@@ -1,0 +1,115 @@
+/* ═════════ V3 — En-tête : structure et comportements repris d'IVT, identité Marché de Gros ═════════
+   Transparent au-dessus du contenu · capsule « repliée » après 40 px · se cache en descendant, revient en remontant ou au survol du haut
+   · onglet « Menu » quand il est caché · menu plein écran sous 1100 px (7 entrées) */
+:root{--hh:64px}
+@media (min-width:640px){:root{--hh:78px}}
+.site-header{--h-ink:var(--color-ivoire-t,#F5F0E6);--h-soft:color-mix(in srgb,var(--h-ink) 78%,transparent);--h-line:color-mix(in srgb,var(--h-ink) 20%,transparent);--h-acc:var(--p-accent,var(--color-ambre,#E07A3F));--ease:cubic-bezier(0.22,1,0.36,1);
+  position:sticky;top:0;z-index:70;margin-bottom:calc(-1 * var(--hh));background:none;color:var(--h-ink);font-family:var(--font-body,'Figtree',sans-serif);
+  transition:transform .45s var(--ease),color .3s ease;will-change:transform}
+.site-header[data-tone="light"]{--h-ink:var(--color-text,#171512);--h-acc:var(--l-deep,#904515)}
+body.nav-open .site-header{--h-ink:var(--color-ivoire-t,#F5F0E6);--h-acc:var(--p-accent,var(--color-ambre,#E07A3F));transform:none!important;z-index:70}
+.sh-inner{position:relative;display:flex;align-items:center;justify-content:space-between;gap:14px;height:64px;width:100%;max-width:1240px;margin:0 auto;
+  padding-left:max(18px,env(safe-area-inset-left));padding-right:max(18px,env(safe-area-inset-right));border:1px solid transparent;
+  transition:height .45s var(--ease),margin .45s var(--ease),padding .45s var(--ease)}
+@media (min-width:640px){.sh-inner{height:78px;padding-left:max(24px,env(safe-area-inset-left));padding-right:max(24px,env(safe-area-inset-right))}}
+.site-header.is-condensed .sh-inner{height:64px}
+@media (min-width:640px){.site-header.is-condensed .sh-inner{height:70px}}
+.site-header.is-condensed .sh-nav a,.site-header.is-condensed .brand,.site-header.is-condensed .sh-actions{text-shadow:0 1px 2px rgba(0,0,0,.55),0 0 14px rgba(0,0,0,.45)}
+.site-header.is-condensed .mark,.site-header.is-condensed .sh-actions svg{filter:drop-shadow(0 1px 6px rgba(0,0,0,.5))}
+.site-header[data-tone="light"].is-condensed .sh-nav a,.site-header[data-tone="light"].is-condensed .brand,.site-header[data-tone="light"].is-condensed .sh-actions{text-shadow:0 1px 2px rgba(255,250,240,.7),0 0 14px rgba(255,250,240,.6)}
+.site-header[data-tone="light"].is-condensed .mark,.site-header[data-tone="light"].is-condensed .sh-actions svg{filter:none}
+.site-header.is-hidden{transform:translateY(calc(-100% - 14px))}
+.site-header .brand{color:inherit;position:relative;z-index:5}
+.site-header .brand:hover{color:inherit}
+
+/* Liens (ordinateur) */
+.sh-nav{display:none}
+.sh-nav a{font-weight:700;text-transform:uppercase;letter-spacing:.14em;font-size:14px;color:var(--h-soft);text-decoration:none;transition:color .25s var(--ease)}
+.sh-nav a:hover,.sh-nav a.on{color:var(--h-ink)}
+.sh-badge{position:absolute;top:-9px;right:-14px;display:inline-flex;align-items:center;justify-content:center;padding:1px 5px;min-width:15px;height:15px;border-radius:999px;background:var(--color-terre,#B85C38);color:#fff;
+  font-size:8.5px;font-weight:700;letter-spacing:.06em;line-height:1;white-space:nowrap;animation:shPulse 3s ease-in-out infinite}
+@keyframes shPulse{0%,70%,100%{opacity:1;box-shadow:0 0 0 0 transparent}85%{opacity:.72;box-shadow:0 0 6px 1px color-mix(in srgb,var(--color-terre,#B85C38) 55%,transparent)}}
+/* Repli intelligent (v3/ivt-header.js) : la barre de liens reste tant qu'elle tient entre le logo et les boutons, sur toutes les pages ;
+   sinon html.nav-fold → bouton Menu + menu plein écran. Sans JS : repli sous 1100 px. */
+html:not(.nav-fold) .site-header .sh-nav{display:flex;position:static;flex-direction:row;align-items:center;gap:28px;background:none;padding:0;min-width:0}
+html:not(.nav-fold) .site-header .sh-nav a{position:relative;padding:6px 0;font-size:11.5px;letter-spacing:.14em;white-space:nowrap}
+html:not(.nav-fold) .site-header .sh-nav a::after{content:'';position:absolute;left:0;bottom:0;height:1px;width:0;background:var(--h-acc);transition:width .3s var(--ease)}
+html:not(.nav-fold) .site-header .sh-nav a:hover::after,html:not(.nav-fold) .site-header .sh-nav a.on::after{width:100%}
+@media (max-width:1299px){html:not(.nav-fold) .site-header .sh-nav{gap:16px}html:not(.nav-fold) .site-header .sh-nav a{letter-spacing:.08em;font-size:10.5px}}
+@media (max-width:1099px){html:not(.nav-js) .site-header .sh-nav{display:none}}
+@media (min-width:1100px){html:not(.nav-js) .sh-burger{display:none}}
+
+/* Actions */
+.sh-actions{display:flex;align-items:center;gap:8px;position:relative;z-index:5}
+.sh-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;padding:0;border:1px solid var(--h-line);border-radius:50%;background:none;color:var(--h-soft);text-decoration:none;cursor:pointer;
+  transition:border-color .25s var(--ease),background .25s var(--ease),color .25s var(--ease),transform .2s var(--ease),box-shadow .25s var(--ease)}
+.sh-btn svg{width:18px;height:18px}
+.sh-btn:hover{border-color:var(--h-acc);background:color-mix(in srgb,var(--h-acc) 8%,transparent);color:var(--h-ink)}
+@media (hover:hover){.sh-btn:hover{box-shadow:0 0 0 1px color-mix(in srgb,var(--h-acc) 35%,transparent),0 8px 24px color-mix(in srgb,var(--h-acc) 14%,transparent)}}
+.sh-btn:active{transform:scale(.94)}
+.sh-btn[aria-disabled="true"]{cursor:help}
+.sh-btn:focus-visible,.sh-burger:focus-visible,.sh-nav a:focus-visible,.header-peek:focus-visible{outline:2px solid var(--h-acc);outline-offset:3px;border-radius:999px}
+.sh-burger{position:relative;z-index:2;display:grid;place-items:center;width:48px;height:48px;min-width:48px;min-height:48px;background:none;border:0;padding:0;flex:0 0 auto;cursor:pointer;color:var(--h-ink);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.sh-burger span{position:absolute;left:50%;top:50%;width:22px;height:2px;margin:0;border-radius:2px;background:currentColor;pointer-events:none;transition:transform .4s var(--ease),opacity .25s var(--ease)}
+.sh-burger span:nth-child(1){transform:translate(-50%,-50%) translateY(-7px)}
+.sh-burger span:nth-child(2){transform:translate(-50%,-50%)}
+.sh-burger span:nth-child(3){transform:translate(-50%,-50%) translateY(7px)}
+.sh-burger[aria-expanded="true"] span:nth-child(1){transform:translate(-50%,-50%) rotate(45deg)}
+.sh-burger[aria-expanded="true"] span:nth-child(2){opacity:0;transform:translate(-50%,-50%) scaleX(.2)}
+.sh-burger[aria-expanded="true"] span:nth-child(3){transform:translate(-50%,-50%) rotate(-45deg)}
+html.nav-js:not(.nav-fold) .sh-burger{display:none}
+
+/* Onglet « Menu » quand l'en-tête est caché */
+.header-peek{position:fixed;top:0;left:50%;z-index:69;translate:-50% -100%;padding:6px 16px 7px;border-radius:0 0 14px 14px;background:transparent;border:1px solid rgba(245,240,230,.35);border-top:0;color:var(--color-ivoire-t,#F5F0E6);
+  text-shadow:0 1px 3px rgba(0,0,0,.6);cursor:pointer;font:500 10px/1 var(--font-body,'Figtree',sans-serif);letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:6px;transition:translate .4s var(--ease)}
+.site-header[data-tone="light"] ~ .header-peek{color:var(--color-text,#171512);border-color:color-mix(in srgb,var(--color-text,#171512) 30%,transparent);text-shadow:0 1px 3px rgba(255,250,240,.7)}
+.header-peek svg{width:10px;height:10px}
+.site-header.is-hidden ~ .header-peek{translate:-50% 0}
+@media (max-width:639px){.header-peek{display:none}}
+@media (pointer:coarse){.header-peek{min-height:44px;padding-block:12px}}
+
+/* Menu plein écran (sorti de l'en-tête quand la barre ne tient pas) — rapide : 160 ms, cascade de 18 ms */
+html.nav-fold body > .sh-nav{display:flex!important;position:fixed;inset:0;z-index:65;flex-direction:column;justify-content:center;gap:0;
+  padding:calc(var(--hh) + 32px) 28px calc(40px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;
+  background:var(--p-bg-deep,var(--color-cacao,#171512));opacity:0;visibility:hidden;pointer-events:none;transition:opacity .14s ease-out,visibility 0s linear .14s}
+html.nav-fold body > .sh-nav.is-open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .16s ease-out}
+html.nav-fold body > .sh-nav a{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px;width:100%;max-width:640px;margin:0 auto;padding:10px 2px;box-sizing:border-box;
+  font-family:var(--font-heading,'Cormorant Garamond',serif);font-weight:500;font-size:clamp(30px,8vw,40px);line-height:1.05;letter-spacing:0;text-transform:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:rgba(245,240,230,.72);border-bottom:1px solid rgba(245,240,230,.12);opacity:0;transform:translateY(8px);
+  transition:opacity .16s ease-out,transform .22s cubic-bezier(0.22,1,0.36,1),color .15s ease}
+html.nav-fold body > .sh-nav a::after{content:'→';flex:none;font-family:var(--font-body,'Jost',sans-serif);font-size:18px;color:rgba(245,240,230,.5);transition:transform .15s ease}
+html.nav-fold body > .sh-nav a:hover,html.nav-fold body > .sh-nav a.on,html.nav-fold body > .sh-nav a:active{color:#F5F0E6}
+html.nav-fold body > .sh-nav a:hover::after{transform:translateX(4px);color:var(--p-accent,#E07A3F)}
+html.nav-fold body > .sh-nav a.on::after{color:var(--p-accent,#E07A3F)}
+html.nav-fold body > .sh-nav.is-open a{opacity:1;transform:none}
+html.nav-fold body > .sh-nav.is-open a:nth-child(2){transition-delay:0.018s}
+html.nav-fold body > .sh-nav.is-open a:nth-child(3){transition-delay:0.036s}
+html.nav-fold body > .sh-nav.is-open a:nth-child(4){transition-delay:0.054s}
+html.nav-fold body > .sh-nav.is-open a:nth-child(5){transition-delay:0.072s}
+html.nav-fold body > .sh-nav.is-open a:nth-child(6){transition-delay:0.090s}
+html.nav-fold body > .sh-nav.is-open a:nth-child(7){transition-delay:0.108s}
+html.nav-fold body > .sh-nav.is-open a:nth-child(8){transition-delay:0.126s}
+html.nav-fold body > .sh-nav .sh-badge{position:static;margin-left:auto;font-family:var(--font-body,'Jost',sans-serif)}
+html.nav-fold body.nav-open .header-peek{display:none}
+@media (max-height:620px){html.nav-fold body > .sh-nav{justify-content:flex-start}html.nav-fold body > .sh-nav a{min-height:52px;font-size:28px}}
+/* logo Marché de Gros un peu plus compact sur téléphone, pour garder les trois boutons d'IVT */
+@media (max-width:639px){.site-header .brand{gap:10px}.site-header .mark{width:34px;height:34px;font-size:18px}.site-header .brand b{font-size:16px}.site-header .brand small{font-size:8.5px;letter-spacing:.24em}}
+@media (max-width:899px),(pointer:coarse){.sh-btn{min-width:44px;min-height:44px}}
+@media (max-width:389px){.sh-actions{gap:4px}.sh-btn{width:44px;height:44px}}
+@media (prefers-reduced-motion:reduce){.site-header,.sh-inner,.header-peek,body > .sh-nav,body > .sh-nav a{transition:none!important;transition-delay:0s!important}.sh-badge{animation:none}}
+/* le contenu passe sous l'en-tête transparent : plus de masque de fondu (comportement IVT) */
+#view,#foot{-webkit-mask-image:none!important;mask-image:none!important}
+body.light #view{padding-top:var(--hh)}
+
+/* Repli automatique au défilement : capsule givrée (flou + voile à la couleur du produit), liens rangés dans le menu */
+.site-header .sh-inner{transition:height .45s var(--ease),margin .45s var(--ease),padding .45s var(--ease),background-color .35s ease,border-color .35s ease,box-shadow .35s ease,border-radius .45s var(--ease)}
+.site-header.is-folded .sh-inner{height:56px!important;margin-top:10px;border-radius:999px;border-color:color-mix(in srgb,var(--h-ink) 14%,transparent);
+  background:color-mix(in srgb,var(--p-bg-deep,#140c08) 58%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.25);backdrop-filter:blur(18px) saturate(1.25);box-shadow:0 14px 34px -16px rgba(0,0,0,.55)}
+.site-header[data-tone="light"].is-folded .sh-inner{background:color-mix(in srgb,var(--color-bg,#F3F2F2) 72%,transparent)}
+.site-header.is-folded .sh-nav a,.site-header.is-folded .brand,.site-header.is-folded .sh-actions{text-shadow:none!important}
+.site-header.is-folded .mark,.site-header.is-folded .sh-actions svg{filter:none!important}
+.site-header.is-folded .sh-btn{width:40px;height:40px;min-width:40px;min-height:40px}
+.site-header.is-folded .mark{width:38px;height:38px;font-size:19px}
+@media (max-width:639px){.site-header.is-folded .sh-inner{margin:8px 8px 0;width:auto;height:52px!important}}
+body.nav-open .site-header .sh-inner{background:none!important;border-color:transparent!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+@media (prefers-reduced-motion:reduce){.site-header .sh-inner{transition:none}}

@@ -1,0 +1,23 @@
+/* Flou (v3/flou.js) — profondeur sur tout le site */
+/* 1. flou progressif sous l'en-tête, seulement quand la page a défilé */
+.fl-top{position:fixed;left:0;right:0;top:0;height:calc(var(--hh,78px) + 36px);z-index:69;pointer-events:none;opacity:0;transition:opacity .35s ease;
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 45%,transparent 100%);mask-image:linear-gradient(to bottom,#000 0%,#000 45%,transparent 100%)}
+html.fl-scrolled .fl-top{opacity:1}
+html.sx-open .fl-top,body.nav-open ~ .fl-top{opacity:0}
+/* 2. apparition au défilement : le bloc sort du flou */
+.fl-r{opacity:0;filter:blur(18px);transform:translateY(28px) scale(.97);transition:opacity .7s cubic-bezier(.22,1,.36,1),filter .8s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1);will-change:opacity,filter,transform}
+.fl-r.fl-in{opacity:1;filter:blur(0);transform:none}
+/* 3. passage flou → net (roue, année) */
+@keyframes flPulse{0%{filter:blur(16px);opacity:.15;transform:translateY(8px) scale(.98)}100%{filter:blur(0);opacity:1;transform:none}}
+.fl-p{animation:flPulse .7s cubic-bezier(.22,1,.36,1) both}
+/* 4. la page recule dans le flou derrière la recherche, le menu et le panneau J'ai / Je cherche */
+#view,#foot{transition:filter .28s ease,transform .32s cubic-bezier(.22,1,.36,1),opacity .28s ease}
+html.sx-open #view,html.sx-open #foot,body.nav-open #view,body.nav-open #foot{filter:blur(10px) saturate(.9);transform:scale(.985);opacity:.7}
+body:has(#mtOD.is-open) #view,body:has(#mtOD.is-open) #foot{filter:blur(6px);transform:scale(.992)}
+/* réduire les animations : rien de tout cela */
+html.fl-off .fl-top{display:none}
+html.fl-off .fl-r{opacity:1!important;filter:none!important;transform:none!important}
+html.fl-off .fl-p{animation:none}
+html.fl-off #view,html.fl-off #foot{transition:none;filter:none!important;transform:none!important;opacity:1!important}
+@media (prefers-reduced-motion:reduce){.fl-r,.fl-p{animation:none;transition:none;filter:none;opacity:1;transform:none}}

@@ -1,0 +1,16 @@
+/* États du système (v3/etat.js) : une seule lumière d'ambiance pour tout le site.
+   IDLE respire · APPROACH s'éclaire · FOCUS assombrit les bords · INTERACTION resserre · TRANSITION voile · CONNECTION éclaire le centre · REST revient. */
+.et-cv{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:9998}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:9997;
+  background:radial-gradient(120% 90% at 50% 40%,transparent 55%,rgba(10,8,6,var(--et-v,.10)) 100%);
+  transition:--et-v .9s cubic-bezier(.22,1,.36,1),opacity .9s cubic-bezier(.22,1,.36,1)}
+@property --et-v{syntax:"<number>";inherits:true;initial-value:.10}
+html[data-etat="idle"] body::after{animation:et-breathe 7s ease-in-out infinite}
+html[data-etat="approach"]{--et-v:.04}
+html[data-etat="interaction"]{--et-v:.16}
+html[data-etat="focus"]{--et-v:.30}
+html[data-etat="transition"]{--et-v:.22}
+html[data-etat="connection"]{--et-v:.26}
+html[data-etat="rest"]{--et-v:.10}
+@keyframes et-breathe{0%,100%{opacity:1}50%{opacity:.7}}
+@media (prefers-reduced-motion:reduce){body::after{transition:none;animation:none!important}.et-cv{display:none}}

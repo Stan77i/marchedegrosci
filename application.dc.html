@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#171512">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600;700&display=swap">
+<script src="v2/data.js"></script>
+<script src="app/marche-app.js"></script>
+<style>html,body{margin:0;height:100%;background:#0d0c0a;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box}a{color:#E07A3F}a:hover{color:#B85C38}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}
+@keyframes mkWave{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.3);opacity:0}}
+@keyframes mkBreath{0%,100%{transform:scale(.82)}50%{transform:scale(1.12)}}
+@keyframes mkFlow{to{stroke-dashoffset:-12}}
+@keyframes mkBlink{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes mkRise{0%{transform:scaleY(.25)}45%,70%{transform:scaleY(1)}100%{transform:scaleY(.25)}}
+@keyframes mkOrbit{to{transform:rotate(360deg)}}
+@keyframes mkDraw{0%{stroke-dashoffset:18}45%,75%{stroke-dashoffset:0}100%{stroke-dashoffset:-18}}
+@keyframes mkArc{to{stroke-dashoffset:0}}
+@keyframes mkLine{from{stroke-dashoffset:200}to{stroke-dashoffset:0}}
+@keyframes mkPop{0%{transform:scale(0);opacity:0}70%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+@keyframes mkFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#24201A,#0d0c0a 70%);font-family:Jost,system-ui,sans-serif">
+<div style="flex:none;padding:{{ shellPad }};border-radius:{{ shellRad }};background:#050504;transform:scale({{ scale }});transform-origin:center">
+<div data-screen-label="Application" style="position:relative;width:{{ W }};height:{{ H }};border-radius:{{ rad }};overflow:hidden;background:#171512;isolation:isolate">
+
+<!-- ═══ ACCUEIL ═══ -->
+<div data-screen-label="Accueil" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;overflow:hidden;isolation:isolate;transform:{{ tf.home }};filter:{{ dim.home }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s">
+  <div style="position:absolute;left:50%;top:330px;width:640px;height:640px;margin:-320px 0 0 -320px;border-radius:50%;background:radial-gradient(circle,{{ halo }} 0%,transparent 60%);opacity:.5;pointer-events:none;transition:background .6s"></div>
+  <div style="height:{{ topPad }};flex:none"></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 10px 0 22px;height:54px;position:relative">
+    <div style="display:flex;flex-direction:column;gap:1px"><span style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:500;line-height:1">Marché de Gros</span><span style="font-size:9.5px;letter-spacing:.24em;color:#B9AD98;font-weight:500">CÔTE D'IVOIRE</span></div>
+    <div style="display:flex;gap:2px">
+      <button onClick="{{ goAcheter }}" aria-label="Chercher" style="width:44px;height:44px;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center;border-radius:22px"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 20 20"></path></svg></button>
+      <button onClick="{{ openMenu }}" aria-label="Menu" style="width:44px;height:44px;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center;border-radius:22px;position:relative"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 8h16M4 16h10"></path></svg><sc-if value="{{ hasPubs }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:10px;right:9px;width:7px;height:7px;border-radius:50%;background:#6CC58C"></span></sc-if></button>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0 0;position:relative">
+    <div style="display:flex;gap:4px">
+      <sc-for list="{{ famPips }}" as="s" hint-placeholder-count="11"><button onClick="{{ s.go }}" aria-label="{{ s.name }}" style="border:0;padding:6px 0;background:transparent;display:flex"><span style="display:block;height:3px;border-radius:2px;width:{{ s.w }};background:{{ s.bg }};transition:all .4s cubic-bezier(.22,1,.36,1)"></span></button></sc-for>
+    </div>
+    <div style="display:flex;align-items:center;gap:2px">
+      <button onClick="{{ prevFam }}" aria-label="Famille précédente" style="width:36px;height:36px;border:0;background:transparent;color:#847966;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+      <button onClick="{{ openFams }}" style="border:0;background:transparent;color:#B9AD98;font-size:10.5px;letter-spacing:.2em;font-weight:500;padding:8px 6px;display:flex;align-items:center;gap:6px;min-height:36px">{{ famName }}<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+      <button onClick="{{ nextFam }}" aria-label="Famille suivante" style="width:36px;height:36px;border:0;background:transparent;color:#847966;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"></path></svg></button>
+    </div>
+  </div>
+  <div onPointerDown="{{ wDown }}" onPointerMove="{{ wMove }}" onPointerUp="{{ wUp }}" onPointerCancel="{{ wUp }}" style="position:relative;height:388px;flex:none;touch-action:pan-y;user-select:none">
+    <svg width="390" height="388" viewBox="0 0 390 388" style="position:absolute;left:50%;top:0;margin-left:-195px;pointer-events:none;overflow:visible">
+      <path d="M -85.8 231 A 318 318 0 0 1 475.8 231" fill="none" stroke="rgba(245,240,230,.14)" stroke-width="1"></path>
+      <path d="M -69.9 239.2 A 300 300 0 0 1 459.9 239.2" fill="none" stroke="{{ halo }}" stroke-opacity=".6" stroke-width="1"></path>
+      <circle cx="195" cy="62" r="9" fill="#E07A3F" fill-opacity=".18"></circle>
+      <circle cx="195" cy="62" r="3.5" fill="#E07A3F"></circle>
+    </svg>
+    <div style="position:absolute;left:50%;top:380px;width:0;height:0">
+      <sc-for list="{{ ticks }}" as="t" hint-placeholder-count="0"><span style="position:absolute;left:0;top:0;width:1.5px;height:7px;background:#F5F0E6;opacity:{{ t.op }};transform:{{ t.tf }};transform-origin:0 0;transition:{{ t.tr }}"></span></sc-for>
+      <sc-for list="{{ labels }}" as="l" hint-placeholder-count="0">
+        <button onClick="{{ l.go }}" style="position:absolute;left:0;top:0;border:0;background:transparent;padding:6px 4px;white-space:nowrap;font-size:{{ l.fs }};letter-spacing:.16em;text-transform:uppercase;color:{{ l.color }};font-weight:{{ l.weight }};transform:{{ l.tf }};opacity:{{ l.op }};transition:{{ l.tr }};transform-origin:0 0;pointer-events:{{ l.pe }}">{{ l.name }}</button>
+      </sc-for>
+    </div>
+    <div style="position:absolute;left:50%;top:104px;width:250px;height:250px;margin-left:-125px;pointer-events:none">
+      <div style="position:absolute;left:30px;right:30px;bottom:6px;height:26px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.6),transparent 70%)"></div>
+      <sc-for list="{{ sacks }}" as="k" hint-placeholder-count="0"><img src="{{ k.src }}" alt="{{ k.alt }}" draggable="false" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:{{ k.op }};transform:{{ k.tf }};transition:{{ k.tr }}"></sc-for>
+      <div style="position:absolute;inset:0;opacity:{{ jute.op }};transform:{{ jute.tf }};transition:opacity .4s,transform .55s cubic-bezier(.22,1,.36,1)">
+        <svg viewBox="0 0 250 250" width="250" height="250">
+          <defs><linearGradient id="jg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9ab7c"></stop><stop offset=".55" stop-color="#a98a5c"></stop><stop offset="1" stop-color="#7d6440"></stop></linearGradient><pattern id="jw" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0 2.5h5M2.5 0v5" stroke="#5c4930" stroke-opacity=".18" stroke-width=".8"></path></pattern><radialGradient id="jm" cx=".5" cy=".7" r=".6"><stop offset="0" stop-color="{{ jute.mound }}"></stop><stop offset="1" stop-color="#2a2218"></stop></radialGradient></defs>
+          <ellipse cx="125" cy="74" rx="80" ry="22" fill="url(#jm)"></ellipse>
+          <path d="M44 78 C40 120 34 170 38 214 C40 232 60 238 125 238 C190 238 210 232 212 214 C216 170 210 120 206 78 C190 92 60 92 44 78Z" fill="url(#jg)"></path>
+          <path d="M44 78 C40 120 34 170 38 214 C40 232 60 238 125 238 C190 238 210 232 212 214 C216 170 210 120 206 78 C190 92 60 92 44 78Z" fill="url(#jw)"></path>
+          <path d="M38 70 C60 58 190 58 212 70 C216 86 214 100 206 106 C170 116 80 116 44 106 C36 100 34 86 38 70Z" fill="#b89a6b"></path>
+          <path d="M38 70 C60 58 190 58 212 70 C216 86 214 100 206 106 C170 116 80 116 44 106 C36 100 34 86 38 70Z" fill="url(#jw)"></path>
+        </svg>
+        <div style="position:absolute;left:50px;right:50px;top:132px;display:flex;flex-direction:column;align-items:center;gap:6px;color:#2f3f63;opacity:.75;text-align:center;font-family:Jost,sans-serif"><span style="font-size:{{ jute.fs }};font-weight:700;letter-spacing:.08em;line-height:1.1">{{ jute.l1 }}</span><span style="font-size:10px;font-weight:600;letter-spacing:.24em">CÔTE D'IVOIRE</span></div>
+      </div>
+    </div>
+    <button onPointerDown="{{ stop }}" onClick="{{ prev }}" aria-label="Produit précédent" style="position:absolute;left:4px;top:208px;width:44px;height:44px;border:0;background:transparent;color:#B9AD98;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+    <button onPointerDown="{{ stop }}" onClick="{{ next }}" aria-label="Produit suivant" style="position:absolute;right:4px;top:208px;width:44px;height:44px;border:0;background:transparent;color:#B9AD98;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 5l7 7-7 7"></path></svg></button>
+  </div>
+  <div style="text-align:center;padding:0 24px;position:relative;margin-top:-10px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:{{ act.fs }};font-weight:500;line-height:1;letter-spacing:-.01em">{{ act.name }}</div>
+    <div style="display:flex;justify-content:center;gap:14px;margin-top:12px;font-size:13.5px;color:#B9AD98;flex-wrap:wrap">
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:50%;background:#6CC58C;opacity:{{ act.oOp }}"></span>{{ act.oTxt }}</span>
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:2px;background:#F2C94C;opacity:{{ act.dOp }}"></span>{{ act.dTxt }}</span>
+      <sc-if value="{{ act.season }}" hint-placeholder-val="{{ false }}"><span style="color:#9dc2a7">En saison</span></sc-if>
+    </div>
+    <button onClick="{{ openFicheAct }}" style="margin-top:8px;border:0;background:transparent;color:#F5F0E6;font-size:13.5px;font-weight:500;padding:10px 14px;display:inline-flex;align-items:center;gap:6px;border-radius:20px">{{ act.cta }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h13M13 6l6 6-6 6"></path></svg></button>
+  </div>
+  <div style="margin-top:auto;padding:0 18px {{ botPad }};display:flex;gap:10px;position:relative">
+    <button onClick="{{ openJai }}" style="flex:1;height:58px;border-radius:29px;border:0;background:#E07A3F;color:#171512;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s" style-active="transform:scale(.97)"><span style="width:11px;height:11px;border-radius:50%;background:#171512"></span>J'ai</button>
+    <button onClick="{{ openCherche }}" style="flex:1;height:58px;border-radius:29px;border:1px solid rgba(245,240,230,.3);background:rgba(245,240,230,.04);color:#F5F0E6;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s" style-active="transform:scale(.97)"><span style="width:10px;height:10px;border-radius:2px;border:1.6px solid #F2C94C"></span>Je cherche</button>
+  </div>
+</div>
+
+<!-- ═══ FICHE PRODUIT ═══ -->
+<div data-screen-label="Fiche produit" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.fiche }};filter:{{ dim.fiche }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<sc-if value="{{ on.fiche }}" hint-placeholder-val="{{ false }}">
+  <div style="background:#24201A;color:#F5F0E6;flex:none;padding-top:{{ topPad }}">
+    <div style="display:flex;align-items:center;height:52px;padding:0 8px">
+      <button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+      <span style="flex:1;text-align:center;font-size:11.5px;letter-spacing:.2em;color:#B9AD98;font-weight:500">{{ fp.famCaps }}</span>
+      <button onClick="{{ share }}" aria-label="Partager" style="width:44px;height:44px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5M5 13v7h14v-7"></path></svg></button>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto">
+    <div style="background:#24201A;color:#F5F0E6;padding:0 24px 28px;text-align:center;position:relative;overflow:hidden">
+      <div style="position:absolute;left:50%;top:110px;width:420px;height:420px;margin:-210px 0 0 -210px;border-radius:50%;background:radial-gradient(circle,{{ fp.tint }} 0%,transparent 60%);opacity:.45"></div>
+      <img src="{{ fp.thumb }}" alt="{{ fp.name }}" style="position:relative;width:{{ fp.imgSize }};height:{{ fp.imgSize }};object-fit:{{ fp.fit }};border-radius:{{ fp.imgRad }};margin-top:6px">
+      <div style="position:relative;font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:500;line-height:1;margin-top:12px">{{ fp.name }}</div>
+      <div style="position:relative;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:14px">
+        <sc-for list="{{ fp.aliases }}" as="a" hint-placeholder-count="2"><span style="font-size:12.5px;color:#B9AD98;border:1px solid rgba(185,173,152,.35);border-radius:14px;padding:4px 11px">{{ a }}</span></sc-for>
+      </div>
+    </div>
+    <div style="padding:24px 20px 130px;display:flex;flex-direction:column;gap:28px">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">SUR LE MARCHÉ</span><button onClick="{{ ficheCarte }}" style="border:0;background:transparent;color:#904515;font-size:13.5px;font-weight:500;padding:8px 0;min-height:36px">Voir sur la carte →</button></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="background:#faf4e9;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#655c4d"><span style="width:10px;height:10px;border-radius:50%;background:#6CC58C;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)"></span>Offres</div><div style="font-family:'Cormorant Garamond',serif;font-size:36px;line-height:1">{{ fp.nOff }}</div></div>
+          <div style="background:#faf4e9;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#655c4d"><span style="width:10px;height:10px;border-radius:2px;background:#F2C94C;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)"></span>Demandes</div><div style="font-family:'Cormorant Garamond',serif;font-size:36px;line-height:1">{{ fp.nDem }}</div></div>
+        </div>
+        <sc-for list="{{ fp.items }}" as="o" hint-placeholder-count="0">
+          <div style="background:#faf4e9;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;animation:mkFade .4s both">
+            <button onClick="{{ o.go }}" style="border:0;background:transparent;padding:0;text-align:left;display:flex;gap:12px;align-items:center;color:#171512">
+              <sc-if value="{{ o.hasPhoto }}" hint-placeholder-val="{{ false }}"><img src="{{ o.photo }}" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:cover;flex:none"></sc-if>
+              <span style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="display:flex;justify-content:space-between;gap:8px"><span style="display:flex;align-items:center;gap:7px;font-weight:600;font-size:15px"><span style="width:9px;height:9px;flex:none;border-radius:{{ o.shapeRad }};background:{{ o.shapeBg }}"></span>{{ o.who }}</span><span style="font-size:12px;color:#847966;white-space:nowrap">{{ o.ago }}</span></span><span style="font-size:13.5px;color:#484236;line-height:1.4">{{ o.line }}</span><span style="font-size:13.5px;font-weight:600">{{ o.price }}</span></span>
+            </button>
+            <sc-if value="{{ o.hasTel }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px"><a href="{{ o.tel }}" style="flex:1;height:44px;border-radius:22px;background:#171512;color:#F5F0E6;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;text-decoration:none">Appeler</a><a href="{{ o.wa }}" target="_blank" style="flex:1;height:44px;border-radius:22px;border:1px solid rgba(23,21,18,.2);color:#171512;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;text-decoration:none">WhatsApp</a></div></sc-if>
+          </div>
+        </sc-for>
+        <sc-if value="{{ fp.empty }}" hint-placeholder-val="{{ true }}"><div style="border:1px dashed rgba(23,21,18,.22);border-radius:16px;padding:18px;font-size:14px;color:#655c4d;line-height:1.5;text-wrap:pretty">{{ fp.emptyTxt }}</div></sc-if>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">PRIX</span>
+        <div style="background:#faf4e9;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><span style="font-size:14px;color:#655c4d">Prix vendeur le plus bas</span><span style="font-weight:600;font-size:15px">{{ fp.low }}</span></div>
+          <div style="height:1px;background:rgba(23,21,18,.1)"></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:14px;color:#655c4d">Prix observé du marché</span><span style="font-family:'Cormorant Garamond',serif;font-size:24px;line-height:1.15">{{ fp.market }}</span></div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+            <sc-for list="{{ fp.meter }}" as="m" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:6px"><div style="height:4px;border-radius:2px;background:#ddd3c2;overflow:hidden"><div style="height:100%;width:{{ m.pct }};background:#31543C;transition:width .8s cubic-bezier(.22,1,.36,1)"></div></div><span style="font-size:11.5px;color:#655c4d;line-height:1.3">{{ m.txt }}</span></div></sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">SAISON</span>
+        <sc-if value="{{ fp.hasSeason }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:3px"><sc-for list="{{ fp.season }}" as="c" hint-placeholder-count="12"><div style="display:flex;flex-direction:column;align-items:center;gap:5px"><div style="width:100%;height:28px;border-radius:5px;background:{{ c.bg }};outline:{{ c.ring }};outline-offset:1px"></div><span style="font-size:11px;color:#655c4d;font-weight:{{ c.w }}">{{ c.l }}</span></div></sc-for></div>
+          <span style="font-size:12.5px;color:#655c4d;line-height:1.45">{{ fp.seasonNote }}</span>
+        </sc-if>
+        <sc-if value="{{ fp.noSeason }}" hint-placeholder-val="{{ true }}"><span style="font-size:14px;color:#655c4d;line-height:1.5">Calendrier de récolte pas encore sourcé pour ce produit.</span></sc-if>
+      </div>
+    </div>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 18px {{ botPad }};background:linear-gradient(to top,#F2EBDD 70%,rgba(242,235,221,0));display:flex;gap:10px">
+    <button onClick="{{ openJai }}" style="flex:1;height:54px;border-radius:27px;border:0;background:#E07A3F;color:#171512;font-size:15.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:9px" style-active="transform:scale(.97)"><span style="width:10px;height:10px;border-radius:50%;background:#171512"></span>J'ai</button>
+    <button onClick="{{ openCherche }}" style="flex:1;height:54px;border-radius:27px;border:0;background:#171512;color:#F5F0E6;font-size:15.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:9px" style-active="transform:scale(.97)"><span style="width:10px;height:10px;border-radius:2px;border:1.6px solid #F2C94C"></span>Je cherche</button>
+  </div>
+</sc-if>
+</div>
+
+<!-- ═══ ACHETER ═══ -->
+<div data-screen-label="Acheter" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.acheter }};filter:{{ dim.acheter }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<sc-if value="{{ on.acheter }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding-top:{{ topPad }};background:#F2EBDD;border-bottom:1px solid rgba(23,21,18,.1)">
+    <div style="display:flex;align-items:center;gap:6px;padding:6px 12px 10px 6px">
+      <button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;flex:none"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+      <div style="flex:1;display:flex;align-items:center;gap:8px;height:48px;border-radius:24px;background:#fffaf3;border:1px solid rgba(23,21,18,.14);padding:0 14px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#847966" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 20 20"></path></svg><input ref="{{ aRef }}" value="{{ aq }}" onChange="{{ onAq }}" placeholder="50 sacs de riz à Bouaké" style="flex:1;min-width:0;border:0;background:transparent;font-size:16px;outline:none;color:#171512"><sc-if value="{{ aqHas }}" hint-placeholder-val="{{ false }}"><button onClick="{{ clearAq }}" aria-label="Effacer" style="border:0;background:transparent;color:#847966;width:28px;height:28px;padding:0">×</button></sc-if></div>
+    </div>
+    <div style="display:flex;gap:6px;overflow-x:auto;padding:0 16px 12px">
+      <button onClick="{{ toggleFilters }}" style="flex:none;height:36px;padding:0 14px;border-radius:18px;border:1px solid {{ fBtn.bd }};background:{{ fBtn.bg }};color:{{ fBtn.color }};font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>{{ fBtn.l }}</button>
+      <sc-for list="{{ famChips }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.go }}" style="flex:none;height:36px;padding:0 14px;border-radius:18px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.color }};font-size:13.5px;font-weight:500;white-space:nowrap">{{ c.l }}</button></sc-for>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:14px 16px 40px;display:flex;flex-direction:column;gap:14px">
+    <sc-if value="{{ fOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#faf4e9;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;animation:mkFade .3s both">
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:500">Région<select value="{{ af.reg }}" onChange="{{ afh.reg }}" style="height:48px;border-radius:12px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 10px;font-size:15px;color:#171512"><option value="">Toute la Côte d'Ivoire</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}">{{ r.name }}</option></sc-for></select></label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:500">Quantité min.<input value="{{ af.qmin }}" onChange="{{ afh.qmin }}" inputmode="numeric" placeholder="—" style="height:48px;border-radius:12px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 12px;font-size:16px;color:#171512;min-width:0"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:500">Prix max. (F)<input value="{{ af.pmax }}" onChange="{{ afh.pmax }}" inputmode="numeric" placeholder="—" style="height:48px;border-radius:12px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 12px;font-size:16px;color:#171512;min-width:0"></label>
+        </div>
+        <button onClick="{{ resetFilters }}" style="align-self:flex-start;border:0;background:transparent;color:#904515;font-size:13.5px;font-weight:500;padding:6px 0">Tout effacer</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ understood.on }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center"><span style="font-size:12px;color:#847966">Compris :</span><sc-for list="{{ understood.chips }}" as="u" hint-placeholder-count="2"><span style="font-size:12.5px;padding:5px 10px;border-radius:12px;background:#e7dcc8;color:#2f2b22;display:flex;gap:5px"><b style="font-weight:600">{{ u.k }}</b>{{ u.v }}</span></sc-for></div>
+    </sc-if>
+    <sc-if value="{{ sugg.on }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;background:#faf4e9;border-radius:16px;overflow:hidden">
+        <sc-for list="{{ sugg.list }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.go }}" style="border:0;background:transparent;display:flex;align-items:center;gap:12px;padding:8px 14px;min-height:52px;text-align:left;color:#171512;border-bottom:1px solid rgba(23,21,18,.06)"><img src="{{ s.thumb }}" alt="" style="width:36px;height:36px;object-fit:{{ s.fit }};border-radius:{{ s.rad }}"><span style="flex:1;display:flex;flex-direction:column"><span style="font-size:15px">{{ s.name }}</span><span style="font-size:12px;color:#847966">{{ s.sub }}</span></span><span style="font-size:12.5px;color:#904515">Fiche</span></button></sc-for>
+      </div>
+    </sc-if>
+    <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">{{ aCount }}</span><button onClick="{{ aCarte }}" style="border:0;background:transparent;color:#904515;font-size:13.5px;font-weight:500;padding:8px 0;min-height:36px">Sur la carte →</button></div>
+    <sc-for list="{{ aList }}" as="o" hint-placeholder-count="0">
+      <div style="background:#faf4e9;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;animation:mkFade .35s both">
+        <button onClick="{{ o.go }}" style="border:0;background:transparent;padding:0;text-align:left;display:flex;gap:12px;align-items:center;color:#171512"><img src="{{ o.img }}" alt="" style="width:60px;height:60px;border-radius:12px;object-fit:{{ o.fit }};flex:none;background:#efe7d9"><span style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="display:flex;justify-content:space-between;gap:8px"><span style="font-weight:600;font-size:15.5px">{{ o.product }}</span><span style="font-size:12px;color:#847966;white-space:nowrap">{{ o.ago }}</span></span><span style="font-size:13.5px;color:#484236">{{ o.line }}</span><span style="font-size:13.5px"><b style="font-weight:600">{{ o.price }}</b> <span style="color:#847966">{{ o.who }}</span></span></span></button>
+        <sc-if value="{{ o.hasTel }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px"><a href="{{ o.tel }}" style="flex:1;height:44px;border-radius:22px;background:#171512;color:#F5F0E6;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;text-decoration:none">Appeler</a><a href="{{ o.wa }}" target="_blank" style="flex:1;height:44px;border-radius:22px;border:1px solid rgba(23,21,18,.2);color:#171512;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;text-decoration:none">WhatsApp</a></div></sc-if>
+      </div>
+    </sc-for>
+    <sc-if value="{{ aEmpty }}" hint-placeholder-val="{{ true }}">
+      <div style="border:1px dashed rgba(23,21,18,.22);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:12px;align-items:flex-start"><span style="font-size:16px;font-weight:500">{{ aEmptyT }}</span><span style="font-size:14px;color:#655c4d;line-height:1.5;text-wrap:pretty">{{ aEmptyX }}</span><button onClick="{{ aDemande }}" style="height:46px;padding:0 20px;border-radius:23px;border:0;background:#E07A3F;color:#171512;font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:2px;background:#171512"></span>{{ aDemandeL }}</button></div>
+    </sc-if>
+  </div>
+</sc-if>
+</div>
+
+<!-- ═══ VENDRE ═══ -->
+<div data-screen-label="Vendre" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.vendre }};filter:{{ dim.vendre }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<sc-if value="{{ on.vendre }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid rgba(23,21,18,.1)">
+    <div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Vendre</span><span style="width:44px;font-size:12.5px;color:#847966;text-align:center">{{ vStepTxt }}</span></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:0 16px 12px"><sc-for list="{{ vBars }}" as="b" hint-placeholder-count="3"><span style="height:3px;border-radius:2px;background:{{ b.bg }};transition:background .4s"></span></sc-for></div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:16px 18px 130px;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">CE QUE L'ACHETEUR VERRA</span>
+      <div style="background:#faf4e9;border-radius:18px;padding:14px;display:flex;gap:12px;align-items:center;box-shadow:0 6px 20px rgba(23,21,18,.08)">
+        <img src="{{ vPrev.img }}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:{{ vPrev.fit }};flex:none;background:#efe7d9">
+        <span style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="display:flex;align-items:center;gap:7px;font-weight:600;font-size:16px"><span style="width:10px;height:10px;border-radius:50%;background:#6CC58C"></span>{{ vPrev.product }}</span><span style="font-size:13.5px;color:#484236">{{ vPrev.line }}</span><span style="font-size:13.5px"><b style="font-weight:600">{{ vPrev.price }}</b> <span style="color:#847966">{{ vPrev.who }}</span></span></span>
+      </div>
+      <sc-if value="{{ vDem.on }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#fff4dd;font-size:13.5px;color:#563e01"><span style="width:10px;height:10px;border-radius:2px;background:#F2C94C;flex:none;animation:mkBreath 2s infinite"></span>{{ vDem.txt }}</div></sc-if>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;background:#e7dcc8;border-radius:22px;padding:3px">
+      <sc-for list="{{ vModes }}" as="m" hint-placeholder-count="2"><button onClick="{{ m.go }}" style="height:40px;border:0;border-radius:19px;background:{{ m.bg }};color:{{ m.color }};font-size:14px;font-weight:600;transition:all .3s">{{ m.l }}</button></sc-for>
+    </div>
+    <sc-if value="{{ vS1 }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;gap:16px;animation:mkFade .35s both">
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Produit</span><button onClick="{{ pickVendre }}" style="height:56px;border-radius:14px;border:1px solid {{ vEb.slug }};background:#fffaf3;display:flex;align-items:center;gap:12px;padding:0 14px;text-align:left;color:#171512"><span style="flex:1;font-size:16px">{{ vProdL }}</span><span style="font-size:13px;color:#904515;font-weight:500">Choisir</span></button></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Photo <span style="color:#847966;font-weight:400">(facultatif)</span></span>
+          <label style="height:96px;border-radius:14px;border:1.5px dashed rgba(23,21,18,.25);display:flex;align-items:center;justify-content:center;gap:12px;color:#484236;font-size:14px;cursor:pointer;overflow:hidden;position:relative;background:#fffaf3"><input type="file" accept="image/*" capture="environment" onChange="{{ onPhoto }}" style="position:absolute;inset:0;opacity:0"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"></path><circle cx="12" cy="13" r="3.5"></circle></svg>{{ vPhotoL }}</label>
+          <span style="font-size:12.5px;color:#847966">Une photo nette, en pleine lumière. Elle est réduite automatiquement.</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Quantité</span><input value="{{ vf.qty }}" onChange="{{ vfh.qty }}" inputmode="decimal" placeholder="ex. 20" style="height:52px;border-radius:14px;border:1px solid {{ vEb.qty }};background:#fffaf3;padding:0 14px;font-size:17px;outline:none;color:#171512">
+          <div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ vUnits }}" as="u" hint-placeholder-count="6"><button onClick="{{ u.go }}" style="height:38px;padding:0 14px;border-radius:19px;border:1px solid {{ u.bd }};background:{{ u.bg }};color:{{ u.color }};font-size:13.5px;font-weight:500">{{ u.l }}</button></sc-for></div></div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ vS2 }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:16px;animation:mkFade .35s both">
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Prix par {{ vf.unit }} <span style="color:#847966;font-weight:400">(F CFA, facultatif)</span></span><input value="{{ vf.price }}" onChange="{{ vfh.price }}" inputmode="numeric" placeholder="ex. 350" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:17px;outline:none;color:#171512"><sc-if value="{{ vRef.on }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px;color:#61846b">{{ vRef.txt }}</span></sc-if></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Région</span><select value="{{ vf.region }}" onChange="{{ vfh.region }}" style="height:52px;border-radius:14px;border:1px solid {{ vEb.region }};background:#fffaf3;padding:0 10px;font-size:15px;color:#171512"><option value="">Choisissez une région</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}">{{ r.name }}</option></sc-for></select></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Ville ou village</span><input value="{{ vf.city }}" onChange="{{ vfh.city }}" placeholder="{{ vCityPh }}" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:16px;outline:none;color:#171512"></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Disponible</span><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ vAvail }}" as="u" hint-placeholder-count="2"><button onClick="{{ u.go }}" style="height:38px;padding:0 14px;border-radius:19px;border:1px solid {{ u.bd }};background:{{ u.bg }};color:{{ u.color }};font-size:13.5px;font-weight:500">{{ u.l }}</button></sc-for></div>
+          <sc-if value="{{ vDateOn }}" hint-placeholder-val="{{ false }}"><input type="date" value="{{ vf.date }}" onChange="{{ vfh.date }}" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:16px;color:#171512"></sc-if></div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ vS3 }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:16px;animation:mkFade .35s both">
+        <sc-if value="{{ vAgent }}" hint-placeholder-val="{{ false }}"><div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Votre nom (agent terrain)</span><input value="{{ vf.agent }}" onChange="{{ vfh.agent }}" placeholder="ex. Awa Koné" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:16px;outline:none;color:#171512"></div></sc-if>
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">{{ vNameL }}</span><input value="{{ vf.name }}" onChange="{{ vfh.name }}" placeholder="ex. Coopérative Akwaba" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:16px;outline:none;color:#171512"></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Téléphone WhatsApp</span><div style="display:flex;align-items:center;height:52px;border-radius:14px;border:1px solid {{ vEb.phone }};background:#fffaf3;overflow:hidden"><span style="padding:0 10px 0 14px;font-size:16px;color:#847966;border-right:1px solid rgba(23,21,18,.1);height:100%;display:flex;align-items:center">+225</span><input value="{{ vf.phone }}" onChange="{{ vfh.phone }}" inputmode="tel" placeholder="07 00 00 00 00" style="flex:1;min-width:0;height:100%;border:0;background:transparent;padding:0 12px;font-size:17px;outline:none;color:#171512"></div><sc-if value="{{ vErr.phone }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#ba5c22">10 chiffres, avec ou sans +225.</span></sc-if></div>
+        <span style="font-size:12.5px;color:#847966;line-height:1.5">Enregistrée sur cet appareil pour l'instant : l'envoi aux autres utilisateurs arrive avec le serveur.</span>
+      </div>
+    </sc-if>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 18px {{ botPad }};background:linear-gradient(to top,#F2EBDD 70%,rgba(242,235,221,0));display:flex;gap:10px">
+    <sc-if value="{{ vCanBack }}" hint-placeholder-val="{{ false }}"><button onClick="{{ vPrevStep }}" style="width:110px;height:56px;border-radius:28px;border:1px solid rgba(23,21,18,.2);background:transparent;color:#171512;font-size:15.5px;font-weight:600">Retour</button></sc-if>
+    <button onClick="{{ vNext }}" style="flex:1;height:56px;border-radius:28px;border:0;background:#E07A3F;color:#171512;font-size:16px;font-weight:600" style-active="transform:scale(.98)">{{ vNextL }}</button>
+  </div>
+</sc-if>
+</div>
+
+<!-- ═══ DEMANDER ═══ -->
+<div data-screen-label="Demander" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.demande }};filter:{{ dim.demande }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<sc-if value="{{ on.demande }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid rgba(23,21,18,.1)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Demander</span><span style="width:44px"></span></div></div>
+  <div style="flex:1;overflow-y:auto;padding:20px 18px 130px;display:flex;flex-direction:column;gap:22px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1.05">Dites ce qu'il vous faut. <em style="color:#904515">Les producteurs viennent à vous.</em></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:14px;font-weight:600">Quoi ?</span><button onClick="{{ pickDemande }}" style="height:56px;border-radius:14px;border:1px solid {{ dEb.slug }};background:#fffaf3;display:flex;align-items:center;gap:12px;padding:0 14px;text-align:left;color:#171512"><span style="flex:1;font-size:16px">{{ dProdL }}</span><span style="font-size:13px;color:#904515;font-weight:500">Choisir</span></button>
+      <sc-for list="{{ dOffers }}" as="o" hint-placeholder-count="0"><div style="background:#faf4e9;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;animation:mkFade .35s both"><span style="width:10px;height:10px;border-radius:50%;background:#6CC58C;flex:none"></span><span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:14px;font-weight:600">{{ o.who }}</span><span style="font-size:12.5px;color:#655c4d">{{ o.line }}</span></span><sc-if value="{{ o.hasTel }}" hint-placeholder-val="{{ false }}"><a href="{{ o.wa }}" target="_blank" style="height:40px;padding:0 14px;border-radius:20px;background:#171512;color:#F5F0E6;display:flex;align-items:center;font-size:13px;text-decoration:none">WhatsApp</a></sc-if></div></sc-for>
+      <sc-if value="{{ dOffInfo.on }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#655c4d;line-height:1.45">{{ dOffInfo.txt }}</span></sc-if>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:600">Combien ?</span><input value="{{ df.qty }}" onChange="{{ dfh.qty }}" inputmode="decimal" placeholder="ex. 50" style="height:52px;border-radius:14px;border:1px solid {{ dEb.qty }};background:#fffaf3;padding:0 14px;font-size:17px;outline:none;color:#171512"><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ dUnits }}" as="u" hint-placeholder-count="6"><button onClick="{{ u.go }}" style="height:38px;padding:0 14px;border-radius:19px;border:1px solid {{ u.bd }};background:{{ u.bg }};color:{{ u.color }};font-size:13.5px;font-weight:500">{{ u.l }}</button></sc-for></div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:600">Où ?</span><select value="{{ df.region }}" onChange="{{ dfh.region }}" style="height:52px;border-radius:14px;border:1px solid {{ dEb.region }};background:#fffaf3;padding:0 10px;font-size:15px;color:#171512"><option value="">Choisissez une région</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}">{{ r.name }}</option></sc-for></select></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:600">Quand ?</span><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ dWhen }}" as="u" hint-placeholder-count="3"><button onClick="{{ u.go }}" style="height:38px;padding:0 14px;border-radius:19px;border:1px solid {{ u.bd }};background:{{ u.bg }};color:{{ u.color }};font-size:13.5px;font-weight:500">{{ u.l }}</button></sc-for></div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:600">Budget <span style="color:#847966;font-weight:400">(F CFA par {{ df.unit }}, facultatif)</span></span><input value="{{ df.budget }}" onChange="{{ dfh.budget }}" inputmode="numeric" placeholder="—" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:17px;outline:none;color:#171512"></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:600">Votre contact</span><input value="{{ df.name }}" onChange="{{ dfh.name }}" placeholder="Votre nom ou votre commerce" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:16px;outline:none;color:#171512"><div style="display:flex;align-items:center;height:52px;border-radius:14px;border:1px solid {{ dEb.phone }};background:#fffaf3;overflow:hidden"><span style="padding:0 10px 0 14px;font-size:16px;color:#847966;border-right:1px solid rgba(23,21,18,.1);height:100%;display:flex;align-items:center">+225</span><input value="{{ df.phone }}" onChange="{{ dfh.phone }}" inputmode="tel" placeholder="07 00 00 00 00" style="flex:1;min-width:0;height:100%;border:0;background:transparent;padding:0 12px;font-size:17px;outline:none;color:#171512"></div><sc-if value="{{ dErr.phone }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#ba5c22">10 chiffres, avec ou sans +225.</span></sc-if></div>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 18px {{ botPad }};background:linear-gradient(to top,#F2EBDD 70%,rgba(242,235,221,0))"><button onClick="{{ dPublish }}" style="width:100%;height:56px;border-radius:28px;border:0;background:#E07A3F;color:#171512;font-size:16px;font-weight:600" style-active="transform:scale(.98)">Publier ma demande</button></div>
+</sc-if>
+</div>
+
+<!-- ═══ CARTE ═══ -->
+<div data-screen-label="Carte" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;transform:{{ tf.carte }};filter:{{ dim.carte }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
+<sc-if value="{{ on.carte }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding-top:{{ topPad }}"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Le réseau</span><span style="width:44px"></span></div></div>
+  <div style="flex:1;overflow-y:auto;padding:0 16px 40px;display:flex;flex-direction:column;gap:14px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:28px;line-height:1.1;padding:0 4px">Qui a quoi, qui cherche quoi, <em style="color:#E07A3F">et où ?</em></div>
+    <div style="display:flex;gap:6px;overflow-x:auto">
+      <button onClick="{{ cPick }}" style="flex:none;height:38px;padding:0 14px;border-radius:19px;border:1px solid rgba(245,240,230,.25);background:rgba(245,240,230,.06);color:#F5F0E6;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:6px">{{ cProdL }}<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></button>
+      <label style="flex:none;height:38px;padding:0 6px 0 12px;border-radius:19px;border:1px solid rgba(176,149,240,.5);background:rgba(176,149,240,.1);color:#F5F0E6;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:6px"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1l5 9H1z" fill="#B095F0"></path></svg><select value="{{ cMe }}" onChange="{{ onMe }}" style="border:0;background:transparent;color:#F5F0E6;font-size:13.5px;outline:none;max-width:150px"><option value="" style="color:#171512">Où êtes-vous ?</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}" style="color:#171512">{{ r.name }}</option></sc-for></select></label>
+    </div>
+    <div style="position:relative;border-radius:22px;background:radial-gradient(ellipse at 50% 40%,#2a241c,#1d1915);border:1px solid rgba(245,240,230,.08);padding:8px">{{ mapEl }}</div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#B9AD98;padding:0 4px"><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#6CC58C"></span>Offre</span><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:#F2C94C"></span>Demande</span><span style="display:flex;align-items:center;gap:6px"><svg width="11" height="11" viewBox="0 0 12 12"><path d="M6 1l5 9H1z" fill="#B095F0"></path></svg>Vous</span><span style="display:flex;align-items:center;gap:6px"><span style="width:16px;height:2px;background:#6AAEF0"></span>Compatibles</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:11px;letter-spacing:.2em;color:#B9AD98;font-weight:600">{{ cListT }}</span>
+      <sc-for list="{{ cList }}" as="o" hint-placeholder-count="0"><button onClick="{{ o.go }}" style="border:0;background:rgba(245,240,230,.05);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;text-align:left;color:#F5F0E6;animation:mkFade .35s both"><span style="width:10px;height:10px;flex:none;border-radius:{{ o.shapeRad }};background:{{ o.shapeBg }}"></span><span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:14.5px;font-weight:500">{{ o.title }}</span><span style="font-size:12.5px;color:#B9AD98">{{ o.line }}</span></span><span style="font-size:12.5px;color:#B095F0;white-space:nowrap">{{ o.km }}</span></button></sc-for>
+      <sc-if value="{{ cEmpty }}" hint-placeholder-val="{{ true }}"><div style="border:1px dashed rgba(245,240,230,.2);border-radius:16px;padding:16px;font-size:14px;color:#B9AD98;line-height:1.5">{{ cEmptyTxt }}</div></sc-if>
+    </div>
+  </div>
+</sc-if>
+</div>
+
+<!-- ═══ CATÉGORIES ═══ -->
+<div data-screen-label="Catégories" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.categories }};filter:{{ dim.categories }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<sc-if value="{{ on.categories }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid rgba(23,21,18,.1)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Catégories</span><span style="width:44px"></span></div></div>
+  <div style="flex:1;overflow-y:auto;padding:8px 0 40px">
+    <div style="padding:16px 20px 12px;font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1.05">{{ catTitle }}<br><em style="color:#904515">tout le vivrier.</em></div>
+    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="11">
+      <div style="border-bottom:1px solid rgba(23,21,18,.08)">
+        <button onClick="{{ c.toggle }}" style="width:100%;border:0;background:transparent;display:flex;align-items:center;gap:14px;padding:12px 20px;text-align:left;color:#171512"><img src="{{ c.img }}" alt="" style="width:56px;height:56px;border-radius:14px;object-fit:cover;flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;font-weight:500">{{ c.name }}</span><span style="font-size:13px;color:#847966">{{ c.sub }}</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#847966" stroke-width="1.8" stroke-linecap="round" style="transform:{{ c.chev }};transition:transform .3s"><path d="M6 9l6 6 6-6"></path></svg></button>
+        <sc-if value="{{ c.open }}" hint-placeholder-val="{{ false }}"><div style="padding:0 20px 14px 90px;display:flex;flex-direction:column;animation:mkFade .3s both"><sc-for list="{{ c.products }}" as="p" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:8px;min-height:48px;border-top:1px solid rgba(23,21,18,.06)"><button onClick="{{ p.go }}" style="flex:1;border:0;background:transparent;padding:0;text-align:left;display:flex;flex-direction:column;gap:1px;color:#171512"><span style="font-size:15px">{{ p.name }}</span><span style="font-size:12px;color:#61846b">{{ p.badge }}</span></button><button onClick="{{ p.jai }}" aria-label="J'ai" style="width:36px;height:36px;border-radius:18px;border:1px solid rgba(23,21,18,.15);background:transparent;display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border-radius:50%;background:#6CC58C"></span></button><button onClick="{{ p.cherche }}" aria-label="Je cherche" style="width:36px;height:36px;border-radius:18px;border:1px solid rgba(23,21,18,.15);background:transparent;display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border-radius:2px;background:#F2C94C"></span></button></div></sc-for></div></sc-if>
+      </div>
+    </sc-for>
+  </div>
+</sc-if>
+</div>
+
+<!-- ═══ PRIX ═══ -->
+<div data-screen-label="Prix du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.prix }};filter:{{ dim.prix }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<sc-if value="{{ on.prix }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid rgba(23,21,18,.1)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Prix du marché</span><span style="width:44px"></span></div></div>
+  <div style="flex:1;overflow-y:auto;padding:22px 18px 40px;display:flex;flex-direction:column;gap:18px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1.05">Un prix qui se <em style="color:#904515">mérite.</em></div>
+    <div style="background:#24201A;color:#F5F0E6;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;gap:12px;align-items:flex-start"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E07A3F" stroke-width="1.8" style="flex:none;margin-top:2px"><path d="M3 12V4h8l10 10-8 8z"></path><circle cx="8" cy="8" r="1.5"></circle></svg><span style="display:flex;flex-direction:column;gap:3px"><b style="font-weight:600;font-size:15px">Prix vendeur</b><span style="font-size:13.5px;color:#B9AD98;line-height:1.45">Déclaré par un vendeur, toujours lié à son nom, sa ville et sa date.</span></span></div>
+      <div style="display:flex;gap:12px;align-items:flex-start"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6CC58C" stroke-width="1.8" stroke-linecap="round" style="flex:none;margin-top:2px"><path d="M5 20V12M12 20V5M19 20v-9"></path></svg><span style="display:flex;flex-direction:column;gap:3px"><b style="font-weight:600;font-size:15px">Prix observé du marché</b><span style="font-size:13.5px;color:#B9AD98;line-height:1.45">Une fourchette (10e – 90e centile), calculée seulement avec au moins 5 observations, 3 vendeurs, sur 30 jours.</span></span></div>
+    </div>
+    <span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">PRODUITS AVEC DES PRIX</span>
+    <sc-for list="{{ prixRows }}" as="r" hint-placeholder-count="0">
+      <button onClick="{{ r.go }}" style="border:0;background:#faf4e9;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;text-align:left;color:#171512;animation:mkFade .35s both">
+        <span style="display:flex;align-items:center;gap:12px;width:100%"><img src="{{ r.thumb }}" alt="" style="width:44px;height:44px;object-fit:{{ r.fit }};border-radius:{{ r.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-weight:500;font-size:15px">{{ r.name }}</span><span style="font-size:12.5px;color:#847966">{{ r.sub }}</span></span><span style="font-weight:600;font-size:14px;white-space:nowrap">{{ r.price }}</span></span>
+        <span style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%"><sc-for list="{{ r.meter }}" as="m" hint-placeholder-count="2"><span style="display:flex;flex-direction:column;gap:5px"><span style="height:4px;border-radius:2px;background:#ddd3c2;overflow:hidden;display:block"><span style="display:block;height:100%;width:{{ m.pct }};background:#31543C"></span></span><span style="font-size:11.5px;color:#655c4d">{{ m.txt }}</span></span></sc-for></span>
+      </button>
+    </sc-for>
+    <sc-if value="{{ prixEmpty }}" hint-placeholder-val="{{ true }}"><div style="border:1px dashed rgba(23,21,18,.22);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;align-items:flex-start"><span style="font-size:15px;font-weight:500">Données en cours de constitution</span><span style="font-size:14px;color:#655c4d;line-height:1.5">Aucun prix vendeur publié pour l'instant. Chaque offre avec un prix fait avancer le prix du marché.</span><button onClick="{{ goVendre }}" style="height:44px;padding:0 20px;border-radius:22px;border:0;background:#E07A3F;color:#171512;font-weight:600;font-size:14px">Publier une offre</button></div></sc-if>
+  </div>
+</sc-if>
+</div>
+
+<!-- ═══ L'ANNÉE ═══ -->
+<div data-screen-label="L'année du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;transform:{{ tf.annee }};filter:{{ dim.annee }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
+<sc-if value="{{ on.annee }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding-top:{{ topPad }}"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">L'année du marché</span><span style="width:44px"></span></div></div>
+  <div style="flex:1;overflow-y:auto;padding:0 18px 40px;display:flex;flex-direction:column;gap:16px">
+    <div style="padding:0 10px">{{ yearEl }}</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button onClick="{{ mPrev }}" aria-label="Mois précédent" style="width:44px;height:44px;border-radius:22px;border:1px solid rgba(245,240,230,.2);background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
+      <div style="flex:1;text-align:center;display:flex;flex-direction:column"><span style="font-family:'Cormorant Garamond',serif;font-size:40px;line-height:1">{{ mName }}</span><span style="font-size:11px;letter-spacing:.2em;color:#D6A83E;font-weight:600;margin-top:4px">{{ mKicker }}</span></div>
+      <button onClick="{{ mNext }}" aria-label="Mois suivant" style="width:44px;height:44px;border-radius:22px;border:1px solid rgba(245,240,230,.2);background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"></path></svg></button>
+    </div>
+    <sc-for list="{{ mGroups }}" as="g" hint-placeholder-count="1">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:12px;color:#B9AD98;display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:3px;background:{{ g.c }}"></span>{{ g.label }}</span>
+        <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2"><button onClick="{{ it.go }}" style="border:0;background:rgba(245,240,230,.05);border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;color:#F5F0E6;animation:mkFade .35s both"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:500">{{ it.name }}</span><span style="font-size:12.5px;color:#B9AD98">{{ it.note }}</span></span><span style="font-size:12px;color:#847966;white-space:nowrap">{{ it.src }}</span></button></sc-for>
+      </div>
+    </sc-for>
+    <sc-if value="{{ mEmpty }}" hint-placeholder-val="{{ false }}"><span style="font-size:14.5px;color:#B9AD98;line-height:1.5;text-align:center">Aucune récolte sourcée ce mois-ci dans notre calendrier.</span></sc-if>
+    <span style="font-size:12px;color:#847966;line-height:1.5;text-align:center">Calendrier indicatif : il varie selon les pluies et les régions. Chaque entrée renvoie à une source publique.</span>
+  </div>
+</sc-if>
+</div>
+
+<!-- ═══ MES PUBLICATIONS ═══ -->
+<div data-screen-label="Mes publications" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.pubs }};filter:{{ dim.pubs }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<sc-if value="{{ on.pubs }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid rgba(23,21,18,.1)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Mes publications</span><span style="width:44px"></span></div></div>
+  <div style="flex:1;overflow-y:auto;padding:18px 18px 40px;display:flex;flex-direction:column;gap:10px">
+    <sc-for list="{{ myPubs }}" as="p" hint-placeholder-count="0">
+      <div style="background:#faf4e9;border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;animation:mkFade .35s both">
+        <img src="{{ p.thumb }}" alt="" style="width:48px;height:48px;object-fit:{{ p.fit }};border-radius:{{ p.rad }};flex:none">
+        <button onClick="{{ p.go }}" style="flex:1;border:0;background:transparent;padding:0;text-align:left;display:flex;flex-direction:column;gap:3px;color:#171512;min-width:0"><span style="font-size:11.5px;letter-spacing:.14em;color:{{ p.typeColor }};font-weight:600;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:{{ p.shapeRad }};background:{{ p.shapeBg }}"></span>{{ p.type }}</span><span style="font-weight:500;font-size:15.5px">{{ p.name }}</span><span style="font-size:12.5px;color:#847966">{{ p.line }}</span><span style="font-size:12.5px;color:#61846b">{{ p.match }}</span></button>
+        <button onClick="{{ p.del }}" aria-label="Retirer" style="width:44px;height:44px;border:0;background:transparent;color:#847966;display:flex;align-items:center;justify-content:center;border-radius:22px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"></path></svg></button>
+      </div>
+    </sc-for>
+    <sc-if value="{{ pubsEmpty }}" hint-placeholder-val="{{ true }}"><div style="padding:40px 10px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center"><div style="display:flex;align-items:center"><span style="width:14px;height:14px;border-radius:50%;background:#6CC58C"></span><span style="width:40px;height:2px;background:#6AAEF0"></span><span style="width:14px;height:14px;border-radius:3px;background:#F2C94C"></span></div><span style="font-family:'Cormorant Garamond',serif;font-size:28px">Rien de publié pour l'instant</span><span style="font-size:14px;color:#655c4d;line-height:1.5;max-width:280px">Une offre ou une demande suffit pour entrer dans le réseau.</span></div></sc-if>
+    <span style="font-size:12.5px;color:#847966;line-height:1.5;text-align:center;padding:16px 10px 0">Enregistré sur cet appareil, partagé avec le site sur ce même navigateur. L'envoi aux autres utilisateurs arrive avec le serveur.</span>
+  </div>
+</sc-if>
+</div>
+
+<!-- ═══ VENDEUR ═══ -->
+<div data-screen-label="Vendeur" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.vendeur }};filter:{{ dim.vendeur }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<sc-if value="{{ on.vendeur }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding-top:{{ topPad }};background:#24201A;color:#F5F0E6"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:11.5px;letter-spacing:.2em;color:#B9AD98">VENDEUR</span><span style="width:44px"></span></div>
+    <div style="padding:6px 24px 26px;display:flex;flex-direction:column;gap:8px"><span style="font-family:'Cormorant Garamond',serif;font-size:40px;line-height:1">{{ vd.name }}</span><span style="font-size:14px;color:#B9AD98">{{ vd.place }}</span><span style="font-size:12.5px;color:#847966">{{ vd.agent }}</span>
+      <sc-if value="{{ vd.hasTel }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;margin-top:8px"><a href="{{ vd.tel }}" style="flex:1;height:48px;border-radius:24px;background:#E07A3F;color:#171512;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;text-decoration:none">Appeler</a><a href="{{ vd.wa }}" target="_blank" style="flex:1;height:48px;border-radius:24px;border:1px solid rgba(245,240,230,.3);color:#F5F0E6;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;text-decoration:none">WhatsApp</a></div></sc-if></div></div>
+  <div style="flex:1;overflow-y:auto;padding:20px 18px 40px;display:flex;flex-direction:column;gap:10px">
+    <span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">SES OFFRES</span>
+    <sc-for list="{{ vd.offers }}" as="o" hint-placeholder-count="1"><button onClick="{{ o.go }}" style="border:0;background:#faf4e9;border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;text-align:left;color:#171512"><img src="{{ o.img }}" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:{{ o.fit }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font-weight:600;font-size:15px">{{ o.product }}</span><span style="font-size:13px;color:#484236">{{ o.line }}</span><span style="font-size:13px;font-weight:600">{{ o.price }}</span></span></button></sc-for>
+  </div>
+</sc-if>
+</div>
+
+<!-- ═══ INFO (comment ça marche, aide producteur, confiance) ═══ -->
+<div data-screen-label="Comprendre" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;transform:{{ tf.info }};filter:{{ dim.info }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
+<sc-if value="{{ on.info }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding-top:{{ topPad }}"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">{{ info.title }}</span><span style="width:44px"></span></div></div>
+  <div style="flex:1;overflow-y:auto;padding:20px 22px 40px;display:flex;flex-direction:column;gap:26px">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:36px;line-height:1.05">{{ info.lead }}</div>
+    <sc-for list="{{ info.steps }}" as="s" hint-placeholder-count="3">
+      <div style="display:flex;gap:16px;align-items:flex-start;animation:mkFade .5s both">
+        <span style="width:56px;height:56px;border-radius:18px;background:rgba(245,240,230,.06);display:flex;align-items:center;justify-content:center;flex:none">{{ s.ico }}</span>
+        <span style="display:flex;flex-direction:column;gap:4px;padding-top:4px"><span style="font-size:11px;letter-spacing:.2em;color:#D6A83E;font-weight:600">{{ s.n }}</span><span style="font-size:17px;font-weight:500">{{ s.t }}</span><span style="font-size:14.5px;color:#B9AD98;line-height:1.5">{{ s.x }}</span></span>
+      </div>
+    </sc-for>
+    <button onClick="{{ info.go }}" style="height:56px;border-radius:28px;border:0;background:#E07A3F;color:#171512;font-size:16px;font-weight:600;margin-top:8px">{{ info.cta }}</button>
+  </div>
+</sc-if>
+</div>
+
+<!-- ═══ voile ═══ -->
+<div onClick="{{ closeAll }}" style="position:absolute;inset:0;background:rgba(10,9,7,.55);opacity:{{ scrimOp }};pointer-events:{{ scrimPe }};transition:opacity .35s"></div>
+
+<!-- ═══ MENU ═══ -->
+<div style="position:absolute;left:0;right:0;bottom:0;max-height:88%;display:flex;flex-direction:column;background:#24201A;color:#F5F0E6;border-radius:28px 28px 0 0;transform:{{ menuTf }};transition:{{ sheetTr }};box-shadow:0 -10px 40px rgba(0,0,0,.4)">
+  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" style="height:28px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab"><span style="width:38px;height:5px;border-radius:3px;background:rgba(245,240,230,.25)"></span></div>
+  <div style="overflow-y:auto;padding:0 12px {{ botPad }}">
+    <sc-for list="{{ menu }}" as="g" hint-placeholder-count="3">
+      <div style="font-size:11px;letter-spacing:.2em;color:#B9AD98;font-weight:600;padding:12px 12px 6px">{{ g.t }}</div>
+      <sc-for list="{{ g.items }}" as="i" hint-placeholder-count="3">
+        <button onClick="{{ i.go }}" style="width:100%;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;gap:14px;padding:8px 12px;border-radius:16px;text-align:left;min-height:58px" style-active="background:rgba(245,240,230,.06)">
+          <span style="width:44px;height:44px;border-radius:14px;background:rgba(245,240,230,.06);display:flex;align-items:center;justify-content:center;flex:none">{{ i.ico }}</span>
+          <span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:16px;font-weight:500">{{ i.t }}</span><span style="font-size:13px;color:#B9AD98">{{ i.s }}</span></span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#847966" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"></path></svg>
+        </button>
+      </sc-for>
+    </sc-for>
+  </div>
+</div>
+
+<!-- ═══ FAMILLES ═══ -->
+<div style="position:absolute;left:0;right:0;bottom:0;max-height:84%;display:flex;flex-direction:column;background:#24201A;color:#F5F0E6;border-radius:28px 28px 0 0;transform:{{ famTf }};transition:{{ sheetTr }};box-shadow:0 -10px 40px rgba(0,0,0,.4)">
+  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" style="height:28px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none"><span style="width:38px;height:5px;border-radius:3px;background:rgba(245,240,230,.25)"></span></div>
+  <div style="padding:0 20px 10px;font-family:'Cormorant Garamond',serif;font-size:28px">Familles de produits</div>
+  <div style="overflow-y:auto;padding:0 14px {{ botPad }};display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <sc-for list="{{ famGrid }}" as="f" hint-placeholder-count="11"><button onClick="{{ f.go }}" style="border:1.5px solid {{ f.bd }};border-radius:18px;padding:0;overflow:hidden;background:#171512;color:#F5F0E6;text-align:left;display:flex;flex-direction:column"><img src="{{ f.img }}" alt="" style="width:100%;height:84px;object-fit:cover;display:block"><span style="padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:500;line-height:1.25">{{ f.name }}</span><span style="font-size:12px;color:#B9AD98">{{ f.sub }}</span></span></button></sc-for>
+  </div>
+</div>
+
+<!-- ═══ J'AI / JE CHERCHE ═══ -->
+<div style="position:absolute;left:0;right:0;bottom:0;height:90%;background:#F2EBDD;color:#171512;border-radius:28px 28px 0 0;display:flex;flex-direction:column;transform:{{ matchTf }};transition:{{ sheetTr }};box-shadow:0 -10px 40px rgba(0,0,0,.35)">
+  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" style="flex:none;touch-action:none;cursor:grab;padding:0 16px 10px">
+    <div style="height:24px;display:flex;align-items:center;justify-content:center"><span style="width:38px;height:5px;border-radius:3px;background:rgba(23,21,18,.2)"></span></div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;background:#e7dcc8;border-radius:22px;padding:3px;position:relative">
+        <span style="position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:19px;background:#171512;transform:{{ segTf }};transition:transform .35s cubic-bezier(.22,1,.36,1)"></span>
+        <button onPointerDown="{{ stop }}" onClick="{{ setJai }}" style="position:relative;height:40px;border:0;background:transparent;color:{{ segA }};font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;transition:color .3s"><span style="width:9px;height:9px;border-radius:50%;background:#6CC58C"></span>J'ai</button>
+        <button onPointerDown="{{ stop }}" onClick="{{ setCherche }}" style="position:relative;height:40px;border:0;background:transparent;color:{{ segB }};font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;transition:color .3s"><span style="width:9px;height:9px;border-radius:2px;background:#F2C94C"></span>Je cherche</button>
+      </div>
+      <button onPointerDown="{{ stop }}" onClick="{{ closeAll }}" aria-label="Fermer" style="width:44px;height:44px;border:0;border-radius:22px;background:#e7dcc8;display:flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+    </div>
+  </div>
+  <sc-if value="{{ formOn }}" hint-placeholder-val="{{ true }}">
+  <div style="flex:1;overflow-y:auto;padding:6px 20px 120px;display:flex;flex-direction:column;gap:18px">
+    <button onClick="{{ pickMatch }}" style="display:flex;align-items:center;gap:12px;background:#faf4e9;border-radius:18px;padding:10px 12px;border:0;text-align:left;color:#171512"><img src="{{ mfP.thumb }}" alt="" style="width:52px;height:52px;object-fit:{{ mfP.fit }};border-radius:{{ mfP.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:12px;color:#847966">{{ mfP.fam }}</span><span style="font-family:'Cormorant Garamond',serif;font-size:26px;line-height:1">{{ mfP.name }}</span></span><span style="height:36px;padding:0 12px;border-radius:18px;border:1px solid rgba(23,21,18,.2);font-size:13px;font-weight:500;display:flex;align-items:center">Changer</span></button>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">{{ matchTitle }}</span>
+      <sc-for list="{{ matches }}" as="o" hint-placeholder-count="0"><div style="background:#faf4e9;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;animation:mkFade .35s both"><span style="width:10px;height:10px;border-radius:{{ o.shapeRad }};background:{{ o.shapeBg }};flex:none"></span><span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:14px;font-weight:600">{{ o.who }}</span><span style="font-size:12.5px;color:#655c4d">{{ o.line }}</span></span><sc-if value="{{ o.hasTel }}" hint-placeholder-val="{{ false }}"><a href="{{ o.wa }}" target="_blank" style="height:40px;padding:0 14px;border-radius:20px;background:#171512;color:#F5F0E6;display:flex;align-items:center;font-size:13px;text-decoration:none">WhatsApp</a></sc-if></div></sc-for>
+      <sc-if value="{{ noMatch }}" hint-placeholder-val="{{ true }}"><div style="border:1px dashed rgba(23,21,18,.22);border-radius:14px;padding:12px 14px;font-size:13.5px;color:#655c4d;line-height:1.5">{{ noMatchTxt }}</div></sc-if>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Quantité</span><input value="{{ mf.qty }}" onChange="{{ mfh.qty }}" inputmode="decimal" placeholder="ex. 20" style="height:52px;border-radius:14px;border:1px solid {{ mEb.qty }};background:#fffaf3;padding:0 14px;font-size:17px;outline:none;color:#171512"><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ mUnits }}" as="u" hint-placeholder-count="6"><button onClick="{{ u.go }}" style="height:38px;padding:0 14px;border-radius:19px;border:1px solid {{ u.bd }};background:{{ u.bg }};color:{{ u.color }};font-size:13.5px;font-weight:500">{{ u.l }}</button></sc-for></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Région</span><select value="{{ mf.region }}" onChange="{{ mfh.region }}" style="height:52px;border-radius:14px;border:1px solid {{ mEb.region }};background:#fffaf3;padding:0 10px;font-size:15px;color:#171512"><option value="">Choisir…</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}">{{ r.name }}</option></sc-for></select></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">{{ mPriceL }}</span><input value="{{ mf.price }}" onChange="{{ mfh.price }}" inputmode="numeric" placeholder="F CFA" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:16px;outline:none;color:#171512;min-width:0"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">{{ mWhenL }}</span><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ mWhens }}" as="u" hint-placeholder-count="3"><button onClick="{{ u.go }}" style="height:38px;padding:0 14px;border-radius:19px;border:1px solid {{ u.bd }};background:{{ u.bg }};color:{{ u.color }};font-size:13.5px;font-weight:500">{{ u.l }}</button></sc-for></div></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Votre nom et téléphone</span><input value="{{ mf.name }}" onChange="{{ mfh.name }}" placeholder="Nom ou commerce" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:16px;outline:none;color:#171512"><div style="display:flex;align-items:center;height:52px;border-radius:14px;border:1px solid {{ mEb.phone }};background:#fffaf3;overflow:hidden"><span style="padding:0 10px 0 14px;font-size:16px;color:#847966;border-right:1px solid rgba(23,21,18,.1);height:100%;display:flex;align-items:center">+225</span><input value="{{ mf.phone }}" onChange="{{ mfh.phone }}" inputmode="tel" placeholder="07 00 00 00 00" style="flex:1;min-width:0;height:100%;border:0;background:transparent;padding:0 12px;font-size:17px;outline:none;color:#171512"></div><sc-if value="{{ mErr.phone }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#ba5c22">10 chiffres, avec ou sans +225.</span></sc-if></div>
+    <button onClick="{{ fullForm }}" style="align-self:flex-start;border:0;background:transparent;color:#904515;font-size:13.5px;font-weight:500;padding:6px 0">{{ fullFormL }}</button>
+  </div>
+  <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 18px {{ botPad }};background:linear-gradient(to top,#F2EBDD 72%,rgba(242,235,221,0))"><button onClick="{{ mPublish }}" style="width:100%;height:56px;border-radius:28px;border:0;background:#E07A3F;color:#171512;font-size:16px;font-weight:600" style-active="transform:scale(.98)">{{ mPublishL }}</button></div>
+  </sc-if>
+  <sc-if value="{{ doneOn }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 28px 60px;text-align:center;gap:14px">
+      <div style="width:260px;height:150px">{{ doneEl }}</div>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:36px;line-height:1.05">{{ done.title }}</span>
+      <span style="font-size:15px;color:#484236;line-height:1.5;max-width:300px">{{ done.text }}</span>
+      <div style="display:flex;flex-direction:column;gap:10px;width:100%;margin-top:10px">
+        <button onClick="{{ done.go }}" style="height:54px;border-radius:27px;border:0;background:#171512;color:#F5F0E6;font-size:15.5px;font-weight:600">{{ done.cta }}</button>
+        <button onClick="{{ closeAll }}" style="height:54px;border-radius:27px;border:1px solid rgba(23,21,18,.2);background:transparent;color:#171512;font-size:15.5px;font-weight:600">Retour au marché</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+<!-- ═══ CHOIX DU PRODUIT ═══ -->
+<div style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ pickTf }};transition:transform .4s cubic-bezier(.22,1,.36,1)">
+  <div style="height:{{ topPad }};flex:none"></div>
+  <div style="display:flex;gap:8px;align-items:center;padding:8px 14px"><div style="flex:1;display:flex;align-items:center;gap:10px;height:48px;border-radius:24px;background:#fffaf3;border:1px solid rgba(23,21,18,.14);padding:0 16px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#847966" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 20 20"></path></svg><input ref="{{ pRef }}" value="{{ pq }}" onChange="{{ onPq }}" placeholder="Tomate, aloco, gnangnan…" style="flex:1;min-width:0;border:0;background:transparent;font-size:16px;outline:none;color:#171512"></div><button onClick="{{ closePick }}" style="height:44px;border:0;background:transparent;font-size:15px;padding:0 6px;color:#171512">Annuler</button></div>
+  <div style="flex:1;overflow-y:auto;padding:4px 0 40px">
+    <sc-for list="{{ pickGroups }}" as="g" hint-placeholder-count="0">
+      <div style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600;padding:14px 20px 6px">{{ g.t }}</div>
+      <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.pick }}" style="width:100%;border:0;background:transparent;display:flex;align-items:center;gap:12px;padding:6px 20px;min-height:52px;text-align:left;color:#171512"><img src="{{ p.thumb }}" alt="" style="width:38px;height:38px;object-fit:{{ p.fit }};border-radius:{{ p.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column"><span style="font-size:15.5px">{{ p.name }}</span><span style="font-size:12px;color:#847966">{{ p.sub }}</span></span></button></sc-for>
+    </sc-for>
+  </div>
+</div>
+
+<div style="position:absolute;left:50%;bottom:110px;transform:translateX(-50%) translateY({{ toastY }});opacity:{{ toastOp }};transition:all .35s cubic-bezier(.22,1,.36,1);background:#171512;color:#F5F0E6;border:1px solid rgba(245,240,230,.12);padding:12px 18px;border-radius:22px;font-size:14px;white-space:nowrap;pointer-events:none;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:25">{{ toast }}</div>
+
+<sc-if value="{{ framed }}" hint-placeholder-val="{{ true }}">
+<div style="position:absolute;left:0;right:0;top:0;height:50px;display:flex;align-items:center;justify-content:space-between;padding:6px 34px 0 40px;color:{{ sbColor }};pointer-events:none;transition:color .3s;z-index:20"><span style="font-size:15.5px;font-weight:600">{{ clock }}</span><span style="position:absolute;left:50%;top:11px;width:124px;height:36px;margin-left:-62px;border-radius:20px;background:#000"></span><span style="display:flex;gap:6px;align-items:center"><svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"></rect><rect x="5" y="5.5" width="3" height="6.5" rx="1"></rect><rect x="10" y="3" width="3" height="9" rx="1"></rect><rect x="15" y="0" width="3" height="12" rx="1" opacity=".35"></rect></svg><svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="currentColor" opacity=".4"></rect><rect x="2" y="2" width="16" height="9" rx="2" fill="currentColor"></rect></svg></span></div>
+<div style="position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:{{ sbColor }};opacity:.8;pointer-events:none;z-index:20"></div>
+</sc-if>
+
+<div style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;opacity:{{ splashOp }};pointer-events:{{ splashPe }};transition:opacity .6s ease;z-index:30">
+  <div style="display:flex;align-items:center"><span style="width:13px;height:13px;border-radius:50%;background:#6CC58C"></span><span style="width:{{ splashLine }};height:2px;background:#6AAEF0;transition:width 1s cubic-bezier(.22,1,.36,1)"></span><span style="width:13px;height:13px;border-radius:3px;background:#F2C94C"></span></div>
+  <span style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500">Marché de Gros</span>
+  <span style="font-size:10.5px;letter-spacing:.26em;color:#B9AD98">LE MARCHÉ EST UNE CONNEXION</span>
+</div>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;splash&quot;: {&quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;}, &quot;startScreen&quot;: {&quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;accueil&quot;, &quot;fiche&quot;, &quot;acheter&quot;, &quot;vendre&quot;, &quot;demande&quot;, &quot;carte&quot;, &quot;categories&quot;, &quot;prix&quot;, &quot;annee&quot;, &quot;pubs&quot;], &quot;default&quot;: &quot;accueil&quot;, &quot;tsType&quot;: &quot;string&quot;}}">
+const PAGES = ['fiche','acheter','vendre','demande','carte','categories','prix','annee','pubs','vendeur','info'];
+const INFO = {
+  'comment-ca-marche': ['Comment ça marche', 'Du producteur à l\u2019acheteur, en direct.', [['cherche', 'Vous cherchez', 'Avec les mots du marché. Les noms locaux et les fautes légères sont compris.'], ['carte', 'Vous trouvez', 'Qui vend, où, en quelle quantité, à quel prix — en liste et sur la carte.'], ['comment', 'Vous contactez', 'WhatsApp ou appel, directement. Pas trouvé ? Publiez une demande.']], 'Chercher un produit', 'acheter'],
+  'aide-producteur': ['Aide producteur', 'Votre récolte, visible des acheteurs.', [['jai', 'Publiez en 2 minutes', 'Produit, photo, quantité, prix, lieu.'], ['aide', 'Un agent peut vous aider', 'Un agent terrain peut publier l\u2019offre à votre place.'], ['demande', 'Soyez contacté en direct', 'L\u2019acheteur vous écrit sur WhatsApp ou vous appelle.']], 'Publier une offre', 'vendre'],
+  confiance: ['Confiance', 'Ce que nous affichons, et ce que nous n\u2019affichons pas.', [['confiance', 'Aucune donnée inventée', 'Seules les publications réelles apparaissent : aucune offre, aucun producteur, aucun prix fictif.'], ['prix', 'Pas de faux avis', 'Aucune étoile, aucun avis, aucun chiffre de ventes n\u2019est inventé.'], ['aide', 'Vérification à venir', 'Le badge « Vérifié » n\u2019apparaîtra qu\u2019après un vrai contrôle.']], 'Voir le prix du marché', 'prix']
+};
+const HASH = { home: '#/', acheter: '#/catalogue', vendre: '#/vendre', demande: '#/demande', carte: '#/carte', categories: '#/categories', prix: '#/prix', annee: '#/annee', pubs: '#/mes-publications' };
+const SHAPE = { offre: ['50%', '#6CC58C'], demande: ['2px', '#F2C94C'] };
+const W_OFF = [['maintenant', 'Maintenant'], ['semaine', 'Cette semaine'], ['mois', 'Ce mois-ci']], W_DEM = [['vite', 'Dès que possible'], ['semaine', 'Cette semaine'], ['mois', 'Ce mois-ci']];
+const ls = (k, v) => { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || 'null'); localStorage.setItem(k, JSON.stringify(v)); } catch (_) { return null; } };
+const chip = on => ({ bd: on ? '#171512' : 'rgba(23,21,18,.18)', bg: on ? '#171512' : 'transparent', color: on ? '#F5F0E6' : '#171512' });
+
+class Component extends DCLogic {
+  constructor(p) {
+    super(p);
+    const me = ls('mdg-app:moi') || {};
+    this.me = me;
+    const draft = ls('mdg-app:brouillon-offre') || {};
+    this.state = { ready: false, stack: ['home'], fam: 0, rot: 0, dragging: false, slug: 'tomate', vid: null, infoK: 'comment-ca-marche',
+      menu: false, sheet: null, sheetDy: 0, pick: null, pq: '', mode: 'jai', mf: this.blankM('tomate'), mErr: {}, done: null,
+      aq: '', af: { cat: '', reg: '', qmin: '', pmax: '' }, fOpen: false,
+      vf: Object.assign({ step: 1, mode: 'moi', slug: '', photo: '', qty: '', unit: 'kg', price: '', region: me.region || '', city: me.city || '', avail: 'maintenant', date: '', agent: '', name: me.name || '', phone: me.phone || '' }, draft, { step: 1 }), vErr: {},
+      df: { slug: '', qty: '', unit: 'kg', region: me.region || '', deadline: 'semaine', budget: '', name: me.name || '', phone: me.phone || '' }, dErr: {},
+      cprod: '', cme: me.region || '', csel: '', month: new Date().getMonth() + 1,
+      toast: '', toastOn: false, splash: this.props.splash === false ? 'off' : 'on', splashLine: false, vw: window.innerWidth, vh: window.innerHeight, clock: '', tick: 0 };
+    this.aRef = React.createRef(); this.pRef = React.createRef(); this.hist = 0;
+  }
+  blankM(slug) { const m = this.me || {}; return { slug, qty: '', unit: 'kg', region: m.region || '', price: '', when: '', name: m.name || '', phone: m.phone || '' }; }
+  componentDidMount() {
+    this.onResize = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
+    this.onData = () => this.setState(s => ({ tick: s.tick + 1 }));
+    this.onPop = () => { if (this.hist > 0) this.hist--; this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack, menu: false, sheet: null, pick: null })); };
+    addEventListener('resize', this.onResize); addEventListener('storage', this.onData); addEventListener('mdg:change', this.onData); addEventListener('popstate', this.onPop);
+    const tick = () => { const d = new Date(); this.setState({ clock: d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0') }); }; tick(); this.clk = setInterval(tick, 20000);
+    const boot = () => {
+      if (!window.MDG || !window.MDG.products || !window.MDGApp) return false;
+      if (!window.MDG.search && !document.getElementById('mdg-search')) { const s = document.createElement('script'); s.id = 'mdg-search'; s.src = 'v2/search.js'; s.onload = this.onData; document.head.appendChild(s); }
+      this.buildFams(); this.fromHash(); this.setState({ ready: true }); return true;
+    };
+    if (!boot()) this.poll = setInterval(() => { if (boot()) clearInterval(this.poll); }, 60);
+    if (this.state.splash === 'on') { setTimeout(() => this.setState({ splashLine: true }), 80); setTimeout(() => this.setState({ splash: 'fade' }), 1500); setTimeout(() => this.setState({ splash: 'off' }), 2200); }
+  }
+  componentWillUnmount() { removeEventListener('resize', this.onResize); removeEventListener('storage', this.onData); removeEventListener('mdg:change', this.onData); removeEventListener('popstate', this.onPop); clearInterval(this.clk); clearInterval(this.poll); }
+  buildFams() {
+    const M = window.MDG, A = window.MDGApp;
+    this.cats = M.categories.slice().sort((a, b) => (a.order || 0) - (b.order || 0));
+    this.FAMS = this.cats.map(c => ({ slug: c.slug, name: c.name, prods: M.products.filter(p => p.categorySlug === c.slug).sort((a, b) => (A.SACK[b.slug] != null) - (A.SACK[a.slug] != null)) })).filter(f => f.prods.length);
+    const i = this.FAMS.findIndex(f => f.slug === 'legumes-et-fruits'); if (i >= 0 && !this.state.ready) this.state.fam = i;
+  }
+  fromHash() {
+    const h = (location.hash || '#/').slice(2).split('?')[0].split('/'), r = h[0], st = this.props.startScreen;
+    let page = null, extra = {};
+    if (r === 'produits' && h[1]) { page = 'fiche'; extra.slug = h[1]; }
+    else if (r === 'producteurs' && h[1]) { page = 'vendeur'; extra.vid = h[1]; }
+    else if (INFO[r]) { page = 'info'; extra.infoK = r; }
+    else { const k = Object.keys(HASH).find(k => HASH[k] === '#/' + r); if (k && k !== 'home') page = k; }
+    if (!page && st && st !== 'accueil') page = st;
+    if (page) this.setState(Object.assign({ stack: ['home', page] }, extra));
+  }
+  hashOf(s, st) { st = st || this.state; return s === 'fiche' ? '#/produits/' + st.slug : s === 'vendeur' ? '#/producteurs/' + st.vid : s === 'info' ? '#/' + st.infoK : (HASH[s] || '#/'); }
+
+  /* ——— données (partagées avec le site) ——— */
+  offers() { const A = window.MDGApp; return A.read('offres').filter(o => o && o.productSlug).map(o => ({ id: o.id, kind: 'offre', slug: o.productSlug, qty: +o.quantity || 0, unit: o.unit || 'kg', region: o.regionSlug, city: o.city || '', price: o.price != null && o.price !== '' ? +o.price : null, when: o.availableFrom || 'maintenant', name: (o.producer && o.producer.name) || o.producerName || 'Vendeur', phone: (o.producer && o.producer.phone) || o.phone || '', at: o.createdAt, photo: o.photo || '', agent: o.agent || '' })); }
+  demands() { const A = window.MDGApp; return A.read('demandes').filter(d => d && d.productSlug).map(d => ({ id: d.id, kind: 'demande', slug: d.productSlug, qty: +d.quantity || 0, unit: d.unit || 'kg', region: d.regionSlug, city: d.city || '', deadline: d.deadline || 'semaine', budget: d.budget != null && d.budget !== '' ? +d.budget : null, name: d.buyerName || 'Acheteur', phone: d.phone || (d.buyerContact && d.buyerContact.tel) || '', at: d.createdAt })); }
+  prod(slug) {
+    const M = window.MDG, A = window.MDGApp, p = M.products.find(x => x.slug === slug) || { slug, name: slug, categorySlug: 'autres-produits-vivriers', aliases: [] };
+    const c = M.categories.find(x => x.slug === p.categorySlug) || { name: '' }, sack = A.SACK[slug] != null;
+    return { slug, name: p.name, aliases: (p.aliases || []).slice(0, 3), cat: p.categorySlug, catName: c.name, sack,
+      thumb: sack ? A.IMG + 'produit-' + slug + '.webp' : A.IMG + 'famille-' + p.categorySlug + '.webp', fit: sack ? 'contain' : 'cover', rad: sack ? '0' : '10px',
+      tint: 'oklch(0.62 0.15 ' + (sack ? A.SACK[slug] : (A.FAMHUE[p.categorySlug] || 70)) + ')' };
+  }
+  regName(s) { const r = (window.MDG.regions || []).find(x => x.slug === s); return r ? r.name : ''; }
+  place(x) { const A = window.MDGApp; return x.city || (A.REG[x.region] || [])[2] || this.regName(x.region); }
+  whenTxt(x) { if (x.kind === 'demande') return 'il le faut ' + (window.MDGApp.DEAD[x.deadline] || 'cette semaine'); if (x.when === 'maintenant') return 'disponible maintenant'; if (x.when === 'semaine') return 'cette semaine'; if (x.when === 'mois') return 'ce mois-ci'; const t = Date.parse(x.when); return t ? 'dès le ' + new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : ''; }
+  card(x) {
+    const A = window.MDGApp, t = A.tel10(x.phone), P = this.prod(x.slug), off = x.kind === 'offre';
+    return { who: x.name, product: P.name, ago: A.ago(x.at), shapeRad: SHAPE[x.kind][0], shapeBg: SHAPE[x.kind][1],
+      line: A.fmt(x.qty) + ' ' + x.unit + ' · ' + this.place(x) + ' · ' + this.whenTxt(x),
+      price: off ? (x.price ? A.fmt(x.price) + ' F CFA / ' + x.unit : 'Prix à discuter') : (x.budget ? 'Budget ' + A.fmt(x.budget) + ' F / ' + x.unit : 'Budget à discuter'),
+      hasPhoto: !!x.photo, photo: x.photo, img: x.photo || P.thumb, fit: x.photo ? 'cover' : P.fit,
+      hasTel: !!t, tel: t ? 'tel:+225' + t : '', wa: t ? 'https://wa.me/225' + t + '?text=' + encodeURIComponent('Bonjour, je vous contacte via Marché de Gros pour : ' + P.name + ' (' + A.fmt(x.qty) + ' ' + x.unit + ').') : '',
+      go: () => off ? this.openVendeur(x.id) : this.openFiche(x.slug) };
+  }
+  market(slug, O) {
+    const now = Date.now(), list = O.filter(o => o.slug === slug && o.price != null && (!o.at || now - Date.parse(o.at) <= 30 * 864e5));
+    const units = {}; list.forEach(o => (units[o.unit] = units[o.unit] || []).push(o));
+    const top = Object.entries(units).sort((a, b) => b[1].length - a[1].length)[0], grp = top ? top[1] : [], unit = top ? top[0] : 'kg';
+    const vend = new Set(grp.map(o => window.MDGApp.tel10(o.phone) || o.name)).size, ok = grp.length >= 5 && vend >= 3;
+    let range = ''; if (ok) { const v = grp.map(o => o.price).sort((a, b) => a - b), q = k => v[Math.min(v.length - 1, Math.floor(k * (v.length - 1)))]; range = window.MDGApp.fmt(q(.1)) + ' – ' + window.MDGApp.fmt(q(.9)) + ' F CFA / ' + unit; }
+    return { obs: grp.length, vend, ok, range, unit };
+  }
+  saveMe(f) { this.me = { name: f.name || this.me.name, phone: f.phone || this.me.phone, region: f.region || this.me.region, city: f.city || this.me.city }; ls('mdg-app:moi', this.me); }
+  pubOffer(f) {
+    const A = window.MDGApp, P = this.prod(f.slug), tel = A.tel10(f.phone), name = (f.name || '').trim() || 'Vendeur';
+    const e = { id: 'off-' + Date.now(), createdAt: new Date().toISOString(), productSlug: f.slug, productLabel: P.name, productName: P.name, quantity: +String(f.qty).replace(',', '.'), unit: f.unit, regionSlug: f.region, regionName: this.regName(f.region),
+      price: A.digits(f.price) ? +A.digits(f.price) : null, city: (f.city || '').trim() || (A.REG[f.region] || [])[2] || '', availableFrom: f.when || 'maintenant', producer: { name, phone: tel }, producerName: name };
+    if (f.agent) e.agent = f.agent.trim(); if (f.photo) e.photo = f.photo;
+    let ok = A.write('offres', [e].concat(A.read('offres')).slice(0, 30));
+    if (!ok && e.photo) { delete e.photo; ok = A.write('offres', [e].concat(A.read('offres')).slice(0, 30)); if (ok) this.say('Photo trop lourde pour cet appareil : offre publiée sans photo'); }
+    this.saveMe(f); return ok ? e : null;
+  }
+  pubDemand(f) {
+    const A = window.MDGApp, P = this.prod(f.slug), tel = A.tel10(f.phone);
+    const e = { id: 'dem-' + Date.now(), createdAt: new Date().toISOString(), productSlug: f.slug, productLabel: P.name, productName: P.name, quantity: +String(f.qty).replace(',', '.'), unit: f.unit, regionSlug: f.region, regionName: this.regName(f.region),
+      deadline: f.deadline || 'semaine', budget: A.digits(f.budget) ? +A.digits(f.budget) : null, buyerContact: { tel, via: 'whatsapp' }, phone: tel, buyerName: (f.name || '').trim() || 'Acheteur', status: 'affichee' };
+    const ok = A.write('demandes', [e].concat(A.read('demandes')).slice(0, 30)); this.saveMe(f); return ok ? e : null;
+  }
+  celebrate(kind, slug) {
+    const n = kind === 'offre' ? this.demands().filter(d => d.slug === slug).length : this.offers().filter(o => o.slug === slug).length, P = this.prod(slug), nm = P.name.toLowerCase();
+    try { navigator.vibrate && navigator.vibrate(12); } catch (_) {}
+    this.setState(s => ({ sheet: 'match', done: { kind, slug, n, title: kind === 'offre' ? 'Votre offre est en ligne' : 'Votre demande est lancée',
+      text: n ? n + (kind === 'offre' ? ' demande' : ' offre') + (n > 1 ? 's' : '') + ' pour ' + nm + (n > 1 ? ' correspondent' : ' correspond') + ' déjà. Contactez-les directement.' : 'Votre signal est envoyé. Dès qu\u2019' + (kind === 'offre' ? 'une demande' : 'une offre') + ' de ' + nm + ' arrive, la connexion se fait.' }, tick: s.tick + 1 }));
+  }
+
+  /* ——— navigation ——— */
+  push(s, extra) {
+    this.setState(st => { const ns = Object.assign({}, extra || {}), stack = [...st.stack.filter(x => x !== s), s]; ns.stack = stack; ns.menu = false; ns.sheet = null; ns.pick = null; ns.done = null; return ns; },
+      () => { try { history.pushState({ app: 1 }, '', this.hashOf(s)); this.hist++; } catch (_) {} if (s === 'acheter') setTimeout(() => this.aRef.current && this.aRef.current.focus({ preventScroll: true }), 480); });
+  }
+  back() { if (this.hist > 0) { history.back(); return; } this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack }), () => { try { history.replaceState(null, '', this.hashOf(this.state.stack[this.state.stack.length - 1])); } catch (_) {} }); }
+  openFiche(slug) { this.push('fiche', { slug }); }
+  openVendeur(vid) { this.push('vendeur', { vid }); }
+  openSheet(mode, slug) { this.setState(st => ({ sheet: 'match', mode, menu: false, done: null, mErr: {}, sheetDy: 0, mf: Object.assign(this.blankM(slug || st.mf.slug), { unit: st.mf.unit }) })); }
+  closeAll() { this.setState({ menu: false, sheet: null, sheetDy: 0, done: null }); }
+  say(t) { clearTimeout(this.tt); this.setState({ toast: t, toastOn: true }); this.tt = setTimeout(() => this.setState({ toastOn: false }), 2400); }
+  famStep(d, toEnd) { const n = this.FAMS.length; this.setState(s => { const f = ((s.fam + d) % n + n) % n; return { fam: f, dragging: false, rot: toEnd ? this.FAMS[f].prods.length - 1 : 0 }; }); }
+  snap(r) { const n = this.FAMS[this.state.fam].prods.length; if (r > n - 1) { this.famStep(1); } else if (r < 0) { this.famStep(-1, true); } else this.setState({ rot: r, dragging: false }); }
+  wDown(e) { this.wd = { x: e.clientX, y: e.clientY, rot: this.state.rot, moved: false, id: e.pointerId, el: e.currentTarget }; }
+  wMove(e) { const d = this.wd; if (!d) return; const dx = (e.clientX - d.x) / this.sc; if (!d.moved && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(e.clientY - d.y)) { d.moved = true; try { d.el.setPointerCapture(d.id); } catch (_) {} } if (d.moved) this.setState({ rot: d.rot - dx / 70, dragging: true }); }
+  wUp() { const d = this.wd; this.wd = null; if (d && d.moved) { this.setState({ dragging: false }); this.snap(Math.round(this.state.rot)); } }
+  sDown(e) { this.sd = { y: e.clientY }; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {} }
+  sMove(e) { if (this.sd) this.setState({ sheetDy: Math.max(0, (e.clientY - this.sd.y) / this.sc) }); }
+  sUp() { if (!this.sd) return; this.sd = null; if (this.state.sheetDy > 110) this.closeAll(); else this.setState({ sheetDy: 0 }); }
+  edgeDown(e) { const r = e.currentTarget.getBoundingClientRect(); this.ed = (e.clientX - r.left) / this.sc < 26 ? e.clientX : null; }
+  edgeUp(e) { if (this.ed != null && (e.clientX - this.ed) / this.sc > 70) this.back(); this.ed = null; }
+  openPick(kind) { this.setState({ pick: kind, pq: '' }); setTimeout(() => this.pRef.current && this.pRef.current.focus({ preventScroll: true }), 420); }
+  doPick(slug) { const k = this.state.pick; this.setState(s => k === 'match' ? { mf: Object.assign({}, s.mf, { slug }), pick: null } : k === 'vendre' ? { vf: Object.assign({}, s.vf, { slug }), vErr: {}, pick: null } : k === 'demande' ? { df: Object.assign({}, s.df, { slug }), dErr: {}, pick: null } : { cprod: slug, csel: '', pick: null }); }
+  setVf(patch) { this.setState(s => { const vf = Object.assign({}, s.vf, patch); ls('mdg-app:brouillon-offre', Object.assign({}, vf, { photo: '' })); return { vf, vErr: {} }; }); }
+
+  mapSVG(O, D, me, sel) {
+    const A = window.MDGApp, P = (s) => { const r = A.REG[s]; return r ? A.proj(r[0], r[1]) : null; };
+    const by = (L) => { const m = {}; L.forEach(x => { if (A.REG[x.region]) m[x.region] = (m[x.region] || 0) + 1; }); return m; };
+    const oc = by(O), dc = by(D), pairs = {};
+    O.forEach(o => D.forEach(d => { if (o.slug === d.slug && A.REG[o.region] && A.REG[d.region] && o.region !== d.region) pairs[o.region + '>' + d.region] = 1; }));
+    let s = `<svg viewBox="0 0 340 360" width="100%" style="display:block;overflow:visible"><path d="${A.OUTLINE}" fill="rgba(245,240,230,.035)" stroke="rgba(245,240,230,.28)" stroke-width="1.2" stroke-linejoin="round"></path>`;
+    Object.keys(pairs).forEach((k, i) => { const [a, b] = k.split('>'), p = P(a), q = P(b), mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2, dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy) || 1, cx = mx - dy / L * 28, cy = my + dx / L * 28, d = `M${p[0]} ${p[1]}Q${cx.toFixed(1)} ${cy.toFixed(1)} ${q[0]} ${q[1]}`;
+      s += `<path d="${d}" fill="none" stroke="#6AAEF0" stroke-opacity=".75" stroke-width="1.6" stroke-dasharray="4 4" style="animation:mkFlow .9s linear infinite"></path><circle r="2.6" fill="#6AAEF0"><animateMotion dur="${(2.2 + i * .3).toFixed(1)}s" repeatCount="indefinite" path="${d}"></animateMotion></circle>`; });
+    Object.entries(A.REG).forEach(([slug, r]) => { const [x, y] = A.proj(r[0], r[1]), o = oc[slug] || 0, d = dc[slug] || 0, on = sel === slug;
+      if (on) s += `<circle cx="${x}" cy="${y}" r="17" fill="none" stroke="#E07A3F" stroke-width="1.5"></circle>`;
+      s += `<circle cx="${x}" cy="${y}" r="2.4" fill="#847966"></circle><text x="${x}" y="${y + 19}" text-anchor="middle" font-family="Jost,sans-serif" font-size="8.5" fill="${o || d || on ? '#F5F0E6' : '#847966'}">${r[2]}</text>`;
+      if (o) { const rr = 4 + Math.min(o, 6); s += `<circle cx="${x - 7}" cy="${y - 4}" r="${rr}" fill="#6CC58C" style="transform-box:fill-box;transform-origin:center;animation:mkPop .6s both"></circle>${o > 1 ? `<text x="${x - 7}" y="${y - 1}" text-anchor="middle" font-family="Jost" font-size="8" font-weight="700" fill="#171512">${o}</text>` : ''}`; }
+      if (d) { const z = 8 + Math.min(d, 6) * 1.5; s += `<rect x="${x + 2}" y="${y - 4 - z / 2}" width="${z}" height="${z}" rx="2" fill="#F2C94C" style="transform-box:fill-box;transform-origin:center;animation:mkPop .6s .1s both"></rect><rect x="${x + 2}" y="${y - 4 - z / 2}" width="${z}" height="${z}" rx="2" fill="none" stroke="#F2C94C" style="transform-box:fill-box;transform-origin:center;animation:mkWave 2.4s ease-out infinite"></rect>${d > 1 ? `<text x="${x + 2 + z / 2}" y="${y - 1}" text-anchor="middle" font-family="Jost" font-size="8" font-weight="700" fill="#171512">${d}</text>` : ''}`; }
+      s += `<circle cx="${x}" cy="${y}" r="20" fill="transparent" data-reg="${slug}" style="cursor:pointer"></circle>`; });
+    if (me && A.REG[me]) { const [x, y] = P(me); s += `<path d="M${x} ${y - 13}l8 13h-16z" fill="#B095F0" pointer-events="none"></path><circle cx="${x}" cy="${y - 4}" r="10" fill="none" stroke="#B095F0" pointer-events="none" style="transform-box:fill-box;transform-origin:center;animation:mkWave 2.6s ease-out infinite"></circle>`; }
+    return s + '</svg>';
+  }
+  doneSVG(done) {
+    const off = done.kind === 'offre', own = off ? '<circle cx="54" cy="75" r="13" fill="#6CC58C"></circle>' : '<rect x="41" y="62" width="26" height="26" rx="4" fill="#F2C94C"></rect>';
+    let s = '<svg viewBox="0 0 260 150" width="260" height="150" style="overflow:visible">';
+    if (done.n) { [35, 75, 115].slice(0, Math.min(3, done.n)).forEach((y, i) => { const d = `M68 75C130 75 140 ${y} 200 ${y}`;
+      s += `<path d="${d}" fill="none" stroke="#6AAEF0" stroke-width="2" stroke-dasharray="200" style="animation:mkLine .9s ${(i * .18).toFixed(2)}s cubic-bezier(.22,1,.36,1) both"></path><circle r="3" fill="#6AAEF0"><animateMotion dur="2s" begin="${(1 + i * .2).toFixed(1)}s" repeatCount="indefinite" path="${d}"></animateMotion></circle>`;
+      s += off ? `<rect x="200" y="${y - 10}" width="20" height="20" rx="3" fill="#F2C94C" style="transform-box:fill-box;transform-origin:center;animation:mkPop .5s ${(.7 + i * .18).toFixed(2)}s both"></rect>` : `<circle cx="210" cy="${y}" r="10" fill="#6CC58C" style="transform-box:fill-box;transform-origin:center;animation:mkPop .5s ${(.7 + i * .18).toFixed(2)}s both"></circle>`; }); }
+    else { [0, .8, 1.6].forEach(dl => { s += off ? `<circle cx="130" cy="75" r="16" fill="none" stroke="#6CC58C" stroke-width="1.5" style="transform-box:fill-box;transform-origin:center;animation:mkWave 2.4s ${dl}s ease-out infinite"></circle>` : `<rect x="114" y="59" width="32" height="32" rx="5" fill="none" stroke="#F2C94C" stroke-width="1.5" style="transform-box:fill-box;transform-origin:center;animation:mkWave 2.4s ${dl}s ease-out infinite"></rect>`; });
+      s += off ? '<circle cx="130" cy="75" r="14" fill="#6CC58C" style="transform-box:fill-box;transform-origin:center;animation:mkPop .6s both"></circle>' : '<rect x="116" y="61" width="28" height="28" rx="4" fill="#F2C94C" style="transform-box:fill-box;transform-origin:center;animation:mkPop .6s both"></rect>'; return s + '</svg>'; }
+    return s + own.replace('/>', ' style="animation:mkPop .5s both"/>') + '</svg>';
+  }
+
+  renderVals() {
+    const S = this.state, framed = S.vw >= 500, sc = framed ? Math.min((S.vh - 32) / 866, (S.vw - 32) / 412, 1) : 1; this.sc = sc;
+    const base = { shellPad: framed ? '11px' : '0', shellRad: framed ? '64px' : '0', scale: sc, W: framed ? '390px' : '100vw', H: framed ? '844px' : '100dvh', rad: framed ? '53px' : '0', framed,
+      topPad: framed ? '50px' : 'max(12px, env(safe-area-inset-top))', botPad: framed ? '34px' : 'max(18px, env(safe-area-inset-bottom))', clock: S.clock,
+      splashOp: S.splash === 'on' || !S.ready ? 1 : 0, splashPe: S.splash === 'off' && S.ready ? 'none' : 'auto', splashLine: S.splashLine ? '56px' : '0px', toast: S.toast, toastOp: S.toastOn ? 1 : 0, toastY: S.toastOn ? '0' : '12px' };
+    if (!S.ready) return base;
+    const A = window.MDGApp, M = window.MDG, h = React.createElement, html = (x, extra) => h('div', Object.assign({ dangerouslySetInnerHTML: { __html: x } }, extra || {}));
+    const ico = k => h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: A.ICO[k] } });
+    const O = this.offers(), D = this.demands(), cm = new Date().getMonth() + 1, top = S.stack[S.stack.length - 1];
+    const regions = M.regions, tf = {}, dim = {}, on = {};
+    ['home', ...PAGES].forEach(s => { const i = S.stack.indexOf(s); tf[s] = i < 0 ? 'translateX(calc(100% + 90px))' : (s === top ? 'none' : 'translateX(-26%)'); dim[s] = i >= 0 && s !== top ? 'brightness(.7)' : 'none'; on[s] = i >= 0; });
+    tf.home = top === 'home' ? 'none' : 'translateX(-26%)';
+    const inSeason = (slug, m) => A.CAL.some(e => e[0] === slug && e[2][m]);
+    const mini = p => { const P = this.prod(p.slug); return { thumb: P.thumb, fit: P.fit, rad: P.rad, name: p.name, sub: P.catName }; };
+
+    /* roue : la famille active seulement */
+    const F = this.FAMS[S.fam], n = F.prods.length, act = this.prod(F.prods[Math.max(0, Math.min(n - 1, Math.round(S.rot)))].slug), tr = S.dragging ? 'none' : 'transform .55s cubic-bezier(.22,1,.36,1),opacity .4s,color .3s';
+    const labels = F.prods.map((p, i) => { const off = i - S.rot, a = Math.abs(off);
+      return { name: p.name, fs: a < .5 ? '13px' : '10.5px', color: a < .5 ? '#F5F0E6' : '#B9AD98', weight: a < .5 ? 600 : 400, tf: 'rotate(' + (off * 22) + 'deg) translate(-50%,-352px)', op: a > 2.4 ? 0 : (a < .5 ? 1 : Math.max(0, .72 - (a - 1) * .3)), pe: a > 2.4 ? 'none' : 'auto', tr, go: () => this.setState({ rot: i }) }; });
+    const ticks = F.prods.map((p, i) => { const off = i - S.rot, a = Math.abs(off); return { op: a > 4 ? 0 : (a < .5 ? .9 : .35), tf: 'rotate(' + (off * 22) + 'deg) translate(-50%,-322px)', tr }; });
+    const sacks = F.prods.filter(p => A.SACK[p.slug] != null).map(p => { const i = F.prods.indexOf(p), off = i - S.rot, a = Math.abs(off);
+      return { src: A.IMG + 'produit-' + p.slug + '.webp', alt: p.name, op: Math.max(0, 1 - a * 1.4), tf: 'translateX(' + (off * 70) + 'px) scale(' + (1 - Math.min(a, 1) * .14) + ')', tr: S.dragging ? 'none' : 'opacity .45s,transform .55s cubic-bezier(.22,1,.36,1)' }; });
+    const ao = O.filter(o => o.slug === act.slug).length, ad = D.filter(d => d.slug === act.slug).length;
+
+    /* fiche */
+    const FP = this.prod(S.slug), fo = O.filter(o => o.slug === S.slug), fd = D.filter(d => d.slug === S.slug), mk = this.market(S.slug, O), low = fo.filter(o => o.price).sort((a, b) => a.price - b.price)[0];
+    const calE = A.CAL.filter(c => c[0] === S.slug);
+    const fp = Object.assign({}, FP, { famCaps: FP.catName.toUpperCase(), imgSize: FP.sack ? '230px' : '190px', imgRad: FP.sack ? '0' : '28px', nOff: fo.length, nDem: fd.length,
+      items: [...fo, ...fd].sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0)).map(x => this.card(x)), empty: !fo.length && !fd.length,
+      emptyTxt: 'Pas encore d\u2019offre ni de demande pour ' + FP.name.toLowerCase() + '. Publiez la première : le réseau commence par vous.',
+      low: low ? A.fmt(low.price) + ' F CFA / ' + low.unit : '—', market: mk.ok ? mk.range : 'Pas assez de données pour calculer un prix du marché',
+      meter: [{ pct: Math.min(100, mk.obs / 5 * 100) + '%', txt: mk.obs + ' / 5 observations' }, { pct: Math.min(100, mk.vend / 3 * 100) + '%', txt: mk.vend + ' / 3 vendeurs' }, { pct: '100%', txt: 'sur 30 jours' }],
+      hasSeason: !!calE.length, noSeason: !calE.length, seasonNote: calE.map(e => e[1] + ' : ' + e[4] + ' (' + e[3] + ')').join(' · '),
+      season: 'JFMAMJJASOND'.split('').map((l, i) => { const lv = calE.reduce((b, c) => c[2][i + 1] && (!b || A.RANK[c[2][i + 1]] > A.RANK[b]) ? c[2][i + 1] : b, null); return { l, bg: lv ? A.LV[lv][1] : '#ddd3c2', ring: i + 1 === cm ? '1.5px solid #171512' : 'none', w: i + 1 === cm ? 700 : 400 }; }) });
+
+    /* acheter */
+    const parsed = S.aq.trim() && M.search ? M.search.parse(S.aq) : null, pslug = parsed && parsed.product ? parsed.product.slug : '';
+    const loc = parsed && parsed.location ? parsed.location : null, lreg = S.af.reg || (loc && loc.regionSlug) || '';
+    const cands = parsed && !pslug && parsed.candidates ? parsed.candidates.map(c => c.slug || (c.product && c.product.slug)).filter(Boolean) : [];
+    const qn = A.norm((parsed && parsed.productText) || S.aq.trim()), uCode = parsed && parsed.unit ? (parsed.unit.code || parsed.unit.label || String(parsed.unit)) : '';
+    let aL = O.filter(o => (!pslug || o.slug === pslug) && (pslug || (cands.length ? cands.includes(o.slug) : (!qn || A.norm(this.prod(o.slug).name).includes(qn)))) && (!S.af.cat || this.prod(o.slug).cat === S.af.cat) && (!lreg || o.region === lreg) && (!+S.af.qmin || o.qty >= +S.af.qmin) && (!+S.af.pmax || (o.price != null && o.price <= +S.af.pmax)));
+    const chipsU = []; if (parsed) { if (parsed.product) chipsU.push({ k: 'Produit', v: parsed.product.name }); if (parsed.quantity) chipsU.push({ k: 'Quantité', v: parsed.quantity + ' ' + (parsed.unit ? (parsed.unit.label || parsed.unit.code || '') : '') }); if (loc) chipsU.push({ k: 'Lieu', v: loc.name || loc.label || this.regName(loc.regionSlug) }); if (parsed.intent) chipsU.push({ k: 'Intention', v: String(parsed.intent) }); }
+    const sug = cands.length ? cands.map(s => M.products.find(p => p.slug === s)).filter(Boolean).map(p => ({ slug: p.slug, name: p.name })) : (S.aq.trim() && !pslug && M.search ? M.search.suggest((parsed && parsed.productText) || S.aq, 5) : []);
+    const nF = [S.af.reg, S.af.qmin, S.af.pmax].filter(Boolean).length;
+    const aDem = () => { const pu = uCode && A.UNITS.includes(uCode) ? uCode : 'kg'; this.setState(s => ({ df: Object.assign({}, s.df, { slug: pslug || s.df.slug, qty: parsed && parsed.quantity ? String(parsed.quantity) : s.df.qty, unit: pu, region: lreg || s.df.region }) })); this.push('demande'); };
+
+    /* vendre */
+    const vf = S.vf, VP = vf.slug ? this.prod(vf.slug) : null, vmk = vf.slug ? this.market(vf.slug, O) : null, vlow = vf.slug ? O.filter(o => o.slug === vf.slug && o.price && o.unit === vf.unit).sort((a, b) => a.price - b.price)[0] : null, vdn = vf.slug ? D.filter(d => d.slug === vf.slug).length : 0;
+    const vNext = () => { const e = {};
+      if (vf.step === 1) { if (!vf.slug) e.slug = 1; if (!(+String(vf.qty).replace(',', '.') > 0)) e.qty = 1; }
+      if (vf.step === 2 && !vf.region) e.region = 1;
+      if (vf.step === 3 && !A.tel10(vf.phone)) e.phone = 1;
+      if (Object.keys(e).length) { this.setState({ vErr: e }); this.say('Complétez les champs en orange'); return; }
+      if (vf.step < 3) { this.setState(s => ({ vf: Object.assign({}, s.vf, { step: s.vf.step + 1 }) })); return; }
+      const ok = this.pubOffer({ slug: vf.slug, qty: vf.qty, unit: vf.unit, price: vf.price, region: vf.region, city: vf.city, when: vf.avail === 'date' && vf.date ? vf.date : 'maintenant', name: vf.name, phone: vf.phone, agent: vf.mode === 'agent' ? vf.agent : '', photo: vf.photo });
+      if (!ok) { this.say('Mémoire pleine : retirez une ancienne publication'); return; }
+      ls('mdg-app:brouillon-offre', null); this.setState(s => ({ vf: Object.assign({}, s.vf, { step: 1, slug: '', qty: '', price: '', photo: '', date: '' }) })); this.celebrate('offre', ok.productSlug); };
+    const eb = (err, k) => err[k] ? '#E07A3F' : 'rgba(23,21,18,.18)';
+    const setD = k => e => { const v = e.target.value; this.setState(s => ({ df: Object.assign({}, s.df, { [k]: v }), dErr: {} })); };
+    const setM = k => e => { const v = e.target.value; this.setState(s => ({ mf: Object.assign({}, s.mf, { [k]: v }), mErr: {} })); };
+    const setV = k => e => this.setVf({ [k]: e.target.value });
+    const setA = k => e => { const v = e.target.value; this.setState(s => ({ af: Object.assign({}, s.af, { [k]: v }) })); };
+
+    /* demander */
+    const df = S.df, dOf = df.slug ? O.filter(o => o.slug === df.slug).sort((a, b) => (b.region === df.region) - (a.region === df.region)) : [];
+    const dPublish = () => { const e = {}; if (!df.slug) e.slug = 1; if (!(+String(df.qty).replace(',', '.') > 0)) e.qty = 1; if (!df.region) e.region = 1; if (!A.tel10(df.phone)) e.phone = 1;
+      if (Object.keys(e).length) { this.setState({ dErr: e }); this.say('Complétez les champs en orange'); return; }
+      const ok = this.pubDemand(df); if (!ok) { this.say('Mémoire pleine : retirez une ancienne publication'); return; } this.setState(s => ({ df: Object.assign({}, s.df, { qty: '', budget: '' }) })); this.celebrate('demande', df.slug); };
+
+    /* feuille rapide */
+    const mf = S.mf, isJai = S.mode === 'jai', MP = this.prod(mf.slug), opp = (isJai ? D : O).filter(x => x.slug === mf.slug);
+    const mPublish = () => { const e = {}; if (!(+String(mf.qty).replace(',', '.') > 0)) e.qty = 1; if (!mf.region) e.region = 1; if (!A.tel10(mf.phone)) e.phone = 1;
+      if (Object.keys(e).length) { this.setState({ mErr: e }); this.say('Complétez les champs en orange'); return; }
+      const ok = isJai ? this.pubOffer(Object.assign({}, mf, { when: mf.when || 'maintenant' })) : this.pubDemand(Object.assign({}, mf, { deadline: mf.when || 'semaine', budget: mf.price }));
+      if (!ok) { this.say('Mémoire pleine : retirez une ancienne publication'); return; } this.celebrate(isJai ? 'offre' : 'demande', mf.slug); };
+    const wl = isJai ? W_OFF : W_DEM, wcur = mf.when || wl[isJai ? 0 : 1][0];
+
+    /* carte */
+    const cO = O.filter(o => !S.cprod || o.slug === S.cprod), cD = D.filter(d => !S.cprod || d.slug === S.cprod);
+    let cItems = [...cO, ...cD], cListT = 'TOUTES LES PUBLICATIONS';
+    if (S.csel) { cItems = cItems.filter(x => x.region === S.csel); cListT = 'À ' + ((A.REG[S.csel] || [])[2] || '').toUpperCase(); }
+    else if (S.cme) { cItems = cO.slice().sort((a, b) => A.km(A.REG[S.cme], A.REG[a.region] || A.REG[S.cme]) - A.km(A.REG[S.cme], A.REG[b.region] || A.REG[S.cme])); cListT = 'LES OFFRES LES PLUS PROCHES DE VOUS'; }
+    const cList = cItems.slice(0, 20).map(x => { const c = this.card(x), d = S.cme && A.REG[x.region] ? A.km(A.REG[S.cme], A.REG[x.region]) : null; return Object.assign(c, { title: c.product + ' · ' + c.who, km: d == null ? '' : (d < 15 ? 'sur place' : '≈ ' + d + ' km') }); });
+
+    /* année */
+    const mE = A.CAL.filter(c => c[2][S.month]);
+    const mGroups = ['plein', 'debut', 'fin'].map(lv => ({ label: A.LV[lv][0], c: A.LV[lv][2], items: mE.filter(e => e[2][S.month] === lv).map(e => ({ name: e[1], note: e[4], src: e[3], go: () => this.openFiche(e[0]) })) })).filter(g => g.items.length);
+
+    /* publications */
+    const mine = [...O, ...D].sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0));
+    const myPubs = mine.map(x => { const P = this.prod(x.slug), c = this.card(x), m = (x.kind === 'offre' ? D : O).filter(y => y.slug === x.slug).length;
+      return { thumb: c.img, fit: c.fit, rad: x.photo ? '10px' : P.rad, type: x.kind === 'offre' ? "J'AI" : 'JE CHERCHE', typeColor: x.kind === 'offre' ? '#31543C' : '#765802', shapeRad: c.shapeRad, shapeBg: c.shapeBg, name: P.name, line: c.line + ' · ' + c.ago,
+        match: m ? m + (x.kind === 'offre' ? ' demande' : ' offre') + (m > 1 ? 's' : '') + ' compatible' + (m > 1 ? 's' : '') : '', go: () => this.openFiche(x.slug),
+        del: () => { const k = x.kind === 'offre' ? 'offres' : 'demandes'; A.write(k, A.read(k).filter(y => y.id !== x.id)); this.say('Publication retirée'); } }; });
+
+    /* vendeur */
+    const vo = O.find(o => o.id === S.vid), vkey = vo ? (A.tel10(vo.phone) || vo.name) : null, vlist = vo ? O.filter(o => (A.tel10(o.phone) || o.name) === vkey) : [], vt = vo ? A.tel10(vo.phone) : null;
+    const vd = vo ? { name: vo.name, place: this.place(vo) + ', ' + this.regName(vo.region), agent: vo.agent ? 'Publié par l\u2019agent terrain ' + vo.agent : '', hasTel: !!vt, tel: vt ? 'tel:+225' + vt : '', wa: vt ? 'https://wa.me/225' + vt : '', offers: vlist.map(o => this.card(o)).map(c => Object.assign(c, { go: c.go })) }
+      : { name: 'Vendeur introuvable', place: 'Cette offre a été retirée.', agent: '', hasTel: false, tel: '', wa: '', offers: [] };
+    vd.offers.forEach((c, i) => { c.go = () => this.openFiche(vlist[i].slug); });
+
+    /* info */
+    const IN = INFO[S.infoK] || INFO['comment-ca-marche'];
+    const info = { title: IN[0], lead: IN[1], steps: IN[2].map((s, i) => ({ ico: ico(s[0]), n: 'ÉTAPE ' + (i + 1), t: s[1], x: s[2] })), cta: IN[3], go: () => this.push(IN[4]) };
+
+    /* prix */
+    const withP = [...new Set(O.filter(o => o.price != null).map(o => o.slug))];
+    const prixRows = withP.map(slug => { const P = this.prod(slug), m = this.market(slug, O), lo = O.filter(o => o.slug === slug && o.price).sort((a, b) => a.price - b.price)[0];
+      return { name: P.name, thumb: P.thumb, fit: P.fit, rad: P.rad, sub: m.ok ? 'Prix observé : ' + m.range : 'Prix vendeur · ' + lo.name + ', ' + this.place(lo), price: 'dès ' + A.fmt(lo.price) + ' F/' + lo.unit,
+        meter: [{ pct: Math.min(100, m.obs / 5 * 100) + '%', txt: m.obs + ' / 5 obs.' }, { pct: Math.min(100, m.vend / 3 * 100) + '%', txt: m.vend + ' / 3 vendeurs' }], go: () => this.openFiche(slug) }; });
+
+    /* sélecteur de produit */
+    const pq = A.norm(S.pq), pl = M.products.filter(p => !pq || A.norm(p.name).includes(pq) || (p.aliases || []).some(a => A.norm(a).includes(pq)));
+    const pickGroups = this.cats.map(c => ({ t: c.name.toUpperCase(), items: pl.filter(p => p.categorySlug === c.slug).map(p => Object.assign(mini(p), { sub: (p.aliases || []).slice(0, 2).join(' · '), pick: () => this.doPick(p.slug) })) })).filter(g => g.items.length);
+    if (S.pick === 'carte' && !pq) pickGroups.unshift({ t: 'RÉSEAU', items: [{ name: 'Tous les produits', sub: 'Toutes les offres et demandes', thumb: A.IMG + 'famille-autres-produits-vivriers.webp', fit: 'cover', rad: '10px', pick: () => this.doPick('') }] });
+
+    const light = ['acheter', 'vendre', 'demande', 'categories', 'prix', 'pubs'].includes(top) || !!S.pick;
+    const sheetOn = S.sheet === 'match', dy = S.sheetDy, anyS = S.menu || sheetOn || S.sheet === 'fam';
+    const mi = (k, t, s, go) => ({ ico: ico(k), t, s, go });
+    return Object.assign(base, {
+      tf, dim, on, regions, halo: act.tint, sbColor: light && !anyS ? '#171512' : '#F5F0E6',
+      back: () => this.back(), edgeDown: e => this.edgeDown(e), edgeUp: e => this.edgeUp(e), stop: e => e.stopPropagation(),
+      goAcheter: () => this.push('acheter'), goVendre: () => this.push('vendre'), openMenu: () => this.setState({ menu: true, sheetDy: 0 }), hasPubs: mine.length > 0,
+      famPips: this.FAMS.map((f, i) => ({ name: f.name, w: i === S.fam ? '18px' : '6px', bg: i === S.fam ? '#E07A3F' : 'rgba(245,240,230,.22)', go: () => this.setState({ fam: i, rot: 0 }) })),
+      famName: F.name.toUpperCase(), prevFam: () => this.famStep(-1), nextFam: () => this.famStep(1), openFams: () => this.setState({ sheet: 'fam', sheetDy: 0 }),
+      wDown: e => this.wDown(e), wMove: e => this.wMove(e), wUp: () => this.wUp(), labels, ticks, sacks,
+      jute: { op: act.sack ? 0 : 1, tf: act.sack ? 'scale(.86)' : 'none', mound: act.tint, l1: act.name.toUpperCase(), fs: act.name.length > 14 ? '14px' : act.name.length > 9 ? '17px' : '21px' },
+      prev: () => this.snap(Math.round(S.rot) - 1), next: () => this.snap(Math.round(S.rot) + 1),
+      act: { name: act.name, fs: act.name.length > 16 ? '34px' : act.name.length > 11 ? '40px' : '48px', oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' },
+      openFicheAct: () => this.openFiche(act.slug),
+      openJai: () => this.openSheet('jai', top === 'fiche' ? S.slug : act.slug), openCherche: () => this.openSheet('cherche', top === 'fiche' ? S.slug : act.slug),
+      fp, share: () => { const u = location.href, t = FP.name + ' — Marché de Gros de Côte d\u2019Ivoire'; if (navigator.share) navigator.share({ title: t, url: u }).catch(() => {}); else { try { navigator.clipboard.writeText(u); this.say('Lien copié'); } catch (_) {} } },
+      ficheCarte: () => this.push('carte', { cprod: S.slug, csel: '' }),
+      aRef: this.aRef, aq: S.aq, onAq: e => this.setState({ aq: e.target.value }), aqHas: !!S.aq, clearAq: () => this.setState({ aq: '' }),
+      toggleFilters: () => this.setState(s => ({ fOpen: !s.fOpen })), fOpen: S.fOpen, fBtn: Object.assign(chip(nF > 0 || S.fOpen), { l: nF ? 'Filtres · ' + nF : 'Filtrer' }),
+      famChips: [{ slug: '', name: 'Tout' }, ...this.cats].map(c => Object.assign(chip(S.af.cat === c.slug), { l: c.name.split(/[ ,]/)[0], go: () => this.setState(s => ({ af: Object.assign({}, s.af, { cat: c.slug }) })) })),
+      af: S.af, afh: { reg: setA('reg'), qmin: setA('qmin'), pmax: setA('pmax') }, resetFilters: () => this.setState({ af: { cat: '', reg: '', qmin: '', pmax: '' } }),
+      understood: { on: chipsU.length > 0, chips: chipsU },
+      sugg: { on: sug.length > 0, list: sug.map(s => Object.assign(mini(s), { sub: s.matchedAlias ? 'aussi appelé « ' + s.matchedAlias + ' »' : this.prod(s.slug).catName, go: () => this.setState({ aq: parsed && parsed.productText && S.aq.includes(parsed.productText) ? S.aq.replace(parsed.productText, s.name) : s.name }) })) },
+      aCount: aL.length ? aL.length + ' OFFRE' + (aL.length > 1 ? 'S' : '') : 'OFFRES', aCarte: () => this.push('carte', { cprod: pslug, csel: lreg }),
+      aList: aL.map(x => this.card(x)), aEmpty: !aL.length,
+      aEmptyT: O.length ? 'Pas encore d\u2019offre' + (pslug ? ' pour ' + this.prod(pslug).name.toLowerCase() : ' qui correspond') : 'Le marché attend sa première offre',
+      aEmptyX: O.length ? 'Publiez une demande : les vendeurs de ce produit la verront et vous contacteront.' : 'Rien n\u2019a encore été publié sur cet appareil. Une demande suffit pour lancer le réseau.',
+      aDemande: aDem, aDemandeL: pslug ? 'Demander ' + this.prod(pslug).name.toLowerCase() : 'Publier une demande',
+      vStepTxt: vf.step + ' / 3', vBars: [1, 2, 3].map(i => ({ bg: i <= vf.step ? '#E07A3F' : '#ddd3c2' })),
+      vPrev: { img: vf.photo || (VP ? VP.thumb : 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72"><rect width="72" height="72" fill="#efe7d9"/><path d="M22 28c-1 10-2 20-1 28 1 4 6 5 15 5s14-1 15-5c1-8 0-18-1-28-6 3-22 3-28 0z" fill="none" stroke="#b9ad98" stroke-width="2"/><path d="M21 24c5-3 25-3 30 0v5c-6 3-24 3-30 0z" fill="none" stroke="#b9ad98" stroke-width="2"/></svg>')), fit: vf.photo || !VP || !VP.sack ? 'cover' : 'contain', product: VP ? VP.name : 'Votre produit',
+        line: (vf.qty ? A.fmt(+String(vf.qty).replace(',', '.') || 0) + ' ' + vf.unit : 'Quantité') + ' · ' + (vf.city || (A.REG[vf.region] || [])[2] || 'Lieu') + ' · ' + (vf.avail === 'date' && vf.date ? 'dès le ' + new Date(vf.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : 'disponible maintenant'),
+        price: A.digits(vf.price) ? A.fmt(+A.digits(vf.price)) + ' F CFA / ' + vf.unit : 'Prix à discuter', who: vf.name || 'Votre nom' },
+      vDem: { on: vdn > 0, txt: vdn + ' demande' + (vdn > 1 ? 's' : '') + ' de ' + (VP ? VP.name.toLowerCase() : '') + ' attend' + (vdn > 1 ? 'ent' : '') + ' déjà un vendeur.' },
+      vModes: [['moi', 'Je vends'], ['agent', 'Pour un producteur']].map(m => ({ l: m[1], bg: vf.mode === m[0] ? '#171512' : 'transparent', color: vf.mode === m[0] ? '#F5F0E6' : '#484236', go: () => this.setVf({ mode: m[0] }) })),
+      vS1: vf.step === 1, vS2: vf.step === 2, vS3: vf.step === 3, pickVendre: () => this.openPick('vendre'), vEb: { slug: eb(S.vErr, 'slug'), qty: eb(S.vErr, 'qty'), region: eb(S.vErr, 'region'), phone: eb(S.vErr, 'phone') },
+      vProdL: VP ? VP.name : 'Choisir un produit', vPhotoL: vf.photo ? 'Photo ajoutée · changer' : 'Prendre ou choisir une photo',
+      onPhoto: e => { const f = e.target.files && e.target.files[0]; if (f) A.photo(f).then(d => this.setState(s => ({ vf: Object.assign({}, s.vf, { photo: d }) }))).catch(() => this.say('Photo illisible')); },
+      vf, vfh: { qty: setV('qty'), price: setV('price'), region: setV('region'), city: setV('city'), date: setV('date'), agent: setV('agent'), name: setV('name'), phone: setV('phone') },
+      vUnits: A.UNITS.map(u => Object.assign(chip(vf.unit === u), { l: u, go: () => this.setVf({ unit: u }) })),
+      vRef: { on: !!(vmk && (vmk.ok || vlow)), txt: vmk && vmk.ok ? 'Prix observé du marché : ' + vmk.range : vlow ? 'Autre vendeur : ' + A.fmt(vlow.price) + ' F / ' + vlow.unit + ' à ' + this.place(vlow) : '' },
+      vCityPh: (A.REG[vf.region] || [])[2] ? 'ex. ' + A.REG[vf.region][2] : 'ex. Bouaké', vAvail: [['maintenant', 'Maintenant'], ['date', 'À partir du…']].map(a => Object.assign(chip(vf.avail === a[0]), { l: a[1], go: () => this.setVf({ avail: a[0] }) })), vDateOn: vf.avail === 'date',
+      vAgent: vf.mode === 'agent', vNameL: vf.mode === 'agent' ? 'Nom du producteur' : 'Votre nom', vErr: S.vErr, vCanBack: vf.step > 1, vPrevStep: () => this.setState(s => ({ vf: Object.assign({}, s.vf, { step: s.vf.step - 1 }) })), vNext, vNextL: vf.step < 3 ? 'Suivant' : 'Publier l\u2019offre',
+      pickDemande: () => this.openPick('demande'), dEb: { slug: eb(S.dErr, 'slug'), qty: eb(S.dErr, 'qty'), region: eb(S.dErr, 'region'), phone: eb(S.dErr, 'phone') }, dProdL: df.slug ? this.prod(df.slug).name : 'Choisir un produit',
+      dOffers: dOf.slice(0, 3).map(o => this.card(o)), dOffInfo: { on: !!df.slug && (dOf.length === 0 || dOf.length > 3), txt: dOf.length ? dOf.length + ' vendeurs proposent ce produit' + (df.region ? ', dont ' + dOf.filter(o => o.region === df.region).length + ' en ' + this.regName(df.region) : '') + '.' : 'Pas encore d\u2019offre pour ce produit. Votre demande sera la première.' },
+      df, dfh: { qty: setD('qty'), region: setD('region'), budget: setD('budget'), name: setD('name'), phone: setD('phone') }, dErr: S.dErr,
+      dUnits: A.UNITS.map(u => Object.assign(chip(df.unit === u), { l: u, go: () => this.setState(s => ({ df: Object.assign({}, s.df, { unit: u }) })) })),
+      dWhen: W_DEM.map(w => Object.assign(chip(df.deadline === w[0]), { l: w[1], go: () => this.setState(s => ({ df: Object.assign({}, s.df, { deadline: w[0] }) })) })), dPublish,
+      cPick: () => this.openPick('carte'), cProdL: S.cprod ? this.prod(S.cprod).name : 'Tous les produits', cMe: S.cme, onMe: e => { const v = e.target.value; this.setState({ cme: v, csel: '' }); if (v) { this.me.region = v; ls('mdg-app:moi', this.me); } },
+      mapEl: html(this.mapSVG(cO, cD, S.cme, S.csel), { onClick: e => { const t = e.target.closest && e.target.closest('[data-reg]'); if (t) this.setState(s => ({ csel: s.csel === t.dataset.reg ? '' : t.dataset.reg })); } }),
+      cListT, cList, cEmpty: !cList.length, cEmptyTxt: 'Le réseau se dessine à chaque publication. Aucune offre ni demande ' + (S.csel ? 'ici' : (S.cprod ? 'pour ce produit' : '')) + ' pour l\u2019instant.',
+      catTitle: this.cats.length + ' familles,', cats: this.cats.map(c => { const ps = M.products.filter(p => p.categorySlug === c.slug), op = S.openFam === c.slug, actv = ps.filter(p => O.some(o => o.slug === p.slug) || D.some(d => d.slug === p.slug)).length, seas = ps.filter(p => inSeason(p.slug, cm)).length;
+        return { name: c.name, img: A.IMG + 'famille-' + c.slug + '.webp', sub: ps.length + ' produits' + (actv ? ' · ' + actv + ' actifs' : '') + (seas ? ' · ' + seas + ' en saison' : ''), open: op, chev: op ? 'rotate(180deg)' : 'none',
+          toggle: () => this.setState(s => ({ openFam: s.openFam === c.slug ? null : c.slug })),
+          products: op ? ps.map(p => { const o = O.filter(x => x.slug === p.slug).length, d = D.filter(x => x.slug === p.slug).length; return { name: p.name, badge: [o && o + ' offre' + (o > 1 ? 's' : ''), d && d + ' demande' + (d > 1 ? 's' : ''), inSeason(p.slug, cm) && 'en saison'].filter(Boolean).join(' · '), go: () => this.openFiche(p.slug), jai: () => this.openSheet('jai', p.slug), cherche: () => this.openSheet('cherche', p.slug) }; }) : [] }; }),
+      prixRows, prixEmpty: !prixRows.length,
+      yearEl: html(A.yearSVG(S.month, cm), { onClick: e => { const t = e.target.closest && e.target.closest('[data-m]'); if (t) this.setState({ month: +t.dataset.m }); } }),
+      mPrev: () => this.setState(s => ({ month: s.month === 1 ? 12 : s.month - 1 })), mNext: () => this.setState(s => ({ month: s.month === 12 ? 1 : s.month + 1 })),
+      mName: A.MOIS[S.month - 1], mKicker: S.month === cm ? 'CE MOIS-CI' : String(S.month).padStart(2, '0') + ' / 12', mGroups, mEmpty: !mGroups.length,
+      myPubs, pubsEmpty: !myPubs.length, vd, info,
+      scrimOp: anyS ? Math.max(0, 1 - dy / 400) : 0, scrimPe: anyS ? 'auto' : 'none', closeAll: () => this.closeAll(),
+      sheetTr: this.sd ? 'none' : 'transform .45s cubic-bezier(.22,1,.36,1)', sDown: e => this.sDown(e), sMove: e => this.sMove(e), sUp: () => this.sUp(),
+      menuTf: S.menu ? 'translateY(' + dy + 'px)' : 'translateY(105%)', famTf: S.sheet === 'fam' ? 'translateY(' + dy + 'px)' : 'translateY(105%)', matchTf: sheetOn ? 'translateY(' + dy + 'px)' : 'translateY(105%)',
+      menu: [
+        { t: 'ÉCHANGER', items: [mi('cherche', 'Acheter', 'Trouver une offre, qui vend quoi et où', () => this.push('acheter')), mi('jai', 'Vendre', 'Publier une offre avec photo', () => this.push('vendre')), mi('demande', 'Demander', 'Dire ce qu\u2019il vous faut', () => this.push('demande')), mi('pubs', 'Mes publications', mine.length ? mine.length + ' sur cet appareil' : 'Aucune pour l\u2019instant', () => this.push('pubs'))] },
+        { t: 'EXPLORER', items: [mi('carte', 'Le réseau', 'La carte des offres et des demandes', () => this.push('carte')), mi('categories', 'Catégories', this.cats.length + ' familles de produits', () => this.push('categories')), mi('prix', 'Prix du marché', 'Prix vendeur et prix observé', () => this.push('prix')), mi('annee', 'L\u2019année du marché', 'Ce qui se récolte, mois par mois', () => this.push('annee'))] },
+        { t: 'COMPRENDRE', items: [mi('comment', 'Comment ça marche', 'Chercher, trouver, contacter', () => this.push('info', { infoK: 'comment-ca-marche' })), mi('aide', 'Aide producteur', 'Publier sa récolte, avec un agent', () => this.push('info', { infoK: 'aide-producteur' })), mi('confiance', 'Confiance', 'Ce que nous affichons, ou pas', () => this.push('info', { infoK: 'confiance' })), mi('ordi', 'Version ordinateur', 'Ouvrir le site complet', () => { location.href = 'index-v3.html?ordinateur=1' + this.hashOf(top); })] }],
+      famGrid: this.FAMS.map((f, i) => ({ name: f.name, sub: f.prods.length + ' produits', img: A.IMG + 'famille-' + f.slug + '.webp', bd: i === S.fam ? '#E07A3F' : 'transparent', go: () => this.setState({ fam: i, rot: 0, sheet: null }) })),
+      segTf: isJai ? 'none' : 'translateX(100%)', segA: isJai ? '#F5F0E6' : '#484236', segB: isJai ? '#484236' : '#F5F0E6',
+      setJai: () => this.setState({ mode: 'jai', mErr: {}, mf: Object.assign({}, S.mf, { when: '' }) }), setCherche: () => this.setState({ mode: 'cherche', mErr: {}, mf: Object.assign({}, S.mf, { when: '' }) }),
+      formOn: !S.done, doneOn: !!S.done, done: S.done ? { title: S.done.title, text: S.done.text, cta: S.done.n ? 'Voir les correspondances' : 'Mes publications', go: () => { const d = S.done; this.closeAll(); d.n ? this.openFiche(d.slug) : this.push('pubs'); } } : { title: '', text: '', cta: '', go: null },
+      doneEl: S.done ? html(this.doneSVG(S.done)) : null,
+      pickMatch: () => this.openPick('match'), mfP: { thumb: MP.thumb, fit: MP.fit, rad: MP.rad, fam: MP.catName, name: MP.name },
+      matchTitle: isJai ? 'DEMANDES QUI VOUS CHERCHENT' : 'OFFRES DISPONIBLES', matches: opp.slice(0, 3).map(x => this.card(x)), noMatch: !opp.length,
+      noMatchTxt: isJai ? 'Pas encore de demande pour ' + MP.name.toLowerCase() + '. Votre offre sera la première du réseau.' : 'Pas encore d\u2019offre pour ' + MP.name.toLowerCase() + '. Publiez votre demande : elle sera la première.',
+      mf, mfh: { qty: setM('qty'), region: setM('region'), price: setM('price'), name: setM('name'), phone: setM('phone') }, mEb: { qty: eb(S.mErr, 'qty'), region: eb(S.mErr, 'region'), phone: eb(S.mErr, 'phone') }, mErr: S.mErr,
+      mUnits: A.UNITS.map(u => Object.assign(chip(mf.unit === u), { l: u, go: () => this.setState(s => ({ mf: Object.assign({}, s.mf, { unit: u }) })) })),
+      mPriceL: isJai ? 'Prix / ' + mf.unit : 'Budget / ' + mf.unit, mWhenL: isJai ? 'Disponible' : 'Il me le faut', mWhens: wl.map(w => Object.assign(chip(wcur === w[0]), { l: w[1], go: () => this.setState(s => ({ mf: Object.assign({}, s.mf, { when: w[0] }) })) })),
+      fullForm: () => { if (isJai) { this.setVf({ slug: mf.slug, qty: mf.qty, unit: mf.unit, price: mf.price, region: mf.region }); this.push('vendre'); } else { this.setState(s => ({ df: Object.assign({}, s.df, { slug: mf.slug, qty: mf.qty, unit: mf.unit, region: mf.region, budget: mf.price }) })); this.push('demande'); } },
+      fullFormL: isJai ? 'Formulaire complet : photo, date, agent →' : 'Formulaire complet : délai, budget →', mPublish, mPublishL: isJai ? 'Publier mon offre' : 'Publier ma demande',
+      pickTf: S.pick ? 'none' : 'translateY(105%)', pRef: this.pRef, pq: S.pq, onPq: e => this.setState({ pq: e.target.value }), closePick: () => this.setState({ pick: null }), pickGroups: S.pick ? pickGroups : []
+    });
+  }
+}
+</script>
+</body>
+</html>

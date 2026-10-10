@@ -11,6 +11,7 @@
 | 4 | J'ai / Je cherche bougent sur l'accueil | Hauteur du nom de produit variable | Zone de nom de hauteur fixe (2 lignes au plus, taille calculée sur la largeur réelle) ; la roue se réduit selon la hauteur de l'écran | Corrigé |
 | 5 | Le nom « Gombo séché » chevauche | Même cause que le n° 4 | Même correction | Corrigé |
 | 6 | Les noms de la roue orbitale se chevauchent | Espacement fixe quelle que soit la longueur du nom | Chaque nom occupe un angle calculé d'après sa largeur mesurée, plus un écart fixe ; les noms qui sortiraient de l'écran s'effacent. Le texte garde sa taille. | Corrigé |
+| 8 | Débordements (Acheter « Prix max. »…), page qui glisse de côté au toucher d'un champ | Grilles à colonnes `1fr` qui ne rétrécissent pas sous la largeur d'un champ ; iOS fait alors défiler la page de côté | 10 grilles en `minmax(0,1fr)`, champs limités à leur colonne, zones qui défilent verrouillées à l'horizontale, pages en `overflow:clip`, décalage remis à zéro | Corrigé, audit sur toutes les pages sans débordement |
 | 7 | Carte trop simple | — | Nouvelle carte, voir section 2 | Livré |
 
 ## 2. Nouvelle carte (`app/carte-app.js`)

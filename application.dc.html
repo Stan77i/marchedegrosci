@@ -15,7 +15,7 @@
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
 <script src="app/carte-app.js"></script>
-<style>html,body{margin:0;height:100%;position:fixed;inset:0;width:100%;overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}input,select,textarea{font-size:16px!important}[style*="overflow-y:auto"]{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}button{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}html,body{background:#0d0c0a;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box;scrollbar-width:none}a{color:#E07A3F}a:hover{color:#B85C38}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}
+<style>html,body{margin:0;height:100%;position:fixed;inset:0;width:100%;overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}input,select,textarea{font-size:16px!important;min-width:0;max-width:100%}label{min-width:0}[data-pg],[data-screen-label="Application"]{overflow:clip!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"]{overflow-x:hidden!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"]{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}button{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}html,body{background:#0d0c0a;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box;scrollbar-width:none}a{color:#E07A3F}a:hover{color:#B85C38}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}
 @keyframes mkWave{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.3);opacity:0}}
 @keyframes mkBreath{0%,100%{transform:scale(.82)}50%{transform:scale(1.12)}}
 @keyframes mkFlow{to{stroke-dashoffset:-12}}
@@ -125,7 +125,7 @@
     <div style="padding:24px 20px 130px;display:flex;flex-direction:column;gap:28px">
       <div style="display:flex;flex-direction:column;gap:12px">
         <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">SUR LE MARCHÉ</span><button onClick="{{ ficheCarte }}" style="border:0;background:transparent;color:#904515;font-size:13.5px;font-weight:500;padding:8px 0;min-height:36px">Voir sur la carte →</button></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
           <div style="background:#faf4e9;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#655c4d"><span style="width:10px;height:10px;border-radius:50%;background:#6CC58C;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)"></span>Offres</div><div style="font-family:'Cormorant Garamond',serif;font-size:36px;line-height:1">{{ fp.nOff }}</div></div>
           <div style="background:#faf4e9;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#655c4d"><span style="width:10px;height:10px;border-radius:2px;background:#F2C94C;box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)"></span>Demandes</div><div style="font-family:'Cormorant Garamond',serif;font-size:36px;line-height:1">{{ fp.nDem }}</div></div>
         </div>
@@ -146,7 +146,7 @@
           <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><span style="font-size:14px;color:#655c4d">Prix vendeur le plus bas</span><span style="font-weight:600;font-size:15px">{{ fp.low }}</span></div>
           <div style="height:1px;background:rgba(23,21,18,.1)"></div>
           <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:14px;color:#655c4d">Prix observé du marché</span><span style="font-family:'Cormorant Garamond',serif;font-size:24px;line-height:1.15">{{ fp.market }}</span></div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
             <sc-for list="{{ fp.meter }}" as="m" hint-placeholder-count="3"><div style="display:flex;flex-direction:column;gap:6px"><div style="height:4px;border-radius:2px;background:#ddd3c2;overflow:hidden"><div style="height:100%;width:{{ m.pct }};background:#31543C;transition:width .8s cubic-bezier(.22,1,.36,1)"></div></div><span style="font-size:11.5px;color:#655c4d;line-height:1.3">{{ m.txt }}</span></div></sc-for>
           </div>
         </div>
@@ -154,7 +154,7 @@
       <div style="display:flex;flex-direction:column;gap:12px">
         <span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">SAISON</span>
         <sc-if value="{{ fp.hasSeason }}" hint-placeholder-val="{{ false }}">
-          <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:3px"><sc-for list="{{ fp.season }}" as="c" hint-placeholder-count="12"><div style="display:flex;flex-direction:column;align-items:center;gap:5px"><div style="width:100%;height:28px;border-radius:5px;background:{{ c.bg }};outline:{{ c.ring }};outline-offset:1px"></div><span style="font-size:11px;color:#655c4d;font-weight:{{ c.w }}">{{ c.l }}</span></div></sc-for></div>
+          <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px"><sc-for list="{{ fp.season }}" as="c" hint-placeholder-count="12"><div style="display:flex;flex-direction:column;align-items:center;gap:5px"><div style="width:100%;height:28px;border-radius:5px;background:{{ c.bg }};outline:{{ c.ring }};outline-offset:1px"></div><span style="font-size:11px;color:#655c4d;font-weight:{{ c.w }}">{{ c.l }}</span></div></sc-for></div>
           <span style="font-size:12.5px;color:#655c4d;line-height:1.45">{{ fp.seasonNote }}</span>
         </sc-if>
         <sc-if value="{{ fp.noSeason }}" hint-placeholder-val="{{ true }}"><span style="font-size:14px;color:#655c4d;line-height:1.5">Calendrier de récolte pas encore sourcé pour ce produit.</span></sc-if>
@@ -185,7 +185,7 @@
     <sc-if value="{{ fOpen }}" hint-placeholder-val="{{ false }}">
       <div style="background:#faf4e9;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px;animation:mkFade .3s both">
         <label style="display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:500">Région<select value="{{ af.reg }}" onChange="{{ afh.reg }}" style="height:48px;border-radius:12px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 10px;font-size:15px;color:#171512"><option value="">Toute la Côte d'Ivoire</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}">{{ r.name }}</option></sc-for></select></label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
           <label style="display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:500">Quantité min.<input value="{{ af.qmin }}" onChange="{{ afh.qmin }}" inputmode="numeric" placeholder="—" style="height:48px;border-radius:12px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 12px;font-size:16px;color:#171512;min-width:0"></label>
           <label style="display:flex;flex-direction:column;gap:6px;font-size:13.5px;font-weight:500">Prix max. (F)<input value="{{ af.pmax }}" onChange="{{ afh.pmax }}" inputmode="numeric" placeholder="—" style="height:48px;border-radius:12px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 12px;font-size:16px;color:#171512;min-width:0"></label>
         </div>
@@ -219,7 +219,7 @@
 <sc-if value="{{ on.vendre }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid rgba(23,21,18,.1)">
     <div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Vendre</span><span style="width:44px;font-size:12.5px;color:#847966;text-align:center">{{ vStepTxt }}</span></div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:0 16px 12px"><sc-for list="{{ vBars }}" as="b" hint-placeholder-count="3"><span style="height:3px;border-radius:2px;background:{{ b.bg }};transition:background .4s"></span></sc-for></div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:0 16px 12px"><sc-for list="{{ vBars }}" as="b" hint-placeholder-count="3"><span style="height:3px;border-radius:2px;background:{{ b.bg }};transition:background .4s"></span></sc-for></div>
   </div>
   <div style="flex:1;overflow-y:auto;padding:16px 18px 130px;display:flex;flex-direction:column;gap:18px">
     <div style="display:flex;flex-direction:column;gap:8px">
@@ -230,7 +230,7 @@
       </div>
       <sc-if value="{{ vDem.on }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#fff4dd;font-size:13.5px;color:#563e01"><span style="width:10px;height:10px;border-radius:2px;background:#F2C94C;flex:none;animation:mkBreath 2s infinite"></span>{{ vDem.txt }}</div></sc-if>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;background:#e7dcc8;border-radius:22px;padding:3px">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:#e7dcc8;border-radius:22px;padding:3px">
       <sc-for list="{{ vModes }}" as="m" hint-placeholder-count="2"><button onClick="{{ m.go }}" style="height:40px;border:0;border-radius:19px;background:{{ m.bg }};color:{{ m.color }};font-size:14px;font-weight:600;transition:all .3s">{{ m.l }}</button></sc-for>
     </div>
     <sc-if value="{{ vS1 }}" hint-placeholder-val="{{ true }}">
@@ -341,7 +341,7 @@
     <sc-for list="{{ prixRows }}" as="r" hint-placeholder-count="0">
       <button onClick="{{ r.go }}" style="border:0;background:#faf4e9;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;text-align:left;color:#171512;animation:mkFade .35s both">
         <span style="display:flex;align-items:center;gap:12px;width:100%"><img src="{{ r.thumb }}" alt="" style="width:44px;height:44px;object-fit:{{ r.fit }};border-radius:{{ r.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-weight:500;font-size:15px">{{ r.name }}</span><span style="font-size:12.5px;color:#847966">{{ r.sub }}</span></span><span style="font-weight:600;font-size:14px;white-space:nowrap">{{ r.price }}</span></span>
-        <span style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%"><sc-for list="{{ r.meter }}" as="m" hint-placeholder-count="2"><span style="display:flex;flex-direction:column;gap:5px"><span style="height:4px;border-radius:2px;background:#ddd3c2;overflow:hidden;display:block"><span style="display:block;height:100%;width:{{ m.pct }};background:#31543C"></span></span><span style="font-size:11.5px;color:#655c4d">{{ m.txt }}</span></span></sc-for></span>
+        <span style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%"><sc-for list="{{ r.meter }}" as="m" hint-placeholder-count="2"><span style="display:flex;flex-direction:column;gap:5px"><span style="height:4px;border-radius:2px;background:#ddd3c2;overflow:hidden;display:block"><span style="display:block;height:100%;width:{{ m.pct }};background:#31543C"></span></span><span style="font-size:11.5px;color:#655c4d">{{ m.txt }}</span></span></sc-for></span>
       </button>
     </sc-for>
     <sc-if value="{{ prixEmpty }}" hint-placeholder-val="{{ true }}"><div style="border:1px dashed rgba(23,21,18,.22);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;align-items:flex-start"><span style="font-size:15px;font-weight:500">Données en cours de constitution</span><span style="font-size:14px;color:#655c4d;line-height:1.5">Aucun prix vendeur publié pour l'instant. Chaque offre avec un prix fait avancer le prix du marché.</span><button onClick="{{ goVendre }}" style="height:44px;padding:0 20px;border-radius:22px;border:0;background:#E07A3F;color:#171512;font-weight:600;font-size:14px">Publier une offre</button></div></sc-if>
@@ -445,7 +445,7 @@
 <div style="position:absolute;left:0;right:0;bottom:0;max-height:84%;display:flex;flex-direction:column;background:#24201A;color:#F5F0E6;border-radius:28px 28px 0 0;transform:{{ famTf }};transition:{{ sheetTr }};box-shadow:0 -10px 40px rgba(0,0,0,.4)">
   <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" style="height:28px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none"><span style="width:38px;height:5px;border-radius:3px;background:rgba(245,240,230,.25)"></span></div>
   <div style="padding:0 20px 10px;font-family:'Cormorant Garamond',serif;font-size:28px">Familles de produits</div>
-  <div style="overflow-y:auto;padding:0 14px {{ botPad }};display:grid;grid-template-columns:1fr 1fr;gap:10px">
+  <div style="overflow-y:auto;padding:0 14px {{ botPad }};display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
     <sc-for list="{{ famGrid }}" as="f" hint-placeholder-count="11"><button onClick="{{ f.go }}" style="border:1.5px solid {{ f.bd }};border-radius:18px;padding:0;overflow:hidden;background:#171512;color:#F5F0E6;text-align:left;display:flex;flex-direction:column"><img src="{{ f.img }}" alt="" style="width:100%;height:84px;object-fit:cover;display:block"><span style="padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:500;line-height:1.25">{{ f.name }}</span><span style="font-size:12px;color:#B9AD98">{{ f.sub }}</span></span></button></sc-for>
   </div>
 </div>
@@ -455,7 +455,7 @@
   <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" style="flex:none;touch-action:none;cursor:grab;padding:0 16px 10px">
     <div style="height:24px;display:flex;align-items:center;justify-content:center"><span style="width:38px;height:5px;border-radius:3px;background:rgba(23,21,18,.2)"></span></div>
     <div style="display:flex;align-items:center;gap:10px">
-      <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;background:#e7dcc8;border-radius:22px;padding:3px;position:relative">
+      <div style="flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:#e7dcc8;border-radius:22px;padding:3px;position:relative">
         <span style="position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:19px;background:#171512;transform:{{ segTf }};transition:transform .35s cubic-bezier(.22,1,.36,1)"></span>
         <button onPointerDown="{{ stop }}" onClick="{{ setJai }}" style="position:relative;height:40px;border:0;background:transparent;color:{{ segA }};font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;transition:color .3s"><span style="width:9px;height:9px;border-radius:50%;background:#6CC58C"></span>J'ai</button>
         <button onPointerDown="{{ stop }}" onClick="{{ setCherche }}" style="position:relative;height:40px;border:0;background:transparent;color:{{ segB }};font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;transition:color .3s"><span style="width:9px;height:9px;border-radius:2px;background:#F2C94C"></span>Je cherche</button>
@@ -472,7 +472,7 @@
       <sc-if value="{{ noMatch }}" hint-placeholder-val="{{ true }}"><div style="border:1px dashed rgba(23,21,18,.22);border-radius:14px;padding:12px 14px;font-size:13.5px;color:#655c4d;line-height:1.5">{{ noMatchTxt }}</div></sc-if>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Quantité</span><input value="{{ mf.qty }}" onChange="{{ mfh.qty }}" inputmode="decimal" placeholder="ex. 20" style="height:52px;border-radius:14px;border:1px solid {{ mEb.qty }};background:#fffaf3;padding:0 14px;font-size:17px;outline:none;color:#171512"><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ mUnits }}" as="u" hint-placeholder-count="6"><button onClick="{{ u.go }}" style="height:38px;padding:0 14px;border-radius:19px;border:1px solid {{ u.bd }};background:{{ u.bg }};color:{{ u.color }};font-size:13.5px;font-weight:500">{{ u.l }}</button></sc-for></div></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
       <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Région</span><select value="{{ mf.region }}" onChange="{{ mfh.region }}" style="height:52px;border-radius:14px;border:1px solid {{ mEb.region }};background:#fffaf3;padding:0 10px;font-size:15px;color:#171512"><option value="">Choisir…</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}">{{ r.name }}</option></sc-for></select></div>
       <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">{{ mPriceL }}</span><input value="{{ mf.price }}" onChange="{{ mfh.price }}" inputmode="numeric" placeholder="F CFA" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:16px;outline:none;color:#171512;min-width:0"></div>
     </div>
@@ -562,6 +562,8 @@ class Component extends DCLogic {
     this.onVV = () => { const ae = document.activeElement, typing = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && ae.type !== 'file' && ae.type !== 'date', vv = window.visualViewport, h = typing && vv && vv.height < window.innerHeight - 60 ? Math.round(vv.height) : 0; if (h !== this.state.kbH) this.setState({ kbH: h }); if (window.scrollY || window.scrollX) window.scrollTo(0, 0); };
     this.onFocus = () => setTimeout(this.onVV, 320); this.onBlur = () => setTimeout(this.onVV, 80);
     if (window.visualViewport) { visualViewport.addEventListener('resize', this.onVV); visualViewport.addEventListener('scroll', this.onVV); }
+    this.onAnyScroll = e => { const t = e.target; if (t && t.nodeType === 1 && t.scrollLeft && !/overflow-x:\s*auto/.test(t.getAttribute('style') || '')) t.scrollLeft = 0; };
+    document.addEventListener('scroll', this.onAnyScroll, true);
     addEventListener('focusin', this.onFocus); addEventListener('focusout', this.onBlur); addEventListener('scroll', this.onVV);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { this._w = {}; this.forceUpdate(); });
     addEventListener('resize', this.onResize); addEventListener('storage', this.onData); addEventListener('mdg:change', this.onData); addEventListener('popstate', this.onPop);
@@ -583,7 +585,7 @@ class Component extends DCLogic {
     this.animT = setTimeout(() => { (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; }, 650);
   }
   componentDidUpdate(pp, ps) { if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map && window.MDGCarte) this.map = window.MDGCarte.mount(el, { onSelect: s => this.setState({ csel: s }) }); if (!el && this.map) { this.map.destroy(); this.map = null; } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
-  componentWillUnmount() { if (this.map) this.map.destroy(); if (window.visualViewport) { visualViewport.removeEventListener('resize', this.onVV); visualViewport.removeEventListener('scroll', this.onVV); } removeEventListener('focusin', this.onFocus); removeEventListener('focusout', this.onBlur); removeEventListener('scroll', this.onVV); removeEventListener('resize', this.onResize); removeEventListener('storage', this.onData); removeEventListener('mdg:change', this.onData); removeEventListener('popstate', this.onPop); clearInterval(this.clk); clearInterval(this.poll); }
+  componentWillUnmount() { if (this.map) this.map.destroy(); if (window.visualViewport) { visualViewport.removeEventListener('resize', this.onVV); visualViewport.removeEventListener('scroll', this.onVV); } document.removeEventListener('scroll', this.onAnyScroll, true); removeEventListener('focusin', this.onFocus); removeEventListener('focusout', this.onBlur); removeEventListener('scroll', this.onVV); removeEventListener('resize', this.onResize); removeEventListener('storage', this.onData); removeEventListener('mdg:change', this.onData); removeEventListener('popstate', this.onPop); clearInterval(this.clk); clearInterval(this.poll); }
   buildFams() {
     const M = window.MDG, A = window.MDGApp;
     this.cats = M.categories.slice().sort((a, b) => (a.order || 0) - (b.order || 0));

@@ -1,3 +1,9 @@
+# Mise à jour — Application mobile, 4e passe (10 octobre 2026)
+
+- **Débordements (Acheter « Prix max. », etc.) et page qui glisse sur le côté** : les grilles à deux ou trois colonnes (`1fr 1fr`) ne pouvaient pas rétrécir sous la largeur naturelle d'un champ ; le champ dépassait, et iOS faisait défiler toute la page de côté au toucher. Les 10 grilles passent en `minmax(0,1fr)` ; champs et listes limités à la largeur disponible ; les zones qui défilent verticalement ne défilent plus de côté ; pages et cadre de l'app en `overflow:clip` (iOS ne peut plus les faire glisser au focus) ; tout décalage horizontal parasite est remis à zéro.
+- La règle anti-rebond de la 2e passe ne s'appliquait pas (style écrit « overflow-y: auto » avec une espace) : corrigée.
+- Audit automatique de débordement sur toutes les pages (Acheter + filtres, Vendre, Demander, Carte, Catégories, Prix, Année, Comprendre ×3, Mes publications, feuille J'ai) : aucun élément ne dépasse.
+
 # Mise à jour — Application mobile, 3e passe (10 octobre 2026)
 
 - **Pages bloquées à mi-chemin (Année, Catégories → fiche, etc.)** : la vraie cause. Les pages n'avaient pas d'ordre d'empilement ; une page placée plus bas dans le code (Année, Catégories, Prix, Carte, Mes publications…) restait peinte **par-dessus** la fiche qui venait d'arriver. Chaque page reçoit maintenant un ordre d'empilement selon sa position dans l'historique (la page qui part passe au-dessus pendant son retour), dans un calque isolé sous les feuilles et le menu. Glissements pilotés en JavaScript (Web Animations), avec annulation de sécurité à 650 ms ; pages hors historique masquées (moins de calques pour l'iPhone).

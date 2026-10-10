@@ -1,0 +1,20 @@
+/* Typographie du site (8 oct. 2026) : titres en Cormorant Garamond (sérif fin, élégant), texte en Jost (géométrique, lisible).
+   Remplace Caprasimo (gros gras arrondi) et Figtree. Les mots mis en avant dans les titres passent en italique, dans la couleur d'accent. */
+:root{--font-heading:"Cormorant Garamond","Cormorant",Georgia,serif;--font-body:"Jost",system-ui,sans-serif;--font-heading-weight:500}
+body{font-family:var(--font-body)}
+h1,h2,h3,.an-m,.hero__title,.catdlg__title,.odv__title{font-family:var(--font-heading)!important;font-weight:500!important;letter-spacing:-.005em!important}
+h1,.an-m{line-height:.95}
+h1 em,h2 em,h3 em,.catdlg__title em{font-style:italic!important;font-weight:500}
+/* le sérif paraît plus petit que Caprasimo : léger agrandissement des très grands titres */
+.an-m{font-size:clamp(60px,9vw,150px)!important}
+/* texte courant : Jost demande un poids un peu plus léger que Figtree */
+p,li{font-weight:400}
+
+/* Alignement : logo, navigation et contenu dans la même colonne sur tout le site (celle de .pg-in / .ivh-wrap : 1240 px, marges 18 px puis 24 px) */
+:root{--col-max:1240px;--col-pad:18px}
+@media (min-width:640px){:root{--col-pad:24px}}
+.sh-inner,.site-header.is-condensed .sh-inner{max-width:var(--col-max)!important;padding-left:max(calc(var(--col-pad) - 1px),env(safe-area-inset-left))!important;padding-right:max(calc(var(--col-pad) - 1px),env(safe-area-inset-right))!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box}
+body .wrap{width:min(var(--col-max),100%)!important;margin-left:auto!important;margin-right:auto!important;padding-left:var(--col-pad)!important;padding-right:var(--col-pad)!important;box-sizing:border-box}
+.an-in{max-width:var(--col-max)!important;padding-left:var(--col-pad)!important;padding-right:var(--col-pad)!important}
+.an-sc{margin:0 calc(-1 * var(--col-pad))!important;padding:0 var(--col-pad)!important}
+.an-cr{right:max(var(--col-pad),calc((100vw - var(--col-max)) / 2 + var(--col-pad)))!important}

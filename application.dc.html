@@ -2,19 +2,20 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <script src="./support.js"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600;700&display=swap">
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
-<style>html,body{margin:0;height:100%;background:#0d0c0a;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box}a{color:#E07A3F}a:hover{color:#B85C38}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}
+<script src="app/carte-app.js"></script>
+<style>html,body{margin:0;height:100%;position:fixed;inset:0;width:100%;overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}input,select,textarea{font-size:16px!important}[style*="overflow-y:auto"]{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}button{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}html,body{background:#0d0c0a;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box;scrollbar-width:none}a{color:#E07A3F}a:hover{color:#B85C38}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}
 @keyframes mkWave{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.3);opacity:0}}
 @keyframes mkBreath{0%,100%{transform:scale(.82)}50%{transform:scale(1.12)}}
 @keyframes mkFlow{to{stroke-dashoffset:-12}}
@@ -28,16 +29,17 @@
 @keyframes mkFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 </style>
 </helmet>
-<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#24201A,#0d0c0a 70%);font-family:Jost,system-ui,sans-serif">
+<div style="position:fixed;inset:0;display:flex;align-items:{{ shellAlign }};justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#24201A,#0d0c0a 70%);font-family:Jost,system-ui,sans-serif">
 <div style="flex:none;padding:{{ shellPad }};border-radius:{{ shellRad }};background:#050504;transform:scale({{ scale }});transform-origin:center">
 <div data-screen-label="Application" style="position:relative;width:{{ W }};height:{{ H }};border-radius:{{ rad }};overflow:hidden;background:#171512;isolation:isolate">
 
+<div style="position:absolute;inset:0;isolation:isolate;z-index:0">
 <!-- ═══ ACCUEIL ═══ -->
-<div data-screen-label="Accueil" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;overflow:hidden;isolation:isolate;transform:{{ tf.home }};filter:{{ dim.home }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s">
+<div data-pg="home" data-screen-label="Accueil" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;overflow:hidden;isolation:isolate;transform:{{ tf.home }};visibility:{{ vis.home }};z-index:{{ zi.home }};backface-visibility:hidden;-webkit-backface-visibility:hidden">
   <div style="position:absolute;left:50%;top:330px;width:640px;height:640px;margin:-320px 0 0 -320px;border-radius:50%;background:radial-gradient(circle,{{ halo }} 0%,transparent 60%);opacity:.5;pointer-events:none;transition:background .6s"></div>
   <div style="height:{{ topPad }};flex:none"></div>
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 10px 0 22px;height:54px;position:relative">
-    <div style="display:flex;flex-direction:column;gap:1px"><span style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:500;line-height:1">Marché de Gros</span><span style="font-size:9.5px;letter-spacing:.24em;color:#B9AD98;font-weight:500">CÔTE D'IVOIRE</span></div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 10px 0 18px;height:54px;position:relative">
+    <div style="display:flex;align-items:center;gap:11px"><span aria-hidden="true" style="position:relative;width:38px;height:38px;flex:none;display:block">{{ markEl }}</span><div style="display:flex;flex-direction:column;gap:1px"><span style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:500;line-height:1">Marché de Gros</span><span style="font-size:9.5px;letter-spacing:.24em;color:#B9AD98;font-weight:500">CÔTE D'IVOIRE</span></div></div>
     <div style="display:flex;gap:2px">
       <button onClick="{{ goAcheter }}" aria-label="Chercher" style="width:44px;height:44px;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center;border-radius:22px"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 20 20"></path></svg></button>
       <button onClick="{{ openMenu }}" aria-label="Menu" style="width:44px;height:44px;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center;border-radius:22px;position:relative"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 8h16M4 16h10"></path></svg><sc-if value="{{ hasPubs }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:10px;right:9px;width:7px;height:7px;border-radius:50%;background:#6CC58C"></span></sc-if></button>
@@ -53,7 +55,8 @@
       <button onClick="{{ nextFam }}" aria-label="Famille suivante" style="width:36px;height:36px;border:0;background:transparent;color:#847966;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"></path></svg></button>
     </div>
   </div>
-  <div onPointerDown="{{ wDown }}" onPointerMove="{{ wMove }}" onPointerUp="{{ wUp }}" onPointerCancel="{{ wUp }}" style="position:relative;height:388px;flex:none;touch-action:pan-y;user-select:none">
+  <div onPointerDown="{{ wDown }}" onPointerMove="{{ wMove }}" onPointerUp="{{ wUp }}" onPointerCancel="{{ wUp }}" style="position:relative;height:{{ wheelH }};flex:none;touch-action:pan-y;user-select:none">
+    <div style="position:absolute;left:50%;top:0;width:390px;height:388px;margin-left:-195px;transform:scale({{ wheelSc }});transform-origin:50% 0">
     <svg width="390" height="388" viewBox="0 0 390 388" style="position:absolute;left:50%;top:0;margin-left:-195px;pointer-events:none;overflow:visible">
       <path d="M -85.8 231 A 318 318 0 0 1 475.8 231" fill="none" stroke="rgba(245,240,230,.14)" stroke-width="1"></path>
       <path d="M -69.9 239.2 A 300 300 0 0 1 459.9 239.2" fill="none" stroke="{{ halo }}" stroke-opacity=".6" stroke-width="1"></path>
@@ -83,24 +86,25 @@
     </div>
     <button onPointerDown="{{ stop }}" onClick="{{ prev }}" aria-label="Produit précédent" style="position:absolute;left:4px;top:208px;width:44px;height:44px;border:0;background:transparent;color:#B9AD98;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
     <button onPointerDown="{{ stop }}" onClick="{{ next }}" aria-label="Produit suivant" style="position:absolute;right:4px;top:208px;width:44px;height:44px;border:0;background:transparent;color:#B9AD98;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 5l7 7-7 7"></path></svg></button>
+    </div>
   </div>
-  <div style="text-align:center;padding:0 24px;position:relative;margin-top:-10px">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:{{ act.fs }};font-weight:500;line-height:1;letter-spacing:-.01em">{{ act.name }}</div>
-    <div style="display:flex;justify-content:center;gap:14px;margin-top:12px;font-size:13.5px;color:#B9AD98;flex-wrap:wrap">
+  <div style="text-align:center;padding:0 24px;position:relative;margin-top:-10px;height:156px;flex:none;display:flex;flex-direction:column;align-items:center">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:{{ act.fs }};font-weight:500;line-height:{{ act.lh }};letter-spacing:-.01em;height:76px;width:100%;flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;text-wrap:balance">{{ act.name }}</div>
+    <div style="display:flex;justify-content:center;gap:14px;margin-top:6px;font-size:13.5px;color:#B9AD98;flex-wrap:nowrap;white-space:nowrap;height:20px;flex:none;overflow:hidden">
       <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:50%;background:#6CC58C;opacity:{{ act.oOp }}"></span>{{ act.oTxt }}</span>
       <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:2px;background:#F2C94C;opacity:{{ act.dOp }}"></span>{{ act.dTxt }}</span>
       <sc-if value="{{ act.season }}" hint-placeholder-val="{{ false }}"><span style="color:#9dc2a7">En saison</span></sc-if>
     </div>
     <button onClick="{{ openFicheAct }}" style="margin-top:8px;border:0;background:transparent;color:#F5F0E6;font-size:13.5px;font-weight:500;padding:10px 14px;display:inline-flex;align-items:center;gap:6px;border-radius:20px">{{ act.cta }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h13M13 6l6 6-6 6"></path></svg></button>
   </div>
-  <div style="margin-top:auto;padding:0 18px {{ botPad }};display:flex;gap:10px;position:relative">
+  <div style="margin-top:auto;flex:none;padding:0 18px {{ botPad }};display:flex;gap:10px;position:relative">
     <button onClick="{{ openJai }}" style="flex:1;height:58px;border-radius:29px;border:0;background:#E07A3F;color:#171512;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s" style-active="transform:scale(.97)"><span style="width:11px;height:11px;border-radius:50%;background:#171512"></span>J'ai</button>
     <button onClick="{{ openCherche }}" style="flex:1;height:58px;border-radius:29px;border:1px solid rgba(245,240,230,.3);background:rgba(245,240,230,.04);color:#F5F0E6;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .15s" style-active="transform:scale(.97)"><span style="width:10px;height:10px;border-radius:2px;border:1.6px solid #F2C94C"></span>Je cherche</button>
   </div>
 </div>
 
 <!-- ═══ FICHE PRODUIT ═══ -->
-<div data-screen-label="Fiche produit" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.fiche }};filter:{{ dim.fiche }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<div data-pg="fiche" data-screen-label="Fiche produit" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.fiche }};visibility:{{ vis.fiche }};z-index:{{ zi.fiche }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.fiche }}" hint-placeholder-val="{{ false }}">
   <div style="background:#24201A;color:#F5F0E6;flex:none;padding-top:{{ topPad }}">
     <div style="display:flex;align-items:center;height:52px;padding:0 8px">
@@ -165,7 +169,7 @@
 </div>
 
 <!-- ═══ ACHETER ═══ -->
-<div data-screen-label="Acheter" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.acheter }};filter:{{ dim.acheter }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<div data-pg="acheter" data-screen-label="Acheter" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.acheter }};visibility:{{ vis.acheter }};z-index:{{ zi.acheter }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.acheter }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }};background:#F2EBDD;border-bottom:1px solid rgba(23,21,18,.1)">
     <div style="display:flex;align-items:center;gap:6px;padding:6px 12px 10px 6px">
@@ -211,7 +215,7 @@
 </div>
 
 <!-- ═══ VENDRE ═══ -->
-<div data-screen-label="Vendre" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.vendre }};filter:{{ dim.vendre }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<div data-pg="vendre" data-screen-label="Vendre" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.vendre }};visibility:{{ vis.vendre }};z-index:{{ zi.vendre }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.vendre }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid rgba(23,21,18,.1)">
     <div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Vendre</span><span style="width:44px;font-size:12.5px;color:#847966;text-align:center">{{ vStepTxt }}</span></div>
@@ -265,7 +269,7 @@
 </div>
 
 <!-- ═══ DEMANDER ═══ -->
-<div data-screen-label="Demander" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.demande }};filter:{{ dim.demande }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<div data-pg="demande" data-screen-label="Demander" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.demande }};visibility:{{ vis.demande }};z-index:{{ zi.demande }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.demande }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid rgba(23,21,18,.1)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Demander</span><span style="width:44px"></span></div></div>
   <div style="flex:1;overflow-y:auto;padding:20px 18px 130px;display:flex;flex-direction:column;gap:22px">
@@ -285,16 +289,18 @@
 </div>
 
 <!-- ═══ CARTE ═══ -->
-<div data-screen-label="Carte" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;transform:{{ tf.carte }};filter:{{ dim.carte }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
+<div data-pg="carte" data-screen-label="Carte" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;transform:{{ tf.carte }};visibility:{{ vis.carte }};z-index:{{ zi.carte }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
 <sc-if value="{{ on.carte }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }}"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Le réseau</span><span style="width:44px"></span></div></div>
   <div style="flex:1;overflow-y:auto;padding:0 16px 40px;display:flex;flex-direction:column;gap:14px">
     <div style="font-family:'Cormorant Garamond',serif;font-size:28px;line-height:1.1;padding:0 4px">Qui a quoi, qui cherche quoi, <em style="color:#E07A3F">et où ?</em></div>
-    <div style="display:flex;gap:6px;overflow-x:auto">
+    <div style="display:flex;gap:6px;overflow-x:auto;margin:0 -16px;padding:0 16px;flex:none">
+      <button onClick="{{ cLocate }}" aria-label="Me localiser" style="flex:none;width:38px;height:38px;border-radius:19px;border:1px solid rgba(176,149,240,.45);background:rgba(176,149,240,.1);color:#B095F0;display:flex;align-items:center;justify-content:center;padding:0"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 2v3M12 19v3M2 12h3M19 12h3"></path><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2" fill="currentColor"></circle></svg></button>
       <button onClick="{{ cPick }}" style="flex:none;height:38px;padding:0 14px;border-radius:19px;border:1px solid rgba(245,240,230,.25);background:rgba(245,240,230,.06);color:#F5F0E6;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:6px">{{ cProdL }}<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg></button>
       <label style="flex:none;height:38px;padding:0 6px 0 12px;border-radius:19px;border:1px solid rgba(176,149,240,.5);background:rgba(176,149,240,.1);color:#F5F0E6;font-size:13.5px;font-weight:500;display:flex;align-items:center;gap:6px"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1l5 9H1z" fill="#B095F0"></path></svg><select value="{{ cMe }}" onChange="{{ onMe }}" style="border:0;background:transparent;color:#F5F0E6;font-size:13.5px;outline:none;max-width:150px"><option value="" style="color:#171512">Où êtes-vous ?</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}" style="color:#171512">{{ r.name }}</option></sc-for></select></label>
     </div>
-    <div style="position:relative;border-radius:22px;background:radial-gradient(ellipse at 50% 40%,#2a241c,#1d1915);border:1px solid rgba(245,240,230,.08);padding:8px">{{ mapEl }}</div>
+    <div ref="{{ mapRef }}" style="height:{{ mapH }};flex:none;border-radius:22px;overflow:hidden;border:1px solid rgba(245,240,230,.1);background:#121417;margin:0 -4px"></div>
+    <sc-if value="{{ cDist.on }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:12px;background:rgba(176,149,240,.08);border:1px solid rgba(176,149,240,.28);border-radius:16px;padding:12px 14px;animation:mkFade .35s both"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B095F0" stroke-width="1.8" stroke-linecap="round"><circle cx="5" cy="18" r="2.2"></circle><circle cx="19" cy="6" r="2.2"></circle><path d="M7 16.5 17 7.5" stroke-dasharray="2 3"></path></svg><span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:14.5px;font-weight:600;color:#F5F0E6">{{ cDist.t }}</span><span style="font-size:12.5px;color:#B9AD98">{{ cDist.x }}</span></span></div></sc-if>
     <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#B9AD98;padding:0 4px"><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:50%;background:#6CC58C"></span>Offre</span><span style="display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;border-radius:2px;background:#F2C94C"></span>Demande</span><span style="display:flex;align-items:center;gap:6px"><svg width="11" height="11" viewBox="0 0 12 12"><path d="M6 1l5 9H1z" fill="#B095F0"></path></svg>Vous</span><span style="display:flex;align-items:center;gap:6px"><span style="width:16px;height:2px;background:#6AAEF0"></span>Compatibles</span></div>
     <div style="display:flex;flex-direction:column;gap:8px">
       <span style="font-size:11px;letter-spacing:.2em;color:#B9AD98;font-weight:600">{{ cListT }}</span>
@@ -306,7 +312,7 @@
 </div>
 
 <!-- ═══ CATÉGORIES ═══ -->
-<div data-screen-label="Catégories" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.categories }};filter:{{ dim.categories }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<div data-pg="categories" data-screen-label="Catégories" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.categories }};visibility:{{ vis.categories }};z-index:{{ zi.categories }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.categories }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid rgba(23,21,18,.1)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Catégories</span><span style="width:44px"></span></div></div>
   <div style="flex:1;overflow-y:auto;padding:8px 0 40px">
@@ -322,7 +328,7 @@
 </div>
 
 <!-- ═══ PRIX ═══ -->
-<div data-screen-label="Prix du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.prix }};filter:{{ dim.prix }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<div data-pg="prix" data-screen-label="Prix du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.prix }};visibility:{{ vis.prix }};z-index:{{ zi.prix }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.prix }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid rgba(23,21,18,.1)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Prix du marché</span><span style="width:44px"></span></div></div>
   <div style="flex:1;overflow-y:auto;padding:22px 18px 40px;display:flex;flex-direction:column;gap:18px">
@@ -344,7 +350,7 @@
 </div>
 
 <!-- ═══ L'ANNÉE ═══ -->
-<div data-screen-label="L'année du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;transform:{{ tf.annee }};filter:{{ dim.annee }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
+<div data-pg="annee" data-screen-label="L'année du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;transform:{{ tf.annee }};visibility:{{ vis.annee }};z-index:{{ zi.annee }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
 <sc-if value="{{ on.annee }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }}"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">L'année du marché</span><span style="width:44px"></span></div></div>
   <div style="flex:1;overflow-y:auto;padding:0 18px 40px;display:flex;flex-direction:column;gap:16px">
@@ -367,7 +373,7 @@
 </div>
 
 <!-- ═══ MES PUBLICATIONS ═══ -->
-<div data-screen-label="Mes publications" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.pubs }};filter:{{ dim.pubs }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<div data-pg="pubs" data-screen-label="Mes publications" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.pubs }};visibility:{{ vis.pubs }};z-index:{{ zi.pubs }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.pubs }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid rgba(23,21,18,.1)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Mes publications</span><span style="width:44px"></span></div></div>
   <div style="flex:1;overflow-y:auto;padding:18px 18px 40px;display:flex;flex-direction:column;gap:10px">
@@ -385,7 +391,7 @@
 </div>
 
 <!-- ═══ VENDEUR ═══ -->
-<div data-screen-label="Vendeur" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.vendeur }};filter:{{ dim.vendeur }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<div data-pg="vendeur" data-screen-label="Vendeur" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#F2EBDD;color:#171512;display:flex;flex-direction:column;transform:{{ tf.vendeur }};visibility:{{ vis.vendeur }};z-index:{{ zi.vendeur }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.vendeur }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }};background:#24201A;color:#F5F0E6"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:11.5px;letter-spacing:.2em;color:#B9AD98">VENDEUR</span><span style="width:44px"></span></div>
     <div style="padding:6px 24px 26px;display:flex;flex-direction:column;gap:8px"><span style="font-family:'Cormorant Garamond',serif;font-size:40px;line-height:1">{{ vd.name }}</span><span style="font-size:14px;color:#B9AD98">{{ vd.place }}</span><span style="font-size:12.5px;color:#847966">{{ vd.agent }}</span>
@@ -398,7 +404,7 @@
 </div>
 
 <!-- ═══ INFO (comment ça marche, aide producteur, confiance) ═══ -->
-<div data-screen-label="Comprendre" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;transform:{{ tf.info }};filter:{{ dim.info }};transition:transform .45s cubic-bezier(.22,1,.36,1),filter .45s;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
+<div data-pg="info" data-screen-label="Comprendre" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;transform:{{ tf.info }};visibility:{{ vis.info }};z-index:{{ zi.info }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
 <sc-if value="{{ on.info }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }}"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">{{ info.title }}</span><span style="width:44px"></span></div></div>
   <div style="flex:1;overflow-y:auto;padding:20px 22px 40px;display:flex;flex-direction:column;gap:26px">
@@ -414,6 +420,7 @@
 </sc-if>
 </div>
 
+</div>
 <!-- ═══ voile ═══ -->
 <div onClick="{{ closeAll }}" style="position:absolute;inset:0;background:rgba(10,9,7,.55);opacity:{{ scrimOp }};pointer-events:{{ scrimPe }};transition:opacity .35s"></div>
 
@@ -525,6 +532,7 @@ const INFO = {
   confiance: ['Confiance', 'Ce que nous affichons, et ce que nous n\u2019affichons pas.', [['confiance', 'Aucune donnée inventée', 'Seules les publications réelles apparaissent : aucune offre, aucun producteur, aucun prix fictif.'], ['prix', 'Pas de faux avis', 'Aucune étoile, aucun avis, aucun chiffre de ventes n\u2019est inventé.'], ['aide', 'Vérification à venir', 'Le badge « Vérifié » n\u2019apparaîtra qu\u2019après un vrai contrôle.']], 'Voir le prix du marché', 'prix']
 };
 const HASH = { home: '#/', acheter: '#/catalogue', vendre: '#/vendre', demande: '#/demande', carte: '#/carte', categories: '#/categories', prix: '#/prix', annee: '#/annee', pubs: '#/mes-publications' };
+const T_OFF = 'translate3d(calc(100% + 60px),0,0)', T_IN = 'translate3d(0,0,0)', T_UNDER = 'translate3d(-26%,0,0)';
 const SHAPE = { offre: ['50%', '#6CC58C'], demande: ['2px', '#F2C94C'] };
 const W_OFF = [['maintenant', 'Maintenant'], ['semaine', 'Cette semaine'], ['mois', 'Ce mois-ci']], W_DEM = [['vite', 'Dès que possible'], ['semaine', 'Cette semaine'], ['mois', 'Ce mois-ci']];
 const ls = (k, v) => { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || 'null'); localStorage.setItem(k, JSON.stringify(v)); } catch (_) { return null; } };
@@ -543,13 +551,19 @@ class Component extends DCLogic {
       df: { slug: '', qty: '', unit: 'kg', region: me.region || '', deadline: 'semaine', budget: '', name: me.name || '', phone: me.phone || '' }, dErr: {},
       cprod: '', cme: me.region || '', csel: '', month: new Date().getMonth() + 1,
       toast: '', toastOn: false, splash: this.props.splash === false ? 'off' : 'on', splashLine: false, vw: window.innerWidth, vh: window.innerHeight, clock: '', tick: 0 };
-    this.aRef = React.createRef(); this.pRef = React.createRef(); this.hist = 0;
+    this.aRef = React.createRef(); this.pRef = React.createRef(); this.mapRef = React.createRef(); this.hist = 0;
   }
   blankM(slug) { const m = this.me || {}; return { slug, qty: '', unit: 'kg', region: m.region || '', price: '', when: '', name: m.name || '', phone: m.phone || '' }; }
   componentDidMount() {
     this.onResize = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
     this.onData = () => this.setState(s => ({ tick: s.tick + 1 }));
-    this.onPop = () => { if (this.hist > 0) this.hist--; this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack, menu: false, sheet: null, pick: null })); };
+    this.onPop = () => { if (this.hist > 0) this.hist--; this.leave(); this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack, menu: false, sheet: null, pick: null })); };
+    const pr = document.createElement('div'); pr.style.cssText = 'position:fixed;top:0;left:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)'; document.body.appendChild(pr); const pcs = getComputedStyle(pr); this.safeT = parseFloat(pcs.paddingTop) || 0; this.safeB = parseFloat(pcs.paddingBottom) || 0; pr.remove();
+    this.onVV = () => { const ae = document.activeElement, typing = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && ae.type !== 'file' && ae.type !== 'date', vv = window.visualViewport, h = typing && vv && vv.height < window.innerHeight - 60 ? Math.round(vv.height) : 0; if (h !== this.state.kbH) this.setState({ kbH: h }); if (window.scrollY || window.scrollX) window.scrollTo(0, 0); };
+    this.onFocus = () => setTimeout(this.onVV, 320); this.onBlur = () => setTimeout(this.onVV, 80);
+    if (window.visualViewport) { visualViewport.addEventListener('resize', this.onVV); visualViewport.addEventListener('scroll', this.onVV); }
+    addEventListener('focusin', this.onFocus); addEventListener('focusout', this.onBlur); addEventListener('scroll', this.onVV);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { this._w = {}; this.forceUpdate(); });
     addEventListener('resize', this.onResize); addEventListener('storage', this.onData); addEventListener('mdg:change', this.onData); addEventListener('popstate', this.onPop);
     const tick = () => { const d = new Date(); this.setState({ clock: d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0') }); }; tick(); this.clk = setInterval(tick, 20000);
     const boot = () => {
@@ -560,7 +574,16 @@ class Component extends DCLogic {
     if (!boot()) this.poll = setInterval(() => { if (boot()) clearInterval(this.poll); }, 60);
     if (this.state.splash === 'on') { setTimeout(() => this.setState({ splashLine: true }), 80); setTimeout(() => this.setState({ splash: 'fade' }), 1500); setTimeout(() => this.setState({ splash: 'off' }), 2200); }
   }
-  componentWillUnmount() { removeEventListener('resize', this.onResize); removeEventListener('storage', this.onData); removeEventListener('mdg:change', this.onData); removeEventListener('popstate', this.onPop); clearInterval(this.clk); clearInterval(this.poll); }
+  slide(prevStack) {
+    const st = this.state.stack, top = st[st.length - 1], prev = prevStack[prevStack.length - 1]; if (top === prev) return;
+    (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; clearTimeout(this.animT);
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const el = k => document.querySelector('[data-pg="' + k + '"]'), go = (k, from, to) => { const e = el(k); if (!e || !e.animate) return; try { this.anims.push(e.animate([{ transform: from }, { transform: to }], { duration: 420, easing: 'cubic-bezier(.22,1,.36,1)' })); } catch (_) {} };
+    if (st.includes(prev)) { go(top, T_OFF, T_IN); go(prev, T_IN, T_UNDER); } else { go(prev, T_IN, T_OFF); go(top, T_UNDER, T_IN); }
+    this.animT = setTimeout(() => { (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; }, 650);
+  }
+  componentDidUpdate(pp, ps) { if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map && window.MDGCarte) this.map = window.MDGCarte.mount(el, { onSelect: s => this.setState({ csel: s }) }); if (!el && this.map) { this.map.destroy(); this.map = null; } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
+  componentWillUnmount() { if (this.map) this.map.destroy(); if (window.visualViewport) { visualViewport.removeEventListener('resize', this.onVV); visualViewport.removeEventListener('scroll', this.onVV); } removeEventListener('focusin', this.onFocus); removeEventListener('focusout', this.onBlur); removeEventListener('scroll', this.onVV); removeEventListener('resize', this.onResize); removeEventListener('storage', this.onData); removeEventListener('mdg:change', this.onData); removeEventListener('popstate', this.onPop); clearInterval(this.clk); clearInterval(this.poll); }
   buildFams() {
     const M = window.MDG, A = window.MDGApp;
     this.cats = M.categories.slice().sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -635,9 +658,10 @@ class Component extends DCLogic {
   /* ——— navigation ——— */
   push(s, extra) {
     this.setState(st => { const ns = Object.assign({}, extra || {}), stack = [...st.stack.filter(x => x !== s), s]; ns.stack = stack; ns.menu = false; ns.sheet = null; ns.pick = null; ns.done = null; return ns; },
-      () => { try { history.pushState({ app: 1 }, '', this.hashOf(s)); this.hist++; } catch (_) {} if (s === 'acheter') setTimeout(() => this.aRef.current && this.aRef.current.focus({ preventScroll: true }), 480); });
+      () => { try { history.pushState({ app: 1 }, '', this.hashOf(s)); this.hist++; } catch (_) {}  });
   }
-  back() { if (this.hist > 0) { history.back(); return; } this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack }), () => { try { history.replaceState(null, '', this.hashOf(this.state.stack[this.state.stack.length - 1])); } catch (_) {} }); }
+  leave() { const st = this.state.stack; if (st.length < 2) return; clearTimeout(this.lvT); this.setState({ leaving: st[st.length - 1] }); this.lvT = setTimeout(() => this.setState({ leaving: null }), 480); }
+  back() { if (this.hist > 0) { history.back(); return; } this.leave(); this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack }), () => { try { history.replaceState(null, '', this.hashOf(this.state.stack[this.state.stack.length - 1])); } catch (_) {} }); }
   openFiche(slug) { this.push('fiche', { slug }); }
   openVendeur(vid) { this.push('vendeur', { vid }); }
   openSheet(mode, slug) { this.setState(st => ({ sheet: 'match', mode, menu: false, done: null, mErr: {}, sheetDy: 0, mf: Object.assign(this.blankM(slug || st.mf.slug), { unit: st.mf.unit }) })); }
@@ -653,7 +677,10 @@ class Component extends DCLogic {
   sUp() { if (!this.sd) return; this.sd = null; if (this.state.sheetDy > 110) this.closeAll(); else this.setState({ sheetDy: 0 }); }
   edgeDown(e) { const r = e.currentTarget.getBoundingClientRect(); this.ed = (e.clientX - r.left) / this.sc < 26 ? e.clientX : null; }
   edgeUp(e) { if (this.ed != null && (e.clientX - this.ed) / this.sc > 70) this.back(); this.ed = null; }
-  openPick(kind) { this.setState({ pick: kind, pq: '' }); setTimeout(() => this.pRef.current && this.pRef.current.focus({ preventScroll: true }), 420); }
+  openPick(kind) { this.setState({ pick: kind, pq: '' }); }
+  tw(txt, font, ls) { const k = font + '|' + txt, c = this._w || (this._w = {}); if (c[k] == null) { const x = this._mc || (this._mc = document.createElement('canvas').getContext('2d')); x.font = font; c[k] = x.measureText(txt).width + (ls || 0) * txt.length; } return c[k]; }
+  fitName(name, maxW) { for (const fs of [48, 44, 40, 36]) if (this.tw(name, '500 ' + fs + 'px "Cormorant Garamond"') <= maxW) return { fs: fs + 'px', lh: '1' }; return { fs: (this.tw(name, '500 34px "Cormorant Garamond"') > maxW * 1.9 ? 30 : 34) + 'px', lh: '1.04' }; }
+  locate() { const A = window.MDGApp; if (!navigator.geolocation) { this.say('Localisation indisponible : choisissez votre région'); return; } this.say('Recherche de votre position…'); navigator.geolocation.getCurrentPosition(p => { let best = '', bd = 1e9; Object.keys(A.REG).forEach(s => { const d = A.km([p.coords.latitude, p.coords.longitude], A.REG[s]); if (d < bd) { bd = d; best = s; } }); if (bd > 400) { this.say('Vous semblez hors de Côte d\u2019Ivoire'); return; } this.me.region = best; ls('mdg-app:moi', this.me); this.setState({ cme: best, csel: '' }); this.say('Repéré près de ' + A.REG[best][2]); }, () => this.say('Position refusée : choisissez votre région'), { timeout: 8000, maximumAge: 600000 }); }
   doPick(slug) { const k = this.state.pick; this.setState(s => k === 'match' ? { mf: Object.assign({}, s.mf, { slug }), pick: null } : k === 'vendre' ? { vf: Object.assign({}, s.vf, { slug }), vErr: {}, pick: null } : k === 'demande' ? { df: Object.assign({}, s.df, { slug }), dErr: {}, pick: null } : { cprod: slug, csel: '', pick: null }); }
   setVf(patch) { this.setState(s => { const vf = Object.assign({}, s.vf, patch); ls('mdg-app:brouillon-offre', Object.assign({}, vf, { photo: '' })); return { vf, vErr: {} }; }); }
 
@@ -687,7 +714,8 @@ class Component extends DCLogic {
 
   renderVals() {
     const S = this.state, framed = S.vw >= 500, sc = framed ? Math.min((S.vh - 32) / 866, (S.vw - 32) / 412, 1) : 1; this.sc = sc;
-    const base = { shellPad: framed ? '11px' : '0', shellRad: framed ? '64px' : '0', scale: sc, W: framed ? '390px' : '100vw', H: framed ? '844px' : '100dvh', rad: framed ? '53px' : '0', framed,
+    const kbH = !framed && S.kbH ? S.kbH : 0;
+    const base = { shellAlign: framed ? 'center' : 'flex-start', shellPad: framed ? '11px' : '0', shellRad: framed ? '64px' : '0', scale: sc, W: framed ? '390px' : '100vw', H: framed ? '844px' : kbH ? kbH + 'px' : '100dvh', rad: framed ? '53px' : '0', framed,
       topPad: framed ? '50px' : 'max(12px, env(safe-area-inset-top))', botPad: framed ? '34px' : 'max(18px, env(safe-area-inset-bottom))', clock: S.clock,
       splashOp: S.splash === 'on' || !S.ready ? 1 : 0, splashPe: S.splash === 'off' && S.ready ? 'none' : 'auto', splashLine: S.splashLine ? '56px' : '0px', toast: S.toast, toastOp: S.toastOn ? 1 : 0, toastY: S.toastOn ? '0' : '12px' };
     if (!S.ready) return base;
@@ -695,16 +723,24 @@ class Component extends DCLogic {
     const ico = k => h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: A.ICO[k] } });
     const O = this.offers(), D = this.demands(), cm = new Date().getMonth() + 1, top = S.stack[S.stack.length - 1];
     const regions = M.regions, tf = {}, dim = {}, on = {};
-    ['home', ...PAGES].forEach(s => { const i = S.stack.indexOf(s); tf[s] = i < 0 ? 'translateX(calc(100% + 90px))' : (s === top ? 'none' : 'translateX(-26%)'); dim[s] = i >= 0 && s !== top ? 'brightness(.7)' : 'none'; on[s] = i >= 0; });
-    tf.home = top === 'home' ? 'none' : 'translateX(-26%)';
+    const vis = {}, zi = {};
+    ['home', ...PAGES].forEach(s => { const i = S.stack.indexOf(s); tf[s] = i < 0 ? T_OFF : (s === top ? T_IN : T_UNDER); on[s] = i >= 0 || S.leaving === s; vis[s] = on[s] ? 'visible' : 'hidden'; zi[s] = s === S.leaving ? 40 : i < 0 ? 0 : i + 1; });
+    tf.home = top === 'home' ? T_IN : T_UNDER; vis.home = 'visible'; zi.home = 1;
     const inSeason = (slug, m) => A.CAL.some(e => e[0] === slug && e[2][m]);
     const mini = p => { const P = this.prod(p.slug); return { thumb: P.thumb, fit: P.fit, rad: P.rad, name: p.name, sub: P.catName }; };
 
     /* roue : la famille active seulement */
     const F = this.FAMS[S.fam], n = F.prods.length, act = this.prod(F.prods[Math.max(0, Math.min(n - 1, Math.round(S.rot)))].slug), tr = S.dragging ? 'none' : 'transform .55s cubic-bezier(.22,1,.36,1),opacity .4s,color .3s';
-    const labels = F.prods.map((p, i) => { const off = i - S.rot, a = Math.abs(off);
-      return { name: p.name, fs: a < .5 ? '13px' : '10.5px', color: a < .5 ? '#F5F0E6' : '#B9AD98', weight: a < .5 ? 600 : 400, tf: 'rotate(' + (off * 22) + 'deg) translate(-50%,-352px)', op: a > 2.4 ? 0 : (a < .5 ? 1 : Math.max(0, .72 - (a - 1) * .3)), pe: a > 2.4 ? 'none' : 'auto', tr, go: () => this.setState({ rot: i }) }; });
-    const ticks = F.prods.map((p, i) => { const off = i - S.rot, a = Math.abs(off); return { op: a > 4 ? 0 : (a < .5 ? .9 : .35), tf: 'rotate(' + (off * 22) + 'deg) translate(-50%,-322px)', tr }; });
+    /* arc : chaque nom occupe un angle proportionnel à sa largeur mesurée (police réelle) + un écart fixe → jamais deux noms qui se touchent */
+    const Hpx = framed ? 844 : (S.vh || 800), sT = framed ? 50 : Math.max(12, this.safeT || 0), sB = framed ? 34 : Math.max(18, this.safeB || 0), aW = framed ? 390 : S.vw;
+    const wheelSc = Math.max(.6, Math.min(1, (Hpx - sT - 54 - 60 - 156 - 58 - sB - 14) / 378, aW / 390));
+    const RAD = 352, GAPPX = 26, DEG = 180 / Math.PI, ws = F.prods.map(p => this.tw(p.name.toUpperCase(), '600 13px Jost, sans-serif', 13 * .16) + 8);
+    const ang = [0]; for (let i = 1; i < n; i++) ang[i] = ang[i - 1] + ((ws[i - 1] + ws[i]) / 2 + GAPPX) / RAD * DEG;
+    const angAt = r => n < 2 ? 0 : r <= 0 ? r * ang[1] : r >= n - 1 ? ang[n - 1] + (r - n + 1) * (ang[n - 1] - ang[n - 2]) : ang[Math.floor(r)] + (ang[Math.floor(r) + 1] - ang[Math.floor(r)]) * (r - Math.floor(r));
+    const a0 = angAt(S.rot), halfV = Math.asin(Math.min(1, (Math.min(390, aW / wheelSc) / 2 - 6) / RAD)) * DEG;
+    const labels = F.prods.map((p, i) => { const off = ang[i] - a0, act0 = Math.abs(i - S.rot) < .5, edge = Math.abs(off) + ws[i] / 2 / RAD * DEG, op = act0 ? 1 : Math.max(0, Math.min(.78, (halfV - edge) / 4));
+      return { name: p.name, fs: act0 ? '13px' : '10.5px', color: act0 ? '#F5F0E6' : '#B9AD98', weight: act0 ? 600 : 400, tf: 'rotate(' + off.toFixed(2) + 'deg) translate(-50%,-352px)', op, pe: op < .15 ? 'none' : 'auto', tr, go: () => this.setState({ rot: i }) }; });
+    const ticks = F.prods.map((p, i) => { const off = ang[i] - a0, a = Math.abs(i - S.rot); return { op: Math.abs(off) > halfV + 4 ? 0 : (a < .5 ? .9 : .35), tf: 'rotate(' + off.toFixed(2) + 'deg) translate(-50%,-322px)', tr }; });
     const sacks = F.prods.filter(p => A.SACK[p.slug] != null).map(p => { const i = F.prods.indexOf(p), off = i - S.rot, a = Math.abs(off);
       return { src: A.IMG + 'produit-' + p.slug + '.webp', alt: p.name, op: Math.max(0, 1 - a * 1.4), tf: 'translateX(' + (off * 70) + 'px) scale(' + (1 - Math.min(a, 1) * .14) + ')', tr: S.dragging ? 'none' : 'opacity .45s,transform .55s cubic-bezier(.22,1,.36,1)' }; });
     const ao = O.filter(o => o.slug === act.slug).length, ad = D.filter(d => d.slug === act.slug).length;
@@ -767,6 +803,12 @@ class Component extends DCLogic {
     let cItems = [...cO, ...cD], cListT = 'TOUTES LES PUBLICATIONS';
     if (S.csel) { cItems = cItems.filter(x => x.region === S.csel); cListT = 'À ' + ((A.REG[S.csel] || [])[2] || '').toUpperCase(); }
     else if (S.cme) { cItems = cO.slice().sort((a, b) => A.km(A.REG[S.cme], A.REG[a.region] || A.REG[S.cme]) - A.km(A.REG[S.cme], A.REG[b.region] || A.REG[S.cme])); cListT = 'LES OFFRES LES PLUS PROCHES DE VOUS'; }
+    { const by = L => { const m = {}; L.forEach(x => { if (A.REG[x.region]) m[x.region] = (m[x.region] || 0) + 1; }); return m; }, oc = by(cO), dc = by(cD), pts = {}, pr = {};
+      Object.keys(A.REG).forEach(s => { if (oc[s] || dc[s]) pts[s] = { o: oc[s] || 0, d: dc[s] || 0 }; });
+      cO.forEach(o => cD.forEach(d => { if (o.slug === d.slug && A.REG[o.region] && A.REG[d.region] && o.region !== d.region) pr[o.region + '>' + d.region] = 1; }));
+      this.mapData = top === 'carte' || S.leaving === 'carte' ? { pts, pairs: Object.keys(pr).map(k => k.split('>')), me: S.cme || '', sel: S.csel || '' } : this.mapData; }
+    const dKm = S.cme && S.csel && S.cme !== S.csel ? A.km(A.REG[S.cme], A.REG[S.csel]) : 0;
+    const cDist = dKm ? { on: true, t: A.REG[S.cme][2] + ' → ' + A.REG[S.csel][2] + ' : ≈ ' + dKm + ' km', x: 'À vol d\u2019oiseau, entre chefs-lieux. Par la route, comptez souvent davantage.' } : { on: false, t: '', x: '' };
     const cList = cItems.slice(0, 20).map(x => { const c = this.card(x), d = S.cme && A.REG[x.region] ? A.km(A.REG[S.cme], A.REG[x.region]) : null; return Object.assign(c, { title: c.product + ' · ' + c.who, km: d == null ? '' : (d < 15 ? 'sur place' : '≈ ' + d + ' km') }); });
 
     /* année */
@@ -805,7 +847,7 @@ class Component extends DCLogic {
     const sheetOn = S.sheet === 'match', dy = S.sheetDy, anyS = S.menu || sheetOn || S.sheet === 'fam';
     const mi = (k, t, s, go) => ({ ico: ico(k), t, s, go });
     return Object.assign(base, {
-      tf, dim, on, regions, halo: act.tint, sbColor: light && !anyS ? '#171512' : '#F5F0E6',
+      tf, vis, zi, on, regions, halo: act.tint, sbColor: light && !anyS ? '#171512' : '#F5F0E6',
       back: () => this.back(), edgeDown: e => this.edgeDown(e), edgeUp: e => this.edgeUp(e), stop: e => e.stopPropagation(),
       goAcheter: () => this.push('acheter'), goVendre: () => this.push('vendre'), openMenu: () => this.setState({ menu: true, sheetDy: 0 }), hasPubs: mine.length > 0,
       famPips: this.FAMS.map((f, i) => ({ name: f.name, w: i === S.fam ? '18px' : '6px', bg: i === S.fam ? '#E07A3F' : 'rgba(245,240,230,.22)', go: () => this.setState({ fam: i, rot: 0 }) })),
@@ -813,7 +855,14 @@ class Component extends DCLogic {
       wDown: e => this.wDown(e), wMove: e => this.wMove(e), wUp: () => this.wUp(), labels, ticks, sacks,
       jute: { op: act.sack ? 0 : 1, tf: act.sack ? 'scale(.86)' : 'none', mound: act.tint, l1: act.name.toUpperCase(), fs: act.name.length > 14 ? '14px' : act.name.length > 9 ? '17px' : '21px' },
       prev: () => this.snap(Math.round(S.rot) - 1), next: () => this.snap(Math.round(S.rot) + 1),
-      act: { name: act.name, fs: act.name.length > 16 ? '34px' : act.name.length > 11 ? '40px' : '48px', oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' },
+      markEl: h('svg', { width: 38, height: 38, viewBox: '0 0 38 38', style: { display: 'block', overflow: 'visible' } },
+        h('circle', { cx: 19, cy: 19, r: 18, fill: 'none', stroke: act.tint, strokeOpacity: .55, strokeWidth: 1, strokeDasharray: '113.1', strokeDashoffset: S.splash === 'off' ? 0 : 113.1, style: { transition: 'stroke-dashoffset 1.4s cubic-bezier(.22,1,.36,1) .2s, stroke .6s' } }),
+        h('circle', { key: 'p' + act.slug, cx: 19, cy: 19, r: 15, fill: 'none', stroke: act.tint, strokeWidth: 1.2, style: { transformOrigin: '19px 19px', animation: 'mkWave 1.1s ease-out both' } }),
+        h('circle', { cx: 19, cy: 19, r: 15, fill: '#B85C38' }),
+        h('text', { x: 19, y: 25.2, textAnchor: 'middle', fontFamily: 'Cormorant Garamond, serif', fontSize: 19, fontWeight: 500, fill: '#F5F0E6' }, 'M'),
+        h('g', { style: { transformOrigin: '19px 19px', transform: 'rotate(' + (a0 * 2.2).toFixed(1) + 'deg)', transition: S.dragging ? 'none' : 'transform .55s cubic-bezier(.22,1,.36,1)' } },
+          h('circle', { cx: 19, cy: 1, r: 2.6, fill: '#E07A3F', stroke: '#171512', strokeWidth: 1.2 }))),
+      act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
       openFicheAct: () => this.openFiche(act.slug),
       openJai: () => this.openSheet('jai', top === 'fiche' ? S.slug : act.slug), openCherche: () => this.openSheet('cherche', top === 'fiche' ? S.slug : act.slug),
       fp, share: () => { const u = location.href, t = FP.name + ' — Marché de Gros de Côte d\u2019Ivoire'; if (navigator.share) navigator.share({ title: t, url: u }).catch(() => {}); else { try { navigator.clipboard.writeText(u); this.say('Lien copié'); } catch (_) {} } },
@@ -848,8 +897,7 @@ class Component extends DCLogic {
       df, dfh: { qty: setD('qty'), region: setD('region'), budget: setD('budget'), name: setD('name'), phone: setD('phone') }, dErr: S.dErr,
       dUnits: A.UNITS.map(u => Object.assign(chip(df.unit === u), { l: u, go: () => this.setState(s => ({ df: Object.assign({}, s.df, { unit: u }) })) })),
       dWhen: W_DEM.map(w => Object.assign(chip(df.deadline === w[0]), { l: w[1], go: () => this.setState(s => ({ df: Object.assign({}, s.df, { deadline: w[0] }) })) })), dPublish,
-      cPick: () => this.openPick('carte'), cProdL: S.cprod ? this.prod(S.cprod).name : 'Tous les produits', cMe: S.cme, onMe: e => { const v = e.target.value; this.setState({ cme: v, csel: '' }); if (v) { this.me.region = v; ls('mdg-app:moi', this.me); } },
-      mapEl: html(this.mapSVG(cO, cD, S.cme, S.csel), { onClick: e => { const t = e.target.closest && e.target.closest('[data-reg]'); if (t) this.setState(s => ({ csel: s.csel === t.dataset.reg ? '' : t.dataset.reg })); } }),
+      cPick: () => this.openPick('carte'), cLocate: () => this.locate(), mapRef: this.mapRef, mapH: Math.max(340, Math.min(520, Math.round(Hpx * .56))) + 'px', cDist, cProdL: S.cprod ? this.prod(S.cprod).name : 'Tous les produits', cMe: S.cme, onMe: e => { const v = e.target.value; this.setState({ cme: v, csel: '' }); if (v) { this.me.region = v; ls('mdg-app:moi', this.me); } },
       cListT, cList, cEmpty: !cList.length, cEmptyTxt: 'Le réseau se dessine à chaque publication. Aucune offre ni demande ' + (S.csel ? 'ici' : (S.cprod ? 'pour ce produit' : '')) + ' pour l\u2019instant.',
       catTitle: this.cats.length + ' familles,', cats: this.cats.map(c => { const ps = M.products.filter(p => p.categorySlug === c.slug), op = S.openFam === c.slug, actv = ps.filter(p => O.some(o => o.slug === p.slug) || D.some(d => d.slug === p.slug)).length, seas = ps.filter(p => inSeason(p.slug, cm)).length;
         return { name: c.name, img: A.IMG + 'famille-' + c.slug + '.webp', sub: ps.length + ' produits' + (actv ? ' · ' + actv + ' actifs' : '') + (seas ? ' · ' + seas + ' en saison' : ''), open: op, chev: op ? 'rotate(180deg)' : 'none',

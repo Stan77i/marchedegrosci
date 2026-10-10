@@ -1,3 +1,16 @@
+# Mise à jour — Application mobile, 3e passe (10 octobre 2026)
+
+- **Pages bloquées à mi-chemin (Année, Catégories → fiche, etc.)** : la vraie cause. Les pages n'avaient pas d'ordre d'empilement ; une page placée plus bas dans le code (Année, Catégories, Prix, Carte, Mes publications…) restait peinte **par-dessus** la fiche qui venait d'arriver. Chaque page reçoit maintenant un ordre d'empilement selon sa position dans l'historique (la page qui part passe au-dessus pendant son retour), dans un calque isolé sous les feuilles et le menu. Glissements pilotés en JavaScript (Web Animations), avec annulation de sécurité à 650 ms ; pages hors historique masquées (moins de calques pour l'iPhone).
+- **Logo « M »** dans l'en-tête de l'Accueil (pastille terracotta du site) : un point orange tourne autour de la pastille avec la roue des produits, l'anneau prend la couleur du produit et une onde part à chaque changement de produit ; l'anneau se trace à l'ouverture.
+
+# Mise à jour — Application mobile, 2e passe (10 octobre 2026)
+
+- **L'app ne « se tire » plus** : page verrouillée (plus de rebond ni de zoom), champs à 16 px (iOS ne zoome plus au toucher d'un champ), clavier : l'app se réduit à la zone visible au lieu de glisser ; plus d'ouverture automatique du clavier sur Acheter et le choix du produit.
+- **Changement de page** : l'écran entrant est monté hors champ puis glisse ; l'écran sortant garde son contenu jusqu'à la fin du glissement (plus d'écran vide) ; filtre d'assombrissement retiré (saccades sur iPhone), glissement sur le GPU.
+- **Accueil fixe** : nom du produit dans une zone de hauteur fixe (taille calculée sur la largeur réelle, 2 lignes au plus), ligne offres/demandes sur une ligne ; la roue se réduit selon la hauteur de l'écran : J'ai / Je cherche ne bougent plus.
+- **Roue** : chaque nom occupe sur l'arc un angle calculé d'après sa largeur mesurée + un écart fixe ; les noms qui sortiraient de l'écran s'effacent. Plus aucun chevauchement, sans réduire le texte.
+- **Carte** (nouveau `app/carte-app.js`) : frontières réelles Natural Earth 1:50 000 000 (repli hors ligne), pays voisins, socle en relief ; glisser, pincer, double-toucher, molette, inertie ; vol de caméra (dézoom puis zoom) vers la ville touchée ou votre région ; noms de villes sans chevauchement ; cercles 50/100/200 km autour de vous, trait et distance « ≈ km à vol d'oiseau » vers la ville touchée, échelle qui suit le zoom ; bouton « Me localiser » (région la plus proche).
+
 # Mise à jour — Application mobile (10 octobre 2026)
 
 Déposer le contenu de ce paquet à la racine du dépôt `Stan77i/marchedegrosci` (branche `main`). Une seule adresse : **ordinateur → site complet**, **téléphone → application**.

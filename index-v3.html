@@ -544,6 +544,7 @@ body.dark .foot-net{display:block}
 .offer:hover{box-shadow:var(--shadow-md)}
 .offer>*{min-width:0}
 .offer.active{border-color:var(--color-accent)}
+.offer.hover{box-shadow:var(--shadow-md),0 0 0 1.5px color-mix(in srgb,var(--mk-offre,#6CC58C) 70%,transparent)}
 .o-t{font-family:var(--font-heading);font-size:24px;line-height:1.1;margin:0}
 .o-by{font-size:14px;color:var(--color-neutral-800);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .o-by a{color:inherit;text-decoration-color:var(--color-neutral-400);text-underline-offset:3px}
@@ -1441,6 +1442,7 @@ function bindOffers(root, need, mapApi) {
     $$('.offer', root).forEach(x => x.classList.toggle('active', x === el));
     mapApi && mapApi.select(el.dataset.p);
   }));
+  if (mapApi && mapApi.hover) $$('.offer', root).forEach(el => { el.addEventListener('mouseenter', () => mapApi.hover(el.dataset.p)); el.addEventListener('mouseleave', () => mapApi.hover(null)); el.addEventListener('focusin', () => mapApi.hover(el.dataset.p)); });
 }
 
 /* ——— Champ de recherche (accueil + pages) ——— */
@@ -2009,7 +2011,7 @@ function product(view, parts, qs) {
   </div></section></div>`;
   const t = $('#toOff'); if (t) t.onclick = e => { e.preventDefault(); window.scrollTo({ top: $('#offres').getBoundingClientRect().top + scrollY - 20, behavior: 'smooth' }); };
   const mapEl = $('#map', view);
-  if (mapEl) { const pts = groupPoints(offs); liveMap(view, { points: pts, zones: pts.map(x => [x.producer.latitude, x.producer.longitude]), onPin: id => { $$('.offer', view).forEach(x => x.classList.toggle('active', x.dataset.p === id)); api && api.select(id); } }).then(a => { api = a; bindOffers(view, null, a); }).catch(() => bindOffers(view, null, null)); }
+  if (mapEl) { const pts = groupPoints(offs); liveMap(view, { points: pts, zones: pts.map(x => [x.producer.latitude, x.producer.longitude]), onPin: id => { let hit = null; $$('.offer', view).forEach(x => { const on = x.dataset.p === id; x.classList.toggle('active', on); if (on && !hit) hit = x; }); api && api.select(id); if (hit) { const r = hit.getBoundingClientRect(); if (r.top < 90 || r.bottom > innerHeight) hit.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' }); } }, onHover: id => $$('.offer', view).forEach(x => x.classList.toggle('hover', !!id && x.dataset.p === id)) }).then(a => { api = a; bindOffers(view, null, a); }).catch(() => bindOffers(view, null, null)); }
   let api; if (!mapEl) bindOffers(view, null, null);
   if (qs && qs.get('entree') && $('#offres')) setTimeout(() => { const o = $('#offres'); if (o) window.scrollTo({ top: o.getBoundingClientRect().top + scrollY - 84, behavior: reduced ? 'auto' : 'smooth' }); }, reduced ? 0 : 700);
 }
@@ -2215,24 +2217,24 @@ function liveMap(view, o) {
   const dock = document.createElement('div'); dock.className = 'wdock'; svg.replaceWith(dock);
   return WORLD.get().then(w => {
     if (!dock.isConnected) return null;
-    w.dock(dock, { interactive: false, onPick: id => o.onPin && o.onPin(id) });
+    w.dock(dock, { interactive: false, onPick: id => o.onPin && o.onPin(id), onHover: id => o.onHover && o.onHover(id) });
     const ids = o.points.map(p => p.producer.id);
     const ps = new Set(o.points.flatMap(p => (p.offers || []).map(x => x.productSlug)));
     w.setState({ hl: new Set(ids), products: ps.size ? ps : null, sel: o.focus || null, zone: null, user: o.dest || null, userLabel: o.destLabel || 'Votre lieu', labels: {} });
     setTimeout(() => o.focus ? w.focusProducer(o.focus) : w.fit(ids), 60);
-    return { select(id) { w.setState({ sel: id }); w.focusProducer(id); } };
+    return { select(id) { w.setState({ sel: id }); w.focusProducer(id); }, hover(id) { w.hover(id); } };
   }).catch(() => { if (dock.isConnected) dock.replaceWith(svg); return flat(); });
 }
 const WORLD = {
   inst: null, p: null,
   get() {
-    return this.p || (this.p = import('./v2/reseau-carte.js?v=20261011c').then(m => m.create({ data: mapData(), reduced, tier: W3.tier, onLost: () => { WORLD.inst = null; WORLD.p = null; } }))
+    return this.p || (this.p = import('./v2/reseau-carte.js?v=20261011d').then(m => m.create({ data: mapData(), reduced, tier: W3.tier, onLost: () => { WORLD.inst = null; WORLD.p = null; } }))
       .then(w => { if (!w) throw new Error('webgl'); this.inst = w; window.MDGTerritoire = w; return w; }).catch(e => { this.p = null; throw e; }));
   },
 };
 function mapData() { return { producers: M.producers.map(p => { const of = OFFERS.filter(o => o.producerId === p.id); return { id: p.id, name: p.name, city: p.city, regionSlug: p.regionSlug, lat: p.latitude, lon: p.longitude, unit: of[0] ? of[0].unit : 'kg', prods: Object.fromEntries(of.map(o => [o.productSlug, o.quantity])) }; }), demands: demandsAll().map(d => ({ id: d.id, name: d.name, buyerType: d.buyerType, city: d.city, regionSlug: d.regionSlug, lat: d.latitude, lon: d.longitude, productSlug: d.productSlug, quantity: d.quantity, unit: d.unit })), zones: zonesOf() }; }
 // L'année du marché : une seconde instance de la même carte (même module, même dessin), car « Le réseau » occupe déjà la première
-const SNMAP = () => SNMAP.p || (SNMAP.p = import('./v2/reseau-carte.js?v=20261011c').then(m => m.create({ data: mapData(), reduced })).then(w => { if (!w) throw new Error('canvas'); return w; }).catch(e => { SNMAP.p = null; throw e; }));
+const SNMAP = () => SNMAP.p || (SNMAP.p = import('./v2/reseau-carte.js?v=20261011d').then(m => m.create({ data: mapData(), reduced })).then(w => { if (!w) throw new Error('canvas'); return w; }).catch(e => { SNMAP.p = null; throw e; }));
 // centres des districts : géographie de référence (v3/marche.js), jamais déduite de producteurs inventés
 function zonesOf() { const G = window.MDGMarche.REG; return M.regions.filter(r => G[r.slug]).map(r => ({ slug: r.slug, name: r.name, lat: G[r.slug][0], lon: G[r.slug][1], n: M.producers.filter(p => p.regionSlug === r.slug).length })); }
 

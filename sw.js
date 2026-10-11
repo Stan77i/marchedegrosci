@@ -1,7 +1,7 @@
 /* Marché de Gros CI — service worker (utilisation hors connexion).
    Pour publier une mise à jour du code : incrémenter CACHE (mgci-v1 -> mgci-v2 ...).
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v3';
+const CACHE = 'mgci-v5';
 
 // Indispensable : si l'un de ces fichiers manque, l'installation échoue et l'ancienne version reste active.
 const CORE = [
@@ -19,6 +19,12 @@ const CORE = [
   "icons/icon-192.png",
   "icons/icon-512.png",
   "icons/apple-touch-icon.png",
+  "icons/apple-touch-icon-noir.png",
+  "icons/icon-maskable-512.png",
+  "icons/favicon.svg",
+  "icons/favicon-32.png",
+  "icons/favicon-noir.svg",
+  "icons/favicon-noir-32.png",
   "vendor/babel.min.js",
   "vendor/countries-110m.json",
   "vendor/countries-50m.json",

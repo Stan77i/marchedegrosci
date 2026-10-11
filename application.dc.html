@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -22,7 +23,7 @@
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
 <script src="app/carte-app.js"></script>
-<style>html,body{margin:0;height:100%;position:fixed;inset:0;width:100%;overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}input,select,textarea{font-size:16px!important;min-width:0;max-width:100%}label{min-width:0}[data-pg],[data-screen-label="Application"]{overflow:clip!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"]{overflow-x:hidden!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"]{overscroll-behavior:contain;-webkit-overflow-scrolling:touch}button{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}html,body{background:#0d0c0a;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box;scrollbar-width:none}a{color:#E07A3F}a:hover{color:#B85C38}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}
+<style>html,body{margin:0;height:100%;position:fixed;inset:0;width:100%;overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}input,select,textarea{font-size:16px!important;min-width:0;max-width:100%}label{min-width:0}[data-pg],[data-screen-label="Application"]{overflow:clip!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"]{overflow-x:hidden!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"],[style*="overflow-x:auto"]{overscroll-behavior:none;-webkit-overflow-scrolling:touch}[style*="overflow-x:auto"]{overflow-y:hidden!important;touch-action:pan-x}*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}img,svg,a{-webkit-user-drag:none}textarea{resize:none}button{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}html,body{background:#0d0c0a;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box;scrollbar-width:none}a{color:#E07A3F}a:hover{color:#B85C38}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}
 @keyframes mkWave{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.3);opacity:0}}
 @keyframes mkBreath{0%,100%{transform:scale(.82)}50%{transform:scale(1.12)}}
 @keyframes mkFlow{to{stroke-dashoffset:-12}}
@@ -433,7 +434,7 @@
 
 <!-- ═══ MENU ═══ -->
 <div style="position:absolute;left:0;right:0;bottom:0;max-height:88%;display:flex;flex-direction:column;background:#24201A;color:#F5F0E6;border-radius:28px 28px 0 0;transform:{{ menuTf }};transition:{{ sheetTr }};box-shadow:0 -10px 40px rgba(0,0,0,.4)">
-  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" style="height:28px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab"><span style="width:38px;height:5px;border-radius:3px;background:rgba(245,240,230,.25)"></span></div>
+  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" onPointerCancel="{{ sUp }}" onLostPointerCapture="{{ sUp }}" style="height:28px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab"><span style="width:38px;height:5px;border-radius:3px;background:rgba(245,240,230,.25)"></span></div>
   <div style="overflow-y:auto;padding:0 12px {{ botPad }}">
     <sc-for list="{{ menu }}" as="g" hint-placeholder-count="3">
       <div style="font-size:11px;letter-spacing:.2em;color:#B9AD98;font-weight:600;padding:12px 12px 6px">{{ g.t }}</div>
@@ -450,7 +451,7 @@
 
 <!-- ═══ FAMILLES ═══ -->
 <div style="position:absolute;left:0;right:0;bottom:0;max-height:84%;display:flex;flex-direction:column;background:#24201A;color:#F5F0E6;border-radius:28px 28px 0 0;transform:{{ famTf }};transition:{{ sheetTr }};box-shadow:0 -10px 40px rgba(0,0,0,.4)">
-  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" style="height:28px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none"><span style="width:38px;height:5px;border-radius:3px;background:rgba(245,240,230,.25)"></span></div>
+  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" onPointerCancel="{{ sUp }}" onLostPointerCapture="{{ sUp }}" style="height:28px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none"><span style="width:38px;height:5px;border-radius:3px;background:rgba(245,240,230,.25)"></span></div>
   <div style="padding:0 20px 10px;font-family:'Cormorant Garamond',serif;font-size:28px">Familles de produits</div>
   <div style="overflow-y:auto;padding:0 14px {{ botPad }};display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
     <sc-for list="{{ famGrid }}" as="f" hint-placeholder-count="11"><button onClick="{{ f.go }}" style="border:1.5px solid {{ f.bd }};border-radius:18px;padding:0;overflow:hidden;background:#171512;color:#F5F0E6;text-align:left;display:flex;flex-direction:column"><img sc-camel-src="{{ f.img }}" alt="" style="width:100%;height:84px;object-fit:cover;display:block"><span style="padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:500;line-height:1.25">{{ f.name }}</span><span style="font-size:12px;color:#B9AD98">{{ f.sub }}</span></span></button></sc-for>
@@ -459,7 +460,7 @@
 
 <!-- ═══ J'AI / JE CHERCHE ═══ -->
 <div style="position:absolute;left:0;right:0;bottom:0;height:90%;background:#F2EBDD;color:#171512;border-radius:28px 28px 0 0;display:flex;flex-direction:column;transform:{{ matchTf }};transition:{{ sheetTr }};box-shadow:0 -10px 40px rgba(0,0,0,.35)">
-  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" style="flex:none;touch-action:none;cursor:grab;padding:0 16px 10px">
+  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" onPointerCancel="{{ sUp }}" onLostPointerCapture="{{ sUp }}" style="flex:none;touch-action:none;cursor:grab;padding:0 16px 10px">
     <div style="height:24px;display:flex;align-items:center;justify-content:center"><span style="width:38px;height:5px;border-radius:3px;background:rgba(23,21,18,.2)"></span></div>
     <div style="display:flex;align-items:center;gap:10px">
       <div style="flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:#e7dcc8;border-radius:22px;padding:3px;position:relative">
@@ -564,15 +565,35 @@ class Component extends DCLogic {
   componentDidMount() {
     this.onResize = () => this.setState({ vw: window.innerWidth, vh: window.innerHeight });
     this.onData = () => this.setState(s => ({ tick: s.tick + 1 }));
-    this.onPop = () => { if (this.hist > 0) this.hist--; this.leave(); this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack, menu: false, sheet: null, pick: null })); };
+    this.onPop = () => { this._bk = Date.now(); this.ed = null; if (this.hist > 0) this.hist--; this.leave(); this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack, menu: false, sheet: null, pick: null })); };
     const pr = document.createElement('div'); pr.style.cssText = 'position:fixed;top:0;left:0;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)'; document.body.appendChild(pr); const pcs = getComputedStyle(pr); this.safeT = parseFloat(pcs.paddingTop) || 0; this.safeB = parseFloat(pcs.paddingBottom) || 0; pr.remove();
     this.onVV = () => { const ae = document.activeElement, typing = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && ae.type !== 'file' && ae.type !== 'date', vv = window.visualViewport, h = typing && vv && vv.height < window.innerHeight - 60 ? Math.round(vv.height) : 0; if (h !== this.state.kbH) this.setState({ kbH: h }); if (window.scrollY || window.scrollX) window.scrollTo(0, 0); };
     this.onFocus = () => setTimeout(this.onVV, 320); this.onBlur = () => setTimeout(this.onVV, 80);
     if (window.visualViewport) { visualViewport.addEventListener('resize', this.onVV); visualViewport.addEventListener('scroll', this.onVV); }
     this.onAnyScroll = e => { const t = e.target; if (t && t.nodeType === 1 && t.scrollLeft && !/overflow-x:\s*auto/.test(t.getAttribute('style') || '')) t.scrollLeft = 0; };
     document.addEventListener('scroll', this.onAnyScroll, true);
+    this.noZoom = e => e.preventDefault();
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.addEventListener(t, this.noZoom, { passive: false }));
+    this.tS = e => { const t = e.touches[0]; this.t0 = t ? { x: t.clientX, y: t.clientY } : null; };
+    this.tM = e => {
+      if (e.touches.length > 1) { if (!(this.mapRef.current && this.mapRef.current.contains(e.target))) e.preventDefault(); return; }
+      const t = e.touches[0], o = this.t0; if (!t || !o || !e.cancelable) return;
+      const dx = t.clientX - o.x, dy = t.clientY - o.y, vert = Math.abs(dy) >= Math.abs(dx);
+      for (let el = e.target; el && el.nodeType === 1 && el !== document.body; el = el.parentElement) {
+        const ta = getComputedStyle(el).touchAction; if (ta === 'none') return;
+        if (this.mapRef.current === el) return;
+        const st = el.getAttribute('style') || '';
+        if (vert && /overflow-y:\s*auto/.test(st) && el.scrollHeight > el.clientHeight + 1) { if ((dy > 0 && el.scrollTop <= 0) || (dy < 0 && el.scrollTop + el.clientHeight >= el.scrollHeight - 1)) e.preventDefault(); return; }
+        if (!vert && /overflow-x:\s*auto/.test(st) && el.scrollWidth > el.clientWidth + 1) { if ((dx > 0 && el.scrollLeft <= 0) || (dx < 0 && el.scrollLeft + el.clientWidth >= el.scrollWidth - 1)) e.preventDefault(); return; }
+      }
+      e.preventDefault();
+    };
+    document.addEventListener('touchstart', this.tS, { passive: true }); document.addEventListener('touchmove', this.tM, { passive: false });
+    this.noDbl = e => { if (!/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) e.preventDefault(); }; document.addEventListener('dblclick', this.noDbl);
+    this.noCtx = e => { if (!/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) e.preventDefault(); }; document.addEventListener('contextmenu', this.noCtx);
     addEventListener('focusin', this.onFocus); addEventListener('focusout', this.onBlur); addEventListener('scroll', this.onVV);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { this._w = {}; this.forceUpdate(); });
+    this.setIcons(this.isDark());
     addEventListener('resize', this.onResize); addEventListener('storage', this.onData); addEventListener('mdg:change', this.onData); addEventListener('popstate', this.onPop);
     const tick = () => { const d = new Date(); this.setState({ clock: d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0') }); }; tick(); this.clk = setInterval(tick, 20000);
     const boot = () => {
@@ -592,7 +613,7 @@ class Component extends DCLogic {
     this.animT = setTimeout(() => { (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; }, 650);
   }
   componentDidUpdate(pp, ps) { if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map && window.MDGCarte) this.map = window.MDGCarte.mount(el, { onSelect: s => this.setState({ csel: s }) }); if (!el && this.map) { this.map.destroy(); this.map = null; } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
-  componentWillUnmount() { if (this.map) this.map.destroy(); if (window.visualViewport) { visualViewport.removeEventListener('resize', this.onVV); visualViewport.removeEventListener('scroll', this.onVV); } document.removeEventListener('scroll', this.onAnyScroll, true); removeEventListener('focusin', this.onFocus); removeEventListener('focusout', this.onBlur); removeEventListener('scroll', this.onVV); removeEventListener('resize', this.onResize); removeEventListener('storage', this.onData); removeEventListener('mdg:change', this.onData); removeEventListener('popstate', this.onPop); clearInterval(this.clk); clearInterval(this.poll); }
+  componentWillUnmount() { ['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.removeEventListener(t, this.noZoom)); document.removeEventListener('touchstart', this.tS); document.removeEventListener('touchmove', this.tM); document.removeEventListener('dblclick', this.noDbl); document.removeEventListener('contextmenu', this.noCtx); if (this.map) this.map.destroy(); if (window.visualViewport) { visualViewport.removeEventListener('resize', this.onVV); visualViewport.removeEventListener('scroll', this.onVV); } document.removeEventListener('scroll', this.onAnyScroll, true); removeEventListener('focusin', this.onFocus); removeEventListener('focusout', this.onBlur); removeEventListener('scroll', this.onVV); removeEventListener('resize', this.onResize); removeEventListener('storage', this.onData); removeEventListener('mdg:change', this.onData); removeEventListener('popstate', this.onPop); clearInterval(this.clk); clearInterval(this.poll); }
   buildFams() {
     const M = window.MDG, A = window.MDGApp;
     this.cats = M.categories.slice().sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -670,10 +691,13 @@ class Component extends DCLogic {
       () => { try { history.pushState({ app: 1 }, '', this.hashOf(s)); this.hist++; } catch (_) {}  });
   }
   leave() { const st = this.state.stack; if (st.length < 2) return; clearTimeout(this.lvT); this.setState({ leaving: st[st.length - 1] }); this.lvT = setTimeout(() => this.setState({ leaving: null }), 480); }
-  back() { if (this.hist > 0) { history.back(); return; } this.leave(); this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack }), () => { try { history.replaceState(null, '', this.hashOf(this.state.stack[this.state.stack.length - 1])); } catch (_) {} }); }
+  back() { const now = Date.now(); if (now - (this._bk || 0) < 500) return; this._bk = now; if (this.hist > 0) { history.back(); return; } this.leave(); this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack }), () => { try { history.replaceState(null, '', this.hashOf(this.state.stack[this.state.stack.length - 1])); } catch (_) {} }); }
   openFiche(slug) { this.push('fiche', { slug }); }
   openVendeur(vid) { this.push('vendeur', { vid }); }
   openSheet(mode, slug) { this.setState(st => ({ sheet: 'match', mode, menu: false, done: null, mErr: {}, sheetDy: 0, mf: Object.assign(this.blankM(slug || st.mf.slug), { unit: st.mf.unit }) })); }
+  isDark() { return this.state.logoDark != null ? this.state.logoDark : ls('mdg-app:logo-noir') === true; }
+  setIcons(d) { const n = d ? '-noir' : ''; document.querySelectorAll('link[rel="apple-touch-icon"]').forEach(l => l.href = 'icons/apple-touch-icon' + n + '.png'); document.querySelectorAll('link[rel="icon"]').forEach(l => l.href = l.type === 'image/svg+xml' ? 'icons/favicon' + n + '.svg' : 'icons/favicon' + n + '-32.png'); }
+  toggleLogo() { const d = !this.isDark(); ls('mdg-app:logo-noir', d); this.setIcons(d); this.setState({ logoDark: d }); }
   closeAll() { this.setState({ menu: false, sheet: null, sheetDy: 0, done: null }); }
   say(t) { clearTimeout(this.tt); this.setState({ toast: t, toastOn: true }); this.tt = setTimeout(() => this.setState({ toastOn: false }), 2400); }
   famStep(d, toEnd) { const n = this.FAMS.length; this.setState(s => { const f = ((s.fam + d) % n + n) % n; return { fam: f, dragging: false, rot: toEnd ? this.FAMS[f].prods.length - 1 : 0 }; }); }
@@ -684,8 +708,8 @@ class Component extends DCLogic {
   sDown(e) { this.sd = { y: e.clientY }; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {} }
   sMove(e) { if (this.sd) this.setState({ sheetDy: Math.max(0, (e.clientY - this.sd.y) / this.sc) }); }
   sUp() { if (!this.sd) return; this.sd = null; if (this.state.sheetDy > 110) this.closeAll(); else this.setState({ sheetDy: 0 }); }
-  edgeDown(e) { const r = e.currentTarget.getBoundingClientRect(); this.ed = (e.clientX - r.left) / this.sc < 26 ? e.clientX : null; }
-  edgeUp(e) { if (this.ed != null && (e.clientX - this.ed) / this.sc > 70) this.back(); this.ed = null; }
+  edgeDown(e) { const r = e.currentTarget.getBoundingClientRect(), S = this.state; this.ed = !S.menu && !S.sheet && !S.pick && (e.clientX - r.left) / this.sc < 26 ? { x: e.clientX, y: e.clientY } : null; }
+  edgeUp(e) { const d = this.ed; this.ed = null; if (d && (e.clientX - d.x) / this.sc > 70 && Math.abs(e.clientY - d.y) < Math.abs(e.clientX - d.x)) this.back(); }
   openPick(kind) { this.setState({ pick: kind, pq: '' }); }
   tw(txt, font, ls) { const k = font + '|' + txt, c = this._w || (this._w = {}); if (c[k] == null) { const x = this._mc || (this._mc = document.createElement('canvas').getContext('2d')); x.font = font; c[k] = x.measureText(txt).width + (ls || 0) * txt.length; } return c[k]; }
   fitName(name, maxW) { for (const fs of [48, 44, 40, 36]) if (this.tw(name, '500 ' + fs + 'px "Cormorant Garamond"') <= maxW) return { fs: fs + 'px', lh: '1' }; return { fs: (this.tw(name, '500 34px "Cormorant Garamond"') > maxW * 1.9 ? 30 : 34) + 'px', lh: '1.04' }; }
@@ -867,8 +891,8 @@ class Component extends DCLogic {
       markEl: h('svg', { width: 38, height: 38, viewBox: '0 0 38 38', style: { display: 'block', overflow: 'visible' } },
         h('circle', { cx: 19, cy: 19, r: 18, fill: 'none', stroke: act.tint, strokeOpacity: .55, strokeWidth: 1, strokeDasharray: '113.1', strokeDashoffset: S.splash === 'off' ? 0 : 113.1, style: { transition: 'stroke-dashoffset 1.4s cubic-bezier(.22,1,.36,1) .2s, stroke .6s' } }),
         h('circle', { key: 'p' + act.slug, cx: 19, cy: 19, r: 15, fill: 'none', stroke: act.tint, strokeWidth: 1.2, style: { transformOrigin: '19px 19px', animation: 'mkWave 1.1s ease-out both' } }),
-        h('circle', { cx: 19, cy: 19, r: 15, fill: '#B85C38' }),
-        h('text', { x: 19, y: 25.2, textAnchor: 'middle', fontFamily: 'Cormorant Garamond, serif', fontSize: 19, fontWeight: 500, fill: '#F5F0E6' }, 'M'),
+        h('circle', { cx: 19, cy: 19, r: 15, fill: this.isDark() ? '#0B0A08' : '#B85C38', stroke: this.isDark() ? 'rgba(245,240,230,.28)' : 'none', strokeWidth: .8, style: { transition: 'fill .4s' } }),
+        h('g', { transform: 'translate(19 19) scale(.058) translate(-256 -256)', fill: 'none', stroke: '#F5F0E6', strokeLinecap: 'round', strokeLinejoin: 'round' }, h('path', { d: 'M394.6 117.4A196 196 0 1 0 452 256H372', strokeWidth: 26 }), h('circle', { cx: 394.6, cy: 117.4, r: 22, fill: '#F5F0E6', stroke: 'none' }), h('path', { d: 'M178 338V182L256 292L334 182V338', strokeWidth: 36 })),
         h('g', { style: { transformOrigin: '19px 19px', transform: 'rotate(' + (a0 * 2.2).toFixed(1) + 'deg)', transition: S.dragging ? 'none' : 'transform .55s cubic-bezier(.22,1,.36,1)' } },
           h('circle', { cx: 19, cy: 1, r: 2.6, fill: '#E07A3F', stroke: '#171512', strokeWidth: 1.2 }))),
       act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
@@ -923,7 +947,8 @@ class Component extends DCLogic {
       menu: [
         { t: 'ÉCHANGER', items: [mi('cherche', 'Acheter', 'Trouver une offre, qui vend quoi et où', () => this.push('acheter')), mi('jai', 'Vendre', 'Publier une offre avec photo', () => this.push('vendre')), mi('demande', 'Demander', 'Dire ce qu\u2019il vous faut', () => this.push('demande')), mi('pubs', 'Mes publications', mine.length ? mine.length + ' sur cet appareil' : 'Aucune pour l\u2019instant', () => this.push('pubs'))] },
         { t: 'EXPLORER', items: [mi('carte', 'Le réseau', 'La carte des offres et des demandes', () => this.push('carte')), mi('categories', 'Catégories', this.cats.length + ' familles de produits', () => this.push('categories')), mi('prix', 'Prix du marché', 'Prix vendeur et prix observé', () => this.push('prix')), mi('annee', 'L\u2019année du marché', 'Ce qui se récolte, mois par mois', () => this.push('annee'))] },
-        { t: 'COMPRENDRE', items: [mi('comment', 'Comment ça marche', 'Chercher, trouver, contacter', () => this.push('info', { infoK: 'comment-ca-marche' })), mi('aide', 'Aide producteur', 'Publier sa récolte, avec un agent', () => this.push('info', { infoK: 'aide-producteur' })), mi('confiance', 'Confiance', 'Ce que nous affichons, ou pas', () => this.push('info', { infoK: 'confiance' })), mi('ordi', 'Version ordinateur', 'Ouvrir le site complet', () => { location.href = 'index-v3.html?ordinateur=1' + this.hashOf(top); })] }],
+        { t: 'AFFICHAGE', items: [{ ico: h('svg', { width: 30, height: 30, viewBox: '0 0 38 38' }, h('circle', { cx: 19, cy: 19, r: 17, fill: this.isDark() ? '#0B0A08' : '#B85C38', stroke: this.isDark() ? 'rgba(245,240,230,.28)' : 'none', strokeWidth: .8 }), h('g', { transform: 'translate(19 19) scale(.058) translate(-256 -256)', fill: 'none', stroke: '#F5F0E6', strokeLinecap: 'round', strokeLinejoin: 'round' }, h('path', { d: 'M394.6 117.4A196 196 0 1 0 452 256H372', strokeWidth: 26 }), h('circle', { cx: 394.6, cy: 117.4, r: 22, fill: '#F5F0E6', stroke: 'none' }), h('path', { d: 'M178 338V182L256 292L334 182V338', strokeWidth: 36 }))), t: this.isDark() ? 'Logo noir' : 'Logo terracotta', s: this.isDark() ? 'Toucher pour revenir au terracotta' : 'Toucher pour passer au noir', go: () => this.toggleLogo() }] },
+        { t: 'COMPRENDRE', items: [mi('comment', 'Comment ça marche', 'Chercher, trouver, contacter', () => this.push('info', { infoK: 'comment-ca-marche' })), mi('aide', 'Aide producteur', 'Publier sa récolte, avec un agent', () => this.push('info', { infoK: 'aide-producteur' })), mi('confiance', 'Confiance', 'Ce que nous affichons, ou pas', () => this.push('info', { infoK: 'confiance' }))] }],
       famGrid: this.FAMS.map((f, i) => ({ name: f.name, sub: f.prods.length + ' produits', img: A.IMG + 'famille-' + f.slug + '.webp', bd: i === S.fam ? '#E07A3F' : 'transparent', go: () => this.setState({ fam: i, rot: 0, sheet: null }) })),
       segTf: isJai ? 'none' : 'translateX(100%)', segA: isJai ? '#F5F0E6' : '#484236', segB: isJai ? '#484236' : '#F5F0E6',
       setJai: () => this.setState({ mode: 'jai', mErr: {}, mf: Object.assign({}, S.mf, { when: '' }) }), setCherche: () => this.setState({ mode: 'cherche', mErr: {}, mf: Object.assign({}, S.mf, { when: '' }) }),

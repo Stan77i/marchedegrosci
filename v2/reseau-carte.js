@@ -119,7 +119,9 @@ export function create({ data, reduced = false, project = null }) {
   const ZN = (data.zones || []).map(z => { const [x, zz] = PJ(z.lat, z.lon); return { ...z, x, z: zz }; });
   const me = { x: 0, z: 0, on: false, k: 'u', id: 'me', hi: 1, seed: .37 };
   let state = { hl: null, products: null, sel: null, zone: null, user: null, userLabel: 'Vous', labels: {}, searching: false, hide: {} }, hov = null, links = [], filtering = false;
-  let mode = { interactive: true, onPick: null, onDemand: null, onZone: null };
+  let mode = { interactive: true, onPick: null, onDemand: null, onZone: null, onHover: null };
+  // survol venu de la carte (souris) : la page peut mettre en avant l'offre correspondante (onHover reçoit l'id d'une offre, ou null)
+  const told = id => { if (mode.onHover) mode.onHover(id && byId[id] && byId[id].k === 'o' ? id : null); };
   const has = (p, s) => p.prods && p.prods[s] != null;
   const dist = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
 
@@ -164,7 +166,7 @@ export function create({ data, reduced = false, project = null }) {
     n.el = mk('tj-pin' + (n.k === 'd' ? ' d' : ''), 'button'); n.el.innerHTML = '<b></b><small></small>';
     n.el.setAttribute('aria-label', n.k === 'd' ? `Demande : ${n.name}, ${n.city}` : `Offre : ${n.name}, ${n.city}`);
     n.el.onclick = () => pickNode(n);
-    n.el.onmouseenter = () => { hov = n.id; wake(); }; n.el.onmouseleave = () => { if (hov === n.id) hov = null; };
+    n.el.onmouseenter = () => { hov = n.id; told(hov); wake(); }; n.el.onmouseleave = () => { if (hov === n.id) { hov = null; told(null); } };
   });
   const meEl = mk('tj-me');
   const fmtQ = (q, u) => q ? `${Math.round(q).toLocaleString('fr-FR')} ${u || ''}`.trim() : '';
@@ -225,7 +227,7 @@ export function create({ data, reduced = false, project = null }) {
   cv.addEventListener('pointermove', e => {
     const l = local(e);
     if (e.pointerType === 'mouse' && !reduced) { lan.x = l.x; lan.y = l.y; lan.on = 1; }
-    if (!ptr.has(e.pointerId)) { if (e.pointerType === 'mouse') { const n = pick(l.x, l.y); cv.style.cursor = n ? 'pointer' : ''; const id = n ? n.id : null; if (id !== hov) { hov = id; ALL.forEach(q => q.el.classList.toggle('hov', q.id === id)); wake(); } } return; }
+    if (!ptr.has(e.pointerId)) { if (e.pointerType === 'mouse') { const n = pick(l.x, l.y); cv.style.cursor = n ? 'pointer' : ''; const id = n ? n.id : null; if (id !== hov) { hov = id; told(id); ALL.forEach(q => q.el.classList.toggle('hov', q.id === id)); wake(); } } return; }
     const prev = ptr.get(e.pointerId); ptr.set(e.pointerId, l);
     if (!mode.interactive) return;
     if (ptr.size === 1 && gd) {
@@ -464,7 +466,7 @@ export function create({ data, reduced = false, project = null }) {
   return {
     get docked() { return docked; },
     dock(el, m = {}) {
-      mode = { interactive: true, onPick: null, onDemand: null, onZone: null, ...m };
+      mode = { interactive: true, onPick: null, onDemand: null, onZone: null, onHover: null, ...m };
       root.classList.toggle('int', !!mode.interactive); root.classList.toggle('card', !mode.interactive); root.classList.remove('on', 'grab');
       el.appendChild(root); docked = true; ins = { left: 0, bottom: 0, top: 0 }; resize();
       const f = firstDock; firstDock = false;

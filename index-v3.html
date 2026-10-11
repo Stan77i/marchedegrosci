@@ -544,6 +544,9 @@ body.dark .foot-net{display:block}
 .offer:hover{box-shadow:var(--shadow-md)}
 .offer>*{min-width:0}
 .offer.active{border-color:var(--color-accent)}
+.o-rep{display:block;margin:10px 0 0 auto;padding:6px 0;border:0;background:none;color:var(--color-neutral-600,#847966);font:600 12px var(--font-body);text-decoration:underline;text-underline-offset:3px;cursor:pointer}.o-rep:hover{color:var(--color-accent)}.o-rep[disabled]{text-decoration:none;cursor:default}
+.ng-new{position:fixed;left:50%;bottom:24px;z-index:80;transform:translateX(-50%);min-height:44px;padding:0 20px;border:0;border-radius:999px;background:var(--color-ivoire-t,#F5F0E6);color:var(--color-cacao,#171512);font:700 14px var(--font-body);box-shadow:0 12px 36px rgba(0,0,0,.35);cursor:pointer}.ng-new[hidden]{display:none}
+.sh-btn .sh-dot{position:absolute;right:9px;top:9px;width:8px;height:8px;border-radius:50%;background:var(--mk-offre,#6CC58C);box-shadow:0 0 0 2px var(--color-cacao,#171512);opacity:0;transition:opacity .3s}.sh-btn.is-on .sh-dot{opacity:1}
 .offer.hover{box-shadow:var(--shadow-md),0 0 0 1.5px color-mix(in srgb,var(--mk-offre,#6CC58C) 70%,transparent)}
 .o-t{font-family:var(--font-heading);font-size:24px;line-height:1.1;margin:0}
 .o-by{font-size:14px;color:var(--color-neutral-800);display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -1203,6 +1206,7 @@ body.tzmode .tz{height:100svh}
     </nav>
     <div class="sh-actions">
       <button type="button" class="sh-btn" id="shContact" aria-disabled="true" aria-label="Contact bientôt disponible" title="Contact bientôt disponible"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h3l1.5 4-2 1.4a11 11 0 0 0 5.1 5.1L16 12.5l4 1.5v3a2 2 0 0 1-2 2A15 15 0 0 1 5 6a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m3.5 3.5 17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+      <button type="button" class="sh-btn" id="shCompte" aria-haspopup="dialog" aria-label="Se connecter" title="Se connecter"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 20a7 7 0 0 1 14 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><i class="sh-dot" aria-hidden="true"></i></button>
       <a class="sh-btn" href="#/catalogue" data-search aria-haspopup="dialog" aria-label="Rechercher (/)" title="Rechercher  /  Ctrl K"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></a>
       <button type="button" class="sh-burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
@@ -1224,7 +1228,7 @@ body.tzmode .tz{height:100svh}
       <div><h4>Vendre</h4><a href="#/vendre">Publier une offre</a><a href="#/aide-producteur">Aide producteur</a></div>
       <div><h4>Le marché</h4><a href="#/annee">L'année du marché</a><a href="#/comment-ca-marche">Comment ça marche</a><a href="#/confiance">Confiance</a></div>
     </nav>
-    <div class="ft-fine"><span>Aucune donnée inventée : seules les offres et demandes publiées s'affichent. Pour l'instant, elles restent sur l'appareil qui les a publiées.</span><span>© 2026 Marché de Gros CI</span></div>
+    <div class="ft-fine"><span>Aucune donnée inventée : seules les offres et demandes publiées s'affichent. Publiées avec un compte, elles sont visibles de tous ; sans compte, elles restent sur l'appareil qui les a publiées.</span><span>© 2026 Marché de Gros CI</span></div>
   </div>
 </footer>
 
@@ -1245,13 +1249,14 @@ body.tzmode .tz{height:100svh}
 <script src="v2/data.js"></script>
 <script src="v3/marqueurs.js?v=20261010a"></script>
 <script src="v3/terre.js?v=20261011a"></script>
-<script src="v3/marche.js?v=20261011b"></script>
+<script src="v3/nuage.js?v=20261011a"></script>
+<script src="v3/marche.js?v=20261011c"></script>
 <script src="v2/search.js"></script>
 <script src="v2/map.js"></script>
 <script src="v3/pages.js?v=20261011b"></script>
-<script src="v3/match.js?v=20261010d"></script>
+<script src="v3/match.js?v=20261011n"></script>
 <script src="v3/acheter.js?v=20261011a"></script>
-<script src="v3/vendre.js?v=20261011a"></script>
+<script src="v3/vendre.js?v=20261011n"></script>
 <script src="v3/scene-ivt.js?v=20261009o"></script>
 <script src="v3/hero-ivt.js?v=20261011b"></script>
 <script src="v3/annee.js?v=20261009z2"></script>
@@ -1366,7 +1371,8 @@ function refreshMarket() {
 function demandsAll() {
   const zc = Object.fromEntries(zonesOf().map(z => [z.slug, z]));
   let mine = []; try { mine = JSON.parse(localStorage.getItem('mdg-v2:demandes') || '[]'); } catch (_) {}
-  return (M.demands || []).concat(mine.filter(d => d.productSlug && zc[d.regionSlug]).map(d => ({ id: d.id, buyerType: 'Votre demande', name: 'Votre demande', city: regBy[d.regionSlug].name, regionSlug: d.regionSlug, latitude: zc[d.regionSlug].lat, longitude: zc[d.regionSlug].lon, productSlug: d.productSlug, quantity: d.quantity, unit: d.unit, phone: d.phone || (d.buyerContact && d.buyerContact.tel) || '', mine: true })));
+  const autres = (window.MDGNuage ? window.MDGNuage.list('demandes') : []).filter(d => d.productSlug && zc[d.regionSlug]).map(d => ({ id: d.id, rid: d._rid, buyerType: d.buyerType || 'Acheteur', name: d.buyerName || 'Acheteur', city: d.city || regBy[d.regionSlug].name, regionSlug: d.regionSlug, latitude: zc[d.regionSlug].lat, longitude: zc[d.regionSlug].lon, productSlug: d.productSlug, quantity: d.quantity, unit: d.unit, phone: d.phone || '', createdAt: d.createdAt, mine: false }));
+  return (M.demands || []).concat(autres, mine.filter(d => d.productSlug && zc[d.regionSlug]).map(d => ({ id: d.id, buyerType: 'Votre demande', name: 'Votre demande', city: regBy[d.regionSlug].name, regionSlug: d.regionSlug, latitude: zc[d.regionSlug].lat, longitude: zc[d.regionSlug].lon, productSlug: d.productSlug, quantity: d.quantity, unit: d.unit, phone: d.phone || (d.buyerContact && d.buyerContact.tel) || '', mine: true })));
 }
 const demandsOf = slug => demandsAll().filter(d => d.productSlug === slug);
 // « Mes offres », « Mes demandes » : le site et l'application partagent le même stockage, mais pas les mêmes champs
@@ -1376,7 +1382,7 @@ const mineDate = d => { const t = d.createdAt ? new Date(d.createdAt) : null; re
 M.categories.forEach(c => c.productCount = M.products.filter(p => p.categorySlug === c.slug).length);
 const catImg = { 'legumes-et-fruits': 'tomate', 'tubercules-et-feculents': 'banane-plantain', 'assaisonnements-epices-condiments': 'ail' };
 window.mdgAlias = p => { const n = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, ''); const b = n(p.name); return (p.aliases || []).filter(a => { const x = n(a); return x && x !== b && x !== b + 's' && x !== b + 'x' && x + 's' !== b; }); };
-const store = (k, v) => { if (v === undefined) return JSON.parse(localStorage.getItem('mdg-v2:' + k) || '[]'); try { const old = (k === 'offres' || k === 'demandes') ? store(k) : null; localStorage.setItem('mdg-v2:' + k, JSON.stringify(v)); if (old) { refreshMarket(); const ids = new Set(old.map(x => x.id)), nu = v.find(x => x && !ids.has(x.id)); if (nu) dispatchEvent(new CustomEvent('mdg:publie', { detail: { kind: k, item: nu } })); } return true; } catch (_) { return false; } };
+const store = (k, v) => { if (v === undefined) return JSON.parse(localStorage.getItem('mdg-v2:' + k) || '[]'); try { const old = (k === 'offres' || k === 'demandes') ? store(k) : null; localStorage.setItem('mdg-v2:' + k, JSON.stringify(v)); if (old) { refreshMarket(); const ids = new Set(old.map(x => x.id)), nu = v.find(x => x && !ids.has(x.id)); if (nu) dispatchEvent(new CustomEvent('mdg:publie', { detail: { kind: k, item: nu } })); dispatchEvent(new CustomEvent('mdg:change')); } return true; } catch (_) { return false; } };
 const toast = t => { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('on'), 2600); };
 const price = (o) => o.price == null ? `<span class="o-p disc">Prix à discuter</span>` : `<span class="o-p"><small class="o-pk">Prix vendeur</small>${fmt(o.price)} FCFA / ${esc(o.unit)}</span>`;
 const plural = (n, a, b) => `${n} ${n > 1 ? b : a}`;
@@ -1433,9 +1439,14 @@ function offerCard(o, { showProduct = true, need = null, k = 0 } = {}) {
     <div class="o-m">${price(o)}<span><svg class="ico"><use href="#i-pin"/></svg>${esc(o.city)}${o.regionName !== o.city ? ', ' + esc(o.regionName) : ''}${dist}</span></div>
     ${cov != null ? `<div class="cover"><i style="--w:${cov}%"></i>${cov >= 100 ? 'Couvre tout votre besoin' : `Couvre ${cov} % de votre besoin`}</div>` : ''}
     <div class="o-a">${contactButtons(o)}</div>
+    ${String(o.id).startsWith('n-') ? `<button type="button" class="o-rep" data-rep="${esc(String(o.id).slice(2))}">Signaler cette annonce</button>` : ''}
   </article>`;
 }
 function bindOffers(root, need, mapApi) {
+  $$('[data-rep]', root).forEach(b => b.onclick = async e => {
+    e.stopPropagation(); if (!confirm('Signaler cette annonce ? (fausse, trompeuse ou déplacée)')) return;
+    b.disabled = true; try { await MDGNuage.report('offres', b.dataset.rep, 'site'); b.textContent = 'Annonce signalée, merci'; } catch (_) { b.disabled = false; toast('Signalement impossible pour l’instant. Réessayez avec du réseau.'); }
+  });
   $$('[data-c]', root).forEach(b => b.onclick = e => { e.stopPropagation(); contact(b.dataset.o, b.dataset.c, need); });
   $$('.offer', root).forEach(el => el.addEventListener('click', e => {
     if (e.target.closest('a,button')) return;
@@ -1591,6 +1602,20 @@ document.addEventListener('click', e => {
 }, true);
 $('#back').onclick = back;
 $('#shContact').onclick = () => toast('Contact bientôt disponible');
+/* ——— Compte et annonces partagées (v3/nuage.js) ——— */
+function paintCompte() { const b = $('#shCompte'); if (!b || !window.MDGNuage) return; const s = MDGNuage.session(), l = s ? 'Mon compte (connecté)' : 'Se connecter'; b.classList.toggle('is-on', !!s); b.setAttribute('aria-label', l); b.title = l; }
+if ($('#shCompte')) $('#shCompte').onclick = () => window.MDGNuage && MDGNuage.open();
+paintCompte();
+addEventListener('mdg:nuage', e => {
+  const k = e.detail && e.detail.kind; if (k === 'compte') { paintCompte(); return; }
+  refreshMarket(); window.MDGV3 && MDGV3.onMarket && MDGV3.onMarket();
+  const r = parseHash().parts[0] || ''; if (!['', 'accueil', 'catalogue', 'carte', 'produits', 'prix', 'categories', 'producteurs'].includes(r)) return;
+  // de nouvelles annonces sont arrivées : on propose d'actualiser, sans faire sauter la page de celui qui lit
+  const act = document.activeElement; if (performance.now() < 5000 && scrollY < 40 && !(act && /^(INPUT|TEXTAREA|SELECT)$/.test(act.tagName))) { if (typeof WORLD !== 'undefined' && WORLD.inst) { WORLD.inst.destroy(); WORLD.inst = null; WORLD.p = null; } route(); return; } // tout juste ouvert : on affiche directement
+  let pill = $('#ngNew'); if (!pill) { pill = document.createElement('button'); pill.type = 'button'; pill.id = 'ngNew'; pill.className = 'ng-new'; document.body.appendChild(pill); }
+  pill.textContent = 'Nouvelles annonces · Afficher'; pill.hidden = false;
+  pill.onclick = () => { pill.hidden = true; if (typeof WORLD !== 'undefined' && WORLD.inst) { WORLD.inst.destroy(); WORLD.inst = null; WORLD.p = null; } route(); };
+});
 
 /* ═════════ ACCUEIL — l'étal ═════════ */
 const HERO = [
@@ -2074,7 +2099,7 @@ function demande(view, _, qs) {
         <figure class="dq-sig" id="dSig"></figure>
         <div class="dq-sum" id="dSum" hidden></div>
         <p class="dq-match" id="dM"></p>
-        <div class="local"><svg class="ico" style="margin-top:2px"><use href="#i-phone-off"/></svg><span>Enregistrée sur cet appareil pour l’instant : l’envoi aux autres utilisateurs arrive avec le serveur.</span></div>
+        <div class="local"><svg class="ico" style="margin-top:2px"><use href="#i-phone-off"/></svg><span>Visible de tous dès que vous êtes connecté (numéro + code). Sans réseau, elle part toute seule au retour de la connexion.</span></div>
         <div class="dq-done" id="dDone" hidden></div>
         <div class="mine" id="mine"></div>
       </aside>
@@ -2192,7 +2217,7 @@ function demande(view, _, qs) {
     const txt = `Bonjour, je ${sentence()} Contact : ${D.tel} (Marché de Gros CI)`;
     const offs = offsOf().sort((p, q) => (q.regionSlug === D.region) - (p.regionSlug === D.region)).slice(0, 4);
     const done = $('#dDone'); done.hidden = false;
-    done.innerHTML = `<span class="caps kicker">Demande publiée</span><p>Elle apparaît sur la carte et dans « J’ai » pour ce produit. Enregistrée sur cet appareil pour l’instant : partagez-la vous-même en attendant le serveur.</p><a class="btn btn-primary" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(txt)}"><svg class="ico"><use href="#i-wa"/></svg>Partager sur WhatsApp</a>`
+    done.innerHTML = `<span class="caps kicker">Demande publiée</span><p>Elle apparaît sur la carte et dans « J’ai » pour ce produit. Visible de tous dès que vous êtes connecté (numéro + code). Sans réseau, elle part toute seule au retour de la connexion.</p><a class="btn btn-primary" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(txt)}"><svg class="ico"><use href="#i-wa"/></svg>Partager sur WhatsApp</a>`
       + (offs.length ? `<div class="concern">${offs.map(o => `<a href="#/producteurs/${o.producerId}"><span>${esc(o.producerName)}<br><small>${esc(o.city)} · ${fmt(o.quantity)} ${esc(o.unit)}</small></span><small>${o.regionSlug === D.region ? 'Votre région' : 'Autre région'}</small></a>`).join('')}</div>` : '')
       + '<button type="button" class="dq-again" id="again">Nouvelle demande</button>';
     $('#again').onclick = () => { done.hidden = true; $('#flow').reset(); Object.assign(D, { product: null, text: '', qty: '', tel: '', budget: '', unitTouched: false }); dp.value = ''; readProduct(); paint(); goQ(0); };
@@ -2245,7 +2270,7 @@ function vendre(view) {
       <div class="caps kicker">Vendre</div>
       <h1 class="vd-t">Publiez votre offre. Voyez ce que l'acheteur verra.</h1>
       <div class="vd-prevw"><button type="button" class="vd-prevt" id="vPrevT" aria-expanded="false" aria-controls="vPrev">Aperçu de l'offre</button><div class="vd-prev" id="vPrev"></div></div>
-      <div class="local"><svg class="ico" style="margin-top:2px"><use href="#i-phone-off"/></svg><span>Pour l'instant, l'offre et la photo restent sur ce téléphone : elles ne sont pas encore publiées sur le site.</span></div>
+      <div class="local"><svg class="ico" style="margin-top:2px"><use href="#i-phone-off"/></svg><span>Visible de tous dès que vous êtes connecté (numéro + code). Sans réseau, elle part toute seule au retour de la connexion. La photo reste sur ce téléphone pour l’instant.</span></div>
       <div class="mine" id="mineO"></div>
     </div>
     <div id="vbox">
@@ -2359,7 +2384,7 @@ function info(view, parts) {
   const T = {
     'comment-ca-marche': ['Comment ça marche', 'Du producteur à l\u2019acheteur, en direct.', [['Vous cherchez', 'Avec les mots du marché. Les noms locaux et les fautes légères sont compris.'], ['Vous trouvez', 'Qui vend, où, en quelle quantité, à quel prix — en liste et sur la carte.'], ['Vous contactez', 'WhatsApp ou appel, directement. Pas trouvé ? Publiez une demande.']]],
     'aide-producteur': ['Aide producteur', 'Votre récolte, visible des acheteurs.', [['Publiez en 2 minutes', 'Produit, photo, quantité, prix, lieu.'], ['Un agent peut vous aider', 'Un agent terrain peut publier l\u2019offre à votre place.'], ['Soyez contacté en direct', 'L\u2019acheteur vous écrit sur WhatsApp ou vous appelle.']]],
-    confiance: ['Confiance', 'Ce que nous affichons, et ce que nous n\u2019affichons pas.', [['Exemples signalés', 'Les producteurs, offres et prix affichés sont des exemples, marqués « Exemple ».'], ['Pas de faux avis', 'Aucune étoile, aucun avis, aucun chiffre de ventes n\u2019est inventé.'], ['Vérification à venir', 'Le badge « Vérifié » n\u2019apparaîtra qu\u2019après un vrai contrôle.']]],
+    confiance: ['Confiance', 'Ce que nous affichons, et ce que nous n\u2019affichons pas.', [['Aucune donnée inventée', 'Seules les offres et demandes réellement publiées apparaissent : aucun producteur, aucune offre, aucun prix fictif.'], ['Comptes et signalements', 'Publier demande un compte (numéro de téléphone + code secret). Chaque annonce peut être signalée : trois signalements de comptes différents la masquent en attendant une vérification.'], ['Pas de faux avis', 'Aucune étoile, aucun avis, aucun chiffre de ventes n\u2019est inventé.'], ['Vérification à venir', 'Le badge « Vérifié » n\u2019apparaîtra qu\u2019après un vrai contrôle.']]],
   }[parts[0]];
   view.innerHTML = `<div class="page wrap"><div class="caps kicker">${T[0]}</div><h1 class="sec-h">${T[1]}</h1><div class="how">${T[2].map(([a, b], i) => `<div><i class="dot" style="display:block;background:${['var(--color-accent)', 'var(--color-accent-2-600)', 'var(--color-text)'][i]}"></i><h4>${a}</h4><p>${b}</p></div>`).join('')}</div></div>`;
 }

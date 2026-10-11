@@ -46,7 +46,7 @@
         </fieldset>
         <p class="vs-err" id="vE" role="alert"></p>
         <div class="vs-nav"><button type="button" class="btn btn-secondary" id="vB">Retour</button><span class="vs-dr" id="vDr" aria-live="polite"></span><button type="button" class="btn btn-primary" id="vN2">Suivant <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button><button type="submit" class="btn btn-primary" id="vS">Publier l’offre <svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></button></div>
-        <p class="vs-local"><svg class="ico" aria-hidden="true"><use href="#i-phone-off"/></svg>Enregistrée sur cet appareil pour l’instant : l’envoi aux autres utilisateurs arrive avec le serveur.</p>
+        <p class="vs-local"><svg class="ico" aria-hidden="true"><use href="#i-phone-off"/></svg>Visible de tous dès que vous êtes connecté (numéro + code). Sans réseau, elle part toute seule au retour de la connexion. La photo reste sur ce téléphone pour l’instant.</p>
       </form>
     </div>
     <aside class="vs-side" aria-label="Aperçu de l’offre"><p class="vs-k">Ce que l’acheteur verra</p><div class="vs-tag" id="vsTag"></div><p class="vs-hint" id="vsHint" aria-live="polite"></p><div class="vs-dm" id="vsDm" hidden></div></aside>
@@ -153,7 +153,7 @@
       try { localStorage.removeItem(DK); } catch (_) {}
       try { navigator.vibrate && navigator.vibrate(10); } catch (_) {}
       done = true; sync(false);
-      $('#vbox').innerHTML = `<div class="vs-done"><p class="vs-k">Offre enregistrée sur ce téléphone</p><h2 class="vs-q">Voici ce que l’acheteur verra.</h2><div class="vs-card">${previewCard(o)}</div><p class="vs-local">Elle apparaît dans Acheter et sur la carte. Enregistrée sur cet appareil pour l’instant : l’envoi aux autres utilisateurs arrive avec le serveur.</p>
+      $('#vbox').innerHTML = `<div class="vs-done"><p class="vs-k">Offre enregistrée sur ce téléphone</p><h2 class="vs-q">Voici ce que l’acheteur verra.</h2><div class="vs-card">${previewCard(o)}</div><p class="vs-local">Elle apparaît dans Acheter et sur la carte. Visible de tous dès que vous êtes connecté (numéro + code). Sans réseau, elle part toute seule au retour de la connexion. La photo reste sur ce téléphone pour l’instant.</p>
         <div class="vs-nav">${agent ? '<button type="button" class="btn btn-primary" id="same">Autre offre pour ce producteur</button>' : ''}<button type="button" class="btn btn-secondary" id="newO">Nouvelle offre</button></div></div>`;
       $('#newO').onclick = () => C.route();
       const sm = $('#same'); if (sm) sm.onclick = () => { try { localStorage.setItem(DK, JSON.stringify({ ag: true, agn: o.agent.name, n: name, t: tel, r: reg, c: city, a: 'maintenant' })); } catch (_) {} C.route(); };

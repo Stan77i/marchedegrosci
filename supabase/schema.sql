@@ -129,3 +129,13 @@ begin
 end $$;
 drop trigger if exists signalement_moderation on public.signalements;
 create trigger signalement_moderation after insert on public.signalements for each row execute function public.apres_signalement();
+
+-- ——— Durcissement (recommandé par l'audit de sécurité Supabase) ———
+-- les fonctions automatiques ne doivent pas être appelables directement depuis le site
+revoke execute on function public.limite_annonces() from public, anon, authenticated;
+revoke execute on function public.apres_signalement() from public, anon, authenticated;
+-- (si « Enable automatic RLS » a été coché à la création du projet, Supabase crée aussi cette fonction)
+do $$ begin if exists (select 1 from pg_proc where proname = 'rls_auto_enable' and pronamespace = 'public'::regnamespace) then
+  revoke execute on function public.rls_auto_enable() from public, anon, authenticated; end if; end $$;
+-- droits par défaut trop larges : seuls lecture, publication, modification et retrait restent
+revoke truncate, references, trigger on public.offres, public.demandes, public.signalements from anon, authenticated;

@@ -113,4 +113,5 @@ Téléphone, tablette, ordinateur : première visite en ligne, puis réseau coup
 - **Signaler** sur chaque annonce venant d'un autre téléphone (site et application).
 - Textes mis à jour (Vendre, Demander, J'ai / Je cherche, pied de page, Confiance) ; la page Confiance du site ne parle plus d'« exemples ».
 - Les photos ne sont pas encore envoyées (elles restent sur le téléphone). `sw.js` : `v3/nuage.js` en cache, `CACHE = 'mgci-v12'`.
-- Non vérifié contre le vrai serveur depuis l'environnement de développement (accès à supabase.co bloqué) : à tester une fois le schéma installé.
+- **Base installée le 11/10/2026** (connecteur Supabase) et vérifiée : audit de sécurité sans avertissement ; un visiteur lit mais ne peut pas publier ; un compte publie, republie sans doublon, mais ne peut pas publier au nom d'un autre. Droits par défaut trop larges retirés, fonctions automatiques non appelables depuis le site (section « Durcissement » de `supabase/schema.sql`).
+- Reste à tester depuis un vrai téléphone : création de compte, connexion, publication visible sur un autre appareil.

@@ -72,6 +72,17 @@
 @media (min-width:760px){.cp-tabs{flex-direction:column;overflow:visible;margin:0;padding:0}}
 .cp-tab{flex:none;display:flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border:0;border-radius:14px;background:none;color:var(--mute);font:500 14.5px Jost,sans-serif;text-align:left;cursor:pointer;transition:background var(--ux-d2,200ms),color var(--ux-d2,200ms)}
 .cp-admin{text-decoration:none;color:#F3B48A}@media (max-width:759px){.cp-admin{order:-1;background:rgba(224,122,63,.12)}}@media (min-width:760px){.cp-admin{margin-top:10px;box-shadow:inset 0 1px 0 var(--line);border-radius:0 0 14px 14px}}
+/* téléphone : tous les onglets tiennent à l'écran (icône + nom court), rien à faire glisser */
+.cp-tc{display:none}
+@media (max-width:759px){
+  .cp-tabs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:2px;overflow:visible;margin:0 -10px;padding:0}
+  .cp-tab{flex-direction:column;justify-content:center;gap:4px;min-height:56px;padding:6px 2px;border-radius:14px;text-align:center}
+  .cp-tab svg{width:20px;height:20px}
+  .cp-tl{display:none}.cp-tc{display:block;font-size:12px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .cp-tab em{position:absolute;margin:0;transform:translate(13px,-14px);min-width:18px;height:18px;font-size:10.5px;line-height:18px;padding:0 5px}
+  .cp-tab{position:relative}
+  .cp-admin{order:0}
+}
 .cp-tab:hover{color:var(--ink);background:rgba(245,240,230,.05)}.cp-tab[aria-selected=true]{color:var(--ink);background:rgba(245,240,230,.1)}
 .cp-tab svg{flex:none;width:18px;height:18px}.cp-tab em{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--acc);color:#171512;font:700 11.5px/20px Jost,sans-serif;font-style:normal;text-align:center}
 .cp-main{overflow:auto;padding:22px 20px 40px;overscroll-behavior:contain}
@@ -199,10 +210,10 @@
     if (!N()) return; const u = me(); if (!u) return N().open();
     let tab = onglet || 'profil';
     const tete = () => { const p = profil || {}; return `<div class="cp-me">${A() ? A().svg(p.avatar, { size: 52, nom: nomAffiche(p) || N().fmtTel(u.tel), seed: u.id }) : ''}<span><b>${esc(nomAffiche(p) || 'Mon compte')}</b><small>${esc(N().fmtTel(u.tel))}</small></span></div>`; };
-    const tabs = () => [['profil', 'Mon profil'], ['activite', 'Mon activité'], ['notifs', 'Notifications'], ['prefs', 'Préférences'], ['securite', 'Sécurité et compte']]
-      .map(([k, t]) => `<button type="button" role="tab" class="cp-tab" data-t="${k}" aria-selected="${tab === k}">${ico(k)}<span>${t}</span>${k === 'notifs' && nonLues() ? `<em aria-label="${nonLues()} non lues">${nonLues()}</em>` : ''}</button>`).join('')
+    const tabs = () => [['profil', 'Mon profil', 'Profil'], ['activite', 'Mon activité', 'Activité'], ['notifs', 'Notifications', 'Alertes'], ['prefs', 'Préférences', 'Réglages'], ['securite', 'Sécurité et compte', 'Sécurité']]
+      .map(([k, t, c]) => `<button type="button" role="tab" class="cp-tab" data-t="${k}" aria-selected="${tab === k}" aria-label="${t}">${ico(k)}<span class="cp-tl">${t}</span><span class="cp-tc" aria-hidden="true">${c}</span>${k === 'notifs' && nonLues() ? `<em aria-label="${nonLues()} non lues">${nonLues()}</em>` : ''}</button>`).join('')
       // administrateur seulement (vérifié par le serveur avec est_admin ; la page admin revérifie elle-même) : le lien vers le tableau de bord
-      + (J('mdg-nuage:admin', false) ? `<a class="cp-tab cp-admin" href="admin.html">${ico('admin')}<span>Tableau de bord</span></a>` : '');
+      + (J('mdg-nuage:admin', false) ? `<a class="cp-tab cp-admin" href="admin.html" aria-label="Tableau de bord">${ico('admin')}<span class="cp-tl">Tableau de bord</span><span class="cp-tc" aria-hidden="true">Admin</span></a>` : '');
     cadre(`<nav class="cp-side" aria-label="Mon espace">${tete()}<div class="cp-tabs" role="tablist">${tabs()}</div></nav><div class="cp-main" role="tabpanel"></div>`, 'Mon espace');
     const main = bg.querySelector('.cp-main');
     const aller = t => { tab = t; bg.querySelector('.cp-side').innerHTML = tete() + `<div class="cp-tabs" role="tablist">${tabs()}</div>`; lier(); VUES[t](main); main.scrollTop = 0; };

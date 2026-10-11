@@ -104,3 +104,8 @@ button[aria-busy="true"]:disabled::after{content:"";display:inline-block;width:1
   :where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)::before,:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)::after{transition:none}
   :where(.btn,.fbtn,.ax-zp,.pp-chip,.vs-o,.nx-go,.nx-alt,.ng-go):active{transform:none}
 }
+
+/* ——— Tiroir de l'application (menu à gauche, comme Gmail) : icônes au trait, sans boîte, à la taille du texte ——— */
+.dr-ico>span,.dr-ico>span>svg{display:block}
+.dr-ico svg{width:26px;height:26px}
+.dr-ico img{width:30px;height:30px}

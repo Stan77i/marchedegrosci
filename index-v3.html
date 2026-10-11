@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="v3/etat.css?v=20261010a">
 <link rel="stylesheet" href="v3/constellation.css?v=20261010c">
 <link rel="stylesheet" href="css/typo.css?v=20261009o">
-<link rel="stylesheet" href="v3/ux.css?v=20261012a">
+<link rel="stylesheet" href="v3/ux.css?v=20261012c">
 <script>/* téléphone : ouvre l'application mobile (même adresse, même données). ?ordinateur=1 force le site complet */(function(){try{var q=location.search,f=/[?&]ordinateur=1/.test(q);if(f)sessionStorage.setItem('mdg-ordi','1');var o=sessionStorage.getItem('mdg-ordi')==='1';if(/[?&]app=1/.test(q)){sessionStorage.setItem('mdg-app','1');sessionStorage.removeItem('mdg-ordi');o=false}var tel=sessionStorage.getItem('mdg-app')==='1'||(matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<768);if(tel&&!o)location.replace('application.dc.html'+(location.hash||'#/'));}catch(e){}})();</script>
 <script>/* sans adresse : ouvre l'Accueil */ if (!location.hash) history.replaceState(null, '', '#/');</script>
 <script src="vendor/gsap.min.js" defer></script>

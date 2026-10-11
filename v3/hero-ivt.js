@@ -25,6 +25,8 @@
         origine: villes.slice(0, 2).join(' · '), offres: o.length, demandes: demandsOf(slug).length, img: img(slug) };
     })());
     const TOUS = M.products.map(p => P(p.slug));
+    // où le produit est proposé ou cherché : le même territoire que les cartes du site (v3/terre.js), aux positions publiées (chef-lieu du district)
+    const prj = (lat, lon) => [(lon + 5.16) * 0.62, -(lat - 7.13) * 0.62], prodPos = Object.fromEntries((M.producers || []).map(x => [x.id, x]));
     const order = (X.order || []).filter(s => prodBy[s] && img(s));
     // familles : chaque position de l'indicateur = une famille du catalogue ; l'arc porte 8 libellés au plus, le reste de la famille en graduations
     const BUDGET = 60, rang = s => { const i = order.indexOf(s); return i < 0 ? 999 : i; };
@@ -102,6 +104,7 @@
         <h1 class="hero__name"></h1>
         <p class="hero__origin"></p>
         <div class="hero__px"></div>
+        <a class="hero__where" href="#/carte" hidden><svg viewBox="-2.3 -2.35 4.15 4.2" aria-hidden="true"><g class="hw-pts"></g></svg><span class="hw-t"></span></a>
         <a class="hero__link" href="#/">Voir la fiche</a>
       </div>
     </div></div>`;
@@ -109,7 +112,7 @@
     const q = s => root.querySelector(s);
     const labelsEl = q('.hero__labels'), svgEl = q('.hero__orbit-svg'), defsEl = svgEl.querySelector('defs'), arcGroup = svgEl.querySelector('.hero__arc-labels'),
       tickGroup = svgEl.querySelector('.hero__ticks'), dotEl = svgEl.querySelector('.hero__dot'), mediaEl = q('.hero__media'), nameEl = q('.hero__name'),
-      originEl = q('.hero__origin'), linkEl = q('.hero__link'), fkEl = q('.hero__fk'), pxEl = q('.hero__px'), coreBtns = [...root.querySelectorAll('.hero__core-b')],
+      originEl = q('.hero__origin'), whereEl = q('.hero__where'), linkEl = q('.hero__link'), fkEl = q('.hero__fk'), pxEl = q('.hero__px'), coreBtns = [...root.querySelectorAll('.hero__core-b')],
       sizesTrack = q('.hero__sizes-track'), sizesLabel = q('.hero__sizes-label'), sizesValue = q('.hero__sizes-value'), decoA = q('.hero__deco--a'), decoB = q('.hero__deco--b'),
       allBtn = q('.hero__all'), diceBtn = q('.hero__dice'), pipsEl = q('.hero__pips'), diceN = q('.hero__dice-n'),
       diceDots = [...root.querySelectorAll('.hero__dice-dots button')], famEl = q('.hero__fam'), diceWrap = q('.hero__dice-wrap'), liveEl = q('.hero__live'), orbitEl = q('.hero__orbit');
@@ -167,7 +170,7 @@
       });
       mesOk = true;
     }
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { mesOk = false; if (mobile && root.isConnected) renderRoue(wheelS); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { mesOk = false; if (!root.isConnected) return; if (mobile) renderRoue(wheelS); else if (courant) { construire(); montrer(courant); } });
     function renderRoue(sf) {
       const n = groupe.length;
       if (!n || !mobile) return;
@@ -197,7 +200,12 @@
     function construire() {
       defsEl.innerHTML = ''; arcGroup.innerHTML = ''; tickGroup.innerHTML = ''; labelsEl.innerHTML = '';
       const n = groupe.length, dans = new Set(groupe.map(p => p.slug)), autres = (FAM[gi] ? FAM[gi].tous : TOUS).filter(p => !dans.has(p.slug));
-      const halves = groupe.map(p => (p.nom.length * perCharDeg) / 2 + PAD);
+      // largeur réelle de chaque nom (police chargée, capitales espacées, gras de l'actif) : l'estimation par lettres coupait les noms (« OMAT »)
+      const probe = document.createElementNS(SVG_NS, 'text'); probe.setAttribute('class', 'hero__arc-label is-active'); arcGroup.appendChild(probe);
+      const pcs = getComputedStyle(probe), pfs = parseFloat(pcs.fontSize) || 15, pls = parseFloat(pcs.letterSpacing) || 0, pup = pcs.textTransform === 'uppercase';
+      mesCv.font = '600 ' + pfs + 'px ' + pcs.fontFamily; probe.remove();
+      const need = p => { const t = pup ? p.nom.toUpperCase() : p.nom; return (mesCv.measureText(t).width + pls * t.length) * 1.04 / R * (90 / Math.PI) + PAD; };
+      const halves = groupe.map(p => Math.max((p.nom.length * perCharDeg) / 2 + PAD, need(p)));
       totalSpan = halves.reduce((s, h) => s + 2 * h, 0) + GAP * (n - 1); maxDiff = totalSpan / 2 || 1;
       halvesM = groupe.map(p => (p.nom.length * perCharM) / 2 + PAD_M); mesOk = false; wheelS = 0;
       let cursor = -totalSpan / 2;
@@ -289,6 +297,19 @@
 
     function renderSizes() {}
 
+    function where(p) {
+      if (!whereEl) return;
+      const o = offersOf(p.slug).map(x => prodPos[x.producerId]).filter(Boolean), d = demandsOf(p.slug).filter(x => x.latitude != null);
+      whereEl.hidden = !o.length && !d.length; if (whereEl.hidden) return;
+      const g = whereEl.querySelector('.hw-pts');
+      g.innerHTML = o.map(x => { const [a, b] = prj(x.latitude, x.longitude); return '<circle class="hw-o" cx="' + a.toFixed(3) + '" cy="' + b.toFixed(3) + '" r=".075"/>'; }).join('')
+        + d.map(x => { const [a, b] = prj(x.latitude, x.longitude); return '<rect class="hw-d" x="' + (a - .07).toFixed(3) + '" y="' + (b - .07).toFixed(3) + '" width=".14" height=".14" rx=".015"/>'; }).join('');
+      whereEl.href = '#/carte?q=' + encodeURIComponent(p.nom);
+      whereEl.setAttribute('aria-label', p.nom + ' sur la carte : ' + [o.length ? o.length + (o.length > 1 ? ' offres' : ' offre') : '', d.length ? d.length + (d.length > 1 ? ' demandes' : ' demande') : ''].filter(Boolean).join(', '));
+      whereEl.querySelector('.hw-t').textContent = 'Voir sur la carte';
+    }
+    if (whereEl && window.MDGTerre) MDGTerre.ready.then(T => { if (root.isConnected) MDGTerre.paint(whereEl.querySelector('svg'), prj, T); }).catch(() => {});
+
     function montrer(p, initial) {
       courant = p;
       LIGHT.set(p.slug, 'hero', !!initial);
@@ -301,6 +322,7 @@
         ? '<i class="hero__st hero__st--on"></i>' + p.offres + (p.offres > 1 ? ' offres disponibles' : ' offre disponible') + (p.origine ? ' · ' + esc(p.origine) : '') + dd
         : '<i class="hero__st"></i>Pas encore d\'offre pour ce produit' + dd;
       pxEl.innerHTML = MK.prixHTML(p.slug, { short: true });
+      where(p);
       coreBtns.forEach(b => { b.dataset.slug = p.slug; });
       coreBtns[0].setAttribute('aria-label', "J'ai du " + p.nom.toLowerCase() + ' : publier une offre');
       coreBtns[1].setAttribute('aria-label', 'Je cherche du ' + p.nom.toLowerCase() + (p.offres ? ' : voir les offres' : ' : publier une demande'));

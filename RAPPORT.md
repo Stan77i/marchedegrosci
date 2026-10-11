@@ -75,3 +75,16 @@ Téléphone, tablette, ordinateur : première visite en ligne, puis réseau coup
 - À tester sur un vrai iPhone (Safari) et un vrai Android (Chrome) : ajout à l'écran d'accueil, ouverture hors ligne.
 - Le site doit être servi en **HTTPS** (par exemple GitHub Pages) : sans HTTPS, pas de mode hors ligne ni d'installation.
 - 7 avertissements (pas des erreurs) `never resolved` restent dans la console : ils viennent de l'écran d'ouverture de la page, non modifié.
+
+---
+
+# Carte du site (« Le réseau ») — territoire réel
+11 octobre 2026 · `v2/reseau-carte.js`
+
+- **Géographie réelle** : frontières Natural Earth 1:50m (Côte d'Ivoire, Libéria, Guinée, Mali, Burkina Faso, Ghana et pays proches), côte avec liseré d'eau peu profonde, frontière terrestre en tirets, côte en trait plein. Repli sur l'ancien contour simplifié si la géographie ne charge pas.
+- **Eau** : fleuves (Bandama, Comoé, Sassandra, Bandama blanc, Baoulé, Bagoé, Cess, Volta…) et lacs (Kossou, Buyo, Volta), Natural Earth 1:10m, domaine public, fichier `vendor/ci-hydro.json` (56 Ko). Le grain s'interrompt sur les lacs.
+- **Repères** : les 14 chefs-lieux de district (géographie de référence déjà présente, `v3/marche.js`). Le nom du chef-lieu s'efface quand une offre ou une demande du district est déjà nommée.
+- **Zoom qui a un sens** : du pays (avec ses voisins) jusqu'au district, pas au-delà (les positions sont au chef-lieu : plus près ne montrerait rien de vrai). Un repère dit toujours ce que l'on regarde : « Tout le pays », « Nord-ouest du pays », puis « Autour de Bouaké » ou « 40 km au sud-ouest de Bouaké », avec l'échelle en kilomètres. Le grain s'affine en approchant.
+- **Gestes** : la carte continue sur son élan quand on la lâche, double-clic pour zoomer à l'endroit pointé ; animations coupées avec « réduire les animations ».
+- Non utilisées volontairement : les limites administratives Natural Earth (19 anciennes régions, pas les 14 districts actuels : elles auraient été fausses) ; la bibliothèque mapcn (React + tuiles en ligne : incompatible avec le site statique et le hors connexion).
+- `sw.js` : `vendor/ci-hydro.json` en cache, `CACHE = 'mgci-v7'`.

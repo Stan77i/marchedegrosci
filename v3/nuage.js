@@ -100,8 +100,8 @@
 
   /* ——— les annonces des autres (cache local) ——— */
   const fromRow = {
-    offres: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', price: num(r.price), availableFrom: r.available_from || 'maintenant', createdAt: r.created_at, producer: { name: r.seller_name || 'Vendeur', phone: r.phone || '' }, producerName: r.seller_name || 'Vendeur', agent: r.agent || '', negociable: r.negociable !== false }),
-    demandes: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', budget: num(r.budget), deadline: r.deadline || 'semaine', buyerType: r.buyer_type || 'Acheteur', buyerName: r.buyer_name || 'Acheteur', phone: r.phone || '', buyerContact: { tel: r.phone || '' }, createdAt: r.created_at, negociable: r.negociable !== false }),
+    offres: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, _uid: r.user_id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', price: num(r.price), availableFrom: r.available_from || 'maintenant', createdAt: r.created_at, producer: { name: r.seller_name || 'Vendeur', phone: r.phone || '' }, producerName: r.seller_name || 'Vendeur', agent: r.agent || '', negociable: r.negociable !== false }),
+    demandes: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, _uid: r.user_id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', budget: num(r.budget), deadline: r.deadline || 'semaine', buyerType: r.buyer_type || 'Acheteur', buyerName: r.buyer_name || 'Acheteur', phone: r.phone || '', buyerContact: { tel: r.phone || '' }, createdAt: r.created_at, negociable: r.negociable !== false }),
   };
   const toRow = {
     offres: o => ({ client_id: txt(o.id, 60), product_slug: txt(o.productSlug, 80), product_label: txt(o.productLabel || o.productName, 120), region_slug: txt(o.regionSlug, 60), city: txt(o.city, 80), quantity: num(o.quantity), unit: txt(o.unit, 20), price: num(o.price), available_from: txt(o.availableFrom, 40), seller_name: txt((o.producer && o.producer.name) || o.producerName, 80), phone: tel10((o.producer && o.producer.phone) || o.phone), agent: txt(o.agent && typeof o.agent === 'object' ? (o.agent.name || 'Agent') : o.agent, 80) || null, negociable: o.negociable !== false }),
@@ -199,13 +199,22 @@
 .ng-warn{padding:12px 14px;border-radius:16px;background:rgba(224,122,63,.12);color:#F3D2BC;font-size:13.5px;line-height:1.45;margin:0 0 14px}`;
   const groupe = c => String(c || '').replace(/(.{4})(?=.)/g, '$1 ');
   function style() { if (!css) { const st = document.createElement('style'); st.textContent = CSS + CSS2; document.head.appendChild(st); css = true; } }
+  // fenêtre modale : le focus y entre, y reste (Tab boucle), et revient d'où il venait à la fermeture
+  function piege(root) {
+    const avant = document.activeElement;
+    const focusables = () => [...root.querySelectorAll('button,a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(x => !x.disabled && x.offsetParent !== null);
+    const onTab = e => { if (e.key !== 'Tab') return; const f = focusables(); if (!f.length) return; const a = f[0], z = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } };
+    root.addEventListener('keydown', onTab);
+    return () => { root.removeEventListener('keydown', onTab); if (avant && avant.focus && document.contains(avant)) setTimeout(() => avant.focus({ preventScroll: true }), 0); };
+  }
   function shell(html) {
     style();
     document.querySelector('.ng-bg')?.remove();
     const bg = document.createElement('div'); bg.className = 'ng-bg';
     bg.innerHTML = `<div class="ng" role="dialog" aria-modal="true" aria-labelledby="ngT"><button type="button" class="ng-x" aria-label="Fermer">×</button>${html}</div>`;
     document.body.appendChild(bg);
-    const close = () => { bg.remove(); removeEventListener('keydown', onK); }, onK = e => { if (e.key === 'Escape' && !bg.dataset.lock) close(); };
+    const rendre = piege(bg), close = () => { bg.remove(); removeEventListener('keydown', onK); rendre(); }, onK = e => { if (e.key === 'Escape' && !bg.dataset.lock) close(); };
     addEventListener('keydown', onK); bg.addEventListener('click', e => { if (e.target === bg && !bg.dataset.lock) close(); }); bg.querySelector('.ng-x').onclick = close;
     bg.close = close; return bg;
   }
@@ -222,7 +231,7 @@
   }
   function open(raison) {
     const s = session(), n = waiting();
-    if (s) return openCompte(s, n);
+    if (s) return window.MDGCompte ? MDGCompte.ouvrir() : openCompte(s, n);
     const bg = shell(`<h2 id="ngT">${raison === 'publie' ? 'Rendez votre annonce visible de tous' : raison === 'negocie' ? 'Connectez-vous pour proposer un prix' : 'Se connecter'}</h2>
         <p>${raison === 'publie' ? 'Elle est enregistrée sur ce téléphone. Connectez-vous pour que les acheteurs et les vendeurs de tout le pays la voient.' : raison === 'negocie' ? 'Le vendeur doit savoir qui lui écrit. Votre numéro et un code secret à 6 chiffres suffisent.' : 'Votre numéro et un code secret à 6 chiffres. Pas besoin d’e-mail.'}</p>
         <div class="ng-tabs" role="tablist"><button type="button" role="tab" data-m="in" aria-selected="true">J’ai déjà un compte</button><button type="button" role="tab" data-m="up" aria-selected="false">Créer mon compte</button></div>
@@ -256,7 +265,8 @@
       try {
         const r = await (mode === 'up' ? signUp(t, c) : mode === 'sos' ? recover(t, $('#ngCle').value, c) : signIn(t, c));
         const fin = () => toast(mode === 'up' ? 'Compte créé. Vos annonces partent maintenant.' : mode === 'sos' ? 'Nouveau code enregistré. Vous êtes connecté.' : 'Connecté. Vos annonces partent maintenant.');
-        bg.close(); if (r && r.secours) showSecours(r.secours, fin); else fin();
+        const bienvenue = () => { fin(); if (mode === 'up' && window.MDGCompte) setTimeout(() => MDGCompte.bienvenue(), 300); };
+        bg.close(); if (r && r.secours) showSecours(r.secours, bienvenue); else bienvenue();
         dispatchEvent(new CustomEvent('mdg:connecte', { detail: { raison } }));
       }
       catch (x) { err.textContent = x.message === 'Failed to fetch' ? 'Le serveur ne répond pas. Réessayez dans un instant.' : x.message; go.disabled = false; go.textContent = label[mode]; }
@@ -304,5 +314,5 @@
   if (age > 60000) setTimeout(refresh, 300); setTimeout(() => sync().then(pullMine), 1200);
   setInterval(() => { if (!document.hidden) refresh(); }, 120000);
 
-  window.MDGNuage = { list, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style };
+  window.MDGNuage = { list, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
 })();

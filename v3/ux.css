@@ -1,0 +1,61 @@
+/* ═════════ Marché de Gros — micro-UX : règles communes (site ; l'application en reprend les mêmes valeurs) ═════════
+   Une seule source pour les durées, les courbes, les tailles d'icônes, les surfaces tactiles et les états.
+   Principe : la taille visible sert la hiérarchie ; la surface interactive sert le doigt (≈ 44 px sur écran tactile).
+   Chaque mouvement répond à une question : qu'est-ce qui a changé, où suis-je, que puis-je faire maintenant ?
+   Durées : 120 ms (retour de pression), 200 ms (état d'un contrôle), 320 ms (ouverture d'un panneau), 520 ms (changement de contexte). */
+:root{
+  --ux-d1:120ms;--ux-d2:200ms;--ux-d3:320ms;--ux-d4:520ms;
+  --ux-out:cubic-bezier(.22,1,.36,1);--ux-std:cubic-bezier(.2,.8,.2,1);--ux-in:cubic-bezier(.4,0,1,1);
+  --ux-hit:44px;--ux-ico-s:14px;--ux-ico-m:18px;--ux-ico-l:22px;
+  --ux-r-s:10px;--ux-r-m:16px;--ux-r-l:24px;--ux-r-pill:999px;
+  --ux-focus:var(--color-ambre,#E07A3F)
+}
+
+/* ——— Chiffres : Cormorant dessine « 1 » comme un « I » et « 0 » comme un « O » ; on force des chiffres alignés, lisibles ——— */
+html{font-variant-numeric:lining-nums}
+
+/* ——— Focus clavier : visible partout, jamais à la souris ——— */
+:where(a,button,summary,input,select,textarea,[tabindex]:not([tabindex="-1"])):focus-visible{outline:2px solid var(--ux-focus);outline-offset:3px}
+:where(a,button,summary,[role="button"]){-webkit-tap-highlight-color:transparent}
+
+/* ——— Pression : un léger enfoncement, seulement sur écran tactile (au survol, la souris a déjà son retour) ——— */
+@media (hover:none),(pointer:coarse){
+  :where(.btn,.fbtn,.ax-zp,.pp-chip,.vs-o,.chip button,.nst-b,.sh-btn,.o-rep,.ng-go,.ng-out,.ng-item,.nx-go,.nx-alt,.nx-chip,.nx-row,.nx-ib):active{transform:scale(.97);transition:transform var(--ux-d1) var(--ux-std)}
+}
+
+/* ——— Surfaces tactiles : la commande garde sa taille visible, la zone qu'on touche grandit ——— */
+@media (pointer:coarse){
+  .fbtn,.ax-zp,.pp-chip,.vs-o.sm,.sel{min-height:var(--ux-hit)}
+  .chip button{position:relative}
+  .chip button::before{content:"";position:absolute;inset:-6px}
+  .o-rep{min-height:var(--ux-hit);padding:0 4px}
+  .crumbs a,.o-by a,.ax-rl a{display:inline-flex;align-items:center;min-height:var(--ux-hit)}
+  #foot a:not(.btn){display:inline-flex;align-items:center;min-height:var(--ux-hit)}
+}
+
+/* ——— Dépliants : un chevron qui pivote, un contenu qui s'ouvre sans saut ——— */
+:where(.ax-rest,.pp-f,.odv__more)>summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:var(--ux-hit);cursor:pointer;user-select:none}
+:where(.ax-rest,.pp-f,.odv__more)>summary::-webkit-details-marker{display:none}
+.odv__more>summary::before{content:none!important}
+:where(.ax-rest,.pp-f,.odv__more)>summary::after{content:"";flex:none;width:8px;height:8px;margin:-3px 4px 0 auto;border-right:2px solid currentColor;border-bottom:2px solid currentColor;opacity:.7;transform:rotate(45deg);transition:transform var(--ux-d2) var(--ux-out),opacity var(--ux-d2)}
+.ax-rest>summary::after{margin-left:2px}
+:where(.ax-rest,.pp-f,.odv__more)[open]>summary::after{transform:translateY(3px) rotate(225deg);opacity:1}
+:where(.ax-rest,.pp-f,.odv__more)>summary:hover::after{opacity:1}
+/* ouverture fluide là où le navigateur sait animer une hauteur « auto » (sinon : ouverture immédiate, sans saut de mise en page) */
+@supports (interpolate-size:allow-keywords){
+  :where(.ax-rest,.pp-f,.odv__more,.an-srcd){interpolate-size:allow-keywords}
+  :where(.ax-rest,.pp-f,.odv__more)::details-content{block-size:0;overflow:clip;opacity:0;transition:block-size var(--ux-d3) var(--ux-out),opacity var(--ux-d2) var(--ux-std),content-visibility var(--ux-d3) allow-discrete}
+  :where(.ax-rest,.pp-f,.odv__more)[open]::details-content{block-size:auto;opacity:1}
+}
+
+/* ——— Compteurs : quand une donnée réelle change, le chiffre le montre brièvement ——— */
+.ux-tick{animation:uxTick var(--ux-d4) var(--ux-out)}
+@keyframes uxTick{0%{transform:scale(1.35)}100%{transform:none}}
+
+/* ——— Moins de mouvement demandé : on garde les états, on retire les déplacements ——— */
+@media (prefers-reduced-motion:reduce){
+  :where(.ax-rest,.pp-f,.odv__more)::details-content{transition:none}
+  :where(.ax-rest,.pp-f,.odv__more)>summary::after{transition:none}
+  .ux-tick{animation:none}
+  :where(.btn,.fbtn,.ax-zp,.pp-chip,.vs-o,.nx-go,.nx-alt,.ng-go):active{transform:none}
+}

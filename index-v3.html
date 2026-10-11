@@ -27,6 +27,7 @@
 <link rel="stylesheet" href="v3/etat.css?v=20261010a">
 <link rel="stylesheet" href="v3/constellation.css?v=20261010c">
 <link rel="stylesheet" href="css/typo.css?v=20261009o">
+<link rel="stylesheet" href="v3/ux.css?v=20261012a">
 <script>/* téléphone : ouvre l'application mobile (même adresse, même données). ?ordinateur=1 force le site complet */(function(){try{var q=location.search,f=/[?&]ordinateur=1/.test(q);if(f)sessionStorage.setItem('mdg-ordi','1');var o=sessionStorage.getItem('mdg-ordi')==='1';if(/[?&]app=1/.test(q)){sessionStorage.setItem('mdg-app','1');sessionStorage.removeItem('mdg-ordi');o=false}var tel=sessionStorage.getItem('mdg-app')==='1'||(matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<768);if(tel&&!o)location.replace('application.dc.html'+(location.hash||'#/'));}catch(e){}})();</script>
 <script>/* sans adresse : ouvre l'Accueil */ if (!location.hash) history.replaceState(null, '', '#/');</script>
 <script src="vendor/gsap.min.js" defer></script>
@@ -547,6 +548,8 @@ body.dark .foot-net{display:block}
 .o-rep{display:block;margin:10px 0 0 auto;padding:6px 0;border:0;background:none;color:var(--color-neutral-600,#847966);font:600 12px var(--font-body);text-decoration:underline;text-underline-offset:3px;cursor:pointer}.o-rep:hover{color:var(--color-accent)}.o-rep[disabled]{text-decoration:none;cursor:default}
 .ng-new{position:fixed;left:50%;bottom:24px;z-index:80;transform:translateX(-50%);min-height:44px;padding:0 20px;border:0;border-radius:999px;background:var(--color-ivoire-t,#F5F0E6);color:var(--color-cacao,#171512);font:700 14px var(--font-body);box-shadow:0 12px 36px rgba(0,0,0,.35);cursor:pointer}.ng-new[hidden]{display:none}
 .sh-btn .sh-dot{position:absolute;right:9px;top:9px;width:8px;height:8px;border-radius:50%;background:var(--mk-offre,#6CC58C);box-shadow:0 0 0 2px var(--color-cacao,#171512);opacity:0;transition:opacity .3s}.sh-btn.is-on .sh-dot{opacity:1}
+.o-av{display:inline-block;flex:none;width:24px;height:24px;margin-right:2px}.o-av svg{display:block;border-radius:50%}
+.sh-btn.has-av{padding:0;overflow:hidden}.sh-btn.has-av>svg:not(.ico){width:100%;height:100%;border-radius:50%}
 .sh-btn .sh-dot[data-n]{right:3px;top:3px;width:auto;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#E07A3F;color:#171512;font:700 11px/18px var(--font-body,Jost),sans-serif;text-align:center;opacity:1;font-style:normal}.sh-btn .sh-dot[data-n]::before{content:attr(data-n)}
 .offer.hover{box-shadow:var(--shadow-md),0 0 0 1.5px color-mix(in srgb,var(--mk-offre,#6CC58C) 70%,transparent)}
 .o-t{font-family:var(--font-heading);font-size:24px;line-height:1.1;margin:0}
@@ -1250,9 +1253,11 @@ body.tzmode .tz{height:100svh}
 <script src="v2/data.js"></script>
 <script src="v3/marqueurs.js?v=20261010a"></script>
 <script src="v3/terre.js?v=20261011a"></script>
-<script src="v3/nuage.js?v=20261012a"></script>
-<script src="v3/sons.js?v=20261012a"></script>
-<script src="v3/negoce.js?v=20261012a"></script>
+<script src="v3/nuage.js?v=20261012b"></script>
+<script src="v3/sons.js?v=20261012b"></script>
+<script src="v3/negoce.js?v=20261012b"></script>
+<script src="v3/avatar.js?v=20261012b"></script>
+<script src="v3/compte.js?v=20261012b"></script>
 <script src="v3/marche.js?v=20261011c"></script>
 <script src="v2/search.js"></script>
 <script src="v2/map.js"></script>
@@ -1436,8 +1441,8 @@ function offerCard(o, { showProduct = true, need = null, k = 0 } = {}) {
   const dist = o.distance == null ? '' : o.distance < 15 ? ' · sur place' : ` · ≈ ${fmt(o.distance)} km`;
   return `<article class="offer" data-o="${o.id}" data-p="${o.producerId}" style="animation-delay:${k * 60}ms;--pt:${ptColor(o.productSlug)}" aria-labelledby="t-${o.id}"><i class="o-pt" aria-hidden="true"></i>
     ${showProduct ? `<h3 class="o-t" id="t-${o.id}"><a href="#/produits/${o.productSlug}" style="color:inherit;text-decoration:none">${esc(o.productName)}</a></h3>
-      <div class="o-by"><svg class="ico" style="width:16px;height:16px"><use href="#i-user"/></svg>par <a href="#/producteurs/${o.producerId}">${esc(o.producerName)}</a> ${o.isExample ? '' : ''}</div>`
-    : `<h3 class="o-t" id="t-${o.id}"><a href="#/producteurs/${o.producerId}" style="color:inherit;text-decoration:none">${esc(o.producerName)}</a></h3><div class="o-by">${o.isExample ? '' : ''}</div>`}
+      <div class="o-by">${o.uid ? `<span class="o-av" data-av-uid="${esc(o.uid)}" data-av-size="24" data-av-nom="${esc(o.producerName)}" aria-hidden="true"></span>` : '<svg class="ico" style="width:16px;height:16px"><use href="#i-user"/></svg>'}par <a href="#/producteurs/${o.producerId}">${esc(o.producerName)}</a> ${o.isExample ? '' : ''}</div>`
+    : `<h3 class="o-t" id="t-${o.id}" style="display:flex;align-items:center;gap:10px">${o.uid ? `<span class="o-av" style="width:30px;height:30px" data-av-uid="${esc(o.uid)}" data-av-size="30" data-av-nom="${esc(o.producerName)}" aria-hidden="true"></span>` : ''}<a href="#/producteurs/${o.producerId}" style="color:inherit;text-decoration:none">${esc(o.producerName)}</a></h3><div class="o-by">${o.isExample ? '' : ''}</div>`}
     <div class="o-q"><small>${avail(o)}</small><b>${o.quantity ? fmt(o.quantity) : '—'}</b><small>${esc(o.unit)}</small></div>
     <div class="o-m">${price(o)}<span><svg class="ico"><use href="#i-pin"/></svg>${esc(o.city)}${o.regionName !== o.city ? ', ' + esc(o.regionName) : ''}${dist}</span></div>
     ${cov != null ? `<div class="cover"><i style="--w:${cov}%"></i>${cov >= 100 ? 'Couvre tout votre besoin' : `Couvre ${cov} % de votre besoin`}</div>` : ''}
@@ -1446,6 +1451,7 @@ function offerCard(o, { showProduct = true, need = null, k = 0 } = {}) {
   </article>`;
 }
 function bindOffers(root, need, mapApi) {
+  if (window.MDGCompte) MDGCompte.hydrate(root);
   $$('[data-rep]', root).forEach(b => b.onclick = async e => {
     e.stopPropagation(); if (!confirm('Signaler cette annonce ? (fausse, trompeuse ou déplacée)')) return;
     b.disabled = true; try { await MDGNuage.report('offres', b.dataset.rep, 'site'); b.textContent = 'Annonce signalée, merci'; } catch (_) { b.disabled = false; toast('Signalement impossible pour l’instant. Réessayez avec du réseau.'); }
@@ -1606,8 +1612,10 @@ document.addEventListener('click', e => {
 $('#back').onclick = back;
 $('#shContact').onclick = () => toast('Contact bientôt disponible');
 /* ——— Compte et annonces partagées (v3/nuage.js) ——— */
-function paintCompte() { const b = $('#shCompte'); if (!b || !window.MDGNuage) return; const s = MDGNuage.session(), n = s && window.MDGNegoce ? MDGNegoce.unread() : 0, l = s ? (n ? 'Mon compte : ' + n + (n > 1 ? ' négociations non lues' : ' négociation non lue') : 'Mon compte (connecté)') : 'Se connecter'; b.classList.toggle('is-on', !!s); b.setAttribute('aria-label', l); b.title = l; const d = b.querySelector('.sh-dot'); if (d) { if (n) d.dataset.n = n > 9 ? '9+' : n; else delete d.dataset.n; } }
-addEventListener('mdg:negoce', paintCompte);
+const ICO_COMPTE = $('#shCompte') ? $('#shCompte').innerHTML : '';
+function paintCompte() { const b = $('#shCompte'); if (!b || !window.MDGNuage) return; const s = MDGNuage.session(), n = s && window.MDGNegoce ? MDGNegoce.unread() : 0, l = s ? (n ? 'Mon espace : ' + n + (n > 1 ? ' négociations non lues' : ' négociation non lue') : 'Mon espace (connecté)') : 'Se connecter'; b.classList.toggle('is-on', !!s); b.setAttribute('aria-label', l); b.title = l;
+  const P = s && window.MDGCompte && window.MDGAvatar ? MDGCompte.profil() : null; b.classList.toggle('has-av', !!(P && (P.avatar || P.prenom))); b.innerHTML = P && (P.avatar || P.prenom) ? MDGAvatar.svg(P.avatar, { size: 44, nom: MDGCompte.nomAffiche(P), seed: s.user.id }) + '<i class="sh-dot" aria-hidden="true"></i>' : ICO_COMPTE; const d = b.querySelector('.sh-dot'); if (d) { if (n) d.dataset.n = n > 9 ? '9+' : n; else delete d.dataset.n; } }
+addEventListener('mdg:negoce', paintCompte); addEventListener('mdg:profil', paintCompte);
 if ($('#shCompte')) $('#shCompte').onclick = () => window.MDGNuage && MDGNuage.open();
 paintCompte();
 addEventListener('mdg:nuage', e => {

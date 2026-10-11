@@ -150,3 +150,39 @@ Téléphone, tablette, ordinateur : première visite en ligne, puis réseau coup
 **Langage sonore** (`v3/sons.js`) : courtes notes de **balafon** synthétisées dans le navigateur (aucun fichier). Désactivé par défaut, activable dans « Mon compte → Sons » ou depuis l'icône haut-parleur des négociations, avec réglage par catégorie, volume et bouton « Écouter ». Hiérarchie : accord (3 notes montantes) > proposition reçue (2 notes montantes) > refus / retrait / expiration (2 notes descendantes) > nouvelle annonce sur un de vos produits (1 note, désactivée par défaut). Les messages écrits ne font pas de son. Les événements rapprochés donnent un seul son ; onglet en arrière-plan : le titre affiche le nombre d'événements et un seul son joue au retour. Chaque son a son message à l'écran. Aucun son pour une activité fictive.
 
 Limites : pas de notification quand le site est fermé (cela demanderait un service d'envoi de notifications) ; les réponses arrivent à la prochaine lecture (toutes les minutes, toutes les 7 s dans une négociation ouverte). `sw.js` : `v3/sons.js` en cache, `CACHE = 'mgci-v14'`.
+
+---
+
+# Compte, profil et avatars · micro-UX — 12 octobre 2026
+**Décisions** : on garde l'authentification existante (Supabase, numéro + code secret à 6 chiffres). Pas de SMS (service payant) : le numéro est affiché « non vérifié par SMS », jamais présenté comme vérifié, et le changer n'est pas encore possible. Le profil est séparé du compte (`public.profils`, `supabase/schema-4.sql`, installé).
+
+**Compte** (`v3/compte.js`, site et application) :
+- Après la création du compte et le code de secours : 3 étapes courtes — prénom (nom facultatif), avatar, rôle et lieu (« Plus tard » possible).
+- « Mon espace » (bouton du compte sur le site, qui montre l'avatar ; menu « Compte » de l'application) :
+  - **Mon profil** : prénom, nom, pseudonyme unique facultatif, avatar, rôle (j'achète / je vends ou je produis / les deux), région (liste du projet), ville. Erreurs affichées sous le champ.
+  - **Mon activité** : mes offres et demandes (en ligne ou en attente d'envoi), propositions envoyées et reçues, accords conclus. Aucune statistique inventée, états vides explicites.
+  - **Notifications** : journal des vrais événements de négociation (proposition, contre-proposition, accord, refus, retrait, expiration).
+  - **Préférences** : messages à l'écran, sons, confidentialité (montrer ou non son nom de famille). Les notifications quand le site est fermé et les SMS sont marqués « pas disponibles ».
+  - **Sécurité** : changer son code secret (l'ancien est vérifié), nouveau code de secours, se déconnecter, déconnecter tous ses appareils, supprimer son compte, données conservées.
+- Changer sa région ne déplace pas ses annonces. Le nom d'exploitation saisi sur chaque annonce reste celui de l'annonce.
+- Ce que voient les autres passe par `profils_publics()` : pseudonyme, ou prénom + initiale du nom (sauf accord), avatar et rôle. Le nom complet n'est jamais montré sans accord.
+- **Suppression du compte** : annonces retirées, négociations en cours fermées, profil et code de secours effacés, connexion bloquée. Les accords conclus et les messages restent pour la trace des échanges (l'autre partie voit « Compte supprimé »). La fonction est à lancer par le propriétaire : `supabase/a-lancer-etape-4.sql`.
+- Vérifié dans une transaction annulée : un compte ne peut ni créer, ni lire, ni modifier le profil d'un autre ; prénom invalide refusé ; `supprime_le` non modifiable ; affichage public « Awa K. ».
+
+**Avatars** (`v3/avatar.js`) : portraits dessinés en SVG, sans image ni service.
+- 9 styles nommés par ce qu'ils montrent, jamais par un genre : foulard, tresses, chignon, afro, nattes, coupe courte, ras, barbe, bonnet.
+- 6 teints, couleurs de cheveux ou de tissu, 6 fonds, boucles d'oreilles ou lunettes.
+- Par défaut : les initiales. Rien n'est déduit du nom ou du numéro.
+- Le même avatar apparaît sur le profil, le bouton du compte, les cartes d'offre (site et application) et les négociations.
+- Pas d'import de photo pour l'instant.
+
+**Micro-UX** (`v3/ux.css` sur le site, mêmes valeurs dans l'application) :
+- Réglages communs : durées 120 / 200 / 320 / 520 ms, courbes, tailles d'icônes, rayons, focus clavier visible, enfoncement léger à la pression sur écran tactile, moins de mouvement si l'appareil le demande.
+- Audit à 1440, 1024, 820, 390 et 360 px : aucun débordement horizontal. Sur écran tactile, surfaces portées à 44 px :
+  - site : puces de prix, zones d'Acheter, filtres, « Signaler », fil d'Ariane, liens du pied de page, croix de retrait ;
+  - application : pastilles des familles, flèches précédent / suivant.
+- Dépliants unifiés : « autres produits sans offre », familles sans prix, options du formulaire rapide. Le chevron pivote et l'ouverture est fluide là où le navigateur sait animer une hauteur.
+- Fenêtres (connexion, Mon espace, négociations, sons) : le focus y entre, boucle avec Tab, et revient au bouton d'origine à la fermeture.
+- Chiffres alignés partout : Cormorant dessinait « 1 » comme un « I » et « 0 » comme un « O » (« Offres I · Demandes O » dans l'application).
+
+**Limites** : pas de vérification par SMS, pas de changement de numéro, pas de photo de profil, pas de notification quand le site est fermé. `sw.js` : `v3/avatar.js`, `v3/compte.js` et `v3/ux.css` en cache, `CACHE = 'mgci-v15'`.

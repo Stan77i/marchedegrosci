@@ -5,7 +5,7 @@
    ce sont des métaphores, aucune donnée n'est affichée ni inventée.
    Pourquoi pas WebGL : quelques centaines de traits suffisent ; un canvas 2D coûte moins (batterie, petits téléphones) et n'échoue pas.
    L'intensité suit l'état réel du formulaire : repos · saisie · envoi · réussite · erreur. Mouvement réduit : une image fixe.
-   Sur téléphone (compact) : une illustration SVG fixe, animée en CSS (voir monterSvg).
+   Dans l'application (<html data-app>) sur téléphone : une illustration SVG, animée en CSS (voir monterSvg).
    API : MDGPorte.monter(el, { compact }) → { etat(nom), mode('in'|'up'|'sos'), arreter() } */
 (function () {
   'use strict';
@@ -22,7 +22,7 @@
 
   function rng(seed) { let s = seed >>> 0; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
 
-  // ——— téléphone : une illustration SVG (la porte du marché) au lieu de la scène animée ———
+  // ——— application sur téléphone : une illustration SVG (la porte du marché) au lieu de la scène animée ———
   // Le bandeau ne fait que 132 px : des points mobiles y passaient sous le texte. Ici, une seule image lisible :
   // à gauche les sillons d'un champ, à droite les étals ; au centre une porte ouverte d'où vient la lumière.
   // Le cercle vert (qui produit) et le carré jaune (qui cherche) marchent vers elle ; la ligne bleue (la rencontre) passe le seuil.
@@ -103,7 +103,7 @@
 
   function monter(el, opt = {}) {
     const compact = !!opt.compact;
-    if (compact) return monterSvg(el);
+    if (compact && document.documentElement.hasAttribute('data-app')) return monterSvg(el);  // l'application sur téléphone ; le site garde ses points partout
     el.classList.add('pt');
     el.innerHTML = `<canvas class="pt-cv" aria-hidden="true"></canvas><div class="pt-txt" aria-hidden="true"><span class="pt-k"><i></i><em></em></span><p class="pt-m"></p></div><p class="pt-sr">Deux mondes, un même marché : le Marché de Gros relie ceux qui produisent et ceux qui cherchent, partout en Côte d'Ivoire.</p>`;
     const cv = el.querySelector('canvas'), ctx = cv.getContext('2d'), tx = el.querySelector('.pt-txt'), k = el.querySelector('.pt-k em'), ki = el.querySelector('.pt-k i'), m = el.querySelector('.pt-m');

@@ -873,6 +873,15 @@ body.dark .sq-b,body.dark .sq-alt{background:var(--color-brun);color:var(--color
 .tj-m{margin:0;font-size:14px;color:var(--p-ink-muted,var(--color-sable))}.tj-m b{color:var(--p-ink,var(--color-ivoire-t));font-weight:600}
 .tj-me{margin:-6px 0 0 14px;font:700 11px/1 var(--font-body);letter-spacing:.22em;text-transform:uppercase;color:var(--color-ivoire-t);text-shadow:0 1px 10px rgba(0,0,0,.9)}
 .tj-geo{translate:-50% -50%;font:700 10px/1 var(--font-body);letter-spacing:.34em;color:color-mix(in srgb,var(--color-sable) 55%,transparent)}
+.tj-geo.w{font:italic 500 17px/1 var(--font-heading);letter-spacing:.04em;color:color-mix(in srgb,var(--color-sable) 62%,transparent)}
+.tj-city{margin:-7px 0 0 9px;font:500 11.5px/1 var(--font-body);letter-spacing:.02em;color:color-mix(in srgb,var(--color-sable) 88%,transparent);text-shadow:0 1px 8px rgba(0,0,0,.85)}
+.tj-city.cap{font-weight:600;font-size:12.5px;color:var(--color-ivoire-t)}
+.tj-geo.w.sm{font-size:13.5px;letter-spacing:.02em;color:color-mix(in srgb,#9DB4AE 75%,transparent)}
+.tj-hud{position:absolute;left:20px;bottom:20px;display:flex;flex-direction:column;gap:7px;pointer-events:none;color:var(--color-ivoire-t);transition:opacity .4s}
+.tj-where{font:500 19px/1.1 var(--font-heading);letter-spacing:.01em;text-shadow:0 1px 12px rgba(0,0,0,.8)}
+.tj-scale{display:flex;align-items:flex-end;gap:9px;font:600 11px/1 var(--font-body);color:var(--color-sable)}
+.tj-scale i{display:block;height:6px;border:1.5px solid color-mix(in srgb,var(--color-sable) 80%,transparent);border-top:0;transition:width .25s}
+.tj-world.card .tj-hud{display:none}
 .tj{position:relative;min-height:max(640px,100svh);display:flex;align-items:center;background:var(--p-bg-deep,var(--color-cacao));color:var(--p-ink,var(--color-ivoire-t));overflow:hidden}
 .tj-map{position:absolute;inset:0}
 .tj-scrim{position:absolute;inset:0;pointer-events:none;z-index:1;background:linear-gradient(90deg,color-mix(in srgb,var(--p-bg-deep,var(--color-cacao)) 86%,transparent) 0%,color-mix(in srgb,var(--p-bg-deep,var(--color-cacao)) 40%,transparent) 36%,transparent 60%),linear-gradient(180deg,var(--p-bg-deep,var(--color-cacao)) 0%,transparent 14%,transparent 86%,var(--p-bg-deep,var(--color-cacao)) 100%)}
@@ -2210,13 +2219,13 @@ function liveMap(view, o) {
 const WORLD = {
   inst: null, p: null,
   get() {
-    return this.p || (this.p = import('./v2/reseau-carte.js?v=20261010b').then(m => m.create({ data: mapData(), reduced, tier: W3.tier, onLost: () => { WORLD.inst = null; WORLD.p = null; } }))
+    return this.p || (this.p = import('./v2/reseau-carte.js?v=20261011c').then(m => m.create({ data: mapData(), reduced, tier: W3.tier, onLost: () => { WORLD.inst = null; WORLD.p = null; } }))
       .then(w => { if (!w) throw new Error('webgl'); this.inst = w; window.MDGTerritoire = w; return w; }).catch(e => { this.p = null; throw e; }));
   },
 };
 function mapData() { return { producers: M.producers.map(p => { const of = OFFERS.filter(o => o.producerId === p.id); return { id: p.id, name: p.name, city: p.city, regionSlug: p.regionSlug, lat: p.latitude, lon: p.longitude, unit: of[0] ? of[0].unit : 'kg', prods: Object.fromEntries(of.map(o => [o.productSlug, o.quantity])) }; }), demands: demandsAll().map(d => ({ id: d.id, name: d.name, buyerType: d.buyerType, city: d.city, regionSlug: d.regionSlug, lat: d.latitude, lon: d.longitude, productSlug: d.productSlug, quantity: d.quantity, unit: d.unit })), zones: zonesOf() }; }
 // L'année du marché : une seconde instance de la même carte (même module, même dessin), car « Le réseau » occupe déjà la première
-const SNMAP = () => SNMAP.p || (SNMAP.p = import('./v2/reseau-carte.js?v=20261010b').then(m => m.create({ data: mapData(), reduced })).then(w => { if (!w) throw new Error('canvas'); return w; }).catch(e => { SNMAP.p = null; throw e; }));
+const SNMAP = () => SNMAP.p || (SNMAP.p = import('./v2/reseau-carte.js?v=20261011c').then(m => m.create({ data: mapData(), reduced })).then(w => { if (!w) throw new Error('canvas'); return w; }).catch(e => { SNMAP.p = null; throw e; }));
 // centres des districts : géographie de référence (v3/marche.js), jamais déduite de producteurs inventés
 function zonesOf() { const G = window.MDGMarche.REG; return M.regions.filter(r => G[r.slug]).map(r => ({ slug: r.slug, name: r.name, lat: G[r.slug][0], lon: G[r.slug][1], n: M.producers.filter(p => p.regionSlug === r.slug).length })); }
 

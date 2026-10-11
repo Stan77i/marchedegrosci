@@ -203,3 +203,4 @@ Limites : pas de notification quand le site est fermé (cela demanderait un serv
 - **Impossible de défiler dans l'application** : le blocage de l'effet élastique de l'iPhone n'autorisait que les zones de l'application elle-même, pas les fenêtres ajoutées par-dessus (connexion, Mon espace, négociation, sons). Il reconnaît maintenant toute zone qui défile. Vérifié par un glissement de doigt simulé : bloqué avant, défile après.
 - Quand le clavier cache le champ touché, celui-ci remonte au milieu de la fenêtre.
 - `sw.js` : `mgci-v20`.
+- Mon espace : plus aucune mention de SMS (préférences, profil, sécurité ; « Changer de numéro » renvoie vers le Marché de Gros). Activité : une proposition n'est « envoyée » ou « reçue » que tant qu'elle attend une réponse ; retirée, refusée ou expirée, elle passe dans « Sans suite », sans prix affiché. Même logique dans « Mes négociations » (groupe « Sans proposition en cours »). `sw.js` : `mgci-v21`.

@@ -266,7 +266,7 @@
   // le code de secours n'est montré qu'une fois : on demande de confirmer qu'il est noté
   function showSecours(cle, apres) {
     const bg = shell(`<h2 id="ngT">Votre code de secours</h2>
-      <p>Si vous oubliez votre code secret, ce code vous permet d’en choisir un nouveau, sans SMS. Notez-le sur papier ou prenez une photo de cet écran.</p>
+      <p>Si vous oubliez votre code secret, ce code vous permet d’en choisir un nouveau. Notez-le sur papier ou prenez une photo de cet écran.</p>
       <div class="ng-ticket"><output>${esc(groupe(cle))}</output><small>Il ne sera plus affiché. Personne d’autre ne peut le voir, même pas le Marché de Gros.</small></div>
       <button type="button" class="ng-alt ng-copy">Copier le code</button>
       <button type="button" class="ng-go ng-ok">J’ai noté mon code de secours</button>`);

@@ -235,8 +235,8 @@
         ${champ('cp-pseudo', 'Pseudonyme', p.pseudo, { facultatif: true, attrs: 'maxlength="24" autocomplete="nickname" spellcheck="false"', aide: 'S’il est rempli, il remplace votre prénom auprès des autres. Unique sur le Marché de Gros.' })}
         ${roleSeg(p)}${lieu(p)}
         <div class="cp-row"><button type="submit" class="cp-go">Enregistrer</button><span class="cp-msg" role="status"></span></div></form>
-        <h3>Téléphone</h3><div class="cp-card"><div class="cp-kv"><span>Numéro du compte</span><b>${esc(N().fmtTel(u.tel))} <span class="cp-tag warn">non vérifié par SMS</span></b></div></div>
-        <p class="cp-help">La vérification par SMS est payante et n’est pas installée : le numéro est celui que vous avez saisi. Le nom affiché sur chaque annonce (votre nom de vendeur ou d’exploitation) reste celui de l’annonce.</p></div>`;
+        <h3>Téléphone</h3><div class="cp-card"><div class="cp-kv"><span>Numéro du compte</span><b>${esc(N().fmtTel(u.tel))}</b></div></div>
+        <p class="cp-help">Le nom affiché sur chaque annonce (votre nom de vendeur ou d’exploitation) reste celui de l’annonce.</p></div>`;
       lierRole(main);
       main.querySelector('[data-av]').onclick = () => choisirAvatar(() => bg && bg.rafraichir());
       const z = main.querySelector('[data-av0]'); if (z) z.onclick = async () => { try { await enregistrer({ avatar: null }); bg.rafraichir(); N().toast('Avatar : vos initiales.'); } catch (e) { N().toast(e.message); } };
@@ -254,19 +254,22 @@
     activite(main) {
       const G = window.MDGNegoce, u = me(), local = k => J('mdg-v2:' + k, []).filter(x => x && x.productSlug), p = J('mdg-nuage:pousse', {});
       const off = local('offres'), dem = local('demandes'), negos = J('mdg-negoce:liste', []);
-      const env = negos.filter(n => n.auteur_id === u.id), rec = negos.filter(n => n.proprio_id === u.id), ok = negos.filter(n => n.statut === 'conclue');
+      // une proposition n'est « envoyée » ou « reçue » que tant qu'elle attend une réponse ; retirée, refusée ou expirée, elle passe dans « Sans suite »
+      const vive = n => n.statut === 'ouverte' && n.dernier_par && n.expire_le && Date.parse(n.expire_le) > Date.now();
+      const env = negos.filter(n => vive(n) && n.dernier_par === u.id), rec = negos.filter(n => vive(n) && n.dernier_par !== u.id), ok = negos.filter(n => n.statut === 'conclue'), fin = negos.filter(n => n.statut !== 'conclue' && !vive(n));
       const mk = k => k === 'offres' ? '<svg class="mk" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5" fill="#6CC58C"/></svg>' : '<svg class="mk" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="5.5" width="13" height="13" rx="1.5" fill="#F2C94C"/></svg>';
       const ann = (k, x) => `<div class="cp-item" style="cursor:default">${mk(k)}<b>${esc(x.productLabel || x.productName || x.productSlug)}${x.quantity ? ' · ' + fmt(x.quantity) + ' ' + esc(x.unit || '') : ''}</b><span class="p">${(k === 'offres' ? x.price : x.budget) ? fmt(k === 'offres' ? x.price : x.budget) : '—'}</span><small>${p[k + ':' + x.id] ? '<span class="cp-tag ok">En ligne</span>' : '<span class="cp-tag warn">Sur cet appareil, en attente d’envoi</span>'} ${x.negociable === false ? '· prix ferme ' : ''}· ${x.createdAt ? ago(x.createdAt) : ''}</small></div>`;
-      const neg = n => { const e = n.statut === 'conclue' ? ['Accord conclu', 'ok'] : n.statut === 'close' ? ['Terminée', ''] : n.dernier_par && n.expire_le && Date.parse(n.expire_le) > Date.now() ? (n.dernier_par === u.id ? ['En attente de réponse', 'warn'] : ['À vous de répondre', 'acc']) : ['En cours', ''];
-        const lui = n.auteur_id === u.id ? n.proprio_id : n.auteur_id, av = avatar(lui, { size: 30 });
-        return `<button type="button" class="cp-item" data-nego="${n.id}"><span style="grid-row:span 2">${av.svg}</span><b>${esc(n.produit || 'Annonce')}</b><span class="p">${fmt(n.statut === 'conclue' ? n.prix_final : n.dernier_prix)}</span><small><span class="cp-tag ${e[1]}">${e[0]}</span> ${esc(av.nom ? 'avec ' + av.nom : '')}</small></button>`; };
+      const neg = n => { const e = n.statut === 'conclue' ? ['Accord conclu', 'ok'] : n.statut === 'close' ? [n.motif_fin === 'annonce_retiree' ? 'Annonce retirée' : 'Négociation arrêtée', ''] : vive(n) ? (n.dernier_par === u.id ? ['En attente de réponse', 'warn'] : ['À vous de répondre', 'acc']) : n.dernier_par ? ['Expirée sans réponse', ''] : ['Proposition retirée ou refusée', ''];
+        const lui = n.auteur_id === u.id ? n.proprio_id : n.auteur_id, roleLui = (lui === n.proprio_id) === (n.cible === 'offre') ? 'Vendeur' : 'Acheteur', av = avatar(lui, { size: 30, nom: roleLui });
+        return `<button type="button" class="cp-item" data-nego="${n.id}"><span style="grid-row:span 2">${av.svg}</span><b>${esc(n.produit || 'Annonce')}</b><span class="p">${n.statut === 'conclue' ? fmt(n.prix_final) : vive(n) ? fmt(n.dernier_prix) : '—'}</span><small><span class="cp-tag ${e[1]}">${e[0]}</span> ${esc(av.nom ? 'avec ' + av.nom : '')}</small></button>`; };
       const sec = (t, L, f, vide) => `<h3>${t} <span class="cp-tag">${L.length}</span></h3>` + (L.length ? `<div class="cp-list">${L.slice(0, 20).map(f).join('')}</div>` : `<div class="cp-empty">${vide}</div>`);
       main.innerHTML = `<div class="cp-panel"><h2>Mon activité</h2><p>Vos annonces et vos négociations réelles. Rien n’est compté qui n’ait eu lieu.</p>
         ${sec('Mes offres', off, x => ann('offres', x), '<b>Aucune offre</b>Publiez ce que vous avez avec « Vendre ».')}
         ${sec('Mes demandes', dem, x => ann('demandes', x), '<b>Aucune demande</b>Dites ce qu’il vous faut avec « Demander ».')}
         ${sec('Propositions envoyées', env, neg, '<b>Aucune proposition envoyée</b>Sur une annonce, touchez « Proposer un prix ».')}
         ${sec('Propositions reçues', rec, neg, '<b>Aucune proposition reçue</b>Elles arrivent ici quand un acheteur ou un vendeur répond à vos annonces.')}
-        ${sec('Accords conclus', ok, neg, '<b>Aucun accord pour l’instant</b>')}</div>`;
+        ${sec('Accords conclus', ok, neg, '<b>Aucun accord pour l’instant</b>')}
+        ${fin.length ? sec('Sans suite', fin, neg, '') : ''}</div>`;
       main.querySelectorAll('[data-nego]').forEach(b => b.onclick = () => { fermer(); G && G.thread(b.dataset.nego); });
       if (G) G.refresh().then(() => { if (bg && main.isConnected && JSON.stringify(J('mdg-negoce:liste', [])) !== JSON.stringify(negos)) VUES.activite(main); });
     },
@@ -284,7 +287,7 @@
         <h3>Notifications</h3><div class="cp-card">
           <label class="cp-sw"><span>Messages à l’écran<small>Une ligne en bas de l’écran quand une proposition arrive, est acceptée ou refusée</small></span><input type="checkbox" data-pf="toasts" ${pf.toasts ? 'checked' : ''}></label>
           <div class="cp-sw cp-na"><span>Notifications quand le site est fermé<small>Pas encore disponible</small></span></div>
-          <div class="cp-sw cp-na"><span>SMS<small>Pas disponible : service payant</small></span></div></div>
+</div>
         <h3>Sons</h3><div class="cp-card"><div class="cp-kv"><span>${sn && sn.on ? 'Activés' : 'Désactivés'} · notes de balafon</span><button type="button" class="cp-alt" data-sons>Régler les sons</button></div></div>
         <h3>Confidentialité</h3><div class="cp-card">
           <label class="cp-sw"><span>Montrer mon nom de famille<small>Sinon, les autres voient « ${esc(p.prenom || 'Prénom')} ${esc(p.nom ? p.nom[0] + '.' : 'N.')} »${p.pseudo ? ' (votre pseudonyme passe avant)' : ''}</small></span><input type="checkbox" data-np ${p.nom_public ? 'checked' : ''}></label></div>
@@ -296,8 +299,8 @@
     securite(main) {
       const u = me();
       main.innerHTML = `<div class="cp-panel"><h2>Sécurité et compte</h2><p>Votre numéro et votre code secret à 6 chiffres protègent votre compte.</p>
-        <div class="cp-card"><div class="cp-kv"><span>Numéro</span><b>${esc(N().fmtTel(u.tel))} <span class="cp-tag warn">non vérifié par SMS</span></b></div>
-          <div class="cp-kv"><span>Changer de numéro</span><b style="font-weight:400;color:var(--mute);font-size:13.5px">Pas encore possible sans vérification par SMS</b></div></div>
+        <div class="cp-card"><div class="cp-kv"><span>Numéro</span><b>${esc(N().fmtTel(u.tel))}</b></div>
+          <div class="cp-kv"><span>Changer de numéro</span><b style="font-weight:400;color:var(--mute);font-size:13.5px">Contactez le Marché de Gros</b></div></div>
         <h3>Code secret</h3><form class="cp-f cp-code" novalidate>${champ('cp-c0', 'Code actuel', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}${champ('cp-c1', 'Nouveau code (6 chiffres)', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}${champ('cp-c2', 'Retapez le nouveau code', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}
           <div class="cp-row"><button type="submit" class="cp-go">Changer mon code</button><span class="cp-msg" role="status"></span></div></form>
         <h3>Code de secours</h3><div class="cp-card"><div class="cp-kv"><span>Pour choisir un nouveau code si vous l’oubliez</span><button type="button" class="cp-alt" data-sos>Créer un nouveau code de secours</button></div></div>

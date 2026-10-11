@@ -346,15 +346,15 @@
     if (!N()) return;
     if (!N().session()) { N().open(); return; }
     const draw = () => {
-      const g = { moi: [], eux: [], ok: [], fin: [] };
-      liste.forEach(n => (n.statut === 'conclue' ? g.ok : n.statut !== 'ouverte' ? g.fin : aMoi(n) ? g.moi : g.eux).push(n));
-      const row = n => { const lui = autre(monRole(n)), e = etat(n), p = n.statut === 'conclue' ? n.prix_final : n.dernier_prix, q = n.statut === 'conclue' ? n.quantite_finale : n.dernier_quantite;
+      const g = { moi: [], eux: [], ok: [], sans: [], fin: [] };
+      liste.forEach(n => (n.statut === 'conclue' ? g.ok : n.statut !== 'ouverte' ? g.fin : aMoi(n) ? g.moi : enCours(n) ? g.eux : g.sans).push(n));
+      const row = n => { const lui = autre(monRole(n)), e = etat(n), p = n.statut === 'conclue' ? n.prix_final : enCours(n) ? n.dernier_prix : null, q = n.statut === 'conclue' ? n.quantite_finale : n.dernier_quantite;
         const av = avDe(n, 36);
         return `<button type="button" class="nx-row${nonLu(n) ? ' is-new' : ''}" data-id="${n.id}"><span class="nx-av">${av.svg || mk(lui)}${av.svg ? `<i>${mk(lui)}</i>` : ''}</span><b>${esc(n.produit || 'Annonce')}</b>
           <span class="p">${p ? fmt(p) : '—'}<small>${p ? 'F / ' + esc(n.unite || 'unité') + (q ? ' × ' + fq(q) : '') : ''}</small></span>
           <small><span class="nx-tag ${e.c}">${esc(e.t)}</span> avec ${leLa(lui)}${av.nom ? ' ' + esc(av.nom) : ''}${n.ville ? ' · ' + esc(n.ville) : ''} · ${ago(n.updated_at)}</small></button>`; };
       const grp = (t, L) => L.length ? `<section class="nx-grp"><h3>${t}</h3>${L.map(row).join('')}</section>` : '';
-      bg.querySelector('.nx-b').innerHTML = liste.length ? grp('À vous de répondre', g.moi) + grp('En cours', g.eux) + grp('Accords conclus', g.ok) + grp('Terminées', g.fin)
+      bg.querySelector('.nx-b').innerHTML = liste.length ? grp('À vous de répondre', g.moi) + grp('En attente de réponse', g.eux) + grp('Accords conclus', g.ok) + grp('Sans proposition en cours', g.sans) + grp('Terminées', g.fin)
         : `<div class="nx-empty"><b>Aucune négociation pour l’instant</b>Sur une offre ou une demande, touchez « Proposer un prix ». Les réponses arrivent ici.</div>`;
       bg.querySelectorAll('.nx-row').forEach(b => b.onclick = () => thread(b.dataset.id));
     };

@@ -440,5 +440,28 @@
     if (!r.ok) { let m = ''; try { const j = await r.json(); m = j.message || j.error || ''; } catch (_) {} throw Object.assign(new Error(m || 'Envoi refusé (' + r.status + ')'), { status: r.status }); }
     return true;
   }
+  // ——— clavier du téléphone : sur iPhone, la page ne rétrécit pas quand le clavier s'ouvre ; seule la zone visible (visualViewport) rétrécit.
+  // Les fenêtres posées par-dessus (connexion, Mon espace, négociation) suivent donc cette zone visible : elles tiennent au-dessus du clavier
+  // et défilent à l'intérieur, au lieu de cacher les champs du bas sous le clavier. Clavier ouvert : l'image de la porte se replie.
+  (function clavier() {
+    const vv = window.visualViewport; if (!vv) return;
+    const st = document.createElement('style');
+    st.textContent = `@media (pointer:coarse){
+.ng-bg,.cp-bg,.nx-bg{top:var(--vvt,0px)!important;bottom:auto!important;height:var(--vvh,100%)!important;transition:height .18s ease}
+.ng{max-height:calc(var(--vvh,100dvh) - 32px)}
+.ng--porte{max-height:calc(var(--vvh,100dvh) - 16px)!important}
+.cp{height:min(calc(var(--vvh,100dvh) * .94),820px)!important}
+.nx{height:min(calc(var(--vvh,100dvh) * .92),820px)!important}
+html.kb .ng-bg{padding:8px!important}
+html.kb .ng--porte{grid-template-rows:0 minmax(0,1fr)!important;max-height:calc(var(--vvh,100dvh) - 16px)!important}
+html.kb .ng--porte .ng-scene{border:0}
+html.kb .cp,html.kb .nx{height:calc(var(--vvh,100dvh) - 8px)!important}}`;
+    document.head.appendChild(st);
+    const de = document.documentElement; let raf = 0;
+    const maj = () => { raf = 0; de.style.setProperty('--vvh', vv.height + 'px'); de.style.setProperty('--vvt', vv.offsetTop + 'px'); de.classList.toggle('kb', vv.height < de.clientHeight * .78); };
+    const plan = () => { if (!raf) raf = requestAnimationFrame(maj); };
+    vv.addEventListener('resize', plan); vv.addEventListener('scroll', plan); maj();
+  })();
+
   window.MDGNuage = { televerser, list, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
 })();

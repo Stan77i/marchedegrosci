@@ -40,6 +40,7 @@
   addEventListener('load', req); req();
 
   // 2 bis. profondeur au défilement : la section qu'on quitte par le haut s'enfonce dans un flou gaussien (flou, recul, fondu)
+  // seulement quand elle quitte vraiment l'écran (son bas remonte dans la moitié haute) : une section qu'on est en train de lire reste nette
   const SECS = '#view > section, #view > div > section, #view > .v3a > section, #view > .v3p > section';
   let dk = false;
   function depth() {
@@ -49,7 +50,7 @@
       if (el.closest('.an:not(.an--emb)') || el.matches('.an:not(.an--emb), .tz, [data-fl-skip]')) return;
       const r = el.getBoundingClientRect();
       if (r.height < H * 0.55 || r.bottom < 0) return;
-      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height * 0.85)));
+      const p = r.top >= 0 ? 0 : Math.min(1, Math.max(0, (H * 0.5 - r.bottom) / (H * 0.5)));
       if (p < 0.01) { if (el.style.filter) { el.style.filter = ''; el.style.transform = ''; el.style.opacity = ''; } return; }
       el.style.filter = 'blur(' + (p * 14).toFixed(1) + 'px)';
       el.style.transform = 'scale(' + (1 - p * 0.05).toFixed(4) + ')';

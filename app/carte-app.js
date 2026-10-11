@@ -2,6 +2,8 @@
    Canvas 2D, frontières réelles Natural Earth 1:50m (world-atlas, chargé à la demande ; repli sur le contour simplifié hors ligne).
    Caméra : glisser, pincer, double-toucher, molette ; vols animés (dézoom puis zoom) vers une ville ; inertie.
    Distances : à vol d'oiseau (haversine), cercles 50 / 100 / 200 km autour de vous, échelle qui suit le zoom.
+   Eau : fleuves et lacs Natural Earth 1:10m (vendor/ci-hydro.json) ; côte en trait plein, frontière terrestre en tirets ;
+   un repère dit ce que l'on regarde (le pays, une partie du pays, les alentours d'un chef-lieu) — même langage que la carte du site.
    Positions des publications : chef-lieu du district (aucune position inventée). */
 (function () {
   'use strict';
@@ -9,7 +11,8 @@
   const MY = lat => -Math.log(Math.tan(Math.PI / 4 + lat * D2R / 2)) / D2R;
   const NEIGH = { '430': ['LIBÉRIA', 6.7, -9.55], '324': ['GUINÉE', 9.75, -9.1], '466': ['MALI', 11.0, -6.9], '854': ['BURKINA FASO', 10.95, -3.9], '288': ['GHANA', 7.4, -1.75] };
   const PRIO = { abidjan: 9, yamoussoukro: 8, 'vallee-du-bandama': 8, savanes: 6, 'bas-sassandra': 6, 'sassandra-marahoue': 5, montagnes: 5, zanzan: 4, denguele: 4, 'goh-djiboua': 4, comoe: 3, woroba: 3, lacs: 2, lagunes: 1 };
-  let geoP = null;
+  let geoP = null, hydroP = null;
+  const hydro = () => hydroP || (hydroP = fetch('vendor/ci-hydro.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).catch(e => { hydroP = null; throw e; }));
   const script = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
   function geo() {
     return geoP || (geoP = Promise.all([
@@ -19,7 +22,9 @@
       const fs = window.topojson.feature(t, t.objects.countries).features;
       const pick = id => { const f = fs.find(x => String(x.id) === id); if (!f) return null; const g = f.geometry; return g.type === 'Polygon' ? [g.coordinates] : g.coordinates; };
       const n = {}; Object.keys(NEIGH).forEach(k => { n[k] = pick(k); });
-      return { civ: pick('384'), n, real: true };
+      const key = q => q[0].toFixed(3) + ',' + q[1].toFixed(3), shared = new Set();
+      Object.values(n).forEach(pp => pp && pp.forEach(poly => poly.forEach(ring => ring.forEach(q => shared.add(key(q))))));
+      const c = pick('384'); return { civ: c, n, bd: c ? c.map(poly => poly.map(ring => ring.map(q => shared.has(key(q))))) : null, real: true };
     }).catch(e => { geoP = null; throw e; }));
   }
   const W2 = polys => polys.map(poly => poly.map(ring => ring.map(p => [p[0], MY(p[1])])));
@@ -48,16 +53,18 @@
     const note = document.createElement('div'); note.style.cssText = 'position:absolute;left:10px;top:10px;font:500 10.5px Jost,sans-serif;letter-spacing:.06em;color:rgba(245,240,230,.55);pointer-events:none;z-index:2;max-width:60%';
     note.textContent = 'Chargement des frontières…'; host.appendChild(note);
 
-    let W = 0, H = 0, dpr = 1, civ = null, nb = {}, real = false, bb = null, cam = { x: -5.5, y: MY(7.5), z: 40 }, anim = null, inert = null, raf = 0, dirty = true, data = { pts: {}, pairs: [], me: '', sel: '' }, alive = true, t0 = performance.now();
+    let W = 0, H = 0, dpr = 1, civ = null, civBd = null, nb = {}, lakes = [], rivers = [], real = false, bb = null, cam = { x: -5.5, y: MY(7.5), z: 40 }, anim = null, inert = null, raf = 0, dirty = true, data = { pts: {}, pairs: [], me: '', sel: '' }, alive = true, t0 = performance.now();
     const fallback = () => { const o = (A.OUT || []).map(p => [p[0], p[1]]); return [[o.concat([o[0]])]]; };
     const setGeo = (c, n, r) => { civ = W2(c); nb = {}; Object.keys(n || {}).forEach(k => { if (n[k]) nb[k] = W2(n[k]); }); real = r;
       let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; civ.forEach(p => p[0].forEach(q => { x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]); }));
       bb = { x0, x1, y0, y1 }; dirty = true; };
     setGeo(fallback(), {}, false);
-    geo().then(g => { if (!alive || !g.civ) return; setGeo(g.civ, g.n, true); note.textContent = ''; kick(); }).catch(() => { note.textContent = 'Hors ligne : contour simplifié'; });
+    geo().then(g => { if (!alive || !g.civ) return; setGeo(g.civ, g.n, true); civBd = g.bd; note.textContent = ''; kick(); }).catch(() => { note.textContent = 'Hors ligne : contour simplifié'; });
 
+    hydro().then(h => { if (!alive) return; const w = pts => pts.map(q => [q[0], MY(q[1])]);
+      lakes = h.lakes.map(l => l.p.map(w)); rivers = h.rivers.map(r => ({ w: r.r <= 5 ? 1.3 : r.r <= 7 ? 1 : .7, pts: w(r.p) })); dirty = true; kick(); }).catch(() => {});
     const home = () => { const pad = 18, z = Math.min((W - pad * 2) / (bb.x1 - bb.x0), (H - pad * 2 - 20) / (bb.y1 - bb.y0)); return { x: (bb.x0 + bb.x1) / 2, y: (bb.y0 + bb.y1) / 2 + 8 / z, z }; };
-    const zMin = () => home().z * .8, zMax = () => home().z * 9;
+    const zMin = () => home().z * .8, zMax = () => home().z * 4.5; // jusqu'au district : plus près ne montrerait rien de vrai
     const clampCam = c => { const h = home(); c.z = Math.max(zMin(), Math.min(zMax(), c.z)); const mx = (bb.x1 - bb.x0) * .6, my = (bb.y1 - bb.y0) * .6; c.x = Math.max(h.x - mx, Math.min(h.x + mx, c.x)); c.y = Math.max(h.y - my, Math.min(h.y + my, c.y)); return c; };
     const S = (wx, wy) => [(wx - cam.x) * cam.z + W / 2, (wy - cam.y) * cam.z + H / 2];
     const SL = (lat, lon) => S(lon, MY(lat));
@@ -135,7 +142,17 @@
       ctx.fillStyle = 'rgba(245,240,230,.075)';
       for (let x = Math.floor(w0[0] / st) * st; x < w1[0]; x += st) for (let y = Math.floor(w0[1] / st) * st; y < w1[1]; y += st) { const s = S(x, y); ctx.fillRect(s[0] - .6, s[1] - .6, 1.2, 1.2); }
       ctx.restore();
-      path(civ); ctx.strokeStyle = 'rgba(224,196,140,.55)'; ctx.lineWidth = 1.3; ctx.lineJoin = 'round'; ctx.stroke();
+      // l'eau : lacs remplis, fleuves en trait fin (gris-vert : le bleu reste réservé aux offres et demandes compatibles)
+      if (lakes.length) { ctx.beginPath(); lakes.forEach(l => l.forEach(ring => { ring.forEach((q, i) => { const s = S(q[0], q[1]); i ? ctx.lineTo(s[0], s[1]) : ctx.moveTo(s[0], s[1]); }); ctx.closePath(); }));
+        ctx.fillStyle = 'rgba(95,118,113,.55)'; ctx.fill('evenodd'); ctx.strokeStyle = 'rgba(143,167,161,.55)'; ctx.lineWidth = .8; ctx.stroke(); }
+      const wk = Math.max(.8, Math.min(1.8, cam.z / 140)); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      rivers.forEach(r => { ctx.beginPath(); r.pts.forEach((q, i) => { const s = S(q[0], q[1]); i ? ctx.lineTo(s[0], s[1]) : ctx.moveTo(s[0], s[1]); }); ctx.strokeStyle = 'rgba(143,167,161,' + (r.w > 1 ? .5 : .36) + ')'; ctx.lineWidth = r.w * wk; ctx.stroke(); });
+      // côte en trait plein (avec liseré d'eau peu profonde), frontière terrestre en tirets
+      const segs = want => { ctx.beginPath(); civ.forEach((poly, a) => poly.forEach((ring, b) => { let pen = false; ring.forEach((q, i) => { const j = i + 1 < ring.length ? i + 1 : 0, f = civBd && civBd[a] && civBd[a][b], isB = f ? (f[i] && f[j]) : false;
+        if (isB !== want) { pen = false; return; } const s0 = S(q[0], q[1]), s1 = S(ring[j][0], ring[j][1]); if (!pen) { ctx.moveTo(s0[0], s0[1]); pen = true; } ctx.lineTo(s1[0], s1[1]); }); })); };
+      segs(false); ctx.strokeStyle = 'rgba(216,204,182,.05)'; [16, 8].forEach(w => { ctx.lineWidth = w; ctx.stroke(); });
+      ctx.strokeStyle = 'rgba(224,196,140,.6)'; ctx.lineWidth = 1.3; ctx.stroke();
+      if (civBd) { segs(true); ctx.save(); ctx.setLineDash([5, 4]); ctx.strokeStyle = 'rgba(224,196,140,.5)'; ctx.lineWidth = 1.2; ctx.stroke(); ctx.restore(); }
 
       const me = data.me && A2.REG[data.me], sel = data.sel && A2.REG[data.sel];
       // cercles de distance autour de vous
@@ -185,9 +202,21 @@
       const kpp = kmPerPx(), km = nice(kpp * 90), px = km / kpp; ctx.textAlign = 'left';
       ctx.strokeStyle = 'rgba(245,240,230,.7)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(12, H - 14); ctx.lineTo(12, H - 10); ctx.lineTo(12 + px, H - 10); ctx.lineTo(12 + px, H - 14); ctx.stroke();
       ctx.font = '500 10px Jost,sans-serif'; ctx.fillStyle = 'rgba(245,240,230,.75)'; ctx.fillText(km + ' km', 16 + px, H - 9);
+      ctx.font = '500 15px "Cormorant Garamond",serif'; ctx.fillStyle = '#F5F0E6'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(18,20,23,.8)'; const wh = where(); ctx.strokeText(wh, 12, H - 22); ctx.fillText(wh, 12, H - 22);
       ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(245,240,230,.32)'; ctx.font = '400 9px Jost,sans-serif'; ctx.fillText(real ? '© Natural Earth' : 'Contour simplifié', W - 10, H - 9);
     }
 
+    // ce que l'on regarde : le pays, une partie du pays, puis les alentours du chef-lieu le plus proche (distance et direction réelles)
+    function where() {
+      const r = cam.z / home().z, lon = cam.x, lat = Math.atan(Math.sinh(-cam.y * D2R)) / D2R;
+      if (r < 1.3) return 'Tout le pays';
+      if (r < 2.4) { const ns = lat > 8.6 ? 'Nord' : lat < 6.4 ? 'Sud' : 'Centre', ew = lon < -6.3 ? 'ouest' : lon > -4.6 ? 'est' : ''; return (ew ? ns + '-' + ew : ns) + ' du pays'; }
+      let best = null, bk = 1e9; Object.keys(A.REG).forEach(k => { const R = A.REG[k], d = A.km([lat, lon], R); if (d < bk) { bk = d; best = R; } });
+      if (!best) return ''; const de = (/^[AEIOUYÉÈ]/i.test(best[2]) ? "d'" : 'de ') + best[2];
+      if (bk < 15) return 'Autour ' + de;
+      const D = ['à l’est', 'au sud-est', 'au sud', 'au sud-ouest', 'à l’ouest', 'au nord-ouest', 'au nord', 'au nord-est'], dx = (lon - best[1]) * Math.cos(lat * D2R), dz = best[0] - lat, i = ((Math.round(Math.atan2(dz, dx) / (Math.PI / 4)) % 8) + 8) % 8;
+      return Math.round(bk / 5) * 5 + ' km ' + D[i] + ' ' + de;
+    }
     function frame(now) {
       raf = 0; if (!alive) return; let more = false;
       if (anim) { const k = Math.min(1, (now - anim.t) / anim.dur); anim.step(k); dirty = true; if (k >= 1) anim = null; else more = true; }

@@ -121,9 +121,11 @@
     $('#axP').onchange = e => { st.pmax = num(e.target.value); sync(); };
 
     /* ——— mini-carte : même projection que la scène ——— */
-    const grid = []; for (let x = -1.6; x <= 1.6; x += .16) for (let z = -1.55; z <= 1.55; z += .16) grid.push(`<circle class="g" cx="${x.toFixed(2)}" cy="${z.toFixed(2)}" r=".008"/>`);
+    const grid = []; for (let x = -1.6; x <= 1.6; x += .08) for (let z = -1.55; z <= 1.55; z += .08) grid.push(`<circle class="g" cx="${x.toFixed(2)}" cy="${z.toFixed(2)}" r=".008"/>`);
     $('#axMap').innerHTML = `<svg viewBox="-1.75 -1.7 3.5 3.4" role="img" aria-label="Producteurs du réseau">${grid.join('')}<g id="axPr">${M.producers.map(pr => { const [x, z] = proj(pr.latitude, pr.longitude); return `<circle class="pr" data-id="${pr.id}" cx="${x.toFixed(3)}" cy="${z.toFixed(3)}" r=".04"/><text data-id="${pr.id}" x="${(x + .08).toFixed(3)}" y="${(z + .025).toFixed(3)}">${esc(pr.city)}</text>`; }).join('')}</g></svg>
       <p class="ax-cap" id="axCap"></p><a href="#/carte">Ouvrir la carte du territoire<svg class="ico" aria-hidden="true"><use href="#i-arrow"/></svg></a>`;
+    // le vrai territoire sous les producteurs ; le grain ne reste que sur la terre (même géographie que la grande carte)
+    if (window.MDGTerre) MDGTerre.ready.then(T => { const sv = $('#axMap svg'); if (!sv || !sv.isConnected) return; const ins = MDGTerre.paint(sv, proj, T); if (ins) $$('#axMap circle.g').forEach(c => { if (!ins(+c.getAttribute('cx'), +c.getAttribute('cy'))) c.remove(); }); }).catch(() => {});
     function mapDraw() {
       const cnt = {}; cur.forEach(r => r.os.forEach(o => cnt[o.producerId] = (cnt[o.producerId] || 0) + 1));
       $$('#axPr circle').forEach(c => c.setAttribute('r', cnt[c.dataset.id] ? (.035 + .022 * cnt[c.dataset.id]).toFixed(3) : .02));

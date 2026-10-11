@@ -325,3 +325,12 @@ html[data-vt="in"]::view-transition-new(vt-light),html[data-vt="out"]::view-tran
 /* Étiquette de page : un simple filet fin à la couleur du produit */
 .pg-k{display:inline-flex!important;width:max-content;margin:0 0 18px!important;padding:6px 12px;font-size:11px!important;letter-spacing:.24em!important;border:1px solid color-mix(in srgb,var(--acc,var(--p-accent,#E07A3F)) 55%,transparent);border-radius:2px}
 .pg-k::before,.pg-k::after{content:none!important;display:none!important}
+/* Terre (v3/terre.js) : le vrai territoire sous les marqueurs des petites cartes — même géographie que la grande carte */
+.terre-nb{fill:#0f0c09;fill-opacity:.55;stroke:var(--color-sable);stroke-opacity:.16;stroke-width:.006}
+.terre-ci{fill:#2E261D;fill-opacity:.55;stroke:#E4D9C4;stroke-opacity:.5;stroke-width:.009;stroke-linejoin:round}
+.terre-eau{fill:#5F7671;fill-opacity:.45;stroke:#8FA7A1;stroke-opacity:.5;stroke-width:.004}
+/* légende des encarts : formes des marqueurs (v3/marqueurs.js) */
+.mapbox .legend{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--color-sable)}
+.mapbox .legend span{display:inline-flex;align-items:center;gap:7px}
+.mapbox .legend .mk{width:14px;height:14px;flex:none}
+.mapbox .legend .lg-me{width:9px;height:9px;border-radius:50%;background:var(--color-ivoire-t);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-ivoire-t) 25%,transparent)}

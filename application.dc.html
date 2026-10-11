@@ -589,9 +589,10 @@ class Component extends DCLogic {
       const t = e.touches[0], o = this.t0; if (!t || !o || !e.cancelable) return;
       const dx = t.clientX - o.x, dy = t.clientY - o.y, vert = Math.abs(dy) >= Math.abs(dx);
       for (let el = e.target; el && el.nodeType === 1 && el !== document.body; el = el.parentElement) {
-        const ta = getComputedStyle(el).touchAction; if (ta === 'none') return;
+        const cs = getComputedStyle(el), ta = cs.touchAction; if (ta === 'none') return;
         if (this.mapRef.current === el) return;
-        const st = el.getAttribute('style') || '';
+        // zones qui défilent : celles de l'application (style écrit) ET les fenêtres ajoutées par-dessus (connexion, Mon espace, négociation…)
+        const st = (el.getAttribute('style') || '') + (/(auto|scroll)/.test(cs.overflowY) ? ';overflow-y:auto' : '') + (/(auto|scroll)/.test(cs.overflowX) ? ';overflow-x:auto' : '');
         if (vert && /overflow-y:\s*auto/.test(st) && el.scrollHeight > el.clientHeight + 1) { if ((dy > 0 && el.scrollTop <= 0) || (dy < 0 && el.scrollTop + el.clientHeight >= el.scrollHeight - 1)) e.preventDefault(); return; }
         if (!vert && /overflow-x:\s*auto/.test(st) && el.scrollWidth > el.clientWidth + 1) { if ((dx > 0 && el.scrollLeft <= 0) || (dx < 0 && el.scrollLeft + el.clientWidth >= el.scrollWidth - 1)) e.preventDefault(); return; }
       }

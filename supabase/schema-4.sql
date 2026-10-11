@@ -26,7 +26,7 @@ alter table public.profils enable row level security;
 create policy "voir mon profil"    on public.profils for select to authenticated using (user_id = auth.uid() or (select public.est_admin()));
 create policy "créer mon profil"   on public.profils for insert to authenticated with check (user_id = auth.uid() and supprime_le is null);
 create policy "modifier mon profil" on public.profils for update to authenticated using (user_id = auth.uid() and supprime_le is null) with check (user_id = auth.uid() and supprime_le is null);
-grant select, insert, update (prenom, nom, pseudo, avatar, role, region_slug, ville, nom_public, updated_at) on public.profils to authenticated;
+grant select, insert, update (user_id, prenom, nom, pseudo, avatar, role, region_slug, ville, nom_public, updated_at) on public.profils to authenticated;  -- user_id : l'enregistrement « crée ou remplace » le réécrit ; la règle ci-dessus interdit d'en changer
 revoke truncate, references, trigger, delete on public.profils from anon, authenticated;
 
 create or replace function public.profil_maj() returns trigger language plpgsql set search_path = public as $$

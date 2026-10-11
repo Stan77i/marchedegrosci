@@ -247,6 +247,9 @@
     const onTab = e => { if (e.key !== 'Tab') return; const f = focusables(); if (!f.length) return; const a = f[0], z = f[f.length - 1];
       if (e.shiftKey && document.activeElement === a) { e.preventDefault(); z.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); a.focus(); } };
     root.addEventListener('keydown', onTab);
+    // téléphone : quand le clavier s'ouvre, le champ touché remonte au milieu de la fenêtre (il n'est plus caché sous le clavier)
+    const onFocus = e => { if (!/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || !matchMedia('(pointer:coarse)').matches) return; setTimeout(() => { try { const r = e.target.getBoundingClientRect(), vh = (window.visualViewport && visualViewport.height) || innerHeight; if (r.bottom > vh - 16 || r.top < 0) e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (_) {} }, 320); };
+    root.addEventListener('focusin', onFocus);
     return () => { root.removeEventListener('keydown', onTab); if (avant && avant.focus && document.contains(avant)) setTimeout(() => avant.focus({ preventScroll: true }), 0); };
   }
   function shell(html, opt = {}) {

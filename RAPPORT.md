@@ -195,3 +195,11 @@ Limites : pas de notification quand le site est fermé (cela demanderait un serv
 - `supabase/schema-5.sql` (photos de profil, dossier public « avatars », 300 Ko, chacun n'écrit que sa propre photo) : **installé par le connecteur**, rien à faire.
 - Corrigés après essai : dans l'application, le montant de « Proposer un prix » s'affichait en petit (la règle de l'application qui force 16 px sur les champs l'écrasait) ; les prix rapides passent sur deux colonnes sur téléphone (plus de bouton seul sur la 2e ligne).
 - Essais (Chromium, serveur simulé) : accueil, Acheter, fiche, carte, Vendre, Prix, Confiance ; connexion (ordinateur et téléphone), inscription puis avatar, « Proposer un prix » (ordinateur et téléphone) : aucune erreur.
+
+---
+
+# Corrections du 12 octobre (essais sur téléphone)
+- **Avatar et photo non enregistrés** (« permission denied for table profils ») : l'enregistrement « crée ou remplace » réécrit aussi `user_id`, sans droit de modification sur cette colonne. Droit ajouté côté base (`grant update (user_id)`), la règle de sécurité interdit toujours de prendre l'identifiant d'un autre (vérifié). Photo : déposer la sienne fonctionne, celle d'un autre est refusée (vérifié). Rien à lancer dans Supabase.
+- **Impossible de défiler dans l'application** : le blocage de l'effet élastique de l'iPhone n'autorisait que les zones de l'application elle-même, pas les fenêtres ajoutées par-dessus (connexion, Mon espace, négociation, sons). Il reconnaît maintenant toute zone qui défile. Vérifié par un glissement de doigt simulé : bloqué avant, défile après.
+- Quand le clavier cache le champ touché, celui-ci remonte au milieu de la fenêtre.
+- `sw.js` : `mgci-v20`.

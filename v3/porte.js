@@ -39,7 +39,7 @@
     <path d="M-10 128C60 118 120 112 176 110" stroke-opacity=".5"/><path d="M-10 116C55 110 118 107 176 106" stroke-opacity=".38"/>
     <path d="M-10 104C52 101 116 101 176 102" stroke-opacity=".28"/><path d="M-10 92C50 92 114 95 176 99" stroke-opacity=".2"/>
     <path d="M-10 80C48 83 112 89 176 96" stroke-opacity=".13"/>
-    <g fill="#6CC58C" stroke="none" fill-opacity=".5"><path d="M34 96c-4-7-2-14 2-17 1 6 1 11-2 17z"/><path d="M36 96c3-6 9-9 13-8-3 5-7 8-13 8z"/><path d="M92 94c-3-6-1-12 2-14 1 5 1 9-2 14z"/><path d="M94 94c3-5 7-7 11-6-2 4-6 6-11 6z"/><path d="M140 101c-2-5-1-9 2-11 0 4 0 7-2 11z"/></g>
+    <g fill="#6CC58C" stroke="none" fill-opacity=".5"><g class="ps-pousse"><path d="M34 96c-4-7-2-14 2-17 1 6 1 11-2 17z"/><path d="M36 96c3-6 9-9 13-8-3 5-7 8-13 8z"/></g><g class="ps-pousse" style="animation-delay:-1.3s"><path d="M92 94c-3-6-1-12 2-14 1 5 1 9-2 14z"/><path d="M94 94c3-5 7-7 11-6-2 4-6 6-11 6z"/></g><g class="ps-pousse" style="animation-delay:-2.4s"><path d="M140 101c-2-5-1-9 2-11 0 4 0 7-2 11z"/></g></g>
   </g>
   <g class="ps-marche" fill="none" stroke="#F5F0E6" stroke-linejoin="round">
     <g stroke-opacity=".34"><path d="M236 106V84M282 106V84"/><path d="M230 84h58l-5-12h-48z"/><path d="M230 84q4.8 5 9.7 0t9.6 0 9.7 0 9.7 0 9.6 0 9.7 0" /></g>
@@ -53,10 +53,17 @@
     <path d="M178 112V52a22 22 0 0 1 44 0v60z" fill="#120f0b"/>
     <g clip-path="url(#psC)"><rect class="ps-jour" x="178" y="28" width="44" height="86" fill="url(#psD)"/>
       <path class="ps-battant" d="M178 112V30h22v82z" fill="#2b231a" stroke="#F5F0E6" stroke-opacity=".3"/></g>
+    <g class="ps-poussiere" fill="#FFF3D6" clip-path="url(#psC)"><circle cx="190" cy="104" r="1"/><circle cx="204" cy="108" r="1.2" style="animation-delay:-1.4s"/><circle cx="213" cy="102" r=".9" style="animation-delay:-2.6s"/><circle cx="196" cy="110" r=".8" style="animation-delay:-3.5s"/></g>
     <path class="ps-faisceau" d="M180 112h40l38 20H142z" fill="#FCE6B8" fill-opacity=".22"/>
   </g>
   <path d="M70 118Q200 76 330 118" fill="none" stroke="#6AAEF0" stroke-opacity=".18" stroke-dasharray="2 5"/>
   <g class="ps-lien" fill="none" stroke="#6AAEF0" stroke-width="1.6" stroke-linecap="round"><path d="M70 118Q135 97 200 97" pathLength="1"/><path d="M330 118Q265 97 200 97" pathLength="1"/></g>
+  <g class="ps-flux" fill="#F5F0E6">
+    <circle r="1.6" opacity="0"><animateMotion dur="3.4s" repeatCount="indefinite" path="M70 118Q135 97 200 97"/><animate attributeName="opacity" values="0;.9;0" dur="3.4s" repeatCount="indefinite"/></circle>
+    <circle r="1.3" opacity="0"><animateMotion dur="3.4s" begin="-1.7s" repeatCount="indefinite" path="M70 118Q135 97 200 97"/><animate attributeName="opacity" values="0;.8;0" dur="3.4s" begin="-1.7s" repeatCount="indefinite"/></circle>
+    <circle r="1.6" opacity="0"><animateMotion dur="3.8s" begin="-.9s" repeatCount="indefinite" path="M330 118Q265 97 200 97"/><animate attributeName="opacity" values="0;.9;0" dur="3.8s" begin="-.9s" repeatCount="indefinite"/></circle>
+    <circle r="1.3" opacity="0"><animateMotion dur="3.8s" begin="-2.8s" repeatCount="indefinite" path="M330 118Q265 97 200 97"/><animate attributeName="opacity" values="0;.8;0" dur="3.8s" begin="-2.8s" repeatCount="indefinite"/></circle>
+  </g>
   <circle class="ps-v" cx="70" cy="118" r="7" fill="#6CC58C"/>
   <rect class="ps-a" x="323" y="111" width="14" height="14" rx="2.5" fill="#F2C94C"/>
   <circle class="ps-r" cx="200" cy="97" r="3.2" fill="#6AAEF0"/>
@@ -72,6 +79,10 @@
 .ps-v{animation:psPas 3.2s ease-in-out infinite}.ps-a{animation:psPas 3.2s ease-in-out -1.6s infinite}
 @keyframes psPas{50%{translate:0 -2px}}
 .ps-halo{animation:psSouffle 5s ease-in-out infinite}@keyframes psSouffle{50%{opacity:.7}}
+.ps-pousse{transform-origin:50% 100%;animation:psVent 4.2s ease-in-out infinite}@keyframes psVent{0%,100%{rotate:-4deg}50%{rotate:5deg}}
+.ps-jour{animation:psJour 6s ease-in-out infinite}@keyframes psJour{50%{filter:brightness(1.08)}}
+.ps-poussiere circle{animation:psMonte 4.6s linear infinite;opacity:0}@keyframes psMonte{0%{opacity:0;translate:0 0}20%{opacity:.8}100%{opacity:0;translate:3px -58px}}
+.ps-flux{opacity:.55;transition:opacity .6s}.pt[data-etat=saisie] .ps-flux{opacity:.85}.pt[data-etat=envoi] .ps-flux,.pt[data-etat=ok] .ps-flux{opacity:1}.pt[data-etat=erreur] .ps-flux{opacity:.15}
 .pt[data-mode=in] .ps-battant{transform:scaleX(.55)}
 .pt[data-mode=up] .ps-battant{transform:scaleX(.7)}
 .pt[data-mode=up] .ps-v{transform:translate(18px,-5.4px)}.pt[data-mode=up] .ps-a{transform:translate(-18px,-5.4px)}
@@ -94,10 +105,12 @@
     if (!document.getElementById('psCss')) { const st = document.createElement('style'); st.id = 'psCss'; st.textContent = CSS; document.head.appendChild(st); }
     el.classList.add('pt', 'pt--svg'); el.dataset.mode = 'in'; el.dataset.etat = 'repos';
     el.innerHTML = SVG + `<p class="pt-sr">La porte du marché : ceux qui produisent et ceux qui cherchent s'y retrouvent.</p>`;
+    const svg = el.querySelector('svg'), fige = () => { try { REDUIT.matches ? (svg.pauseAnimations(), svg.setCurrentTime(1.2)) : svg.unpauseAnimations(); } catch (_) {} };
+    fige(); REDUIT.addEventListener && REDUIT.addEventListener('change', fige);
     return {
       etat(n) { if (n in CIBLE) el.dataset.etat = n; },
       mode(m) { el.dataset.mode = m; },
-      arreter() {}
+      arreter() { REDUIT.removeEventListener && REDUIT.removeEventListener('change', fige); }
     };
   }
 

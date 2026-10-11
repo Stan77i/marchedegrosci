@@ -27,7 +27,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
 <link rel="stylesheet" href="css/fonts.css">
-<link rel="stylesheet" href="v3/ux.css?v=20261011p">
+<link rel="stylesheet" href="v3/ux.css?v=20261012a">
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
 <script src="app/carte-app.js"></script>
@@ -579,7 +579,7 @@ class Component extends DCLogic {
     this.onVV = () => { const ae = document.activeElement, typing = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && ae.type !== 'file' && ae.type !== 'date', vv = window.visualViewport, h = typing && vv && vv.height < window.innerHeight - 60 ? Math.round(vv.height) : 0; if (h !== this.state.kbH) this.setState({ kbH: h }); if (window.scrollY || window.scrollX) window.scrollTo(0, 0); };
     this.onFocus = () => setTimeout(this.onVV, 320); this.onBlur = () => setTimeout(this.onVV, 80);
     if (window.visualViewport) { visualViewport.addEventListener('resize', this.onVV); visualViewport.addEventListener('scroll', this.onVV); }
-    this.onAnyScroll = e => { const t = e.target; if (t && t.nodeType === 1 && t.scrollLeft && !/overflow-x:\s*auto/.test(t.getAttribute('style') || '')) t.scrollLeft = 0; };
+    this.onAnyScroll = e => { const t = e.target; if (t && t.nodeType === 1 && t.scrollLeft && !/overflow-x:\s*auto/.test(t.getAttribute('style') || '') && !/(auto|scroll)/.test(getComputedStyle(t).overflowX)) t.scrollLeft = 0; };  // ne ramène que les débordements involontaires ; une rangée faite pour défiler (overflow-x: auto, même dans une feuille de style) reste libre
     document.addEventListener('scroll', this.onAnyScroll, true);
     this.noZoom = e => e.preventDefault();
     ['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.addEventListener(t, this.noZoom, { passive: false }));

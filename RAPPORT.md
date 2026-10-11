@@ -204,3 +204,4 @@ Limites : pas de notification quand le site est fermé (cela demanderait un serv
 - Quand le clavier cache le champ touché, celui-ci remonte au milieu de la fenêtre.
 - `sw.js` : `mgci-v20`.
 - Mon espace : plus aucune mention de SMS (préférences, profil, sécurité ; « Changer de numéro » renvoie vers le Marché de Gros). Activité : une proposition n'est « envoyée » ou « reçue » que tant qu'elle attend une réponse ; retirée, refusée ou expirée, elle passe dans « Sans suite », sans prix affiché. Même logique dans « Mes négociations » (groupe « Sans proposition en cours »). `sw.js` : `mgci-v21`.
+- **Création de compte** : prénom, nom et pseudonyme obligatoires dès le formulaire (erreurs sous chaque champ). Le pseudonyme est vérifié pendant la saisie (coche verte, ou « déjà pris ») puis juste avant de créer le compte (`pseudo_libre()`, installée). Le profil est enregistré aussitôt ; la bienvenue commence directement par l'avatar. `sw.js` : `mgci-v22`.

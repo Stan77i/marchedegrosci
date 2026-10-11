@@ -440,9 +440,10 @@
   }
 
   /* ——— bienvenue : 3 étapes courtes après la création du compte (les deux dernières peuvent attendre) ——— */
-  function bienvenue() {
+  function bienvenue(opt = {}) {
     const u = me(); if (!u || !A()) return;
-    let etape = 1, getAv = null;
+    // prénom, nom et pseudonyme déjà saisis à l'inscription : on commence par l'avatar
+    let etape = opt.identite ? 2 : 1, getAv = null;
     const p = () => profil || {};
     cadre(`<div class="cp-main" style="grid-column:1 / -1"><div class="cp-steps" aria-hidden="true"><i></i><i></i><i></i></div><div class="cp-w"></div></div>`, 'Bienvenue');
     bg.dataset.lock = '1'; bg.querySelector('.cp-x').hidden = true;

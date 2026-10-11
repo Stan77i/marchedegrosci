@@ -184,7 +184,8 @@
     if (!el) { el = document.createElement('div'); el.id = 'ngToast'; el.setAttribute('role', 'status'); el.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:9100;max-width:min(92vw,440px);padding:12px 18px;border-radius:16px;background:#F5F0E6;color:#171512;font:600 14px/1.4 Jost,sans-serif;box-shadow:0 12px 40px rgba(0,0,0,.35);transition:opacity .3s'; document.body.appendChild(el); }
     el.textContent = m; el.style.opacity = '1'; clearTimeout(toastT); toastT = setTimeout(() => { el.style.opacity = '0'; }, 4200);
   }
-  const CSS2 = `.ng-link{display:inline;padding:0;border:0;background:none;color:#F3B48A;font:600 14px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+  const CSS2 = `.ng-id2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}@media (max-width:360px){.ng-id2{grid-template-columns:minmax(0,1fr)}}
+.ng-link{display:inline;padding:0;border:0;background:none;color:#F3B48A;font:600 14px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .ng-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:-4px 0 14px}
 .ng-list{display:flex;flex-direction:column;gap:8px;margin:4px 0 6px}
 .ng-item{display:flex;align-items:center;gap:14px;width:100%;min-height:58px;padding:10px 16px;border:1px solid rgba(245,240,230,.12);border-radius:18px;background:rgba(245,240,230,.04);color:#F5F0E6;font:500 15px/1.3 Jost,sans-serif;text-align:left;text-decoration:none;cursor:pointer}
@@ -287,6 +288,11 @@
         <div class="ng-tabs" role="tablist" aria-label="Connexion ou inscription"><button type="button" role="tab" data-m="in" aria-selected="true">J’ai déjà un compte</button><button type="button" role="tab" data-m="up" aria-selected="false">Créer mon compte</button></div>
         <div class="ng-glob" role="alert" hidden><p></p><button type="button" class="ng-link" hidden></button></div>
         <form novalidate>
+          <div class="ng-id" hidden>
+            <div class="ng-id2"><div class="ng-fd"><label for="ngPrenom">Prénom</label><div class="ng-ip"><input id="ngPrenom" autocomplete="given-name" maxlength="40" placeholder="Awa" aria-describedby="ngPrenomE"></div><p class="ng-fe" id="ngPrenomE"></p></div>
+            <div class="ng-fd"><label for="ngNom">Nom</label><div class="ng-ip"><input id="ngNom" autocomplete="family-name" maxlength="60" placeholder="Koné" aria-describedby="ngNomE"></div><p class="ng-fe" id="ngNomE"></p></div></div>
+            <div class="ng-fd"><label for="ngPseudo">Pseudonyme <i>le nom que verront les autres</i></label><div class="ng-ip"><input id="ngPseudo" autocomplete="nickname" autocapitalize="off" spellcheck="false" maxlength="24" placeholder="awa_mais" aria-describedby="ngPseudoE"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngPseudoE"></p></div>
+          </div>
           <div class="ng-fd"><label for="ngTel">Votre numéro</label><div class="ng-ip ng-ip--tel"><span aria-hidden="true">+225</span><input id="ngTel" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="07 01 02 03 04" maxlength="14" aria-describedby="ngTelE"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngTelE"></p></div>
           <div class="ng-fd ng-cle" hidden><label for="ngCle">Code de secours <i>12 caractères</i></label><div class="ng-ip"><input id="ngCle" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" placeholder="ABCD EFGH JKLM" aria-describedby="ngCleE"></div><p class="ng-fe" id="ngCleE"></p></div>
           <div class="ng-fd"><label for="ngCode" class="ng-lc">Code secret <i>6 chiffres</i></label><div class="ng-ip"><input id="ngCode" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" maxlength="6" placeholder="••••••" aria-describedby="ngCodeE"><button type="button" class="ng-eye" aria-pressed="false">Afficher</button></div><p class="ng-fe" id="ngCodeE"></p></div>
@@ -302,11 +308,11 @@
     const glob = (msg, action, fn) => { const g = $('.ng-glob'); g.hidden = !msg; g.querySelector('p').textContent = msg || ''; const b = g.querySelector('button'); b.hidden = !action; b.textContent = action || ''; b.onclick = fn || null; };
     const setMode = m => {
       mode = m; bg.querySelectorAll('.ng-tabs button').forEach(x => x.setAttribute('aria-selected', String(x.dataset.m === m)));
-      $('.ng-tabs').hidden = m === 'sos'; $('.ng-c2').hidden = m === 'in'; $('.ng-cle').hidden = m !== 'sos'; $('.ng-oubli').hidden = m !== 'in';
+      $('.ng-tabs').hidden = m === 'sos'; $('.ng-id').hidden = m !== 'up'; $('.ng-c2').hidden = m === 'in'; $('.ng-cle').hidden = m !== 'sos'; $('.ng-oubli').hidden = m !== 'in';
       $('#ngT').textContent = TITRE[m]; $('.ng-lede').textContent = LEDE[m];
       $('.ng-lc').innerHTML = (m === 'sos' ? 'Nouveau code secret' : m === 'up' ? 'Choisissez un code secret' : 'Code secret') + ' <i>6 chiffres</i>';
       $('#ngCode').autocomplete = m === 'in' ? 'current-password' : 'new-password'; go.querySelector('span').textContent = BTN[m]; glob('');
-      ['ngCode', 'ngCode2', 'ngCle'].forEach(id => champErr(id, '')); bg.querySelector('.ng-form').scrollTop = 0;
+      ['ngCode', 'ngCode2', 'ngCle', 'ngPrenom', 'ngNom', 'ngPseudo'].forEach(id => champErr(id, '')); bg.querySelector('.ng-form').scrollTop = 0;
     };
     setMode('in');
     bg.querySelectorAll('.ng-tabs button').forEach(b => b.onclick = () => setMode(b.dataset.m));
@@ -322,13 +328,22 @@
     f.addEventListener('focusin', () => P && P.etat('saisie'));
     const me = (window.MDGApp && J('mdg-app:moi', {}).phone) || ''; if (me) { tel.value = fmtTel(digits(me)); ok('ngTel', digits(me).length === 10); }
     setTimeout(() => $(me ? '#ngCode' : '#ngTel').focus(), 80);
+    // identité à l'inscription : prénom, nom, pseudonyme (le pseudonyme est unique, vérifié avant de créer le compte)
+    const idErr = () => { const pr = $('#ngPrenom').value.trim(), no = $('#ngNom').value.trim(), ps = $('#ngPseudo').value.trim(), L = /^[\p{L}][\p{L} '’.-]*$/u;
+      return { ngPrenom: !pr ? 'Entrez votre prénom.' : !L.test(pr) ? 'Des lettres uniquement (espaces, tirets et apostrophes acceptés).' : '',
+        ngNom: !no ? 'Entrez votre nom.' : !L.test(no) ? 'Des lettres uniquement.' : '',
+        ngPseudo: !ps ? 'Choisissez un pseudonyme.' : !/^[A-Za-z0-9_.-]{3,24}$/.test(ps) ? '3 à 24 caractères : lettres sans accent, chiffres, point, tiret ou _.' : '' }; };
+    ['ngPrenom', 'ngNom', 'ngPseudo'].forEach(id => $('#' + id).addEventListener('blur', () => { if ($('#' + id).value) champErr(id, idErr()[id]); }));
+    let pseudoT = 0; $('#ngPseudo').addEventListener('input', () => { const ps = $('#ngPseudo').value.trim(); ok('ngPseudo', false); clearTimeout(pseudoT); if (!/^[A-Za-z0-9_.-]{3,24}$/.test(ps) || !navigator.onLine) return;
+      pseudoT = setTimeout(async () => { try { const libre = await rpc('pseudo_libre', { p: ps }, false); if ($('#ngPseudo').value.trim() !== ps) return; ok('ngPseudo', libre); champErr('ngPseudo', libre ? '' : 'Ce pseudonyme est déjà pris. Essayez-en un autre.'); } catch (_) {} }, 400); });
     const valider = () => {
       const d = digits(tel.value), c = $('#ngCode').value, errs = [];
       if (d.length !== 10) errs.push(['ngTel', d ? 'Le numéro fait 10 chiffres, par exemple 07 01 02 03 04.' : 'Entrez votre numéro.']);
       if (mode === 'sos' && String($('#ngCle').value).replace(/[^A-Za-z0-9]/g, '').length !== 12) errs.push(['ngCle', 'Le code de secours fait 12 caractères.']);
       if (!/^\d{6}$/.test(c)) errs.push(['ngCode', c ? 'Le code secret fait exactement 6 chiffres.' : 'Entrez votre code secret.']);
       if (mode !== 'in' && c !== $('#ngCode2').value) errs.push(['ngCode2', 'Les deux codes ne sont pas identiques.']);
-      ['ngTel', 'ngCle', 'ngCode', 'ngCode2'].forEach(id => champErr(id, (errs.find(e => e[0] === id) || [])[1] || ''));
+      if (mode === 'up') { const e = idErr(); ['ngPseudo', 'ngNom', 'ngPrenom'].forEach(k => { if (e[k]) errs.unshift([k, e[k]]); }); }
+      ['ngPrenom', 'ngNom', 'ngPseudo', 'ngTel', 'ngCle', 'ngCode', 'ngCode2'].forEach(id => champErr(id, (errs.find(e => e[0] === id) || [])[1] || ''));
       if (errs.length) $('#' + errs[0][0]).focus();
       return !errs.length;
     };
@@ -339,18 +354,21 @@
       if (!navigator.onLine) { glob('Pas de connexion internet. Vos annonces restent sur ce téléphone ; réessayez quand le réseau revient.', 'Réessayer', () => f.requestSubmit()); return; }
       const m0 = mode; occupe(true); go.querySelector('span').textContent = ENC[m0]; P && P.etat('envoi');
       try {
-        const t = tel.value, c = $('#ngCode').value;
+        const t = tel.value, c = $('#ngCode').value, ident = { prenom: $('#ngPrenom').value.trim(), nom: $('#ngNom').value.trim(), pseudo: $('#ngPseudo').value.trim() };
+        if (m0 === 'up') { const libre = await rpc('pseudo_libre', { p: ident.pseudo }, false).catch(() => true); if (!libre) throw new Error('PSEUDO_PRIS'); }
         const r = await (m0 === 'up' ? signUp(t, c) : m0 === 'sos' ? recover(t, $('#ngCle').value, c) : signIn(t, c));
+        if (m0 === 'up') { try { await api('/rest/v1/profils?on_conflict=user_id', { method: 'POST', auth: true, body: Object.assign({ user_id: r.user.id }, ident), prefer: 'return=minimal,resolution=merge-duplicates' }); say('compte'); } catch (e) { console.warn('[nuage] profil non enregistré', e.message); } }
         // réussite confirmée par le serveur : seulement maintenant
         go.classList.add('is-ok'); go.removeAttribute('aria-busy'); go.querySelector('span').textContent = m0 === 'up' ? 'Compte créé. Préparation de votre espace…' : 'Connexion réussie. Préparation de votre espace…'; P && P.etat('ok');
         const fin = () => toast(m0 === 'up' ? 'Compte créé. Vos annonces partent maintenant.' : m0 === 'sos' ? 'Nouveau code enregistré. Vous êtes connecté.' : 'Connecté. Vos annonces partent maintenant.');
-        const bienvenue = () => { fin(); if (m0 === 'up' && window.MDGCompte) setTimeout(() => MDGCompte.bienvenue(), 300); };
+        const bienvenue = () => { fin(); if (m0 === 'up' && window.MDGCompte) setTimeout(() => MDGCompte.bienvenue({ identite: true }), 300); };
         setTimeout(() => { bg.close(); if (r && r.secours) showSecours(r.secours, bienvenue); else bienvenue(); dispatchEvent(new CustomEvent('mdg:connecte', { detail: { raison } })); }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 250 : 900);
       } catch (x) {
         occupe(false); go.querySelector('span').textContent = BTN[mode]; P && P.etat('erreur'); setTimeout(() => P && P.etat('saisie'), 1400);
         const msg = String(x.message || '');
         if (msg === 'Failed to fetch') glob('Le serveur ne répond pas. Vérifiez votre connexion, puis réessayez.', 'Réessayer', () => f.requestSubmit());
         else if (/incorrect|invalid/i.test(msg) && mode === 'in') { glob('Numéro ou code secret incorrect. Vérifiez les deux.', 'Code oublié ?', () => { setMode('sos'); $('#ngCle').focus(); }); $('#ngCode').select(); }
+        else if (msg === 'PSEUDO_PRIS') { champErr('ngPseudo', 'Ce pseudonyme est déjà pris. Essayez-en un autre.'); $('#ngPseudo').focus(); }
         else if (/déjà un compte/i.test(msg)) glob('Ce numéro a déjà un compte.', 'Me connecter avec ce numéro', () => { setMode('in'); $('#ngCode').focus(); });
         else if (/rate|too many|trop de|429/i.test(msg + (x.status || ''))) glob('Trop d’essais d’affilée. Attendez quelques minutes, puis réessayez.');
         else if (/trop facile/i.test(msg)) { champErr('ngCode', msg); $('#ngCode').focus(); }

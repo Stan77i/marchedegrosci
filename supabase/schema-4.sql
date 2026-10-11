@@ -67,3 +67,11 @@ revoke execute on function public.profil_maj() from public, anon, authenticated;
 revoke execute on function public.profils_publics(uuid[]), public.supprimer_compte() from public;
 grant execute on function public.profils_publics(uuid[]) to anon, authenticated;
 grant execute on function public.supprimer_compte() to authenticated;
+
+-- pseudonyme libre ? (vérifié à l'inscription, avant de créer le compte)
+create or replace function public.pseudo_libre(p text) returns boolean
+language sql stable security definer set search_path = public as $$
+  select coalesce(p, '') ~ '^[A-Za-z0-9_.-]{3,24}$' and not exists (select 1 from public.profils where lower(pseudo) = lower(btrim(p)));
+$$;
+revoke execute on function public.pseudo_libre(text) from public;
+grant execute on function public.pseudo_libre(text) to anon, authenticated;

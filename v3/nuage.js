@@ -229,6 +229,17 @@
 .ng--porte .ng-go.is-ok{background:#6AAEF0;opacity:1}
 .ng--porte .ng-go.is-ok span::before{content:"";display:inline-block;width:16px;height:16px;margin:0 8px -2px 0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3.5 8.3 2.8 2.8L12.6 4.8' fill='none' stroke='%23171512' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
 .ng--porte .ng-note{margin-top:18px}
+/* téléphone : l'ordre le plus simple — image, titre, champs, bouton, un seul lien pour basculer ; pas de paragraphe */
+.ng-sw{display:none}
+@media (max-width:759px){
+  .ng--porte h2{padding:0 40px;text-align:center;margin-bottom:22px;font-size:clamp(23px,6.3vw,29px)}
+  .ng--porte .ng-lede{text-align:center}
+  .ng--porte .ng-tabs,.ng--porte .ng-note,.ng--porte .ng-hint{display:none!important}
+  .ng--porte .ng-row{display:flex;justify-content:flex-end;margin:-4px 0 14px}
+  .ng-sw{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px 6px;margin:18px 0 0!important;color:#B9AD98;font-size:15px!important}
+  .ng-sw span:empty{display:none}
+  .ng-sw .ng-link{min-height:44px;font-size:15px}
+}
 /* scène */
 .pt{isolation:isolate}.pt-cv{position:absolute;inset:0;display:block}
 .pt-txt{position:absolute;left:22px;right:22px;bottom:16px;transition:opacity .42s cubic-bezier(.2,.8,.2,1),transform .42s cubic-bezier(.2,.8,.2,1)}
@@ -291,7 +302,7 @@
           <div class="ng-id" hidden>
             <div class="ng-id2"><div class="ng-fd"><label for="ngPrenom">Prénom</label><div class="ng-ip"><input id="ngPrenom" autocomplete="given-name" maxlength="40" placeholder="Awa" aria-describedby="ngPrenomE"></div><p class="ng-fe" id="ngPrenomE"></p></div>
             <div class="ng-fd"><label for="ngNom">Nom</label><div class="ng-ip"><input id="ngNom" autocomplete="family-name" maxlength="60" placeholder="Koné" aria-describedby="ngNomE"></div><p class="ng-fe" id="ngNomE"></p></div></div>
-            <div class="ng-fd"><label for="ngPseudo">Pseudonyme <i>le nom que verront les autres</i></label><div class="ng-ip"><input id="ngPseudo" autocomplete="nickname" autocapitalize="off" spellcheck="false" maxlength="24" placeholder="awa_mais" aria-describedby="ngPseudoE"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngPseudoE"></p></div>
+            <div class="ng-fd"><label for="ngPseudo">Pseudonyme <i class="ng-hint">le nom que verront les autres</i></label><div class="ng-ip"><input id="ngPseudo" autocomplete="nickname" autocapitalize="off" spellcheck="false" maxlength="24" placeholder="awa_mais" aria-describedby="ngPseudoE"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngPseudoE"></p></div>
           </div>
           <div class="ng-fd"><label for="ngTel">Votre numéro</label><div class="ng-ip ng-ip--tel"><span aria-hidden="true">+225</span><input id="ngTel" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="07 01 02 03 04" maxlength="14" aria-describedby="ngTelE"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngTelE"></p></div>
           <div class="ng-fd ng-cle" hidden><label for="ngCle">Code de secours <i>12 caractères</i></label><div class="ng-ip"><input id="ngCle" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" placeholder="ABCD EFGH JKLM" aria-describedby="ngCleE"></div><p class="ng-fe" id="ngCleE"></p></div>
@@ -300,6 +311,7 @@
           <div class="ng-row ng-oubli"><button type="button" class="ng-link">Code oublié ?</button></div>
           <button type="submit" class="ng-go"><span>Se connecter</span></button>
         </form>
+        <p class="ng-sw"><span></span> <button type="button" class="ng-link"></button></p>
         <p class="ng-note">Gardez votre code secret pour vous, comme celui de Mobile Money. À la création du compte, vous recevez aussi un code de secours : notez-le.</p>`, { porte: true });
     let mode = 'in'; const f = bg.querySelector('form'), go = bg.querySelector('.ng-go'), $ = q => bg.querySelector(q), P = bg.porte;
     const digits = v => { let d = String(v || '').replace(/\D/g, ''); if (d.length > 10 && d.startsWith('225')) d = d.slice(3); return d.slice(0, 10); };
@@ -309,6 +321,8 @@
     const setMode = m => {
       mode = m; P && P.mode && P.mode(m); bg.querySelectorAll('.ng-tabs button').forEach(x => x.setAttribute('aria-selected', String(x.dataset.m === m)));
       $('.ng-tabs').hidden = m === 'sos'; $('.ng-id').hidden = m !== 'up'; $('.ng-c2').hidden = m === 'in'; $('.ng-cle').hidden = m !== 'sos'; $('.ng-oubli').hidden = m !== 'in';
+      const SW = { in: ['Pas encore de compte ?', 'Créer un compte', 'up'], up: ['Déjà un compte ?', 'Se connecter', 'in'], sos: ['', 'Retour à la connexion', 'in'] }[m];
+      $('.ng-sw span').textContent = SW[0]; $('.ng-sw button').textContent = SW[1]; $('.ng-sw button').onclick = () => setMode(SW[2]);
       $('#ngT').textContent = TITRE[m]; $('.ng-lede').textContent = LEDE[m]; $('.ng-lede').hidden = !LEDE[m];
       $('.ng-lc').innerHTML = (m === 'sos' ? 'Nouveau code secret' : m === 'up' ? 'Choisissez un code secret' : 'Code secret') + ' <i>6 chiffres</i>';
       $('#ngCode').autocomplete = m === 'in' ? 'current-password' : 'new-password'; go.querySelector('span').textContent = BTN[m]; glob('');

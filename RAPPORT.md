@@ -50,7 +50,8 @@ Pastille terracotta dans l'en-tête de l'accueil :
 - Le site s'ouvre **sans connexion** sur téléphone, tablette et ordinateur, une fois visité au moins une fois avec internet.
 - Il peut être **ajouté à l'écran d'accueil** et s'ouvre alors en plein écran, comme une application (icône « M » sur fond terre).
 - Les offres et demandes publiées restent dans le téléphone (`localStorage`, clés `mdg-v2:offres` et `mdg-v2:demandes`, inchangées). Rien n'est envoyé à un serveur.
-- `index.html` ouvre l'application sur **tous les appareils** (l'ancienne version ordinateur `index-v3.html` n'existe plus dans le dépôt). Sur un grand écran, l'application s'affiche dans son cadre de téléphone.
+- **Téléphone → application, ordinateur et tablette → site web** (`index-v3.html`, restauré le 11/10/2026 après sa suppression par erreur). Règle : écran tactile dont le petit côté fait moins de 768 px = téléphone (un téléphone tourné à l'horizontale reste dans l'application). L'aiguillage est fait par `index.html`, et aussi au début de `application.dc.html` et de `index-v3.html` : ouvrir directement l'adresse de l'application sur un ordinateur affiche le site. `?ordinateur=1` force le site, `?app=1` force l'application.
+- Le site web fonctionne aussi hors connexion (GSAP, Lenis, d3, React, Babel et polices dans `vendor/` et `fonts/`).
 
 ## Fichiers
 | Fichier | Rôle |
@@ -65,7 +66,7 @@ Pastille terracotta dans l'en-tête de l'accueil :
 | `app/carte-app.js` | Frontières et topojson chargés depuis `vendor/` |
 
 ## À chaque mise à jour du code
-Changer le numéro dans `sw.js` : `const CACHE = 'mgci-v3';` → `'mgci-v4'`, etc. Sinon les appareils gardent l'ancienne version.
+Changer le numéro dans `sw.js` : `const CACHE = 'mgci-v6';` → `'mgci-v7'`, etc. Sinon les appareils gardent l'ancienne version.
 
 ## Vérifications faites (Chromium)
 Téléphone, tablette, ordinateur : première visite en ligne, puis réseau coupé → accueil et carte affichés, 28 images sur 28, polices chargées, publications conservées, 0 erreur dans la console, aucune requête vers internet. Changement de version du cache → nouvelle version prise en compte.

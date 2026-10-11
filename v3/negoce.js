@@ -58,20 +58,24 @@
     const A = Object.fromEntries(avant.map(n => [n.id, n])), u = me(), ev = [];
     apres.forEach(n => {
       const o = A[n.id]; if (!nonLu(n)) return;
-      if (!o) { if (n.proprio_id === u) ev.push(['proposition', 'Nouvelle proposition sur « ' + (n.produit || 'votre annonce') + ' ».']); return; }
+      if (!o) { if (n.proprio_id === u) ev.push(['proposition', 'Nouvelle proposition sur « ' + (n.produit || 'votre annonce') + ' ».', n.id]); return; }
       if (n.updated_at === o.updated_at) return;
-      if (n.statut === 'conclue' && o.statut !== 'conclue') ev.push(['accord', 'Accord conclu : ' + (n.produit || 'annonce') + ' à ' + fmt(n.prix_final) + ' F.']);
-      else if (n.dernier_msg && n.dernier_msg !== o.dernier_msg && n.dernier_par !== u) ev.push(['proposition', (o.dernier_msg ? 'Contre-proposition' : 'Nouvelle proposition') + ' : ' + fmt(n.dernier_prix) + ' F pour « ' + (n.produit || 'annonce') + ' ».']);
-      else if (o.dernier_par === u && !n.dernier_par && n.statut === 'ouverte') ev.push(['refus', 'Votre proposition pour « ' + (n.produit || 'annonce') + ' » a été refusée.']);
-      else if (o.dernier_par && o.dernier_par !== u && !n.dernier_par && n.statut === 'ouverte') ev.push(['refus', 'Une proposition sur « ' + (n.produit || 'annonce') + ' » a été retirée.']);
-      else if (n.statut === 'close' && o.statut === 'ouverte') ev.push(['refus', n.motif_fin === 'annonce_retiree' ? 'L’annonce « ' + (n.produit || '') + ' » a été retirée : la négociation est fermée.' : 'Une négociation a été arrêtée.']);
+      if (n.statut === 'conclue' && o.statut !== 'conclue') ev.push(['accord', 'Accord conclu : ' + (n.produit || 'annonce') + ' à ' + fmt(n.prix_final) + ' F.', n.id]);
+      else if (n.dernier_msg && n.dernier_msg !== o.dernier_msg && n.dernier_par !== u) ev.push(['proposition', (o.dernier_msg ? 'Contre-proposition' : 'Nouvelle proposition') + ' : ' + fmt(n.dernier_prix) + ' F pour « ' + (n.produit || 'annonce') + ' ».', n.id]);
+      else if (o.dernier_par === u && !n.dernier_par && n.statut === 'ouverte') ev.push(['refus', 'Votre proposition pour « ' + (n.produit || 'annonce') + ' » a été refusée.', n.id]);
+      else if (o.dernier_par && o.dernier_par !== u && !n.dernier_par && n.statut === 'ouverte') ev.push(['refus', 'Une proposition sur « ' + (n.produit || 'annonce') + ' » a été retirée.', n.id]);
+      else if (n.statut === 'close' && o.statut === 'ouverte') ev.push(['refus', n.motif_fin === 'annonce_retiree' ? 'L’annonce « ' + (n.produit || '') + ' » a été retirée : la négociation est fermée.' : 'Une négociation a été arrêtée.', n.id]);
     });
     const vues = new Set(J(KX, []));
-    apres.forEach(n => { if (expiree(n) && n.dernier_par === u && !vues.has(n.dernier_msg)) { vues.add(n.dernier_msg); ev.push(['refus', 'Votre proposition pour « ' + (n.produit || 'annonce') + ' » a expiré sans réponse.']); } });
+    apres.forEach(n => { if (expiree(n) && n.dernier_par === u && !vues.has(n.dernier_msg)) { vues.add(n.dernier_msg); ev.push(['refus', 'Votre proposition pour « ' + (n.produit || 'annonce') + ' » a expiré sans réponse.', n.id]); } });
     W(KX, [...vues].slice(-200));
     if (!ev.length) return;
+    // journal des notifications (Mon espace → Notifications) : uniquement des événements réels
+    const log = J('mdg-notifs', []); ev.forEach(([c, t, id]) => log.unshift({ t: new Date().toISOString(), cat: c, texte: t, nego: id || null, lu: false })); W('mdg-notifs', log.slice(0, 100));
+    dispatchEvent(new CustomEvent('mdg:notifs'));
     ev.forEach(([c]) => window.MDGSons && MDGSons.signal(c));
-    if (!bg) N().toast(ev.length > 1 ? ev.length + ' nouveautés dans « Mes négociations ».' : ev[0][1]);
+    const pf = window.MDGCompte ? MDGCompte.prefs() : { toasts: true };
+    if (!bg && pf.toasts) N().toast(ev.length > 1 ? ev.length + ' nouveautés dans « Mes négociations ».' : ev[0][1]);
   }
   let first = true;
   async function refresh() {
@@ -187,10 +191,14 @@
 .nx-stop{margin:8px 0 0;text-align:center}.nx-stop button{min-height:36px;border:0;background:none;color:#8f846f;font:500 13px Jost,sans-serif;text-decoration:underline;cursor:pointer}
 .nx-in{color:var(--ink);font-weight:600}
 .nx-snd s{opacity:.6}
+.nx-av{position:relative;grid-row:span 2;width:36px;height:36px}.nx-av svg{display:block;border-radius:50%}.nx-av i{position:absolute;right:-4px;bottom:-4px;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#1d1a15}.nx-av i svg{width:14px;height:14px}
+.nx-hav{flex:none;width:40px;height:40px}.nx-hav svg{display:block;border-radius:50%}
 @keyframes nxIn{from{opacity:0}}@keyframes nxUp{from{transform:translateY(28px);opacity:0}}
 @keyframes nxPop{from{transform:scale(.92);opacity:0}}.nx-new{animation:nxPop .32s cubic-bezier(.22,1,.36,1) both}
 @media (prefers-reduced-motion:reduce){.nx-bg,.nx,.nx-new{animation:none}.nx-rail .gap,.nx-rail .pin{transition:none}}`;
   let css = false, bg = null, poll = 0;
+  const autreId = n => n.auteur_id === me() ? n.proprio_id : n.auteur_id;
+  const avDe = (n, size) => window.MDGCompte ? MDGCompte.avatar(autreId(n), { size: size || 34 }) : { svg: '', nom: '' };
   const mk = r => r === 'vendeur' ? '<svg class="mk" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5" fill="#6CC58C"/></svg>' : '<svg class="mk" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="5.5" width="13" height="13" rx="1.5" fill="#F2C94C"/></svg>';
   function sheet(html, label) {
     if (!css) { const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st); css = true; }
@@ -198,12 +206,15 @@
     bg = document.createElement('div'); bg.className = 'nx-bg';
     bg.innerHTML = `<div class="nx" role="dialog" aria-modal="true" aria-label="${esc(label)}">${html}</div>`;
     document.body.appendChild(bg);
+    const rf = N() && N().piege ? N().piege(bg) : null; if (!rendreFocus) rendreFocus = rf;
     bg.addEventListener('click', e => { if (e.target === bg) close(); });
     bg.querySelectorAll('[data-x]').forEach(b => b.onclick = () => close());
     document.addEventListener('keydown', onKey);
     return bg;
   }
-  function close(keep) { clearInterval(poll); poll = 0; if (bg) { bg.remove(); bg = null; } if (!keep) document.removeEventListener('keydown', onKey); }
+  let rendreFocus = null, redessiner = null;
+  addEventListener('mdg:profils', () => { if (bg && redessiner) redessiner(); });
+  function close(keep) { clearInterval(poll); poll = 0; if (bg) { bg.remove(); bg = null; } if (!keep) { document.removeEventListener('keydown', onKey); if (rendreFocus) { rendreFocus(); rendreFocus = null; } } }
   function onKey(e) { if (e.key === 'Escape' && bg) close(); }
   const head = (t, sub, back) => `<div class="nx-h">${back ? '<button type="button" class="nx-ib" data-back aria-label="Retour à mes négociations">‹</button>' : ''}<h2>${esc(t)}${sub ? `<small>${esc(sub)}</small>` : ''}</h2>${window.MDGSons ? `<button type="button" class="nx-ib nx-snd" aria-label="Réglages des sons" title="Sons">${MDGSons.reglages().on ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h3l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>' : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h3l5-4v14l-5-4H4z"/><path d="m16 9 5 6m0-6-5 6"/></svg>'}</button>` : ''}<button type="button" class="nx-ib" data-x aria-label="Fermer">×</button></div>`;
   const bindSnd = () => { const b = bg && bg.querySelector('.nx-snd'); if (b) b.onclick = () => { close(); MDGSons.panneau(); }; };
@@ -288,6 +299,7 @@
     const cible = a.cible === 'demande' ? 'demande' : 'offre', deja = liste.find(n => n.cible === cible && n.cible_id === a.id && n.auteur_id === me());
     if (deja) return thread(deja.id);
     const prix = +a.prix || 0, u = a.unite || 'kg', q = +a.quantite || 0, lui = cible === 'offre' ? 'vendeur' : 'acheteur';
+    redessiner = null;
     sheet(head('Proposer un prix', (a.produit || 'Annonce') + (a.ville ? ' · ' + a.ville : '')) + `
       <div class="nx-b">
         <div class="nx-ann">${mk(lui)}<p><b>${esc(a.produit || 'Annonce')}${q ? ' · ' + fq(q) + ' ' + esc(u) : ''}</b>${esc(a.nom || Le(lui))}${a.ville ? ', ' + esc(a.ville) : ''}<br>${prix ? (cible === 'offre' ? 'Prix affiché par le vendeur : ' : 'Budget affiché par l’acheteur : ') + '<b class="nx-in">' + fmt(prix) + ' F / ' + esc(u) + '</b>' : (cible === 'offre' ? 'Pas de prix affiché' : 'Pas de budget affiché')}${a.negociable === false ? ' · prix ferme' : ''}</p></div>
@@ -308,15 +320,17 @@
       const g = { moi: [], eux: [], ok: [], fin: [] };
       liste.forEach(n => (n.statut === 'conclue' ? g.ok : n.statut !== 'ouverte' ? g.fin : aMoi(n) ? g.moi : g.eux).push(n));
       const row = n => { const lui = autre(monRole(n)), e = etat(n), p = n.statut === 'conclue' ? n.prix_final : n.dernier_prix, q = n.statut === 'conclue' ? n.quantite_finale : n.dernier_quantite;
-        return `<button type="button" class="nx-row${nonLu(n) ? ' is-new' : ''}" data-id="${n.id}">${mk(lui)}<b>${esc(n.produit || 'Annonce')}</b>
+        const av = avDe(n, 36);
+        return `<button type="button" class="nx-row${nonLu(n) ? ' is-new' : ''}" data-id="${n.id}"><span class="nx-av">${av.svg || mk(lui)}${av.svg ? `<i>${mk(lui)}</i>` : ''}</span><b>${esc(n.produit || 'Annonce')}</b>
           <span class="p">${p ? fmt(p) : '—'}<small>${p ? 'F / ' + esc(n.unite || 'unité') + (q ? ' × ' + fq(q) : '') : ''}</small></span>
-          <small><span class="nx-tag ${e.c}">${esc(e.t)}</span> avec ${leLa(lui)}${n.ville ? ' · ' + esc(n.ville) : ''} · ${ago(n.updated_at)}</small></button>`; };
+          <small><span class="nx-tag ${e.c}">${esc(e.t)}</span> avec ${leLa(lui)}${av.nom ? ' ' + esc(av.nom) : ''}${n.ville ? ' · ' + esc(n.ville) : ''} · ${ago(n.updated_at)}</small></button>`; };
       const grp = (t, L) => L.length ? `<section class="nx-grp"><h3>${t}</h3>${L.map(row).join('')}</section>` : '';
       bg.querySelector('.nx-b').innerHTML = liste.length ? grp('À vous de répondre', g.moi) + grp('En cours', g.eux) + grp('Accords conclus', g.ok) + grp('Terminées', g.fin)
         : `<div class="nx-empty"><b>Aucune négociation pour l’instant</b>Sur une offre ou une demande, touchez « Proposer un prix ». Les réponses arrivent ici.</div>`;
       bg.querySelectorAll('.nx-row').forEach(b => b.onclick = () => thread(b.dataset.id));
     };
     sheet(head('Mes négociations', 'Propositions, réponses et accords') + `<div class="nx-b"><div class="nx-empty">Chargement…</div></div>`, 'Mes négociations');
+    redessiner = () => draw();
     bindSnd();
     if (liste.length) draw();
     await refresh(); if (bg && bg.querySelector('.nx-row,.nx-empty')) draw();
@@ -352,7 +366,8 @@
     const paint = anim => {
       if (!bg || !n) return;
       const lui = autre(monRole(n)), u = n.unite || 'unité', proprio = me() === n.proprio_id;
-      $('.nx-h h2').innerHTML = esc(n.produit || 'Négociation') + `<small>Avec ${leLa(lui)}${n.ville ? ' · ' + esc(n.ville) : ''}${n.quantite ? ' · annonce de ' + fq(n.quantite) + ' ' + esc(u) : ''}</small>`;
+      const av = avDe(n, 40); $('.nx-h').classList.toggle('has-av', !!av.svg); let ha = $('.nx-h .nx-hav'); if (!ha && av.svg) { ha = document.createElement('span'); ha.className = 'nx-hav'; $('.nx-h h2').before(ha); } if (ha) ha.innerHTML = av.svg;
+      $('.nx-h h2').innerHTML = esc(n.produit || 'Négociation') + `<small>Avec ${leLa(lui)}${av.nom ? ' ' + esc(av.nom) : ''}${n.ville ? ' · ' + esc(n.ville) : ''}${n.quantite ? ' · annonce de ' + fq(n.quantite) + ' ' + esc(u) : ''}</small>`;
       const e = etat(n);
       $('.nx-top').innerHTML = `<div class="nx-state"><span class="nx-tag ${e.c}">${esc(e.t)}</span>${n.prix_annonce ? `<span>Prix affiché ${fmt(n.prix_annonce)} F / ${esc(u)}</span>` : ''}</div>` + rail(n, msgs)
         + (proprio && dispo && dispo.quantite ? `<p class="nx-dispo">Sur votre annonce : ${fq(dispo.convenue)} / ${fq(dispo.quantite)} ${esc(u)} déjà convenus${dispo.en_cours > 1 ? ' · ' + (dispo.en_cours - 1) + ' autre' + (dispo.en_cours > 2 ? 's' : '') + ' négociation' + (dispo.en_cours > 2 ? 's' : '') + ' en cours' : ''}</p>` : '');
@@ -422,6 +437,7 @@
         if (nonLu(nn)) N().rpc('marquer_lu', { nego: id }).then(() => { nn[me() === nn.auteur_id ? 'lu_auteur' : 'lu_proprio'] = new Date().toISOString(); W(KL, liste); announce(); }).catch(() => {});
       } catch (e) { if (bg && !msgs) $('.nx-msgs').innerHTML = '<div class="nx-ev">Pas de réseau : la négociation s’affichera quand la connexion revient.</div>'; }
     }
+    redessiner = () => { if (mode === '') paint(false); };
     if (n) paint(false);
     await load(true);
     clearInterval(poll); poll = setInterval(() => { if (!document.hidden && navigator.onLine && bg) load(false); }, 7000);

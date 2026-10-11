@@ -114,4 +114,39 @@ Téléphone, tablette, ordinateur : première visite en ligne, puis réseau coup
 - Textes mis à jour (Vendre, Demander, J'ai / Je cherche, pied de page, Confiance) ; la page Confiance du site ne parle plus d'« exemples ».
 - Les photos ne sont pas encore envoyées (elles restent sur le téléphone). `sw.js` : `v3/nuage.js` en cache, `CACHE = 'mgci-v12'`.
 - **Base installée le 11/10/2026** (connecteur Supabase) et vérifiée : audit de sécurité sans avertissement ; un visiteur lit mais ne peut pas publier ; un compte publie, republie sans doublon, mais ne peut pas publier au nom d'un autre. Droits par défaut trop larges retirés, fonctions automatiques non appelables depuis le site (section « Durcissement » de `supabase/schema.sql`).
-- Reste à tester depuis un vrai téléphone : création de compte, connexion, publication visible sur un autre appareil.
+- Testé depuis un vrai téléphone le 11/10/2026 : compte créé, offre publiée et visible dans la base.
+
+---
+
+# Négocier un prix, code de secours, tableau de bord — 11 octobre 2026
+- **Proposer un prix** (`v3/negoce.js`, site et application) : sur une annonce venant d'un autre compte, « Proposer un prix » ouvre une négociation. Raccourcis −5 / −10 / −15 % (ou + pour répondre à une demande), écart affiché par unité et sur toute la quantité, message facultatif. L'autre partie accepte, refuse ou fait une contre-proposition ; on peut aussi s'écrire. À l'accord : prix convenu, total, boutons Appeler / WhatsApp. Rappel affiché : un accord n'est pas un paiement.
+- **La règle des prix** : en haut de chaque négociation, le prix affiché et le dernier prix de chaque partie (cercle vert = vendeur, carré jaune = acheteur, comme sur la carte) ; à l'accord, ils se rejoignent sur la ligne bleue « compatibles ».
+- **Mes négociations** : dans « Mon compte » (site) et le menu « Compte » (application), classées « À vous de répondre », « En attente de réponse », « Accords conclus », « Arrêtées ». Nombre de réponses non lues sur le bouton du compte du site ; message quand une réponse arrive. Les réponses sont relues chaque minute (toutes les 7 s quand une négociation est ouverte).
+- **Code de secours** (12 caractères, remis une seule fois à la création du compte, ou depuis « Mon compte » pour les comptes déjà créés) : « Code oublié ? » permet de choisir un nouveau code secret sans SMS. Gardé chiffré : personne ne peut le relire. 5 essais ratés par heure au maximum ; après usage, un nouveau code de secours est remis et les autres connexions sont fermées.
+- **Nouveau téléphone** : à la connexion, mes annonces publiées ailleurs reviennent dans « Mes publications » (pour les modifier ou les retirer d'ici). Une annonce modifiée sur le téléphone repart toute seule vers la base.
+- **Tableau de bord** `admin.html` (lien dans « Mon compte » pour l'administrateur) : pouls du marché sur 14 jours (une marque = une annonce réelle), chiffres clés, annonces à traiter (signalées ou masquées : rétablir, masquer, supprimer), toutes les annonces (filtres, recherche), comptes (numéro, inscription, dernière connexion, annonces, signalements ; nouveau code secret pour un vendeur qui appelle), négociations (lecture des échanges). La base refuse tout aux comptes qui ne sont pas dans `public.admins`.
+- **Base** : `supabase/schema-2.sql` (tables `admins`, `secours`, `negociations`, `messages` ; écritures seulement par des fonctions qui vérifient les règles). Installé et vérifié par le connecteur, sauf les 2 fonctions qui changent un code secret, que Supabase réserve au propriétaire : **`supabase/a-lancer-dans-sql-editor.sql`** (à coller dans SQL Editor, avec votre numéro pour devenir administrateur).
+- Vérifié (transactions annulées) : un acheteur propose, le vendeur contre-propose, l'acheteur accepte → accord au bon prix ; personne ne peut proposer sur sa propre annonce, accepter son propre prix, accepter une proposition refusée, écrire dans la négociation des autres ni la lire ; un visiteur sans compte ne peut rien appeler ; un compte ordinaire n'a pas accès aux fonctions d'administration.
+- Bug corrigé : le nom de l'agent partait vers la base sous la forme « [object Object] ».
+- `sw.js` : `v3/negoce.js` en cache, `CACHE = 'mgci-v13'`.
+
+---
+
+# Négociation complète, langage sonore, pages claires réparées — 12 octobre 2026
+**Pages restées claires** (elles n'avaient pas le fond sombre des autres) : Acheter avec une recherche (« 1 vendeur », « Tomate »…), fiche producteur, Comment ça marche, Aide producteur, Confiance, page introuvable. Elles passent au sombre avec une seule couche de réglages (`.dk` dans `v3/pages.css`) qui inverse l'échelle des neutres : cartes d'offre, puces, filtres, carte et notes suivent sans être réécrits. Vérifié sur ordinateur (1440) et tablette (820).
+
+**Négociation** (mission « Négociation commerciale intelligente ») — base : `supabase/schema-3.sql` (installé et vérifié) ; écran : `v3/negoce.js`.
+- Une proposition = **prix + quantité + conditions**. Elle attend 48 h puis **expire** (la base refuse d'accepter une proposition expirée).
+- Sort de chaque proposition, gardé dans l'historique : en attente, acceptée, refusée, **retirée** (par son auteur tant qu'il n'y a pas de réponse), remplacée (contre-proposition), expirée.
+- L'acceptation passe par un **résumé** (quantité × prix = total, conditions) puis « Confirmer l'accord ». L'accord est un **instantané figé** (prix, quantité, conditions, date) : la base refuse toute modification, même directe.
+- **Prix ferme** : à la publication, « J'accepte les propositions de prix » (coché par défaut, site et application). Sinon seul le prix affiché peut être proposé.
+- **Plusieurs acheteurs sur une même offre** : la base refuse un accord qui dépasserait la quantité annoncée (« il reste 5 sacs ») ; le vendeur voit « 15 / 20 sacs déjà convenus · 1 autre négociation en cours ».
+- Annonce retirée ou masquée : les négociations ouvertes se ferment (« Annonce retirée »), les accords restent.
+- Concurrence : accepter une proposition qui a changé entre-temps est refusé (« Relisez la dernière proposition »). Double retrait, réponse à sa propre proposition, action après l'accord : refusés.
+- Saisie : total et écart en direct, alerte non bloquante si le prix est très loin du prix affiché (zéro en trop ?) ou si l'écart dépasse 40 %, quantité limitée à celle de l'annonce.
+- Prix affiché, prix proposé et prix convenu ne sont jamais confondus. Un accord n'est ni un paiement ni une livraison (rappelé à l'écran).
+- Vérifié dans une transaction annulée : proposition 900 × 15 → contre-proposition → retrait → expiration → accord à 960 × 15 ; prix ferme, quantité trop grande, référence périmée, double retrait, sur-vente et modification après accord refusés ; annonce retirée → négociation fermée, accord conservé.
+
+**Langage sonore** (`v3/sons.js`) : courtes notes de **balafon** synthétisées dans le navigateur (aucun fichier). Désactivé par défaut, activable dans « Mon compte → Sons » ou depuis l'icône haut-parleur des négociations, avec réglage par catégorie, volume et bouton « Écouter ». Hiérarchie : accord (3 notes montantes) > proposition reçue (2 notes montantes) > refus / retrait / expiration (2 notes descendantes) > nouvelle annonce sur un de vos produits (1 note, désactivée par défaut). Les messages écrits ne font pas de son. Les événements rapprochés donnent un seul son ; onglet en arrière-plan : le titre affiche le nombre d'événements et un seul son joue au retour. Chaque son a son message à l'écran. Aucun son pour une activité fictive.
+
+Limites : pas de notification quand le site est fermé (cela demanderait un service d'envoi de notifications) ; les réponses arrivent à la prochaine lecture (toutes les minutes, toutes les 7 s dans une négociation ouverte). `sw.js` : `v3/sons.js` en cache, `CACHE = 'mgci-v14'`.

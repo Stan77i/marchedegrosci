@@ -101,3 +101,6 @@ select.vs-in option{background:var(--color-cacao);color:var(--color-ivoire-t)}
 .vs-dm-ct a{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;border:1px solid color-mix(in srgb,var(--color-ivoire-t) 22%,transparent);color:var(--color-ivoire-t);font-size:13px;font-weight:700;text-decoration:none}
 .vs-dm-ct a:hover{border-color:var(--color-accent-300)}
 .vs-dm-ct a:focus-visible{outline:2px solid var(--color-accent-300);outline-offset:2px}
+
+/* 12 oct. — prix négociable ou ferme */
+.vs-neg{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:12px 0 0;font-size:14.5px;font-weight:600;cursor:pointer}.vs-neg input{width:20px;height:20px;accent-color:var(--color-ambre,#E07A3F)}.vs-neg i{flex-basis:100%;padding-left:30px;font-style:normal;font-weight:400;font-size:13px;color:var(--color-sable,#B9AD98)}

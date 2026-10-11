@@ -367,3 +367,28 @@ html[data-vt="in"]::view-transition-new(vt-light),html[data-vt="out"]::view-tran
 .pp-chip:hover{background:color-mix(in srgb,var(--color-ivoire-t) 11%,transparent);color:var(--color-ivoire-t)}
 .pp-chip img,.pp-chip i{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;object-fit:cover;font:400 13px/1 var(--font-heading);font-style:normal;background:color-mix(in srgb,var(--color-ivoire-t) 8%,transparent)}
 @media (max-width:900px){.pp-c{grid-template-columns:56px minmax(0,1fr);gap:12px 16px}.pp-cp img,.pp-cp i{width:56px;height:56px}.pp-cv,.pp-cg{grid-column:2}}
+/* ═══ 12 oct. — Les dernières pages claires passent au sombre (Acheter avec recherche, producteur, pages d'information, page introuvable).
+   Même famille que la fiche produit : fond du produit sous l'en-tête, encre ivoire, cartes à 6 % d'ivoire. On inverse l'échelle des neutres
+   pour que les anciens composants (cartes d'offre, puces, filtres, carte) suivent sans être réécrits. ═══ */
+body.light #view:has(> .dk){padding-top:0}
+.dk{position:relative;min-height:100svh;padding:var(--hh,78px) 0 0;color:var(--color-ivoire-t);color-scheme:dark;
+  background:radial-gradient(ellipse 60% 50% at 22% 0%,color-mix(in oklab,var(--p-accent,#E07A3F) 12%,transparent),transparent 70%),linear-gradient(180deg,var(--p-bg,var(--color-cacao)),var(--p-bg-deep,var(--color-cacao)) 60%);
+  --color-bg:var(--p-bg-deep,var(--color-cacao));--color-surface:color-mix(in srgb,var(--color-ivoire-t) 8%,var(--color-brun));--color-text:var(--color-ivoire-t);
+  --color-divider:color-mix(in srgb,var(--color-ivoire-t) 13%,transparent);
+  --color-neutral-100:color-mix(in srgb,var(--color-ivoire-t) 6%,var(--p-bg-deep,var(--color-brun)));--color-neutral-200:color-mix(in srgb,var(--color-ivoire-t) 10%,var(--p-bg-deep,var(--color-brun)));
+  --color-neutral-300:color-mix(in srgb,var(--color-ivoire-t) 18%,transparent);--color-neutral-400:color-mix(in srgb,var(--color-ivoire-t) 32%,transparent);
+  --color-neutral-500:var(--color-sable);--color-neutral-600:var(--color-sable);--color-neutral-700:#D9CFBD;--color-neutral-800:#E8E0D1;--color-neutral-900:var(--color-ivoire-t);
+  --color-accent-100:color-mix(in srgb,var(--color-ambre) 14%,transparent);--color-accent-200:color-mix(in srgb,var(--color-ambre) 22%,transparent);
+  --color-accent-600:#F3A26E;--color-accent-700:#F3A26E;--color-accent-800:#F8C3A0;--color-accent-2-600:#8FC79C;--color-accent-2-700:#8FC79C}
+.dk .page{padding-top:clamp(24px,3vw,44px)}
+.dk a:not([class]){color:inherit}
+.dk .note{background:color-mix(in srgb,var(--color-ivoire-t) 6%,transparent);box-shadow:inset 0 0 0 1px var(--color-divider);color:var(--color-neutral-800)}
+.dk .lede a,.dk .note a,.dk p a{color:#F3A26E;text-decoration-color:color-mix(in srgb,#F3A26E 50%,transparent)}
+.dk .kicker,.dk .caps.kicker{color:var(--p-accent,#E07A3F)}
+.dk h1,.dk h2,.dk h3,.dk h4,.dk .ac-t,.dk .sec-h{color:var(--color-ivoire-t)}
+.dk p,.dk .lede{color:color-mix(in srgb,var(--color-ivoire-t) 82%,transparent)}
+.dk .crumbs{color:var(--color-sable)}
+.dk .searchwrap,.dk .search,.dk input,.dk select,.dk .sel{color:var(--color-ivoire-t)}
+.dk input::placeholder{color:color-mix(in srgb,var(--color-ivoire-t) 45%,transparent)}
+.dk .btn-secondary{color:var(--color-ivoire-t);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--color-ivoire-t) 28%,transparent);background:transparent}
+.dk .how .dot{box-shadow:0 0 0 6px color-mix(in srgb,currentColor 10%,transparent)}

@@ -2,6 +2,8 @@
    Des portraits dessinés en SVG (aucune image, aucun service) : coiffure ou foulard, teint, couleur, fond, détail.
    Le choix appartient à la personne : rien n'est déduit du nom ou du numéro. Par défaut : ses initiales.
    Code compact enregistré dans le profil (≤ 200 caractères) : « v1:c=foulard;t=2;k=0;f=1;a=boucles » ou « ini:f=3 ».
+   Photo (12/10/2026) : « ph:u=<uid>;v=<version>;f=<fond> » → l'image publique avatars/<uid>.jpg (Supabase Storage, supabase/schema-5.sql) ;
+   tant qu'elle charge ou si elle manque, les initiales restent dessous.
    API : MDGAvatar.svg(code, { size, nom, seed }) · uri(code, opt) (pour une balise <img>) · STYLES · TEINTS · COULEURS · FONDS · parse · code */
 (function () {
   'use strict';
@@ -19,13 +21,17 @@
   const DETAILS = [{ id: '', nom: 'Aucun' }, { id: 'boucles', nom: 'Boucles d’oreilles' }, { id: 'lunettes', nom: 'Lunettes' }];
 
   const parse = code => {
-    const s = String(code || ''), m = /^(v1|ini):(.*)$/.exec(s), o = { mode: 'ini', c: 'court', t: 2, k: 0, f: -1, a: '' };
+    const s = String(code || ''), m = /^(v1|ini):(.*)$/.exec(s), o = { mode: 'ini', c: 'court', t: 2, k: 0, f: -1, a: '', u: '', v: 0 };
+    const ph = /^ph:(.*)$/.exec(s);
+    if (ph) { o.mode = 'ph'; ph[1].split(';').forEach(kv => { const [k, v] = kv.split('='); if (k === 'u' && /^[0-9a-f-]{36}$/i.test(v)) o.u = v; if (k === 'v') o.v = +v || 0; if (k === 'f') o.f = +v; }); if (!o.u) o.mode = 'ini'; return o; }
     if (!m) return o; o.mode = m[1];
     m[2].split(';').forEach(kv => { const [k, v] = kv.split('='); if (k in o) o[k] = /^-?\d+$/.test(v) ? +v : v; });
     if (!STYLES.some(x => x.id === o.c)) o.c = 'court';
     return o;
   };
-  const code = o => o.mode === 'ini' ? 'ini:f=' + (o.f >= 0 ? o.f : 0) : 'v1:c=' + o.c + ';t=' + o.t + ';k=' + o.k + ';f=' + o.f + (o.a ? ';a=' + o.a : '');
+  const BASE = 'https://catmsypctymgkjkfzdkt.supabase.co/storage/v1/object/public/avatars/';
+  const photoUrl = o => BASE + o.u + '.jpg?v=' + (o.v || 0);
+  const code = o => o.mode === 'ph' ? 'ph:u=' + o.u + ';v=' + (o.v || 0) + ';f=' + (o.f >= 0 ? o.f : 0) : o.mode === 'ini' ? 'ini:f=' + (o.f >= 0 ? o.f : 0) : 'v1:c=' + o.c + ';t=' + o.t + ';k=' + o.k + ';f=' + o.f + (o.a ? ';a=' + o.a : '');
   const hash = s => { let h = 7; for (const ch of String(s || '')) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const initiales = nom => { const p = String(nom || '').trim().split(/\s+/).filter(Boolean); return ((p[0] || '?')[0] + (p[1] ? p[1][0] : '')).toUpperCase(); };
@@ -48,23 +54,24 @@
   function svg(c0, opt = {}) {
     const o = parse(c0), size = opt.size || 40, label = opt.nom ? esc(opt.nom) : 'Avatar';
     const fi = o.f >= 0 ? o.f % FONDS.length : hash(opt.seed || opt.nom) % FONDS.length, fond = FONDS[fi];
-    const head = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${size}" height="${size}" role="img" aria-label="${label}"><title>${label}</title><defs><clipPath id="avc${++uid}"><circle cx="32" cy="32" r="32"/></clipPath></defs><g clip-path="url(#avc${uid})"><rect width="64" height="64" fill="${fond}"/>`;
+    const id = ++uid, head = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${size}" height="${size}" role="img" aria-label="${label}"><title>${label}</title><defs><clipPath id="avc${id}"><circle cx="32" cy="32" r="32"/></clipPath><radialGradient id="avl${id}" cx=".32" cy=".22" r=".9"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></radialGradient></defs><g clip-path="url(#avc${id})"><rect width="64" height="64" fill="${fond}"/><rect width="64" height="64" fill="url(#avl${id})"/>`;
+    if (o.mode === 'ph') return head + `<text x="32" y="41.5" text-anchor="middle" font-family="'Cormorant Garamond',Georgia,serif" font-size="27" font-weight="600" fill="#F5F0E6">${esc(initiales(opt.nom))}</text><image href="${photoUrl(o)}" x="0" y="0" width="64" height="64" preserveAspectRatio="xMidYMid slice"/></g><circle cx="32" cy="32" r="31.5" fill="none" stroke="#fff" stroke-opacity=".1"/></svg>`;
     if (o.mode === 'ini') return head + `<text x="32" y="41.5" text-anchor="middle" font-family="'Cormorant Garamond',Georgia,serif" font-size="27" font-weight="600" fill="#F5F0E6">${esc(initiales(opt.nom))}</text></g></svg>`;
     const peau = TEINTS[o.t % TEINTS.length], st = STYLES.find(x => x.id === o.c) || STYLES[5];
     const col = st.tissu ? TISSUS[o.k % TISSUS.length] : CHEVEUX[o.k % CHEVEUX.length], habit = HABITS[(fi + 1) % HABITS.length];
     const derriere = o.c === 'afro' || o.c === 'tresses' ? coiffure(o.c, col, peau) : '';
     return head + '<g transform="translate(32 35) scale(1.14) translate(-32 -32)">' + derriere
-      + `<path d="M8 66c1.6-11.4 11.4-18.6 24-18.6S54.4 54.6 56 66Z" fill="${habit}"/><path d="M26.6 46.2h10.8v4.6c-1.6 1.4-3.4 2.1-5.4 2.1s-3.8-.7-5.4-2.1Z" fill="${peau}"/>`
-      + `<ellipse cx="32" cy="31" rx="13.4" ry="15" fill="${peau}"/>`
+      + `<path d="M8 66c1.6-11.4 11.4-18.6 24-18.6S54.4 54.6 56 66Z" fill="${habit}"/><path d="M8 66c1.6-11.4 11.4-18.6 24-18.6 3 0 5.8.4 8.4 1.2C30 50 20 56.6 17.6 66Z" fill="#fff" opacity=".1"/><path d="M24.4 48.2c2.2 2.6 4.8 4 7.6 4s5.4-1.4 7.6-4" stroke="#000" stroke-opacity=".18" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M26.6 44.6h10.8v6.2c-1.6 1.4-3.4 2.1-5.4 2.1s-3.8-.7-5.4-2.1Z" fill="${peau}"/><path d="M26.6 44.6h10.8v2.6c-1.7.9-3.5 1.3-5.4 1.3s-3.7-.4-5.4-1.3Z" fill="#000" opacity=".2"/>`
+      + `<ellipse cx="32" cy="31" rx="13.4" ry="15" fill="${peau}"/><path d="M39.6 18.6c3.6 2.6 5.8 7 5.8 12.4 0 8.3-6 15-13.4 15-2.6 0-5-.8-7-2.2 7.6.4 13.6-5.6 14.6-13.6.5-4.4-.1-8.4 0-11.6Z" fill="#000" opacity=".13"/><ellipse cx="25.4" cy="36.4" rx="2.6" ry="1.6" fill="#E2735B" opacity=".16"/><ellipse cx="38.6" cy="36.4" rx="2.6" ry="1.6" fill="#E2735B" opacity=".16"/>`
       + `<ellipse cx="18.8" cy="32" rx="2" ry="3" fill="${peau}"/><ellipse cx="45.2" cy="32" rx="2" ry="3" fill="${peau}"/>`
-      + `<circle cx="26.8" cy="31.6" r="1.35" fill="#1a120c"/><circle cx="37.2" cy="31.6" r="1.35" fill="#1a120c"/>`
+      + `<path d="M23.6 27.6c1.6-1 3.4-1.2 5.2-.6M35.2 27c1.8-.6 3.6-.4 5.2.6" stroke="#1a120c" stroke-opacity=".6" stroke-width="1.1" stroke-linecap="round" fill="none"/><circle cx="26.8" cy="31.6" r="1.45" fill="#1a120c"/><circle cx="37.2" cy="31.6" r="1.45" fill="#1a120c"/><circle cx="27.3" cy="31.1" r=".45" fill="#fff" opacity=".8"/><circle cx="37.7" cy="31.1" r=".45" fill="#fff" opacity=".8"/><path d="M31.2 33.4c-.5 1.4-.6 2.4.2 2.8.4.2 1 .2 1.6 0" stroke="#000" stroke-opacity=".22" stroke-width="1" stroke-linecap="round" fill="none"/>`
       + (o.c === 'barbe' ? '' : `<path d="M28.4 38.4c2.3 1.5 4.9 1.5 7.2 0" stroke="#1a120c" stroke-opacity=".55" stroke-width="1.3" stroke-linecap="round" fill="none"/>`)
       + (derriere ? (o.c === 'afro' ? '' : coiffure(o.c, col, peau).replace(/<g fill[\s\S]*?<\/g>|<g stroke[\s\S]*?<\/g>/g, '')) : coiffure(o.c, col, peau))
       + (o.a === 'boucles' ? `<circle cx="18.6" cy="37" r="1.6" fill="#D6A83E"/><circle cx="45.4" cy="37" r="1.6" fill="#D6A83E"/>` : '')
       + (o.a === 'lunettes' ? `<g fill="none" stroke="#17110D" stroke-width="1.3"><circle cx="26.8" cy="31.6" r="3.8"/><circle cx="37.2" cy="31.6" r="3.8"/><path d="M30.6 31.4h2.8M23 31l-3.4-1M41 31l3.4-1"/></g>` : '')
-      + `</g></g></svg>`;
+      + `</g></g><circle cx="32" cy="32" r="31.5" fill="none" stroke="#fff" stroke-opacity=".1"/></svg>`;
   }
-  const uri = (c0, opt) => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg(c0, opt));
+  const uri = (c0, opt) => { const o = parse(c0); return o.mode === 'ph' ? photoUrl(o) : 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg(c0, opt)); };
 
-  window.MDGAvatar = { svg, uri, parse, code, initiales, STYLES, DETAILS, TEINTS, CHEVEUX, TISSUS, FONDS };
+  window.MDGAvatar = { svg, uri, parse, code, photoUrl, initiales, STYLES, DETAILS, TEINTS, CHEVEUX, TISSUS, FONDS };
 })();

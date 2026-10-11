@@ -118,3 +118,11 @@ html.sx-open{overflow:hidden}
   .sx__row.is-top .sx__acts{display:none}
 }
 @media (prefers-reduced-motion:reduce){.sx__row,.sx__pv.is-on > *{animation:none}.sx.is-listening .sx__mic{animation:none}}
+
+/* 11/10/2026 : barre épurée — ni micro, ni « Échap », ni raccourcis clavier ; pas de cadre orange sur le champ (le soulignement de la barre suffit) */
+.sx__mic,.sx__keys{display:none!important}
+.sx__x{display:none}
+.sx__in:focus,.sx__in:focus-visible{outline:none!important;box-shadow:none!important}
+.sx__bar{transition:border-color .2s}
+.sx__bar:focus-within{border-bottom-color:color-mix(in srgb,var(--p-accent,#E07A3F) 55%,transparent)}
+@media (max-width:759px){.sx__x{display:grid}.sx__x span::before{content:none}}

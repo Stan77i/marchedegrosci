@@ -17,17 +17,17 @@
 <link rel="stylesheet" href="css/styles.css?v=20261009o">
 <link rel="stylesheet" href="v3/acheter.css?v=20261009o">
 <link rel="stylesheet" href="v3/vendre.css?v=20261009o">
-<link rel="stylesheet" href="v3/hero-ivt.css?v=20261011b">
-<link rel="stylesheet" href="v3/ivt-header.css?v=20261009w">
+<link rel="stylesheet" href="v3/hero-ivt.css?v=20261011m">
+<link rel="stylesheet" href="v3/ivt-header.css?v=20261012c">
 <link rel="stylesheet" href="v3/pages.css?v=20261011c">
 <link rel="stylesheet" href="v3/annee.css?v=20261009z">
-<link rel="stylesheet" href="v3/cherche.css?v=20261009w">
+<link rel="stylesheet" href="v3/cherche.css?v=20261011m">
 <link rel="stylesheet" href="v3/flou.css?v=20261009y">
 <link rel="stylesheet" href="v3/marqueurs.css?v=20261010b">
 <link rel="stylesheet" href="v3/etat.css?v=20261010a">
 <link rel="stylesheet" href="v3/constellation.css?v=20261010c">
 <link rel="stylesheet" href="css/typo.css?v=20261009o">
-<link rel="stylesheet" href="v3/ux.css?v=20261012a">
+<link rel="stylesheet" href="v3/ux.css?v=20261011p">
 <script>/* téléphone : ouvre l'application mobile (même adresse, même données). ?ordinateur=1 force le site complet */(function(){try{var q=location.search,f=/[?&]ordinateur=1/.test(q);if(f)sessionStorage.setItem('mdg-ordi','1');var o=sessionStorage.getItem('mdg-ordi')==='1';if(/[?&]app=1/.test(q)){sessionStorage.setItem('mdg-app','1');sessionStorage.removeItem('mdg-ordi');o=false}var tel=sessionStorage.getItem('mdg-app')==='1'||(matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<768);if(tel&&!o)location.replace('application.dc.html'+(location.hash||'#/'));}catch(e){}})();</script>
 <script>/* sans adresse : ouvre l'Accueil */ if (!location.hash) history.replaceState(null, '', '#/');</script>
 <script src="vendor/gsap.min.js" defer></script>
@@ -98,7 +98,8 @@ body.tzmode .top::after{display:none}
 .backb::after{content:"";position:absolute;left:10px;right:10px;bottom:5px;height:1.5px;border-radius:2px;background:var(--fil,var(--color-terre));transform-origin:left;transform:scaleX(0);pointer-events:none}
 .backb:active::after{animation:rewind .22s cubic-bezier(.22,1,.36,1)}
 @keyframes rewind{from{transform:scaleX(1)}to{transform:scaleX(0)}}
-.offer{position:relative}.o-pt{position:absolute;right:18px;top:20px;width:9px;height:9px;border-radius:50%;background:var(--pt,var(--fil))}
+.offer{position:relative}.o-pt{display:none}
+.o-q small:first-child::before{content:'';display:inline-block;width:7px;height:7px;margin:0 8px 2px 0;border-radius:50%;vertical-align:middle;background:var(--pt,var(--fil))}
 #top{view-transition-name:mdg-top}
 ::view-transition-group(mdg-top),::view-transition-old(mdg-top),::view-transition-new(mdg-top){animation:none}
 ::view-transition-old(mdg-top){display:none}
@@ -511,7 +512,7 @@ body.dark .foot-net{display:block}
 .ac-sheet-a .btn-primary{flex:1;justify-content:center}
 @media (max-width:760px){.cats-f,.ac-num,#regSel{display:none}.ac-fb{display:inline-flex}.ac-tools{width:100%;justify-content:space-between}.ac-t{font-size:20px}}
 .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:8px 0 24px}
-.cats-f{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;flex:1;min-width:0}
+.cats-f{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;flex:1 1 100%;min-width:0;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);padding-right:48px}
 .cats-f::-webkit-scrollbar{display:none}
 .fbtn{flex:none;min-height:42px;padding:0 16px;border-radius:999px;border:1.5px solid var(--color-divider);background:none;font-weight:600;font-size:14px;cursor:pointer;color:var(--color-neutral-700);transition:all .25s}
 .fbtn:hover{color:var(--color-text);border-color:var(--color-neutral-500)}
@@ -962,7 +963,7 @@ body.tzmode footer{display:none}
 .tz-world{position:absolute;inset:0;opacity:0;transition:opacity .9s}.tz-world.on{opacity:1}
 .tz-world.card .tz-cv{cursor:default}
 .tz-world.card .tz-pin.dim,.tz-world.card .tz-geo{display:none}
-.wdock{position:relative;aspect-ratio:1;border-radius:28px;overflow:hidden;background:var(--color-cacao);margin-top:8px}
+.wdock{position:relative;aspect-ratio:5/4;border-radius:28px;overflow:hidden;background:var(--color-cacao);margin-top:8px}
 .netview .wdock{position:absolute;inset:0;margin:0;border-radius:0;aspect-ratio:auto}
 @media (max-width:760px){.wdock{aspect-ratio:4/3;border-radius:22px}.tz-world.card .tz-pin{min-height:36px;margin-top:-36px;font-size:12px}}
 .tz.grab .tz-cv,.tz-world.grab .tz-cv{cursor:grabbing}
@@ -1209,7 +1210,6 @@ body.tzmode .tz{height:100svh}
       <a href="#/prix" data-r="prix">Prix du marché</a>
     </nav>
     <div class="sh-actions">
-      <button type="button" class="sh-btn" id="shContact" aria-disabled="true" aria-label="Contact bientôt disponible" title="Contact bientôt disponible"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h3l1.5 4-2 1.4a11 11 0 0 0 5.1 5.1L16 12.5l4 1.5v3a2 2 0 0 1-2 2A15 15 0 0 1 5 6a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m3.5 3.5 17 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
       <button type="button" class="sh-btn" id="shCompte" aria-haspopup="dialog" aria-label="Se connecter" title="Se connecter"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 20a7 7 0 0 1 14 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><i class="sh-dot" aria-hidden="true"></i></button>
       <a class="sh-btn" href="#/catalogue" data-search aria-haspopup="dialog" aria-label="Rechercher (/)" title="Rechercher  /  Ctrl K"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M16 16l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></a>
       <button type="button" class="sh-burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
@@ -1253,11 +1253,12 @@ body.tzmode .tz{height:100svh}
 <script src="v2/data.js"></script>
 <script src="v3/marqueurs.js?v=20261010a"></script>
 <script src="v3/terre.js?v=20261011a"></script>
-<script src="v3/nuage.js?v=20261012b"></script>
+<script src="v3/porte.js?v=20261012d"></script>
+<script src="v3/nuage.js?v=20261012e"></script>
 <script src="v3/sons.js?v=20261012b"></script>
-<script src="v3/negoce.js?v=20261012b"></script>
-<script src="v3/avatar.js?v=20261012b"></script>
-<script src="v3/compte.js?v=20261012b"></script>
+<script src="v3/negoce.js?v=20261012c"></script>
+<script src="v3/avatar.js?v=20261012c"></script>
+<script src="v3/compte.js?v=20261012c"></script>
 <script src="v3/marche.js?v=20261011c"></script>
 <script src="v2/search.js"></script>
 <script src="v2/map.js"></script>
@@ -1266,17 +1267,18 @@ body.tzmode .tz{height:100svh}
 <script src="v3/acheter.js?v=20261011a"></script>
 <script src="v3/vendre.js?v=20261011n"></script>
 <script src="v3/scene-ivt.js?v=20261009o"></script>
-<script src="v3/hero-ivt.js?v=20261011b"></script>
+<script src="v3/hero-ivt.js?v=20261012c"></script>
 <script src="v3/annee.js?v=20261009z2"></script>
 <script src="v3/flou.js?v=20261011a"></script>
 <script src="v3/etat.js?v=20261010a"></script>
 <script src="v3/constellation.js?v=20261010c"></script>
-<script src="v3/cherche.js?v=20261010c"></script>
-<script src="v3/ivt-header.js?v=20261009w"></script>
+<script src="v3/cherche.js?v=20261012c"></script>
+<script src="v3/ivt-header.js?v=20261012d"></script>
 <div id="tweaks-root"></div>
 <script src="vendor/react.production.min.js"></script>
 <script src="vendor/react-dom.production.min.js"></script>
 <script src="vendor/babel.min.js"></script>
+<script>window.Babel||document.write('<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"><\/script>')</script>
 <script type="text/babel" src="v3/tweaks-panel.jsx"></script>
 <script type="text/babel" src="v3/tweaks.jsx"></script>
 <script>
@@ -1610,7 +1612,7 @@ document.addEventListener('click', e => {
   e.preventDefault(); const to = a.getAttribute('href'); if ((to === '#/' || to === '#/accueil') && !(parseHash().parts[0] || '')) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; } go(to);
 }, true);
 $('#back').onclick = back;
-$('#shContact').onclick = () => toast('Contact bientôt disponible');
+
 /* ——— Compte et annonces partagées (v3/nuage.js) ——— */
 const ICO_COMPTE = $('#shCompte') ? $('#shCompte').innerHTML : '';
 function paintCompte() { const b = $('#shCompte'); if (!b || !window.MDGNuage) return; const s = MDGNuage.session(), n = s && window.MDGNegoce ? MDGNegoce.unread() : 0, l = s ? (n ? 'Mon espace : ' + n + (n > 1 ? ' négociations non lues' : ' négociation non lue') : 'Mon espace (connecté)') : 'Se connecter'; b.classList.toggle('is-on', !!s); b.setAttribute('aria-label', l); b.title = l;
@@ -1762,9 +1764,9 @@ function catalogue(view, _, qs) {
       .then(a => { api = a; bindOffers(view, need, api); }).catch(() => { mapEl.outerHTML = '<p class="note">Carte indisponible hors connexion. La liste reste complète.</p>'; bindOffers(view, need, null); });
   } else bindOffers(view, need, null);
   { const shown = p && p.product ? offers : OFFERS.filter(o => (!cat || prodBy[o.productSlug].categorySlug === cat) && (!regionSlug || o.regionSlug === regionSlug) && keep(o));
-    terrainIn(view).then(T => T && T.set({ points: [...new Set(shown.map(o => o.producerId))].map(prXY) }));
+    if (!$('.mapbox', view)) terrainIn(view).then(T => T && T.set({ points: [...new Set(shown.map(o => o.producerId))].map(prXY) }));
     const cities = Object.entries(shown.reduce((m, o) => (m[o.city] = (m[o.city] || 0) + 1, m), {})).sort((a, b) => b[1] - a[1]).slice(0, 2).map(e => e[0]);
-    const rh = $('.res-h p', view); if (rh && shown.length) rh.insertAdjacentHTML('beforeend', `<span class="tr-cap"> · ${plural(shown.length, 'offre', 'offres')}, surtout autour de ${cities.map(esc).join(' et ')}</span>`); }
+    const rh = $('.res-h p', view); if (rh && shown.length) rh.insertAdjacentHTML('beforeend', `<span class="tr-cap"> · ${p && p.product ? '' : plural(shown.length, 'offre', 'offres') + ', '}surtout autour de ${cities.map(esc).join(' et ')}</span>`); }
   if (new URLSearchParams(location.search).get('debug') === 'search') debugSearch();
 }
 // le terrain en tête des pages Acheter, Vendre, Demander (v2/terrain.js)
@@ -2258,20 +2260,21 @@ function liveMap(view, o) {
     const ids = o.points.map(p => p.producer.id);
     const ps = new Set(o.points.flatMap(p => (p.offers || []).map(x => x.productSlug)));
     w.setState({ hl: new Set(ids), products: ps.size ? ps : null, sel: o.focus || null, zone: null, user: o.dest || null, userLabel: o.destLabel || 'Votre lieu', labels: {} });
-    setTimeout(() => o.focus ? w.focusProducer(o.focus) : w.fit(ids), 60);
+    // un ou deux points : on garde tout le pays à l'écran (zoomer sur un seul point ne montrait qu'un morceau de côte)
+    setTimeout(() => o.focus ? w.focusProducer(o.focus) : ids.length < 3 ? w.home() : w.fit(ids), 60);
     return { select(id) { w.setState({ sel: id }); w.focusProducer(id); }, hover(id) { w.hover(id); } };
   }).catch(() => { if (dock.isConnected) dock.replaceWith(svg); return flat(); });
 }
 const WORLD = {
   inst: null, p: null,
   get() {
-    return this.p || (this.p = import('./v2/reseau-carte.js?v=20261011d').then(m => m.create({ data: mapData(), reduced, tier: W3.tier, onLost: () => { WORLD.inst = null; WORLD.p = null; } }))
+    return this.p || (this.p = import('./v2/reseau-carte.js?v=20261012c').then(m => m.create({ data: mapData(), reduced, tier: W3.tier, onLost: () => { WORLD.inst = null; WORLD.p = null; } }))
       .then(w => { if (!w) throw new Error('webgl'); this.inst = w; window.MDGTerritoire = w; return w; }).catch(e => { this.p = null; throw e; }));
   },
 };
 function mapData() { return { producers: M.producers.map(p => { const of = OFFERS.filter(o => o.producerId === p.id); return { id: p.id, name: p.name, city: p.city, regionSlug: p.regionSlug, lat: p.latitude, lon: p.longitude, unit: of[0] ? of[0].unit : 'kg', prods: Object.fromEntries(of.map(o => [o.productSlug, o.quantity])) }; }), demands: demandsAll().map(d => ({ id: d.id, name: d.name, buyerType: d.buyerType, city: d.city, regionSlug: d.regionSlug, lat: d.latitude, lon: d.longitude, productSlug: d.productSlug, quantity: d.quantity, unit: d.unit })), zones: zonesOf() }; }
 // L'année du marché : une seconde instance de la même carte (même module, même dessin), car « Le réseau » occupe déjà la première
-const SNMAP = () => SNMAP.p || (SNMAP.p = import('./v2/reseau-carte.js?v=20261011d').then(m => m.create({ data: mapData(), reduced })).then(w => { if (!w) throw new Error('canvas'); return w; }).catch(e => { SNMAP.p = null; throw e; }));
+const SNMAP = () => SNMAP.p || (SNMAP.p = import('./v2/reseau-carte.js?v=20261012c').then(m => m.create({ data: mapData(), reduced })).then(w => { if (!w) throw new Error('canvas'); return w; }).catch(e => { SNMAP.p = null; throw e; }));
 // centres des districts : géographie de référence (v3/marche.js), jamais déduite de producteurs inventés
 function zonesOf() { const G = window.MDGMarche.REG; return M.regions.filter(r => G[r.slug]).map(r => ({ slug: r.slug, name: r.name, lat: G[r.slug][0], lon: G[r.slug][1], n: M.producers.filter(p => p.regionSlug === r.slug).length })); }
 

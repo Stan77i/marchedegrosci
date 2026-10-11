@@ -37,13 +37,39 @@
   const brand = h.querySelector('.brand'), actions = h.querySelector('.sh-actions');
   root.classList.add('nav-js');
   nav.id = nav.id || 'mainNav'; burger.setAttribute('aria-controls', nav.id);
+  // entrée « compte » dans le menu dépliant (le bouton rond peut manquer de place sur les petits téléphones)
+  const accB = document.createElement('button'); accB.type = 'button'; accB.className = 'sh-acc';
+  const peindreAcc = () => { const b = document.getElementById('shCompte'), s = window.MDGNuage && MDGNuage.session(); const av = b && b.classList.contains('has-av') ? b.innerHTML : '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 20a7 7 0 0 1 14 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+    accB.innerHTML = '<span class="sh-acc-av" aria-hidden="true">' + av + '</span><span>' + (s ? 'Mon espace' : 'Se connecter') + '<small>' + (s ? 'Profil, annonces, négociations' : 'Numéro + code à 6 chiffres') + '</small></span>'; };
+  peindreAcc(); nav.appendChild(accB);
+  ['mdg:nuage', 'mdg:profil', 'mdg:negoce'].forEach(ev => addEventListener(ev, () => setTimeout(peindreAcc, 0)));
+  accB.addEventListener('click', () => { set(false); window.MDGNuage && MDGNuage.open(); });
+  // repère de la page active : un seul trait qui glisse d'un lien à l'autre ; aria-current en plus de la couleur
+  const ind = document.createElement('span'); ind.className = 'sh-ind'; ind.setAttribute('aria-hidden', 'true'); nav.appendChild(ind);
+  let indVu = false;
+  const posInd = () => {
+    nav.querySelectorAll('a').forEach(a => { if (a.classList.contains('on')) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+    const a = nav.querySelector('a.on');
+    if (root.classList.contains('nav-fold') || !a || !a.offsetWidth) { ind.style.opacity = 0; return; }
+    if (!indVu) ind.classList.add('no-anim');
+    ind.style.width = a.offsetWidth + 'px'; ind.style.transform = 'translateX(' + a.offsetLeft + 'px)'; ind.style.opacity = 1;
+    if (!indVu) { indVu = true; requestAnimationFrame(() => requestAnimationFrame(() => ind.classList.remove('no-anim'))); }
+  };
+  new MutationObserver(() => requestAnimationFrame(posInd)).observe(nav, { subtree: true, attributes: true, attributeFilter: ['class'] });
+  const scrim = document.createElement('div'); scrim.className = 'sh-scrim'; scrim.setAttribute('aria-hidden', 'true'); document.body.appendChild(scrim);
+  scrim.addEventListener('click', () => close());
+  // un seul panneau à la fois : le menu ferme la recherche, la recherche ferme le menu
+  addEventListener('mdg:panneau', e => { if (e.detail !== 'menu') close(); });
   const set = open => {
+    if (open) dispatchEvent(new CustomEvent('mdg:panneau', { detail: 'menu' }));
+    const avait = nav.contains(document.activeElement);
     nav.classList.toggle('is-open', open);
     document.body.classList.toggle('nav-open', open);
     burger.setAttribute('aria-expanded', String(open));
     burger.setAttribute('aria-label', open ? 'Fermer le menu' : 'Menu');
     document.body.style.overflow = open ? 'hidden' : '';
-    if (open) { show(); const a = nav.querySelector('a.on') || nav.querySelector('a'); a && a.focus({ preventScroll: true }); }
+    if (open) { show(); peindreAcc(); const a = nav.querySelector('a.on') || nav.querySelector('a'); a && a.focus({ preventScroll: true }); }
+    else if (avait) burger.focus({ preventScroll: true });
   };
   const close = () => { if (nav.classList.contains('is-open')) set(false); };
   let folded = null;
@@ -54,14 +80,14 @@
     root.classList.remove('nav-fold');
     const cs = getComputedStyle(inner), avail = inner.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
     const need = brand.getBoundingClientRect().width + nav.scrollWidth + actions.getBoundingClientRect().width + 40 + (was ? 24 : 0); // 24 px d'hystérésis : pas de clignotement à la limite
-    return need > avail || scrolledFold;
+    return need > avail; // la capsule repliée garde ses liens tant qu'ils tiennent
   };
   const place = () => {
     const f = measure();
     root.classList.toggle('nav-fold', f);
     if (f) { if (nav.parentNode !== document.body) document.body.appendChild(nav); }
     else { close(); if (nav.parentNode !== home) home.insertBefore(nav, anchor); }
-    folded = f;
+    folded = f; posInd();
   };
   onFold = () => place();
   let rq = 0; const req = () => { if (!rq) rq = requestAnimationFrame(() => { rq = 0; place(); }); };
@@ -75,6 +101,8 @@
   nav.addEventListener('click', e => { if (e.target === nav || e.target.closest('a')) close(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && nav.classList.contains('is-open')) { close(); burger.focus(); } });
   document.addEventListener('click', e => { if (nav.classList.contains('is-open') && !nav.contains(e.target) && !e.target.closest('.sh-burger')) close(); });
+  // Tab garde le focus entre le bouton menu et le panneau tant qu'il est ouvert
+  nav.addEventListener('keydown', e => { if (e.key !== 'Tab' || !nav.classList.contains('is-open')) return; const f = [...nav.querySelectorAll('a,button')].filter(x => x.offsetParent); const a = f[0], z = f[f.length - 1]; if (e.shiftKey && document.activeElement === a) { e.preventDefault(); burger.focus(); } else if (!e.shiftKey && document.activeElement === z) { e.preventDefault(); burger.focus(); } });
   let lastTouch = 0;
   const toggle = e => { e.preventDefault(); e.stopPropagation(); set(!nav.classList.contains('is-open')); };
   burger.addEventListener('touchend', e => { lastTouch = Date.now(); toggle(e); }, { passive: false });

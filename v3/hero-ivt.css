@@ -562,3 +562,10 @@
 .ivh .hero__where .hw-t{font-size:12.5px;font-weight:600;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--color-ivoire-t) 35%,transparent);text-underline-offset:4px}
 .ivh .hero__where:hover .hw-t{text-decoration-color:var(--hero-accent,#E07A3F)}
 .ivh .hero__where:focus-visible{outline:2px solid var(--hero-accent,#E07A3F);outline-offset:4px;border-radius:14px}
+
+/* 11/10/2026 : « où » compact — la carte à sa taille de repère, le lien sur une ligne, « Voir la fiche » juste dessous */
+.ivh .hero__px .hero__where{gap:14px;margin:10px 0 0}
+.ivh .hero__px .hero__where svg{width:88px;border-radius:12px;transition:transform var(--ux-d3,320ms) var(--ux-out,cubic-bezier(.22,1,.36,1))}
+.ivh .hero__px .hero__where:hover svg{transform:scale(1.04)}
+.ivh .hero__where .hw-t{white-space:nowrap;font-size:13px}
+.ivh .hero__px .hero__link{margin-top:12px}

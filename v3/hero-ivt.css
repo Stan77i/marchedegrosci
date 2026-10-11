@@ -553,3 +553,12 @@
 
 /* 9 oct. : à la sélection, plus d'éclat lumineux (onde de la scène retirée, faisceau sans flash) */
 .ivh .hero__beam.is-on{animation:none;opacity:.9}
+/* où le produit est proposé ou cherché : le vrai territoire (v3/terre.js), offres et demandes aux marqueurs communs */
+.ivh .hero__where{display:flex;align-items:center;gap:12px;margin:4px 0 2px;color:var(--color-ivoire-t);text-decoration:none}
+.ivh .hero__where[hidden]{display:none}
+.ivh .hero__where svg{width:118px;height:auto;flex:none;overflow:hidden;border-radius:14px;background:color-mix(in srgb,#000 22%,transparent)}
+.ivh .hero__where .hw-o{fill:var(--mk-offre,#6CC58C)}
+.ivh .hero__where .hw-d{fill:var(--mk-demande,#F2C94C)}
+.ivh .hero__where .hw-t{font-size:12.5px;font-weight:600;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--color-ivoire-t) 35%,transparent);text-underline-offset:4px}
+.ivh .hero__where:hover .hw-t{text-decoration-color:var(--hero-accent,#E07A3F)}
+.ivh .hero__where:focus-visible{outline:2px solid var(--hero-accent,#E07A3F);outline-offset:4px;border-radius:14px}

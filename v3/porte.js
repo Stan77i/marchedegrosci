@@ -5,7 +5,8 @@
    ce sont des métaphores, aucune donnée n'est affichée ni inventée.
    Pourquoi pas WebGL : quelques centaines de traits suffisent ; un canvas 2D coûte moins (batterie, petits téléphones) et n'échoue pas.
    L'intensité suit l'état réel du formulaire : repos · saisie · envoi · réussite · erreur. Mouvement réduit : une image fixe.
-   API : MDGPorte.monter(el, { compact }) → { etat(nom), arreter() } */
+   Sur téléphone (compact) : une illustration SVG fixe, animée en CSS (voir monterSvg).
+   API : MDGPorte.monter(el, { compact }) → { etat(nom), mode('in'|'up'|'sos'), arreter() } */
 (function () {
   'use strict';
   const RECIT = [
@@ -21,8 +22,88 @@
 
   function rng(seed) { let s = seed >>> 0; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
 
+  // ——— téléphone : une illustration SVG (la porte du marché) au lieu de la scène animée ———
+  // Le bandeau ne fait que 132 px : des points mobiles y passaient sous le texte. Ici, une seule image lisible :
+  // à gauche les sillons d'un champ, à droite les étals ; au centre une porte ouverte d'où vient la lumière.
+  // Le cercle vert (qui produit) et le carré jaune (qui cherche) marchent vers elle ; la ligne bleue (la rencontre) passe le seuil.
+  // L'état du formulaire ouvre la porte (saisie), allume la lumière (envoi), fait se rejoindre les deux (réussite).
+  const SVG = `<svg class="ps" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+  <defs>
+    <radialGradient id="psL" cx="50%" cy="78%" r="60%"><stop offset="0" stop-color="#FCE6B8"/><stop offset=".45" stop-color="#E9A35E" stop-opacity=".55"/><stop offset="1" stop-color="#E07A3F" stop-opacity="0"/></radialGradient>
+    <linearGradient id="psD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF3D6"/><stop offset="1" stop-color="#F2B872"/></linearGradient>
+    <linearGradient id="psSol" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C9A27A" stop-opacity="0"/><stop offset=".5" stop-color="#C9A27A" stop-opacity=".5"/><stop offset="1" stop-color="#F5F0E6" stop-opacity="0"/></linearGradient>
+    <clipPath id="psC"><path d="M178 112V52a22 22 0 0 1 44 0v60z"/></clipPath>
+  </defs>
+  <ellipse class="ps-halo" cx="200" cy="104" rx="150" ry="58" fill="url(#psL)"/>
+  <g class="ps-champ" fill="none" stroke="#C9A27A" stroke-linecap="round">
+    <path d="M-10 128C60 118 120 112 176 110" stroke-opacity=".5"/><path d="M-10 116C55 110 118 107 176 106" stroke-opacity=".38"/>
+    <path d="M-10 104C52 101 116 101 176 102" stroke-opacity=".28"/><path d="M-10 92C50 92 114 95 176 99" stroke-opacity=".2"/>
+    <path d="M-10 80C48 83 112 89 176 96" stroke-opacity=".13"/>
+    <g fill="#6CC58C" stroke="none" fill-opacity=".5"><path d="M34 96c-4-7-2-14 2-17 1 6 1 11-2 17z"/><path d="M36 96c3-6 9-9 13-8-3 5-7 8-13 8z"/><path d="M92 94c-3-6-1-12 2-14 1 5 1 9-2 14z"/><path d="M94 94c3-5 7-7 11-6-2 4-6 6-11 6z"/><path d="M140 101c-2-5-1-9 2-11 0 4 0 7-2 11z"/></g>
+  </g>
+  <g class="ps-marche" fill="none" stroke="#F5F0E6" stroke-linejoin="round">
+    <g stroke-opacity=".34"><path d="M236 106V84M282 106V84"/><path d="M230 84h58l-5-12h-48z"/><path d="M230 84q4.8 5 9.7 0t9.6 0 9.7 0 9.7 0 9.6 0 9.7 0" /></g>
+    <g stroke-opacity=".24"><path d="M300 106V80M352 106V80"/><path d="M294 80h64l-6-13h-52z"/><path d="M294 80q5.3 5 10.7 0t10.6 0 10.7 0 10.7 0 10.6 0 10.7 0"/></g>
+    <g stroke-opacity=".15"><path d="M366 106V78M412 106V78"/><path d="M360 78h58l-5-12h-48z"/></g>
+    <g fill="#F2C94C" stroke="none" fill-opacity=".35"><rect x="244" y="96" width="9" height="9" rx="1.5"/><rect x="256" y="98" width="7" height="7" rx="1.5"/><rect x="312" y="95" width="10" height="10" rx="1.5"/><rect x="326" y="98" width="7" height="7" rx="1.5"/></g>
+  </g>
+  <path d="M0 112.5H400" stroke="url(#psSol)"/>
+  <g class="ps-porte">
+    <path d="M172 112V52a28 28 0 0 1 56 0v60" fill="none" stroke="#F5F0E6" stroke-opacity=".55" stroke-width="1.5"/>
+    <path d="M178 112V52a22 22 0 0 1 44 0v60z" fill="#120f0b"/>
+    <g clip-path="url(#psC)"><rect class="ps-jour" x="178" y="28" width="44" height="86" fill="url(#psD)"/>
+      <path class="ps-battant" d="M178 112V30h22v82z" fill="#2b231a" stroke="#F5F0E6" stroke-opacity=".3"/></g>
+    <path class="ps-faisceau" d="M180 112h40l38 20H142z" fill="#FCE6B8" fill-opacity=".22"/>
+  </g>
+  <path d="M70 118Q200 76 330 118" fill="none" stroke="#6AAEF0" stroke-opacity=".18" stroke-dasharray="2 5"/>
+  <g class="ps-lien" fill="none" stroke="#6AAEF0" stroke-width="1.6" stroke-linecap="round"><path d="M70 118Q135 97 200 97" pathLength="1"/><path d="M330 118Q265 97 200 97" pathLength="1"/></g>
+  <circle class="ps-v" cx="70" cy="118" r="7" fill="#6CC58C"/>
+  <rect class="ps-a" x="323" y="111" width="14" height="14" rx="2.5" fill="#F2C94C"/>
+  <circle class="ps-r" cx="200" cy="97" r="3.2" fill="#6AAEF0"/>
+</svg>`;
+  const CSS = `.ps{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ps *{transform-box:fill-box}
+.ps-halo{opacity:.55;transform-origin:50% 80%;transition:opacity .8s,transform .8s cubic-bezier(.22,1,.36,1)}
+.ps-battant{transform-origin:0 50%;transform:scaleX(1);transition:transform .9s cubic-bezier(.22,1,.36,1)}
+.ps-jour{opacity:.75;transition:opacity .6s}.ps-faisceau{opacity:.4;transition:opacity .6s}
+.ps-lien path{stroke-dasharray:1;stroke-dashoffset:.72;transition:stroke-dashoffset 1s cubic-bezier(.22,1,.36,1)}.ps-lien{opacity:.7;transition:opacity .6s}
+.ps-v,.ps-a{transition:transform 1.1s cubic-bezier(.22,1,.36,1)}
+.ps-r{opacity:0;transform-origin:50% 50%;transition:opacity .4s,transform .6s cubic-bezier(.22,1,.36,1)}
+.ps-v{animation:psPas 3.2s ease-in-out infinite}.ps-a{animation:psPas 3.2s ease-in-out -1.6s infinite}
+@keyframes psPas{50%{translate:0 -2px}}
+.ps-halo{animation:psSouffle 5s ease-in-out infinite}@keyframes psSouffle{50%{opacity:.7}}
+.pt[data-mode=in] .ps-battant{transform:scaleX(.55)}
+.pt[data-mode=up] .ps-battant{transform:scaleX(.7)}
+.pt[data-mode=up] .ps-v{transform:translate(18px,-5.4px)}.pt[data-mode=up] .ps-a{transform:translate(-18px,-5.4px)}
+.pt[data-etat=saisie] .ps-battant{transform:scaleX(.22)}
+.pt[data-etat=saisie] .ps-lien path{stroke-dashoffset:.45}.pt[data-etat=saisie] .ps-lien{opacity:.85}
+.pt[data-etat=saisie] .ps-v{transform:translate(34px,-9.6px)}.pt[data-etat=saisie] .ps-a{transform:translate(-34px,-9.6px)}
+.pt[data-etat=envoi] .ps-battant{transform:scaleX(.08)}.pt[data-etat=envoi] .ps-jour{opacity:1}.pt[data-etat=envoi] .ps-faisceau{opacity:.9}
+.pt[data-etat=envoi] .ps-halo{transform:scale(1.12)}
+.pt[data-etat=envoi] .ps-lien path{stroke-dashoffset:.15}.pt[data-etat=envoi] .ps-lien{opacity:1}
+.pt[data-etat=envoi] .ps-v{transform:translate(70px,-16.5px)}.pt[data-etat=envoi] .ps-a{transform:translate(-70px,-16.5px)}
+.pt[data-etat=ok] .ps-battant{transform:scaleX(0)}.pt[data-etat=ok] .ps-jour,.pt[data-etat=ok] .ps-faisceau{opacity:1}
+.pt[data-etat=ok] .ps-halo{transform:scale(1.25);opacity:.9}
+.pt[data-etat=ok] .ps-lien path{stroke-dashoffset:0}.pt[data-etat=ok] .ps-lien{opacity:1}
+.pt[data-etat=ok] .ps-v{transform:translate(112px,-20.6px)}.pt[data-etat=ok] .ps-a{transform:translate(-112px,-20.6px)}
+.pt[data-etat=ok] .ps-r{opacity:1;transform:scale(1.5)}
+.pt[data-etat=erreur] .ps-battant{transform:scaleX(.6)}.pt[data-etat=erreur] .ps-lien path{stroke-dashoffset:.85}.pt[data-etat=erreur] .ps-lien{opacity:.4}
+@media (prefers-reduced-motion:reduce){.ps *{animation:none!important;transition:none!important}}`;
+
+  function monterSvg(el) {
+    if (!document.getElementById('psCss')) { const st = document.createElement('style'); st.id = 'psCss'; st.textContent = CSS; document.head.appendChild(st); }
+    el.classList.add('pt', 'pt--svg'); el.dataset.mode = 'in'; el.dataset.etat = 'repos';
+    el.innerHTML = SVG + `<p class="pt-sr">La porte du marché : ceux qui produisent et ceux qui cherchent s'y retrouvent.</p>`;
+    return {
+      etat(n) { if (n in CIBLE) el.dataset.etat = n; },
+      mode(m) { el.dataset.mode = m; },
+      arreter() {}
+    };
+  }
+
   function monter(el, opt = {}) {
     const compact = !!opt.compact;
+    if (compact) return monterSvg(el);
     el.classList.add('pt');
     el.innerHTML = `<canvas class="pt-cv" aria-hidden="true"></canvas><div class="pt-txt" aria-hidden="true"><span class="pt-k"><i></i><em></em></span><p class="pt-m"></p></div><p class="pt-sr">Deux mondes, un même marché : le Marché de Gros relie ceux qui produisent et ceux qui cherchent, partout en Côte d'Ivoire.</p>`;
     const cv = el.querySelector('canvas'), ctx = cv.getContext('2d'), tx = el.querySelector('.pt-txt'), k = el.querySelector('.pt-k em'), ki = el.querySelector('.pt-k i'), m = el.querySelector('.pt-m');
@@ -100,6 +181,7 @@
     document.addEventListener('visibilitychange', onVis);
     if (REDUIT.matches) dessin(0); else raf = requestAnimationFrame(boucle);
     return {
+      mode() {},
       etat(n) { if (!(n in CIBLE)) return; etat = n; if (n === 'ok') { flash = 1; side = 'l'; k.textContent = 'La rencontre'; m.textContent = 'La bonne connexion change la suite.'; ki.className = 'pt-i-l'; } if (REDUIT.matches) { I = CIBLE[n]; dessin(0); } },
       arreter() { vivant = false; cancelAnimationFrame(raf); clearInterval(tm); ro && ro.disconnect(); removeEventListener('pointermove', onMove); document.removeEventListener('visibilitychange', onVis); }
     };

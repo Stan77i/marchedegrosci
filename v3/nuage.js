@@ -204,7 +204,7 @@
 .ng-form{position:relative;overflow:auto;padding:22px 22px calc(22px + env(safe-area-inset-bottom));overscroll-behavior:contain}
 @media (min-width:760px){.ng-bg:has(.ng--porte){padding:24px}.ng--porte{max-width:980px;grid-template-columns:minmax(0,1fr) 440px;grid-template-rows:minmax(0,1fr);height:min(660px,calc(100dvh - 48px))}.ng-scene{border-bottom:0;border-right:1px solid rgba(245,240,230,.08)}.ng-form{padding:40px 38px 32px}}
 .ng--porte .ng-x{position:absolute;top:14px;right:14px;float:none;margin:0;z-index:3}
-.ng--porte h2{padding-right:48px;font-size:32px;text-wrap:balance}
+.ng--porte h2{padding-right:48px;font-size:clamp(24px,6.9vw,32px);text-wrap:balance}
 @media (min-width:760px){.ng--porte h2{font-size:36px}}
 .ng--porte .ng-lede{margin:0 0 20px;color:#B9AD98;font-size:15px;line-height:1.5;text-wrap:pretty}
 .ng--porte .ng-tabs{margin:0 0 20px}
@@ -278,10 +278,10 @@
   function open(raison) {
     const s = session();
     if (s) return window.MDGCompte ? MDGCompte.ouvrir() : openCompte(s, waiting());
-    const TITRE = { in: raison === 'publie' ? 'Rendez votre annonce visible de tous' : raison === 'negocie' ? 'Connectez-vous pour proposer un prix' : 'Heureux de vous retrouver.', up: 'Rejoignez le marché.', sos: 'Choisir un nouveau code' };
+    const TITRE = { in: raison === 'publie' ? 'Rendez votre annonce visible de tous' : raison === 'negocie' ? 'Connectez-vous pour proposer un prix' : 'Entrez dans le marché.', up: 'Rejoignez le marché.', sos: 'Choisir un nouveau code' };
     const LEDE = {
-      in: raison === 'publie' ? 'Elle est enregistrée sur ce téléphone. Connectez-vous pour que les acheteurs et les vendeurs de tout le pays la voient.' : raison === 'negocie' ? 'Le vendeur doit savoir qui lui écrit. Votre numéro et votre code secret suffisent.' : 'Votre numéro et votre code secret à 6 chiffres. Pas besoin d’e-mail.',
-      up: 'Un numéro et un code secret à 6 chiffres. Vos annonces deviennent visibles dans tout le pays ; vous compléterez votre profil juste après.',
+      in: raison === 'publie' ? 'Elle est enregistrée sur ce téléphone. Connectez-vous pour que les acheteurs et les vendeurs de tout le pays la voient.' : raison === 'negocie' ? 'Le vendeur doit savoir qui lui écrit. Votre numéro et votre code secret suffisent.' : '',
+      up: '',
       sos: 'Votre numéro, le code de secours reçu à la création du compte, puis un nouveau code secret.' };
     const BTN = { in: 'Se connecter', up: 'Créer mon compte', sos: 'Choisir mon nouveau code' }, ENC = { in: 'Connexion en cours', up: 'Création du compte', sos: 'Vérification du code de secours' };
     const bg = shell(`<h2 id="ngT"></h2><p class="ng-lede"></p>
@@ -307,9 +307,9 @@
     const ok = (id, v) => $('#' + id).closest('.ng-ip').classList.toggle('is-ok', !!v);
     const glob = (msg, action, fn) => { const g = $('.ng-glob'); g.hidden = !msg; g.querySelector('p').textContent = msg || ''; const b = g.querySelector('button'); b.hidden = !action; b.textContent = action || ''; b.onclick = fn || null; };
     const setMode = m => {
-      mode = m; bg.querySelectorAll('.ng-tabs button').forEach(x => x.setAttribute('aria-selected', String(x.dataset.m === m)));
+      mode = m; P && P.mode && P.mode(m); bg.querySelectorAll('.ng-tabs button').forEach(x => x.setAttribute('aria-selected', String(x.dataset.m === m)));
       $('.ng-tabs').hidden = m === 'sos'; $('.ng-id').hidden = m !== 'up'; $('.ng-c2').hidden = m === 'in'; $('.ng-cle').hidden = m !== 'sos'; $('.ng-oubli').hidden = m !== 'in';
-      $('#ngT').textContent = TITRE[m]; $('.ng-lede').textContent = LEDE[m];
+      $('#ngT').textContent = TITRE[m]; $('.ng-lede').textContent = LEDE[m]; $('.ng-lede').hidden = !LEDE[m];
       $('.ng-lc').innerHTML = (m === 'sos' ? 'Nouveau code secret' : m === 'up' ? 'Choisissez un code secret' : 'Code secret') + ' <i>6 chiffres</i>';
       $('#ngCode').autocomplete = m === 'in' ? 'current-password' : 'new-password'; go.querySelector('span').textContent = BTN[m]; glob('');
       ['ngCode', 'ngCode2', 'ngCle', 'ngPrenom', 'ngNom', 'ngPseudo'].forEach(id => champErr(id, '')); bg.querySelector('.ng-form').scrollTop = 0;

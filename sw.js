@@ -1,7 +1,9 @@
 /* Marché de Gros CI — service worker (utilisation hors connexion).
-   Pour publier une mise à jour du code : incrémenter CACHE (mgci-v1 -> mgci-v2 ...).
+   Le code (pages, JS, CSS, manifeste) part du RÉSEAU D'ABORD : une mise à jour publiée sur le site arrive aussi dans l'application
+   installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
+   Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v28';
+const CACHE = 'mgci-v30';
 
 // Indispensable : si l'un de ces fichiers manque, l'installation échoue et l'ancienne version reste active.
 const CORE = [
@@ -130,9 +132,31 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Fichiers statiques : le cache d'abord, puis le réseau.
+  // Code (JS, CSS, JSON, manifeste) : le réseau d'abord — revalidé auprès du serveur, jamais une vieille copie du navigateur —,
+  // le cache si le réseau échoue ou traîne plus de 4 s.
+  if (/\.(js|css|json|webmanifest|html)$/.test(url.pathname) || ['script', 'style', 'manifest'].includes(req.destination)) {
+    e.respondWith((async () => {
+      const reseau = fetch(req, { cache: 'no-cache' }).then(async res => {
+        if (res && res.ok && res.type === 'basic') { const c = await caches.open(CACHE); await c.put(req, res.clone()); }
+        return res;
+      });
+      const copie = () => caches.match(req).then(h => h || caches.match(req, { ignoreSearch: true }));
+      try {
+        const res = await Promise.race([reseau, new Promise((_, ko) => setTimeout(() => ko(new Error('lent')), 4000))]);
+        if (res && res.ok) return res;
+        return (await copie()) || res;
+      } catch (_) {
+        const hit = await copie();
+        if (hit) { e.waitUntil(reseau.catch(() => {})); return hit; }  // la réponse réseau, si elle finit par arriver, remplit le cache pour la prochaine fois
+        return reseau;
+      }
+    })());
+    return;
+  }
+
+  // Images, polices, sons : le cache d'abord, puis le réseau.
   e.respondWith((async () => {
-    const hit = await caches.match(req, { ignoreSearch: true }); // les fichiers du site sont appelés avec ?v=…
+    const hit = await caches.match(req, { ignoreSearch: true });
     if (hit) return hit;
     const res = await fetch(req);
     if (res && res.ok && res.type === 'basic') { const c = await caches.open(CACHE); c.put(req, res.clone()); }

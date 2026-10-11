@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="v3/etat.css?v=20261010a">
 <link rel="stylesheet" href="v3/constellation.css?v=20261010c">
 <link rel="stylesheet" href="css/typo.css?v=20261009o">
-<link rel="stylesheet" href="v3/ux.css?v=20261012a">
+<link rel="stylesheet" href="v3/ux.css?v=20261012c">
 <script>/* téléphone : ouvre l'application mobile (même adresse, même données). ?ordinateur=1 force le site complet */(function(){try{var q=location.search,f=/[?&]ordinateur=1/.test(q);if(f)sessionStorage.setItem('mdg-ordi','1');var o=sessionStorage.getItem('mdg-ordi')==='1';if(/[?&]app=1/.test(q)){sessionStorage.setItem('mdg-app','1');sessionStorage.removeItem('mdg-ordi');o=false}var tel=sessionStorage.getItem('mdg-app')==='1'||(matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<768);if(tel&&!o)location.replace('application.dc.html'+(location.hash||'#/'));}catch(e){}})();</script>
 <script>/* sans adresse : ouvre l'Accueil */ if (!location.hash) history.replaceState(null, '', '#/');</script>
 <script src="vendor/gsap.min.js" defer></script>
@@ -1274,6 +1274,8 @@ body.tzmode .tz{height:100svh}
 <script src="v3/constellation.js?v=20261010c"></script>
 <script src="v3/cherche.js?v=20261012c"></script>
 <script src="v3/ivt-header.js?v=20261012d"></script>
+<script src="v3/souffle.js?v=20261012a"></script>
+<script src="v3/barre-mobile.js?v=20261012a"></script>
 <div id="tweaks-root"></div>
 <script src="vendor/react.production.min.js"></script>
 <script src="vendor/react-dom.production.min.js"></script>

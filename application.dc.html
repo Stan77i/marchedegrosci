@@ -19,6 +19,7 @@
 <script src="v3/negoce.js"></script>
 <script src="v3/avatar.js"></script>
 <script src="v3/compte.js"></script>
+<script src="v3/souffle.js"></script>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -27,7 +28,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
 <link rel="stylesheet" href="css/fonts.css">
-<link rel="stylesheet" href="v3/ux.css?v=20261012a">
+<link rel="stylesheet" href="v3/ux.css?v=20261012c">
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
 <script src="app/carte-app.js"></script>
@@ -54,11 +55,12 @@
 <div data-pg="home" data-screen-label="Accueil" style="position:absolute;inset:0;background:#171512;color:#F5F0E6;display:flex;flex-direction:column;overflow:hidden;isolation:isolate;transform:{{ tf.home }};visibility:{{ vis.home }};z-index:{{ zi.home }};backface-visibility:hidden;-webkit-backface-visibility:hidden">
   <div style="position:absolute;left:50%;top:330px;width:640px;height:640px;margin:-320px 0 0 -320px;border-radius:50%;background:radial-gradient(circle,{{ halo }} 0%,transparent 60%);opacity:.5;pointer-events:none;transition:background .6s"></div>
   <div style="height:{{ topPad }};flex:none"></div>
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:4px 10px 0 18px;height:54px;position:relative">
-    <div style="display:flex;align-items:center;gap:11px"><span aria-hidden="true" style="position:relative;width:38px;height:38px;flex:none;display:block">{{ markEl }}</span><div style="display:flex;flex-direction:column;gap:1px"><span style="font-family:'Cormorant Garamond',serif;font-size:25px;font-weight:500;line-height:1">Marché de Gros</span><span style="font-size:9.5px;letter-spacing:.24em;color:#B9AD98;font-weight:500">CÔTE D'IVOIRE</span></div></div>
-    <div style="display:flex;gap:2px">
-      <button onClick="{{ goAcheter }}" aria-label="Chercher" style="width:44px;height:44px;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center;border-radius:22px"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="M15.5 15.5 20 20"></path></svg></button>
-      <button onClick="{{ openMenu }}" aria-label="Menu" style="width:44px;height:44px;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center;border-radius:22px;position:relative"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 8h16M4 16h10"></path></svg><sc-if value="{{ hasPubs }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:10px;right:9px;width:7px;height:7px;border-radius:50%;background:#6CC58C"></span></sc-if></button>
+  <!-- barre du haut, à la manière de Gmail : menu à gauche, recherche au milieu (le nom s'écrit, puis des phrases passent), compte à droite -->
+  <div style="padding:4px 12px 0;height:58px;box-sizing:border-box;position:relative;z-index:2">
+    <div style="display:flex;align-items:center;height:54px;border-radius:27px;background:rgba(245,240,230,.075);box-shadow:inset 0 0 0 1px rgba(245,240,230,.06);padding:0 5px">
+      <button onClick="{{ openMenu }}" aria-label="Menu" style="width:44px;height:44px;flex:none;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;justify-content:center;border-radius:22px;position:relative"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"></path></svg><sc-if value="{{ hasPubs }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:9px;right:8px;width:7px;height:7px;border-radius:50%;background:#6CC58C;box-shadow:0 0 0 2px #2a2620"></span></sc-if></button>
+      <button onClick="{{ goAcheter }}" aria-label="Chercher un produit" style="flex:1;min-width:0;height:44px;border:0;background:transparent;padding:0 6px;display:flex;align-items:center;color:#B9AD98"><mdg-souffle data-go="{{ sfGo }}"></mdg-souffle></button>
+      <button onClick="{{ goMoi }}" aria-label="{{ moiLabel }}" style="width:44px;height:44px;flex:none;border:0;background:transparent;display:flex;align-items:center;justify-content:center;border-radius:22px;padding:0;position:relative">{{ moiEl }}<sc-if value="{{ moiDot }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:5px;right:4px;width:9px;height:9px;border-radius:50%;background:#E07A3F;box-shadow:0 0 0 2px #2a2620"></span></sc-if></button>
     </div>
   </div>
   <div style="display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px 0 0;position:relative">
@@ -441,21 +443,23 @@
 <!-- ═══ voile ═══ -->
 <div onClick="{{ closeAll }}" style="position:absolute;inset:0;background:rgba(10,9,7,.55);opacity:{{ scrimOp }};pointer-events:{{ scrimPe }};transition:opacity .35s"></div>
 
-<!-- ═══ MENU ═══ -->
-<div style="position:absolute;left:0;right:0;bottom:0;max-height:88%;display:flex;flex-direction:column;background:#24201A;color:#F5F0E6;border-radius:28px 28px 0 0;transform:{{ menuTf }};transition:{{ sheetTr }};box-shadow:0 -10px 40px rgba(0,0,0,.4)">
-  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" onPointerCancel="{{ sUp }}" onLostPointerCapture="{{ sUp }}" style="height:28px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab"><span style="width:38px;height:5px;border-radius:3px;background:rgba(245,240,230,.25)"></span></div>
-  <div style="overflow-y:auto;padding:0 12px {{ botPad }}">
-    <sc-for list="{{ menu }}" as="g" hint-placeholder-count="3">
-      <div style="font-size:11px;letter-spacing:.2em;color:#B9AD98;font-weight:600;padding:12px 12px 6px">{{ g.t }}</div>
+<!-- ═══ MENU : tiroir à gauche, comme Gmail — le nom en haut, le compte d'abord, puis tout le reste ; glisser vers la gauche pour fermer ═══ -->
+<div role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="{{ menuHid }}" onPointerDown="{{ dDown }}" onPointerMove="{{ dMove }}" onPointerUp="{{ dUp }}" onPointerCancel="{{ dUp }}" style="position:absolute;left:0;top:0;bottom:0;width:min(86%,340px);display:flex;flex-direction:column;background:#211D17;color:#F5F0E6;border-radius:0 26px 26px 0;transform:{{ menuTf }};transition:{{ drTr }};box-shadow:14px 0 44px rgba(0,0,0,.5);touch-action:pan-y;visibility:{{ menuVis }}">
+  <div style="height:{{ topPad }};flex:none"></div>
+  <div style="display:flex;align-items:center;gap:12px;padding:16px 20px 18px;flex:none;border-bottom:1px solid rgba(245,240,230,.09)"><span aria-hidden="true" style="position:relative;width:38px;height:38px;flex:none;display:block">{{ markEl }}</span><span style="font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:500;line-height:1">Marché de Gros</span></div>
+  <div style="flex:1;min-height:0;overflow-y:auto;padding:6px 12px 10px 0;overscroll-behavior:contain">
+    <sc-for list="{{ menu }}" as="g" hint-placeholder-count="4">
+      <sc-if value="{{ g.sep }}" hint-placeholder-val="{{ true }}"><div style="height:1px;background:rgba(245,240,230,.09);margin:8px 0 8px 64px"></div></sc-if>
       <sc-for list="{{ g.items }}" as="i" hint-placeholder-count="3">
-        <button onClick="{{ i.go }}" style="width:100%;border:0;background:transparent;color:#F5F0E6;display:flex;align-items:center;gap:14px;padding:8px 12px;border-radius:16px;text-align:left;min-height:58px" style-active="background:rgba(245,240,230,.06)">
-          <span style="width:44px;height:44px;border-radius:14px;background:rgba(245,240,230,.06);display:flex;align-items:center;justify-content:center;flex:none">{{ i.ico }}</span>
-          <span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:16px;font-weight:500">{{ i.t }}</span><span style="font-size:13px;color:#B9AD98">{{ i.s }}</span></span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#847966" stroke-width="2" stroke-linecap="round"><path d="M9 5l7 7-7 7"></path></svg>
+        <button onClick="{{ i.go }}" aria-current="{{ i.cur }}" style="width:100%;border:0;background:{{ i.bg }};color:{{ i.fg }};display:flex;align-items:center;gap:18px;padding:6px 16px 6px 20px;border-radius:0 26px 26px 0;text-align:left;min-height:52px;font-family:Jost,system-ui,sans-serif" style-active="background:rgba(245,240,230,.08)">
+          <span class="dr-ico" style="width:28px;height:28px;flex:none;display:flex;align-items:center;justify-content:center">{{ i.ico }}</span>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;font-weight:500;line-height:1.2">{{ i.t }}</span><sc-if value="{{ i.hasS }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px;color:#B9AD98;line-height:1.3">{{ i.s }}</span></sc-if></span>
+          <sc-if value="{{ i.hasN }}" hint-placeholder-val="{{ false }}"><span style="flex:none;min-width:24px;height:22px;padding:0 8px;border-radius:11px;background:{{ i.nBg }};color:{{ i.nFg }};font-size:12.5px;font-weight:600;line-height:22px;text-align:center">{{ i.n }}</span></sc-if>
         </button>
       </sc-for>
     </sc-for>
   </div>
+  <div style="flex:none;display:flex;align-items:center;gap:10px;padding:12px 20px {{ botPad }};border-top:1px solid rgba(245,240,230,.09);color:#847966;font-size:12.5px"><span aria-hidden="true" style="position:relative;width:22px;height:22px;flex:none;display:block;opacity:.8">{{ markSm }}</span><span>Marché de Gros, Côte d'Ivoire</span></div>
 </div>
 
 <!-- ═══ FAMILLES ═══ -->
@@ -892,10 +896,16 @@ class Component extends DCLogic {
     const light = ['acheter', 'vendre', 'demande', 'categories', 'prix', 'pubs'].includes(top) || !!S.pick;
     const sheetOn = S.sheet === 'match', dy = S.sheetDy, anyS = S.menu || sheetOn || S.sheet === 'fam';
     const mi = (k, t, s, go) => ({ ico: ico(k), t, s, go });
+    const logoIco = (sz) => h('svg', { width: sz, height: sz, viewBox: '0 0 38 38', style: { display: 'block' } }, h('circle', { cx: 19, cy: 19, r: 17, fill: this.isDark() ? '#0B0A08' : '#B85C38', stroke: this.isDark() ? 'rgba(245,240,230,.28)' : 'none', strokeWidth: .8 }), h('g', { transform: 'translate(19 19) scale(.058) translate(-256 -256)', fill: 'none', stroke: '#F5F0E6', strokeLinecap: 'round', strokeLinejoin: 'round' }, h('path', { d: 'M394.6 117.4A196 196 0 1 0 452 256H372', strokeWidth: 26 }), h('circle', { cx: 394.6, cy: 117.4, r: 22, fill: '#F5F0E6', stroke: 'none' }), h('path', { d: 'M178 338V182L256 292L334 182V338', strokeWidth: 36 })));
+    // le compte, à droite de la barre du haut : votre avatar (ou une silhouette pour se connecter)
+    const moiN = window.MDGNuage, moiS = moiN && moiN.session(), moiC = window.MDGCompte, moiP = moiS && moiC ? moiC.profil() : null;
+    const moiEl = moiS && window.MDGAvatar
+      ? h('img', { src: window.MDGAvatar.uri(moiP && moiP.avatar, { size: 34, nom: (moiP && moiC.nomAffiche(moiP)) || String(moiS.user.tel || ''), seed: moiS.user.id }), alt: '', width: 34, height: 34, style: { borderRadius: '50%', display: 'block', boxShadow: '0 0 0 2px rgba(245,240,230,.14)' } })
+      : h('span', { style: { width: 34, height: 34, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(245,240,230,.1)' } }, h('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: '#F5F0E6', strokeWidth: 1.7, strokeLinecap: 'round' }, h('circle', { cx: 12, cy: 8.5, r: 3.6 }), h('path', { d: 'M5 20a7 7 0 0 1 14 0' })));
     return Object.assign(base, {
       tf, vis, zi, on, regions, halo: act.tint, sbColor: light && !anyS ? '#171512' : '#F5F0E6',
       back: () => this.back(), edgeDown: e => this.edgeDown(e), edgeUp: e => this.edgeUp(e), stop: e => e.stopPropagation(),
-      goAcheter: () => this.push('acheter'), goVendre: () => this.push('vendre'), openMenu: () => this.setState({ menu: true, sheetDy: 0 }), hasPubs: mine.length > 0,
+      goAcheter: () => this.push('acheter'), goVendre: () => this.push('vendre'), openMenu: () => this.setState({ menu: true, sheetDy: 0, drDx: 0 }), moiEl, moiLabel: moiS ? 'Mon compte' : 'Se connecter', sfGo: S.splash !== 'on' && S.ready ? '1' : '0', moiDot: !!(moiS && window.MDGNegoce && window.MDGNegoce.unread()), goMoi: () => { if (!moiN) return; if (moiS && moiC) moiC.ouvrir(); else moiN.open(); }, hasPubs: mine.length > 0,
       famPips: this.FAMS.map((f, i) => ({ name: f.name, w: i === S.fam ? '18px' : '6px', bg: i === S.fam ? '#E07A3F' : 'rgba(245,240,230,.22)', go: () => this.setState({ fam: i, rot: 0 }) })),
       famName: F.name.toUpperCase(), prevFam: () => this.famStep(-1), nextFam: () => this.famStep(1), openFams: () => this.setState({ sheet: 'fam', sheetDy: 0 }),
       wDown: e => this.wDown(e), wMove: e => this.wMove(e), wUp: () => this.wUp(), labels, ticks, sacks,
@@ -956,18 +966,29 @@ class Component extends DCLogic {
       myPubs, pubsEmpty: !myPubs.length, vd, info,
       scrimOp: anyS ? Math.max(0, 1 - dy / 400) : 0, scrimPe: anyS ? 'auto' : 'none', closeAll: () => this.closeAll(),
       sheetTr: this.sd ? 'none' : 'transform .45s cubic-bezier(.22,1,.36,1)', sDown: e => this.sDown(e), sMove: e => this.sMove(e), sUp: () => this.sUp(),
-      menuTf: S.menu ? 'translateY(' + dy + 'px)' : 'translateY(105%)', famTf: S.sheet === 'fam' ? 'translateY(' + dy + 'px)' : 'translateY(105%)', matchTf: sheetOn ? 'translateY(' + dy + 'px)' : 'translateY(105%)',
-      menu: [
-        { t: 'ÉCHANGER', items: [mi('cherche', 'Acheter', 'Trouver une offre, qui vend quoi et où', () => this.push('acheter')), mi('jai', 'Vendre', 'Publier une offre avec photo', () => this.push('vendre')), mi('demande', 'Demander', 'Dire ce qu\u2019il vous faut', () => this.push('demande')), mi('pubs', 'Mes publications', mine.length ? mine.length + ' sur cet appareil' : 'Aucune pour l\u2019instant', () => this.push('pubs'))] },
-        { t: 'EXPLORER', items: [mi('carte', 'Le réseau', 'La carte des offres et des demandes', () => this.push('carte')), mi('categories', 'Catégories', this.cats.length + ' familles de produits', () => this.push('categories')), mi('prix', 'Prix du marché', 'Prix vendeur et prix observé', () => this.push('prix')), mi('annee', 'L\u2019année du marché', 'Ce qui se récolte, mois par mois', () => this.push('annee'))] },
-        { t: 'COMPTE', items: [(() => { const N = window.MDGNuage, ss = N && N.session(), tl = ss && ss.user && ss.user.tel ? String(ss.user.tel).replace(/(\d{2})(?=\d)/g, '$1 ') : '';
-          const C = window.MDGCompte, P = ss && C ? C.profil() : null, nomP = P ? C.nomAffiche(P) : '';
-          return { ico: P && window.MDGAvatar ? h('img', { src: window.MDGAvatar.uri(P.avatar, { size: 30, nom: nomP || tl, seed: ss.user.id }), alt: '', width: 30, height: 30, style: { borderRadius: '50%' } }) : h('svg', { width: 30, height: 30, viewBox: '0 0 24 24', fill: 'none', stroke: '#F5F0E6', strokeWidth: 1.6, strokeLinecap: 'round' }, h('circle', { cx: 12, cy: 8.5, r: 3.6 }), h('path', { d: 'M5 20a7 7 0 0 1 14 0' })),
-            t: ss ? (nomP ? 'Mon espace · ' + nomP : 'Mon espace') : 'Se connecter', s: ss ? 'Profil, activité, notifications, réglages · ' + tl : 'Numéro + code à 6 chiffres, pour publier pour tous', go: () => { this.setState({ menu: false }); N && setTimeout(() => N.open(), 250); } }; })()].concat(window.MDGNuage && window.MDGNuage.session() && window.MDGNegoce ? [(() => { const G = window.MDGNegoce, u = G.unread();
-          return { ico: h('svg', { width: 30, height: 30, viewBox: '0 0 24 24', fill: 'none', stroke: '#F5F0E6', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }, h('path', { d: 'M4 7h11M4 7l3-3M4 7l3 3M20 17H9m11 0-3-3m3 3-3 3' })),
-            t: 'Mes négociations', s: u ? (u > 1 ? u + ' réponses à lire' : '1 réponse à lire') : 'Prix proposés, réponses et accords', go: () => { this.setState({ menu: false }); setTimeout(() => G.inbox(), 250); } }; })()] : []) },
-        { t: 'AFFICHAGE', items: [{ ico: h('svg', { width: 30, height: 30, viewBox: '0 0 38 38' }, h('circle', { cx: 19, cy: 19, r: 17, fill: this.isDark() ? '#0B0A08' : '#B85C38', stroke: this.isDark() ? 'rgba(245,240,230,.28)' : 'none', strokeWidth: .8 }), h('g', { transform: 'translate(19 19) scale(.058) translate(-256 -256)', fill: 'none', stroke: '#F5F0E6', strokeLinecap: 'round', strokeLinejoin: 'round' }, h('path', { d: 'M394.6 117.4A196 196 0 1 0 452 256H372', strokeWidth: 26 }), h('circle', { cx: 394.6, cy: 117.4, r: 22, fill: '#F5F0E6', stroke: 'none' }), h('path', { d: 'M178 338V182L256 292L334 182V338', strokeWidth: 36 }))), t: this.isDark() ? 'Logo noir' : 'Logo terracotta', s: this.isDark() ? 'Toucher pour revenir au terracotta' : 'Toucher pour passer au noir', go: () => this.toggleLogo() }] },
-        { t: 'COMPRENDRE', items: [mi('comment', 'Comment ça marche', 'Chercher, trouver, contacter', () => this.push('info', { infoK: 'comment-ca-marche' })), mi('aide', 'Aide producteur', 'Publier sa récolte, avec un agent', () => this.push('info', { infoK: 'aide-producteur' })), mi('confiance', 'Confiance', 'Ce que nous affichons, ou pas', () => this.push('info', { infoK: 'confiance' }))] }],
+      menuTf: S.menu ? 'translateX(' + Math.min(0, S.drDx || 0) + 'px)' : 'translateX(-105%)', drTr: this.dd ? 'none' : 'transform .42s cubic-bezier(.22,1,.36,1), visibility 0s linear ' + (S.menu ? '0s' : '.42s'), menuVis: S.menu ? 'visible' : 'hidden', menuHid: S.menu ? 'false' : 'true',
+      dDown: e => { this.dx0 = e.clientX; this.dy0 = e.clientY; this.dd = false; }, dMove: e => { if (this.dx0 == null) return; const dx = e.clientX - this.dx0, dyy = e.clientY - this.dy0; if (!this.dd && dx < -10 && Math.abs(dx) > Math.abs(dyy) * 1.3) this.dd = true; if (this.dd) this.setState({ drDx: Math.min(0, dx) }); }, dUp: () => { if (this.dd) { const fermer = (this.state.drDx || 0) < -70; this.dd = false; this.setState(fermer ? { menu: false, drDx: 0 } : { drDx: 0 }); } this.dx0 = null; }, famTf: S.sheet === 'fam' ? 'translateY(' + dy + 'px)' : 'translateY(105%)', matchTf: sheetOn ? 'translateY(' + dy + 'px)' : 'translateY(105%)',
+      menu: (() => {
+        // une ligne du tiroir : icône, nom, (sous-titre), (compteur) ; la page ouverte est surlignée comme dans Gmail
+        const ln = (o) => Object.assign({ hasS: !!o.s, s: o.s || '', hasN: !!o.n, n: o.n || '', nBg: o.nBg || 'rgba(245,240,230,.1)', nFg: o.nFg || '#F5F0E6', cur: o.page && o.page === top ? 'page' : 'false', bg: o.page && o.page === top ? 'rgba(224,122,63,.16)' : 'transparent', fg: o.page && o.page === top ? '#F3B48A' : '#F5F0E6' }, o);
+        const pg = (k, t, page, extra) => ln(Object.assign({ ico: ico(k), t, page, go: () => this.push(page, extra && extra.args) }, extra || {}));
+        const N = window.MDGNuage, ss = N && N.session(), tl = ss && ss.user && ss.user.tel ? String(ss.user.tel).replace(/(\d{2})(?=\d)/g, '$1 ') : '';
+        const C = window.MDGCompte, P = ss && C ? C.profil() : null, nomP = P ? C.nomAffiche(P) : '';
+        const G = ss && window.MDGNegoce ? window.MDGNegoce : null, nonLus = G ? G.unread() : 0;
+        const compte = [ln({ ico: ss && window.MDGAvatar ? h('img', { src: window.MDGAvatar.uri(P && P.avatar, { size: 30, nom: nomP || tl, seed: ss.user.id }), alt: '', width: 30, height: 30, style: { borderRadius: '50%', display: 'block' } }) : h('svg', { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: '#F5F0E6', strokeWidth: 1.6, strokeLinecap: 'round' }, h('circle', { cx: 12, cy: 8.5, r: 3.6 }), h('path', { d: 'M5 20a7 7 0 0 1 14 0' })),
+            t: ss ? (nomP || 'Mon compte') : 'Se connecter', s: ss ? tl : 'Pour publier et négocier', go: () => { this.setState({ menu: false }); N && setTimeout(() => N.open(), 250); } })];
+        if (G) compte.push(ln({ ico: h('svg', { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: '#F5F0E6', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }, h('path', { d: 'M4 7h11M4 7l3-3M4 7l3 3M20 17H9m11 0-3-3m3 3-3 3' })),
+            t: 'Mes négociations', n: nonLus || '', nBg: '#E07A3F', nFg: '#171512', go: () => { this.setState({ menu: false }); setTimeout(() => G.inbox(), 250); } }));
+        compte.push(pg('pubs', 'Mes publications', 'pubs', { n: mine.length || '' }));
+        return [
+          { sep: false, items: compte },
+          { sep: true, items: [pg('cherche', 'Acheter', 'acheter'), pg('jai', 'Vendre', 'vendre'), pg('demande', 'Demander', 'demande')] },
+          { sep: true, items: [pg('carte', 'Le réseau', 'carte'), pg('categories', 'Catégories', 'categories', { n: this.cats.length }), pg('prix', 'Prix du marché', 'prix'), pg('annee', 'L\u2019année du marché', 'annee')] },
+          { sep: true, items: [pg('comment', 'Comment ça marche', 'info', { args: { infoK: 'comment-ca-marche' }, page: null }), pg('aide', 'Aide producteur', 'info', { args: { infoK: 'aide-producteur' }, page: null }), pg('confiance', 'Confiance', 'info', { args: { infoK: 'confiance' }, page: null }),
+            ln({ ico: logoIco(26), t: this.isDark() ? 'Logo noir' : 'Logo terracotta', s: this.isDark() ? 'Toucher pour revenir au terracotta' : 'Toucher pour passer au noir', go: () => this.toggleLogo() })] }
+        ];
+      })(),
+      markSm: logoIco(22),
       famGrid: this.FAMS.map((f, i) => ({ name: f.name, sub: f.prods.length + ' produits', img: A.IMG + 'famille-' + f.slug + '.webp', bd: i === S.fam ? '#E07A3F' : 'transparent', go: () => this.setState({ fam: i, rot: 0, sheet: null }) })),
       segTf: isJai ? 'none' : 'translateX(100%)', segA: isJai ? '#F5F0E6' : '#484236', segB: isJai ? '#484236' : '#F5F0E6',
       setJai: () => this.setState({ mode: 'jai', mErr: {}, mf: Object.assign({}, S.mf, { when: '' }) }), setCherche: () => this.setState({ mode: 'cherche', mErr: {}, mf: Object.assign({}, S.mf, { when: '' }) }),

@@ -1,3 +1,55 @@
+# Mise à jour — 12 octobre 2026 (connexion, en-tête, avatar, négociation, carte)
+
+Déposer le contenu de ce dossier à la racine du dépôt `Stan77i/marchedegrosci` (branche `main`), en gardant les sous-dossiers. Service worker : `mgci-v19` (les téléphones prennent la nouvelle version au prochain chargement).
+
+## À faire une seule fois dans Supabase
+Coller `supabase/schema-5.sql` dans SQL Editor → New query → Run. Il crée le dossier public « avatars » (photos de profil, 300 Ko max, JPEG ou WebP) et les règles : chacun ne peut écrire que son propre fichier. Tant que ce n'est pas fait, l'enregistrement d'une photo affiche « pas encore activée sur le serveur » ; portraits et initiales fonctionnent déjà.
+
+## Fichiers (17)
+| Fichier | État |
+|---|---|
+| `index-v3.html` | modifié : pied de page (bande « L'année du marché » retirée), bouton contact retiré, fiche d'offre (point de couleur devant le texte), carte Acheter (vue pays entier, cadre moins haut), chargement de `porte.js` |
+| `application.dc.html` | modifié : `ux.css` et `porte.js` chargés, Catégories accessible, boutons J'ai / Je cherche à 44 px, message en bas sans rebond |
+| `sw.js` | modifié : `mgci-v19`, `porte.js` et `ux.css` en cache |
+| `v2/reseau-carte.js` | modifié : la terre se prolonge au-delà des données (plus de bord coupé ni de zone vide) |
+| `v3/porte.js` | **nouveau** : scène « Deux mondes. Un même marché. » (canvas 2D, récit de 5 messages, états repos / saisie / envoi / réussite / erreur, mouvement réduit = image fixe) |
+| `v3/nuage.js` | modifié : connexion / inscription / code oublié repensés (champs, erreurs près du champ, messages d'erreur utiles, réussite seulement après le serveur), `televerser()` pour les photos |
+| `v3/compte.js` | modifié : éditeur d'avatar (Portrait / Photo / Initiales, aperçu à taille réelle, au hasard, recadrage de la photo), étape Avatar de la bienvenue |
+| `v3/avatar.js` | modifié : portraits plus fins, mode photo `ph:u=…;v=…;f=…` |
+| `v3/negoce.js` | modifié : « Proposer un prix » refait (montant en grands chiffres, trait qui s'allume, prix rapides sur deux lignes, conditions cochables, bouton collant), bouton sons retiré |
+| `v3/ivt-header.js` | modifié : menu dépliant ancré, entrée compte, repère de page qui glisse, un seul panneau à la fois, focus géré |
+| `v3/ivt-header.css` | modifié : liens en casse normale, panneau dépliant, repère, fond de fermeture |
+| `v3/cherche.js` | modifié : la recherche ferme le menu (et inversement) |
+| `v3/cherche.css` | modifié : plus de micro, d'« Échap », de raccourcis ni de cadre orange |
+| `v3/hero-ivt.js` | modifié : mini-carte de l'accueil retirée |
+| `v3/hero-ivt.css` | modifié : « Voir la fiche » remonté |
+| `v3/ux.css` | modifié : croix de fermeture unique, bouton d'envoi qui tourne, chevrons, filtres, message en bas |
+| `supabase/schema-5.sql` | **nouveau** : photos de profil (Storage) |
+
+## Ce qui a changé
+- **Connexion** : scène à gauche sur ordinateur (bande compacte sur téléphone), formulaire à droite ; numéro mis en forme pendant la saisie, coche verte quand il est complet, code affichable, erreurs sous le champ, message global avec action (« Code oublié ? », « Réessayer »), « Connexion réussie » seulement après la réponse du serveur. Aucun contrôle de sécurité modifié.
+- **En-tête** : liens en casse normale, repère de page, menu à trois traits → panneau sous l'en-tête (Échap, clic extérieur, Tab bouclé), recherche et menu jamais ouverts ensemble.
+- **Avatar** : portrait détaillé, photo de profil recadrée côté appareil (384 px, JPEG) puis envoyée dans `avatars/<id>.jpg`.
+- **Proposer un prix**, **carte**, **pied de page**, **accueil** : voir le tableau.
+- **Recherche** épurée ; **Acheter** : familles sur une ligne, offre unique = pays entier.
+
+## Limites connues
+- `vendor/babel.min.js` (Babel 7.29.0) n'est pas dans ce paquet : trop gros pour l'import ; il reste dans le dépôt, rien à faire. Sans lui, le panneau de réglages se charge depuis internet.
+- La photo de profil attend `schema-5.sql`.
+- À essayer sur un vrai iPhone : croix de fermeture, bouton d'envoi qui tourne, menu, recadrage de la photo au doigt.
+- Non testés dans l'aperçu (compte requis) : « Proposer un prix », éditeur d'avatar.
+
+## Commandes
+```
+git checkout main && git pull
+# copier le contenu de ce dossier à la racine du dépôt
+git add -A
+git commit -m "Connexion immersive, en-tête, avatar + photo, proposer un prix, carte plein cadre"
+git push origin main
+```
+
+---
+
 # Mise à jour — Application mobile, 4e passe (10 octobre 2026)
 
 - **Débordements (Acheter « Prix max. », etc.) et page qui glisse sur le côté** : les grilles à deux ou trois colonnes (`1fr 1fr`) ne pouvaient pas rétrécir sous la largeur naturelle d'un champ ; le champ dépassait, et iOS faisait défiler toute la page de côté au toucher. Les 10 grilles passent en `minmax(0,1fr)` ; champs et listes limités à la largeur disponible ; les zones qui défilent verticalement ne défilent plus de côté ; pages et cadre de l'app en `overflow:clip` (iOS ne peut plus les faire glisser au focus) ; tout décalage horizontal parasite est remis à zéro.

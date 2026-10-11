@@ -65,7 +65,7 @@ export function create({ data, reduced = false, project = null }) {
   /* ——— Terre ——— */
   // poly : contour principal du pays (cadrage et limites du déplacement) ; civ / ctxLand : contours réels, une fois chargés
   let poly = OUT.map(([lo, la]) => PJ(la, lo)), civ = [{ pts: poly, bd: poly.map(() => 0), co: poly.map(() => 1) }], ctxLand = [], real = false;
-  let bx0, bx1, bz0, bz1;
+  let bx0, bx1, bz0, bz1, GB = null; // GB : cadre des données voisines, pour prolonger la terre au-delà (pas de bord coupé à l'écran)
   const bounds = () => { bx0 = 1e9; bx1 = -1e9; bz0 = 1e9; bz1 = -1e9; poly.forEach(([x, z]) => { bx0 = Math.min(bx0, x); bx1 = Math.max(bx1, x); bz0 = Math.min(bz0, z); bz1 = Math.max(bz1, z); }); };
   bounds();
   const panX = v => clamp(v, bx0 - .2, bx1 + .2), panZ = v => clamp(v, bz0 - .2, bz1 + .2);
@@ -91,6 +91,7 @@ export function create({ data, reduced = false, project = null }) {
     civ = C.rings.map(ring);
     ctxLand = G.filter(f => f.id !== '384').map(f => ({ id: f.id, rings: f.rings.map(ring) }));
     poly = civ.reduce((a, r) => r.pts.length > a.length ? r.pts : a, []); bounds(); real = true;
+    { const A = ctxLand.flatMap(L => L.rings.flatMap(R => R.pts)); if (A.length) { const g = { x0: 1e9, x1: -1e9, z0: 1e9, z1: -1e9 }; A.forEach(([x, z]) => { g.x0 = Math.min(g.x0, x); g.x1 = Math.max(g.x1, x); g.z0 = Math.min(g.z0, z); g.z1 = Math.max(g.z1, z); }); g.zW = Math.max(...A.filter(([x]) => x < g.x0 + .25).map(p => p[1])); g.zE = Math.max(...A.filter(([x]) => x > g.x1 - .25).map(p => p[1])); GB = g; } }
     grain(); intro = Math.min(intro, .5); if (atHome) fitHome(); wake();
   }).catch(e => console.warn('[réseau] géographie indisponible, contour simplifié', e));
   // l'eau : fleuves (tracés) et lacs ; leurs noms en italique, comme sur une carte
@@ -301,6 +302,8 @@ export function create({ data, reduced = false, project = null }) {
       ctx.strokeStyle = '#D8CCB6'; ctx.beginPath(); civ.forEach(R => segs(R, 'co')); ctxLand.forEach(L => L.rings.forEach(R => segs(R, 'co')));
       [[24, .03], [12, .045], [4, .07]].forEach(([w, a]) => { ctx.globalAlpha = a * li; ctx.lineWidth = w * kz; ctx.stroke(); });
       ctx.globalAlpha = .55 * li; ctx.fillStyle = '#0f0c09'; ctx.beginPath(); ctxLand.forEach(L => L.rings.forEach(ring)); ctx.fill('evenodd');
+      // au-delà du cadre des données, la terre continue (nord, et côtés jusqu'à la côte) : la carte remplit l'écran sans bord droit
+      if (GB) { const E = 14, Q = [[GB.x0 - E, GB.z0 - E], [GB.x1 + E, GB.z0 - E], [GB.x1 + E, GB.zE], [GB.x1, GB.zE], [GB.x1, GB.z0], [GB.x0, GB.z0], [GB.x0, GB.zW], [GB.x0 - E, GB.zW]]; ctx.beginPath(); let on = false; Q.forEach(([x, z]) => { if (!proj(x, 0, z)) return; if (on) ctx.lineTo(P.x, P.y); else { ctx.moveTo(P.x, P.y); on = true; } }); ctx.closePath(); ctx.fill(); }
     }
     ctx.globalAlpha = .4 * li; ctx.fillStyle = '#2E261D'; ctx.beginPath(); civ.forEach(ring); ctx.fill('evenodd');
     // le grain : gros de loin, fin de près (le grain fin prend le relais à partir du district)

@@ -232,6 +232,7 @@
   function open(from) {
     if (!CX()) return;
     if (!od) build();
+    dispatchEvent(new CustomEvent('mdg:panneau', { detail: 'recherche' }));
     opener = from || document.activeElement;
     loadSeason();
     od.hidden = false; document.documentElement.classList.add('sx-open');
@@ -245,6 +246,7 @@
     if (opener && opener.focus && document.contains(opener)) opener.focus({ preventScroll: true });
   }
 
+  addEventListener('mdg:panneau', e => { if (e.detail !== 'recherche') close(); });
   document.addEventListener('click', e => {
     // seule la loupe de l'en-tête ouvre cette boîte ; les champs de recherche des pages gardent leur propre fonctionnement
     const a = e.target.closest('a[data-search],button[data-search]'); if (!a || !a.closest('#top, .site-header')) return;

@@ -123,7 +123,47 @@
 /* étapes de bienvenue */
 .cp-steps{display:flex;gap:6px;margin:0 0 18px}.cp-steps i{flex:1;height:4px;border-radius:2px;background:rgba(245,240,230,.12);transition:background var(--ux-d3,320ms)}.cp-steps i.on{background:var(--acc)}
 @keyframes cpIn{from{opacity:0}}@keyframes cpUp{from{transform:translateY(26px);opacity:0}}@keyframes cpFade{from{opacity:0;transform:translateY(6px)}}
-@media (prefers-reduced-motion:reduce){.cp-bg,.cp,.cp-panel{animation:none}}`;
+/* avatar : aperçu à gauche (fixe), réglages à droite */
+.avx{display:grid;gap:22px}
+@media (min-width:640px){.avx{grid-template-columns:200px minmax(0,1fr);gap:34px;align-items:start}}
+.avx-pv{display:grid;justify-items:center;gap:10px;padding:22px 12px 18px;border:1px solid var(--line);border-radius:24px;background:radial-gradient(120% 90% at 50% 0%,rgba(245,240,230,.06),transparent 70%)}
+@media (min-width:640px){.avx-pv{position:sticky;top:0}}
+.avx-big{width:148px;height:148px;border-radius:50%;box-shadow:0 0 0 6px rgba(245,240,230,.05),0 18px 40px rgba(0,0,0,.35)}
+.avx-big svg,.avx-big img,.avx-mini svg,.avx-mini img{display:block;border-radius:50%}
+.avx-big>*{animation:avxIn var(--ux-d2,200ms) cubic-bezier(.22,1,.36,1)}
+.avx-nom{font:500 22px/1.15 'Cormorant Garamond',Georgia,serif;text-align:center;overflow-wrap:anywhere}
+.avx-mini{display:flex;gap:18px;padding-top:10px;border-top:1px solid var(--line);width:100%;justify-content:center}
+.avx-mini span{display:grid;justify-items:center;gap:6px;align-content:end}.avx-mini small{color:var(--faint);font-size:11.5px}
+.avx-mode{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;margin:0 0 20px;border-radius:999px;background:rgba(245,240,230,.06)}
+.avx-mode button{min-height:44px;border:0;border-radius:999px;background:none;color:var(--mute);font:600 14.5px Jost,sans-serif;cursor:pointer;transition:background var(--ux-d2,200ms),color var(--ux-d2,200ms)}
+.avx-mode button:hover{color:var(--ink)}.avx-mode button[aria-selected=true]{background:var(--ink);color:#171512}
+.avx-p{display:grid;gap:22px;animation:cpFade var(--ux-d2,200ms) ease both}
+.avx-sec{display:grid;gap:4px}.avx-h{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.avx-dice{min-height:36px;padding:0 14px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:var(--ink);font:500 13px Jost,sans-serif;cursor:pointer}.avx-dice:hover{background:rgba(245,240,230,.06)}
+.avx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:6px}
+.avx-pick{display:grid;justify-items:center;gap:6px;min-height:44px;padding:8px 2px;border:0;border-radius:16px;background:none;color:var(--mute);font:500 12px/1.2 Jost,sans-serif;text-align:center;cursor:pointer;transition:background var(--ux-d2,200ms),color var(--ux-d2,200ms)}
+.avx-pick svg{border-radius:50%;transition:box-shadow var(--ux-d2,200ms),transform var(--ux-d2,200ms) cubic-bezier(.22,1,.36,1)}
+.avx-pick:hover{background:rgba(245,240,230,.05);color:var(--ink)}.avx-pick:hover svg{transform:translateY(-2px)}
+.avx-pick[aria-pressed=true]{color:var(--ink)}.avx-pick[aria-pressed=true] svg{box-shadow:0 0 0 3px #1d1a15,0 0 0 5px var(--ink)}
+.avx-p .cp-dot[aria-pressed=true]{box-shadow:0 0 0 3px #1d1a15,0 0 0 5px var(--ink)}
+.avx-txt{margin:0 0 12px;color:var(--mute);font-size:14.5px}
+.avx-drop{display:grid;justify-items:center;gap:6px;padding:40px 18px;border:1.5px dashed rgba(245,240,230,.24);border-radius:24px;text-align:center;cursor:pointer;transition:border-color var(--ux-d2,200ms),background var(--ux-d2,200ms)}
+.avx-drop:hover,.avx-drop.is-over{border-color:var(--ink);background:rgba(245,240,230,.04)}
+.avx-drop b{font:500 22px/1.2 'Cormorant Garamond',Georgia,serif}.avx-drop span{color:var(--mute);font-size:13.5px}
+.avx-drop:focus-within{outline:2px solid var(--acc);outline-offset:2px}
+.avx-stage{position:relative;width:240px;height:240px;margin:0 auto 6px;border-radius:24px;overflow:hidden;cursor:grab;touch-action:none;background:#14120f}
+.avx-stage.is-drag{cursor:grabbing}.avx-stage canvas{display:block;width:100%;height:100%}
+.avx-stage i{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 50%,transparent 119px,rgba(10,9,7,.62) 120px);box-shadow:inset 0 0 0 1px rgba(245,240,230,.12)}
+.avx-stage i::after{content:"";position:absolute;left:0;top:0;width:240px;height:240px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(245,240,230,.7)}
+.avx-stage:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.avx-zoom{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;max-width:320px;margin:4px auto 0;width:100%}.avx-zoom .cp-l{margin:0}
+.avx-zoom input{width:100%;accent-color:var(--ink);min-height:44px}
+.avx-crop .cp-help{text-align:center}.avx-crop .cp-row{justify-content:center}
+.avx-file{display:inline-flex;align-items:center}
+.avx-act{position:sticky;bottom:-40px;margin:22px -20px -40px;padding:14px 20px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,#1d1a15 26%);}
+@media (min-width:760px){.avx-act{margin:24px -34px -48px;padding:16px 34px 22px}}
+@keyframes avxIn{from{opacity:.4;transform:scale(.96)}}
+@media (prefers-reduced-motion:reduce){.cp-bg,.cp,.cp-panel{animation:none}.avx-big>*,.avx-p{animation:none}.avx-pick svg{transition:none}}`;
   let css = false, bg = null, rendre = null;
   const ICO = {
     profil: '<circle cx="12" cy="8.5" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0" stroke-linecap="round"/>',
@@ -205,7 +245,7 @@
       f.onsubmit = async e => {
         e.preventDefault(); msg.textContent = ''; if (!valider(f, ['prenom', 'nom', 'pseudo'])) { f.querySelector('[aria-invalid=true]').focus(); return; }
         if (!navigator.onLine) { msg.textContent = 'Pas de connexion internet : réessayez quand le réseau revient.'; return; }
-        go.disabled = true; go.textContent = 'Enregistrement…';
+        go.disabled = true; go.setAttribute('aria-busy', 'true'); go.textContent = 'Enregistrement';
         try { await enregistrer({ prenom: f.querySelector('#cp-prenom').value.trim(), nom: f.querySelector('#cp-nom').value.trim() || null, pseudo: f.querySelector('#cp-pseudo').value.trim() || null, role: roleVal(f), region_slug: f.querySelector('#cp-reg').value || null, ville: f.querySelector('#cp-ville').value.trim() || null });
           bg.rafraichir(); N().toast('Profil enregistré.'); }
         catch (x) { go.disabled = false; go.textContent = 'Enregistrer'; const champPseudo = /pseudonyme/i.test(x.message); if (champPseudo) { f.querySelector('#cp-pseudo').setAttribute('aria-invalid', 'true'); f.querySelector('#cp-pseudo-e').textContent = x.message; } else msg.innerHTML = `<span style="color:#F3A08C">${esc(x.message)}</span>`; }
@@ -274,7 +314,7 @@
         if (!/^\d{6}$/.test(c1)) return err('cp-c1', 'Le nouveau code fait 6 chiffres.');
         if (/^(\d)\1{5}$/.test(c1) || c1 === '123456' || c1 === '654321') return err('cp-c1', 'Trop facile à deviner : évitez 123456 ou 6 fois le même chiffre.');
         if (c1 !== c2) return err('cp-c2', 'Les deux codes ne sont pas identiques.');
-        go.disabled = true; go.textContent = 'Vérification…'; msg.textContent = '';
+        go.disabled = true; go.setAttribute('aria-busy', 'true'); go.textContent = 'Vérification'; msg.textContent = '';
         try { await N().signIn(u.tel, c0); await N().api('/auth/v1/user', { method: 'PUT', auth: true, body: { password: c1 } }); f.reset(); msg.innerHTML = '<span class="cp-ok">✓ Code changé</span>'; }
         catch (x) { msg.innerHTML = `<span style="color:#F3A08C">${esc(/incorrect/i.test(x.message) ? 'Code actuel incorrect.' : x.message)}</span>`; }
         go.disabled = false; go.textContent = 'Changer mon code';
@@ -293,29 +333,107 @@
     box.querySelector('form').onsubmit = async e => {
       e.preventDefault(); const c = box.querySelector('#cp-dc').value, er = box.querySelector('#cp-dc-e'); er.textContent = '';
       if (!/^\d{6}$/.test(c)) { er.textContent = 'Votre code fait 6 chiffres.'; return; }
-      const b = box.querySelector('.cp-go'); b.disabled = true; b.textContent = 'Suppression…';
+      const b = box.querySelector('.cp-go'); b.disabled = true; b.setAttribute('aria-busy', 'true'); b.textContent = 'Suppression';
       try { await N().signIn(me().tel, c); await N().rpc('supprimer_compte'); localStorage.removeItem(KP); fermer(); N().signOut(); N().toast('Votre compte est supprimé. Vos annonces ont été retirées.'); }
       catch (x) { er.textContent = /incorrect/i.test(x.message) ? 'Code incorrect.' : /supprimer_compte|schema cache|Could not find/i.test(x.message) ? 'La suppression n’est pas encore activée sur le serveur. Contactez le Marché de Gros.' : x.message; b.disabled = false; b.textContent = 'Supprimer définitivement'; }
     };
   }
 
-  /* ——— choisir son avatar ——— */
+  /* ——— choisir son avatar : portrait dessiné, photo (recadrée ici, envoyée dans avatars/<id>.jpg) ou initiales ——— */
   function choisirAvatar(apres, embarque) {
-    const u = me(), M = A(); let o = M.parse((profil && profil.avatar) || 'v1:c=foulard;t=1;k=0;f=1'); if (o.mode === 'ini') o = M.parse('v1:c=foulard;t=1;k=0;f=' + Math.max(0, o.f));
-    const nom = nomAffiche(profil) || '?';
-    const html = () => { const st = M.STYLES.find(x => x.id === o.c), cols = st && st.tissu ? M.TISSUS : M.CHEVEUX;
-      return `<div class="cp-avz"><div class="cp-avbig">${M.svg(M.code(o), { size: 112, nom })}</div>${embarque ? '' : '<p class="cp-help" style="margin:0">Vous pourrez le changer quand vous voulez.</p>'}</div>
-      <div class="cp-avp"><div><span class="cp-l">Style</span><div class="cp-grid">${M.STYLES.map(s => `<button type="button" class="cp-pick" data-c="${s.id}" aria-pressed="${o.c === s.id}">${M.svg(M.code(Object.assign({}, o, { c: s.id, k: s.tissu === st.tissu ? o.k : 0 })), { size: 52, nom: s.nom })}<span>${s.nom}</span></button>`).join('')}</div></div>
-        <div><span class="cp-l">Teint</span><div class="cp-dots">${M.TEINTS.map((c, i) => `<button type="button" class="cp-dot" data-t="${i}" style="background:${c}" aria-label="Teint ${i + 1}" aria-pressed="${o.t === i}"></button>`).join('')}</div></div>
-        <div><span class="cp-l">${st && st.tissu ? 'Couleur du tissu' : 'Couleur des cheveux'}</span><div class="cp-dots">${cols.map((c, i) => `<button type="button" class="cp-dot" data-k="${i}" style="background:${c}" aria-label="Couleur ${i + 1}" aria-pressed="${o.k === i}"></button>`).join('')}</div></div>
-        <div><span class="cp-l">Fond</span><div class="cp-dots">${M.FONDS.map((c, i) => `<button type="button" class="cp-dot" data-f="${i}" style="background:${c}" aria-label="Fond ${i + 1}" aria-pressed="${o.f === i}"></button>`).join('')}</div></div>
-        <div><span class="cp-l">Détail</span><div class="cp-seg">${M.DETAILS.map(d => `<button type="button" data-a="${d.id}" aria-pressed="${(o.a || '') === d.id}">${d.nom}</button>`).join('')}</div></div></div>`; };
-    const zone = embarque || (cadre(`<div class="cp-main" style="grid-column:1 / -1"><h2>Mon avatar</h2><p>Il apparaît sur votre profil et dans vos négociations.</p><div class="cp-avw"></div><div class="cp-row" style="margin-top:20px"><button type="button" class="cp-go" data-ok>Enregistrer cet avatar</button><button type="button" class="cp-alt" data-ini>Garder mes initiales</button><span class="cp-msg" role="status"></span></div></div>`, 'Mon avatar'), bg.querySelector('.cp-avw'));
-    const peindre = () => { zone.innerHTML = html(); zone.querySelectorAll('button').forEach(b => b.onclick = () => { const d = b.dataset; if (d.c) { const was = M.STYLES.find(x => x.id === o.c), now = M.STYLES.find(x => x.id === d.c); if (!!was.tissu !== !!now.tissu) o.k = 0; o.c = d.c; } if (d.t) o.t = +d.t; if (d.k) o.k = +d.k; if (d.f) o.f = +d.f; if ('a' in d) o.a = d.a; peindre(); }); };
-    peindre();
-    if (embarque) return () => M.code(o);
-    bg.querySelector('[data-ok]').onclick = async e => { e.target.disabled = true; try { await enregistrer({ avatar: M.code(o) }); N().toast('Avatar enregistré.'); fermer(true); apres ? apres() : ouvrir('profil'); } catch (x) { e.target.disabled = false; bg.querySelector('.cp-msg').textContent = x.message; } };
-    bg.querySelector('[data-ini]').onclick = async () => { try { await enregistrer({ avatar: null }); } catch (_) {} fermer(true); apres ? apres() : ouvrir('profil'); };
+    const u = me(), M = A(), nom = nomAffiche(profil) || '?', cur = M.parse(profil && profil.avatar);
+    let mode = cur.mode === 'v1' || cur.mode === 'ph' ? cur.mode : (profil && profil.avatar ? 'ini' : 'v1');
+    let o = cur.mode === 'v1' ? cur : M.parse('v1:c=foulard;t=1;k=0;f=' + Math.max(0, cur.f >= 0 ? cur.f : 1));
+    let fi = cur.f >= 0 ? cur.f : 1;
+    const ph = { img: null, z: 1, x: 0, y: 0, url: '' }; // photo en cours de cadrage
+    const S = 240; // côté du cadre de recadrage (px CSS)
+    const codeNow = () => mode === 'v1' ? M.code(o) : mode === 'ini' ? 'ini:f=' + fi : cur.mode === 'ph' && !ph.img ? M.code(Object.assign({}, cur, { f: fi })) : '';
+    const rnd = n => Math.floor(Math.random() * n);
+    const html = () => '<div class="avx"><aside class="avx-pv"><div class="avx-big"></div><b class="avx-nom">' + esc(nom) + '</b><div class="avx-mini" aria-hidden="true"><span><i class="m36"></i><small>Négociation</small></span><span><i class="m24"></i><small>Annonce</small></span></div></aside>'
+      + '<div class="avx-c"><div class="avx-mode" role="tablist" aria-label="Type d’avatar">' + [['v1', 'Portrait'], ['ph', 'Photo'], ['ini', 'Initiales']].map(([k, t]) => '<button type="button" role="tab" data-mode="' + k + '" aria-selected="' + (mode === k) + '">' + t + '</button>').join('') + '</div><div class="avx-p"></div></div></div>';
+    const zone = embarque || (cadre('<div class="cp-main" style="grid-column:1 / -1"><h2>Mon avatar</h2><p>Il apparaît sur votre profil, à côté de vos annonces et dans vos négociations.</p><div class="cp-avw"></div><div class="cp-row avx-act"><button type="button" class="cp-go" data-ok>Enregistrer</button><button type="button" class="cp-alt" data-no>Annuler</button><span class="cp-msg" role="status"></span></div></div>', 'Mon avatar'), bg.querySelector('.cp-avw'));
+    zone.innerHTML = html();
+    const P = zone.querySelector('.avx-p'), big = zone.querySelector('.avx-big'), m36 = zone.querySelector('.m36'), m24 = zone.querySelector('.m24');
+    function apercu() {
+      if (mode === 'ph' && ph.img) { const d = rendu(144).toDataURL('image/jpeg', .8); big.innerHTML = '<img src="' + d + '" alt="" width="148" height="148">'; m36.innerHTML = '<img src="' + d + '" alt="" width="36" height="36">'; m24.innerHTML = '<img src="' + d + '" alt="" width="24" height="24">'; return; }
+      const k = codeNow() || 'ini:f=' + fi;
+      big.innerHTML = M.svg(k, { size: 148, nom, seed: u.id }); m36.innerHTML = M.svg(k, { size: 36, nom, seed: u.id }); m24.innerHTML = M.svg(k, { size: 24, nom, seed: u.id });
+    }
+    const dots = (L, key, sel, lab) => '<div class="cp-dots">' + L.map((col, i) => '<button type="button" class="cp-dot" data-' + key + '="' + i + '" style="background:' + col + '" aria-label="' + lab + ' ' + (i + 1) + '" aria-pressed="' + (sel === i) + '"></button>').join('') + '</div>';
+    function panneau() {
+      zone.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.mode === mode)));
+      if (mode === 'v1') {
+        const st = M.STYLES.find(x => x.id === o.c), cols = st && st.tissu ? M.TISSUS : M.CHEVEUX;
+        P.innerHTML = '<div class="avx-sec"><div class="avx-h"><span class="cp-l">Coiffure</span><button type="button" class="avx-dice" data-dice>Au hasard</button></div><div class="avx-grid">' + M.STYLES.map(s => '<button type="button" class="avx-pick" data-c="' + s.id + '" aria-pressed="' + (o.c === s.id) + '">' + M.svg(M.code(Object.assign({}, o, { c: s.id, k: !!s.tissu === !!(st && st.tissu) ? o.k : 0 })), { size: 56, nom: s.nom }) + '<span>' + s.nom + '</span></button>').join('') + '</div></div>'
+          + '<div class="avx-sec"><span class="cp-l">Teint</span>' + dots(M.TEINTS, 't', o.t, 'Teint') + '</div>'
+          + '<div class="avx-sec"><span class="cp-l">' + (st && st.tissu ? 'Couleur du tissu' : 'Couleur des cheveux') + '</span>' + dots(cols, 'k', o.k, 'Couleur') + '</div>'
+          + '<div class="avx-sec"><span class="cp-l">Fond</span>' + dots(M.FONDS, 'f', o.f, 'Fond') + '</div>'
+          + '<div class="avx-sec"><span class="cp-l">Détail</span><div class="cp-seg">' + M.DETAILS.map(d => '<button type="button" data-a="' + d.id + '" aria-pressed="' + ((o.a || '') === d.id) + '">' + d.nom + '</button>').join('') + '</div></div>';
+      } else if (mode === 'ini') {
+        P.innerHTML = '<div class="avx-sec"><p class="avx-txt">Vos initiales, « ' + esc(M.initiales(nom)) + ' », sur le fond de votre choix.</p><span class="cp-l">Fond</span>' + dots(M.FONDS, 'fi', fi, 'Fond') + '</div>';
+      } else {
+        P.innerHTML = ph.img
+          ? '<div class="avx-sec avx-crop"><div class="avx-stage" tabindex="0" aria-label="Cadrage de la photo : glissez pour déplacer, flèches du clavier aussi"><canvas width="' + S * 2 + '" height="' + S * 2 + '"></canvas><i aria-hidden="true"></i></div><label class="avx-zoom"><span class="cp-l">Agrandir</span><input type="range" min="1" max="3" step="0.01" value="' + ph.z + '"></label><p class="cp-help">Glissez la photo pour la centrer sur votre visage.</p><div class="cp-row"><label class="cp-alt avx-file">Choisir une autre photo<input type="file" accept="image/*" hidden></label></div></div>'
+          : '<div class="avx-sec"><label class="avx-drop"><input type="file" accept="image/*" hidden><b>' + (cur.mode === 'ph' ? 'Changer de photo' : 'Choisir une photo') + '</b><span>Depuis la galerie ou l’appareil photo · JPEG, PNG ou HEIC</span></label><p class="cp-help">Visible de tous, à côté de vos annonces et dans vos négociations. Une photo de vous ou de votre stand, jamais d’une pièce d’identité.</p></div>';
+        const fl = P.querySelector('input[type=file]'); if (fl) fl.onchange = () => charger1(fl.files && fl.files[0]);
+        const dr = P.querySelector('.avx-drop'); if (dr) { dr.ondragover = e => { e.preventDefault(); dr.classList.add('is-over'); }; dr.ondragleave = () => dr.classList.remove('is-over'); dr.ondrop = e => { e.preventDefault(); dr.classList.remove('is-over'); charger1(e.dataTransfer.files[0]); }; }
+        if (ph.img) cadrage();
+      }
+      apercu();
+    }
+    function charger1(f) {
+      const msg = zone.closest('.cp') && zone.closest('.cp').querySelector('.cp-msg'); if (msg) msg.textContent = '';
+      if (!f || !/^image\//.test(f.type || 'image/')) { if (msg) msg.textContent = 'Ce fichier n’est pas une image.'; return; }
+      if (ph.url) URL.revokeObjectURL(ph.url);
+      ph.url = URL.createObjectURL(f); const im = new Image();
+      im.onload = () => { ph.img = im; ph.z = 1; ph.x = 0; ph.y = 0; panneau(); };
+      im.onerror = () => { if (msg) msg.textContent = 'Cette image ne s’ouvre pas ici. Essayez une photo JPEG ou PNG.'; };
+      im.src = ph.url;
+    }
+    // la photo couvre le cadre ; x, y = décalage en px du cadre ; z = agrandissement
+    const borne = () => { const im = ph.img, k = Math.max(S / im.naturalWidth, S / im.naturalHeight) * ph.z, w = im.naturalWidth * k, h = im.naturalHeight * k; ph.x = Math.min(0, Math.max(S - w, ph.x)); ph.y = Math.min(0, Math.max(S - h, ph.y)); return [k, w, h]; };
+    function dessiner(ctx, n) { const [k, w, h] = borne(), r = n / S; ctx.fillStyle = '#1d1a15'; ctx.fillRect(0, 0, n, n); ctx.drawImage(ph.img, ph.x * r, ph.y * r, w * r, h * r); }
+    function rendu(n) { const cv = document.createElement('canvas'); cv.width = cv.height = n; dessiner(cv.getContext('2d'), n); return cv; }
+    function cadrage() {
+      const st = P.querySelector('.avx-stage'), cv = st.querySelector('canvas'), ctx = cv.getContext('2d'), rg = P.querySelector('input[type=range]');
+      if (!ph.x && !ph.y) { const [k, w, h] = borne(); ph.x = (S - w) / 2; ph.y = (S - h) / 2; }
+      let raf = 0; const peindre = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { dessiner(ctx, S * 2); }); };
+      let tAp = 0; const ap = () => { clearTimeout(tAp); tAp = setTimeout(apercu, 90); };
+      peindre();
+      let g = null;
+      st.onpointerdown = e => { g = { x: e.clientX, y: e.clientY, x0: ph.x, y0: ph.y }; st.setPointerCapture(e.pointerId); st.classList.add('is-drag'); };
+      st.onpointermove = e => { if (!g) return; ph.x = g.x0 + e.clientX - g.x; ph.y = g.y0 + e.clientY - g.y; peindre(); };
+      st.onpointerup = st.onpointercancel = () => { g = null; st.classList.remove('is-drag'); ap(); };
+      st.onkeydown = e => { const d = { ArrowLeft: [8, 0], ArrowRight: [-8, 0], ArrowUp: [0, 8], ArrowDown: [0, -8] }[e.key]; if (!d) return; e.preventDefault(); ph.x += d[0]; ph.y += d[1]; peindre(); ap(); };
+      st.onwheel = e => { e.preventDefault(); zoom(Math.min(3, Math.max(1, ph.z - e.deltaY * .002))); rg.value = ph.z; };
+      const zoom = z => { const c0 = S / 2, [k0] = borne(), ix = (c0 - ph.x) / k0, iy = (c0 - ph.y) / k0; ph.z = z; const [k1] = borne(); ph.x = c0 - ix * k1; ph.y = c0 - iy * k1; peindre(); ap(); };
+      rg.oninput = () => zoom(+rg.value);
+    }
+    zone.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b || !zone.contains(b)) return; const d = b.dataset;
+      if (d.mode) { mode = d.mode; panneau(); return; }
+      if (d.dice) { const s = M.STYLES[rnd(M.STYLES.length)]; o = { mode: 'v1', c: s.id, t: rnd(M.TEINTS.length), k: rnd((s.tissu ? M.TISSUS : M.CHEVEUX).length), f: rnd(M.FONDS.length), a: M.DETAILS[rnd(M.DETAILS.length)].id }; panneau(); return; }
+      if (d.c) { const was = M.STYLES.find(x => x.id === o.c), now = M.STYLES.find(x => x.id === d.c); if (!!was.tissu !== !!now.tissu) o.k = 0; o.c = d.c; }
+      else if (d.t) o.t = +d.t; else if (d.k) o.k = +d.k; else if (d.f) { o.f = +d.f; fi = o.f; } else if (d.fi) fi = +d.fi; else if ('a' in d) o.a = d.a; else return;
+      panneau();
+    });
+    panneau();
+    // le code à enregistrer ; pour une nouvelle photo, l'envoi a lieu ici (et seulement ici)
+    async function finir() {
+      if (mode !== 'ph') return codeNow();
+      if (!ph.img) { if (cur.mode === 'ph') return codeNow(); throw new Error('Choisissez d’abord une photo, ou un portrait.'); }
+      if (!navigator.onLine) throw new Error('Pas de connexion internet : la photo sera envoyée quand le réseau revient.');
+      const blob = await new Promise(r => rendu(384).toBlob(r, 'image/jpeg', .84));
+      try { await N().televerser('avatars/' + u.id + '.jpg', blob); }
+      catch (x) { throw new Error(x.status === 404 || /bucket|not found/i.test(x.message) ? 'La photo de profil n’est pas encore activée sur le serveur (supabase/schema-5.sql). Choisissez un portrait en attendant.' : x.status === 413 ? 'Photo trop lourde. Essayez-en une autre.' : x.code === 'auth' ? 'Votre session a expiré : reconnectez-vous.' : 'La photo n’a pas pu être envoyée : ' + x.message); }
+      return 'ph:u=' + u.id + ';v=' + Date.now().toString(36).slice(-6) + ';f=' + fi;
+    }
+    if (embarque) return finir;
+    const ok = bg.querySelector('[data-ok]'), msg = bg.querySelector('.cp-msg');
+    ok.onclick = async () => { ok.disabled = true; ok.setAttribute('aria-busy', 'true'); ok.textContent = mode === 'ph' && ph.img ? 'Envoi de la photo' : 'Enregistrement'; msg.textContent = '';
+      try { const k = await finir(); await enregistrer({ avatar: k }); N().toast(mode === 'ph' ? 'Photo de profil enregistrée.' : 'Avatar enregistré.'); fermer(true); apres ? apres() : ouvrir('profil'); }
+      catch (x) { ok.disabled = false; ok.removeAttribute('aria-busy'); ok.textContent = 'Enregistrer'; msg.textContent = x.message; } };
+    bg.querySelector('[data-no]').onclick = () => { fermer(true); apres ? apres() : ouvrir('profil'); };
   }
 
   /* ——— bienvenue : 3 étapes courtes après la création du compte (les deux dernières peuvent attendre) ——— */
@@ -337,7 +455,7 @@
       } else if (etape === 2) {
         w.innerHTML = `<h2>Votre avatar</h2><p>Choisissez ce qui vous ressemble, ou gardez vos initiales.</p><div class="cp-avw cp-panel"></div><div class="cp-row" style="margin-top:20px"><button type="button" class="cp-go" data-ok>Continuer</button><button type="button" class="cp-alt" data-ini>Garder mes initiales</button></div>`;
         getAv = choisirAvatar(null, w.querySelector('.cp-avw'));
-        w.querySelector('[data-ok]').onclick = () => suite({ avatar: getAv() });
+        const okb = w.querySelector('[data-ok]'); okb.onclick = async () => { okb.disabled = true; okb.setAttribute('aria-busy', 'true'); let m = ''; try { m = await suite({ avatar: await getAv() }); } catch (x) { m = x.message; } if (m && okb.isConnected) { okb.disabled = false; okb.removeAttribute('aria-busy'); let er = w.querySelector('.cp-msg'); if (!er) { er = document.createElement('span'); er.className = 'cp-msg'; er.setAttribute('role', 'status'); okb.parentNode.appendChild(er); } er.textContent = m; } };
         w.querySelector('[data-ini]').onclick = () => suite(null);
       } else {
         w.innerHTML = `<h2>Ce que vous faites, et où</h2><p>Pour vous montrer d’abord ce qui vous concerne. Vous pouvez passer cette étape.</p><form class="cp-f cp-panel" novalidate>${roleSeg(p())}${lieu(p())}<div class="cp-row"><button class="cp-go">Terminer</button><button type="button" class="cp-alt" data-skip>Plus tard</button></div></form>`;

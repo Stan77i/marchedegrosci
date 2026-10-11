@@ -195,6 +195,35 @@
 .nx-hav{flex:none;width:40px;height:40px}.nx-hav svg{display:block;border-radius:50%}
 @keyframes nxIn{from{opacity:0}}@keyframes nxUp{from{transform:translateY(28px);opacity:0}}
 @keyframes nxPop{from{transform:scale(.92);opacity:0}}.nx-new{animation:nxPop .32s cubic-bezier(.22,1,.36,1) both}
+/* proposer un prix (12/10/2026) : le montant d'abord, en chiffres droits ; un trait qui s'allume au lieu d'un cadre ; prix rapides en deux lignes */
+.nx-ann{gap:14px;padding:14px 16px;border-radius:20px;background:rgba(245,240,230,.035)}
+.nx-ann p{font-size:13.5px}.nx-ann p b{font-size:15.5px;margin-bottom:2px}
+.nx-ed>.nx-lbl:first-of-type{margin-top:4px}
+.nx-px{position:relative;align-items:flex-end;gap:12px;padding:4px 0 12px;border-bottom:1px solid rgba(245,240,230,.2)}
+.nx-px::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--acc);transform:scaleX(0);transform-origin:0 50%;transition:transform .32s cubic-bezier(.22,1,.36,1)}
+.nx-px:focus-within::after{transform:scaleX(1)}
+.nx .nx-px input,.nx .nx-px input:focus,.nx .nx-px input:focus-visible{outline:none!important;box-shadow:none!important}
+.nx-px input{font:300 clamp(46px,12vw,68px)/1 Jost,system-ui,sans-serif;letter-spacing:-.025em;font-variant-numeric:lining-nums tabular-nums}
+.nx-px input{font-size:clamp(46px,12vw,68px)!important}
+.nx-px input::placeholder{color:rgba(245,240,230,.2)}
+.nx-px span{padding-bottom:8px;font-size:15px}
+.nx-pq{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:14px 0 2px}
+@media (max-width:520px){.nx-pq{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.nx-pq .nx-chip{display:grid;align-content:center;gap:2px;min-height:58px;padding:8px 12px;border-radius:16px;border-color:rgba(245,240,230,.14);text-align:left;font:600 16px/1.1 Jost,sans-serif;font-variant-numeric:tabular-nums;transition:background .2s,border-color .2s,color .2s}
+.nx-pq .nx-chip small{font:500 12px/1.2 Jost,sans-serif;color:var(--mute);transition:color .2s}
+.nx-pq .nx-chip:hover{border-color:rgba(245,240,230,.34);background:rgba(245,240,230,.04)}
+.nx-pq .nx-chip[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#171512}.nx-pq .nx-chip[aria-pressed=true] small{color:#5d5446}
+.nx-q{gap:8px}.nx-q input{width:120px;height:52px;border-radius:14px;font:500 20px Jost,sans-serif;font-variant-numeric:tabular-nums;transition:border-color .2s}
+.nx-q input:focus,.nx-q input:focus-visible,.nx textarea:focus,.nx textarea:focus-visible{outline:none!important;border-color:var(--acc)}
+.nx-q .nx-chip{min-height:44px}
+.nx-tot{margin:16px 0 0;padding:12px 14px;border-radius:16px;background:rgba(245,240,230,.04)}.nx-tot:empty{display:none}
+.nx-cd{gap:6px}.nx-cd .nx-chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;font-size:13.5px;border-color:rgba(245,240,230,.14)}
+.nx-cd .nx-chip::before{content:"";width:14px;height:14px;border-radius:4px;box-shadow:inset 0 0 0 1.5px rgba(245,240,230,.4);transition:background .2s,box-shadow .2s}
+.nx-cd .nx-chip[aria-pressed=true]{background:rgba(245,240,230,.08);border-color:rgba(245,240,230,.34);color:var(--ink)}
+.nx-cd .nx-chip[aria-pressed=true]::before{background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='m3.5 7.2 2.3 2.3 4.7-4.9' fill='none' stroke='%23171512' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat;box-shadow:none}
+.nx textarea{min-height:64px;border-radius:14px;transition:border-color .2s}
+.nx-send{position:sticky;bottom:0;margin-top:18px;box-shadow:0 -14px 24px 6px #1d1a15}
+@media (prefers-reduced-motion:reduce){.nx-px::after{transition:none}}
 @media (prefers-reduced-motion:reduce){.nx-bg,.nx,.nx-new{animation:none}.nx-rail .gap,.nx-rail .pin{transition:none}}`;
   let css = false, bg = null, poll = 0;
   const autreId = n => n.auteur_id === me() ? n.proprio_id : n.auteur_id;
@@ -216,7 +245,7 @@
   addEventListener('mdg:profils', () => { if (bg && redessiner) redessiner(); });
   function close(keep) { clearInterval(poll); poll = 0; if (bg) { bg.remove(); bg = null; } if (!keep) { document.removeEventListener('keydown', onKey); if (rendreFocus) { rendreFocus(); rendreFocus = null; } } }
   function onKey(e) { if (e.key === 'Escape' && bg) close(); }
-  const head = (t, sub, back) => `<div class="nx-h">${back ? '<button type="button" class="nx-ib" data-back aria-label="Retour à mes négociations">‹</button>' : ''}<h2>${esc(t)}${sub ? `<small>${esc(sub)}</small>` : ''}</h2>${window.MDGSons ? `<button type="button" class="nx-ib nx-snd" aria-label="Réglages des sons" title="Sons">${MDGSons.reglages().on ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h3l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>' : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h3l5-4v14l-5-4H4z"/><path d="m16 9 5 6m0-6-5 6"/></svg>'}</button>` : ''}<button type="button" class="nx-ib" data-x aria-label="Fermer">×</button></div>`;
+  const head = (t, sub, back) => `<div class="nx-h">${back ? '<button type="button" class="nx-ib" data-back aria-label="Retour à mes négociations">‹</button>' : ''}<h2>${esc(t)}${sub ? `<small>${esc(sub)}</small>` : ''}</h2><button type="button" class="nx-ib" data-x aria-label="Fermer">×</button></div>`;
   const bindSnd = () => { const b = bg && bg.querySelector('.nx-snd'); if (b) b.onclick = () => { close(); MDGSons.panneau(); }; };
 
   // la règle des prix : repère du prix affiché, dernier prix de chaque partie (atténué s'il n'est plus valable), écart
@@ -255,12 +284,12 @@
       ${fixe ? `<p class="nx-warn">Prix ferme : ${ctx.pour === 'vendeur' ? 'le vendeur' : 'l’acheteur'} n’accepte pas d’autre prix. Vous pouvez proposer le prix affiché et une quantité.</p>` : ''}
       <label class="nx-lbl" for="nxP">Prix par ${esc(u)}</label>
       <div class="nx-px"><input id="nxP" inputmode="numeric" autocomplete="off" placeholder="${ref ? fmt(chips[1] ? chips[1].v : ref) : '0'}" ${fixe ? `value="${fmt(ref)}" readonly` : ''} aria-describedby="nxD"><span>F / ${esc(u)}</span></div>
-      <div class="nx-chips" role="group" aria-label="Prix rapides">${ref ? `<button type="button" class="nx-chip" data-v="${ref}" aria-pressed="false">Prix affiché · ${fmt(ref)}</button>` : ''}${ctx.dernier && ctx.dernier !== ref ? `<button type="button" class="nx-chip" data-v="${ctx.dernier}" aria-pressed="false">Sa proposition · ${fmt(ctx.dernier)}</button>` : ''}${chips.map(c => `<button type="button" class="nx-chip" data-v="${c.v}" aria-pressed="false">${c.t} · ${fmt(c.v)}</button>`).join('')}</div>
+      <div class="nx-chips nx-pq" role="group" aria-label="Prix rapides">${ref ? `<button type="button" class="nx-chip" data-v="${ref}" aria-pressed="false"><small>Prix affiché</small>${fmt(ref)}</button>` : ''}${ctx.dernier && ctx.dernier !== ref ? `<button type="button" class="nx-chip" data-v="${ctx.dernier}" aria-pressed="false"><small>Sa proposition</small>${fmt(ctx.dernier)}</button>` : ''}${chips.map(c => `<button type="button" class="nx-chip" data-v="${c.v}" aria-pressed="false"><small>${c.t}</small>${fmt(c.v)}</button>`).join('')}</div>
       <div class="nx-qr"><label class="nx-lbl" for="nxQ">Quantité</label><div class="nx-q"><input id="nxQ" inputmode="decimal" autocomplete="off" value="${ctx.q0 ? fq(ctx.q0) : ''}" placeholder="—"><span>${esc(u)}</span>${ctx.qmax ? `<button type="button" class="nx-chip" data-q="${ctx.qmax}">Tout le lot · ${fq(ctx.qmax)}</button>` : ''}</div></div>
       <div class="nx-tot" id="nxD" aria-live="polite"></div>
       <div class="nx-prev"></div>
       <label class="nx-lbl" for="nxT" style="margin-top:14px">Conditions (facultatif)</label>
-      <div class="nx-chips" style="margin-top:4px">${(ctx.pour === 'vendeur' ? ['Paiement à la livraison', 'Je viens chercher', 'Livraison sous 3 jours'] : ['Je peux livrer', 'Disponible maintenant', 'Qualité vérifiable sur place']).map(t => `<button type="button" class="nx-chip" data-t="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+      <div class="nx-chips nx-cd" style="margin-top:4px">${(ctx.pour === 'vendeur' ? ['Paiement à la livraison', 'Je viens chercher', 'Livraison sous 3 jours'] : ['Je peux livrer', 'Disponible maintenant', 'Qualité vérifiable sur place']).map(t => `<button type="button" class="nx-chip" data-t="${esc(t)}">${esc(t)}</button>`).join('')}</div>
       <textarea id="nxT" maxlength="500" placeholder="Livraison, paiement, délai…"></textarea>
       <button type="button" class="nx-go nx-send" disabled>${esc(label || 'Envoyer ma proposition')}</button><p class="nx-err" role="alert"></p></div>`;
     const $ = s => box.querySelector(s), ip = $('#nxP'), iq = $('#nxQ'), go = $('.nx-send'), out = $('#nxD');
@@ -282,10 +311,10 @@
     iq.addEventListener('input', upd);
     box.querySelectorAll('.nx-chip[data-v]').forEach(c => c.onclick = () => { if (!fixe) { ip.value = fmt(+c.dataset.v); upd(); } });
     box.querySelectorAll('.nx-chip[data-q]').forEach(c => c.onclick = () => { iq.value = fq(+c.dataset.q); upd(); });
-    box.querySelectorAll('.nx-chip[data-t]').forEach(c => c.onclick = () => { const t = $('#nxT'); if (!t.value.includes(c.dataset.t)) t.value = (t.value.trim() ? t.value.trim() + '. ' : '') + c.dataset.t; c.setAttribute('aria-pressed', 'true'); });
+    box.querySelectorAll('.nx-chip[data-t]').forEach(c => { c.setAttribute('aria-pressed', 'false'); c.onclick = () => { const t = $('#nxT'), on = c.getAttribute('aria-pressed') !== 'true', s = c.dataset.t; let v = t.value.split(/\.\s*/).map(x => x.trim()).filter(Boolean).filter(x => x !== s); if (on) v.push(s); t.value = v.join('. '); c.setAttribute('aria-pressed', String(on)); }; });
     go.onclick = async () => {
       if (!navigator.onLine) { $('.nx-err').textContent = 'Pas de connexion internet. Réessayez quand le réseau revient.'; return; }
-      const v = vals(); go.disabled = true; $('.nx-err').textContent = ''; go.textContent = 'Envoi…';
+      const v = vals(); go.disabled = true; go.setAttribute('aria-busy', 'true'); $('.nx-err').textContent = ''; go.textContent = 'Envoi';
       try { await onSend(v); } catch (x) { $('.nx-err').textContent = err(x); go.disabled = false; upd(); }
     };
     upd(); setTimeout(() => (fixe ? iq : ip).focus(), 60);

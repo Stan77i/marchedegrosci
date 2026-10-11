@@ -186,3 +186,12 @@ Limites : pas de notification quand le site est fermé (cela demanderait un serv
 - Chiffres alignés partout : Cormorant dessinait « 1 » comme un « I » et « 0 » comme un « O » (« Offres I · Demandes O » dans l'application).
 
 **Limites** : pas de vérification par SMS, pas de changement de numéro, pas de photo de profil, pas de notification quand le site est fermé. `sw.js` : `v3/avatar.js`, `v3/compte.js` et `v3/ux.css` en cache, `CACHE = 'mgci-v15'`.
+
+---
+
+# Mise à jour du 12 octobre 2026 appliquée (paquet « Application mobile multiplateforme »)
+- 17 fichiers du paquet (voir `MISE-A-JOUR.md`) : connexion repensée avec la scène « Deux mondes. Un même marché. » (`v3/porte.js`), en-tête (menu dépliant, repère de page), éditeur d'avatar (portrait, photo, initiales), « Proposer un prix » refait, carte sans bord coupé, recherche épurée, pied de page allégé. `sw.js` : `mgci-v19`.
+- Vérifié avant de copier : le paquet part de la version en ligne (toutes les fonctions précédentes y sont : négociation, compte, avatars, sons, pages sombres).
+- `supabase/schema-5.sql` (photos de profil, dossier public « avatars », 300 Ko, chacun n'écrit que sa propre photo) : **installé par le connecteur**, rien à faire.
+- Corrigés après essai : dans l'application, le montant de « Proposer un prix » s'affichait en petit (la règle de l'application qui force 16 px sur les champs l'écrasait) ; les prix rapides passent sur deux colonnes sur téléphone (plus de bouton seul sur la 2e ligne).
+- Essais (Chromium, serveur simulé) : accueil, Acheter, fiche, carte, Vendre, Prix, Confiance ; connexion (ordinateur et téléphone), inscription puis avatar, « Proposer un prix » (ordinateur et téléphone) : aucune erreur.

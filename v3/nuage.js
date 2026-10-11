@@ -169,10 +169,10 @@
 .ng-tabs button{flex:1;min-height:42px;border:0;border-radius:999px;background:none;color:#B9AD98;font:600 14px Jost,sans-serif;cursor:pointer}.ng-tabs button[aria-selected=true]{background:#F5F0E6;color:#171512}
 .ng label{display:block;margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;color:#B9AD98}
 .ng input{width:100%;box-sizing:border-box;height:52px;margin:0 0 14px;padding:0 16px;border:1px solid rgba(245,240,230,.16);border-radius:16px;background:#14120f;color:#F5F0E6;font:500 18px Jost,sans-serif;letter-spacing:.06em}
-.ng input:focus{outline:2px solid #E07A3F;outline-offset:1px;border-color:transparent}
+.ng input{transition:border-color .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s cubic-bezier(.2,.8,.2,1)}.ng input:focus{outline:none;border-color:#E07A3F;box-shadow:0 0 0 3px rgba(224,122,63,.22)}
 .ng-go{width:100%;min-height:52px;border:0;border-radius:999px;background:#E07A3F;color:#171512;font:700 16px Jost,sans-serif;cursor:pointer}.ng-go[disabled]{opacity:.6}
 .ng-x{float:right;width:40px;height:40px;margin:-6px -6px 0 0;border:0;border-radius:50%;background:rgba(245,240,230,.08);color:#F5F0E6;font-size:20px;cursor:pointer}
-.ng-err{min-height:20px;margin:-4px 0 12px;color:#F3B48A;font-size:14px}.ng-note{margin:14px 0 0;font-size:12.5px;color:#8f846f;line-height:1.5}
+.ng-err:empty{min-height:0;margin:0 0 14px}.ng-err{min-height:20px;margin:-4px 0 12px;color:#F3B48A;font-size:14px}.ng-note{margin:16px 0 0;font-size:12.5px;color:#8f846f;line-height:1.5}
 .ng-me{display:flex;flex-direction:column;gap:12px}.ng-me b{font:500 24px/1 'Cormorant Garamond',serif}.ng-out{min-height:48px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:#F5F0E6;font:600 15px Jost,sans-serif;cursor:pointer}
 @keyframes ngIn{from{opacity:0}}@keyframes ngUp{from{transform:translateY(24px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.ng-bg,.ng{animation:none}}`;
@@ -196,7 +196,48 @@
 .ng [hidden]{display:none!important}
 .ng-ticket small{display:block;margin-top:10px;color:#B9AD98;font-size:12.5px;text-align:center}
 .ng-alt{width:100%;min-height:48px;margin:0 0 10px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:#F5F0E6;font:600 15px Jost,sans-serif;cursor:pointer}
-.ng-warn{padding:12px 14px;border-radius:16px;background:rgba(224,122,63,.12);color:#F3D2BC;font-size:13.5px;line-height:1.45;margin:0 0 14px}`;
+.ng-warn{padding:12px 14px;border-radius:16px;background:rgba(224,122,63,.12);color:#F3D2BC;font-size:13.5px;line-height:1.45;margin:0 0 14px}
+/* ——— la porte : scène + formulaire ——— */
+.ng--porte{position:relative;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:132px minmax(0,1fr);max-width:440px;max-height:calc(100dvh - 16px);padding:0;overflow:hidden}
+.ng-scene{position:relative;overflow:hidden;background:radial-gradient(90% 120% at 50% 100%,#2a2219 0%,#15120e 70%);border-bottom:1px solid rgba(245,240,230,.08)}
+.ng-form{position:relative;overflow:auto;padding:22px 22px calc(22px + env(safe-area-inset-bottom));overscroll-behavior:contain}
+@media (min-width:760px){.ng-bg:has(.ng--porte){padding:24px}.ng--porte{max-width:980px;grid-template-columns:minmax(0,1fr) 440px;grid-template-rows:minmax(0,1fr);height:min(660px,calc(100dvh - 48px))}.ng-scene{border-bottom:0;border-right:1px solid rgba(245,240,230,.08)}.ng-form{padding:40px 38px 32px}}
+.ng--porte .ng-x{position:absolute;top:14px;right:14px;float:none;margin:0;z-index:3}
+.ng--porte h2{padding-right:48px;font-size:32px;text-wrap:balance}
+@media (min-width:760px){.ng--porte h2{font-size:36px}}
+.ng--porte .ng-lede{margin:0 0 20px;color:#B9AD98;font-size:15px;line-height:1.5;text-wrap:pretty}
+.ng--porte .ng-tabs{margin:0 0 20px}
+.ng-fd{margin:0 0 14px}
+.ng--porte label{margin:0 0 7px;font-size:14px;font-weight:500;letter-spacing:0;color:#E9E1D2}.ng--porte label i{font-style:normal;color:#8f846f;margin-left:6px;font-size:13px}
+.ng-ip{position:relative;display:flex;align-items:center;border:1px solid rgba(245,240,230,.16);border-radius:16px;background:#14120f;transition:border-color .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s cubic-bezier(.2,.8,.2,1)}
+.ng-ip:focus-within{border-color:#E07A3F;box-shadow:0 0 0 3px rgba(224,122,63,.2)}
+.ng-ip.is-bad{border-color:#E2735B}.ng-ip.is-bad:focus-within{box-shadow:0 0 0 3px rgba(226,115,91,.22)}
+.ng--porte .ng-ip input{flex:1;min-width:0;height:54px;margin:0;border:0;background:none;box-shadow:none;outline:none;padding:0 16px;font:500 19px Jost,sans-serif;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.ng--porte .ng-ip input:focus{border:0;box-shadow:none}
+.ng-ip--tel>span{padding:0 0 0 16px;color:#8f846f;font:500 17px Jost,sans-serif;letter-spacing:.02em}.ng-ip--tel input{padding-left:10px!important}
+.ng-ck{flex:none;width:22px;height:22px;margin-right:14px;border-radius:50%;background:#6CC58C url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='m6.5 11.4 3 3 6-6.4' fill='none' stroke='%23171512' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/22px no-repeat;opacity:0;transform:scale(.6);transition:opacity .2s,transform .32s cubic-bezier(.22,1,.36,1)}
+.ng-ip.is-ok .ng-ck{opacity:1;transform:none}
+.ng-eye{flex:none;min-height:44px;margin-right:6px;padding:0 12px;border:0;border-radius:12px;background:none;color:#B9AD98;font:600 13px Jost,sans-serif;cursor:pointer}.ng-eye:hover{color:#F5F0E6;background:rgba(245,240,230,.06)}
+.ng-fe{margin:6px 2px 0!important;color:#F3A08C!important;font-size:13.5px!important;line-height:1.4!important}.ng-fe:empty{display:none}
+.ng-glob{display:grid;gap:4px;margin:0 0 16px;padding:12px 14px;border-radius:16px;background:rgba(226,115,91,.1);box-shadow:inset 0 0 0 1px rgba(226,115,91,.32);animation:ngUp .32s cubic-bezier(.22,1,.36,1) both}
+.ng-glob p{margin:0!important;color:#F6D3C6!important;font-size:14.5px!important}.ng-glob .ng-link{justify-self:start;min-height:32px}
+.ng--porte .ng-row{margin:-2px 0 16px}
+.ng--porte .ng-go{position:relative;overflow:hidden;min-height:56px;transition:background .32s,color .32s,filter .2s}
+.ng--porte .ng-go:hover:not([disabled]){filter:brightness(1.06)}
+.ng--porte .ng-go[aria-busy=true]{opacity:1}
+.ng--porte .ng-go.is-ok{background:#6AAEF0;opacity:1}
+.ng--porte .ng-go.is-ok span::before{content:"";display:inline-block;width:16px;height:16px;margin:0 8px -2px 0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3.5 8.3 2.8 2.8L12.6 4.8' fill='none' stroke='%23171512' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+.ng--porte .ng-note{margin-top:18px}
+/* scène */
+.pt{isolation:isolate}.pt-cv{position:absolute;inset:0;display:block}
+.pt-txt{position:absolute;left:22px;right:22px;bottom:16px;transition:opacity .42s cubic-bezier(.2,.8,.2,1),transform .42s cubic-bezier(.2,.8,.2,1)}
+.pt-txt.is-out{opacity:0;transform:translateY(6px)}
+.pt-k{display:flex;align-items:center;gap:8px;color:#CFC4B1;font:500 12.5px/1 Jost,sans-serif}.pt-k em{font-style:normal}
+.pt-k i{width:9px;height:9px;flex:none}.pt-i-v{border-radius:50%;background:#6CC58C}.pt-i-a{border-radius:2px;background:#F2C94C}.pt-i-l{height:2px!important;width:14px!important;border-radius:1px;background:#6AAEF0}
+.pt-m{margin:6px 0 0!important;max-width:22ch;color:#F5F0E6!important;font:500 21px/1.15 'Cormorant Garamond',Georgia,serif!important;text-wrap:balance;text-shadow:0 2px 18px rgba(10,9,7,.9)}
+.pt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (min-width:760px){.pt-txt{left:40px;right:40px;bottom:40px}.pt-m{font-size:clamp(34px,3.4vw,46px)!important;line-height:1.05!important;max-width:16ch}.pt-k{font-size:13.5px}}
+@media (prefers-reduced-motion:reduce){.pt-txt,.ng-ck,.ng-glob{transition:none;animation:none}}`;
   const groupe = c => String(c || '').replace(/(.{4})(?=.)/g, '$1 ');
   function style() { if (!css) { const st = document.createElement('style'); st.textContent = CSS + CSS2; document.head.appendChild(st); css = true; } }
   // fenêtre modale : le focus y entre, y reste (Tab boucle), et revient d'où il venait à la fermeture
@@ -208,13 +249,14 @@
     root.addEventListener('keydown', onTab);
     return () => { root.removeEventListener('keydown', onTab); if (avant && avant.focus && document.contains(avant)) setTimeout(() => avant.focus({ preventScroll: true }), 0); };
   }
-  function shell(html) {
+  function shell(html, opt = {}) {
     style();
     document.querySelector('.ng-bg')?.remove();
     const bg = document.createElement('div'); bg.className = 'ng-bg';
-    bg.innerHTML = `<div class="ng" role="dialog" aria-modal="true" aria-labelledby="ngT"><button type="button" class="ng-x" aria-label="Fermer">×</button>${html}</div>`;
+    bg.innerHTML = opt.porte ? `<div class="ng ng--porte" role="dialog" aria-modal="true" aria-labelledby="ngT"><div class="ng-scene"></div><div class="ng-form"><button type="button" class="ng-x" aria-label="Fermer">×</button>${html}</div></div>` : `<div class="ng" role="dialog" aria-modal="true" aria-labelledby="ngT"><button type="button" class="ng-x" aria-label="Fermer">×</button>${html}</div>`;
     document.body.appendChild(bg);
-    const rendre = piege(bg), close = () => { bg.remove(); removeEventListener('keydown', onK); rendre(); }, onK = e => { if (e.key === 'Escape' && !bg.dataset.lock) close(); };
+    if (opt.porte && window.MDGPorte) bg.porte = MDGPorte.monter(bg.querySelector('.ng-scene'), { compact: !matchMedia('(min-width:760px)').matches });
+    const rendre = piege(bg), close = () => { if (bg.porte) bg.porte.arreter(); bg.remove(); removeEventListener('keydown', onK); rendre(); }, onK = e => { if (e.key === 'Escape' && !bg.dataset.lock) close(); };
     addEventListener('keydown', onK); bg.addEventListener('click', e => { if (e.target === bg && !bg.dataset.lock) close(); }); bg.querySelector('.ng-x').onclick = close;
     bg.close = close; return bg;
   }
@@ -230,46 +272,88 @@
     bg.querySelector('.ng-ok').onclick = () => { bg.close(); apres && apres(); };
   }
   function open(raison) {
-    const s = session(), n = waiting();
-    if (s) return window.MDGCompte ? MDGCompte.ouvrir() : openCompte(s, n);
-    const bg = shell(`<h2 id="ngT">${raison === 'publie' ? 'Rendez votre annonce visible de tous' : raison === 'negocie' ? 'Connectez-vous pour proposer un prix' : 'Se connecter'}</h2>
-        <p>${raison === 'publie' ? 'Elle est enregistrée sur ce téléphone. Connectez-vous pour que les acheteurs et les vendeurs de tout le pays la voient.' : raison === 'negocie' ? 'Le vendeur doit savoir qui lui écrit. Votre numéro et un code secret à 6 chiffres suffisent.' : 'Votre numéro et un code secret à 6 chiffres. Pas besoin d’e-mail.'}</p>
-        <div class="ng-tabs" role="tablist"><button type="button" role="tab" data-m="in" aria-selected="true">J’ai déjà un compte</button><button type="button" role="tab" data-m="up" aria-selected="false">Créer mon compte</button></div>
-        <form novalidate><label for="ngTel">VOTRE NUMÉRO</label><input id="ngTel" inputmode="numeric" autocomplete="tel" placeholder="07 01 02 03 04" maxlength="16">
-        <div class="ng-cle" hidden><label for="ngCle">CODE DE SECOURS (12 CARACTÈRES)</label><input id="ngCle" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" placeholder="ABCD EFGH JKLM"></div>
-        <label for="ngCode" class="ng-lc">CODE SECRET (6 CHIFFRES)</label><input id="ngCode" type="password" inputmode="numeric" autocomplete="current-password" maxlength="6" placeholder="••••••">
-        <div class="ng-c2" hidden><label for="ngCode2">RETAPEZ LE CODE</label><input id="ngCode2" type="password" inputmode="numeric" autocomplete="new-password" maxlength="6" placeholder="••••••"></div>
-        <div class="ng-row ng-oubli"><button type="button" class="ng-link">Code oublié ?</button></div>
-        <p class="ng-err" role="alert"></p><button type="submit" class="ng-go">Se connecter</button></form>
-        <p class="ng-note">Gardez votre code secret pour vous, comme celui de Mobile Money. À la création du compte, vous recevez aussi un code de secours : notez-le.</p>`);
-    let mode = 'in'; const f = bg.querySelector('form'), err = bg.querySelector('.ng-err'), go = bg.querySelector('.ng-go'), $ = q => bg.querySelector(q);
-    const label = { in: 'Se connecter', up: 'Créer mon compte', sos: 'Choisir mon nouveau code' };
+    const s = session();
+    if (s) return window.MDGCompte ? MDGCompte.ouvrir() : openCompte(s, waiting());
+    const TITRE = { in: raison === 'publie' ? 'Rendez votre annonce visible de tous' : raison === 'negocie' ? 'Connectez-vous pour proposer un prix' : 'Heureux de vous retrouver.', up: 'Rejoignez le marché.', sos: 'Choisir un nouveau code' };
+    const LEDE = {
+      in: raison === 'publie' ? 'Elle est enregistrée sur ce téléphone. Connectez-vous pour que les acheteurs et les vendeurs de tout le pays la voient.' : raison === 'negocie' ? 'Le vendeur doit savoir qui lui écrit. Votre numéro et votre code secret suffisent.' : 'Votre numéro et votre code secret à 6 chiffres. Pas besoin d’e-mail.',
+      up: 'Un numéro et un code secret à 6 chiffres. Vos annonces deviennent visibles dans tout le pays ; vous compléterez votre profil juste après.',
+      sos: 'Votre numéro, le code de secours reçu à la création du compte, puis un nouveau code secret.' };
+    const BTN = { in: 'Se connecter', up: 'Créer mon compte', sos: 'Choisir mon nouveau code' }, ENC = { in: 'Connexion en cours', up: 'Création du compte', sos: 'Vérification du code de secours' };
+    const bg = shell(`<h2 id="ngT"></h2><p class="ng-lede"></p>
+        <div class="ng-tabs" role="tablist" aria-label="Connexion ou inscription"><button type="button" role="tab" data-m="in" aria-selected="true">J’ai déjà un compte</button><button type="button" role="tab" data-m="up" aria-selected="false">Créer mon compte</button></div>
+        <div class="ng-glob" role="alert" hidden><p></p><button type="button" class="ng-link" hidden></button></div>
+        <form novalidate>
+          <div class="ng-fd"><label for="ngTel">Votre numéro</label><div class="ng-ip ng-ip--tel"><span aria-hidden="true">+225</span><input id="ngTel" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="07 01 02 03 04" maxlength="14" aria-describedby="ngTelE"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngTelE"></p></div>
+          <div class="ng-fd ng-cle" hidden><label for="ngCle">Code de secours <i>12 caractères</i></label><div class="ng-ip"><input id="ngCle" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" placeholder="ABCD EFGH JKLM" aria-describedby="ngCleE"></div><p class="ng-fe" id="ngCleE"></p></div>
+          <div class="ng-fd"><label for="ngCode" class="ng-lc">Code secret <i>6 chiffres</i></label><div class="ng-ip"><input id="ngCode" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" maxlength="6" placeholder="••••••" aria-describedby="ngCodeE"><button type="button" class="ng-eye" aria-pressed="false">Afficher</button></div><p class="ng-fe" id="ngCodeE"></p></div>
+          <div class="ng-fd ng-c2" hidden><label for="ngCode2">Retapez le code</label><div class="ng-ip"><input id="ngCode2" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" maxlength="6" placeholder="••••••" aria-describedby="ngCode2E"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngCode2E"></p></div>
+          <div class="ng-row ng-oubli"><button type="button" class="ng-link">Code oublié ?</button></div>
+          <button type="submit" class="ng-go"><span>Se connecter</span></button>
+        </form>
+        <p class="ng-note">Gardez votre code secret pour vous, comme celui de Mobile Money. À la création du compte, vous recevez aussi un code de secours : notez-le.</p>`, { porte: true });
+    let mode = 'in'; const f = bg.querySelector('form'), go = bg.querySelector('.ng-go'), $ = q => bg.querySelector(q), P = bg.porte;
+    const digits = v => { let d = String(v || '').replace(/\D/g, ''); if (d.length > 10 && d.startsWith('225')) d = d.slice(3); return d.slice(0, 10); };
+    const champErr = (id, msg) => { const i = $('#' + id), e = $('#' + id + 'E'); i.setAttribute('aria-invalid', msg ? 'true' : 'false'); i.closest('.ng-ip').classList.toggle('is-bad', !!msg); e.textContent = msg || ''; };
+    const ok = (id, v) => $('#' + id).closest('.ng-ip').classList.toggle('is-ok', !!v);
+    const glob = (msg, action, fn) => { const g = $('.ng-glob'); g.hidden = !msg; g.querySelector('p').textContent = msg || ''; const b = g.querySelector('button'); b.hidden = !action; b.textContent = action || ''; b.onclick = fn || null; };
     const setMode = m => {
       mode = m; bg.querySelectorAll('.ng-tabs button').forEach(x => x.setAttribute('aria-selected', String(x.dataset.m === m)));
       $('.ng-tabs').hidden = m === 'sos'; $('.ng-c2').hidden = m === 'in'; $('.ng-cle').hidden = m !== 'sos'; $('.ng-oubli').hidden = m !== 'in';
-      $('#ngT').textContent = m === 'sos' ? 'Choisir un nouveau code' : $('#ngT').dataset.t; $('.ng-lc').textContent = m === 'sos' ? 'NOUVEAU CODE SECRET (6 CHIFFRES)' : 'CODE SECRET (6 CHIFFRES)';
-      $('#ngCode').autocomplete = m === 'in' ? 'current-password' : 'new-password'; go.textContent = label[m]; err.textContent = '';
-      if (m === 'sos') bg.querySelector('.ng > p').textContent = 'Entrez votre numéro, le code de secours reçu à la création du compte, puis un nouveau code secret.';
+      $('#ngT').textContent = TITRE[m]; $('.ng-lede').textContent = LEDE[m];
+      $('.ng-lc').innerHTML = (m === 'sos' ? 'Nouveau code secret' : m === 'up' ? 'Choisissez un code secret' : 'Code secret') + ' <i>6 chiffres</i>';
+      $('#ngCode').autocomplete = m === 'in' ? 'current-password' : 'new-password'; go.querySelector('span').textContent = BTN[m]; glob('');
+      ['ngCode', 'ngCode2', 'ngCle'].forEach(id => champErr(id, '')); bg.querySelector('.ng-form').scrollTop = 0;
     };
-    $('#ngT').dataset.t = $('#ngT').textContent;
+    setMode('in');
     bg.querySelectorAll('.ng-tabs button').forEach(b => b.onclick = () => setMode(b.dataset.m));
     $('.ng-oubli button').onclick = () => { setMode('sos'); $('#ngCle').focus(); };
-    const me = (window.MDGApp && J('mdg-app:moi', {}).phone) || ''; if (me) $('#ngTel').value = fmtTel(me);
-    setTimeout(() => $(me ? '#ngCode' : '#ngTel').focus(), 60);
+    // numéro : chiffres groupés par deux pendant la saisie ; l'erreur n'apparaît qu'en quittant le champ
+    const tel = $('#ngTel');
+    tel.addEventListener('input', () => { const d = digits(tel.value); tel.value = d.replace(/(\d{2})(?=\d)/g, '$1 '); ok('ngTel', d.length === 10); if (d.length === 10) champErr('ngTel', ''); });
+    tel.addEventListener('blur', () => { const d = digits(tel.value); champErr('ngTel', d && d.length !== 10 ? 'Le numéro fait 10 chiffres, par exemple 07 01 02 03 04.' : ''); });
+    ['ngCode', 'ngCode2'].forEach(id => { const i = $('#' + id); i.addEventListener('input', () => { i.value = i.value.replace(/\D/g, '').slice(0, 6); if (i.value.length === 6) champErr(id, ''); compare(); }); });
+    $('#ngCode').addEventListener('blur', () => { const v = $('#ngCode').value; champErr('ngCode', v && v.length !== 6 ? 'Le code secret fait exactement 6 chiffres.' : ''); });
+    const compare = () => { const a = $('#ngCode').value, b = $('#ngCode2').value; if (mode === 'in') return; ok('ngCode2', b.length === 6 && a === b); champErr('ngCode2', b.length === 6 && a !== b ? 'Les deux codes ne sont pas identiques.' : ''); };
+    const eye = $('.ng-eye'); eye.onclick = () => { const on = eye.getAttribute('aria-pressed') !== 'true'; eye.setAttribute('aria-pressed', String(on)); eye.textContent = on ? 'Masquer' : 'Afficher'; ['ngCode', 'ngCode2'].forEach(id => { $('#' + id).type = on ? 'text' : 'password'; }); };
+    f.addEventListener('focusin', () => P && P.etat('saisie'));
+    const me = (window.MDGApp && J('mdg-app:moi', {}).phone) || ''; if (me) { tel.value = fmtTel(digits(me)); ok('ngTel', digits(me).length === 10); }
+    setTimeout(() => $(me ? '#ngCode' : '#ngTel').focus(), 80);
+    const valider = () => {
+      const d = digits(tel.value), c = $('#ngCode').value, errs = [];
+      if (d.length !== 10) errs.push(['ngTel', d ? 'Le numéro fait 10 chiffres, par exemple 07 01 02 03 04.' : 'Entrez votre numéro.']);
+      if (mode === 'sos' && String($('#ngCle').value).replace(/[^A-Za-z0-9]/g, '').length !== 12) errs.push(['ngCle', 'Le code de secours fait 12 caractères.']);
+      if (!/^\d{6}$/.test(c)) errs.push(['ngCode', c ? 'Le code secret fait exactement 6 chiffres.' : 'Entrez votre code secret.']);
+      if (mode !== 'in' && c !== $('#ngCode2').value) errs.push(['ngCode2', 'Les deux codes ne sont pas identiques.']);
+      ['ngTel', 'ngCle', 'ngCode', 'ngCode2'].forEach(id => champErr(id, (errs.find(e => e[0] === id) || [])[1] || ''));
+      if (errs.length) $('#' + errs[0][0]).focus();
+      return !errs.length;
+    };
+    const occupe = on => { go.disabled = on; if (on) go.setAttribute('aria-busy', 'true'); else go.removeAttribute('aria-busy'); bg.querySelectorAll('.ng-tabs button,.ng-oubli button').forEach(b => { b.disabled = on; }); };
     f.onsubmit = async e => {
-      e.preventDefault(); err.textContent = '';
-      const t = $('#ngTel').value, c = $('#ngCode').value.trim();
-      if (mode !== 'in' && c !== $('#ngCode2').value.trim()) { err.textContent = 'Les deux codes ne sont pas identiques.'; return; }
-      if (!navigator.onLine) { err.textContent = 'Pas de connexion internet. Réessayez quand le réseau revient : vos annonces restent sur ce téléphone.'; return; }
-      go.disabled = true; go.textContent = '…';
+      e.preventDefault(); glob('');
+      if (!valider()) return;
+      if (!navigator.onLine) { glob('Pas de connexion internet. Vos annonces restent sur ce téléphone ; réessayez quand le réseau revient.', 'Réessayer', () => f.requestSubmit()); return; }
+      const m0 = mode; occupe(true); go.querySelector('span').textContent = ENC[m0]; P && P.etat('envoi');
       try {
-        const r = await (mode === 'up' ? signUp(t, c) : mode === 'sos' ? recover(t, $('#ngCle').value, c) : signIn(t, c));
-        const fin = () => toast(mode === 'up' ? 'Compte créé. Vos annonces partent maintenant.' : mode === 'sos' ? 'Nouveau code enregistré. Vous êtes connecté.' : 'Connecté. Vos annonces partent maintenant.');
-        const bienvenue = () => { fin(); if (mode === 'up' && window.MDGCompte) setTimeout(() => MDGCompte.bienvenue(), 300); };
-        bg.close(); if (r && r.secours) showSecours(r.secours, bienvenue); else bienvenue();
-        dispatchEvent(new CustomEvent('mdg:connecte', { detail: { raison } }));
+        const t = tel.value, c = $('#ngCode').value;
+        const r = await (m0 === 'up' ? signUp(t, c) : m0 === 'sos' ? recover(t, $('#ngCle').value, c) : signIn(t, c));
+        // réussite confirmée par le serveur : seulement maintenant
+        go.classList.add('is-ok'); go.removeAttribute('aria-busy'); go.querySelector('span').textContent = m0 === 'up' ? 'Compte créé. Préparation de votre espace…' : 'Connexion réussie. Préparation de votre espace…'; P && P.etat('ok');
+        const fin = () => toast(m0 === 'up' ? 'Compte créé. Vos annonces partent maintenant.' : m0 === 'sos' ? 'Nouveau code enregistré. Vous êtes connecté.' : 'Connecté. Vos annonces partent maintenant.');
+        const bienvenue = () => { fin(); if (m0 === 'up' && window.MDGCompte) setTimeout(() => MDGCompte.bienvenue(), 300); };
+        setTimeout(() => { bg.close(); if (r && r.secours) showSecours(r.secours, bienvenue); else bienvenue(); dispatchEvent(new CustomEvent('mdg:connecte', { detail: { raison } })); }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 250 : 900);
+      } catch (x) {
+        occupe(false); go.querySelector('span').textContent = BTN[mode]; P && P.etat('erreur'); setTimeout(() => P && P.etat('saisie'), 1400);
+        const msg = String(x.message || '');
+        if (msg === 'Failed to fetch') glob('Le serveur ne répond pas. Vérifiez votre connexion, puis réessayez.', 'Réessayer', () => f.requestSubmit());
+        else if (/incorrect|invalid/i.test(msg) && mode === 'in') { glob('Numéro ou code secret incorrect. Vérifiez les deux.', 'Code oublié ?', () => { setMode('sos'); $('#ngCle').focus(); }); $('#ngCode').select(); }
+        else if (/déjà un compte/i.test(msg)) glob('Ce numéro a déjà un compte.', 'Me connecter avec ce numéro', () => { setMode('in'); $('#ngCode').focus(); });
+        else if (/rate|too many|trop de|429/i.test(msg + (x.status || ''))) glob('Trop d’essais d’affilée. Attendez quelques minutes, puis réessayez.');
+        else if (/trop facile/i.test(msg)) { champErr('ngCode', msg); $('#ngCode').focus(); }
+        else if (/secours/i.test(msg) && mode === 'sos') champErr('ngCle', msg);
+        else glob(msg);
       }
-      catch (x) { err.textContent = x.message === 'Failed to fetch' ? 'Le serveur ne répond pas. Réessayez dans un instant.' : x.message; go.disabled = false; go.textContent = label[mode]; }
     };
   }
   async function openCompte(s, n) {
@@ -314,5 +398,12 @@
   if (age > 60000) setTimeout(refresh, 300); setTimeout(() => sync().then(pullMine), 1200);
   setInterval(() => { if (!document.hidden) refresh(); }, 120000);
 
-  window.MDGNuage = { list, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
+  // envoi d'un fichier dans Supabase Storage (photo de profil) : remplace l'ancien s'il existe
+  async function televerser(chemin, blob) {
+    const s = await token(); if (!s) throw Object.assign(new Error('non connecté'), { code: 'auth' });
+    const r = await fetch(URL0 + '/storage/v1/object/' + chemin, { method: 'POST', headers: { apikey: KEY, Authorization: 'Bearer ' + s.access_token, 'x-upsert': 'true', 'Content-Type': blob.type || 'image/jpeg', 'Cache-Control': '3600' }, body: blob });
+    if (!r.ok) { let m = ''; try { const j = await r.json(); m = j.message || j.error || ''; } catch (_) {} throw Object.assign(new Error(m || 'Envoi refusé (' + r.status + ')'), { status: r.status }); }
+    return true;
+  }
+  window.MDGNuage = { televerser, list, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
 })();

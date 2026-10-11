@@ -52,10 +52,55 @@ html{font-variant-numeric:lining-nums}
 .ux-tick{animation:uxTick var(--ux-d4) var(--ux-out)}
 @keyframes uxTick{0%{transform:scale(1.35)}100%{transform:none}}
 
+/* ═════════ Passe du 11/10/2026 (2) ═════════ */
+
+/* ——— Croix de fermeture : une seule, partout (connexion, Mon espace, négociations, sons, fiches, catalogue, feuilles, recherche mobile).
+   Visible 40 px, trait de 1,75 px dessiné en CSS (le « × » et le « ✕ » des polices n'avaient ni la même taille ni le même centre) ; zone tactile 44 px. ——— */
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x){position:relative;display:grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;
+  background:color-mix(in srgb,currentColor 9%,transparent);color:inherit;font-size:0!important;line-height:0;cursor:pointer;
+  transition:background var(--ux-d2) var(--ux-std),transform var(--ux-d1) var(--ux-std)}
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)>*{display:none}
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)::before,
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)::after{content:""!important;position:absolute;left:50%;top:50%;width:14px;height:1.75px;inset:auto;margin:-.875px 0 0 -7px;border-radius:2px;background:currentColor;transform:rotate(45deg);transition:transform var(--ux-d2) var(--ux-out)}
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)::after{transform:rotate(-45deg)}
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x):hover{background:color-mix(in srgb,currentColor 16%,transparent)}
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x):hover::before{transform:rotate(135deg)}
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x):hover::after{transform:rotate(45deg)}
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x):active{transform:scale(.92)}
+@media (pointer:coarse){:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x){width:44px;height:44px}}
+
+/* ——— Envoi en cours : le bouton garde sa place, dit ce qu'il fait et tourne ; il ne paraît jamais « fait » avant la réponse ——— */
+button[aria-busy="true"]:disabled{cursor:progress;opacity:1!important}
+button[aria-busy="true"]:disabled::after{content:"";display:inline-block;width:14px;height:14px;margin-left:10px;vertical-align:-2px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:uxSpin .7s linear infinite}
+@keyframes uxSpin{to{transform:rotate(360deg)}}
+
+/* ——— Listes déroulantes : le chevron suit la couleur du texte (il disparaissait sur les pages sombres) ——— */
+:where(.dk,.dark,#top[data-tone="dark"]~#view) .sel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23F5F0E6' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='m1 1.5 5 5 5-5'/%3E%3C/svg%3E")!important}
+/* sur fond sombre : la loupe du champ et la croix des critères compris restaient sombres sur sombre */
+#top[data-tone="dark"]~#view .search>.ico{color:var(--p-accent,var(--color-ambre))!important}
+#top[data-tone="dark"]~#view .chip button{color:var(--color-ivoire-t)!important;background:color-mix(in srgb,var(--color-ivoire-t) 12%,transparent)!important}
+#top[data-tone="dark"]~#view .chip button:hover{background:color-mix(in srgb,var(--color-ivoire-t) 22%,transparent)}
+.sel{transition:border-color var(--ux-d2) var(--ux-std),background-color var(--ux-d2) var(--ux-std)}
+.sel:hover{border-color:color-mix(in srgb,currentColor 40%,transparent)}
+
+/* ——— Filtres : l'état actif se lit tout de suite, sans « transition: all » qui animait aussi la mise en page ——— */
+.fbtn{transition:color var(--ux-d2) var(--ux-std),background-color var(--ux-d2) var(--ux-std),border-color var(--ux-d2) var(--ux-std)}
+.seg button{transition:background-color var(--ux-d2) var(--ux-std),color var(--ux-d2) var(--ux-std),box-shadow var(--ux-d2) var(--ux-std)}
+
+/* ——— Offre ↔ carte : l'offre choisie sur la carte (ou dans la liste) s'allume ; le lien se voit des deux côtés ——— */
+.offer{transition:border-color var(--ux-d2) var(--ux-std),box-shadow var(--ux-d3) var(--ux-out)}
+.offer.active{box-shadow:0 0 0 4px color-mix(in srgb,var(--color-accent) 18%,transparent)}
+
+/* ——— Message en bas d'écran : entre en 320 ms, sans rebond ; sort plus vite qu'il n'entre ——— */
+.toast{transition:transform var(--ux-d2) var(--ux-in),visibility 0s var(--ux-d2)!important}
+.toast.on{transition:transform var(--ux-d3) var(--ux-out)!important}
+
 /* ——— Moins de mouvement demandé : on garde les états, on retire les déplacements ——— */
 @media (prefers-reduced-motion:reduce){
   :where(.ax-rest,.pp-f,.odv__more)::details-content{transition:none}
   :where(.ax-rest,.pp-f,.odv__more)>summary::after{transition:none}
   .ux-tick{animation:none}
+  button[aria-busy="true"]:disabled::after{animation-duration:2.4s}
+  :where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)::before,:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)::after{transition:none}
   :where(.btn,.fbtn,.ax-zp,.pp-chip,.vs-o,.nx-go,.nx-alt,.ng-go):active{transform:none}
 }

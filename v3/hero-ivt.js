@@ -104,7 +104,6 @@
         <h1 class="hero__name"></h1>
         <p class="hero__origin"></p>
         <div class="hero__px"></div>
-        <a class="hero__where" href="#/carte" hidden><svg viewBox="-2.3 -2.35 4.15 4.2" aria-hidden="true"><g class="hw-pts"></g></svg><span class="hw-t"></span></a>
         <a class="hero__link" href="#/">Voir la fiche</a>
       </div>
     </div></div>`;

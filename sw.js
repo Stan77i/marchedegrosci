@@ -1,7 +1,7 @@
 /* Marché de Gros CI — service worker (utilisation hors connexion).
    Pour publier une mise à jour du code : incrémenter CACHE (mgci-v1 -> mgci-v2 ...).
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v15';
+const CACHE = 'mgci-v19';
 
 // Indispensable : si l'un de ces fichiers manque, l'installation échoue et l'ancienne version reste active.
 const CORE = [
@@ -85,7 +85,8 @@ const CORE = [
   "v3/negoce.js",
   "v3/avatar.js",
   "v3/compte.js",
-  "v3/ux.css"
+  "v3/ux.css",
+  "v3/porte.js"
 ];
 
 // Images v2/img/ : mises en cache au mieux (une image manquante n'empêche pas l'installation).

@@ -9,7 +9,7 @@
   const STEPS = [['Le produit', 'Que vendez-vous ?'], ['Le lieu', 'Où est la marchandise ?'], ['Le prix', 'À quel prix, et quand ?'], ['Le contact', 'Comment l’acheteur vous joint ?']];
 
   V3.vendre = function (view, qs) {
-    const C = window.MDGCTX, { M, OFFERS, prodBy, prBy, regBy, esc, fmt, plural, reduced, S, UNITS, store, toast, regCenter, demandsOf, previewCard } = C;
+    const C = window.MDGCTX, { M, OFFERS, prodBy, prBy, regBy, esc, fmt, plural, reduced, S, UNITS, store, toast, regCenter, demandsOf, previewCard, mineLbl, minePlace } = C;
     const L = C.LIGHT; if (L && (L.fam || L.source === 'recherche')) L.off();
     const famIdx = Object.fromEntries(M.categories.map((c, i) => [c.slug, i]));
     const famCol = slug => V3.FAMC[famIdx[slug] % V3.FAMC.length];
@@ -161,7 +161,7 @@
     });
     function mineO() {
       const list = store('offres'); $('#vm').hidden = !list.length;
-      $('#mineO').innerHTML = list.map(d => `<div class="vm-i"><span><b>${fmt(d.quantity)} ${esc(d.unit)} · ${esc(d.productLabel)}</b><small>${esc(d.city)}, ${esc(d.regionName)}${d.agent ? ' · saisie par l’agent' : ''}</small></span><button type="button" data-del="${d.id}">Supprimer</button></div>`).join('');
+      $('#mineO').innerHTML = list.map(d => `<div class="vm-i"><span><b>${fmt(d.quantity)} ${esc(d.unit || '')} · ${esc(mineLbl(d))}</b><small>${esc(minePlace(d))}${d.agent ? ' · saisie par l’agent' : ''}</small></span><button type="button" data-del="${d.id}">Supprimer</button></div>`).join('');
       $$('[data-del]', $('#mineO')).forEach(b => b.onclick = () => { store('offres', store('offres').filter(x => x.id !== b.dataset.del)); mineO(); toast('Offre supprimée'); });
     }
 

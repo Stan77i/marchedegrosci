@@ -325,3 +325,45 @@ html[data-vt="in"]::view-transition-new(vt-light),html[data-vt="out"]::view-tran
 /* Étiquette de page : un simple filet fin à la couleur du produit */
 .pg-k{display:inline-flex!important;width:max-content;margin:0 0 18px!important;padding:6px 12px;font-size:11px!important;letter-spacing:.24em!important;border:1px solid color-mix(in srgb,var(--acc,var(--p-accent,#E07A3F)) 55%,transparent);border-radius:2px}
 .pg-k::before,.pg-k::after{content:none!important;display:none!important}
+/* Terre (v3/terre.js) : le vrai territoire sous les marqueurs des petites cartes — même géographie que la grande carte */
+.terre-nb{fill:#0f0c09;fill-opacity:.55;stroke:var(--color-sable);stroke-opacity:.16;stroke-width:.006}
+.terre-ci{fill:#2E261D;fill-opacity:.55;stroke:#E4D9C4;stroke-opacity:.5;stroke-width:.009;stroke-linejoin:round}
+.terre-eau{fill:#5F7671;fill-opacity:.45;stroke:#8FA7A1;stroke-opacity:.5;stroke-width:.004}
+/* légende des encarts : formes des marqueurs (v3/marqueurs.js) */
+.mapbox .legend{display:flex;flex-wrap:wrap;gap:6px 16px;color:var(--color-sable)}
+.mapbox .legend span{display:inline-flex;align-items:center;gap:7px}
+.mapbox .legend .mk{width:14px;height:14px;flex:none}
+.mapbox .legend .lg-me{width:9px;height:9px;border-radius:50%;background:var(--color-ivoire-t);box-shadow:0 0 0 3px color-mix(in srgb,var(--color-ivoire-t) 25%,transparent)}
+/* Prix du marché : d'abord ce qui a un prix (avec ce qui manque pour un prix du marché), puis le reste en étiquettes */
+.pp-sec{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:44px 0 6px;padding-bottom:12px;border-bottom:1px solid color-mix(in srgb,var(--color-ivoire-t) 12%,transparent)}
+.pp-sec:first-of-type{margin-top:28px}
+.pp-h{margin:0;font:400 clamp(26px,2.6vw,36px)/1.1 var(--font-heading);color:var(--color-ivoire-t)}
+.pp-n{font-size:13px;color:var(--color-sable);font-variant-numeric:tabular-nums}
+.pp-now{list-style:none;margin:0;padding:0}
+.pp-c{display:grid;grid-template-columns:64px minmax(0,1.1fr) minmax(0,1fr) minmax(0,1.25fr);align-items:center;gap:20px;padding:20px 12px;border-bottom:1px solid color-mix(in srgb,var(--color-ivoire-t) 8%,transparent);color:var(--color-ivoire-t);text-decoration:none;border-radius:18px;transition:background .25s}
+.pp-c:hover{background:color-mix(in srgb,var(--color-ivoire-t) 5%,transparent);color:var(--color-ivoire-t)}
+.pp-c:focus-visible{outline:2px solid var(--p-accent,#E07A3F);outline-offset:2px}
+.pp-cp img,.pp-cp i{display:grid;place-items:center;width:64px;height:64px;border-radius:18px;object-fit:cover;font:400 26px/1 var(--font-heading);font-style:normal;background:color-mix(in srgb,var(--color-ivoire-t) 6%,transparent)}
+.pp-cn{display:flex;flex-direction:column;gap:4px;min-width:0}
+.pp-cn b{font:400 24px/1.1 var(--font-heading)}.pp-cn small{font-size:13px;color:var(--color-sable)}
+.pp-cv{display:flex;flex-direction:column;gap:3px;min-width:0}
+.pp-ck{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--p-accent,#E07A3F)}.pp-ck svg{width:15px;height:15px}
+.pp-cv b{font:500 32px/1 var(--font-heading);font-variant-numeric:tabular-nums}
+.pp-cv small{font-size:13px;color:var(--color-sable);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pp-cg{display:flex;flex-direction:column;gap:7px;font-size:12.5px;color:var(--color-sable)}
+.pp-cgr{display:grid;grid-template-columns:64px auto 1fr;align-items:center;gap:10px}
+.pp-cgr em{font-style:normal;font-weight:700;color:var(--color-ivoire-t);font-variant-numeric:tabular-nums}
+.pp-seg{display:inline-flex;gap:3px}
+.pp-seg i{display:block;width:16px;height:6px;border-radius:2px;background:color-mix(in srgb,var(--color-ivoire-t) 13%,transparent)}
+.pp-seg i.on{background:var(--p-accent,#E07A3F)}
+.pp-cgt{color:var(--color-ivoire-t);opacity:.82}
+.pp-c--obs .pp-cgt{color:var(--p-accent,#E07A3F);opacity:1;font-weight:700}
+.pp-sub{margin:14px 0 18px;font-size:15px;color:var(--color-sable);max-width:70ch}
+.pp-cta{display:inline-block;margin-top:6px;font-weight:700;color:var(--color-ivoire-t);text-decoration:underline;text-decoration-color:var(--p-accent,#E07A3F);text-underline-offset:4px}
+.pp-cta:hover{color:var(--p-accent,#E07A3F)}
+.pp-f--rest{margin-top:8px}
+.pp-chips{display:flex;flex-wrap:wrap;gap:8px;padding:2px 18px 20px}
+.pp-chip{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:4px 14px 4px 4px;border-radius:999px;background:color-mix(in srgb,var(--color-ivoire-t) 5%,transparent);color:var(--color-ivoire-t);font-size:14px;font-weight:500;text-decoration:none;transition:background .2s}
+.pp-chip:hover{background:color-mix(in srgb,var(--color-ivoire-t) 11%,transparent);color:var(--color-ivoire-t)}
+.pp-chip img,.pp-chip i{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;object-fit:cover;font:400 13px/1 var(--font-heading);font-style:normal;background:color-mix(in srgb,var(--color-ivoire-t) 8%,transparent)}
+@media (max-width:900px){.pp-c{grid-template-columns:56px minmax(0,1fr);gap:12px 16px}.pp-cp img,.pp-cp i{width:56px;height:56px}.pp-cv,.pp-cg{grid-column:2}}

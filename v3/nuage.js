@@ -302,7 +302,7 @@
           <div class="ng-id" hidden>
             <div class="ng-id2"><div class="ng-fd"><label for="ngPrenom">Prénom</label><div class="ng-ip"><input id="ngPrenom" autocomplete="given-name" maxlength="40" placeholder="Awa" aria-describedby="ngPrenomE"></div><p class="ng-fe" id="ngPrenomE"></p></div>
             <div class="ng-fd"><label for="ngNom">Nom</label><div class="ng-ip"><input id="ngNom" autocomplete="family-name" maxlength="60" placeholder="Koné" aria-describedby="ngNomE"></div><p class="ng-fe" id="ngNomE"></p></div></div>
-            <div class="ng-fd"><label for="ngPseudo">Pseudonyme <i class="ng-hint">le nom que verront les autres</i></label><div class="ng-ip"><input id="ngPseudo" autocomplete="nickname" autocapitalize="off" spellcheck="false" maxlength="24" placeholder="awa_mais" aria-describedby="ngPseudoE"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngPseudoE"></p></div>
+            <div class="ng-fd"><label for="ngPseudo">Pseudonyme <i>facultatif</i></label><div class="ng-ip"><input id="ngPseudo" autocomplete="nickname" autocapitalize="off" spellcheck="false" maxlength="24" placeholder="awa_mais" aria-describedby="ngPseudoE"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngPseudoE"></p></div>
           </div>
           <div class="ng-fd"><label for="ngTel">Votre numéro</label><div class="ng-ip ng-ip--tel"><span aria-hidden="true">+225</span><input id="ngTel" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="07 01 02 03 04" maxlength="14" aria-describedby="ngTelE"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngTelE"></p></div>
           <div class="ng-fd ng-cle" hidden><label for="ngCle">Code de secours <i>12 caractères</i></label><div class="ng-ip"><input id="ngCle" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" placeholder="ABCD EFGH JKLM" aria-describedby="ngCleE"></div><p class="ng-fe" id="ngCleE"></p></div>
@@ -342,11 +342,11 @@
     f.addEventListener('focusin', () => P && P.etat('saisie'));
     const me = (window.MDGApp && J('mdg-app:moi', {}).phone) || ''; if (me) { tel.value = fmtTel(digits(me)); ok('ngTel', digits(me).length === 10); }
     setTimeout(() => $(me ? '#ngCode' : '#ngTel').focus(), 80);
-    // identité à l'inscription : prénom, nom, pseudonyme (le pseudonyme est unique, vérifié avant de créer le compte)
+    // identité à l'inscription : prénom et nom ; pseudonyme facultatif (s'il est rempli : unique, vérifié avant de créer le compte)
     const idErr = () => { const pr = $('#ngPrenom').value.trim(), no = $('#ngNom').value.trim(), ps = $('#ngPseudo').value.trim(), L = /^[\p{L}][\p{L} '’.-]*$/u;
       return { ngPrenom: !pr ? 'Entrez votre prénom.' : !L.test(pr) ? 'Des lettres uniquement (espaces, tirets et apostrophes acceptés).' : '',
         ngNom: !no ? 'Entrez votre nom.' : !L.test(no) ? 'Des lettres uniquement.' : '',
-        ngPseudo: !ps ? 'Choisissez un pseudonyme.' : !/^[A-Za-z0-9_.-]{3,24}$/.test(ps) ? '3 à 24 caractères : lettres sans accent, chiffres, point, tiret ou _.' : '' }; };
+        ngPseudo: ps && !/^[A-Za-z0-9_.-]{3,24}$/.test(ps) ? '3 à 24 caractères : lettres sans accent, chiffres, point, tiret ou _.' : '' }; };
     ['ngPrenom', 'ngNom', 'ngPseudo'].forEach(id => $('#' + id).addEventListener('blur', () => { if ($('#' + id).value) champErr(id, idErr()[id]); }));
     let pseudoT = 0; $('#ngPseudo').addEventListener('input', () => { const ps = $('#ngPseudo').value.trim(); ok('ngPseudo', false); clearTimeout(pseudoT); if (!/^[A-Za-z0-9_.-]{3,24}$/.test(ps) || !navigator.onLine) return;
       pseudoT = setTimeout(async () => { try { const libre = await rpc('pseudo_libre', { p: ps }, false); if ($('#ngPseudo').value.trim() !== ps) return; ok('ngPseudo', libre); champErr('ngPseudo', libre ? '' : 'Ce pseudonyme est déjà pris. Essayez-en un autre.'); } catch (_) {} }, 400); });
@@ -368,8 +368,8 @@
       if (!navigator.onLine) { glob('Pas de connexion internet. Vos annonces restent sur ce téléphone ; réessayez quand le réseau revient.', 'Réessayer', () => f.requestSubmit()); return; }
       const m0 = mode; occupe(true); go.querySelector('span').textContent = ENC[m0]; P && P.etat('envoi');
       try {
-        const t = tel.value, c = $('#ngCode').value, ident = { prenom: $('#ngPrenom').value.trim(), nom: $('#ngNom').value.trim(), pseudo: $('#ngPseudo').value.trim() };
-        if (m0 === 'up') { const libre = await rpc('pseudo_libre', { p: ident.pseudo }, false).catch(() => true); if (!libre) throw new Error('PSEUDO_PRIS'); }
+        const t = tel.value, c = $('#ngCode').value, ident = { prenom: $('#ngPrenom').value.trim(), nom: $('#ngNom').value.trim(), pseudo: $('#ngPseudo').value.trim() || null };
+        if (m0 === 'up' && ident.pseudo) { const libre = await rpc('pseudo_libre', { p: ident.pseudo }, false).catch(() => true); if (!libre) throw new Error('PSEUDO_PRIS'); }
         const r = await (m0 === 'up' ? signUp(t, c) : m0 === 'sos' ? recover(t, $('#ngCle').value, c) : signIn(t, c));
         if (m0 === 'up') { try { await api('/rest/v1/profils?on_conflict=user_id', { method: 'POST', auth: true, body: Object.assign({ user_id: r.user.id }, ident), prefer: 'return=minimal,resolution=merge-duplicates' }); say('compte'); } catch (e) { console.warn('[nuage] profil non enregistré', e.message); } }
         // réussite confirmée par le serveur : seulement maintenant

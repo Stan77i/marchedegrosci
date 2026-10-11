@@ -40,3 +40,37 @@ Pastille terracotta dans l'en-tête de l'accueil :
 - Le menu « Où êtes-vous ? » peut afficher « Où êtes-vous ? » alors que la région est enregistrée : non confirmé.
 - La fiche « Maïs grain » affiche une photo de riz : erreur dans les données des images, antérieure à ces corrections, non touchée.
 - Sauvegarde GitHub : pas d'envoi direct possible depuis ici ; le dossier est à déposer à la main sur le dépôt `Stan77i/marchedegrosci`, branche `main`.
+
+---
+
+# Rapport — Utilisation hors connexion (PWA)
+11 octobre 2026
+
+## Ce qui change pour l'usager
+- Le site s'ouvre **sans connexion** sur téléphone, tablette et ordinateur, une fois visité au moins une fois avec internet.
+- Il peut être **ajouté à l'écran d'accueil** et s'ouvre alors en plein écran, comme une application (icône « M » sur fond terre).
+- Les offres et demandes publiées restent dans le téléphone (`localStorage`, clés `mdg-v2:offres` et `mdg-v2:demandes`, inchangées). Rien n'est envoyé à un serveur.
+- `index.html` ouvre l'application sur **tous les appareils** (l'ancienne version ordinateur `index-v3.html` n'existe plus dans le dépôt). Sur un grand écran, l'application s'affiche dans son cadre de téléphone.
+
+## Fichiers
+| Fichier | Rôle |
+|---|---|
+| `vendor/` | React 18.3.1, ReactDOM 18.3.1, Babel 7.29.0, topojson-client 3.1.0, world-atlas 2.0.2 (110m, 50m), hébergés dans le projet |
+| `fonts/`, `css/fonts.css` | Polices Cormorant Garamond et Jost hébergées dans le projet |
+| `icons/` | Icônes 192, 512 et iPhone (180) |
+| `manifest.webmanifest` | Nom, couleurs, icônes, plein écran, portrait |
+| `sw.js` | Service worker : met l'application en cache, pages réseau d'abord, fichiers cache d'abord |
+| `support.js` | ⚠️ 3 adresses changées (unpkg → `vendor/`). Fichier généré par l'outil de conception : à refaire s'il est régénéré |
+| `application.dc.html` | Balises manifest / iPhone / service worker ; polices locales ; `<img sc-camel-src="{{ … }}">` au lieu de `src` (plus de 404 au démarrage) |
+| `app/carte-app.js` | Frontières et topojson chargés depuis `vendor/` |
+
+## À chaque mise à jour du code
+Changer le numéro dans `sw.js` : `const CACHE = 'mgci-v3';` → `'mgci-v4'`, etc. Sinon les appareils gardent l'ancienne version.
+
+## Vérifications faites (Chromium)
+Téléphone, tablette, ordinateur : première visite en ligne, puis réseau coupé → accueil et carte affichés, 28 images sur 28, polices chargées, publications conservées, 0 erreur dans la console, aucune requête vers internet. Changement de version du cache → nouvelle version prise en compte.
+
+## Points ouverts
+- À tester sur un vrai iPhone (Safari) et un vrai Android (Chrome) : ajout à l'écran d'accueil, ouverture hors ligne.
+- Le site doit être servi en **HTTPS** (par exemple GitHub Pages) : sans HTTPS, pas de mode hors ligne ni d'installation.
+- 7 avertissements (pas des erreurs) `never resolved` restent dans la console : ils viennent de l'écran d'ouverture de la page, non modifié.

@@ -16,4 +16,5 @@ date: 2026-10-10T21:58:00Z
 | Application mobile (toutes les pages) | application.dc.html, support.js |
 | Carte du réseau | app/carte-app.js |
 | Données, stockage, calendrier | app/marche-app.js, v2/data.js |
-| Aiguillage téléphone / ordinateur | index.html, index-v3.html |
+| Entrée du site (tous appareils → application) | index.html |
+| Hors connexion (PWA) | sw.js, manifest.webmanifest, vendor/, fonts/, css/fonts.css, icons/ |

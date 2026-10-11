@@ -13,8 +13,8 @@
   const script = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
   function geo() {
     return geoP || (geoP = Promise.all([
-      fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-50m.json').then(r => r.json()),
-      window.topojson ? 0 : script('https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js')
+      fetch('vendor/countries-50m.json').then(r => r.json()),
+      window.topojson ? 0 : script('vendor/topojson-client.min.js')
     ]).then(([t]) => {
       const fs = window.topojson.feature(t, t.objects.countries).features;
       const pick = id => { const f = fs.find(x => String(x.id) === id); if (!f) return null; const g = f.geometry; return g.type === 'Polygon' ? [g.coordinates] : g.coordinates; };

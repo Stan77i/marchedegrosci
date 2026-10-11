@@ -49,20 +49,37 @@
 
   /* Prix du marché : observer le marché (PHILOSOPHIE § 22) — rien n'est calculé sous le seuil */
   V3.prixPage = function (view) {
-    const C = window.MDGCTX, MK = window.MDGMarche, { M, OFFERS, esc, img } = C, S = MK.SEUIL;
-    const rows = M.categories.map(c => ({ c, ps: M.products.filter(p => p.categorySlug === c.slug).map(p => ({ p, P: MK.prix(p.slug) })) })).filter(g => g.ps.length);
-    const nObs = rows.reduce((a, g) => a + g.ps.filter(x => x.P.type === 'observe').length, 0), nDec = rows.reduce((a, g) => a + g.ps.filter(x => x.P.type === 'vendeur').length, 0);
+    const C = window.MDGCTX, MK = window.MDGMarche, { M, esc, img, catBy, fmt } = C, S = MK.SEUIL;
+    const all = M.products.map(p => ({ p, P: MK.prix(p.slug) }));
+    // 1. ce qui a un prix aujourd'hui : prix observés d'abord, puis prix vendeurs (les plus avancés vers un prix du marché en tête)
+    const now = all.filter(x => x.P.type !== 'aucun').sort((a, b) => (b.P.type === 'observe') - (a.P.type === 'observe') || ((b.P.prog || {}).n || 0) - ((a.P.prog || {}).n || 0));
+    const pic = p => img(p.slug) ? '<img src="' + img(p.slug) + '" alt="" loading="lazy">' : '<i>' + esc(p.name.charAt(0)) + '</i>';
+    const seg = (n, of) => '<span class="pp-seg" role="img" aria-label="' + Math.min(n, of) + ' sur ' + of + '">' + Array.from({ length: of }, (_, k) => '<i' + (k < n ? ' class="on"' : '') + '></i>').join('') + '</span>';
+    const card = ({ p, P }) => {
+      const fam = catBy[p.categorySlug] ? catBy[p.categorySlug].name : '';
+      if (P.type === 'observe') return '<li><a class="pp-c pp-c--obs" href="#/produits/' + p.slug + '"><span class="pp-cp">' + pic(p) + '</span><span class="pp-cn"><b>' + esc(p.name) + '</b><small>' + esc(fam) + '</small></span>'
+        + '<span class="pp-cv"><span class="pp-ck">' + MK.ICO.observe + 'Prix observé</span><b>' + fmt(P.min) + '–' + fmt(P.max) + ' F</b><small>par ' + esc(P.unit) + '</small></span>'
+        + '<span class="pp-cg"><span class="pp-cgt">' + P.n + ' prix, ' + P.vendeurs + ' vendeurs, ' + P.jours + ' jours</span></span></a></li>';
+      const g = P.prog || { n: 1, vendeurs: 1 }, o = P.offre, mn = Math.max(0, S.obs - g.n), mv = Math.max(0, S.vendeurs - g.vendeurs);
+      const miss = mn || mv ? 'Encore ' + [mn ? mn + ' prix' : '', mv ? mv + (mv > 1 ? ' vendeurs' : ' vendeur') : ''].filter(Boolean).join(' et ') + ' pour un prix du marché' : 'Prix du marché au prochain calcul';
+      return '<li><a class="pp-c" href="#/produits/' + p.slug + '"><span class="pp-cp">' + pic(p) + '</span><span class="pp-cn"><b>' + esc(p.name) + '</b><small>' + esc(fam) + '</small></span>'
+        + '<span class="pp-cv"><span class="pp-ck">' + MK.ICO.vendeur + 'Prix vendeur</span><b>' + fmt(o.price) + ' F</b><small>par ' + esc(o.unit) + ' · ' + esc(o.seller || 'un vendeur') + (o.city ? ', ' + esc(o.city) : '') + '</small></span>'
+        + '<span class="pp-cg"><span class="pp-cgr"><span>Prix</span>' + seg(g.n, S.obs) + '<em>' + Math.min(g.n, S.obs) + '/' + S.obs + '</em></span><span class="pp-cgr"><span>Vendeurs</span>' + seg(g.vendeurs, S.vendeurs) + '<em>' + Math.min(g.vendeurs, S.vendeurs) + '/' + S.vendeurs + '</em></span><span class="pp-cgt">' + miss + '</span></span></a></li>';
+    };
+    // 2. pas encore de prix : regroupés par famille, en étiquettes ; chacune mène au produit (où l'on peut publier)
+    const rest = M.categories.map(c => ({ c, ps: all.filter(x => x.P.type === 'aucun' && x.p.categorySlug === c.slug).map(x => x.p) })).filter(g => g.ps.length);
+    const nRest = rest.reduce((a, g) => a + g.ps.length, 0);
     view.innerHTML = '<div class="v3p">' + V3.head('prix', { label: 'Prix du marché — en-tête', kicker: 'Prix du marché', title: 'Ce que coûte le marché, quand on peut le savoir.', sub: 'Un prix du marché n’apparaît qu’avec au moins ' + S.obs + ' prix vendeurs venant de ' + S.vendeurs + ' vendeurs différents sur ' + S.jours + ' jours. Avant, il n’y a que des prix vendeurs, présentés comme tels.' })
       + '<section class="pp" data-tone="dark"><div class="pp-in">'
-      + '<div class="pp-leg"><span><i class="pp-ic pp-ic--obs">' + MK.ICO.observe + '</i><b>Prix observé</b>calculé sur plusieurs vendeurs</span><span><i class="pp-ic pp-ic--decl">' + MK.ICO.vendeur + '</i><b>Prix vendeur</b>fixé par un seul vendeur</span><span><i class="pp-ic">' + MK.ICO.vide + '</i><b>Pas assez de données</b>aucun prix calculé</span></div>'
-      + (!nObs && !nDec ? V3.nst({ title: 'Données en cours de constitution', text: 'Aucun prix n’a encore été publié. Chaque offre avec un prix vendeur rapproche le premier prix observé du marché.' }) : '')
-      + rows.map(g => '<details class="pp-f"' + (g.ps.some(x => x.P.type !== 'aucun') ? ' open' : '') + '><summary><b>' + esc(g.c.name) + '</b><span>' + g.ps.length + ' produits</span></summary><ul>'
-        + g.ps.map(({ p, P }) => '<li><a href="#/produits/' + p.slug + '"><span class="pp-p">' + (img(p.slug) ? '<img src="' + img(p.slug) + '" alt="" loading="lazy">' : '<i>' + esc(p.name.charAt(0)) + '</i>') + esc(p.name) + '</span>'
-          + (P.type === 'observe' ? '<span class="pp-v pp-v--obs">' + MK.ICO.observe + Math.round(P.min) + '–' + Math.round(P.max) + ' F/' + esc(P.unit) + '<small>' + P.n + ' obs.</small></span>'
-            : P.type === 'vendeur' ? '<span class="pp-v pp-v--decl">' + MK.ICO.vendeur + Math.round(P.offre.price) + ' F/' + esc(P.offre.unit) + '<small>prix vendeur</small></span>'
-            : '<span class="pp-v">' + MK.ICO.vide + '<small>Pas assez de données</small></span>') + '</a></li>').join('') + '</ul></details>').join('')
+      + '<div class="pp-leg"><span><i class="pp-ic pp-ic--obs">' + MK.ICO.observe + '</i><b>Prix observé</b>calculé sur plusieurs vendeurs</span><span><i class="pp-ic pp-ic--decl">' + MK.ICO.vendeur + '</i><b>Prix vendeur</b>fixé par un seul vendeur</span></div>'
+      + '<div class="pp-sec"><h2 class="pp-h">Ce qui a un prix aujourd’hui</h2><span class="pp-n">' + (now.length ? now.length + (now.length > 1 ? ' produits' : ' produit') : '') + '</span></div>'
+      + (now.length ? '<ul class="pp-now">' + now.map(card).join('') + '</ul>'
+        : V3.nst({ title: 'Aucun prix publié pour l’instant', text: 'Le premier prix vendeur apparaîtra ici. Chaque offre avec un prix rapproche le premier prix observé du marché.' }))
+      + '<div class="pp-sec"><h2 class="pp-h">Pas encore de prix</h2><span class="pp-n">' + nRest + ' produits</span></div>'
+      + '<p class="pp-sub">Un prix apparaît dès qu’un vendeur publie une offre avec son prix. <a class="pp-cta" href="#/vendre">Vous vendez l’un de ces produits ? Publiez votre prix</a></p>'
+      + rest.map(g => '<details class="pp-f pp-f--rest"><summary><b>' + esc(g.c.name) + '</b><span>' + g.ps.length + ' sans prix</span></summary><div class="pp-chips">'
+        + g.ps.map(p => '<a class="pp-chip" href="#/produits/' + p.slug + '">' + pic(p) + esc(p.name) + '</a>').join('') + '</div></details>').join('')
       + '</div></section></div>';
-    void OFFERS;
     return V3.headBind(view);
   };
 })();

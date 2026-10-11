@@ -42,7 +42,8 @@
       return { type: 'observe', min: q(.1), max: q(.9), unit, n: grp.length, vendeurs, jours: SEUIL.jours };
     }
     const best = list.slice().sort((a, b) => a.price - b.price)[0];
-    return { type: 'vendeur', offre: best, n: list.length };
+    // en chemin vers un prix du marché : combien de prix et de vendeurs, sur l'unité la plus fréquente (pour montrer ce qui manque)
+    return { type: 'vendeur', offre: best, n: list.length, prog: { n: grp ? grp.length : 0, vendeurs, unit: unit || best.unit } };
   }
   const SVG = (d, extra) => '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"' + (extra || '') + '>' + d + '</svg>';
   const ICO = {

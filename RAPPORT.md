@@ -88,3 +88,14 @@ Téléphone, tablette, ordinateur : première visite en ligne, puis réseau coup
 - **Gestes** : la carte continue sur son élan quand on la lâche, double-clic pour zoomer à l'endroit pointé ; animations coupées avec « réduire les animations ».
 - Non utilisées volontairement : les limites administratives Natural Earth (19 anciennes régions, pas les 14 districts actuels : elles auraient été fausses) ; la bibliothèque mapcn (React + tuiles en ligne : incompatible avec le site statique et le hors connexion).
 - `sw.js` : `vendor/ci-hydro.json` en cache, `CACHE = 'mgci-v7'`.
+
+---
+
+# Passe sur tout le produit — 11 octobre 2026 (suite)
+- **Lecture au défilement** (`v3/flou.js`) : une section ne se floute plus pendant qu'on la lit ; l'effet de profondeur ne joue que quand elle quitte l'écran. Les listes du catalogue et les offres d'une fiche restent nettes.
+- **Petites cartes sur le vrai territoire** (`v3/terre.js`, nouveau) : la mini-carte du catalogue et celle de « Demander » dessinent le contour réel, les voisins et les lacs ; le grain ne tombe que sur la terre. Même géographie que la grande carte.
+- **Langage commun** : la légende des encarts (fiche produit, producteur) reprend les marqueurs (cercle vert = offre, carré jaune = demande, trait bleu = compatibles, votre lieu) ; « Le carré jaune marque votre demande ».
+- **Mes offres / Mes demandes** : plus de « 800 kg · , » ni de « le Invalid Date » — le produit, le lieu et la date sont retrouvés même pour une offre publiée depuis l'application (même stockage, autres champs).
+- **Prix du marché** (`v3/pages.js`) : d'abord « Ce qui a un prix aujourd'hui » (prix observés, puis prix vendeurs), avec pour chacun ce qui manque pour un prix du marché (« Encore 3 prix et 1 vendeur », jauges sur les seuils réels 5 prix / 3 vendeurs / 30 jours) ; puis « Pas encore de prix » en étiquettes par famille, chacune menant au produit, et une invitation à publier son prix. Fini le mur de « Pas assez de données ».
+- **Carte de l'application** (`app/carte-app.js`) : fleuves et lacs, côte en trait plein et frontière en tirets, repère « où suis-je » au-dessus de l'échelle, zoom borné au district.
+- `sw.js` : `v3/terre.js` en cache, `CACHE = 'mgci-v9'`.

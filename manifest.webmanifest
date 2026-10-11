@@ -1,0 +1,17 @@
+{
+  "name": "Marché de Gros CI",
+  "short_name": "MGCI",
+  "description": "Marché de Gros CI : offres et demandes de produits vivriers en Côte d'Ivoire.",
+  "start_url": "application.dc.html",
+  "scope": "./",
+  "id": "./application.dc.html",
+  "lang": "fr",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#171512",
+  "theme_color": "#171512",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

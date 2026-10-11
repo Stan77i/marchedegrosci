@@ -1,0 +1,87 @@
+/* Marché de Gros CI — service worker (utilisation hors connexion).
+   Pour publier une mise à jour du code : incrémenter CACHE (mgci-v1 -> mgci-v2 ...).
+   Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
+const CACHE = 'mgci-v3';
+
+// Indispensable : si l'un de ces fichiers manque, l'installation échoue et l'ancienne version reste active.
+const CORE = [
+  "./",
+  "application.dc.html",
+  "index.html",
+  "support.js",
+  "manifest.webmanifest",
+  "app/marche-app.js",
+  "app/carte-app.js",
+  "v2/data.js",
+  "v2/saisons.js",
+  "v2/search.js",
+  "css/fonts.css",
+  "icons/icon-192.png",
+  "icons/icon-512.png",
+  "icons/apple-touch-icon.png",
+  "vendor/babel.min.js",
+  "vendor/countries-110m.json",
+  "vendor/countries-50m.json",
+  "vendor/react-dom.production.min.js",
+  "vendor/react.production.min.js",
+  "vendor/topojson-client.min.js",
+  "fonts/cormorant-garamond-latin-500-italic.woff2",
+  "fonts/cormorant-garamond-latin-500-normal.woff2",
+  "fonts/cormorant-garamond-latin-600-italic.woff2",
+  "fonts/cormorant-garamond-latin-600-normal.woff2",
+  "fonts/jost-latin-400-normal.woff2",
+  "fonts/jost-latin-500-normal.woff2",
+  "fonts/jost-latin-600-normal.woff2",
+  "fonts/jost-latin-700-normal.woff2"
+];
+
+// Images v2/img/ : mises en cache au mieux (une image manquante n'empêche pas l'installation).
+const IMAGES = ["evenement-camion-depart-paysage.webp", "evenement-camion-depart-portrait.webp", "evenement-piment-seche-paysage.webp", "evenement-piment-seche-portrait.webp", "evenement-soudure-etal-paysage.webp", "evenement-soudure-etal-portrait.webp", "evenement-vendeuse-monnaie-paysage.webp", "evenement-vendeuse-monnaie-portrait.webp", "famille-arachide-noix-et-oleagineux.webp", "famille-assaisonnements-epices-condiments.webp", "famille-autres-produits-vivriers.webp", "famille-cereales-et-riz-local.webp", "famille-legumes-et-fruits.webp", "famille-oeufs.webp", "famille-poissons.webp", "famille-produits-surgeles.webp", "famille-tubercules-et-feculents.webp", "famille-viande-de-brousse.webp", "famille-volaille.webp", "femme-marche-07-paysage.webp", "femme-marche-07-portrait.webp", "produit-ail.webp", "produit-ananas.webp", "produit-aubergine.webp", "produit-avocat.webp", "produit-banane-douce.webp", "produit-banane-plantain.webp", "produit-chou.webp", "produit-citron.webp", "produit-concombre.webp", "produit-gombo.webp", "produit-oignon.webp", "produit-orange.webp", "produit-papaye.webp", "produit-pasteque.webp", "produit-patate-douce.webp", "produit-piment-frais.webp", "produit-piment-garba.webp", "produit-poivron.webp", "produit-pomme-de-terre.webp", "produit-tomate.webp", "saison-01-janvier-paysage.webp", "saison-01-janvier-portrait.webp", "saison-02-fevrier-paysage.webp", "saison-02-fevrier-portrait.webp", "saison-05-mai-paysage.webp", "saison-05-mai-portrait.webp", "saison-07-juillet-paysage.webp", "saison-07-juillet-portrait.webp", "saison-08-aout-paysage.webp", "saison-08-aout-portrait.webp", "saison-09-septembre-paysage.webp", "saison-09-septembre-portrait.webp", "saison-10-octobre-paysage.webp", "saison-10-octobre-portrait.webp", "saison-11-novembre-paysage.webp", "saison-11-novembre-portrait.webp", "saison-12-decembre-paysage.webp", "saison-12-decembre-portrait.webp"].map(f => 'v2/img/' + f);
+
+self.addEventListener('install', e => {
+  e.waitUntil((async () => {
+    const c = await caches.open(CACHE);
+    await c.addAll(CORE.map(u => new Request(u, { cache: 'reload' })));
+    await Promise.all(IMAGES.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})));
+    await self.skipWaiting();
+  })());
+});
+
+self.addEventListener('activate', e => {
+  e.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => k.startsWith('mgci-') && k !== CACHE).map(k => caches.delete(k)));
+    await self.clients.claim();
+  })());
+});
+
+self.addEventListener('fetch', e => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return; // liens externes (WhatsApp, etc.) : réseau normal
+
+  // Pages : le réseau d'abord, le cache si le réseau échoue.
+  if (req.mode === 'navigate' || req.destination === 'document') {
+    e.respondWith((async () => {
+      try {
+        const res = await fetch(req);
+        if (res && res.ok) { const c = await caches.open(CACHE); c.put(req, res.clone()); }
+        return res;
+      } catch (_) {
+        const hit = await caches.match(req, { ignoreSearch: true });
+        return hit || (await caches.match('application.dc.html')) || Response.error();
+      }
+    })());
+    return;
+  }
+
+  // Fichiers statiques : le cache d'abord, puis le réseau.
+  e.respondWith((async () => {
+    const hit = await caches.match(req);
+    if (hit) return hit;
+    const res = await fetch(req);
+    if (res && res.ok && res.type === 'basic') { const c = await caches.open(CACHE); c.put(req, res.clone()); }
+    return res;
+  })());
+});

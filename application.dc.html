@@ -3,6 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MGCI">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -10,8 +18,7 @@
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="css/fonts.css">
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
 <script src="app/carte-app.js"></script>
@@ -71,7 +78,7 @@
     </div>
     <div style="position:absolute;left:50%;top:104px;width:250px;height:250px;margin-left:-125px;pointer-events:none">
       <div style="position:absolute;left:30px;right:30px;bottom:6px;height:26px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.6),transparent 70%)"></div>
-      <sc-for list="{{ sacks }}" as="k" hint-placeholder-count="0"><img src="{{ k.src }}" alt="{{ k.alt }}" draggable="false" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:{{ k.op }};transform:{{ k.tf }};transition:{{ k.tr }}"></sc-for>
+      <sc-for list="{{ sacks }}" as="k" hint-placeholder-count="0"><img sc-camel-src="{{ k.src }}" alt="{{ k.alt }}" draggable="false" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:{{ k.op }};transform:{{ k.tf }};transition:{{ k.tr }}"></sc-for>
       <div style="position:absolute;inset:0;opacity:{{ jute.op }};transform:{{ jute.tf }};transition:opacity .4s,transform .55s cubic-bezier(.22,1,.36,1)">
         <svg viewBox="0 0 250 250" width="250" height="250">
           <defs><linearGradient id="jg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9ab7c"></stop><stop offset=".55" stop-color="#a98a5c"></stop><stop offset="1" stop-color="#7d6440"></stop></linearGradient><pattern id="jw" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0 2.5h5M2.5 0v5" stroke="#5c4930" stroke-opacity=".18" stroke-width=".8"></path></pattern><radialGradient id="jm" cx=".5" cy=".7" r=".6"><stop offset="0" stop-color="{{ jute.mound }}"></stop><stop offset="1" stop-color="#2a2218"></stop></radialGradient></defs>
@@ -116,7 +123,7 @@
   <div style="flex:1;overflow-y:auto">
     <div style="background:#24201A;color:#F5F0E6;padding:0 24px 28px;text-align:center;position:relative;overflow:hidden">
       <div style="position:absolute;left:50%;top:110px;width:420px;height:420px;margin:-210px 0 0 -210px;border-radius:50%;background:radial-gradient(circle,{{ fp.tint }} 0%,transparent 60%);opacity:.45"></div>
-      <img src="{{ fp.thumb }}" alt="{{ fp.name }}" style="position:relative;width:{{ fp.imgSize }};height:{{ fp.imgSize }};object-fit:{{ fp.fit }};border-radius:{{ fp.imgRad }};margin-top:6px">
+      <img sc-camel-src="{{ fp.thumb }}" alt="{{ fp.name }}" style="position:relative;width:{{ fp.imgSize }};height:{{ fp.imgSize }};object-fit:{{ fp.fit }};border-radius:{{ fp.imgRad }};margin-top:6px">
       <div style="position:relative;font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:500;line-height:1;margin-top:12px">{{ fp.name }}</div>
       <div style="position:relative;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:14px">
         <sc-for list="{{ fp.aliases }}" as="a" hint-placeholder-count="2"><span style="font-size:12.5px;color:#B9AD98;border:1px solid rgba(185,173,152,.35);border-radius:14px;padding:4px 11px">{{ a }}</span></sc-for>
@@ -132,7 +139,7 @@
         <sc-for list="{{ fp.items }}" as="o" hint-placeholder-count="0">
           <div style="background:#faf4e9;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;animation:mkFade .4s both">
             <button onClick="{{ o.go }}" style="border:0;background:transparent;padding:0;text-align:left;display:flex;gap:12px;align-items:center;color:#171512">
-              <sc-if value="{{ o.hasPhoto }}" hint-placeholder-val="{{ false }}"><img src="{{ o.photo }}" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:cover;flex:none"></sc-if>
+              <sc-if value="{{ o.hasPhoto }}" hint-placeholder-val="{{ false }}"><img sc-camel-src="{{ o.photo }}" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:cover;flex:none"></sc-if>
               <span style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="display:flex;justify-content:space-between;gap:8px"><span style="display:flex;align-items:center;gap:7px;font-weight:600;font-size:15px"><span style="width:9px;height:9px;flex:none;border-radius:{{ o.shapeRad }};background:{{ o.shapeBg }}"></span>{{ o.who }}</span><span style="font-size:12px;color:#847966;white-space:nowrap">{{ o.ago }}</span></span><span style="font-size:13.5px;color:#484236;line-height:1.4">{{ o.line }}</span><span style="font-size:13.5px;font-weight:600">{{ o.price }}</span></span>
             </button>
             <sc-if value="{{ o.hasTel }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px"><a href="{{ o.tel }}" style="flex:1;height:44px;border-radius:22px;background:#171512;color:#F5F0E6;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;text-decoration:none">Appeler</a><a href="{{ o.wa }}" target="_blank" style="flex:1;height:44px;border-radius:22px;border:1px solid rgba(23,21,18,.2);color:#171512;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;text-decoration:none">WhatsApp</a></div></sc-if>
@@ -197,13 +204,13 @@
     </sc-if>
     <sc-if value="{{ sugg.on }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex;flex-direction:column;background:#faf4e9;border-radius:16px;overflow:hidden">
-        <sc-for list="{{ sugg.list }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.go }}" style="border:0;background:transparent;display:flex;align-items:center;gap:12px;padding:8px 14px;min-height:52px;text-align:left;color:#171512;border-bottom:1px solid rgba(23,21,18,.06)"><img src="{{ s.thumb }}" alt="" style="width:36px;height:36px;object-fit:{{ s.fit }};border-radius:{{ s.rad }}"><span style="flex:1;display:flex;flex-direction:column"><span style="font-size:15px">{{ s.name }}</span><span style="font-size:12px;color:#847966">{{ s.sub }}</span></span><span style="font-size:12.5px;color:#904515">Fiche</span></button></sc-for>
+        <sc-for list="{{ sugg.list }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.go }}" style="border:0;background:transparent;display:flex;align-items:center;gap:12px;padding:8px 14px;min-height:52px;text-align:left;color:#171512;border-bottom:1px solid rgba(23,21,18,.06)"><img sc-camel-src="{{ s.thumb }}" alt="" style="width:36px;height:36px;object-fit:{{ s.fit }};border-radius:{{ s.rad }}"><span style="flex:1;display:flex;flex-direction:column"><span style="font-size:15px">{{ s.name }}</span><span style="font-size:12px;color:#847966">{{ s.sub }}</span></span><span style="font-size:12.5px;color:#904515">Fiche</span></button></sc-for>
       </div>
     </sc-if>
     <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">{{ aCount }}</span><button onClick="{{ aCarte }}" style="border:0;background:transparent;color:#904515;font-size:13.5px;font-weight:500;padding:8px 0;min-height:36px">Sur la carte →</button></div>
     <sc-for list="{{ aList }}" as="o" hint-placeholder-count="0">
       <div style="background:#faf4e9;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;animation:mkFade .35s both">
-        <button onClick="{{ o.go }}" style="border:0;background:transparent;padding:0;text-align:left;display:flex;gap:12px;align-items:center;color:#171512"><img src="{{ o.img }}" alt="" style="width:60px;height:60px;border-radius:12px;object-fit:{{ o.fit }};flex:none;background:#efe7d9"><span style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="display:flex;justify-content:space-between;gap:8px"><span style="font-weight:600;font-size:15.5px">{{ o.product }}</span><span style="font-size:12px;color:#847966;white-space:nowrap">{{ o.ago }}</span></span><span style="font-size:13.5px;color:#484236">{{ o.line }}</span><span style="font-size:13.5px"><b style="font-weight:600">{{ o.price }}</b> <span style="color:#847966">{{ o.who }}</span></span></span></button>
+        <button onClick="{{ o.go }}" style="border:0;background:transparent;padding:0;text-align:left;display:flex;gap:12px;align-items:center;color:#171512"><img sc-camel-src="{{ o.img }}" alt="" style="width:60px;height:60px;border-radius:12px;object-fit:{{ o.fit }};flex:none;background:#efe7d9"><span style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="display:flex;justify-content:space-between;gap:8px"><span style="font-weight:600;font-size:15.5px">{{ o.product }}</span><span style="font-size:12px;color:#847966;white-space:nowrap">{{ o.ago }}</span></span><span style="font-size:13.5px;color:#484236">{{ o.line }}</span><span style="font-size:13.5px"><b style="font-weight:600">{{ o.price }}</b> <span style="color:#847966">{{ o.who }}</span></span></span></button>
         <sc-if value="{{ o.hasTel }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px"><a href="{{ o.tel }}" style="flex:1;height:44px;border-radius:22px;background:#171512;color:#F5F0E6;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;text-decoration:none">Appeler</a><a href="{{ o.wa }}" target="_blank" style="flex:1;height:44px;border-radius:22px;border:1px solid rgba(23,21,18,.2);color:#171512;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;text-decoration:none">WhatsApp</a></div></sc-if>
       </div>
     </sc-for>
@@ -225,7 +232,7 @@
     <div style="display:flex;flex-direction:column;gap:8px">
       <span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">CE QUE L'ACHETEUR VERRA</span>
       <div style="background:#faf4e9;border-radius:18px;padding:14px;display:flex;gap:12px;align-items:center;box-shadow:0 6px 20px rgba(23,21,18,.08)">
-        <img src="{{ vPrev.img }}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:{{ vPrev.fit }};flex:none;background:#efe7d9">
+        <img sc-camel-src="{{ vPrev.img }}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:{{ vPrev.fit }};flex:none;background:#efe7d9">
         <span style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="display:flex;align-items:center;gap:7px;font-weight:600;font-size:16px"><span style="width:10px;height:10px;border-radius:50%;background:#6CC58C"></span>{{ vPrev.product }}</span><span style="font-size:13.5px;color:#484236">{{ vPrev.line }}</span><span style="font-size:13.5px"><b style="font-weight:600">{{ vPrev.price }}</b> <span style="color:#847966">{{ vPrev.who }}</span></span></span>
       </div>
       <sc-if value="{{ vDem.on }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#fff4dd;font-size:13.5px;color:#563e01"><span style="width:10px;height:10px;border-radius:2px;background:#F2C94C;flex:none;animation:mkBreath 2s infinite"></span>{{ vDem.txt }}</div></sc-if>
@@ -249,7 +256,7 @@
         <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Région</span><select value="{{ vf.region }}" onChange="{{ vfh.region }}" style="height:52px;border-radius:14px;border:1px solid {{ vEb.region }};background:#fffaf3;padding:0 10px;font-size:15px;color:#171512"><option value="">Choisissez une région</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}">{{ r.name }}</option></sc-for></select></div>
         <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Ville ou village</span><input value="{{ vf.city }}" onChange="{{ vfh.city }}" placeholder="{{ vCityPh }}" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:16px;outline:none;color:#171512"></div>
         <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Disponible</span><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ vAvail }}" as="u" hint-placeholder-count="2"><button onClick="{{ u.go }}" style="height:38px;padding:0 14px;border-radius:19px;border:1px solid {{ u.bd }};background:{{ u.bg }};color:{{ u.color }};font-size:13.5px;font-weight:500">{{ u.l }}</button></sc-for></div>
-          <sc-if value="{{ vDateOn }}" hint-placeholder-val="{{ false }}"><input type="date" value="{{ vf.date }}" onChange="{{ vfh.date }}" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:16px;color:#171512"></sc-if></div>
+          <sc-if value="{{ vDateOn }}" hint-placeholder-val="{{ false }}"><input type="date" sc-camel-value="{{ vf.date }}" onChange="{{ vfh.date }}" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:16px;color:#171512"></sc-if></div>
       </div>
     </sc-if>
     <sc-if value="{{ vS3 }}" hint-placeholder-val="{{ false }}">
@@ -319,7 +326,7 @@
     <div style="padding:16px 20px 12px;font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1.05">{{ catTitle }}<br><em style="color:#904515">tout le vivrier.</em></div>
     <sc-for list="{{ cats }}" as="c" hint-placeholder-count="11">
       <div style="border-bottom:1px solid rgba(23,21,18,.08)">
-        <button onClick="{{ c.toggle }}" style="width:100%;border:0;background:transparent;display:flex;align-items:center;gap:14px;padding:12px 20px;text-align:left;color:#171512"><img src="{{ c.img }}" alt="" style="width:56px;height:56px;border-radius:14px;object-fit:cover;flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;font-weight:500">{{ c.name }}</span><span style="font-size:13px;color:#847966">{{ c.sub }}</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#847966" stroke-width="1.8" stroke-linecap="round" style="transform:{{ c.chev }};transition:transform .3s"><path d="M6 9l6 6 6-6"></path></svg></button>
+        <button onClick="{{ c.toggle }}" style="width:100%;border:0;background:transparent;display:flex;align-items:center;gap:14px;padding:12px 20px;text-align:left;color:#171512"><img sc-camel-src="{{ c.img }}" alt="" style="width:56px;height:56px;border-radius:14px;object-fit:cover;flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:16px;font-weight:500">{{ c.name }}</span><span style="font-size:13px;color:#847966">{{ c.sub }}</span></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#847966" stroke-width="1.8" stroke-linecap="round" style="transform:{{ c.chev }};transition:transform .3s"><path d="M6 9l6 6 6-6"></path></svg></button>
         <sc-if value="{{ c.open }}" hint-placeholder-val="{{ false }}"><div style="padding:0 20px 14px 90px;display:flex;flex-direction:column;animation:mkFade .3s both"><sc-for list="{{ c.products }}" as="p" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:8px;min-height:48px;border-top:1px solid rgba(23,21,18,.06)"><button onClick="{{ p.go }}" style="flex:1;border:0;background:transparent;padding:0;text-align:left;display:flex;flex-direction:column;gap:1px;color:#171512"><span style="font-size:15px">{{ p.name }}</span><span style="font-size:12px;color:#61846b">{{ p.badge }}</span></button><button onClick="{{ p.jai }}" aria-label="J'ai" style="width:36px;height:36px;border-radius:18px;border:1px solid rgba(23,21,18,.15);background:transparent;display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border-radius:50%;background:#6CC58C"></span></button><button onClick="{{ p.cherche }}" aria-label="Je cherche" style="width:36px;height:36px;border-radius:18px;border:1px solid rgba(23,21,18,.15);background:transparent;display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border-radius:2px;background:#F2C94C"></span></button></div></sc-for></div></sc-if>
       </div>
     </sc-for>
@@ -340,7 +347,7 @@
     <span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">PRODUITS AVEC DES PRIX</span>
     <sc-for list="{{ prixRows }}" as="r" hint-placeholder-count="0">
       <button onClick="{{ r.go }}" style="border:0;background:#faf4e9;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;text-align:left;color:#171512;animation:mkFade .35s both">
-        <span style="display:flex;align-items:center;gap:12px;width:100%"><img src="{{ r.thumb }}" alt="" style="width:44px;height:44px;object-fit:{{ r.fit }};border-radius:{{ r.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-weight:500;font-size:15px">{{ r.name }}</span><span style="font-size:12.5px;color:#847966">{{ r.sub }}</span></span><span style="font-weight:600;font-size:14px;white-space:nowrap">{{ r.price }}</span></span>
+        <span style="display:flex;align-items:center;gap:12px;width:100%"><img sc-camel-src="{{ r.thumb }}" alt="" style="width:44px;height:44px;object-fit:{{ r.fit }};border-radius:{{ r.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-weight:500;font-size:15px">{{ r.name }}</span><span style="font-size:12.5px;color:#847966">{{ r.sub }}</span></span><span style="font-weight:600;font-size:14px;white-space:nowrap">{{ r.price }}</span></span>
         <span style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%"><sc-for list="{{ r.meter }}" as="m" hint-placeholder-count="2"><span style="display:flex;flex-direction:column;gap:5px"><span style="height:4px;border-radius:2px;background:#ddd3c2;overflow:hidden;display:block"><span style="display:block;height:100%;width:{{ m.pct }};background:#31543C"></span></span><span style="font-size:11.5px;color:#655c4d">{{ m.txt }}</span></span></sc-for></span>
       </button>
     </sc-for>
@@ -379,7 +386,7 @@
   <div style="flex:1;overflow-y:auto;padding:18px 18px 40px;display:flex;flex-direction:column;gap:10px">
     <sc-for list="{{ myPubs }}" as="p" hint-placeholder-count="0">
       <div style="background:#faf4e9;border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;animation:mkFade .35s both">
-        <img src="{{ p.thumb }}" alt="" style="width:48px;height:48px;object-fit:{{ p.fit }};border-radius:{{ p.rad }};flex:none">
+        <img sc-camel-src="{{ p.thumb }}" alt="" style="width:48px;height:48px;object-fit:{{ p.fit }};border-radius:{{ p.rad }};flex:none">
         <button onClick="{{ p.go }}" style="flex:1;border:0;background:transparent;padding:0;text-align:left;display:flex;flex-direction:column;gap:3px;color:#171512;min-width:0"><span style="font-size:11.5px;letter-spacing:.14em;color:{{ p.typeColor }};font-weight:600;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:{{ p.shapeRad }};background:{{ p.shapeBg }}"></span>{{ p.type }}</span><span style="font-weight:500;font-size:15.5px">{{ p.name }}</span><span style="font-size:12.5px;color:#847966">{{ p.line }}</span><span style="font-size:12.5px;color:#61846b">{{ p.match }}</span></button>
         <button onClick="{{ p.del }}" aria-label="Retirer" style="width:44px;height:44px;border:0;background:transparent;color:#847966;display:flex;align-items:center;justify-content:center;border-radius:22px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"></path></svg></button>
       </div>
@@ -398,7 +405,7 @@
       <sc-if value="{{ vd.hasTel }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;margin-top:8px"><a href="{{ vd.tel }}" style="flex:1;height:48px;border-radius:24px;background:#E07A3F;color:#171512;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;text-decoration:none">Appeler</a><a href="{{ vd.wa }}" target="_blank" style="flex:1;height:48px;border-radius:24px;border:1px solid rgba(245,240,230,.3);color:#F5F0E6;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;text-decoration:none">WhatsApp</a></div></sc-if></div></div>
   <div style="flex:1;overflow-y:auto;padding:20px 18px 40px;display:flex;flex-direction:column;gap:10px">
     <span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">SES OFFRES</span>
-    <sc-for list="{{ vd.offers }}" as="o" hint-placeholder-count="1"><button onClick="{{ o.go }}" style="border:0;background:#faf4e9;border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;text-align:left;color:#171512"><img src="{{ o.img }}" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:{{ o.fit }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font-weight:600;font-size:15px">{{ o.product }}</span><span style="font-size:13px;color:#484236">{{ o.line }}</span><span style="font-size:13px;font-weight:600">{{ o.price }}</span></span></button></sc-for>
+    <sc-for list="{{ vd.offers }}" as="o" hint-placeholder-count="1"><button onClick="{{ o.go }}" style="border:0;background:#faf4e9;border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;text-align:left;color:#171512"><img sc-camel-src="{{ o.img }}" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:{{ o.fit }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font-weight:600;font-size:15px">{{ o.product }}</span><span style="font-size:13px;color:#484236">{{ o.line }}</span><span style="font-size:13px;font-weight:600">{{ o.price }}</span></span></button></sc-for>
   </div>
 </sc-if>
 </div>
@@ -446,7 +453,7 @@
   <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" style="height:28px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none"><span style="width:38px;height:5px;border-radius:3px;background:rgba(245,240,230,.25)"></span></div>
   <div style="padding:0 20px 10px;font-family:'Cormorant Garamond',serif;font-size:28px">Familles de produits</div>
   <div style="overflow-y:auto;padding:0 14px {{ botPad }};display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
-    <sc-for list="{{ famGrid }}" as="f" hint-placeholder-count="11"><button onClick="{{ f.go }}" style="border:1.5px solid {{ f.bd }};border-radius:18px;padding:0;overflow:hidden;background:#171512;color:#F5F0E6;text-align:left;display:flex;flex-direction:column"><img src="{{ f.img }}" alt="" style="width:100%;height:84px;object-fit:cover;display:block"><span style="padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:500;line-height:1.25">{{ f.name }}</span><span style="font-size:12px;color:#B9AD98">{{ f.sub }}</span></span></button></sc-for>
+    <sc-for list="{{ famGrid }}" as="f" hint-placeholder-count="11"><button onClick="{{ f.go }}" style="border:1.5px solid {{ f.bd }};border-radius:18px;padding:0;overflow:hidden;background:#171512;color:#F5F0E6;text-align:left;display:flex;flex-direction:column"><img sc-camel-src="{{ f.img }}" alt="" style="width:100%;height:84px;object-fit:cover;display:block"><span style="padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:500;line-height:1.25">{{ f.name }}</span><span style="font-size:12px;color:#B9AD98">{{ f.sub }}</span></span></button></sc-for>
   </div>
 </div>
 
@@ -465,7 +472,7 @@
   </div>
   <sc-if value="{{ formOn }}" hint-placeholder-val="{{ true }}">
   <div style="flex:1;overflow-y:auto;padding:6px 20px 120px;display:flex;flex-direction:column;gap:18px">
-    <button onClick="{{ pickMatch }}" style="display:flex;align-items:center;gap:12px;background:#faf4e9;border-radius:18px;padding:10px 12px;border:0;text-align:left;color:#171512"><img src="{{ mfP.thumb }}" alt="" style="width:52px;height:52px;object-fit:{{ mfP.fit }};border-radius:{{ mfP.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:12px;color:#847966">{{ mfP.fam }}</span><span style="font-family:'Cormorant Garamond',serif;font-size:26px;line-height:1">{{ mfP.name }}</span></span><span style="height:36px;padding:0 12px;border-radius:18px;border:1px solid rgba(23,21,18,.2);font-size:13px;font-weight:500;display:flex;align-items:center">Changer</span></button>
+    <button onClick="{{ pickMatch }}" style="display:flex;align-items:center;gap:12px;background:#faf4e9;border-radius:18px;padding:10px 12px;border:0;text-align:left;color:#171512"><img sc-camel-src="{{ mfP.thumb }}" alt="" style="width:52px;height:52px;object-fit:{{ mfP.fit }};border-radius:{{ mfP.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:12px;color:#847966">{{ mfP.fam }}</span><span style="font-family:'Cormorant Garamond',serif;font-size:26px;line-height:1">{{ mfP.name }}</span></span><span style="height:36px;padding:0 12px;border-radius:18px;border:1px solid rgba(23,21,18,.2);font-size:13px;font-weight:500;display:flex;align-items:center">Changer</span></button>
     <div style="display:flex;flex-direction:column;gap:8px">
       <span style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600">{{ matchTitle }}</span>
       <sc-for list="{{ matches }}" as="o" hint-placeholder-count="0"><div style="background:#faf4e9;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px;animation:mkFade .35s both"><span style="width:10px;height:10px;border-radius:{{ o.shapeRad }};background:{{ o.shapeBg }};flex:none"></span><span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:14px;font-weight:600">{{ o.who }}</span><span style="font-size:12.5px;color:#655c4d">{{ o.line }}</span></span><sc-if value="{{ o.hasTel }}" hint-placeholder-val="{{ false }}"><a href="{{ o.wa }}" target="_blank" style="height:40px;padding:0 14px;border-radius:20px;background:#171512;color:#F5F0E6;display:flex;align-items:center;font-size:13px;text-decoration:none">WhatsApp</a></sc-if></div></sc-for>
@@ -502,7 +509,7 @@
   <div style="flex:1;overflow-y:auto;padding:4px 0 40px">
     <sc-for list="{{ pickGroups }}" as="g" hint-placeholder-count="0">
       <div style="font-size:11px;letter-spacing:.2em;color:#655c4d;font-weight:600;padding:14px 20px 6px">{{ g.t }}</div>
-      <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.pick }}" style="width:100%;border:0;background:transparent;display:flex;align-items:center;gap:12px;padding:6px 20px;min-height:52px;text-align:left;color:#171512"><img src="{{ p.thumb }}" alt="" style="width:38px;height:38px;object-fit:{{ p.fit }};border-radius:{{ p.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column"><span style="font-size:15.5px">{{ p.name }}</span><span style="font-size:12px;color:#847966">{{ p.sub }}</span></span></button></sc-for>
+      <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.pick }}" style="width:100%;border:0;background:transparent;display:flex;align-items:center;gap:12px;padding:6px 20px;min-height:52px;text-align:left;color:#171512"><img sc-camel-src="{{ p.thumb }}" alt="" style="width:38px;height:38px;object-fit:{{ p.fit }};border-radius:{{ p.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column"><span style="font-size:15.5px">{{ p.name }}</span><span style="font-size:12px;color:#847966">{{ p.sub }}</span></span></button></sc-for>
     </sc-for>
   </div>
 </div>

@@ -102,3 +102,15 @@ Téléphone, tablette, ordinateur : première visite en ligne, puis réseau coup
 - **Accueil** (`v3/hero-ivt.js`) : sous le prix, une petite carte du vrai territoire montre où le produit choisi est proposé (cercles verts) et cherché (carrés jaunes) ; elle mène à la grande carte filtrée sur ce produit. Elle n'apparaît que s'il existe au moins une offre ou une demande.
 - **Roue des produits sur tablette** : les noms étaient coupés (« OMAT » pour « TOMATE ») ; leur largeur est maintenant mesurée avec la police réelle, en capitales espacées, et recalculée quand les polices sont chargées. `sw.js` : `CACHE = 'mgci-v10'`.
 - **Fiche produit : offres et carte se répondent** : survoler (ou parcourir au clavier) une offre l'allume sur la carte ; survoler un point de la carte met l'offre en avant dans la liste ; toucher un point sélectionne l'offre et la fait venir à l'écran si elle est cachée. (`v2/reseau-carte.js` : rappel `onHover`, sans changer le reste de l'API.) `sw.js` : `CACHE = 'mgci-v11'`.
+
+---
+
+# Annonces partagées entre tous les téléphones (Supabase, formule gratuite) — 11 octobre 2026
+- **Base** : projet Supabase `mgci` (Paris). Schéma dans `supabase/schema.sql` (à coller une fois dans « SQL Editor ») : tables `offres`, `demandes`, `signalements` ; lecture publique ; publication réservée aux comptes ; chacun ne modifie que ses annonces ; 30 annonces actives par compte ; 3 signalements de comptes différents masquent une annonce.
+- **Compte** : numéro de téléphone + code secret à 6 chiffres (pas de SMS, donc aucun frais). Bouton « Mon compte » dans l'en-tête du site, section « Compte » dans le menu de l'application. Pas encore de récupération du code par SMS.
+- **Module commun** `v3/nuage.js` (site et application) : lit les annonces de tous et les garde en cache (visibles hors connexion) ; envoie mes annonces (file d'attente hors ligne, envoi au retour du réseau) ; retire du serveur une annonce supprimée sur le téléphone ; propose de se connecter après une publication faite sans compte.
+- « Mes annonces » restent dans `mdg-v2:offres` / `mdg-v2:demandes` (inchangé) ; le cache des autres est séparé (`mdg-nuage:*`). « Mes publications » n'affiche que les siennes.
+- **Signaler** sur chaque annonce venant d'un autre téléphone (site et application).
+- Textes mis à jour (Vendre, Demander, J'ai / Je cherche, pied de page, Confiance) ; la page Confiance du site ne parle plus d'« exemples ».
+- Les photos ne sont pas encore envoyées (elles restent sur le téléphone). `sw.js` : `v3/nuage.js` en cache, `CACHE = 'mgci-v12'`.
+- Non vérifié contre le vrai serveur depuis l'environnement de développement (accès à supabase.co bloqué) : à tester une fois le schéma installé.

@@ -14,7 +14,8 @@
   const jitter = (s, a) => { let h = 7; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return ((h % 1000) / 1000 - .5) * a; };
 
   function load() {
-    const offres = read('offres').filter(o => o && o.productSlug && REG[o.regionSlug]);
+    // mes offres (ce téléphone) + celles des autres, reçues du serveur et gardées en cache (v3/nuage.js)
+    const offres = read('offres').concat(window.MDGNuage ? window.MDGNuage.list('offres') : []).filter(o => o && o.productSlug && REG[o.regionSlug]);
     const producers = [], offers = [];
     offres.forEach(o => {
       const c = REG[o.regionSlug], id = 'pub-' + o.id, who = (o.producer && o.producer.name) || o.producerName || 'Vendeur';

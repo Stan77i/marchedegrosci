@@ -3,7 +3,7 @@
    J'ai      → publier une offre déjà remplie avec le produit, et voir les demandes qui correspondent ;
    Je cherche → voir les offres qui correspondent ; s'il n'y en a pas, publier une demande tout de suite.
    Panneau ancré sur ordinateur, feuille qui monte du bas sur téléphone. Peu de champs, le reste replié.
-   Données : enregistrées sur cet appareil pour l'instant (aucun serveur). */
+   Données : enregistrées sur cet appareil, puis envoyées à tous avec un compte (v3/nuage.js). */
 (function () {
   'use strict';
   const V3 = window.MDGV3 = window.MDGV3 || {};
@@ -54,7 +54,7 @@
         <p class="odv__msg" aria-live="polite"></p>
         <div class="odv__pane" id="mtJai" role="tabpanel" data-p="jai"></div>
         <div class="odv__pane" id="mtCh" role="tabpanel" data-p="cherche"></div>
-        <p class="mt-local">Enregistré sur cet appareil pour l'instant : l'envoi aux autres utilisateurs arrive avec le serveur.</p>
+        <p class="mt-local">Visible de tous dès que vous êtes connecté (numéro + code). Sans réseau, l’envoi se fait au retour de la connexion.</p>
       </section>`;
     document.body.appendChild(od);
     card = q('.odv__card');

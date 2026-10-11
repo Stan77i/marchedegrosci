@@ -371,7 +371,7 @@
         const t = tel.value, c = $('#ngCode').value, ident = { prenom: $('#ngPrenom').value.trim(), nom: $('#ngNom').value.trim(), pseudo: $('#ngPseudo').value.trim() || null };
         if (m0 === 'up' && ident.pseudo) { const libre = await rpc('pseudo_libre', { p: ident.pseudo }, false).catch(() => true); if (!libre) throw new Error('PSEUDO_PRIS'); }
         const r = await (m0 === 'up' ? signUp(t, c) : m0 === 'sos' ? recover(t, $('#ngCle').value, c) : signIn(t, c));
-        if (m0 === 'up') { try { await api('/rest/v1/profils?on_conflict=user_id', { method: 'POST', auth: true, body: Object.assign({ user_id: r.user.id }, ident), prefer: 'return=minimal,resolution=merge-duplicates' }); say('compte'); } catch (e) { console.warn('[nuage] profil non enregistré', e.message); } }
+        if (m0 === 'up') { try { await api('/rest/v1/profils', { method: 'POST', auth: true, body: Object.assign({ user_id: r.user.id }, ident), prefer: 'return=minimal' }).catch(e => { if (e.status === 409) return api('/rest/v1/profils?user_id=eq.' + r.user.id, { method: 'PATCH', auth: true, body: ident, prefer: 'return=minimal' }); throw e; }); say('compte'); } catch (e) { console.warn('[nuage] profil non enregistré', e.message); } }
         // réussite confirmée par le serveur : seulement maintenant
         go.classList.add('is-ok'); go.removeAttribute('aria-busy'); go.querySelector('span').textContent = m0 === 'up' ? 'Compte créé. Préparation de votre espace…' : 'Connexion réussie. Préparation de votre espace…'; P && P.etat('ok');
         const fin = () => toast(m0 === 'up' ? 'Compte créé. Vos annonces partent maintenant.' : m0 === 'sos' ? 'Nouveau code enregistré. Vous êtes connecté.' : 'Connecté. Vos annonces partent maintenant.');

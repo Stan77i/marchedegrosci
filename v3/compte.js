@@ -31,8 +31,15 @@
   async function enregistrer(champs) {
     const u = me(); if (!u) throw new Error('Connectez-vous d’abord.');
     const row = Object.assign({ user_id: u.id }, champs);
-    const r = await N().api('/rest/v1/profils?on_conflict=user_id', { method: 'POST', auth: true, body: row, prefer: 'return=representation,resolution=merge-duplicates' })
-      .catch(e => { throw /profils_pseudo_unique|duplicate/i.test(e.message) ? new Error('Ce pseudonyme est déjà pris. Essayez-en un autre.') : /prenom_check/.test(e.message) ? new Error('Prénom : des lettres uniquement (espaces, tirets et apostrophes acceptés).') : /nom_check/.test(e.message) ? new Error('Nom : des lettres uniquement.') : /pseudo_check/.test(e.message) ? new Error('Pseudonyme : 3 à 24 caractères, lettres, chiffres, point, tiret ou _.') : /profils|schema cache/i.test(e.message) && e.status === 404 ? new Error('Les profils ne sont pas encore activés sur le serveur.') : e; });
+    // modifier la ligne existante (sans toucher à user_id) ; la créer seulement si elle n'existe pas encore.
+    // (l'ancien « créer ou remplacer » réécrivait user_id et exigeait un droit de modification sur cette colonne : « permission denied »)
+    const ecrire = async () => {
+      const maj = await N().api('/rest/v1/profils?user_id=eq.' + u.id, { method: 'PATCH', auth: true, body: champs, prefer: 'return=representation' });
+      if (maj && maj.length) return maj;
+      return N().api('/rest/v1/profils', { method: 'POST', auth: true, body: row, prefer: 'return=representation' });
+    };
+    const r = await ecrire()
+      .catch(e => { throw /profils_pseudo_unique|duplicate/i.test(e.message) ? new Error('Ce pseudonyme est déjà pris. Essayez-en un autre.') : /prenom_check/.test(e.message) ? new Error('Prénom : des lettres uniquement (espaces, tirets et apostrophes acceptés).') : /nom_check/.test(e.message) ? new Error('Nom : des lettres uniquement.') : /pseudo_check/.test(e.message) ? new Error('Pseudonyme : 3 à 24 caractères, lettres, chiffres, point, tiret ou _.') : /profils|schema cache/i.test(e.message) && e.status === 404 ? new Error('Les profils ne sont pas encore activés sur le serveur.') : /permission denied|row-level security/i.test(e.message) ? new Error('Le serveur a refusé l’enregistrement. Reconnectez-vous, puis réessayez.') : e; });
     profil = (r && r[0]) || Object.assign(profil || {}, row); W(KP, profil); cacheMe(); dispatchEvent(new CustomEvent('mdg:profil')); return profil;
   }
 

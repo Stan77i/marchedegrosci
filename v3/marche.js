@@ -22,7 +22,7 @@
       producers.push({ id, name: who, regionSlug: o.regionSlug, city: o.city || c[2], latitude: c[0] + jitter(o.id, .3), longitude: c[1] + jitter(o.id + 'x', .3),
         phone: (o.producer && o.producer.phone) || '', published: true, approxCoords: true });
       offers.push({ id: o.id, producerId: id, productSlug: o.productSlug, price: o.price ?? null, currency: 'XOF', unit: o.unit || 'kg', quantity: +o.quantity || 0, city: o.city || c[2], regionSlug: o.regionSlug,
-        availableFrom: o.availableFrom || 'maintenant', createdAt: o.createdAt || null, phone: (o.producer && o.producer.phone) || '', seller: who, published: true });
+        availableFrom: o.availableFrom || 'maintenant', createdAt: o.createdAt || null, phone: (o.producer && o.producer.phone) || '', seller: who, published: true, negociable: o.negociable !== false });
     });
     M.producers = producers; M.offers = offers; M.demands = [];
     return M;

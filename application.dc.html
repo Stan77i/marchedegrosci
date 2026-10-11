@@ -14,6 +14,7 @@
 <script>/* ordinateur ou tablette : ouvre le site (même adresse, mêmes données). ?app=1 force l'application */(function(){try{var q=location.search;if(/[?&]app=1/.test(q)){sessionStorage.setItem("mdg-app","1");sessionStorage.removeItem("mdg-ordi")}var app=sessionStorage.getItem("mdg-app")==="1",tel=matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<768;if(!tel&&!app)location.replace("index-v3.html"+(location.hash||"#/"))}catch(e){}})();</script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
 <script src="v3/nuage.js"></script>
+<script src="v3/sons.js"></script>
 <script src="v3/negoce.js"></script>
 <script src="./support.js"></script>
 </head>
@@ -257,6 +258,7 @@
     <sc-if value="{{ vS2 }}" hint-placeholder-val="{{ false }}">
       <div style="display:flex;flex-direction:column;gap:16px;animation:mkFade .35s both">
         <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Prix par {{ vf.unit }} <span style="color:#847966;font-weight:400">(F CFA, facultatif)</span></span><input value="{{ vf.price }}" onChange="{{ vfh.price }}" inputmode="numeric" placeholder="ex. 350" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:17px;outline:none;color:#171512"><sc-if value="{{ vRef.on }}" hint-placeholder-val="{{ false }}"><span style="font-size:12.5px;color:#61846b">{{ vRef.txt }}</span></sc-if></div>
+        <button onClick="{{ vfh.neg }}" style="align-self:flex-start;min-height:44px;padding:0 16px;border-radius:22px;border:1.5px solid #171512;background:{{ vfh.negBg }};color:{{ vfh.negFg }};font-size:14px;font-weight:600">{{ vfh.negTxt }}</button>
         <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Région</span><select value="{{ vf.region }}" onChange="{{ vfh.region }}" style="height:52px;border-radius:14px;border:1px solid {{ vEb.region }};background:#fffaf3;padding:0 10px;font-size:15px;color:#171512"><option value="">Choisissez une région</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}">{{ r.name }}</option></sc-for></select></div>
         <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Ville ou village</span><input value="{{ vf.city }}" onChange="{{ vfh.city }}" placeholder="{{ vCityPh }}" style="height:52px;border-radius:14px;border:1px solid rgba(23,21,18,.18);background:#fffaf3;padding:0 14px;font-size:16px;outline:none;color:#171512"></div>
         <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:14px;font-weight:500">Disponible</span><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ vAvail }}" as="u" hint-placeholder-count="2"><button onClick="{{ u.go }}" style="height:38px;padding:0 14px;border-radius:19px;border:1px solid {{ u.bd }};background:{{ u.bg }};color:{{ u.color }};font-size:13.5px;font-weight:500">{{ u.l }}</button></sc-for></div>
@@ -558,7 +560,7 @@ class Component extends DCLogic {
     this.state = { ready: false, stack: ['home'], fam: 0, rot: 0, dragging: false, slug: 'tomate', vid: null, infoK: 'comment-ca-marche',
       menu: false, sheet: null, sheetDy: 0, pick: null, pq: '', mode: 'jai', mf: this.blankM('tomate'), mErr: {}, done: null,
       aq: '', af: { cat: '', reg: '', qmin: '', pmax: '' }, fOpen: false,
-      vf: Object.assign({ step: 1, mode: 'moi', slug: '', photo: '', qty: '', unit: 'kg', price: '', region: me.region || '', city: me.city || '', avail: 'maintenant', date: '', agent: '', name: me.name || '', phone: me.phone || '' }, draft, { step: 1 }), vErr: {},
+      vf: Object.assign({ step: 1, mode: 'moi', slug: '', photo: '', qty: '', unit: 'kg', price: '', neg: true, region: me.region || '', city: me.city || '', avail: 'maintenant', date: '', agent: '', name: me.name || '', phone: me.phone || '' }, draft, { step: 1 }), vErr: {},
       df: { slug: '', qty: '', unit: 'kg', region: me.region || '', deadline: 'semaine', budget: '', name: me.name || '', phone: me.phone || '' }, dErr: {},
       cprod: '', cme: me.region || '', csel: '', month: new Date().getMonth() + 1,
       toast: '', toastOn: false, splash: this.props.splash === false ? 'off' : 'on', splashLine: false, vw: window.innerWidth, vh: window.innerHeight, clock: '', tick: 0 };
@@ -636,8 +638,8 @@ class Component extends DCLogic {
   hashOf(s, st) { st = st || this.state; return s === 'fiche' ? '#/produits/' + st.slug : s === 'vendeur' ? '#/producteurs/' + st.vid : s === 'info' ? '#/' + st.infoK : (HASH[s] || '#/'); }
 
   /* ——— données (partagées avec le site) ——— */
-  offers() { const A = window.MDGApp, N = window.MDGNuage; return A.read('offres').concat(N ? N.list('offres') : []).filter(o => o && o.productSlug).map(o => ({ id: o.id, remote: !!o._remote, rid: o._rid, kind: 'offre', slug: o.productSlug, qty: +o.quantity || 0, unit: o.unit || 'kg', region: o.regionSlug, city: o.city || '', price: o.price != null && o.price !== '' ? +o.price : null, when: o.availableFrom || 'maintenant', name: (o.producer && o.producer.name) || o.producerName || 'Vendeur', phone: (o.producer && o.producer.phone) || o.phone || '', at: o.createdAt, photo: o.photo || '', agent: o.agent || '' })); }
-  demands() { const A = window.MDGApp, N = window.MDGNuage; return A.read('demandes').concat(N ? N.list('demandes') : []).filter(d => d && d.productSlug).map(d => ({ id: d.id, remote: !!d._remote, rid: d._rid, kind: 'demande', slug: d.productSlug, qty: +d.quantity || 0, unit: d.unit || 'kg', region: d.regionSlug, city: d.city || '', deadline: d.deadline || 'semaine', budget: d.budget != null && d.budget !== '' ? +d.budget : null, name: d.buyerName || 'Acheteur', phone: d.phone || (d.buyerContact && d.buyerContact.tel) || '', at: d.createdAt })); }
+  offers() { const A = window.MDGApp, N = window.MDGNuage; return A.read('offres').concat(N ? N.list('offres') : []).filter(o => o && o.productSlug).map(o => ({ id: o.id, remote: !!o._remote, rid: o._rid, kind: 'offre', slug: o.productSlug, qty: +o.quantity || 0, unit: o.unit || 'kg', region: o.regionSlug, city: o.city || '', price: o.price != null && o.price !== '' ? +o.price : null, when: o.availableFrom || 'maintenant', name: (o.producer && o.producer.name) || o.producerName || 'Vendeur', phone: (o.producer && o.producer.phone) || o.phone || '', at: o.createdAt, photo: o.photo || '', agent: o.agent || '', neg: o.negociable !== false })); }
+  demands() { const A = window.MDGApp, N = window.MDGNuage; return A.read('demandes').concat(N ? N.list('demandes') : []).filter(d => d && d.productSlug).map(d => ({ id: d.id, remote: !!d._remote, rid: d._rid, kind: 'demande', slug: d.productSlug, qty: +d.quantity || 0, unit: d.unit || 'kg', region: d.regionSlug, city: d.city || '', deadline: d.deadline || 'semaine', budget: d.budget != null && d.budget !== '' ? +d.budget : null, name: d.buyerName || 'Acheteur', phone: d.phone || (d.buyerContact && d.buyerContact.tel) || '', at: d.createdAt, neg: d.negociable !== false })); }
   prod(slug) {
     const M = window.MDG, A = window.MDGApp, p = M.products.find(x => x.slug === slug) || { slug, name: slug, categorySlug: 'autres-produits-vivriers', aliases: [] };
     const c = M.categories.find(x => x.slug === p.categorySlug) || { name: '' }, sack = A.SACK[slug] != null;
@@ -655,7 +657,7 @@ class Component extends DCLogic {
       price: off ? (x.price ? A.fmt(x.price) + ' F CFA / ' + x.unit : 'Prix à discuter') : (x.budget ? 'Budget ' + A.fmt(x.budget) + ' F / ' + x.unit : 'Budget à discuter'),
       hasPhoto: !!x.photo, photo: x.photo, img: x.photo || P.thumb, fit: x.photo ? 'cover' : P.fit,
       hasTel: !!t, tel: t ? 'tel:+225' + t : '', wa: t ? 'https://wa.me/225' + t + '?text=' + encodeURIComponent('Bonjour, je vous contacte via Marché de Gros pour : ' + P.name + ' (' + A.fmt(x.qty) + ' ' + x.unit + ').') : '',
-      canNeg: !!(x.remote && x.rid), neg: () => window.MDGNegoce && window.MDGNegoce.proposer({ cible: off ? 'offre' : 'demande', id: x.rid, produit: P.name, prix: off ? x.price : x.budget, unite: x.unit, quantite: x.qty || null, ville: this.place(x), nom: x.name }),
+      canNeg: !!(x.remote && x.rid), neg: () => window.MDGNegoce && window.MDGNegoce.proposer({ cible: off ? 'offre' : 'demande', id: x.rid, produit: P.name, prix: off ? x.price : x.budget, unite: x.unit, quantite: x.qty || null, ville: this.place(x), nom: x.name, negociable: x.neg !== false }),
       canRep: !!x.remote, rep: () => { if (!confirm('Signaler cette annonce ? (fausse, trompeuse ou déplacée)')) return; window.MDGNuage.report(off ? 'offres' : 'demandes', x.rid, 'application').then(() => this.say('Annonce signalée, merci')).catch(() => this.say('Signalement impossible sans réseau')); },
       go: () => off ? this.openVendeur(x.id) : this.openFiche(x.slug) };
   }
@@ -671,7 +673,7 @@ class Component extends DCLogic {
   pubOffer(f) {
     const A = window.MDGApp, P = this.prod(f.slug), tel = A.tel10(f.phone), name = (f.name || '').trim() || 'Vendeur';
     const e = { id: 'off-' + Date.now(), createdAt: new Date().toISOString(), productSlug: f.slug, productLabel: P.name, productName: P.name, quantity: +String(f.qty).replace(',', '.'), unit: f.unit, regionSlug: f.region, regionName: this.regName(f.region),
-      price: A.digits(f.price) ? +A.digits(f.price) : null, city: (f.city || '').trim() || (A.REG[f.region] || [])[2] || '', availableFrom: f.when || 'maintenant', producer: { name, phone: tel }, producerName: name };
+      price: A.digits(f.price) ? +A.digits(f.price) : null, city: (f.city || '').trim() || (A.REG[f.region] || [])[2] || '', availableFrom: f.when || 'maintenant', producer: { name, phone: tel }, producerName: name, negociable: f.neg !== false };
     if (f.agent) e.agent = f.agent.trim(); if (f.photo) e.photo = f.photo;
     let ok = A.write('offres', [e].concat(A.read('offres')).slice(0, 30));
     if (!ok && e.photo) { delete e.photo; ok = A.write('offres', [e].concat(A.read('offres')).slice(0, 30)); if (ok) this.say('Photo trop lourde pour cet appareil : offre publiée sans photo'); }
@@ -813,7 +815,7 @@ class Component extends DCLogic {
       if (vf.step === 3 && !A.tel10(vf.phone)) e.phone = 1;
       if (Object.keys(e).length) { this.setState({ vErr: e }); this.say('Complétez les champs en orange'); return; }
       if (vf.step < 3) { this.setState(s => ({ vf: Object.assign({}, s.vf, { step: s.vf.step + 1 }) })); return; }
-      const ok = this.pubOffer({ slug: vf.slug, qty: vf.qty, unit: vf.unit, price: vf.price, region: vf.region, city: vf.city, when: vf.avail === 'date' && vf.date ? vf.date : 'maintenant', name: vf.name, phone: vf.phone, agent: vf.mode === 'agent' ? vf.agent : '', photo: vf.photo });
+      const ok = this.pubOffer({ slug: vf.slug, qty: vf.qty, unit: vf.unit, price: vf.price, region: vf.region, city: vf.city, when: vf.avail === 'date' && vf.date ? vf.date : 'maintenant', name: vf.name, phone: vf.phone, agent: vf.mode === 'agent' ? vf.agent : '', photo: vf.photo, neg: vf.neg !== false });
       if (!ok) { this.say('Mémoire pleine : retirez une ancienne publication'); return; }
       ls('mdg-app:brouillon-offre', null); this.setState(s => ({ vf: Object.assign({}, s.vf, { step: 1, slug: '', qty: '', price: '', photo: '', date: '' }) })); this.celebrate('offre', ok.productSlug); };
     const eb = (err, k) => err[k] ? '#E07A3F' : 'rgba(23,21,18,.18)';
@@ -925,7 +927,7 @@ class Component extends DCLogic {
       vS1: vf.step === 1, vS2: vf.step === 2, vS3: vf.step === 3, pickVendre: () => this.openPick('vendre'), vEb: { slug: eb(S.vErr, 'slug'), qty: eb(S.vErr, 'qty'), region: eb(S.vErr, 'region'), phone: eb(S.vErr, 'phone') },
       vProdL: VP ? VP.name : 'Choisir un produit', vPhotoL: vf.photo ? 'Photo ajoutée · changer' : 'Prendre ou choisir une photo',
       onPhoto: e => { const f = e.target.files && e.target.files[0]; if (f) A.photo(f).then(d => this.setState(s => ({ vf: Object.assign({}, s.vf, { photo: d }) }))).catch(() => this.say('Photo illisible')); },
-      vf, vfh: { qty: setV('qty'), price: setV('price'), region: setV('region'), city: setV('city'), date: setV('date'), agent: setV('agent'), name: setV('name'), phone: setV('phone') },
+      vf, vfh: { neg: () => this.setState(s => ({ vf: Object.assign({}, s.vf, { neg: s.vf.neg === false }) })), negBg: vf.neg === false ? 'transparent' : '#171512', negFg: vf.neg === false ? '#171512' : '#F5F0E6', negTxt: vf.neg === false ? 'Prix ferme : pas de proposition' : 'J’accepte les propositions de prix', qty: setV('qty'), price: setV('price'), region: setV('region'), city: setV('city'), date: setV('date'), agent: setV('agent'), name: setV('name'), phone: setV('phone') },
       vUnits: A.UNITS.map(u => Object.assign(chip(vf.unit === u), { l: u, go: () => this.setVf({ unit: u }) })),
       vRef: { on: !!(vmk && (vmk.ok || vlow)), txt: vmk && vmk.ok ? 'Prix observé du marché : ' + vmk.range : vlow ? 'Autre vendeur : ' + A.fmt(vlow.price) + ' F / ' + vlow.unit + ' à ' + this.place(vlow) : '' },
       vCityPh: (A.REG[vf.region] || [])[2] ? 'ex. ' + A.REG[vf.region][2] : 'ex. Bouaké', vAvail: [['maintenant', 'Maintenant'], ['date', 'À partir du…']].map(a => Object.assign(chip(vf.avail === a[0]), { l: a[1], go: () => this.setVf({ avail: a[0] }) })), vDateOn: vf.avail === 'date',

@@ -1250,8 +1250,9 @@ body.tzmode .tz{height:100svh}
 <script src="v2/data.js"></script>
 <script src="v3/marqueurs.js?v=20261010a"></script>
 <script src="v3/terre.js?v=20261011a"></script>
-<script src="v3/nuage.js?v=20261011b"></script>
-<script src="v3/negoce.js?v=20261011b"></script>
+<script src="v3/nuage.js?v=20261012a"></script>
+<script src="v3/sons.js?v=20261012a"></script>
+<script src="v3/negoce.js?v=20261012a"></script>
 <script src="v3/marche.js?v=20261011c"></script>
 <script src="v2/search.js"></script>
 <script src="v2/map.js"></script>
@@ -1440,7 +1441,7 @@ function offerCard(o, { showProduct = true, need = null, k = 0 } = {}) {
     <div class="o-q"><small>${avail(o)}</small><b>${o.quantity ? fmt(o.quantity) : '—'}</b><small>${esc(o.unit)}</small></div>
     <div class="o-m">${price(o)}<span><svg class="ico"><use href="#i-pin"/></svg>${esc(o.city)}${o.regionName !== o.city ? ', ' + esc(o.regionName) : ''}${dist}</span></div>
     ${cov != null ? `<div class="cover"><i style="--w:${cov}%"></i>${cov >= 100 ? 'Couvre tout votre besoin' : `Couvre ${cov} % de votre besoin`}</div>` : ''}
-    <div class="o-a">${contactButtons(o)}${String(o.id).startsWith('n-') ? `<button type="button" class="btn btn-secondary o-neg" data-negocier="${esc(JSON.stringify({ cible: 'offre', id: String(o.id).slice(2), produit: o.productName || o.productLabel || '', prix: o.price || null, unite: o.unit, quantite: o.quantity || null, ville: o.city || '', nom: o.producerName || '' }))}"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h11M4 7l3-3M4 7l3 3M20 17H9m11 0-3-3m3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Proposer un prix</button>` : ''}</div>
+    <div class="o-a">${contactButtons(o)}${String(o.id).startsWith('n-') ? `<button type="button" class="btn btn-secondary o-neg" data-negocier="${esc(JSON.stringify({ cible: 'offre', id: String(o.id).slice(2), produit: o.productName || o.productLabel || '', prix: o.price || null, unite: o.unit, quantite: o.quantity || null, ville: o.city || '', nom: o.producerName || '', negociable: o.negociable !== false }))}"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h11M4 7l3-3M4 7l3 3M20 17H9m11 0-3-3m3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>${o.negociable === false ? 'Proposer d’acheter' : 'Proposer un prix'}</button>` : ''}</div>
     ${String(o.id).startsWith('n-') ? `<button type="button" class="o-rep" data-rep="${esc(String(o.id).slice(2))}">Signaler cette annonce</button>` : ''}
   </article>`;
 }
@@ -1655,7 +1656,7 @@ function catalogue(view, _, qs) {
   const regionSlug = reg || (p && p.location ? p.location.regionSlug : '');
   const link = (o) => { const n = new URLSearchParams({ q, cat, region: reg, vue, qmin: qmin || '', pmax: pmax || '', ...o }); [...n.keys()].forEach(k => !n.get(k) && n.delete(k)); return '#/catalogue' + (n.toString() ? '?' + n : ''); };
   const nF = [cat, reg, qmin, pmax].filter(Boolean).length;
-  let html = `<div class="page wrap">
+  let html = `<div class="dk" data-tone="dark"><div class="page wrap">
     <header class="ac-h"><div class="caps kicker">Acheter</div><p class="ac-t">Trouvez un produit, contactez le producteur.</p></header>
     <div class="inner-search">${searchBox(q)}</div>`;
   let offers = [], points = [], dest = null, need = null, title = '', lede = '';
@@ -1706,14 +1707,14 @@ function catalogue(view, _, qs) {
     html += `<div class="res-h"><h1>${cat ? esc(catBy[cat].name) : 'Catalogue'}</h1><p>${plural(list.length, 'produit', 'produits')}${regionSlug ? ` avec une offre en ${esc(regBy[regionSlug].name)}` : ''}</p></div>`;
     html += vue === 'carte' ? `<div class="split"><div class="list" id="list">${regOffers.map((o, k) => offerCard(o, { k })).join('') || (window.MDGV3 ? window.MDGV3.nst({ title: 'Pas encore d\u2019offre ici', text: 'Les offres publiées apparaîtront ici.' }) : '')}</div>${mapBox('Producteurs')}</div>`
       : `<div class="pgrid" id="pgrid"></div><div class="morew" id="morew"><button class="more" id="more" hidden><span></span><i aria-hidden="true"><svg class="ico"><use href="#i-arrow"/></svg></i></button><p class="more-end" id="moreEnd" hidden>C'est tout pour l'instant. <a href="#/demande">Vous ne trouvez pas ? Publier une demande</a></p></div>`;
-    view.innerHTML = html + '</div>';
+    view.innerHTML = html + '</div></div>';
     if (vue !== 'carte') {
       let shown = 0; const grid = $('#pgrid'), more = $('#more'), STEP = 24;
       const add = focus => { const from = shown; grid.insertAdjacentHTML('beforeend', list.slice(shown, shown + STEP).map((x, k) => productCard(x, k)).join('')); shown += STEP; const left = list.length - shown; more.hidden = left <= 0; $('#moreEnd').hidden = left > 0 || list.length <= STEP; $('span', more).textContent = `${Math.min(STEP, left)} ${left > 1 ? 'produits' : 'produit'} de plus, sur ${list.length}`; if (focus) { const el = grid.children[from]; el && el.querySelector('a,button') ? el.querySelector('a,button').focus({ preventScroll: true }) : el && el.focus && el.focus({ preventScroll: true }); } };
       more.onclick = () => add(true); add();
     }
   }
-  if (!view.innerHTML) view.innerHTML = html + '</div>';
+  if (!view.innerHTML) view.innerHTML = html + '</div></div>';
   bindSearch(view);
   const qi = $('#q', view); if (q) { $('#und', view).innerHTML = understood(p, true); }
   $$('[data-rm]', view).forEach(b => b.onclick = () => {
@@ -2048,7 +2049,7 @@ function product(view, parts, qs) {
 function producer(view, parts) {
   const pr = prBy[parts[1]]; if (!pr) return notFound(view);
   const offs = OFFERS.filter(o => o.producerId === pr.id);
-  view.innerHTML = `<div class="page wrap">
+  view.innerHTML = `<div class="dk" data-tone="dark"><div class="page wrap">
     <nav class="crumbs"><a href="#/catalogue">Catalogue</a><span>/</span><span>Producteurs</span></nav>
     <div class="fiche" style="align-items:start">
       <div class="ftitle">
@@ -2066,7 +2067,7 @@ function producer(view, parts) {
     </div>
     <div class="sub-h"><h2>Ses offres</h2></div>
     <div class="pgrid" style="grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))">${offs.map((o, k) => offerCard(o, { k })).join('')}</div>
-  </div>`;
+  </div></div>`;
   liveMap(view, { points: [{ producer: pr, offers: offs }], focus: pr.id, zones: [[pr.latitude, pr.longitude]] }).catch(() => {});
   bindOffers(view, null, null);
 }
@@ -2389,9 +2390,9 @@ function info(view, parts) {
     'aide-producteur': ['Aide producteur', 'Votre récolte, visible des acheteurs.', [['Publiez en 2 minutes', 'Produit, photo, quantité, prix, lieu.'], ['Un agent peut vous aider', 'Un agent terrain peut publier l\u2019offre à votre place.'], ['Soyez contacté en direct', 'L\u2019acheteur vous écrit sur WhatsApp ou vous appelle.']]],
     confiance: ['Confiance', 'Ce que nous affichons, et ce que nous n\u2019affichons pas.', [['Aucune donnée inventée', 'Seules les offres et demandes réellement publiées apparaissent : aucun producteur, aucune offre, aucun prix fictif.'], ['Comptes et signalements', 'Publier demande un compte (numéro de téléphone + code secret). Chaque annonce peut être signalée : trois signalements de comptes différents la masquent en attendant une vérification.'], ['Pas de faux avis', 'Aucune étoile, aucun avis, aucun chiffre de ventes n\u2019est inventé.'], ['Vérification à venir', 'Le badge « Vérifié » n\u2019apparaîtra qu\u2019après un vrai contrôle.']]],
   }[parts[0]];
-  view.innerHTML = `<div class="page wrap"><div class="caps kicker">${T[0]}</div><h1 class="sec-h">${T[1]}</h1><div class="how">${T[2].map(([a, b], i) => `<div><i class="dot" style="display:block;background:${['var(--color-accent)', 'var(--color-accent-2-600)', 'var(--color-text)'][i]}"></i><h4>${a}</h4><p>${b}</p></div>`).join('')}</div></div>`;
+  view.innerHTML = `<div class="dk" data-tone="dark"><div class="page wrap"><div class="caps kicker">${T[0]}</div><h1 class="sec-h">${T[1]}</h1><div class="how">${T[2].map(([a, b], i) => `<div><i class="dot" style="display:block;background:${['var(--color-accent)', 'var(--color-accent-2-600)', 'var(--color-recolte)', 'var(--color-terre-400)'][i % 4]}"></i><h4>${a}</h4><p>${b}</p></div>`).join('')}</div></div></div>`;
 }
-function notFound(view) { view.innerHTML = `<div class="page wrap"><div class="caps kicker">Page introuvable</div><h1 class="sec-h">Cette page n'existe pas.</h1><p class="lede"><a href="#/catalogue">Chercher dans le catalogue</a></p></div>`; }
+function notFound(view) { view.innerHTML = `<div class="dk" data-tone="dark"><div class="page wrap"><div class="caps kicker">Page introuvable</div><h1 class="sec-h">Cette page n'existe pas.</h1><p class="lede"><a href="#/catalogue">Chercher dans le catalogue</a></p></div></div>`; }
 
 function debugSearch() {
   if ($('#debug')) return;

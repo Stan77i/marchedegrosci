@@ -1,7 +1,7 @@
 /* Marché de Gros CI — service worker (utilisation hors connexion).
    Pour publier une mise à jour du code : incrémenter CACHE (mgci-v1 -> mgci-v2 ...).
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v13';
+const CACHE = 'mgci-v14';
 
 // Indispensable : si l'un de ces fichiers manque, l'installation échoue et l'ancienne version reste active.
 const CORE = [
@@ -81,6 +81,7 @@ const CORE = [
   "vendor/ci-hydro.json",
   "v3/terre.js",
   "v3/nuage.js",
+  "v3/sons.js",
   "v3/negoce.js"
 ];
 

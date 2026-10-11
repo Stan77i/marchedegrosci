@@ -129,3 +129,24 @@ Téléphone, tablette, ordinateur : première visite en ligne, puis réseau coup
 - Vérifié (transactions annulées) : un acheteur propose, le vendeur contre-propose, l'acheteur accepte → accord au bon prix ; personne ne peut proposer sur sa propre annonce, accepter son propre prix, accepter une proposition refusée, écrire dans la négociation des autres ni la lire ; un visiteur sans compte ne peut rien appeler ; un compte ordinaire n'a pas accès aux fonctions d'administration.
 - Bug corrigé : le nom de l'agent partait vers la base sous la forme « [object Object] ».
 - `sw.js` : `v3/negoce.js` en cache, `CACHE = 'mgci-v13'`.
+
+---
+
+# Négociation complète, langage sonore, pages claires réparées — 12 octobre 2026
+**Pages restées claires** (elles n'avaient pas le fond sombre des autres) : Acheter avec une recherche (« 1 vendeur », « Tomate »…), fiche producteur, Comment ça marche, Aide producteur, Confiance, page introuvable. Elles passent au sombre avec une seule couche de réglages (`.dk` dans `v3/pages.css`) qui inverse l'échelle des neutres : cartes d'offre, puces, filtres, carte et notes suivent sans être réécrits. Vérifié sur ordinateur (1440) et tablette (820).
+
+**Négociation** (mission « Négociation commerciale intelligente ») — base : `supabase/schema-3.sql` (installé et vérifié) ; écran : `v3/negoce.js`.
+- Une proposition = **prix + quantité + conditions**. Elle attend 48 h puis **expire** (la base refuse d'accepter une proposition expirée).
+- Sort de chaque proposition, gardé dans l'historique : en attente, acceptée, refusée, **retirée** (par son auteur tant qu'il n'y a pas de réponse), remplacée (contre-proposition), expirée.
+- L'acceptation passe par un **résumé** (quantité × prix = total, conditions) puis « Confirmer l'accord ». L'accord est un **instantané figé** (prix, quantité, conditions, date) : la base refuse toute modification, même directe.
+- **Prix ferme** : à la publication, « J'accepte les propositions de prix » (coché par défaut, site et application). Sinon seul le prix affiché peut être proposé.
+- **Plusieurs acheteurs sur une même offre** : la base refuse un accord qui dépasserait la quantité annoncée (« il reste 5 sacs ») ; le vendeur voit « 15 / 20 sacs déjà convenus · 1 autre négociation en cours ».
+- Annonce retirée ou masquée : les négociations ouvertes se ferment (« Annonce retirée »), les accords restent.
+- Concurrence : accepter une proposition qui a changé entre-temps est refusé (« Relisez la dernière proposition »). Double retrait, réponse à sa propre proposition, action après l'accord : refusés.
+- Saisie : total et écart en direct, alerte non bloquante si le prix est très loin du prix affiché (zéro en trop ?) ou si l'écart dépasse 40 %, quantité limitée à celle de l'annonce.
+- Prix affiché, prix proposé et prix convenu ne sont jamais confondus. Un accord n'est ni un paiement ni une livraison (rappelé à l'écran).
+- Vérifié dans une transaction annulée : proposition 900 × 15 → contre-proposition → retrait → expiration → accord à 960 × 15 ; prix ferme, quantité trop grande, référence périmée, double retrait, sur-vente et modification après accord refusés ; annonce retirée → négociation fermée, accord conservé.
+
+**Langage sonore** (`v3/sons.js`) : courtes notes de **balafon** synthétisées dans le navigateur (aucun fichier). Désactivé par défaut, activable dans « Mon compte → Sons » ou depuis l'icône haut-parleur des négociations, avec réglage par catégorie, volume et bouton « Écouter ». Hiérarchie : accord (3 notes montantes) > proposition reçue (2 notes montantes) > refus / retrait / expiration (2 notes descendantes) > nouvelle annonce sur un de vos produits (1 note, désactivée par défaut). Les messages écrits ne font pas de son. Les événements rapprochés donnent un seul son ; onglet en arrière-plan : le titre affiche le nombre d'événements et un seul son joue au retour. Chaque son a son message à l'écran. Aucun son pour une activité fictive.
+
+Limites : pas de notification quand le site est fermé (cela demanderait un service d'envoi de notifications) ; les réponses arrivent à la prochaine lecture (toutes les minutes, toutes les 7 s dans une négociation ouverte). `sw.js` : `v3/sons.js` en cache, `CACHE = 'mgci-v14'`.

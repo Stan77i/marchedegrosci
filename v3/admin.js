@@ -140,8 +140,8 @@
       return top('Négociations', fmt(L.length) + ' au total : ' + fmt(L.filter(n => n.statut === 'ouverte').length) + ' en cours, ' + fmt(L.filter(n => n.statut === 'conclue').length) + ' conclues.') + `<div class="list">${L.length ? L.map(n => `
         <div class="row" data-row="${n.id}"><span class="mk ${n.cible === 'offre' ? 'o' : 'd'}"></span>
           <div><b>${esc(n.produit || 'Annonce')}${n.quantite ? ' · ' + fmt(n.quantite) + ' ' + esc(n.unite || '') : ''}</b><small>${esc(n.ville || '')} · mis à jour ${ago(n.updated_at)}</small></div>
-          <div class="c3"><small>Affiché ${n.prix_annonce ? fmt(n.prix_annonce) + ' F' : '—'}</small><small>${n.statut === 'conclue' ? 'Accord ' + fmt(n.prix_final) + ' F' : 'Dernier prix ' + (n.dernier_prix ? fmt(n.dernier_prix) + ' F' : '—')}</small></div>
-          <div class="c4"><span class="tag ${n.statut === 'conclue' ? 'ok' : n.statut === 'close' ? '' : 'acc'}">${n.statut === 'conclue' ? 'conclue' : n.statut === 'close' ? 'arrêtée' : 'en cours'}</span></div>
+          <div class="c3"><small>Affiché ${n.prix_annonce ? fmt(n.prix_annonce) + ' F' : '—'}</small><small>${n.statut === 'conclue' ? 'Accord ' + fmt(n.prix_final) + ' F' + (n.quantite_finale ? ' × ' + fmt(n.quantite_finale) : '') : 'Dernier prix ' + (n.dernier_prix ? fmt(n.dernier_prix) + ' F' + (n.dernier_quantite ? ' × ' + fmt(n.dernier_quantite) : '') : '—')}</small></div>
+          <div class="c4"><span class="tag ${n.statut === 'conclue' ? 'ok' : n.statut === 'close' ? '' : 'acc'}">${n.statut === 'conclue' ? 'conclue' : n.statut === 'close' ? (n.motif_fin === 'annonce_retiree' ? 'annonce retirée' : 'arrêtée') : n.dernier_par && n.expire_le && Date.parse(n.expire_le) > Date.now() ? 'proposition en attente' : 'en cours'}</span></div>
           <div class="acts"><button class="btn sm" data-fil="${n.id}">Lire</button></div></div>`).join('') : '<div class="empty"><b>Aucune négociation</b>Elles apparaîtront ici dès qu’un acheteur proposera un prix.</div>'}</div>`;
     }
   };
@@ -196,9 +196,9 @@
       try {
         const M = await N.api('/rest/v1/messages?select=*&negociation_id=eq.' + n.id + '&order=created_at.asc', { auth: true });
         const role = u => u === n.proprio_id ? (n.cible === 'offre' ? 'vendeur' : 'acheteur') : (n.cible === 'offre' ? 'acheteur' : 'vendeur');
-        const lab = { texte: '', prix: 'propose ', accord: 'accepte ', refus: 'refuse ', fin: 'arrête la négociation' };
+        const lab = { texte: '', prix: 'propose ', accord: 'accepte ', refus: 'refuse ', retrait: 'retire sa proposition ', fin: 'arrête la négociation' };
         const el = document.createElement('div'); el.className = 'fil';
-        el.innerHTML = M.length ? M.map(m => `<div class="${m.auteur_id === n.proprio_id ? '' : 'p'}"><em>${role(m.auteur_id)} · ${esc(tel(m.auteur_id))} · ${ago(m.created_at)}</em>${lab[m.genre]}${m.prix ? '<b>' + fmt(m.prix) + ' F</b>' : ''}${m.texte ? (m.prix ? ' — ' : '') + esc(m.texte) : ''}</div>`).join('') : '<div>Aucun message.</div>';
+        el.innerHTML = M.length ? M.map(m => `<div class="${m.auteur_id === n.proprio_id ? '' : 'p'}"><em>${role(m.auteur_id)} · ${esc(tel(m.auteur_id))} · ${ago(m.created_at)}</em>${lab[m.genre]}${m.prix ? '<b>' + fmt(m.prix) + ' F' + (m.quantite ? ' × ' + fmt(m.quantite) : '') + '</b>' : ''}${m.issue && m.genre === 'prix' ? ' <span class="tag">' + ({ en_attente: 'en attente', acceptee: 'acceptée', refusee: 'refusée', retiree: 'retirée', remplacee: 'remplacée', expiree: 'expirée' }[m.issue] || '') + '</span>' : ''}${m.texte ? (m.prix ? ' — ' : '') + esc(m.texte) : ''}</div>`).join('') : '<div>Aucun message.</div>';
         row.after(el);
       } catch (e) { toast('Lecture impossible : ' + e.message); }
     });

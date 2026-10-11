@@ -35,7 +35,7 @@
           <div class="vs-f full"><label for="vC">Ville ou village</label><input class="vs-in" id="vC" list="vCl" placeholder="Ex. Bouaké"><datalist id="vCl"></datalist></div>
         </fieldset>
         <fieldset class="vs-st" data-s="2"><legend class="vs-q">${STEPS[2][1]}</legend>
-          <div class="vs-f full"><label for="vPr">Prix vendeur par <span id="vPu">kg</span> (FCFA) <i>facultatif</i></label><input class="vs-in xl" id="vPr" inputmode="numeric" placeholder="Vide = prix à discuter"></div>
+          <div class="vs-f full"><label for="vPr">Prix vendeur par <span id="vPu">kg</span> (FCFA) <i>facultatif</i></label><input class="vs-in xl" id="vPr" inputmode="numeric" placeholder="Vide = prix à discuter"><label class="vs-neg"><input type="checkbox" id="vNeg" checked> J’accepte les propositions de prix <i>les acheteurs peuvent proposer un autre prix ; vous acceptez ou non</i></label></div>
           <div class="vs-f full"><span class="vs-l">Disponibilité</span><div class="vs-sug" id="vA" role="group" aria-label="Disponibilité"></div></div>
           <div class="vs-f full" id="vAd" hidden><label for="vAdi">Disponible à partir du</label><input class="vs-in" type="date" id="vAdi"></div>
         </fieldset>
@@ -148,7 +148,7 @@
       e.preventDefault();
       for (let i = 0; i < 4; i++) { const er = errOf(i); if (er) { go2(i); $('#vE').textContent = er; return; } }
       const reg = val('#vR'), name = val('#vN').trim(), tel = window.MDGMarche.tel(val('#vT')) || '', city = val('#vC').trim(), pr = val('#vPr').replace(/\s/g, '');
-      const o = { id: 'loc-' + Date.now(), createdAt: new Date().toISOString(), productSlug: prod ? prod.slug : null, productLabel: nameOf(), productName: nameOf(), quantity: qNum(), unit: val('#vU'), price: /^\d+$/.test(pr) ? +pr : null, regionSlug: reg, regionName: regBy[reg].name, city, availableFrom: avail === 'date' && val('#vAdi') ? val('#vAdi') : 'maintenant', producer: { name, phone: tel }, producerName: name, agent: agent ? { name: val('#vAgNi').trim() || 'Agent' } : null, photo: photo ? { dataUrl: photo } : null };
+      const o = { id: 'loc-' + Date.now(), createdAt: new Date().toISOString(), productSlug: prod ? prod.slug : null, productLabel: nameOf(), productName: nameOf(), quantity: qNum(), unit: val('#vU'), price: /^\d+$/.test(pr) ? +pr : null, regionSlug: reg, regionName: regBy[reg].name, city, availableFrom: avail === 'date' && val('#vAdi') ? val('#vAdi') : 'maintenant', producer: { name, phone: tel }, producerName: name, agent: agent ? { name: val('#vAgNi').trim() || 'Agent' } : null, photo: photo ? { dataUrl: photo } : null, negociable: $('#vNeg') ? $('#vNeg').checked : true };
       if (!store('offres', [o, ...store('offres')].slice(0, 12))) { $('#vE').textContent = 'La mémoire de ce navigateur est pleine. Supprimez une ancienne offre plus bas, puis réessayez.'; return; }
       try { localStorage.removeItem(DK); } catch (_) {}
       try { navigator.vibrate && navigator.vibrate(10); } catch (_) {}

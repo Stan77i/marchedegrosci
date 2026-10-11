@@ -48,7 +48,10 @@ grant execute on function public.admin_reinitialiser(uuid, text) to authenticate
 -- 3. administrateur : votre numéro à la place de 0700000000
 insert into public.admins (user_id) select id from auth.users where email = '225' || '0700000000' || '@tel.marchedegros.ci' on conflict do nothing;
 
--- nettoyage d'une fonction d'essai vide créée pendant l'installation
+-- nettoyage : une fonction d'essai vide créée pendant l'installation, et les fonctions de négociation de l'étape 2,
+-- remplacées par nego_ouvrir / nego_agir (étape 3, déjà installée) et déjà rendues inaccessibles
 drop function if exists public._essai_tmp();
+drop function if exists public.proposer_prix(text, uuid, numeric, text);
+drop function if exists public.negocier(uuid, text, numeric, text);
 
 select (select count(*) from public.admins) as administrateurs;

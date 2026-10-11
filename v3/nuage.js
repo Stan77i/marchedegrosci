@@ -100,12 +100,12 @@
 
   /* ——— les annonces des autres (cache local) ——— */
   const fromRow = {
-    offres: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', price: num(r.price), availableFrom: r.available_from || 'maintenant', createdAt: r.created_at, producer: { name: r.seller_name || 'Vendeur', phone: r.phone || '' }, producerName: r.seller_name || 'Vendeur', agent: r.agent || '' }),
-    demandes: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', budget: num(r.budget), deadline: r.deadline || 'semaine', buyerType: r.buyer_type || 'Acheteur', buyerName: r.buyer_name || 'Acheteur', phone: r.phone || '', buyerContact: { tel: r.phone || '' }, createdAt: r.created_at }),
+    offres: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', price: num(r.price), availableFrom: r.available_from || 'maintenant', createdAt: r.created_at, producer: { name: r.seller_name || 'Vendeur', phone: r.phone || '' }, producerName: r.seller_name || 'Vendeur', agent: r.agent || '', negociable: r.negociable !== false }),
+    demandes: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', budget: num(r.budget), deadline: r.deadline || 'semaine', buyerType: r.buyer_type || 'Acheteur', buyerName: r.buyer_name || 'Acheteur', phone: r.phone || '', buyerContact: { tel: r.phone || '' }, createdAt: r.created_at, negociable: r.negociable !== false }),
   };
   const toRow = {
-    offres: o => ({ client_id: txt(o.id, 60), product_slug: txt(o.productSlug, 80), product_label: txt(o.productLabel || o.productName, 120), region_slug: txt(o.regionSlug, 60), city: txt(o.city, 80), quantity: num(o.quantity), unit: txt(o.unit, 20), price: num(o.price), available_from: txt(o.availableFrom, 40), seller_name: txt((o.producer && o.producer.name) || o.producerName, 80), phone: tel10((o.producer && o.producer.phone) || o.phone), agent: txt(o.agent && typeof o.agent === 'object' ? (o.agent.name || 'Agent') : o.agent, 80) || null }),
-    demandes: d => ({ client_id: txt(d.id, 60), product_slug: txt(d.productSlug, 80), product_label: txt(d.productLabel || d.productName, 120), region_slug: txt(d.regionSlug, 60), city: txt(d.city, 80), quantity: num(d.quantity), unit: txt(d.unit, 20), budget: num(d.budget), deadline: txt(d.deadline, 40), buyer_type: txt(d.buyerType, 60), buyer_name: txt(d.buyerName, 80), phone: tel10(d.phone || (d.buyerContact && d.buyerContact.tel)) }),
+    offres: o => ({ client_id: txt(o.id, 60), product_slug: txt(o.productSlug, 80), product_label: txt(o.productLabel || o.productName, 120), region_slug: txt(o.regionSlug, 60), city: txt(o.city, 80), quantity: num(o.quantity), unit: txt(o.unit, 20), price: num(o.price), available_from: txt(o.availableFrom, 40), seller_name: txt((o.producer && o.producer.name) || o.producerName, 80), phone: tel10((o.producer && o.producer.phone) || o.phone), agent: txt(o.agent && typeof o.agent === 'object' ? (o.agent.name || 'Agent') : o.agent, 80) || null, negociable: o.negociable !== false }),
+    demandes: d => ({ client_id: txt(d.id, 60), product_slug: txt(d.productSlug, 80), product_label: txt(d.productLabel || d.productName, 120), region_slug: txt(d.regionSlug, 60), city: txt(d.city, 80), quantity: num(d.quantity), unit: txt(d.unit, 20), budget: num(d.budget), deadline: txt(d.deadline, 40), buyer_type: txt(d.buyerType, 60), buyer_name: txt(d.buyerName, 80), phone: tel10(d.phone || (d.buyerContact && d.buyerContact.tel)), negociable: d.negociable !== false }),
   };
   // annonces des autres seulement : celles publiées depuis ce téléphone sont déjà dans « mes annonces »
   function list(kind) {
@@ -119,7 +119,9 @@
       const sel = '?select=*&status=eq.active&order=created_at.desc&limit=500';
       const [o, d] = await Promise.all([api('/rest/v1/offres' + sel), api('/rest/v1/demandes' + sel)]);
       const sig = x => (x || []).map(r => r.id).join(','), was = sig(J(K.o, []).map(x => ({ id: x._rid }))) + '|' + sig(J(K.d, []).map(x => ({ id: x._rid })));
+      const avant = new Set(J(K.o, []).concat(J(K.d, [])).map(x => x._rid)), premier = !J(K.t, 0);
       W(K.o, (o || []).map(fromRow.offres)); W(K.d, (d || []).map(fromRow.demandes)); W(K.t, Date.now());
+      if (!premier) { const neuves = { offres: list('offres').filter(x => !avant.has(x._rid)), demandes: list('demandes').filter(x => !avant.has(x._rid)) }; if (neuves.offres.length || neuves.demandes.length) dispatchEvent(new CustomEvent('mdg:nouvelles', { detail: neuves })); }
       if (was !== sig(o) + '|' + sig(d)) say('liste'); // ne prévenir que s'il y a du nouveau
       return true;
     } catch (e) { console.warn('[nuage] lecture impossible', e.message); return false; }
@@ -196,8 +198,9 @@
 .ng-alt{width:100%;min-height:48px;margin:0 0 10px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:#F5F0E6;font:600 15px Jost,sans-serif;cursor:pointer}
 .ng-warn{padding:12px 14px;border-radius:16px;background:rgba(224,122,63,.12);color:#F3D2BC;font-size:13.5px;line-height:1.45;margin:0 0 14px}`;
   const groupe = c => String(c || '').replace(/(.{4})(?=.)/g, '$1 ');
+  function style() { if (!css) { const st = document.createElement('style'); st.textContent = CSS + CSS2; document.head.appendChild(st); css = true; } }
   function shell(html) {
-    if (!css) { const st = document.createElement('style'); st.textContent = CSS + CSS2; document.head.appendChild(st); css = true; }
+    style();
     document.querySelector('.ng-bg')?.remove();
     const bg = document.createElement('div'); bg.className = 'ng-bg';
     bg.innerHTML = `<div class="ng" role="dialog" aria-modal="true" aria-labelledby="ngT"><button type="button" class="ng-x" aria-label="Fermer">×</button>${html}</div>`;
@@ -266,11 +269,13 @@
       <div class="ng-sos"></div>
       <div class="ng-list">
         ${N ? `<button type="button" class="ng-item ng-nego"><span>Mes négociations<small>Prix proposés, réponses et accords</small></span>${nonLus ? `<span class="ng-dot" aria-label="${nonLus} non lues">${nonLus}</span>` : '<i aria-hidden="true">›</i>'}</button>` : ''}
+        ${window.MDGSons ? `<button type="button" class="ng-item ng-sons"><span>Sons<small>${MDGSons.reglages().on ? 'Activés' : 'Désactivés'} · notes de balafon pour les propositions et les accords</small></span><i aria-hidden="true">›</i></button>` : ''}
         <a class="ng-item ng-admin" href="admin.html" hidden><span>Tableau de bord<small>Administration : annonces, comptes, signalements</small></span><i aria-hidden="true">›</i></a>
       </div>
       <button type="button" class="ng-out">Me déconnecter</button></div>`);
     bg.querySelector('.ng-out').onclick = () => { signOut(); bg.close(); toast('Déconnecté. Vos annonces restent publiées.'); };
     const ng = bg.querySelector('.ng-nego'); if (ng) ng.onclick = () => { bg.close(); N.inbox(); };
+    const sn = bg.querySelector('.ng-sons'); if (sn) sn.onclick = () => { bg.close(); MDGSons.panneau(); };
     if (J(K.a, false)) bg.querySelector('.ng-admin').hidden = false;
     isAdmin().then(a => { bg.querySelector('.ng-admin').hidden = !a; });
     if (!navigator.onLine) return;
@@ -299,5 +304,5 @@
   if (age > 60000) setTimeout(refresh, 300); setTimeout(() => sync().then(pullMine), 1200);
   setInterval(() => { if (!document.hidden) refresh(); }, 120000);
 
-  window.MDGNuage = { list, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel };
+  window.MDGNuage = { list, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style };
 })();

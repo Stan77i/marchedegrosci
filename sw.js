@@ -1,7 +1,7 @@
 /* Marché de Gros CI — service worker (utilisation hors connexion).
    Pour publier une mise à jour du code : incrémenter CACHE (mgci-v1 -> mgci-v2 ...).
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v5';
+const CACHE = 'mgci-v6';
 
 // Indispensable : si l'un de ces fichiers manque, l'installation échoue et l'ancienne version reste active.
 const CORE = [
@@ -38,7 +38,46 @@ const CORE = [
   "fonts/jost-latin-400-normal.woff2",
   "fonts/jost-latin-500-normal.woff2",
   "fonts/jost-latin-600-normal.woff2",
-  "fonts/jost-latin-700-normal.woff2"
+  "fonts/jost-latin-700-normal.woff2",
+  "index-v3.html",
+  "css/styles.css",
+  "css/typo.css",
+  "v2/map.js",
+  "v2/oklch.js",
+  "v2/reseau-carte.js",
+  "v2/terrain.js",
+  "v2/themes.js",
+  "v3/acheter.css",
+  "v3/acheter.js",
+  "v3/annee.css",
+  "v3/annee.js",
+  "v3/cherche.css",
+  "v3/cherche.js",
+  "v3/constellation.css",
+  "v3/constellation.js",
+  "v3/etat.css",
+  "v3/etat.js",
+  "v3/flou.css",
+  "v3/flou.js",
+  "v3/hero-ivt.css",
+  "v3/hero-ivt.js",
+  "v3/ivt-header.css",
+  "v3/ivt-header.js",
+  "v3/marche.js",
+  "v3/marqueurs.css",
+  "v3/marqueurs.js",
+  "v3/match.js",
+  "v3/pages.css",
+  "v3/pages.js",
+  "v3/scene-ivt.js",
+  "v3/tweaks-panel.jsx",
+  "v3/tweaks.jsx",
+  "v3/vendre.css",
+  "v3/vendre.js",
+  "vendor/ScrollTrigger.min.js",
+  "vendor/d3.min.js",
+  "vendor/gsap.min.js",
+  "vendor/lenis.min.js"
 ];
 
 // Images v2/img/ : mises en cache au mieux (une image manquante n'empêche pas l'installation).
@@ -84,7 +123,7 @@ self.addEventListener('fetch', e => {
 
   // Fichiers statiques : le cache d'abord, puis le réseau.
   e.respondWith((async () => {
-    const hit = await caches.match(req);
+    const hit = await caches.match(req, { ignoreSearch: true }); // les fichiers du site sont appelés avec ?v=…
     if (hit) return hit;
     const res = await fetch(req);
     if (res && res.ok && res.type === 'basic') { const c = await caches.open(CACHE); c.put(req, res.clone()); }

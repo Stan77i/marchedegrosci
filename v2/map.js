@@ -5,10 +5,10 @@
   // d3 + topojson chargés à la demande (jamais dans <head> : ils bloquaient l'affichage sur connexion faible)
   const lib = (src, integrity) => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.integrity = integrity; s.crossOrigin = 'anonymous'; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
   const libs = () => (libsP ||= Promise.all([
-    window.d3 ? 0 : lib('https://unpkg.com/d3@7.9.0/dist/d3.min.js', 'sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i'),
-    window.topojson ? 0 : lib('https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js', 'sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67'),
+    window.d3 ? 0 : lib('vendor/d3.min.js', 'sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i'),
+    window.topojson ? 0 : lib('vendor/topojson-client.min.js', 'sha384-Ukv1p/xTma6P4/2bY5KzWBw+ydSpXmhCMtyciIQVDJ1RmOxtCYNMF1uXT9T63H67'),
   ]).catch(e => { libsP = null; throw e; }));
-  const getTopo = () => (topoP ||= fetch('https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json').then(r => r.json()));
+  const getTopo = () => (topoP ||= fetch('vendor/countries-110m.json').then(r => r.json()));
 
   async function draw(svg, { points = [], focus = null, dest = null, zones = [], onPin, compact = false } = {}) {
     const [topo] = await Promise.all([getTopo(), libs()]);

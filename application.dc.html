@@ -11,6 +11,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="MGCI">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script>/* ordinateur ou tablette : ouvre le site (même adresse, mêmes données). ?app=1 force l'application */(function(){try{var q=location.search;if(/[?&]app=1/.test(q)){sessionStorage.setItem("mdg-app","1");sessionStorage.removeItem("mdg-ordi")}var app=sessionStorage.getItem("mdg-app")==="1",tel=matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<768;if(!tel&&!app)location.replace("index-v3.html"+(location.hash||"#/"))}catch(e){}})();</script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');</script>
 <script src="./support.js"></script>
 </head>

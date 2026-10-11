@@ -71,6 +71,7 @@
 .cp-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}
 @media (min-width:760px){.cp-tabs{flex-direction:column;overflow:visible;margin:0;padding:0}}
 .cp-tab{flex:none;display:flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border:0;border-radius:14px;background:none;color:var(--mute);font:500 14.5px Jost,sans-serif;text-align:left;cursor:pointer;transition:background var(--ux-d2,200ms),color var(--ux-d2,200ms)}
+.cp-admin{text-decoration:none;color:#F3B48A}@media (max-width:759px){.cp-admin{order:-1;background:rgba(224,122,63,.12)}}@media (min-width:760px){.cp-admin{margin-top:10px;box-shadow:inset 0 1px 0 var(--line);border-radius:0 0 14px 14px}}
 .cp-tab:hover{color:var(--ink);background:rgba(245,240,230,.05)}.cp-tab[aria-selected=true]{color:var(--ink);background:rgba(245,240,230,.1)}
 .cp-tab svg{flex:none;width:18px;height:18px}.cp-tab em{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--acc);color:#171512;font:700 11.5px/20px Jost,sans-serif;font-style:normal;text-align:center}
 .cp-main{overflow:auto;padding:22px 20px 40px;overscroll-behavior:contain}
@@ -170,7 +171,8 @@
     activite: '<circle cx="7" cy="8" r="3"/><rect x="14" y="5" width="6" height="6" rx="1"/><path d="M4 15h16M4 19h10" stroke-linecap="round"/>',
     notifs: '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15Z" stroke-linejoin="round"/><path d="M10 20a2 2 0 0 0 4 0" stroke-linecap="round"/>',
     prefs: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke-linecap="round"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
-    securite: '<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke-linecap="round"/>'
+    securite: '<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke-linecap="round"/>',
+    admin: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="4" rx="1.5"/><rect x="13" y="10" width="7" height="10" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/>'
   };
   const ico = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">${ICO[k]}</svg>`;
   function cadre(html, label) {
@@ -198,7 +200,9 @@
     let tab = onglet || 'profil';
     const tete = () => { const p = profil || {}; return `<div class="cp-me">${A() ? A().svg(p.avatar, { size: 52, nom: nomAffiche(p) || N().fmtTel(u.tel), seed: u.id }) : ''}<span><b>${esc(nomAffiche(p) || 'Mon compte')}</b><small>${esc(N().fmtTel(u.tel))}</small></span></div>`; };
     const tabs = () => [['profil', 'Mon profil'], ['activite', 'Mon activité'], ['notifs', 'Notifications'], ['prefs', 'Préférences'], ['securite', 'Sécurité et compte']]
-      .map(([k, t]) => `<button type="button" role="tab" class="cp-tab" data-t="${k}" aria-selected="${tab === k}">${ico(k)}<span>${t}</span>${k === 'notifs' && nonLues() ? `<em aria-label="${nonLues()} non lues">${nonLues()}</em>` : ''}</button>`).join('');
+      .map(([k, t]) => `<button type="button" role="tab" class="cp-tab" data-t="${k}" aria-selected="${tab === k}">${ico(k)}<span>${t}</span>${k === 'notifs' && nonLues() ? `<em aria-label="${nonLues()} non lues">${nonLues()}</em>` : ''}</button>`).join('')
+      // administrateur seulement (vérifié par le serveur avec est_admin ; la page admin revérifie elle-même) : le lien vers le tableau de bord
+      + (J('mdg-nuage:admin', false) ? `<a class="cp-tab cp-admin" href="admin.html">${ico('admin')}<span>Tableau de bord</span></a>` : '');
     cadre(`<nav class="cp-side" aria-label="Mon espace">${tete()}<div class="cp-tabs" role="tablist">${tabs()}</div></nav><div class="cp-main" role="tabpanel"></div>`, 'Mon espace');
     const main = bg.querySelector('.cp-main');
     const aller = t => { tab = t; bg.querySelector('.cp-side').innerHTML = tete() + `<div class="cp-tabs" role="tablist">${tabs()}</div>`; lier(); VUES[t](main); main.scrollTop = 0; };
@@ -206,6 +210,7 @@
     lier(); VUES[tab](main);
     bg.rafraichir = () => aller(tab);
     if (navigator.onLine) charger().then(() => bg && bg.rafraichir && bg.rafraichir());
+    const adm0 = J('mdg-nuage:admin', false); if (N().isAdmin) N().isAdmin().then(a => { if (a !== adm0 && bg && bg.rafraichir) bg.rafraichir(); });
   }
 
   // un champ texte avec message d'erreur près de lui

@@ -346,7 +346,7 @@
         go.disabled = false; go.textContent = 'Changer mon code';
       };
       main.querySelector('[data-sos]').onclick = async e => { if (!confirm('Créer un nouveau code de secours ? L’ancien ne fonctionnera plus.')) return; e.target.disabled = true; try { const c = await N().rpc('creer_secours'); fermer(); N().showSecours ? N().showSecours(c) : alert('Votre code de secours : ' + c); } catch (x) { e.target.disabled = false; N().toast(x.message); } };
-      main.querySelector('[data-out]').onclick = () => { fermer(); N().signOut(); N().toast('Déconnecté. Vos annonces restent publiées.'); };
+      main.querySelector('[data-out]').onclick = () => { fermer(); const fin = () => N().toast('Vous êtes sorti du marché. Vos annonces restent publiées.'); if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N().signOut()); else { N().signOut(); fin(); } };  // dans l'application : on « sort du marché » (v3/porte.js)
       main.querySelector('[data-outall]').onclick = async () => { if (!confirm('Déconnecter tous vos appareils, celui-ci compris ?')) return; try { await N().api('/auth/v1/logout?scope=global', { method: 'POST', auth: true }); } catch (_) {} fermer(); N().signOut(); N().toast('Tous vos appareils sont déconnectés.'); };
       main.querySelector('[data-del]').onclick = () => supprimer(main);
     }

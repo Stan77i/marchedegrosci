@@ -28,7 +28,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
 <link rel="stylesheet" href="css/fonts.css">
-<link rel="stylesheet" href="v3/ux.css?v=20261012g">
+<link rel="stylesheet" href="v3/ux.css?v=20261012h">
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
 <script src="app/carte-app.js"></script>
@@ -442,7 +442,7 @@
 
 </div>
 <!-- ═══ voile ═══ -->
-<div onClick="{{ closeAll }}" style="position:absolute;inset:0;background:rgba(10,9,7,.55);opacity:{{ scrimOp }};pointer-events:{{ scrimPe }};transition:opacity .35s"></div>
+<div onClick="{{ closeAll }}" style="position:absolute;inset:0;background:{{ scrimBg }};-webkit-backdrop-filter:{{ scrimFlou }};backdrop-filter:{{ scrimFlou }};opacity:{{ scrimOp }};pointer-events:{{ scrimPe }};transition:opacity .35s"></div>
 
 <!-- ═══ MENU : tiroir à gauche, comme Gmail — le nom en haut, le compte d'abord, puis tout le reste ; glisser vers la gauche pour fermer ═══ -->
 <div role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="{{ menuHid }}" onPointerDown="{{ dDown }}" onPointerMove="{{ dMove }}" onPointerUp="{{ dUp }}" onPointerCancel="{{ dUp }}" style="position:absolute;left:0;top:0;bottom:0;width:min(86%,340px);display:flex;flex-direction:column;background:#211D17;color:#F5F0E6;border-radius:0 26px 26px 0;transform:{{ menuTf }};transition:{{ drTr }};box-shadow:14px 0 44px rgba(0,0,0,.5);touch-action:pan-y;visibility:{{ menuVis }}">
@@ -460,7 +460,7 @@
       </sc-for>
     </sc-for>
   </div>
-  <div style="flex:none;display:flex;align-items:center;gap:10px;padding:12px 20px {{ botPad }};border-top:1px solid rgba(245,240,230,.09);color:#847966;font-size:12.5px"><span aria-hidden="true" style="position:relative;width:22px;height:22px;flex:none;display:block;opacity:.8">{{ markSm }}</span><span>Marché de Gros, Côte d'Ivoire</span></div>
+  <div style="flex:none;padding:6px 12px {{ botPad }} 0;border-top:1px solid rgba(245,240,230,.09)"><button onClick="{{ goPorte }}" style="width:100%;border:0;background:transparent;color:#F3B48A;display:flex;align-items:center;gap:18px;padding:6px 16px 6px 20px;border-radius:0 26px 26px 0;text-align:left;min-height:52px;font-family:Jost,system-ui,sans-serif;font-size:16px;font-weight:500" style-active="background:rgba(224,122,63,.12)"><span aria-hidden="true" style="width:28px;height:28px;flex:none;display:flex;align-items:center;justify-content:center">{{ porteEl }}</span>{{ porteTxt }}</button></div>
 </div>
 
 <!-- ═══ FAMILLES ═══ -->
@@ -656,6 +656,16 @@ class Component extends DCLogic {
      (aubergine violette → sauge ; orange → bleu-gris ; jaune → indigo doux), jamais deux couleurs vives qui se battent.
      Calcul en OKLCH (teintes perçues de façon égale), converti en couleurs sRGB ordinaires pour tous les téléphones ;
      la couleur du texte est choisie par le contraste réel (au moins 4,5 : 1). fond : 'sombre' (accueil) ou 'clair' (fiche). */
+  /* Petite porte du tiroir : elle s'ouvre, la flèche sort (déconnexion) ou entre (connexion), puis elle se referme.
+     Une fois, à chaque ouverture du tiroir (la clé change, l'icône repart de zéro). Styles : v3/ux.css (.so-ico). */
+  porteIco(sortie, k, fixe) {
+    const h = React.createElement;
+    return h('svg', { key: k, width: 26, height: 26, viewBox: '0 0 26 26', fill: 'none', stroke: '#F3B48A', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round', className: 'so-ico ' + (sortie ? 'so-out' : 'so-in') + (fixe ? ' so-fixe' : '') },
+      h('path', { d: 'M5 22.5V5a1.5 1.5 0 0 1 1.5-1.5h7.5A1.5 1.5 0 0 1 15.5 5v17.5' }),
+      h('g', { className: 'so-bat' }, h('path', { d: 'M5 22.5V3.5l6.5 2v18.5z', fill: 'rgba(243,180,138,.16)' }), h('circle', { cx: 9.6, cy: 14, r: .95, fill: '#F3B48A', stroke: 'none' })),
+      h('g', { className: 'so-fl' }, sortie ? [h('path', { key: 'a', d: 'M12.5 13.5h11' }), h('path', { key: 'b', d: 'M20 10l3.5 3.5L20 17' })] : [h('path', { key: 'a', d: 'M24 13.5H13' }), h('path', { key: 'b', d: 'M16.5 10 13 13.5l3.5 3.5' })]),
+      h('path', { d: 'M2.5 22.5h15.5' }));
+  }
   duo(h, fond) {
     const rgb = (L, C, H) => { for (let c = C; c >= 0; c -= .005) { const a = c * Math.cos(H * Math.PI / 180), b = c * Math.sin(H * Math.PI / 180);
         const l = (L + .3963377774 * a + .2158037573 * b) ** 3, m = (L - .1055613458 * a - .0638541728 * b) ** 3, s3 = (L - .0894841775 * a - 1.291485548 * b) ** 3;
@@ -931,7 +941,11 @@ class Component extends DCLogic {
     return Object.assign(base, {
       tf, vis, zi, on, regions, halo: act.tint, sbColor: light && !anyS ? '#171512' : '#F5F0E6',
       back: () => this.back(), edgeDown: e => this.edgeDown(e), edgeUp: e => this.edgeUp(e), stop: e => e.stopPropagation(),
-      goAcheter: () => this.push('acheter'), goVendre: () => this.push('vendre'), openMenu: () => this.setState({ menu: true, sheetDy: 0, drDx: 0 }), moiEl, moiLabel: moiS ? 'Mon compte' : 'Se connecter', sfGo: S.splash !== 'on' && S.ready ? '1' : '0', moiDot: !!(moiS && window.MDGNegoce && window.MDGNegoce.unread()), goMoi: () => { if (!moiN) return; if (moiS && moiC) moiC.ouvrir(); else moiN.open(); }, hasPubs: mine.length > 0,
+      goAcheter: () => this.push('acheter'), goVendre: () => this.push('vendre'), openMenu: () => { this.ouvertures = (this.ouvertures || 0) + 1; this.setState({ menu: true, sheetDy: 0, drDx: 0 }); setTimeout(() => { const l = document.querySelector('[role=dialog][aria-label="Menu"] [style*="overflow-y"]'); if (l) l.scrollTop = 0; }, 0); },
+      porteTxt: moiS ? 'Se déconnecter' : 'Se connecter', porteEl: S.menu ? this.porteIco(!!moiS, 'p' + (this.ouvertures || 0)) : this.porteIco(!!moiS, 'p0', true),
+      goPorte: () => { const N = window.MDGNuage; this.setState({ menu: false }); if (!N) return; if (!N.session()) { setTimeout(() => N.open(), 250); return; }
+        const fin = () => N.toast('Vous êtes sorti du marché. Vos annonces restent publiées.');
+        setTimeout(() => { if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N.signOut()); else { N.signOut(); fin(); } }, 320); }, moiEl, moiLabel: moiS ? 'Mon compte' : 'Se connecter', sfGo: S.splash !== 'on' && S.ready ? '1' : '0', moiDot: !!(moiS && window.MDGNegoce && window.MDGNegoce.unread()), goMoi: () => { if (!moiN) return; if (moiS && moiC) moiC.ouvrir(); else moiN.open(); }, hasPubs: mine.length > 0,
       famPips: this.FAMS.map((f, i) => ({ name: f.name, w: i === S.fam ? '18px' : '6px', bg: i === S.fam ? '#E07A3F' : 'rgba(245,240,230,.22)', go: () => this.setState({ fam: i, rot: 0 }) })),
       famName: F.name.toUpperCase(), prevFam: () => this.famStep(-1), nextFam: () => this.famStep(1), openFams: () => this.setState({ sheet: 'fam', sheetDy: 0 }),
       wDown: e => this.wDown(e), wMove: e => this.wMove(e), wUp: () => this.wUp(), labels, ticks, sacks,
@@ -991,7 +1005,8 @@ class Component extends DCLogic {
       mPrev: () => this.setState(s => ({ month: s.month === 1 ? 12 : s.month - 1 })), mNext: () => this.setState(s => ({ month: s.month === 12 ? 1 : s.month + 1 })),
       mName: A.MOIS[S.month - 1], mKicker: S.month === cm ? 'CE MOIS-CI' : String(S.month).padStart(2, '0') + ' / 12', mGroups, mEmpty: !mGroups.length,
       myPubs, pubsEmpty: !myPubs.length, vd, info,
-      scrimOp: anyS ? Math.max(0, 1 - dy / 400) : 0, scrimPe: anyS ? 'auto' : 'none', closeAll: () => this.closeAll(),
+      scrimOp: anyS ? Math.max(0, 1 - dy / 400) : 0, scrimBg: S.menu ? 'rgba(8,7,5,.74)' : 'rgba(10,9,7,.55)', scrimFlou: S.menu ? 'blur(3px)' : 'none',  // tiroir ouvert : l'accueil s'efface davantage (rien ne semble dépasser du tiroir)
+       scrimPe: anyS ? 'auto' : 'none', closeAll: () => this.closeAll(),
       sheetTr: this.sd ? 'none' : 'transform .45s cubic-bezier(.22,1,.36,1)', sDown: e => this.sDown(e), sMove: e => this.sMove(e), sUp: () => this.sUp(),
       menuTf: S.menu ? 'translateX(' + Math.min(0, S.drDx || 0) + 'px)' : 'translateX(-105%)', drTr: this.dd ? 'none' : 'transform .42s cubic-bezier(.22,1,.36,1), visibility 0s linear ' + (S.menu ? '0s' : '.42s'), menuVis: S.menu ? 'visible' : 'hidden', menuHid: S.menu ? 'false' : 'true',
       dDown: e => { this.dx0 = e.clientX; this.dy0 = e.clientY; this.dd = false; }, dMove: e => { if (this.dx0 == null) return; const dx = e.clientX - this.dx0, dyy = e.clientY - this.dy0; if (!this.dd && dx < -10 && Math.abs(dx) > Math.abs(dyy) * 1.3) this.dd = true; if (this.dd) this.setState({ drDx: Math.min(0, dx) }); }, dUp: () => { if (this.dd) { const fermer = (this.state.drDx || 0) < -70; this.dd = false; this.setState(fermer ? { menu: false, drDx: 0 } : { drDx: 0 }); } this.dx0 = null; }, famTf: S.sheet === 'fam' ? 'translateY(' + dy + 'px)' : 'translateY(105%)', matchTf: sheetOn ? 'translateY(' + dy + 'px)' : 'translateY(105%)',
@@ -1015,7 +1030,6 @@ class Component extends DCLogic {
             ln({ ico: logoIco(26), t: this.isDark() ? 'Logo noir' : 'Logo terracotta', s: this.isDark() ? 'Toucher pour revenir au terracotta' : 'Toucher pour passer au noir', go: () => this.toggleLogo() })] }
         ];
       })(),
-      markSm: logoIco(22),
       famGrid: this.FAMS.map((f, i) => ({ name: f.name, sub: f.prods.length + ' produits', img: A.IMG + 'famille-' + f.slug + '.webp', bd: i === S.fam ? '#E07A3F' : 'transparent', go: () => this.setState({ fam: i, rot: 0, sheet: null }) })),
       segTf: isJai ? 'none' : 'translateX(100%)', segA: isJai ? '#F5F0E6' : '#484236', segB: isJai ? '#484236' : '#F5F0E6',
       setJai: () => this.setState({ mode: 'jai', mErr: {}, mf: Object.assign({}, S.mf, { when: '' }) }), setCherche: () => this.setState({ mode: 'cherche', mErr: {}, mf: Object.assign({}, S.mf, { when: '' }) }),

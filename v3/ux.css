@@ -121,3 +121,14 @@ button[aria-busy="true"]:disabled::after{content:"";display:inline-block;width:1
   52%{background-color:#5BAF7A;box-shadow:0 0 0 0 rgba(108,197,140,0)}
 }
 @media (prefers-reduced-motion:reduce){[style*="mkLuciole"]{animation:none!important;box-shadow:0 0 6px 2px rgba(108,197,140,.5)}}
+
+/* ——— Application, pied du tiroir : la petite porte de « Se déconnecter » / « Se connecter » ———
+   À chaque ouverture du tiroir, une fois : la porte s'entrouvre, la flèche sort (ou entre), la porte se referme. 1,5 s, après l'arrivée du tiroir. */
+.so-ico .so-bat{transform-box:fill-box;transform-origin:0 50%;animation:soBat 1.5s .5s cubic-bezier(.22,1,.36,1) both}
+.so-out .so-fl{animation:soSort 1.5s .5s cubic-bezier(.22,1,.36,1) both}
+.so-in .so-fl{animation:soEntre 1.5s .5s cubic-bezier(.22,1,.36,1) both}
+.so-fixe .so-bat,.so-fixe .so-fl{animation:none}
+@keyframes soBat{0%,100%{transform:none}28%,62%{transform:scaleX(.3) skewY(-8deg)}}
+@keyframes soSort{0%,18%{transform:translateX(-8px);opacity:0}40%{opacity:1}58%,100%{transform:none;opacity:1}}
+@keyframes soEntre{0%{transform:translateX(6px);opacity:0}22%{opacity:1}55%{transform:translateX(-4px);opacity:1}70%,100%{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.so-ico .so-bat,.so-ico .so-fl{animation:none}}

@@ -3,7 +3,7 @@
    installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
    Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v42';
+const CACHE = 'mgci-v46';
 
 // Indispensable : si l'un de ces fichiers manque, l'installation échoue et l'ancienne version reste active.
 const CORE = [
@@ -89,7 +89,8 @@ const CORE = [
   "v3/compte.js",
   "v3/ux.css",
   "v3/porte.js",
-  "v3/souffle.js"
+  "v3/souffle.js",
+  "v3/pousse.js"
 ];
 
 // Images v2/img/ : mises en cache au mieux (une image manquante n'empêche pas l'installation).
@@ -162,5 +163,28 @@ self.addEventListener('fetch', e => {
     const res = await fetch(req);
     if (res && res.ok && res.type === 'basic') { const c = await caches.open(CACHE); c.put(req, res.clone()); }
     return res;
+  })());
+});
+
+// ——— Notifications (Web Push) : affichées même application fermée ; chiffre sur l'icône ; toucher = ouvrir la négociation ———
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (_) { d = { body: e.data ? e.data.text() : '' }; }
+  e.waitUntil((async () => {
+    await self.registration.showNotification(d.title || 'Marché de Gros', {
+      body: d.body || '', tag: d.tag || 'mdg', renotify: true, icon: 'icons/icon-192.png', badge: 'icons/badge-96.png',
+      vibrate: [70, 40, 70], timestamp: Date.now(), data: { url: d.url || 'application.dc.html#/', nego: d.nego || null }
+    });
+    try { if (self.navigator.setAppBadge) { if (d.badge) await self.navigator.setAppBadge(d.badge); else if (d.badge === 0) await self.navigator.clearAppBadge(); } } catch (_) {}
+  })());
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const data = e.notification.data || {}, url = new URL(data.url || 'application.dc.html#/', self.registration.scope).href;
+  e.waitUntil((async () => {
+    const fen = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const app = fen.find(c => /application\.dc\.html/.test(c.url)) || fen[0];
+    if (app) { await app.focus(); if (data.nego) app.postMessage({ type: 'mdg-nego', nego: data.nego }); return; }
+    await self.clients.openWindow(url);
   })());
 });

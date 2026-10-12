@@ -132,3 +132,27 @@ button[aria-busy="true"]:disabled::after{content:"";display:inline-block;width:1
 @keyframes soSort{0%,18%{transform:translateX(-8px);opacity:0}40%{opacity:1}58%,100%{transform:none;opacity:1}}
 @keyframes soEntre{0%{transform:translateX(6px);opacity:0}22%{opacity:1}55%{transform:translateX(-4px);opacity:1}70%,100%{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){.so-ico .so-bat,.so-ico .so-fl{animation:none}}
+
+/* ═════════ Les offres scintillent partout, « En saison » s'anime (site et application) ═════════
+   Luciole : la même respiration irrégulière que le point « offre » de l'accueil de l'application — mais en filtre, pour marcher
+   sur tous les marqueurs (dessins SVG, pastilles) sans toucher à leur couleur. Seulement là où le point annonce de vraies offres
+   (compteurs, lignes « x offres disponibles »), jamais sur les boutons « J'ai ». Les points voisins ne battent pas ensemble. */
+@keyframes mkLucioleF{
+  0%,100%{filter:brightness(.92) drop-shadow(0 0 0 rgba(108,197,140,0))}
+  14%{filter:brightness(1.4) drop-shadow(0 0 4px rgba(150,235,180,.85))}
+  24%{filter:brightness(1) drop-shadow(0 0 1px rgba(108,197,140,.3))}
+  34%{filter:brightness(1.5) drop-shadow(0 0 5px rgba(160,240,185,.9))}
+  52%{filter:brightness(.92) drop-shadow(0 0 0 rgba(108,197,140,0))}
+}
+.cx-c .mk--offre:not(.is-off),.dx-k .mk--offre:not(.is-off),.sx__pvn .mk--offre:not(.is-off),[title="Offres"] .mk--offre:not(.is-off),[title="Offres"]>.mk--offre:not(.is-off),
+.hero__st--on{animation:mkLucioleF 3.2s ease-in-out infinite;overflow:visible}
+.cx-p:nth-child(3n+2) .mk--offre,.ct-row:nth-child(3n+2) .mk--offre{animation-delay:-1.1s}
+.cx-p:nth-child(3n) .mk--offre,.ct-row:nth-child(3n) .mk--offre{animation-delay:-2.2s}
+
+/* En saison : un reflet de lumière passe sur l'étiquette toutes les 5 s, comme le soleil sur un fruit mûr */
+.ct-s:not([hidden]),.en-saison{position:relative;overflow:hidden;display:inline-block;isolation:isolate}
+.ct-s:not([hidden])::after,.en-saison::after{content:"";position:absolute;inset:-2px;z-index:1;pointer-events:none;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,248,225,.55) 48%,rgba(255,248,225,.15) 56%,transparent 70%);
+  transform:translateX(-120%);animation:enSaison 5s cubic-bezier(.4,0,.2,1) infinite}
+@keyframes enSaison{0%,62%{transform:translateX(-120%)}86%,100%{transform:translateX(120%)}}
+@media (prefers-reduced-motion:reduce){.cx-c .mk--offre,.dx-k .mk--offre,.sx__pvn .mk--offre,[title="Offres"] .mk--offre,.hero__st--on{animation:none}.ct-s:not([hidden])::after,.en-saison::after{display:none}}

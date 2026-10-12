@@ -110,19 +110,19 @@ button[aria-busy="true"]:disabled::after{content:"";display:inline-block;width:1
 .dr-ico svg{width:26px;height:26px}
 .dr-ico img{width:30px;height:30px}
 
-/* ——— Application, roue des produits : la roue s'arrête sur un produit qui vit (offres ou demandes) → un halo fait le tour de l'écran ———
-   Deux couches : une lueur intérieure qui monte et retombe (partout), et un trait de lumière qui parcourt tout le bord une fois
-   (là où le navigateur sait animer un angle : @property). 1,25 s en tout, puis plus rien. Couleurs : --c1 / --c2 (vert = offres, jaune = demandes). */
-@property --mk-a{syntax:'<angle>';inherits:false;initial-value:-90deg}
-.mk-halo{position:absolute;inset:0;z-index:6;pointer-events:none;border-radius:inherit;opacity:0;animation:mkHalo 1.25s cubic-bezier(.22,1,.36,1) forwards}
-.mk-halo::after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 90px -26px var(--c1),inset 0 0 22px -8px var(--c2)}
-.mk-halo::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:2.5px;
-  background:conic-gradient(from var(--mk-a),transparent 0deg,var(--c1) 70deg,var(--c2) 115deg,transparent 170deg,transparent 360deg);
-  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;
-  filter:drop-shadow(0 0 7px var(--c1));animation:mkTour 1.25s cubic-bezier(.45,.05,.25,1) forwards}
-@keyframes mkHalo{0%{opacity:0}16%{opacity:1}62%{opacity:.85}100%{opacity:0}}
-@keyframes mkTour{from{--mk-a:-90deg}to{--mk-a:270deg}}
+/* ——— Application, roue des produits : la roue s'arrête sur un produit qui vit (offres ou demandes) → des ondes, comme une goutte dans l'eau ———
+   Un éclat doux au centre du sac, puis quatre cercles qui s'élargissent l'un après l'autre (220 ms d'écart) en s'effaçant ;
+   le trait s'affine en grandissant, comme une ride à la surface. 1,9 s en tout. Couleurs : --c1 / --c2 (vert = offres, jaune = demandes). */
+.mk-onde{position:absolute;z-index:6;width:0;height:0;pointer-events:none}
+.mk-onde>*{position:absolute;left:0;top:0;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;opacity:0}
+.mk-onde>i{background:radial-gradient(circle,var(--c1) 0%,transparent 66%);animation:mkEclat .9s cubic-bezier(.22,1,.36,1) forwards}
+.mk-onde>b{border:2px solid var(--c1);box-shadow:0 0 14px -2px var(--c1),inset 0 0 14px -6px var(--c2);animation:mkRide 1.6s cubic-bezier(.16,.84,.3,1) forwards}
+.mk-onde>b:nth-of-type(2){animation-delay:.22s;border-color:var(--c2)}
+.mk-onde>b:nth-of-type(3){animation-delay:.44s}
+.mk-onde>b:nth-of-type(4){animation-delay:.66s;border-color:var(--c2)}
+@keyframes mkEclat{0%{opacity:0;transform:scale(.4)}25%{opacity:.45}100%{opacity:0;transform:scale(1.6)}}
+@keyframes mkRide{0%{opacity:0;transform:scale(.25);border-width:3px}12%{opacity:.95}100%{opacity:0;transform:scale(4.6);border-width:.6px}}
 .mk-po.is-ping{animation:mkPingV .9s ease-out}.mk-pd.is-ping{animation:mkPingJ .9s ease-out}
 @keyframes mkPingV{0%{box-shadow:0 0 0 0 rgba(108,197,140,.75);transform:scale(1.35)}100%{box-shadow:0 0 0 11px rgba(108,197,140,0);transform:none}}
 @keyframes mkPingJ{0%{box-shadow:0 0 0 0 rgba(242,201,76,.75);transform:scale(1.35)}100%{box-shadow:0 0 0 11px rgba(242,201,76,0);transform:none}}
-@media (prefers-reduced-motion:reduce){.mk-halo::before{display:none}.mk-halo{animation-duration:.9s}.mk-po.is-ping,.mk-pd.is-ping{animation:none}}
+@media (prefers-reduced-motion:reduce){.mk-onde>b{display:none}.mk-po.is-ping,.mk-pd.is-ping{animation:none}}

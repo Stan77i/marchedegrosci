@@ -28,7 +28,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
 <link rel="stylesheet" href="css/fonts.css">
-<link rel="stylesheet" href="v3/ux.css?v=20261012d">
+<link rel="stylesheet" href="v3/ux.css?v=20261012e">
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
 <script src="app/carte-app.js"></script>
@@ -626,9 +626,9 @@ class Component extends DCLogic {
     if (st.includes(prev)) { go(top, T_OFF, T_IN); go(prev, T_IN, T_UNDER); } else { go(prev, T_IN, T_OFF); go(top, T_UNDER, T_IN); }
     this.animT = setTimeout(() => { (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; }, 650);
   }
-  /* La roue s'arrête sur un produit qui a des offres ou des demandes : un halo fait le tour de l'écran, une fois, vite,
+  /* La roue s'arrête sur un produit qui a des offres ou des demandes : des ondes partent du sac, comme une goutte dans l'eau,
      à la couleur du signal (vert = offres, jaune = demandes, les deux = vert puis jaune), et le point du compteur pulse.
-     Rien pendant qu'on fait glisser la roue, rien sur un produit vide, rien au premier affichage. Styles : v3/ux.css (.mk-halo). */
+     Rien pendant qu'on fait glisser la roue, rien sur un produit vide, rien au premier affichage. Styles : v3/ux.css (.mk-onde). */
   signalMarche() {
     const a = this._act, S = this.state; if (!a || S.dragging) return;
     if (a.slug === this._sigSlug) return; const premier = this._sigSlug == null; this._sigSlug = a.slug;
@@ -638,11 +638,17 @@ class Component extends DCLogic {
     this._sigT = setTimeout(() => { const b = this._act, T = this.state; if (!b || b.slug !== slug || T.dragging || T.stack[T.stack.length - 1] !== 'home') return; this.halo(b); }, 420);
   }
   halo(a) {
+    // des ondes, comme une goutte qui tombe dans l'eau : quatre cercles partent du sac et s'élargissent l'un après l'autre
     const pg = document.querySelector('[data-pg="home"]'); if (!pg) return;
-    pg.querySelectorAll('.mk-halo').forEach(x => x.remove());
-    const el = document.createElement('div'); el.className = 'mk-halo'; el.setAttribute('aria-hidden', 'true');
+    pg.querySelectorAll('.mk-onde').forEach(x => x.remove());
+    const r0 = pg.getBoundingClientRect(); let cx = r0.width / 2, cy = r0.height * .42;
+    const img = [...pg.querySelectorAll('img')].map(i => ({ i, r: i.getBoundingClientRect() })).filter(o => o.r.width > 120 && getComputedStyle(o.i).opacity > .5).sort((x, y) => y.r.width * y.r.height - x.r.width * x.r.height)[0];
+    if (img) { cx = img.r.left - r0.left + img.r.width / 2; cy = img.r.top - r0.top + img.r.height * .5; }
+    const el = document.createElement('div'); el.className = 'mk-onde'; el.setAttribute('aria-hidden', 'true');
+    el.style.left = cx + 'px'; el.style.top = cy + 'px';
     el.style.setProperty('--c1', a.ao ? '#6CC58C' : '#F2C94C'); el.style.setProperty('--c2', a.ao && a.ad ? '#F2C94C' : a.ao ? '#A8E6BC' : '#FFE08A');
-    pg.appendChild(el); setTimeout(() => el.remove(), 1400);
+    el.innerHTML = '<i></i><b></b><b></b><b></b><b></b>';
+    pg.appendChild(el); setTimeout(() => el.remove(), 2300);
     pg.querySelectorAll(a.ao && a.ad ? '.mk-po,.mk-pd' : a.ao ? '.mk-po' : '.mk-pd').forEach(d => { d.classList.remove('is-ping'); void d.offsetWidth; d.classList.add('is-ping'); });
     try { navigator.vibrate && navigator.vibrate(12); } catch (_) {}
   }

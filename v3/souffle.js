@@ -9,9 +9,13 @@
   if (!window.customElements || customElements.get('mdg-souffle')) return;
   const PHRASES = [
     'Chercher un produit, une ville…',
+    'Vous êtes connecté à tous les marchés de gros de Côte d’Ivoire.',
     'Tomate, oignon, plantain…',
+    'Vous êtes connecté à tous les grossistes du pays.',
     'Qui vend près de chez vous ?',
+    'Vous êtes connecté aux meilleurs acheteurs du pays.',
     'Le bon produit, au bon endroit.',
+    'Vous êtes connecté aux coopératives de tout le pays.',
     'Du champ au marché, sans détour.',
     'Dites ce qu’il vous faut.'
   ];
@@ -19,6 +23,8 @@
 .sf-l{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;white-space:nowrap}
 .sf-nom{font:500 23px/1 'Cormorant Garamond',Georgia,serif;color:#F5F0E6;letter-spacing:.005em}
 .sf-ph{font:400 15.5px/1 Jost,system-ui,sans-serif;color:#B9AD98;justify-content:flex-start;padding-left:2px}
+.sf-ph.sf-2{flex-wrap:wrap;align-content:center;white-space:normal;font-size:13.5px;line-height:1.22}
+.sf-ph.sf-3{font-size:12.5px}
 .sf-l span{display:inline-block;white-space:pre;opacity:0;will-change:transform,opacity,filter}
 .sf-in span{animation:sfIn .62s cubic-bezier(.22,1,.36,1) forwards;animation-delay:calc(var(--i) * 55ms)}
 .sf-out span{opacity:1;animation:sfOut .42s cubic-bezier(.4,0,1,1) forwards;animation-delay:calc(var(--i) * 30ms)}
@@ -45,9 +51,13 @@
     disconnectedCallback() { clearTimeout(this._t); document.removeEventListener('visibilitychange', this._vis); this._pret = false; this.textContent = ''; }
     _ligne(txt, cls, lettres) {
       const l = document.createElement('span'); l.className = 'sf-l ' + cls + ' sf-in';
-      const morceaux = lettres ? [...txt] : txt.split(/(\s+)/).filter(Boolean);
+      const morceaux = lettres ? [...txt] : txt.split(/(?<=\s)/).filter(Boolean);  // chaque mot garde son espace : un retour à la ligne ne laisse pas d'espace en tête
       let n = 0; morceaux.forEach(m => { const s = document.createElement('span'); s.textContent = m; if (!/^\s+$/.test(m)) s.style.setProperty('--i', lettres ? n * .45 : n); n++; l.appendChild(s); });
-      this.appendChild(l); return l;
+      this.appendChild(l);
+      // trop long pour la barre ? deux lignes, puis un cran plus petit si besoin — la phrase n'est jamais coupée
+      if (!lettres) { const tient = () => l.scrollWidth <= l.clientWidth + 1 && l.scrollHeight <= l.clientHeight + 1;
+        if (!tient()) { l.classList.add('sf-2'); if (!tient()) l.classList.add('sf-3'); } }
+      return l;
     }
     _suite(d) {
       clearTimeout(this._t);
@@ -58,7 +68,7 @@
         if (vieille) { vieille.classList.remove('sf-in'); vieille.classList.add('sf-out'); setTimeout(() => vieille.remove(), 700); }
         this._i = (this._i + 1) % PHRASES.length;
         setTimeout(() => { if (this.isConnected) this._ligne(PHRASES[this._i], 'sf-ph', false); }, REDUIT.matches ? 120 : 260);
-        this._suite(3400);
+        this._suite(PHRASES[this._i].length > 34 ? 4300 : 3400);
       }, d);
     }
   }

@@ -28,7 +28,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
 <link rel="stylesheet" href="css/fonts.css">
-<link rel="stylesheet" href="v3/ux.css?v=20261012g">
+<link rel="stylesheet" href="v3/ux.css?v=20261012h">
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
 <script src="app/carte-app.js"></script>
@@ -460,7 +460,7 @@
       </sc-for>
     </sc-for>
   </div>
-  <div style="flex:none;display:flex;align-items:center;gap:10px;padding:12px 20px {{ botPad }};border-top:1px solid rgba(245,240,230,.09);color:#847966;font-size:12.5px"><span aria-hidden="true" style="position:relative;width:22px;height:22px;flex:none;display:block;opacity:.8">{{ markSm }}</span><span>Marché de Gros, Côte d'Ivoire</span></div>
+  <div style="flex:none;padding:6px 12px {{ botPad }} 0;border-top:1px solid rgba(245,240,230,.09)"><button onClick="{{ goPorte }}" style="width:100%;border:0;background:transparent;color:#F3B48A;display:flex;align-items:center;gap:18px;padding:6px 16px 6px 20px;border-radius:0 26px 26px 0;text-align:left;min-height:52px;font-family:Jost,system-ui,sans-serif;font-size:16px;font-weight:500" style-active="background:rgba(224,122,63,.12)"><span aria-hidden="true" style="width:28px;height:28px;flex:none;display:flex;align-items:center;justify-content:center">{{ porteEl }}</span>{{ porteTxt }}</button></div>
 </div>
 
 <!-- ═══ FAMILLES ═══ -->
@@ -656,6 +656,16 @@ class Component extends DCLogic {
      (aubergine violette → sauge ; orange → bleu-gris ; jaune → indigo doux), jamais deux couleurs vives qui se battent.
      Calcul en OKLCH (teintes perçues de façon égale), converti en couleurs sRGB ordinaires pour tous les téléphones ;
      la couleur du texte est choisie par le contraste réel (au moins 4,5 : 1). fond : 'sombre' (accueil) ou 'clair' (fiche). */
+  /* Petite porte du tiroir : elle s'ouvre, la flèche sort (déconnexion) ou entre (connexion), puis elle se referme.
+     Une fois, à chaque ouverture du tiroir (la clé change, l'icône repart de zéro). Styles : v3/ux.css (.so-ico). */
+  porteIco(sortie, k, fixe) {
+    const h = React.createElement;
+    return h('svg', { key: k, width: 26, height: 26, viewBox: '0 0 26 26', fill: 'none', stroke: '#F3B48A', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round', className: 'so-ico ' + (sortie ? 'so-out' : 'so-in') + (fixe ? ' so-fixe' : '') },
+      h('path', { d: 'M5 22.5V5a1.5 1.5 0 0 1 1.5-1.5h7.5A1.5 1.5 0 0 1 15.5 5v17.5' }),
+      h('g', { className: 'so-bat' }, h('path', { d: 'M5 22.5V3.5l6.5 2v18.5z', fill: 'rgba(243,180,138,.16)' }), h('circle', { cx: 9.6, cy: 14, r: .95, fill: '#F3B48A', stroke: 'none' })),
+      h('g', { className: 'so-fl' }, sortie ? [h('path', { key: 'a', d: 'M12.5 13.5h11' }), h('path', { key: 'b', d: 'M20 10l3.5 3.5L20 17' })] : [h('path', { key: 'a', d: 'M24 13.5H13' }), h('path', { key: 'b', d: 'M16.5 10 13 13.5l3.5 3.5' })]),
+      h('path', { d: 'M2.5 22.5h15.5' }));
+  }
   duo(h, fond) {
     const rgb = (L, C, H) => { for (let c = C; c >= 0; c -= .005) { const a = c * Math.cos(H * Math.PI / 180), b = c * Math.sin(H * Math.PI / 180);
         const l = (L + .3963377774 * a + .2158037573 * b) ** 3, m = (L - .1055613458 * a - .0638541728 * b) ** 3, s3 = (L - .0894841775 * a - 1.291485548 * b) ** 3;
@@ -931,7 +941,11 @@ class Component extends DCLogic {
     return Object.assign(base, {
       tf, vis, zi, on, regions, halo: act.tint, sbColor: light && !anyS ? '#171512' : '#F5F0E6',
       back: () => this.back(), edgeDown: e => this.edgeDown(e), edgeUp: e => this.edgeUp(e), stop: e => e.stopPropagation(),
-      goAcheter: () => this.push('acheter'), goVendre: () => this.push('vendre'), openMenu: () => this.setState({ menu: true, sheetDy: 0, drDx: 0 }), moiEl, moiLabel: moiS ? 'Mon compte' : 'Se connecter', sfGo: S.splash !== 'on' && S.ready ? '1' : '0', moiDot: !!(moiS && window.MDGNegoce && window.MDGNegoce.unread()), goMoi: () => { if (!moiN) return; if (moiS && moiC) moiC.ouvrir(); else moiN.open(); }, hasPubs: mine.length > 0,
+      goAcheter: () => this.push('acheter'), goVendre: () => this.push('vendre'), openMenu: () => { this.ouvertures = (this.ouvertures || 0) + 1; this.setState({ menu: true, sheetDy: 0, drDx: 0 }); setTimeout(() => { const l = document.querySelector('[role=dialog][aria-label="Menu"] [style*="overflow-y"]'); if (l) l.scrollTop = 0; }, 0); },
+      porteTxt: moiS ? 'Se déconnecter' : 'Se connecter', porteEl: S.menu ? this.porteIco(!!moiS, 'p' + (this.ouvertures || 0)) : this.porteIco(!!moiS, 'p0', true),
+      goPorte: () => { const N = window.MDGNuage; this.setState({ menu: false }); if (!N) return; if (!N.session()) { setTimeout(() => N.open(), 250); return; }
+        const fin = () => N.toast('Vous êtes sorti du marché. Vos annonces restent publiées.');
+        setTimeout(() => { if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N.signOut()); else { N.signOut(); fin(); } }, 320); }, moiEl, moiLabel: moiS ? 'Mon compte' : 'Se connecter', sfGo: S.splash !== 'on' && S.ready ? '1' : '0', moiDot: !!(moiS && window.MDGNegoce && window.MDGNegoce.unread()), goMoi: () => { if (!moiN) return; if (moiS && moiC) moiC.ouvrir(); else moiN.open(); }, hasPubs: mine.length > 0,
       famPips: this.FAMS.map((f, i) => ({ name: f.name, w: i === S.fam ? '18px' : '6px', bg: i === S.fam ? '#E07A3F' : 'rgba(245,240,230,.22)', go: () => this.setState({ fam: i, rot: 0 }) })),
       famName: F.name.toUpperCase(), prevFam: () => this.famStep(-1), nextFam: () => this.famStep(1), openFams: () => this.setState({ sheet: 'fam', sheetDy: 0 }),
       wDown: e => this.wDown(e), wMove: e => this.wMove(e), wUp: () => this.wUp(), labels, ticks, sacks,
@@ -1015,7 +1029,6 @@ class Component extends DCLogic {
             ln({ ico: logoIco(26), t: this.isDark() ? 'Logo noir' : 'Logo terracotta', s: this.isDark() ? 'Toucher pour revenir au terracotta' : 'Toucher pour passer au noir', go: () => this.toggleLogo() })] }
         ];
       })(),
-      markSm: logoIco(22),
       famGrid: this.FAMS.map((f, i) => ({ name: f.name, sub: f.prods.length + ' produits', img: A.IMG + 'famille-' + f.slug + '.webp', bd: i === S.fam ? '#E07A3F' : 'transparent', go: () => this.setState({ fam: i, rot: 0, sheet: null }) })),
       segTf: isJai ? 'none' : 'translateX(100%)', segA: isJai ? '#F5F0E6' : '#484236', segB: isJai ? '#484236' : '#F5F0E6',
       setJai: () => this.setState({ mode: 'jai', mErr: {}, mf: Object.assign({}, S.mf, { when: '' }) }), setCherche: () => this.setState({ mode: 'cherche', mErr: {}, mf: Object.assign({}, S.mf, { when: '' }) }),

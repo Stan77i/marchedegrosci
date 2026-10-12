@@ -100,6 +100,7 @@
 .pt[data-etat=ok] .ps-lien path{stroke-dashoffset:0}.pt[data-etat=ok] .ps-lien{opacity:1}
 .pt[data-etat=ok] .ps-v{transform:translate(112px,-20.6px)}.pt[data-etat=ok] .ps-a{transform:translate(-112px,-20.6px)}
 .pt[data-etat=ok] .ps-r{opacity:1;transform:scale(1.5)}
+.pt[data-etat=ferme] .ps-jour{opacity:.28}.pt[data-etat=ferme] .ps-faisceau{opacity:.08}.pt[data-etat=ferme] .ps-halo{opacity:.18;animation:none}.pt[data-etat=ferme] .ps-lien{opacity:.3}
 .pt[data-etat=erreur] .ps-battant{transform:scaleX(.6)}.pt[data-etat=erreur] .ps-lien path{stroke-dashoffset:.85}.pt[data-etat=erreur] .ps-lien{opacity:.4}
 @media (prefers-reduced-motion:reduce){.ps *{animation:none!important;transition:none!important}}`;
 
@@ -266,5 +267,31 @@
     setTimeout(() => { if (ov.isConnected) { ov.remove(); dessous(); fin(); } }, 4200);  // filet de sécurité
   }
 
-  window.MDGPorte = { monter, entrer };
+  /* ——— Sortir du marché : la transition de la déconnexion (application), l'inverse de l'entrée ———
+     On est dans la lumière du marché, « À bientôt au marché. » ; la lumière se retire, on recule hors de la porte,
+     le marché réapparaît derrière elle, puis la porte se referme et ses lumières baissent. ≈ 2,9 s.
+     La déconnexion elle-même se fait dès que l'écran est couvert (l'accueil se met à jour dessous). Mouvement réduit : rien. */
+  function sortir(fini, couvert) {
+    const une = f => { let fait = false; return () => { if (fait) return; fait = true; try { f && f(); } catch (_) {} }; }, fin = une(fini), dessous = une(couvert);
+    if (REDUIT.matches || !document.documentElement.hasAttribute('data-app') || !Element.prototype.animate) { dessous(); return fin(); }
+    cssScene();
+    const ov = document.createElement('div'); ov.setAttribute('aria-hidden', 'true');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:10050;background:radial-gradient(120% 80% at 50% 60%,#2a2219 0%,#120f0b 70%);overflow:hidden;opacity:0';
+    ov.innerHTML = `<div class="pt" data-etat="ok" data-mode="in" style="position:absolute;left:-40%;width:180%;top:46%;aspect-ratio:400/132;transform-origin:50% 60.6%;margin-top:calc(-180vw * 132 / 400 * .606);transform:scale(12)">${scene('ms')}</div>
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#FFF6DE 0%,#FCE6B8 45%,#F2B872 100%)"></div>
+      <p style="position:absolute;left:24px;right:24px;top:50%;margin:-24px 0 0;text-align:center;font:500 31px/1.15 'Cormorant Garamond',Georgia,serif;color:#171512">À bientôt au marché.</p>`;
+    document.body.appendChild(ov);
+    const [sc, lumiere, txt] = ov.children;
+    ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-out', fill: 'forwards' }).onfinish = dessous;
+    txt.animate([{ opacity: 1, transform: 'none', filter: 'blur(0)' }, { opacity: 0, transform: 'translateY(-8px)', filter: 'blur(4px)' }], { duration: 420, delay: 1050, easing: 'ease-in', fill: 'forwards' });
+    lumiere.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 520, delay: 1250, easing: 'ease-out', fill: 'forwards' });
+    sc.animate([{ transform: 'scale(12)' }, { transform: 'scale(1)' }], { duration: 1150, delay: 1250, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'forwards' });
+    // dehors : la porte se referme derrière nous, ses lumières baissent, le vert et le jaune repartent chacun de leur côté
+    setTimeout(() => { sc.dataset.etat = 'ferme'; sc.dataset.mode = ''; }, 2050);
+    const out = ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 600, delay: 2750, easing: 'ease-in', fill: 'forwards' });
+    out.onfinish = () => { ov.remove(); fin(); };
+    setTimeout(() => { if (ov.isConnected) { ov.remove(); dessous(); fin(); } }, 4600);  // filet de sécurité
+  }
+
+  window.MDGPorte = { monter, entrer, sortir };
 })();

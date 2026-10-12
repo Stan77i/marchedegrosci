@@ -109,3 +109,15 @@ button[aria-busy="true"]:disabled::after{content:"";display:inline-block;width:1
 .dr-ico>span,.dr-ico>span>svg{display:block}
 .dr-ico svg{width:26px;height:26px}
 .dr-ico img{width:30px;height:30px}
+
+/* ——— Application, roue des produits : le point « offre » scintille comme une luciole quand le produit a au moins une offre ———
+   Une lueur verte qui s'allume et s'éteint à un rythme irrégulier (deux éclats rapprochés, puis un repos), jamais un clignotement sec.
+   Mouvement réduit : une lueur fixe. */
+@keyframes mkLuciole{
+  0%,100%{background-color:#5BAF7A;box-shadow:0 0 0 0 rgba(108,197,140,0)}
+  14%{background-color:#B8F5CB;box-shadow:0 0 6px 2px rgba(140,230,170,.75),0 0 14px 4px rgba(108,197,140,.35)}
+  24%{background-color:#6CC58C;box-shadow:0 0 2px 0 rgba(108,197,140,.25)}
+  34%{background-color:#C8FAD6;box-shadow:0 0 8px 3px rgba(160,240,185,.8),0 0 18px 6px rgba(108,197,140,.3)}
+  52%{background-color:#5BAF7A;box-shadow:0 0 0 0 rgba(108,197,140,0)}
+}
+@media (prefers-reduced-motion:reduce){[style*="mkLuciole"]{animation:none!important;box-shadow:0 0 6px 2px rgba(108,197,140,.5)}}

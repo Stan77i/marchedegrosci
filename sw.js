@@ -3,7 +3,7 @@
    installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
    Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v47';
+const CACHE = 'mgci-v48';
 
 // Indispensable : si l'un de ces fichiers manque, l'installation échoue et l'ancienne version reste active.
 const CORE = [
@@ -91,7 +91,8 @@ const CORE = [
   "v3/porte.js",
   "v3/souffle.js",
   "v3/pousse.js",
-  "v3/reputation.js"
+  "v3/reputation.js",
+  "v3/messages.js"
 ];
 
 // Images v2/img/ : mises en cache au mieux (une image manquante n'empêche pas l'installation).
@@ -174,7 +175,7 @@ self.addEventListener('push', e => {
   e.waitUntil((async () => {
     await self.registration.showNotification(d.title || 'Marché de Gros', {
       body: d.body || '', tag: d.tag || 'mdg', renotify: true, icon: 'icons/icon-192.png', badge: 'icons/badge-96.png',
-      vibrate: [70, 40, 70], timestamp: Date.now(), data: { url: d.url || 'application.dc.html#/', nego: d.nego || null }
+      vibrate: [70, 40, 70], timestamp: Date.now(), data: { url: d.url || 'application.dc.html#/', nego: d.nego || null, dm: d.dm || null }
     });
     try { if (self.navigator.setAppBadge) { if (d.badge) await self.navigator.setAppBadge(d.badge); else if (d.badge === 0) await self.navigator.clearAppBadge(); } } catch (_) {}
   })());
@@ -185,7 +186,7 @@ self.addEventListener('notificationclick', e => {
   e.waitUntil((async () => {
     const fen = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
     const app = fen.find(c => /application\.dc\.html/.test(c.url)) || fen[0];
-    if (app) { await app.focus(); if (data.nego) app.postMessage({ type: 'mdg-nego', nego: data.nego }); return; }
+    if (app) { await app.focus(); if (data.nego) app.postMessage({ type: 'mdg-nego', nego: data.nego }); if (data.dm) app.postMessage({ type: 'mdg-dm', dm: data.dm }); return; }
     await self.clients.openWindow(url);
   })());
 });

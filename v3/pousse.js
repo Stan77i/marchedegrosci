@@ -50,7 +50,7 @@
 
   // la pastille sur l'icône : le nombre de réponses à lire (comme le serveur l'envoie avec chaque notification)
   function badge(n) { try { if (!('setAppBadge' in navigator)) return; n ? navigator.setAppBadge(n) : navigator.clearAppBadge(); } catch (_) {} }
-  const majBadge = () => { const G = window.MDGNegoce; badge(G && N() && N().session() ? G.unread() : 0); };
+  const majBadge = () => { const G = window.MDGNegoce, M = window.MDGMessages; badge(N() && N().session() ? (G ? G.unread() : 0) + (M ? M.unread() : 0) : 0); };
 
   // toucher une notification : ouvrir la négociation
   function depuisAdresse() {
@@ -84,7 +84,7 @@
 
   window.MDGPousse = { ok, ios, installee, etat, activer, desactiver, oublier, suivre, badge, essai, inviter };
   addEventListener('mdg:connecte', () => { setTimeout(suivre, 1500); setTimeout(inviter, 4200); });
-  addEventListener('mdg:negoce', majBadge);
+  addEventListener('mdg:negoce', majBadge); addEventListener('mdg:dm', majBadge);
   addEventListener('hashchange', depuisAdresse);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) majBadge(); });
   if (document.readyState === 'loading') addEventListener('DOMContentLoaded', depuisAdresse); else depuisAdresse();

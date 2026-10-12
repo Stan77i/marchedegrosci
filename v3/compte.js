@@ -334,8 +334,11 @@
       const neg = n => { const e = n.statut === 'conclue' ? ['Accord conclu', 'ok'] : n.statut === 'close' ? [n.motif_fin === 'annonce_retiree' ? 'Annonce retirée' : 'Négociation arrêtée', ''] : vive(n) ? (n.dernier_par === u.id ? ['En attente de réponse', 'warn'] : ['À vous de répondre', 'acc']) : n.dernier_par ? ['Expirée sans réponse', ''] : ['Proposition retirée ou refusée', ''];
         const lui = n.auteur_id === u.id ? n.proprio_id : n.auteur_id, roleLui = (lui === n.proprio_id) === (n.cible === 'offre') ? 'Vendeur' : 'Acheteur', av = avatar(lui, { size: 30, nom: roleLui });
         return `<button type="button" class="cp-item" data-nego="${n.id}"><span style="grid-row:span 2">${av.svg}</span><b>${esc(n.produit || 'Annonce')}</b><span class="p">${n.statut === 'conclue' ? fmt(n.prix_final) : vive(n) ? fmt(n.dernier_prix) : '—'}</span><small><span class="cp-tag ${e[1]}">${e[0]}</span> ${esc(av.nom ? 'avec ' + av.nom : '')}</small></button>`; };
+      // messagerie directe (v3/messages.js) : les conversations récentes, toucher pour ouvrir
+      const dms = J('mdg-dm:liste', []), dm = c => `<button type="button" class="cp-item" data-dm="${c.id}"><span style="grid-row:span 2">${avatar(c.autre_id, { size: 30, nom: c.autre_nom }).svg}</span><b>${esc(c.autre_nom)}</b><span class="p" style="font-size:13px">${c.non_lu ? '<span class="cp-tag acc">Nouveau</span>' : ''}</span><small>${c.dernier_par === u.id ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small></button>`;
       const sec = (t, L, f, vide) => `<h3>${t} <span class="cp-tag">${L.length}</span></h3>` + (L.length ? `<div class="cp-list">${L.slice(0, 20).map(f).join('')}</div>` : `<div class="cp-empty">${vide}</div>`);
       main.innerHTML = `<div class="cp-panel"><h2>Mon activité</h2><p>Vos annonces et vos négociations réelles. Rien n’est compté qui n’ait eu lieu.</p>
+        ${window.MDGMessages ? sec('Messages', dms, dm, '<b>Aucune conversation</b>Touchez la photo d’un vendeur ou d’un acheteur, puis « Écrire ». Les messages s’effacent ' + MDGMessages.JOURS + ' jours après l’envoi.') : ''}
         ${sec('Mes offres', off, x => ann('offres', x), '<b>Aucune offre</b>Publiez ce que vous avez avec « Vendre ».')}
         ${sec('Mes demandes', dem, x => ann('demandes', x), '<b>Aucune demande</b>Dites ce qu’il vous faut avec « Demander ».')}
         ${sec('Propositions envoyées', env, neg, '<b>Aucune proposition envoyée</b>Sur une annonce, touchez « Proposer un prix ».')}
@@ -343,6 +346,7 @@
         ${sec('Accords conclus', ok, neg, '<b>Aucun accord pour l’instant</b>')}
         ${fin.length ? sec('Sans suite', fin, neg, '') : ''}</div>`;
       main.querySelectorAll('[data-nego]').forEach(b => b.onclick = () => { fermer(); G && G.thread(b.dataset.nego); });
+      main.querySelectorAll('[data-dm]').forEach(b => b.onclick = () => { fermer(); MDGMessages.conversation(b.dataset.dm); });
       // glisser une négociation vers la gauche pour la retirer de sa liste
       if (G && G.glisser) main.querySelectorAll('[data-nego]').forEach(b => G.glisser(b, async () => { await G.masquer(b.dataset.nego); }));
       if (G) G.refresh().then(() => { if (bg && main.isConnected && JSON.stringify(J('mdg-negoce:liste', [])) !== JSON.stringify(negos)) VUES.activite(main); });

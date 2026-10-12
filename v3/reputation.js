@@ -47,6 +47,7 @@
 .rp-x{position:absolute;right:14px;top:14px;width:42px;height:42px;border:0;border-radius:50%;background:rgba(245,240,230,.08);color:#F5F0E6;font-size:0;cursor:pointer}
 .rp-x::before,.rp-x::after{content:"";position:absolute;left:50%;top:50%;width:15px;height:2px;border-radius:2px;background:currentColor;transform:translate(-50%,-50%) rotate(45deg)}.rp-x::after{transform:translate(-50%,-50%) rotate(-45deg)}
 .rp-go{width:100%;min-height:54px;margin-top:16px;border:0;border-radius:999px;background:#E07A3F;color:#171512;font:700 16px Jost,sans-serif;cursor:pointer}.rp-go:disabled{opacity:.45;cursor:default}
+.rp-duo{display:flex;gap:8px}.rp-duo .rp-go{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 14px}.rp-duo .rp-ecr{flex:0 0 38%;background:none;box-shadow:inset 0 0 0 1.5px rgba(245,240,230,.28);color:#F5F0E6}
 .rp-alt{min-height:44px;padding:0 16px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:#F5F0E6;font:600 14px Jost,sans-serif;cursor:pointer}
 .rp-et{display:inline-flex;vertical-align:middle}.rp-et-f{position:relative;display:inline-block;line-height:0}.rp-et-f>span{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap}
 .rp-ch{display:flex;flex-wrap:wrap;gap:8px}.rp-ch button{min-height:44px;padding:0 15px;border:1px solid rgba(245,240,230,.18);border-radius:999px;background:none;color:#E9E1D2;font:500 14px Jost,sans-serif;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
@@ -136,8 +137,9 @@
     bg.querySelector('[data-corps]').innerHTML = (nb ? `<div class="rp-score"><strong>${moy.toFixed(1).replace('.', ',')}</strong><span>${etoiles(moy, nb, 15)}${nb} avis</span><div class="rp-barres">${rep.map((c, i) => `<div><em style="font-style:normal">${5 - i}</em><i><b style="width:${nb ? c / nb * 100 : 0}%"></b></i></div>`).join('')}</div></div>
       <div class="rp-av">${liste.map(a => `<article><header>${avatar(a.auteur, a.avatar, a.auteur, 26)}<b>${esc(a.auteur)}</b>${etoiles(a.note, 1, 11)}<small>${quand(a.quand)}</small></header>${a.texte ? `<p>${esc(a.texte)}</p>` : ''}</article>`).join('')}</div>`
       : `<div class="rp-vide">${moi ? 'Vous n’avez pas encore d’avis. Ils arrivent quand vos partenaires vous notent après une négociation.' : 'Pas encore d’avis. Négociez avec ce membre pour pouvoir le noter.'}</div>`)
-      + (moi ? '' : `<button type="button" class="rp-go" data-noter>Noter ${esc(o.nom || 'ce membre')}</button>`);
+      + (moi ? '' : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire</button>` : ''}<button type="button" class="rp-go" data-noter>Noter ${esc(o.nom || 'ce membre')}</button></div>`);
     const b = bg.querySelector('[data-noter]'); if (b) b.onclick = () => { bg.fermer(); noter(uid, o.nom, () => profil(uid, o)); };
+    const e = bg.querySelector('[data-ecrire]'); if (e) e.onclick = () => { bg.fermer(); MDGMessages.ecrire(uid, { nom: o.nom, avatar: o.avatar }); };
   }
 
   // ——— les mieux notés ———

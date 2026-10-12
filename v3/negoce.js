@@ -85,7 +85,7 @@
     N().toast('Négociation retirée de votre liste. Elle reviendra si l’autre personne vous écrit.');
   }
   /* glisser vers la gauche pour supprimer (comme les messages d'un téléphone) : un bouton rouge apparaît ; glisser jusqu'au bout supprime directement */
-  const SWCSS = `.sw{position:relative;overflow:hidden;border-radius:18px;background:linear-gradient(90deg,#5a2318,#c2452f)}.sw+.sw{margin-top:8px}
+  const SWCSS = `.sw{position:relative;overflow:hidden;border-radius:18px}.sw.is-act{background:linear-gradient(90deg,#5a2318,#c2452f)}.sw:not(.is-act)>.sw-del{visibility:hidden}.sw+.sw{margin-top:8px}
 .sw>.sw-del{position:absolute;top:0;right:0;bottom:0;width:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0;border:0;background:none;color:#fff;font:600 14px Jost,system-ui,sans-serif;cursor:pointer}
 .sw>.sw-del svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .sw>.sw-row{position:relative;z-index:1;margin:0!important;background-color:#211d17!important;transition:transform .34s cubic-bezier(.22,1,.36,1);touch-action:pan-y;will-change:transform}
@@ -100,7 +100,7 @@
     del.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Supprimer';
     w.append(del, row); row.classList.add('sw-row');
     const L = 96; let x0 = null, y0 = 0, dx = 0, ouvert = false, drag = false;
-    const pose = v => { row.style.transform = v ? 'translateX(' + v + 'px)' : ''; };
+    const pose = v => { row.style.transform = v ? 'translateX(' + v + 'px)' : ''; if (v) w.classList.add('is-act'); else setTimeout(() => { if (!row.style.transform) w.classList.remove('is-act'); }, 360); };  // le rouge n'apparaît que pendant le geste (sinon il déborde aux coins arrondis)
     const go = async () => { pose(-row.offsetWidth); w.style.height = w.offsetHeight + 'px'; requestAnimationFrame(() => w.classList.add('is-out'));
       try { await suppr(); } catch (_) { w.classList.remove('is-out'); w.style.height = ''; pose(0); ouvert = false; N().toast('La suppression n’a pas abouti. Réessayez.'); } };
     row.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; drag = false; });
@@ -443,8 +443,9 @@
       $('.nx-bottom').innerHTML = n.statut === 'conclue' ? deal() : '';
       // en bas du fil : noter la personne (étoiles, v3/reputation.js) et retirer la négociation de sa liste
       const idLui = autreId(n), R = window.MDGRep;
-      $('.nx-bottom').insertAdjacentHTML('beforeend', `<div class="nx-plus">${R ? `<button type="button" class="nx-pl" data-noter><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.6l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></svg>Noter ${esc(av.nom || leLa(lui))}</button><button type="button" class="nx-pl" data-profil>Voir son profil</button>` : ''}<button type="button" class="nx-pl" data-cacher>Retirer de ma liste</button></div>`);
-      const bN = $('[data-noter]'), bP = $('[data-profil]'), bC = $('[data-cacher]');
+      $('.nx-bottom').insertAdjacentHTML('beforeend', `<div class="nx-plus">${R ? `<button type="button" class="nx-pl" data-noter><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.6l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></svg>Noter ${esc(av.nom || leLa(lui))}</button><button type="button" class="nx-pl" data-profil>Voir son profil</button>` : ''}${window.MDGMessages ? '<button type="button" class="nx-pl" data-ecrire>Écrire en privé</button>' : ''}<button type="button" class="nx-pl" data-cacher>Retirer de ma liste</button></div>`);
+      const bN = $('[data-noter]'), bP = $('[data-profil]'), bC = $('[data-cacher]'), bE = $('[data-ecrire]');
+      if (bE) bE.onclick = () => { close(); MDGMessages.ecrire(idLui, { nom: av.nom || 'Membre' }); };
       if (bN) bN.onclick = () => R.noter(idLui, av.nom || '');
       if (bP) bP.onclick = () => R.profil(idLui, { nom: av.nom || 'Membre', uri: avDe(n, 72).uri || '' });
       if (bC) bC.onclick = async () => { try { await masquer(n.id); inbox(); } catch (_) { N().toast('Impossible pour l’instant. Réessayez.'); } };

@@ -405,12 +405,14 @@
       <div class="ng-sos"></div>
       <div class="ng-list">
         ${N ? `<button type="button" class="ng-item ng-nego"><span>Mes négociations<small>Prix proposés, réponses et accords</small></span>${nonLus ? `<span class="ng-dot" aria-label="${nonLus} non lues">${nonLus}</span>` : '<i aria-hidden="true">›</i>'}</button>` : ''}
+        ${window.MDGMessages ? `<button type="button" class="ng-item ng-dm"><span>Messages<small>Écrire directement à un membre · effacés après ${MDGMessages.JOURS} jours</small></span>${MDGMessages.unread() ? `<span class="ng-dot" aria-label="${MDGMessages.unread()} non lus">${MDGMessages.unread()}</span>` : '<i aria-hidden="true">›</i>'}</button>` : ''}
         ${window.MDGSons ? `<button type="button" class="ng-item ng-sons"><span>Sons<small>${MDGSons.reglages().on ? 'Activés' : 'Désactivés'} · notes de balafon pour les propositions et les accords</small></span><i aria-hidden="true">›</i></button>` : ''}
         <a class="ng-item ng-admin" href="admin.html" hidden><span>Tableau de bord<small>Administration : annonces, comptes, signalements</small></span><i aria-hidden="true">›</i></a>
       </div>
       <button type="button" class="ng-out">Me déconnecter</button></div>`);
     bg.querySelector('.ng-out').onclick = () => { signOut(); bg.close(); toast('Déconnecté. Vos annonces restent publiées.'); };
     const ng = bg.querySelector('.ng-nego'); if (ng) ng.onclick = () => { bg.close(); N.inbox(); };
+    const dm = bg.querySelector('.ng-dm'); if (dm) dm.onclick = () => { bg.close(); MDGMessages.boite(); };
     const sn = bg.querySelector('.ng-sons'); if (sn) sn.onclick = () => { bg.close(); MDGSons.panneau(); };
     if (J(K.a, false)) bg.querySelector('.ng-admin').hidden = false;
     isAdmin().then(a => { bg.querySelector('.ng-admin').hidden = !a; });

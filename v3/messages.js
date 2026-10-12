@@ -36,7 +36,7 @@
       const avant = new Map(liste.map(c => [c.id, c.updated_at])), r = await N().rpc('dm_liste') || [];
       if (!premier) r.filter(c => c.non_lu && c.id !== ouverte && avant.get(c.id) !== c.updated_at).forEach(c => {
         N().toast(c.autre_nom + ' vous a écrit : « ' + String(c.dernier_texte || '').slice(0, 60) + (String(c.dernier_texte || '').length > 60 ? '…' : '') + ' »');
-        window.MDGSons && MDGSons.signal('proposition');
+        window.MDGSons && MDGSons.signal('message');
       });
       premier = false; liste = r; W(KL, r);
     } catch (e) { if (e.code === 'auth') { liste = []; W(KL, []); } }

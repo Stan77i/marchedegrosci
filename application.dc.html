@@ -442,7 +442,7 @@
 
 </div>
 <!-- ═══ voile ═══ -->
-<div onClick="{{ closeAll }}" style="position:absolute;inset:0;background:rgba(10,9,7,.55);opacity:{{ scrimOp }};pointer-events:{{ scrimPe }};transition:opacity .35s"></div>
+<div onClick="{{ closeAll }}" style="position:absolute;inset:0;background:{{ scrimBg }};-webkit-backdrop-filter:{{ scrimFlou }};backdrop-filter:{{ scrimFlou }};opacity:{{ scrimOp }};pointer-events:{{ scrimPe }};transition:opacity .35s"></div>
 
 <!-- ═══ MENU : tiroir à gauche, comme Gmail — le nom en haut, le compte d'abord, puis tout le reste ; glisser vers la gauche pour fermer ═══ -->
 <div role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="{{ menuHid }}" onPointerDown="{{ dDown }}" onPointerMove="{{ dMove }}" onPointerUp="{{ dUp }}" onPointerCancel="{{ dUp }}" style="position:absolute;left:0;top:0;bottom:0;width:min(86%,340px);display:flex;flex-direction:column;background:#211D17;color:#F5F0E6;border-radius:0 26px 26px 0;transform:{{ menuTf }};transition:{{ drTr }};box-shadow:14px 0 44px rgba(0,0,0,.5);touch-action:pan-y;visibility:{{ menuVis }}">
@@ -1005,7 +1005,8 @@ class Component extends DCLogic {
       mPrev: () => this.setState(s => ({ month: s.month === 1 ? 12 : s.month - 1 })), mNext: () => this.setState(s => ({ month: s.month === 12 ? 1 : s.month + 1 })),
       mName: A.MOIS[S.month - 1], mKicker: S.month === cm ? 'CE MOIS-CI' : String(S.month).padStart(2, '0') + ' / 12', mGroups, mEmpty: !mGroups.length,
       myPubs, pubsEmpty: !myPubs.length, vd, info,
-      scrimOp: anyS ? Math.max(0, 1 - dy / 400) : 0, scrimPe: anyS ? 'auto' : 'none', closeAll: () => this.closeAll(),
+      scrimOp: anyS ? Math.max(0, 1 - dy / 400) : 0, scrimBg: S.menu ? 'rgba(8,7,5,.74)' : 'rgba(10,9,7,.55)', scrimFlou: S.menu ? 'blur(3px)' : 'none',  // tiroir ouvert : l'accueil s'efface davantage (rien ne semble dépasser du tiroir)
+       scrimPe: anyS ? 'auto' : 'none', closeAll: () => this.closeAll(),
       sheetTr: this.sd ? 'none' : 'transform .45s cubic-bezier(.22,1,.36,1)', sDown: e => this.sDown(e), sMove: e => this.sMove(e), sUp: () => this.sUp(),
       menuTf: S.menu ? 'translateX(' + Math.min(0, S.drDx || 0) + 'px)' : 'translateX(-105%)', drTr: this.dd ? 'none' : 'transform .42s cubic-bezier(.22,1,.36,1), visibility 0s linear ' + (S.menu ? '0s' : '.42s'), menuVis: S.menu ? 'visible' : 'hidden', menuHid: S.menu ? 'false' : 'true',
       dDown: e => { this.dx0 = e.clientX; this.dy0 = e.clientY; this.dd = false; }, dMove: e => { if (this.dx0 == null) return; const dx = e.clientX - this.dx0, dyy = e.clientY - this.dy0; if (!this.dd && dx < -10 && Math.abs(dx) > Math.abs(dyy) * 1.3) this.dd = true; if (this.dd) this.setState({ drDx: Math.min(0, dx) }); }, dUp: () => { if (this.dd) { const fermer = (this.state.drDx || 0) < -70; this.dd = false; this.setState(fermer ? { menu: false, drDx: 0 } : { drDx: 0 }); } this.dx0 = null; }, famTf: S.sheet === 'fam' ? 'translateY(' + dy + 'px)' : 'translateY(105%)', matchTf: sheetOn ? 'translateY(' + dy + 'px)' : 'translateY(105%)',

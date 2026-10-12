@@ -7,15 +7,16 @@
 (function () {
   'use strict';
   if (!window.customElements || customElements.get('mdg-souffle')) return;
+  // courtes, au présent, qui donnent envie : ce qu'on trouve ici, et qui on y rencontre
   const PHRASES = [
     'Chercher un produit, une ville…',
-    'Vous êtes connecté à tous les marchés de gros de Côte d’Ivoire.',
+    'Tous les marchés de gros, ici.',
     'Tomate, oignon, plantain…',
-    'Vous êtes connecté à tous les grossistes du pays.',
+    'Les grossistes du pays, en direct.',
     'Qui vend près de chez vous ?',
-    'Vous êtes connecté aux meilleurs acheteurs du pays.',
-    'Le bon produit, au bon endroit.',
-    'Vous êtes connecté aux coopératives de tout le pays.',
+    'Les vrais acheteurs sont là.',
+    'Le bon produit, au bon prix.',
+    'Les coopératives, à un geste.',
     'Du champ au marché, sans détour.',
     'Dites ce qu’il vous faut.'
   ];

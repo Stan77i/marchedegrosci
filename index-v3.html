@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
+<meta name="color-scheme" content="dark">
+<style>/* avant toute feuille de style : jamais d'écran blanc pendant le chargement */html{background:#171512}</style>
 <title>Marché de Gros de Côte d'Ivoire — du producteur à l'acheteur, en direct</title>
 <meta name="description" content="Trouvez les produits des marchés ivoiriens directement auprès de ceux qui les produisent : riz local, igname, tomate, poisson fumé, djoumblé… Contact direct, carte, demande d'achat.">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1173,6 +1175,26 @@ body.tzmode .tz{height:100svh}
 </style>
 </head>
 <body class="light">
+<!-- Chargeur : affiché pendant que le site se construit (les scripts du bas). Le vert (qui produit) et le jaune (qui cherche)
+     se rejoignent sur la ligne bleue, en boucle ; dès que le site est prêt, il s'efface. N'apparaît pas si le site arrive en moins de 0,18 s. -->
+<div id="mdgCharge" aria-hidden="true"><style>
+#mdgCharge{position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:radial-gradient(120% 70% at 50% 46%,#241d16 0%,#171512 62%);opacity:0;animation:mcIn .3s .18s ease-out forwards;transition:opacity .45s ease,visibility 0s linear .45s}
+#mdgCharge.is-fin{opacity:0!important;visibility:hidden;animation:none}
+#mdgCharge svg{width:150px;height:50px;overflow:visible}
+#mdgCharge .l{fill:none;stroke:#6AAEF0;stroke-width:2.2;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:mcL 1.8s cubic-bezier(.65,0,.35,1) infinite}
+#mdgCharge .v{fill:#6CC58C;animation:mcV 1.8s cubic-bezier(.65,0,.35,1) infinite;transform-box:fill-box;transform-origin:center}
+#mdgCharge .a{fill:#F2C94C;animation:mcA 1.8s cubic-bezier(.65,0,.35,1) infinite;transform-box:fill-box;transform-origin:center}
+#mdgCharge .r{fill:#6AAEF0;opacity:0;animation:mcR 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
+#mdgCharge b{font:500 22px/1 'Cormorant Garamond',Georgia,serif;color:#F5F0E6;letter-spacing:.01em;font-weight:500}
+#mdgCharge small{display:block;margin-top:6px;font:400 12px/1 Jost,system-ui,sans-serif;color:#8f846f;letter-spacing:.02em;text-align:center}
+@keyframes mcIn{to{opacity:1}}
+@keyframes mcL{0%{stroke-dashoffset:1}45%,70%{stroke-dashoffset:0}100%{stroke-dashoffset:-1}}
+@keyframes mcV{0%,100%{transform:none}45%,60%{transform:translateX(4px)}}
+@keyframes mcA{0%,100%{transform:none}45%,60%{transform:translateX(-4px)}}
+@keyframes mcR{0%,40%{opacity:0;transform:scale(.4)}52%{opacity:1;transform:scale(1.25)}70%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(.6)}}
+@media (prefers-reduced-motion:reduce){#mdgCharge .l{animation:none;stroke-dashoffset:0}#mdgCharge .v,#mdgCharge .a,#mdgCharge .r{animation:none}#mdgCharge .r{opacity:1}}
+</style><svg viewBox="0 0 150 50"><path class="l" pathLength="1" d="M22 30Q75 6 128 30"/><circle class="v" cx="16" cy="30" r="7"/><rect class="a" x="127" y="23" width="14" height="14" rx="2.5"/><circle class="r" cx="75" cy="18" r="4.2"/></svg><div><b>Marché de Gros</b><small>On ouvre le marché…</small></div></div>
+<script>(function(){var t0=Date.now(),el=document.getElementById('mdgCharge'),fait=false;function fin(){if(fait)return;fait=true;var vu=Date.now()-t0>180,d=vu?Math.max(0,700-(Date.now()-t0)):0;setTimeout(function(){el.classList.add('is-fin');setTimeout(function(){el.remove()},500)},d)}if(document.readyState!=='loading')requestAnimationFrame(fin);else document.addEventListener('DOMContentLoaded',function(){requestAnimationFrame(function(){requestAnimationFrame(fin)})});setTimeout(fin,9000)})();</script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs>
   <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>

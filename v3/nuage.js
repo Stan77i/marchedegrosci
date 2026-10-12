@@ -96,7 +96,8 @@
     if (n) { say('mes'); toast(n > 1 ? n + ' de vos annonces sont maintenant sur cet appareil.' : 'Une de vos annonces est maintenant sur cet appareil.'); }
     return n;
   }
-  async function signOut() { const s = session(); localStorage.removeItem(K.s); localStorage.removeItem(K.a); say('compte'); if (s) fetch(URL0 + '/auth/v1/logout', { method: 'POST', headers: { apikey: KEY, Authorization: 'Bearer ' + s.access_token } }).catch(() => {}); }
+  async function signOut() { const s = session(); if (s && window.MDGPousse) { try { await MDGPousse.oublier(); } catch (_) {} }  // ce téléphone ne reçoit plus les notifications de ce compte
+    localStorage.removeItem(K.s); localStorage.removeItem(K.a); say('compte'); if (s) fetch(URL0 + '/auth/v1/logout', { method: 'POST', headers: { apikey: KEY, Authorization: 'Bearer ' + s.access_token } }).catch(() => {}); }
 
   /* ——— les annonces des autres (cache local) ——— */
   const fromRow = {

@@ -127,6 +127,10 @@
 .cp-sw{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:56px;border-top:1px solid var(--line);cursor:pointer}.cp-sw:first-child{border-top:0}
 .cp-sw span small{display:block;color:var(--mute);font-size:13px}.cp-sw input{width:22px;height:22px;flex:none;accent-color:var(--acc)}
 .cp-na{opacity:.6;cursor:default}
+.cp-cloche{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(224,122,63,.14);color:#F3B48A}.cp-cloche svg{width:20px;height:20px}
+.cp-pousse.is-on .cp-cloche{background:rgba(108,197,140,.16);color:#9fe0b4}
+.cp-pousse.is-on .cp-cloche svg{animation:cpCloche 2.6s ease-in-out 1}
+@keyframes cpCloche{0%,60%,100%{transform:none}8%{transform:rotate(14deg)}16%{transform:rotate(-12deg)}24%{transform:rotate(8deg)}32%{transform:rotate(-5deg)}40%{transform:rotate(2deg)}}
 /* avatar */
 .cp-avz{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center;margin:0 0 6px}
 .cp-avbig{position:relative;width:112px;height:112px;border-radius:50%;box-shadow:0 0 0 4px rgba(245,240,230,.08)}
@@ -249,6 +253,26 @@
   const lierRole = root => root.querySelectorAll('[data-role]').forEach(b => b.onclick = () => root.querySelectorAll('[data-role]').forEach(x => x.setAttribute('aria-pressed', String(x === b && x.getAttribute('aria-pressed') !== 'true'))));
   const roleVal = root => { const b = root.querySelector('[data-role][aria-pressed=true]'); return b ? b.dataset.role : null; };
 
+  /* ——— Notifications sur ce téléphone (v3/pousse.js) : une carte qui dit l'état réel et propose l'action qui convient ——— */
+  async function cartePousse(el) {
+    const P = window.MDGPousse; if (!el) return;
+    const st = P ? await P.etat() : 'impossible';
+    const T = {
+      actif: ['Notifications activées sur ce téléphone', 'Une réponse à votre prix, un accord, un refus : votre téléphone vous prévient tout de suite, même application fermée, avec le nombre de réponses sur l’icône.', '<button type="button" class="cp-alt" data-pe>Envoyer un essai</button><button type="button" class="cp-alt" data-pd>Désactiver</button>'],
+      inactif: ['Être prévenu même application fermée', 'Comme pour vos messages : dès qu’on répond à votre prix, votre téléphone vous le dit, et le nombre de réponses s’affiche sur l’icône.', '<button type="button" class="cp-go" data-pa>Activer les notifications</button>'],
+      refuse: ['Notifications bloquées sur ce téléphone', 'Elles ont été refusées. Pour les recevoir : Réglages du téléphone → Notifications → Marché de Gros → Autoriser, puis revenez ici.', ''],
+      installer: ['Sur iPhone : ajoutez d’abord l’application', 'Les notifications n’arrivent que dans l’application installée. Touchez Partager, puis « Sur l’écran d’accueil », ouvrez-la depuis l’icône et activez ici.', ''],
+      impossible: ['Notifications indisponibles ici', 'Ce navigateur ne permet pas les notifications. Ouvrez le Marché de Gros dans l’application installée ou dans Chrome, Safari ou Edge à jour.', '']
+    }[st];
+    el.innerHTML = `<div class="cp-card cp-pousse${st === 'actif' ? ' is-on' : ''}"><div style="display:flex;gap:12px;align-items:flex-start"><span aria-hidden="true" class="cp-cloche">${ico('notifs')}</span><span style="flex:1;min-width:0"><b style="display:block;font-size:15.5px;margin-bottom:4px">${T[0]}</b><small style="display:block;color:var(--mute);font-size:13.5px;line-height:1.45">${T[1]}</small></span></div>${T[2] ? `<div class="cp-row" style="margin-top:14px;gap:8px;flex-wrap:wrap">${T[2]}</div>` : ''}<p class="cp-err" role="status" style="margin-top:8px"></p></div>`;
+    const msg = el.querySelector('.cp-err'), b = q => el.querySelector(q);
+    if (b('[data-pa]')) b('[data-pa]').onclick = async e => { const t = e.currentTarget; t.disabled = true; t.textContent = 'Activation…'; t.setAttribute('aria-busy', 'true');
+      try { await P.activer(); N().toast('Notifications activées. Une notification d’essai arrive.'); cartePousse(el); }
+      catch (x) { t.disabled = false; t.removeAttribute('aria-busy'); t.textContent = 'Activer les notifications'; const m = String(x.message); msg.textContent = m === 'REFUS' ? 'Vous avez refusé. Autorisez-les dans les réglages du téléphone, puis réessayez.' : m === 'SANS_REPONSE' ? 'Pas de réponse à la demande. Réessayez et touchez « Autoriser ».' : m === 'INSTALLER' ? 'Ajoutez d’abord l’application à l’écran d’accueil.' : 'L’activation n’a pas abouti. Vérifiez la connexion, puis réessayez.'; } };
+    if (b('[data-pe]')) b('[data-pe]').onclick = async () => { msg.textContent = 'Envoi…'; const r = await P.essai(); msg.textContent = r && r.envoyees ? 'Envoyée : elle doit apparaître dans quelques secondes.' : 'L’essai n’est pas parti. Désactivez puis réactivez les notifications.'; };
+    if (b('[data-pd]')) b('[data-pd]').onclick = async () => { await P.desactiver(); N().toast('Notifications désactivées sur ce téléphone.'); cartePousse(el); };
+  }
+
   const VUES = {
     profil(main) {
       const p = profil || {}, u = me();
@@ -299,8 +323,10 @@
     notifs(main) {
       const L = notifs();
       main.innerHTML = `<div class="cp-panel"><h2>Notifications</h2><p>Propositions, contre-propositions, accords, refus et expirations de vos négociations, et nouvelles annonces sur vos produits.</p>
+        <div data-pousse style="margin:0 0 18px"></div>
         ${L.length ? `<div class="cp-row" style="margin:0 0 12px"><button type="button" class="cp-alt" data-lu>Tout marquer comme lu</button></div><div class="cp-list">${L.slice(0, 60).map((n, i) => `<button type="button" class="cp-item${n.lu ? '' : ' is-new'}" data-i="${i}"><span style="grid-row:span 2;width:10px;height:10px;border-radius:50%;background:${n.lu ? 'transparent' : 'var(--acc)'}"></span><b>${esc(n.texte)}</b><span></span><small>${ago(n.t)}</small></button>`).join('')}</div>`
           : '<div class="cp-empty"><b>Rien de nouveau</b>Les réponses à vos propositions et les accords apparaîtront ici.</div>'}</div>`;
+      cartePousse(main.querySelector('[data-pousse]'));
       const lu = main.querySelector('[data-lu]'); if (lu) lu.onclick = () => { W(KN, notifs().map(n => Object.assign(n, { lu: true }))); bg.rafraichir(); };
       main.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const all = notifs(), n = all[+b.dataset.i]; if (!n) return; n.lu = true; W(KN, all); if (n.nego && window.MDGNegoce) { fermer(); MDGNegoce.thread(n.nego); } else bg.rafraichir(); });
     },
@@ -309,14 +335,14 @@
       main.innerHTML = `<div class="cp-panel"><h2>Préférences</h2><p>Chaque réglage agit vraiment ; ce qui n’existe pas encore est indiqué.</p>
         <h3>Notifications</h3><div class="cp-card">
           <label class="cp-sw"><span>Messages à l’écran<small>Une ligne en bas de l’écran quand une proposition arrive, est acceptée ou refusée</small></span><input type="checkbox" data-pf="toasts" ${pf.toasts ? 'checked' : ''}></label>
-          <div class="cp-sw cp-na"><span>Notifications quand le site est fermé<small>Pas encore disponible</small></span></div>
-</div>
+</div><div data-pousse style="margin-top:10px"></div>
         <h3>Sons</h3><div class="cp-card"><div class="cp-kv"><span>${sn && sn.on ? 'Activés' : 'Désactivés'} · notes de balafon</span><button type="button" class="cp-alt" data-sons>Régler les sons</button></div></div>
         <h3>Confidentialité</h3><div class="cp-card">
           <label class="cp-sw"><span>Montrer mon nom de famille<small>Sinon, les autres voient « ${esc(p.prenom || 'Prénom')} ${esc(p.nom ? p.nom[0] + '.' : 'N.')} »${p.pseudo ? ' (votre pseudonyme passe avant)' : ''}</small></span><input type="checkbox" data-np ${p.nom_public ? 'checked' : ''}></label></div>
         <p class="cp-help">Le numéro inscrit sur une annonce est visible de tous : c’est ainsi que les acheteurs vous appellent. Vous le choisissez annonce par annonce.</p></div>`;
       main.querySelectorAll('[data-pf]').forEach(i => i.onchange = () => { const o = prefs(); o[i.dataset.pf] = i.checked; W(KPF, o); N().toast('Préférence enregistrée.'); });
       const s = main.querySelector('[data-sons]'); if (s) s.onclick = () => { fermer(); S && S.panneau(); };
+      cartePousse(main.querySelector('[data-pousse]'));
       main.querySelector('[data-np]').onchange = async e => { try { await enregistrer({ nom_public: e.target.checked }); N().toast('Préférence enregistrée.'); bg.rafraichir(); } catch (x) { e.target.checked = !e.target.checked; N().toast(x.message); } };
     },
     securite(main) {

@@ -7,7 +7,7 @@
    • Toutes les règles sont vérifiées par la base (nego_ouvrir, nego_agir) : rien n'est simulé ici.
    • La règle des prix : cercle vert = vendeur, carré jaune = acheteur (le langage de la carte) ; à l'accord, ligne bleue.
    Notions distinctes, jamais confondues : prix affiché (l'annonce), prix proposé (en attente), prix convenu (l'accord).
-   API : MDGNegoce.proposer(annonce) · inbox() · thread(id) · unread() · refresh()
+   API : MDGNegoce.proposer(annonce) · inbox() · thread(id) · unread() · refresh() · masquer(id) · glisser(ligne, supprimer)
    Un bouton peut porter data-negocier='{"cible":"offre","id":"…","produit":"…","prix":12000,"unite":"kg","quantite":20,"negociable":true}'.
    Événement : « mdg:negoce » (detail.unread). */
 (function () {
@@ -77,12 +77,49 @@
     const pf = window.MDGCompte ? MDGCompte.prefs() : { toasts: true };
     if (!bg && pf.toasts) N().toast(ev.length > 1 ? ev.length + ' nouveautés dans « Mes négociations ».' : ev[0][1]);
   }
+  // masquée pour moi (nego_masquer) : tant que l'autre n'a rien écrit depuis
+  const masquee = n => { const c = me() === n.auteur_id ? n.cache_auteur : n.cache_proprio; return !!c && Date.parse(c) >= Date.parse(n.updated_at); };
+  async function masquer(id) {
+    await N().rpc('nego_masquer', { p_nego: id });
+    liste = liste.filter(n => n.id !== id); W(KL, liste); announce();
+    N().toast('Négociation retirée de votre liste. Elle reviendra si l’autre personne vous écrit.');
+  }
+  /* glisser vers la gauche pour supprimer (comme les messages d'un téléphone) : un bouton rouge apparaît ; glisser jusqu'au bout supprime directement */
+  const SWCSS = `.sw{position:relative;overflow:hidden;border-radius:18px}.sw.is-act{background:linear-gradient(90deg,#5a2318,#c2452f)}.sw:not(.is-act)>.sw-del{visibility:hidden}.sw+.sw{margin-top:8px}
+.sw>.sw-del{position:absolute;top:0;right:0;bottom:0;width:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0;border:0;background:none;color:#fff;font:600 14px Jost,system-ui,sans-serif;cursor:pointer}
+.sw>.sw-del svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sw>.sw-row{position:relative;z-index:1;margin:0!important;background-color:#211d17!important;transition:transform .34s cubic-bezier(.22,1,.36,1);touch-action:pan-y;will-change:transform}
+.sw.is-drag>.sw-row{transition:none}.sw.is-out{animation:swOut .34s cubic-bezier(.4,0,1,1) forwards}
+@keyframes swOut{to{height:0;opacity:0;margin-top:0}}
+@media (prefers-reduced-motion:reduce){.sw>.sw-row{transition:none}.sw.is-out{animation-duration:.01s}}`;
+  function glisser(row, suppr) {
+    if (!row || row.closest('.sw')) return;
+    if (!document.getElementById('swCss')) { const st = document.createElement('style'); st.id = 'swCss'; st.textContent = SWCSS; document.head.appendChild(st); }
+    const w = document.createElement('div'); w.className = 'sw'; row.parentNode.insertBefore(w, row);
+    const del = document.createElement('button'); del.type = 'button'; del.className = 'sw-del'; del.tabIndex = -1;
+    del.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>Supprimer';
+    w.append(del, row); row.classList.add('sw-row');
+    const L = 96; let x0 = null, y0 = 0, dx = 0, ouvert = false, drag = false;
+    const pose = v => { row.style.transform = v ? 'translateX(' + v + 'px)' : ''; if (v) w.classList.add('is-act'); else setTimeout(() => { if (!row.style.transform) w.classList.remove('is-act'); }, 360); };  // le rouge n'apparaît que pendant le geste (sinon il déborde aux coins arrondis)
+    const go = async () => { pose(-row.offsetWidth); w.style.height = w.offsetHeight + 'px'; requestAnimationFrame(() => w.classList.add('is-out'));
+      try { await suppr(); } catch (_) { w.classList.remove('is-out'); w.style.height = ''; pose(0); ouvert = false; N().toast('La suppression n’a pas abouti. Réessayez.'); } };
+    row.addEventListener('pointerdown', e => { x0 = e.clientX; y0 = e.clientY; drag = false; });
+    row.addEventListener('pointermove', e => { if (x0 == null) return; const m = e.clientX - x0;
+      if (!drag && Math.abs(m) > 10 && Math.abs(m) > Math.abs(e.clientY - y0) * 1.2) { drag = true; w.classList.add('is-drag'); try { row.setPointerCapture(e.pointerId); } catch (_) {} }
+      if (drag) { dx = Math.min(0, m + (ouvert ? -L : 0)); pose(dx < -L ? -L + (dx + L) * .85 : dx); } });
+    const fin = () => { if (x0 == null) return; x0 = null; w.classList.remove('is-drag'); if (!drag) return;
+      if (dx < -row.offsetWidth * .55) go(); else if (dx < -L / 2) { ouvert = true; pose(-L); } else { ouvert = false; pose(0); } setTimeout(() => { drag = false; }, 0); };
+    row.addEventListener('pointerup', fin); row.addEventListener('pointercancel', fin);
+    row.addEventListener('click', e => { if (drag || ouvert) { e.stopImmediatePropagation(); e.preventDefault(); if (ouvert && !drag) { ouvert = false; pose(0); } } }, true);
+    del.onclick = go;
+  }
+
   let first = true;
   async function refresh() {
     if (!N() || !N().session() || !navigator.onLine) { announce(); return liste; }
     try {
       const u = me(), r = await N().api('/rest/v1/negociations?select=*&or=(auteur_id.eq.' + u + ',proprio_id.eq.' + u + ')&order=updated_at.desc&limit=100', { auth: true });
-      const avant = liste; liste = r || []; W(KL, liste);
+      const avant = liste; liste = (r || []).filter(n => !masquee(n)); W(KL, liste);
       if (!first || avant.length) evenements(avant, liste); first = false;
     } catch (e) { if (e.code === 'auth') { liste = []; W(KL, []); } }
     announce(); return liste;
@@ -142,6 +179,7 @@
 .nx-grp{margin:0 0 22px}.nx-grp h3{margin:0 0 10px;font:500 20px/1.2 'Cormorant Garamond',serif;color:var(--ink)}
 .nx-row{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;width:100%;padding:12px 14px;margin:0 0 8px;border:1px solid var(--line);border-radius:18px;background:rgba(245,240,230,.03);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
 .nx-row:hover{background:rgba(245,240,230,.07)}
+.nx-plus{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:18px 0 6px}.nx-pl{display:inline-flex;align-items:center;gap:7px;min-height:42px;padding:0 15px;border:1px solid var(--line);border-radius:999px;background:rgba(245,240,230,.03);color:var(--mute);font:600 13.5px Jost,sans-serif;cursor:pointer}.nx-pl:hover{color:var(--ink)}.nx-pl svg{width:15px;height:15px;fill:#F2C94C}
 .nx-row .mk{grid-row:span 2}.nx-row b{font-weight:600;font-size:15.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nx-row small{grid-column:2;color:var(--mute);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nx-row .p{grid-row:span 2;text-align:right;font:500 22px/1 'Cormorant Garamond',serif}.nx-row .p small{display:block;margin-top:4px;font:400 11.5px Jost,sans-serif}
@@ -356,7 +394,7 @@
       const grp = (t, L) => L.length ? `<section class="nx-grp"><h3>${t}</h3>${L.map(row).join('')}</section>` : '';
       bg.querySelector('.nx-b').innerHTML = liste.length ? grp('À vous de répondre', g.moi) + grp('En attente de réponse', g.eux) + grp('Accords conclus', g.ok) + grp('Sans proposition en cours', g.sans) + grp('Terminées', g.fin)
         : `<div class="nx-empty"><b>Aucune négociation pour l’instant</b>Sur une offre ou une demande, touchez « Proposer un prix ». Les réponses arrivent ici.</div>`;
-      bg.querySelectorAll('.nx-row').forEach(b => b.onclick = () => thread(b.dataset.id));
+      bg.querySelectorAll('.nx-row').forEach(b => { b.onclick = () => thread(b.dataset.id); glisser(b, () => masquer(b.dataset.id)); });
     };
     sheet(head('Mes négociations', 'Propositions, réponses et accords') + `<div class="nx-b"><div class="nx-empty">Chargement…</div></div>`, 'Mes négociations');
     redessiner = () => draw();
@@ -403,6 +441,14 @@
       const box = $('.nx-msgs'), seen = box.childElementCount;
       box.innerHTML = (msgs || []).map((m, i) => ticket(m, i, seen, anim)).join('');
       $('.nx-bottom').innerHTML = n.statut === 'conclue' ? deal() : '';
+      // en bas du fil : noter la personne (étoiles, v3/reputation.js) et retirer la négociation de sa liste
+      const idLui = autreId(n), R = window.MDGRep;
+      $('.nx-bottom').insertAdjacentHTML('beforeend', `<div class="nx-plus">${R ? `<button type="button" class="nx-pl" data-noter><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.6l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></svg>Noter ${esc(av.nom || leLa(lui))}</button><button type="button" class="nx-pl" data-profil>Voir son profil</button>` : ''}${window.MDGMessages ? '<button type="button" class="nx-pl" data-ecrire>Écrire en privé</button>' : ''}<button type="button" class="nx-pl" data-cacher>Retirer de ma liste</button></div>`);
+      const bN = $('[data-noter]'), bP = $('[data-profil]'), bC = $('[data-cacher]'), bE = $('[data-ecrire]');
+      if (bE) bE.onclick = () => { close(); MDGMessages.ecrire(idLui, { nom: av.nom || 'Membre' }); };
+      if (bN) bN.onclick = () => R.noter(idLui, av.nom || '');
+      if (bP) bP.onclick = () => R.profil(idLui, { nom: av.nom || 'Membre', uri: avDe(n, 72).uri || '' });
+      if (bC) bC.onclick = async () => { try { await masquer(n.id); inbox(); } catch (_) { N().toast('Impossible pour l’instant. Réessayez.'); } };
       pied();
       if (anim) { const b = $('.nx-b'); b.scrollTop = b.scrollHeight; }
     };
@@ -487,5 +533,5 @@
   // en arrière-plan, on continue de relire (plus lentement) pour pouvoir signaler au retour
   setInterval(() => { if (document.hidden) refresh(); }, 180000);
 
-  window.MDGNegoce = { proposer, inbox, thread, unread, refresh };
+  window.MDGNegoce = { proposer, inbox, thread, unread, refresh, masquer, glisser };
 })();

@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="css/styles.css?v=20261009o">
 <link rel="stylesheet" href="v3/acheter.css?v=20261009o">
 <link rel="stylesheet" href="v3/vendre.css?v=20261009o">
-<link rel="stylesheet" href="v3/hero-ivt.css?v=20261011m">
+<link rel="stylesheet" href="v3/hero-ivt.css?v=20261012b">
 <link rel="stylesheet" href="v3/ivt-header.css?v=20261012c">
 <link rel="stylesheet" href="v3/pages.css?v=20261011c">
 <link rel="stylesheet" href="v3/annee.css?v=20261009z">
@@ -29,7 +29,7 @@
 <link rel="stylesheet" href="v3/etat.css?v=20261010a">
 <link rel="stylesheet" href="v3/constellation.css?v=20261010c">
 <link rel="stylesheet" href="css/typo.css?v=20261009o">
-<link rel="stylesheet" href="v3/ux.css?v=20261012i">
+<link rel="stylesheet" href="v3/ux.css?v=20261012j">
 <script>/* téléphone : ouvre l'application mobile (même adresse, même données). ?ordinateur=1 force le site complet */(function(){try{var q=location.search,f=/[?&]ordinateur=1/.test(q);if(f)sessionStorage.setItem('mdg-ordi','1');var o=sessionStorage.getItem('mdg-ordi')==='1';if(/[?&]app=1/.test(q)){sessionStorage.setItem('mdg-app','1');sessionStorage.removeItem('mdg-ordi');o=false}var tel=sessionStorage.getItem('mdg-app')==='1'||(matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<768);if(tel&&!o)location.replace('application.dc.html'+(location.hash||'#/'));}catch(e){}})();</script>
 <script>/* sans adresse : ouvre l'Accueil */ if (!location.hash) history.replaceState(null, '', '#/');</script>
 <script src="vendor/gsap.min.js" defer></script>
@@ -1276,12 +1276,14 @@ body.tzmode .tz{height:100svh}
 <script src="v3/marqueurs.js?v=20261010a"></script>
 <script src="v3/terre.js?v=20261011a"></script>
 <script src="v3/porte.js?v=20261012i"></script>
-<script src="v3/nuage.js?v=20261012k"></script>
+<script src="v3/nuage.js?v=20261012l"></script>
 <script src="v3/sons.js?v=20261012b"></script>
-<script src="v3/negoce.js?v=20261012c"></script>
+<script src="v3/negoce.js?v=20261012e"></script>
 <script src="v3/avatar.js?v=20261012c"></script>
-<script src="v3/compte.js?v=20261012i"></script>
-<script src="v3/pousse.js?v=20261012b"></script>
+<script src="v3/compte.js?v=20261012k"></script>
+<script src="v3/pousse.js?v=20261012c"></script>
+<script src="v3/reputation.js?v=20261012c"></script>
+<script src="v3/messages.js?v=20261012a"></script>
 <script src="v3/marche.js?v=20261011c"></script>
 <script src="v2/search.js"></script>
 <script src="v2/map.js"></script>
@@ -1638,9 +1640,9 @@ $('#back').onclick = back;
 
 /* ——— Compte et annonces partagées (v3/nuage.js) ——— */
 const ICO_COMPTE = $('#shCompte') ? $('#shCompte').innerHTML : '';
-function paintCompte() { const b = $('#shCompte'); if (!b || !window.MDGNuage) return; const s = MDGNuage.session(), n = s && window.MDGNegoce ? MDGNegoce.unread() : 0, l = s ? (n ? 'Mon espace : ' + n + (n > 1 ? ' négociations non lues' : ' négociation non lue') : 'Mon espace (connecté)') : 'Se connecter'; b.classList.toggle('is-on', !!s); b.setAttribute('aria-label', l); b.title = l;
+function paintCompte() { const b = $('#shCompte'); if (!b || !window.MDGNuage) return; const s = MDGNuage.session(), n = s ? (window.MDGNegoce ? MDGNegoce.unread() : 0) + (window.MDGMessages ? MDGMessages.unread() : 0) : 0, l = s ? (n ? 'Mon espace : ' + n + ' à lire (négociations et messages)' : 'Mon espace (connecté)') : 'Se connecter'; b.classList.toggle('is-on', !!s); b.setAttribute('aria-label', l); b.title = l;
   const P = s && window.MDGCompte && window.MDGAvatar ? MDGCompte.profil() : null; b.classList.toggle('has-av', !!(P && (P.avatar || P.prenom))); b.innerHTML = P && (P.avatar || P.prenom) ? MDGAvatar.svg(P.avatar, { size: 44, nom: MDGCompte.nomAffiche(P), seed: s.user.id }) + '<i class="sh-dot" aria-hidden="true"></i>' : ICO_COMPTE; const d = b.querySelector('.sh-dot'); if (d) { if (n) d.dataset.n = n > 9 ? '9+' : n; else delete d.dataset.n; } }
-addEventListener('mdg:negoce', paintCompte); addEventListener('mdg:profil', paintCompte);
+addEventListener('mdg:negoce', paintCompte); addEventListener('mdg:dm', paintCompte); addEventListener('mdg:profil', paintCompte);
 if ($('#shCompte')) $('#shCompte').onclick = () => window.MDGNuage && MDGNuage.open();
 paintCompte();
 addEventListener('mdg:nuage', e => {
@@ -2443,6 +2445,7 @@ const SQ = (() => {
   function check() {
     raf = 0; const H = document.documentElement.scrollHeight, y = scrollY;
     if (Math.abs(y - lastY) > 4) { down = y > lastY; lastY = y; }
+    if (y >= end() - 8) down = false; else if (y < innerHeight * 1.2) down = true;  // arrivé en bas : la flèche remonte ; tout en haut : elle descend
     const show = H > innerHeight * 2.2 && y > innerHeight * .9 && !typing() && !$('#sheet').classList.contains('on');
     el.hidden = !show; el.classList.toggle('down', down);
     b.setAttribute('aria-label', down ? 'Aller en bas de la page' : 'Revenir en haut de la page'); alt.setAttribute('aria-label', down ? 'Revenir en haut de la page' : 'Aller en bas de la page');

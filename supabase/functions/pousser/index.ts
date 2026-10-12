@@ -1,8 +1,9 @@
 // ═════════ Marché de Gros CI — fonction Edge « pousser » : envoie les notifications sur les téléphones (Web Push) ═════════
-// Deux façons de l'appeler :
+// Trois façons de l'appeler :
 //  1. par la base (déclencheur public.push_message, via pg_net) à chaque nouveau message de négociation,
 //     avec l'en-tête x-mdg-cle (clé partagée rangée dans le coffre) et { message_id } ;
 //  2. par l'application, connectée, pour vérifier que les notifications marchent : { test: true } + le jeton de la session.
+//  3. par la base (déclencheur public.push_dm) à chaque message direct, avec { dm_id } (schema-8).
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
 import webpush from "npm:web-push@3.6.7";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -67,6 +68,18 @@ Deno.serve(async (req) => {
 
     // 1. un nouveau message de négociation
     if (req.headers.get("x-mdg-cle") !== c.mdg_push_cle) return json({ erreur: "refusé" }, 401);
+
+    // 3. un message direct (messagerie, schema-8) : « Awa » · le texte
+    if (corps.dm_id) {
+      const { data: m } = await sb.from("dm").select("id, discussion_id, auteur_id, texte").eq("id", String(corps.dm_id)).maybeSingle();
+      if (!m) return json({ erreur: "message introuvable" }, 404);
+      const { data: d } = await sb.from("discussions").select("id, a_id, b_id").eq("id", m.discussion_id).maybeSingle();
+      if (!d) return json({ erreur: "conversation introuvable" }, 404);
+      const dest = m.auteur_id === d.a_id ? d.b_id : d.a_id;
+      const badge = (await sb.rpc("push_badge", { uid: dest })).data ?? 0;
+      return json(await envoyer(dest, { title: await nomDe(m.auteur_id), body: coupe(String(m.texte || ""), 140), tag: "dm-" + d.id, url: "application.dc.html#/?dm=" + d.id, dm: d.id, badge }));
+    }
+
     const id = String(corps.message_id || "");
     const { data: m } = await sb.from("messages").select("*").eq("id", id).maybeSingle();
     if (!m) return json({ erreur: "message introuvable" }, 404);

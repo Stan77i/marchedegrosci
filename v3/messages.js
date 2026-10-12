@@ -1,0 +1,276 @@
+/* ═════════ Marché de Gros CI — messagerie directe ═════════
+   Écrire à un vendeur, un acheteur ou n'importe quel membre, sans annonce et sans quitter l'application.
+   Chaque message est effacé 7 jours après son envoi (base gratuite : pas de surcharge) ; on peut bloquer quelqu'un.
+   Serveur : supabase/schema-8.sql (dm_ouvrir, dm_envoyer, dm_liste, dm_messages, dm_lu, dm_masquer, dm_bloquer) ;
+   notification sur le téléphone : fonction Edge « pousser » (déclencheur push_dm).
+   API : MDGMessages.boite() · ecrire(uid, { nom, avatar }) · conversation(id) · unread() · refresh()
+   Événement : mdg:dm { unread } quand le nombre de conversations à lire change. */
+(function () {
+  'use strict';
+  const JOURS = 7;  // = dm_duree() dans supabase/schema-8.sql
+  const KL = 'mdg-dm:liste';
+  const N = () => window.MDGNuage, A = () => window.MDGAvatar;
+  const J = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } };
+  const W = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const me = () => { const s = N() && N().session(); return s && s.user && s.user.id; };
+  // l'avatar : celui que la liste du serveur donne, sinon celui des profils publics déjà connus (v3/compte.js), sinon les initiales
+  const av = (uid, code, nom, t) => { const u = !code && uid && window.MDGCompte ? MDGCompte.avatar(uid, { size: t, nom: nom || '?' }).uri : A() ? A().uri(code, { size: t, nom: nom || '?', seed: uid }) : '';
+    return u ? `<img src="${u}" width="${t}" height="${t}" alt="">` : ''; };
+  const heure = t => new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const jour = t => { const d = new Date(t), a = new Date(); a.setHours(0, 0, 0, 0); const j = Math.round((a - new Date(d).setHours(0, 0, 0, 0)) / 864e5);
+    return j <= 0 ? 'Aujourd’hui' : j === 1 ? 'Hier' : d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }); };
+  const quand = t => { const d = new Date(t), j = (Date.now() - d) / 864e5; return j < 1 && d.getDate() === new Date().getDate() ? heure(t) : j < 2 ? 'hier' : d.toLocaleDateString('fr-FR', { weekday: 'short' }); };
+  const reste = t => { const h = Math.max(0, (Date.parse(t) + JOURS * 864e5 - Date.now()) / 36e5); return h < 1 ? 'moins d’une heure' : h < 24 ? Math.round(h) + ' h' : Math.round(h / 24) + ' j'; };
+  const err = x => { const m = String(x && x.message || x || ''); return /BLOQUE/.test(m) ? 'Vous ne pouvez plus écrire à cette personne.' : /TROP_VITE/.test(m) ? 'Trop de messages d’un coup. Attendez une minute.'
+    : /Failed to fetch|NetworkError/i.test(m) ? 'Pas de réseau. Le message n’est pas parti.' : /dm_|schema cache|Could not find/i.test(m) ? 'La messagerie n’est pas encore activée sur le serveur.' : m || 'Une erreur est survenue.'; };
+
+  // ——— la liste des conversations (gardée sur l'appareil pour s'afficher tout de suite) ———
+  let liste = J(KL, []), dernierU = -1, premier = true, ouverte = null;
+  const unread = () => liste.filter(c => c.non_lu && c.id !== ouverte).length;
+  function annoncer() { const u = unread(); if (u !== dernierU) { dernierU = u; dispatchEvent(new CustomEvent('mdg:dm', { detail: { unread: u } })); } }
+  async function refresh() {
+    if (!N() || !N().session()) { if (liste.length) { liste = []; W(KL, []); } annoncer(); return liste; }
+    if (!navigator.onLine) { annoncer(); return liste; }
+    try {
+      const avant = new Map(liste.map(c => [c.id, c.updated_at])), r = await N().rpc('dm_liste') || [];
+      if (!premier) r.filter(c => c.non_lu && c.id !== ouverte && avant.get(c.id) !== c.updated_at).forEach(c => {
+        N().toast(c.autre_nom + ' vous a écrit : « ' + String(c.dernier_texte || '').slice(0, 60) + (String(c.dernier_texte || '').length > 60 ? '…' : '') + ' »');
+        window.MDGSons && MDGSons.signal('proposition');
+      });
+      premier = false; liste = r; W(KL, r);
+    } catch (e) { if (e.code === 'auth') { liste = []; W(KL, []); } }
+    annoncer(); return liste;
+  }
+
+  // ——— feuille (sombre, plein écran sur téléphone, comme une vraie messagerie) ———
+  const CSS = `.dm-bg{position:fixed;inset:0;z-index:9200;background:rgba(10,9,7,.6);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:dmIn .2s ease both}
+.dm{--ink:#F5F0E6;--mute:#B9AD98;--line:rgba(245,240,230,.1);--acc:#E07A3F;position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:100%;background:#1d1a15;color:var(--ink);font:400 15px/1.45 Jost,system-ui,sans-serif;animation:dmUp .38s cubic-bezier(.22,1,.36,1) both;overflow:hidden}
+@media (min-width:720px){.dm-bg{align-items:center;padding:24px}.dm{height:min(760px,92dvh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.55)}}
+.dm-h{flex:none;display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 10px 10px;border-bottom:1px solid var(--line);background:#1a1712}
+.dm-ib{flex:none;position:relative;width:44px;height:44px;border:0;border-radius:50%;background:rgba(245,240,230,.07);color:var(--ink);display:grid;place-items:center;cursor:pointer}
+.dm-ib svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.dm-ib:focus-visible,.dm button:focus-visible,.dm textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.dm-qui{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;color:inherit;text-align:left;padding:4px;border-radius:14px;cursor:pointer;font:inherit}
+.dm-qui img{flex:none;border-radius:50%}.dm-qui span{min-width:0}.dm-qui b{display:block;font-weight:600;font-size:16.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-qui small{display:block;color:var(--mute);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-t{flex:1;min-width:0;margin:0 0 0 6px;font:500 26px/1.1 'Cormorant Garamond',Georgia,serif}.dm-t small{display:block;margin-top:2px;font:400 12.5px Jost,sans-serif;color:var(--mute)}
+.dm-b{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:14px 14px 18px;-webkit-overflow-scrolling:touch}
+.dm-info{display:flex;align-items:center;justify-content:center;gap:7px;margin:2px auto 14px;padding:7px 12px;max-width:340px;border-radius:999px;background:rgba(245,240,230,.05);color:var(--mute);font-size:12.5px;text-align:center}
+.dm-info svg{flex:none;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.dm-jour{margin:16px 0 8px;text-align:center;color:var(--mute);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:capitalize}
+.dm-m{display:flex;margin:3px 0}.dm-m.me{justify-content:flex-end}
+.dm-m p{max-width:80%;margin:0;padding:9px 13px 7px;border-radius:20px 20px 20px 6px;background:rgba(245,240,230,.08);white-space:pre-wrap;overflow-wrap:anywhere;font-size:15.5px;line-height:1.4}
+.dm-m.me p{border-radius:20px 20px 6px 20px;background:#F5F0E6;color:#171512}
+.dm-m.suite p{border-top-left-radius:20px}.dm-m.me.suite p{border-top-right-radius:20px;border-top-left-radius:20px}
+.dm-m time{display:block;margin-top:2px;text-align:right;font-size:11px;opacity:.55}
+.dm-m.envoi p{opacity:.6}.dm-m.rate p{box-shadow:inset 0 0 0 1.5px #E2735B}
+.dm-m.rate time{opacity:1;color:#E2735B;font-weight:600}.dm-m.rate{cursor:pointer}
+.dm-m.neuf p{animation:dmPop .3s cubic-bezier(.22,1,.36,1) both}
+.dm-f{flex:none;display:flex;align-items:flex-end;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#1a1712}
+.dm-f textarea{flex:1;min-width:0;min-height:46px;max-height:132px;margin:0;padding:12px 16px;border:1px solid rgba(245,240,230,.14);border-radius:23px;background:#14120f;color:var(--ink);font:400 16px/1.35 Jost,sans-serif;resize:none;box-sizing:border-box}
+.dm-f textarea:focus{outline:none;border-color:var(--acc)}
+.dm-env{flex:none;width:46px;height:46px;border:0;border-radius:50%;background:var(--acc);color:#171512;display:grid;place-items:center;cursor:pointer;transition:transform .15s,opacity .2s}
+.dm-env svg{width:20px;height:20px;fill:currentColor}.dm-env:disabled{opacity:.35;cursor:default}.dm-env:not(:disabled):active{transform:scale(.92)}
+.dm-stop{flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;color:var(--mute);font-size:14px}
+.dm-stop button{flex:none;min-height:40px;padding:0 14px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:var(--ink);font:600 13.5px Jost,sans-serif;cursor:pointer}
+.dm-menu{position:absolute;right:10px;top:calc(60px + env(safe-area-inset-top));z-index:3;min-width:220px;padding:6px;border-radius:18px;background:#2a251e;box-shadow:0 18px 40px rgba(0,0,0,.5);animation:dmPop .2s ease both}
+.dm-menu button{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:0 12px;border:0;border-radius:12px;background:none;color:var(--ink);font:500 15px Jost,sans-serif;text-align:left;cursor:pointer}
+.dm-menu button:hover{background:rgba(245,240,230,.06)}.dm-menu .rouge{color:#F3A08C}
+.dm-l{display:flex;flex-direction:column;gap:2px}
+.dm-c{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;align-items:center;width:100%;padding:10px 10px;border:0;border-radius:18px;background:#1d1a15;color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.dm-c:hover{background:#25211b}.dm-c img{grid-row:span 2;border-radius:50%}
+.dm-c b{font-weight:600;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-c small{grid-column:2;color:var(--mute);font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-c time{color:var(--mute);font-size:12px;text-align:right}.dm-c i{grid-column:3;justify-self:end;width:10px;height:10px;border-radius:50%;background:var(--acc)}
+.dm-c.neuf b,.dm-c.neuf small{color:var(--ink);font-weight:600}.dm-c.neuf time{color:#F3B48A}
+.dm-l .sw{border-radius:18px}.dm-l .sw+.sw{margin-top:2px}.dm-l .sw>.sw-row{background-color:#1d1a15!important}
+.dm-vide{padding:56px 18px;text-align:center;color:var(--mute);line-height:1.55}.dm-vide svg{width:54px;height:54px;margin:0 auto 14px;display:block;fill:none;stroke:#F3B48A;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.dm-vide b{display:block;margin:0 0 6px;font:500 25px/1.2 'Cormorant Garamond',serif;color:var(--ink)}
+.dm-vide button{margin-top:16px;min-height:46px;padding:0 18px;border:1px solid rgba(245,240,230,.22);border-radius:999px;background:none;color:var(--ink);font:600 14.5px Jost,sans-serif;cursor:pointer}
+@keyframes dmIn{from{opacity:0}}@keyframes dmUp{from{transform:translateY(30px);opacity:0}}@keyframes dmPop{from{transform:scale(.94);opacity:0}}
+@media (prefers-reduced-motion:reduce){.dm-bg,.dm,.dm-m.neuf p,.dm-menu{animation:none}}`;
+  const I = {
+    retour: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
+    x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>',
+    horloge: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+    envoyer: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.4 20.4 21 12 3.4 3.6l2.2 7.1 8.4 1.3-8.4 1.3z"/></svg>',
+    bulle: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>'
+  };
+  let bg = null, rendre = null, minuteur = 0;
+  function feuille(html, label) {
+    if (!document.getElementById('dmCss')) { const st = document.createElement('style'); st.id = 'dmCss'; st.textContent = CSS; document.head.appendChild(st); }
+    fermer(true);
+    bg = document.createElement('div'); bg.className = 'dm-bg';
+    bg.innerHTML = `<div class="dm" role="dialog" aria-modal="true" aria-label="${esc(label)}">${html}</div>`;
+    document.body.appendChild(bg);
+    if (!rendre) rendre = N() && N().piege ? N().piege(bg) : null;
+    bg.addEventListener('click', e => { if (e.target === bg) fermer(); });
+    bg.querySelectorAll('[data-x]').forEach(b => b.onclick = () => fermer());
+    document.addEventListener('keydown', touche);
+    ajuster();
+    return bg;
+  }
+  function fermer(garder) {
+    clearInterval(minuteur); minuteur = 0; ouverte = null;
+    if (bg) { bg.remove(); bg = null; }
+    if (!garder) { document.removeEventListener('keydown', touche); if (rendre) { rendre(); rendre = null; } annoncer(); }
+  }
+  function touche(e) { if (e.key === 'Escape' && bg) { const m = bg.querySelector('.dm-menu'); if (m) m.remove(); else fermer(); } }
+  // iPhone : la page ne rétrécit pas quand le clavier s'ouvre ; la feuille suit la zone visible pour garder le champ au-dessus du clavier
+  function ajuster() {
+    const vv = window.visualViewport; if (!bg || !vv || matchMedia('(min-width:720px)').matches) return;
+    bg.style.top = vv.offsetTop + 'px'; bg.style.height = vv.height + 'px'; bg.style.bottom = 'auto';
+  }
+  if (window.visualViewport) { visualViewport.addEventListener('resize', ajuster); visualViewport.addEventListener('scroll', ajuster); }
+
+  // ——— la boîte : toutes mes conversations ———
+  function boite() {
+    if (!N() || !N().session()) { N() && N().open('Connectez-vous pour voir vos messages.'); return; }
+    const b = feuille(`<div class="dm-h"><h2 class="dm-t">Messages<small>Effacés ${JOURS} jours après l’envoi</small></h2><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div><div class="dm-b"><div class="dm-l" data-l></div></div>`, 'Messages');
+    const dessiner = () => {
+      const box = b.querySelector('[data-l]'); if (!box) return; const u = me();
+      if (!liste.length) {
+        box.innerHTML = `<div class="dm-vide">${I.bulle}<b>Aucune conversation</b>Touchez la photo d’un vendeur ou d’un acheteur, puis « Écrire ». Vous pouvez parler de tout, même sans acheter.${window.MDGRep ? '<br><button type="button" data-top>Voir les mieux notés</button>' : ''}</div>`;
+        const t = box.querySelector('[data-top]'); if (t) t.onclick = () => { fermer(); MDGRep.classement(); };
+        return;
+      }
+      box.innerHTML = liste.map(c => `<button type="button" class="dm-c${c.non_lu ? ' neuf' : ''}" data-id="${c.id}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 46)}<b>${esc(c.autre_nom)}</b><time>${quand(c.updated_at)}</time><small>${c.dernier_par === u ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small>${c.non_lu ? '<i aria-label="Non lu"></i>' : ''}</button>`).join('');
+      box.querySelectorAll('[data-id]').forEach(el => {
+        el.onclick = () => conversation(el.dataset.id, true);
+        if (window.MDGNegoce && MDGNegoce.glisser) MDGNegoce.glisser(el, async () => { await N().rpc('dm_masquer', { p_discussion: el.dataset.id }); liste = liste.filter(c => c.id !== el.dataset.id); W(KL, liste); annoncer(); N().toast('Conversation retirée de votre liste. Elle reviendra si la personne vous écrit.'); });
+      });
+    };
+    dessiner();
+    refresh().then(() => { if (bg === b) dessiner(); });
+    clearInterval(minuteur); minuteur = setInterval(() => { if (!document.hidden && bg === b) refresh().then(() => { if (bg === b) dessiner(); }); }, 15000);
+  }
+
+  // ——— écrire à quelqu'un (depuis sa fiche, une annonce, une négociation) ———
+  async function ecrire(uid, o = {}) {
+    if (!uid) return;
+    if (!N() || !N().session()) {
+      N() && N().open('Connectez-vous pour écrire à ' + (o.nom || 'ce membre') + '.');
+      const apres = () => { removeEventListener('mdg:connecte', apres); setTimeout(() => ecrire(uid, o), 500); };
+      addEventListener('mdg:connecte', apres); return;
+    }
+    if (uid === me()) { N().toast('C’est votre propre compte.'); return; }
+    try {
+      const id = await N().rpc('dm_ouvrir', { p_autre: uid });
+      conversation(id, false, { autre_id: uid, autre_nom: o.nom || 'Membre', autre_avatar: o.avatar || null });
+    } catch (x) { N().toast(err(x)); }
+  }
+
+  // ——— une conversation ———
+  async function conversation(id, depuisBoite, meta) {
+    if (!id || !N() || !N().session()) return;
+    let c = liste.find(x => x.id === id) || Object.assign({ id, bloque: false, je_bloque: false }, meta || {});
+    if (!c.autre_id) { await refresh(); c = liste.find(x => x.id === id) || c; }
+    const u = me(); ouverte = id;
+    const b = feuille(`<div class="dm-h">${depuisBoite ? `<button type="button" class="dm-ib" data-back aria-label="Retour aux messages">${I.retour}</button>` : ''}
+      <button type="button" class="dm-qui" data-profil aria-label="Voir le profil de ${esc(c.autre_nom)}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 40)}<span><b>${esc(c.autre_nom || 'Membre')}</b><small data-rep>Voir son profil</small></span></button>
+      <button type="button" class="dm-ib" data-plus aria-label="Plus d’options" aria-haspopup="menu">${I.plus}</button><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div>
+      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les messages s’effacent ${JOURS} jours après leur envoi.</div><div data-msgs></div></div>
+      <div class="dm-f" data-f></div>`, 'Conversation avec ' + (c.autre_nom || 'un membre'));
+    const corps = b.querySelector('[data-b]'), zone = b.querySelector('[data-msgs]'), pied = b.querySelector('[data-f]');
+    if (depuisBoite) b.querySelector('[data-back]').onclick = () => boite();
+    b.querySelector('[data-profil]').onclick = () => { if (window.MDGRep) { fermer(); MDGRep.profil(c.autre_id, { nom: c.autre_nom, avatar: c.autre_avatar }); } };
+    if (window.MDGRep && MDGRep.charger) { const r = MDGRep.resume && MDGRep.resume(c.autre_id); if (r && r.n) b.querySelector('[data-rep]').textContent = MDGRep.texteNote(r) + ' · voir son profil'; }
+
+    let msgs = [], attente = [];
+    const enBas = () => corps.scrollHeight - corps.scrollTop - corps.clientHeight < 80;
+    const descendre = () => { corps.scrollTop = corps.scrollHeight; };
+    function dessiner(neufs) {
+      const tout = msgs.concat(attente); let j = '', prec = null, h = '';
+      tout.forEach(m => {
+        const jj = jour(m.created_at); if (jj !== j) { j = jj; h += `<div class="dm-jour">${esc(jj)}</div>`; prec = null; }
+        const moi = m.auteur_id === u, suite = prec && prec.auteur_id === m.auteur_id && Date.parse(m.created_at) - Date.parse(prec.created_at) < 3e5;
+        const etat = m._etat === 'envoi' ? 'Envoi…' : m._etat === 'rate' ? 'Non envoyé · toucher pour réessayer' : heure(m.created_at);
+        h += `<div class="dm-m${moi ? ' me' : ''}${suite ? ' suite' : ''}${m._etat ? ' ' + m._etat : ''}${neufs && neufs.has(m.id) ? ' neuf' : ''}" data-m="${m.id}"${m._etat === 'rate' ? ' role="button" tabindex="0"' : ''}><p>${esc(m.texte)}<time title="S’efface dans ${reste(m.created_at)}">${etat}</time></p></div>`;
+        prec = m;
+      });
+      zone.innerHTML = h || `<div class="dm-vide" style="padding:30px 10px">${I.bulle}<b>Dites bonjour</b>Présentez-vous et dites ce que vous cherchez ou proposez.</div>`;
+      zone.querySelectorAll('.dm-m.rate').forEach(el => el.onclick = () => { const m = attente.find(x => x.id === el.dataset.m); if (m) partir(m); });
+    }
+    async function charger(premiere) {
+      const apres = msgs.length ? msgs[msgs.length - 1].created_at : null;
+      let r; try { r = await N().rpc('dm_messages', { p_discussion: id, p_apres: apres }) || []; } catch (x) { if (premiere) zone.innerHTML = `<div class="dm-vide" style="padding:30px 10px"><b>Impossible de charger</b>${esc(err(x))}</div>`; return; }
+      if (bg !== b) return;
+      const deja = new Set(msgs.map(m => m.id)), neufs = r.filter(m => !deja.has(m.id));
+      if (!neufs.length && !premiere) return;
+      const bas = premiere || enBas();
+      msgs = msgs.concat(neufs);
+      dessiner(premiere ? null : new Set(neufs.map(m => m.id)));
+      if (bas) descendre();
+      if (neufs.some(m => m.auteur_id !== u) || premiere) { N().rpc('dm_lu', { p_discussion: id }).catch(() => {}); const l = liste.find(x => x.id === id); if (l && l.non_lu) { l.non_lu = false; W(KL, liste); } annoncer(); }
+    }
+    async function partir(m) {
+      m._etat = 'envoi'; dessiner(); descendre();
+      try {
+        const r = await N().rpc('dm_envoyer', { p_discussion: id, p_texte: m.texte });
+        attente = attente.filter(x => x !== m);
+        if (!msgs.some(x => x.id === r.id)) msgs.push(r);
+        const l = liste.find(x => x.id === id);
+        if (l) Object.assign(l, { dernier_texte: r.texte.slice(0, 140), dernier_par: u, updated_at: r.created_at }); else liste.unshift(Object.assign({}, c, { dernier_texte: r.texte, dernier_par: u, updated_at: r.created_at, non_lu: false }));
+        liste.sort((a, z) => Date.parse(z.updated_at) - Date.parse(a.updated_at)); W(KL, liste);
+      } catch (x) {
+        m._etat = 'rate'; N().toast(err(x));
+        if (/BLOQUE/.test(String(x.message))) { attente = attente.filter(y => y !== m); c.bloque = true; piedDe(); }
+      }
+      if (bg === b) { dessiner(); descendre(); }
+    }
+    function piedDe() {
+      if (c.je_bloque) { pied.innerHTML = `<div class="dm-stop"><span>Vous avez bloqué ${esc(c.autre_nom)}.</span><button type="button" data-deb>Débloquer</button></div>`; pied.querySelector('[data-deb]').onclick = () => bloquer(false); return; }
+      if (c.bloque) { pied.innerHTML = `<div class="dm-stop"><span>Vous ne pouvez plus écrire à cette personne.</span></div>`; return; }
+      pied.innerHTML = `<textarea rows="1" maxlength="2000" placeholder="Écrire un message" aria-label="Votre message à ${esc(c.autre_nom)}" enterkeyhint="send"></textarea><button type="button" class="dm-env" aria-label="Envoyer" disabled>${I.envoyer}</button>`;
+      const ta = pied.querySelector('textarea'), go = pied.querySelector('.dm-env');
+      const grandir = () => { ta.style.height = 'auto'; ta.style.height = Math.min(132, ta.scrollHeight + 2) + 'px'; go.disabled = !ta.value.trim(); };
+      const envoyer = () => { const t = ta.value.trim(); if (!t) return; ta.value = ''; grandir(); const m = { id: 'tmp-' + Date.now(), created_at: new Date().toISOString(), auteur_id: u, texte: t }; attente.push(m); partir(m); ta.focus(); };
+      ta.addEventListener('input', grandir);
+      // ordinateur : Entrée envoie, Maj+Entrée va à la ligne ; téléphone : le bouton envoie (Entrée va à la ligne)
+      ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && matchMedia('(hover:hover) and (pointer:fine)').matches) { e.preventDefault(); envoyer(); } });
+      go.onclick = envoyer;
+      ta.addEventListener('focus', () => setTimeout(() => { ajuster(); descendre(); }, 300));
+    }
+    async function bloquer(oui) {
+      try { await N().rpc('dm_bloquer', { p_autre: c.autre_id, p_oui: oui }); c.je_bloque = oui; c.bloque = oui; const l = liste.find(x => x.id === id); if (l) Object.assign(l, { je_bloque: oui, bloque: oui }); W(KL, liste);
+        N().toast(oui ? c.autre_nom + ' ne peut plus vous écrire.' : c.autre_nom + ' peut de nouveau vous écrire.'); piedDe();
+        if (!oui) refresh().then(() => { const l2 = liste.find(x => x.id === id); if (l2) { c.bloque = l2.bloque; c.je_bloque = l2.je_bloque; piedDe(); } });
+      } catch (x) { N().toast(err(x)); }
+    }
+    b.querySelector('[data-plus]').onclick = e => {
+      e.stopPropagation(); const vieux = b.querySelector('.dm-menu'); if (vieux) { vieux.remove(); return; }
+      const m = document.createElement('div'); m.className = 'dm-menu'; m.setAttribute('role', 'menu');
+      m.innerHTML = `${window.MDGRep ? '<button type="button" role="menuitem" data-a="profil">Voir son profil et sa note</button>' : ''}<button type="button" role="menuitem" data-a="retirer">Retirer de ma liste</button><button type="button" role="menuitem" class="rouge" data-a="bloquer">${c.je_bloque ? 'Débloquer' : 'Bloquer'} ${esc(c.autre_nom)}</button>`;
+      b.querySelector('.dm').appendChild(m); m.querySelector('button').focus();
+      const loin = ev => { if (!m.contains(ev.target)) { m.remove(); document.removeEventListener('click', loin, true); } }; setTimeout(() => document.addEventListener('click', loin, true), 0);
+      m.onclick = async ev => { const a = ev.target.closest('[data-a]'); if (!a) return; m.remove();
+        if (a.dataset.a === 'profil') b.querySelector('[data-profil]').click();
+        else if (a.dataset.a === 'retirer') { try { await N().rpc('dm_masquer', { p_discussion: id }); liste = liste.filter(x => x.id !== id); W(KL, liste); N().toast('Conversation retirée de votre liste. Elle reviendra si la personne vous écrit.'); depuisBoite ? boite() : fermer(); } catch (x) { N().toast(err(x)); } }
+        else if (a.dataset.a === 'bloquer') { if (c.je_bloque) bloquer(false); else if (confirm('Bloquer ' + c.autre_nom + ' ? Vous ne pourrez plus vous écrire, ni l’un ni l’autre, tant que vous ne le débloquez pas.')) bloquer(true); } };
+    };
+    piedDe(); dessiner(); zone.innerHTML = '<div class="dm-vide" style="padding:30px 10px">Chargement…</div>';
+    await charger(true);
+    clearInterval(minuteur); minuteur = setInterval(() => { if (!document.hidden && navigator.onLine && bg === b) charger(false); }, 4000);
+    const ta = pied.querySelector('textarea'); if (ta && matchMedia('(hover:hover) and (pointer:fine)').matches) ta.focus();
+  }
+
+  // toucher une notification : ouvrir la conversation
+  function depuisAdresse() {
+    const m = location.hash.match(/[?&]dm=([0-9a-f-]{36})/); if (!m) return;
+    try { history.replaceState(history.state, '', location.hash.replace(/[?&]dm=[0-9a-f-]{36}/, '').replace(/\?$/, '') || '#/'); } catch (_) {}
+    const go = k => { if (N() && N().session()) conversation(m[1]); else if (k < 20) setTimeout(() => go(k + 1), 300); };
+    setTimeout(() => go(0), 700);
+  }
+  if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'mdg-dm' && e.data.dm) conversation(e.data.dm); });
+
+  window.MDGMessages = { boite, ecrire, conversation, unread, refresh, JOURS };
+  addEventListener('mdg:connecte', () => { premier = true; setTimeout(refresh, 1200); });
+  addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte' && !(N() && N().session())) { liste = []; W(KL, []); fermer(); annoncer(); } });
+  addEventListener('hashchange', depuisAdresse);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
+  if (document.readyState === 'loading') addEventListener('DOMContentLoaded', depuisAdresse); else depuisAdresse();
+  setTimeout(refresh, 2500);
+  setInterval(() => { if (!document.hidden) refresh(); }, 30000);
+})();

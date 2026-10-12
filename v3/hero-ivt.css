@@ -569,3 +569,7 @@
 .ivh .hero__px .hero__where:hover svg{transform:scale(1.04)}
 .ivh .hero__where .hw-t{white-space:nowrap;font-size:13px}
 .ivh .hero__px .hero__link{margin-top:12px}
+/* 12 oct. : « Voir la fiche » — zone de toucher de 44 px sans changer le dessin */
+.ivh .hero__link{padding:14px 0;margin:-14px 0}
+/* tablette : la bulle se pose en bas, centrée, comme sur téléphone (elle ne couvre plus le prix du marché) */
+@media (min-width:760px) and (max-width:1099px){.ivh .hero__pitch{position:fixed;left:50%;right:auto;translate:-50% 12px;bottom:20px;max-width:440px;width:calc(100% - 48px)}.ivh .hero__pitch.is-on{translate:-50% 0}}

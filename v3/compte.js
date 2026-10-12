@@ -119,7 +119,7 @@
 .cp-kv span{color:var(--mute);font-size:14px}.cp-kv b{font-weight:600;text-align:right}
 .cp-tag{display:inline-block;padding:2px 9px;border-radius:999px;font:600 12px/1.5 Jost,sans-serif;background:rgba(245,240,230,.08);color:var(--mute)}
 .cp-tag.warn{background:rgba(242,201,76,.14);color:#F2DC9A}.cp-tag.ok{background:rgba(106,174,240,.16);color:#A9CDF5}.cp-tag.acc{background:rgba(224,122,63,.2);color:#F3B48A}
-.cp-list{display:flex;flex-direction:column;gap:8px}
+.cp-list{display:flex;flex-direction:column;gap:8px}.cp-list .sw+.sw{margin-top:0}.cp-list .sw{border-radius:16px}
 .cp-item{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;align-items:center;width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:rgba(245,240,230,.03);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
 .cp-item:hover{background:rgba(245,240,230,.07)}.cp-item .mk{grid-row:span 2}.cp-item b{font-weight:600}.cp-item small{grid-column:2;color:var(--mute);font-size:13px}.cp-item .p{grid-row:span 2;text-align:right;font:500 20px/1 'Cormorant Garamond',serif}
 .cp-item.is-new{border-color:rgba(224,122,63,.6)}
@@ -127,6 +127,24 @@
 .cp-sw{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:56px;border-top:1px solid var(--line);cursor:pointer}.cp-sw:first-child{border-top:0}
 .cp-sw span small{display:block;color:var(--mute);font-size:13px}.cp-sw input{width:22px;height:22px;flex:none;accent-color:var(--acc)}
 .cp-na{opacity:.6;cursor:default}
+.cp-rep{display:grid;grid-template-columns:56px minmax(0,1fr) 18px;align-items:center;gap:14px;width:100%;margin:6px 0 20px;padding:12px 14px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,rgba(242,201,76,.09),rgba(245,240,230,.02));color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.cp-rep:active{transform:scale(.99)}.cp-rep-n{display:grid;place-items:center;width:56px;height:56px;border-radius:16px;background:rgba(242,201,76,.14);color:#F2C94C;font:500 26px/1 'Cormorant Garamond',Georgia,serif}
+.cp-rep b{display:block;font-size:15px}.cp-rep small{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:3px;color:var(--mute);font-size:13px;line-height:1.35}
+.cp-sec h3{margin:24px 0 8px;font:600 12px/1 Jost,sans-serif;letter-spacing:.06em;color:var(--faint)}
+.cp-grp{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:rgba(245,240,230,.03)}
+.cp-act{display:grid;grid-template-columns:40px minmax(0,1fr) 18px;align-items:center;gap:14px;width:100%;min-height:66px;padding:10px 14px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);text-align:left;font:inherit;cursor:pointer;list-style:none;transition:background-color var(--ux-d2,200ms)}
+.cp-grp>.cp-act:first-child,.cp-grp>.cp-acc:first-child>.cp-act{border-top:0}.cp-act::-webkit-details-marker{display:none}
+.cp-act:hover{background:rgba(245,240,230,.04)}.cp-act:active{background:rgba(245,240,230,.08)}.cp-act--info{grid-template-columns:40px minmax(0,1fr);cursor:default}.cp-act--info:hover{background:none}
+.cp-act>i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(245,240,230,.07);color:#E9E1D2}
+.cp-act>i svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.cp-act b{display:block;font-size:15px;font-weight:600;line-height:1.25}.cp-act small{display:block;margin-top:2px;color:var(--mute);font-size:13px;line-height:1.35}
+.cp-chev{width:16px;height:16px;fill:none;stroke:var(--faint);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform var(--ux-d3,320ms) cubic-bezier(.22,1,.36,1)}
+.cp-acc[open]>.cp-act .cp-chev{transform:rotate(90deg)}.cp-acc-c{padding:4px 16px 18px 68px;animation:cpFade var(--ux-d3,320ms) ease both}
+@media (max-width:420px){.cp-acc-c{padding-left:16px}}
+.cp-act.cp-bad,.cp-bad{color:#F3A08C}.cp-act.cp-bad>i{background:rgba(226,115,91,.13);color:#F3A08C}.cp-grp--bad{border-color:rgba(226,115,91,.28)}
+.cp-sec .cp-grp{animation:cpLeve .45s cubic-bezier(.22,1,.36,1) both}.cp-sec .cp-grp:nth-of-type(2){animation-delay:.04s}.cp-sec .cp-grp:nth-of-type(3){animation-delay:.08s}.cp-sec .cp-grp:nth-of-type(4){animation-delay:.12s}.cp-sec .cp-grp:nth-of-type(5){animation-delay:.16s}
+@keyframes cpLeve{from{opacity:0;transform:translateY(10px)}}
+@media (prefers-reduced-motion:reduce){.cp-sec .cp-grp,.cp-acc-c{animation:none}}
 .cp-cloche{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(224,122,63,.14);color:#F3B48A}.cp-cloche svg{width:20px;height:20px}
 .cp-pousse.is-on .cp-cloche{background:rgba(108,197,140,.16);color:#9fe0b4}
 .cp-pousse.is-on .cp-cloche svg{animation:cpCloche 2.6s ease-in-out 1}
@@ -278,6 +296,7 @@
       const p = profil || {}, u = me();
       main.innerHTML = `<div class="cp-panel"><h2>Mon profil</h2><p>Ce que les autres voient quand vous publiez ou négociez : votre avatar et ${p.pseudo ? 'votre pseudonyme' : 'votre prénom'}${p.nom_public ? ' et votre nom' : ', avec l’initiale de votre nom'}.</p>
         <div class="cp-avz"><div class="cp-avbig">${A().svg(p.avatar, { size: 112, nom: nomAffiche(p) || '?', seed: u.id })}</div><div class="cp-row"><button type="button" class="cp-alt" data-av>Choisir mon avatar</button>${p.avatar ? '<button type="button" class="cp-alt" data-av0>Revenir aux initiales</button>' : ''}</div></div>
+        <button type="button" class="cp-rep" data-rep><span class="cp-rep-n" data-repn>—</span><span><b>Ma réputation</b><small data-rept>Ce que vos partenaires disent de vous</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
         <form class="cp-f" novalidate>${champ('cp-prenom', 'Prénom', p.prenom, { attrs: 'maxlength="40" autocomplete="given-name" required' })}${champ('cp-nom', 'Nom', p.nom, { facultatif: true, attrs: 'maxlength="60" autocomplete="family-name"', aide: 'Montré seulement si vous l’acceptez (Préférences). Sinon : son initiale.' })}
         ${champ('cp-pseudo', 'Pseudonyme', p.pseudo, { facultatif: true, attrs: 'maxlength="24" autocomplete="nickname" spellcheck="false"', aide: 'S’il est rempli, il remplace votre prénom auprès des autres. Unique sur le Marché de Gros.' })}
         ${roleSeg(p)}${lieu(p)}
@@ -286,6 +305,12 @@
         <p class="cp-help">Le nom affiché sur chaque annonce (votre nom de vendeur ou d’exploitation) reste celui de l’annonce.</p></div>`;
       lierRole(main);
       main.querySelector('[data-av]').onclick = () => choisirAvatar(() => bg && bg.rafraichir());
+      (async () => { const R = window.MDGRep, b = main.querySelector('[data-rep]'); if (!b || !R) { b && b.remove(); return; }
+        b.onclick = () => R.profil(u.id, { nom: nomAffiche(p) || 'Moi', uri: A().uri(p.avatar, { size: 72, nom: nomAffiche(p) || '?', seed: u.id }) });
+        let r = null; try { r = (await N().rpc('notes_publiques', { ids: [u.id] }))[0]; } catch (_) {}
+        if (!b.isConnected) return;
+        b.querySelector('[data-repn]').textContent = r ? String(r.moyenne).replace('.', ',') : '—';
+        b.querySelector('[data-rept]').innerHTML = r ? R.etoiles(r.moyenne, r.nombre, 13) + ' <span>' + r.nombre + ' avis · voir le détail</span>' : 'Pas encore d’avis : ils arrivent quand vos partenaires vous notent après une négociation.'; })();
       const z = main.querySelector('[data-av0]'); if (z) z.onclick = async () => { try { await enregistrer({ avatar: null }); bg.rafraichir(); N().toast('Avatar : vos initiales.'); } catch (e) { N().toast(e.message); } };
       const f = main.querySelector('form'), msg = main.querySelector('.cp-msg'), go = main.querySelector('.cp-go');
       f.querySelectorAll('.cp-in').forEach(i => i.addEventListener('blur', () => { const k = i.id.slice(3); if (VALID[k] && i.value) valider(f, [k]); }));
@@ -309,8 +334,11 @@
       const neg = n => { const e = n.statut === 'conclue' ? ['Accord conclu', 'ok'] : n.statut === 'close' ? [n.motif_fin === 'annonce_retiree' ? 'Annonce retirée' : 'Négociation arrêtée', ''] : vive(n) ? (n.dernier_par === u.id ? ['En attente de réponse', 'warn'] : ['À vous de répondre', 'acc']) : n.dernier_par ? ['Expirée sans réponse', ''] : ['Proposition retirée ou refusée', ''];
         const lui = n.auteur_id === u.id ? n.proprio_id : n.auteur_id, roleLui = (lui === n.proprio_id) === (n.cible === 'offre') ? 'Vendeur' : 'Acheteur', av = avatar(lui, { size: 30, nom: roleLui });
         return `<button type="button" class="cp-item" data-nego="${n.id}"><span style="grid-row:span 2">${av.svg}</span><b>${esc(n.produit || 'Annonce')}</b><span class="p">${n.statut === 'conclue' ? fmt(n.prix_final) : vive(n) ? fmt(n.dernier_prix) : '—'}</span><small><span class="cp-tag ${e[1]}">${e[0]}</span> ${esc(av.nom ? 'avec ' + av.nom : '')}</small></button>`; };
+      // messagerie directe (v3/messages.js) : les conversations récentes, toucher pour ouvrir
+      const dms = J('mdg-dm:liste', []), dm = c => `<button type="button" class="cp-item" data-dm="${c.id}"><span style="grid-row:span 2">${avatar(c.autre_id, { size: 30, nom: c.autre_nom }).svg}</span><b>${esc(c.autre_nom)}</b><span class="p" style="font-size:13px">${c.non_lu ? '<span class="cp-tag acc">Nouveau</span>' : ''}</span><small>${c.dernier_par === u.id ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small></button>`;
       const sec = (t, L, f, vide) => `<h3>${t} <span class="cp-tag">${L.length}</span></h3>` + (L.length ? `<div class="cp-list">${L.slice(0, 20).map(f).join('')}</div>` : `<div class="cp-empty">${vide}</div>`);
       main.innerHTML = `<div class="cp-panel"><h2>Mon activité</h2><p>Vos annonces et vos négociations réelles. Rien n’est compté qui n’ait eu lieu.</p>
+        ${window.MDGMessages ? sec('Messages', dms, dm, '<b>Aucune conversation</b>Touchez la photo d’un vendeur ou d’un acheteur, puis « Écrire ». Les messages s’effacent ' + MDGMessages.JOURS + ' jours après l’envoi.') : ''}
         ${sec('Mes offres', off, x => ann('offres', x), '<b>Aucune offre</b>Publiez ce que vous avez avec « Vendre ».')}
         ${sec('Mes demandes', dem, x => ann('demandes', x), '<b>Aucune demande</b>Dites ce qu’il vous faut avec « Demander ».')}
         ${sec('Propositions envoyées', env, neg, '<b>Aucune proposition envoyée</b>Sur une annonce, touchez « Proposer un prix ».')}
@@ -318,6 +346,9 @@
         ${sec('Accords conclus', ok, neg, '<b>Aucun accord pour l’instant</b>')}
         ${fin.length ? sec('Sans suite', fin, neg, '') : ''}</div>`;
       main.querySelectorAll('[data-nego]').forEach(b => b.onclick = () => { fermer(); G && G.thread(b.dataset.nego); });
+      main.querySelectorAll('[data-dm]').forEach(b => b.onclick = () => { fermer(); MDGMessages.conversation(b.dataset.dm); });
+      // glisser une négociation vers la gauche pour la retirer de sa liste
+      if (G && G.glisser) main.querySelectorAll('[data-nego]').forEach(b => G.glisser(b, async () => { await G.masquer(b.dataset.nego); }));
       if (G) G.refresh().then(() => { if (bg && main.isConnected && JSON.stringify(J('mdg-negoce:liste', [])) !== JSON.stringify(negos)) VUES.activite(main); });
     },
     notifs(main) {
@@ -347,17 +378,15 @@
     },
     securite(main) {
       const u = me();
-      main.innerHTML = `<div class="cp-panel"><h2>Sécurité et compte</h2><p>Votre numéro et votre code secret à 6 chiffres protègent votre compte.</p>
-        <div class="cp-card"><div class="cp-kv"><span>Numéro</span><b>${esc(N().fmtTel(u.tel))}</b></div>
-          <div class="cp-kv"><span>Changer de numéro</span><b style="font-weight:400;color:var(--mute);font-size:13.5px">Contactez le Marché de Gros</b></div></div>
-        <h3>Code secret</h3><form class="cp-f cp-code" novalidate>${champ('cp-c0', 'Code actuel', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}${champ('cp-c1', 'Nouveau code (6 chiffres)', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}${champ('cp-c2', 'Retapez le nouveau code', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}
-          <div class="cp-row"><button type="submit" class="cp-go">Changer mon code</button><span class="cp-msg" role="status"></span></div></form>
-        <h3>Code de secours</h3><div class="cp-card"><div class="cp-kv"><span>Pour choisir un nouveau code si vous l’oubliez</span><button type="button" class="cp-alt" data-sos>Créer un nouveau code de secours</button></div></div>
-        <h3>Connexions</h3><div class="cp-card"><div class="cp-kv"><span>Cet appareil</span><button type="button" class="cp-alt" data-out>Me déconnecter</button></div>
-          <div class="cp-kv"><span>Tous mes appareils (téléphone perdu ?)</span><button type="button" class="cp-alt" data-outall>Déconnecter partout</button></div></div>
-        <h3>Supprimer mon compte</h3><div class="cp-card"><p style="margin:0 0 12px;color:var(--mute);font-size:14px;line-height:1.5">Vos annonces sont retirées et les négociations en cours fermées. Votre profil et votre code de secours sont effacés, et la connexion est bloquée. Les accords déjà conclus et les messages restent visibles des deux parties, pour la trace des échanges ; l’autre partie y voit « Compte supprimé ».</p>
-          <button type="button" class="cp-alt cp-bad" data-del>Supprimer mon compte…</button></div>
-        <h3>Données conservées</h3><p class="cp-help" style="font-size:13.5px">Numéro et code secret (chiffré) : pour vous connecter. Profil : pour vous présenter aux autres. Annonces : pour être trouvées. Négociations et messages : pour que les deux parties gardent la trace de leurs échanges. Signalements : pour la modération. Sur cet appareil : vos annonces en attente, vos réglages et une copie des annonces des autres pour l’usage hors connexion.</p></div>`;
+      main.innerHTML = `<div class="cp-panel cp-sec"><h2>Sécurité et compte</h2><p>Votre numéro et votre code secret à 6 chiffres protègent votre compte.</p>
+        <h3>Votre compte</h3><div class="cp-grp"><div class="cp-act cp-act--info"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M11 18h2"/></svg></i><span><b>${esc(N().fmtTel(u.tel))}</b><small>Votre numéro de connexion. Pour en changer, contactez le Marché de Gros.</small></span></div></div>
+        <h3>Code secret</h3><div class="cp-grp"><details class="cp-acc"><summary class="cp-act"><i aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 8-8M16 7l2 2M14 9l2 2"/></svg></i><span><b>Changer mon code secret</b><small>Il vous faut votre code actuel</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></summary><div class="cp-acc-c"><form class="cp-f cp-code" novalidate>${champ('cp-c0', 'Code actuel', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}${champ('cp-c1', 'Nouveau code (6 chiffres)', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}${champ('cp-c2', 'Retapez le nouveau code', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}
+          <div class="cp-row"><button type="submit" class="cp-go">Enregistrer le nouveau code</button><span class="cp-msg" role="status"></span></div></form></div></details>
+          <button type="button" class="cp-act" data-sos><i aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="m6 6 3.5 3.5M18 6l-3.5 3.5M6 18l3.5-3.5M18 18l-3.5-3.5"/></svg></i><span><b>Créer un nouveau code de secours</b><small>Pour retrouver votre compte si vous oubliez votre code</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+        <h3>Connexions</h3><div class="cp-grp"><button type="button" class="cp-act" data-out><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 21V4.5A1.5 1.5 0 0 1 6.5 3H14a1.5 1.5 0 0 1 1.5 1.5V21"/><path d="M12 12h9M18 9l3 3-3 3"/><path d="M3 21h13"/></svg></i><span><b>Me déconnecter</b><small>Sur ce téléphone seulement</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+          <button type="button" class="cp-act" data-outall><i aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="11" height="8" rx="1.5"/><rect x="14" y="9" width="7" height="11" rx="1.5"/><path d="M6 17h5"/></svg></i><span><b>Déconnecter tous mes appareils</b><small>Téléphone perdu ou prêté ? Tous devront se reconnecter</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
+        <h3>Zone sensible</h3><div class="cp-grp cp-grp--bad"><details class="cp-acc"><summary class="cp-act cp-bad"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></i><span><b>Supprimer mon compte</b><small>Définitif : vos annonces sont retirées</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></summary><div class="cp-acc-c"><p style="margin:0 0 12px;color:var(--mute);font-size:14px;line-height:1.5">Vos annonces sont retirées et les négociations en cours fermées. Votre profil et votre code de secours sont effacés, et la connexion est bloquée. Les accords déjà conclus et les messages restent visibles des deux parties, pour la trace des échanges ; l’autre partie y voit « Compte supprimé ».</p><button type="button" class="cp-alt cp-bad" data-del>Je veux supprimer mon compte…</button></div></details></div>
+        <div class="cp-grp" style="margin-top:22px"><details class="cp-acc"><summary class="cp-act"><i aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></i><span><b>Données conservées</b><small>Ce que nous gardons, et pourquoi</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></summary><div class="cp-acc-c"><p class="cp-help" style="font-size:13.5px;margin:0">Numéro et code secret (chiffré) : pour vous connecter. Profil : pour vous présenter aux autres. Annonces : pour être trouvées. Négociations et messages : pour que les deux parties gardent la trace de leurs échanges. Signalements : pour la modération. Sur cet appareil : vos annonces en attente, vos réglages et une copie des annonces des autres pour l’usage hors connexion.</p></div></details></div></div>`;
       const f = main.querySelector('.cp-code'), msg = f.querySelector('.cp-msg'), go = f.querySelector('.cp-go');
       f.onsubmit = async e => {
         e.preventDefault(); const c0 = f.querySelector('#cp-c0').value, c1 = f.querySelector('#cp-c1').value, c2 = f.querySelector('#cp-c2').value;

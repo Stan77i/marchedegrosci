@@ -156,3 +156,9 @@ button[aria-busy="true"]:disabled::after{content:"";display:inline-block;width:1
   transform:translateX(-120%);animation:enSaison 5s cubic-bezier(.4,0,.2,1) infinite}
 @keyframes enSaison{0%,62%{transform:translateX(-120%)}86%,100%{transform:translateX(120%)}}
 @media (prefers-reduced-motion:reduce){.cx-c .mk--offre,.dx-k .mk--offre,.sx__pvn .mk--offre,[title="Offres"] .mk--offre,.hero__st--on{animation:none}.ct-s:not([hidden])::after,.en-saison::after{display:none}}
+
+/* ——— Application, catégories : « En saison » devient une étiquette vivante — pousse qui se balance + reflet de lumière ——— */
+.sz-pill{display:inline-flex!important;align-items:center;gap:4px;padding:2px 9px 2px 7px;border-radius:999px;background:rgba(97,132,107,.13);color:#3d6a4a;font:600 11.5px/1.5 Jost,system-ui,sans-serif;letter-spacing:.01em}
+.sz-pousse{transform-origin:50% 100%;animation:szPousse 2.8s ease-in-out infinite}
+@keyframes szPousse{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(9deg)}}
+@media (prefers-reduced-motion:reduce){.sz-pousse{animation:none}}

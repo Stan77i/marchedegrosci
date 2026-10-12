@@ -28,7 +28,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
 <link rel="stylesheet" href="css/fonts.css">
-<link rel="stylesheet" href="v3/ux.css?v=20261012h">
+<link rel="stylesheet" href="v3/ux.css?v=20261012i">
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
 <script src="app/carte-app.js"></script>
@@ -112,7 +112,7 @@
     <div style="display:flex;justify-content:center;gap:14px;margin:-6px -18px -12px;padding:12px 18px;font-size:13.5px;color:#B9AD98;flex-wrap:nowrap;white-space:nowrap;height:44px;box-sizing:border-box;flex:none;overflow:hidden">
       <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:50%;background:#6CC58C;opacity:{{ act.oOp }};animation:{{ act.oAnim }}"></span>{{ act.oTxt }}</span>
       <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:2px;background:#F2C94C;opacity:{{ act.dOp }}"></span>{{ act.dTxt }}</span>
-      <sc-if value="{{ act.season }}" hint-placeholder-val="{{ false }}"><span style="color:#9dc2a7">En saison</span></sc-if>
+      <sc-if value="{{ act.season }}" hint-placeholder-val="{{ false }}"><span class="en-saison" style="color:#9dc2a7;padding:0 2px">En saison</span></sc-if>
     </div>
     <button onClick="{{ openFicheAct }}" style="margin-top:8px;border:0;background:transparent;color:#F5F0E6;font-size:13.5px;font-weight:500;padding:10px 14px;display:inline-flex;align-items:center;gap:6px;border-radius:20px">{{ act.cta }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h13M13 6l6 6-6 6"></path></svg></button>
   </div>

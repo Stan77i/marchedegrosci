@@ -28,7 +28,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
 <link rel="stylesheet" href="css/fonts.css">
-<link rel="stylesheet" href="v3/ux.css?v=20261012c">
+<link rel="stylesheet" href="v3/ux.css?v=20261012d">
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
 <script src="app/carte-app.js"></script>
@@ -109,8 +109,8 @@
   <div style="text-align:center;padding:0 24px;position:relative;margin-top:-10px;height:156px;flex:none;display:flex;flex-direction:column;align-items:center">
     <div style="font-family:'Cormorant Garamond',serif;font-size:{{ act.fs }};font-weight:500;line-height:{{ act.lh }};letter-spacing:-.01em;height:76px;width:100%;flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;text-wrap:balance">{{ act.name }}</div>
     <div style="display:flex;justify-content:center;gap:14px;margin-top:6px;font-size:13.5px;color:#B9AD98;flex-wrap:nowrap;white-space:nowrap;height:20px;flex:none;overflow:hidden">
-      <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:50%;background:#6CC58C;opacity:{{ act.oOp }}"></span>{{ act.oTxt }}</span>
-      <span style="display:flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:2px;background:#F2C94C;opacity:{{ act.dOp }}"></span>{{ act.dTxt }}</span>
+      <span style="display:flex;align-items:center;gap:6px"><span class="mk-po" style="width:9px;height:9px;border-radius:50%;background:#6CC58C;opacity:{{ act.oOp }}"></span>{{ act.oTxt }}</span>
+      <span style="display:flex;align-items:center;gap:6px"><span class="mk-pd" style="width:9px;height:9px;border-radius:2px;background:#F2C94C;opacity:{{ act.dOp }}"></span>{{ act.dTxt }}</span>
       <sc-if value="{{ act.season }}" hint-placeholder-val="{{ false }}"><span style="color:#9dc2a7">En saison</span></sc-if>
     </div>
     <button onClick="{{ openFicheAct }}" style="margin-top:8px;border:0;background:transparent;color:#F5F0E6;font-size:13.5px;font-weight:500;padding:10px 14px;display:inline-flex;align-items:center;gap:6px;border-radius:20px">{{ act.cta }}<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h13M13 6l6 6-6 6"></path></svg></button>
@@ -626,7 +626,27 @@ class Component extends DCLogic {
     if (st.includes(prev)) { go(top, T_OFF, T_IN); go(prev, T_IN, T_UNDER); } else { go(prev, T_IN, T_OFF); go(top, T_UNDER, T_IN); }
     this.animT = setTimeout(() => { (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; }, 650);
   }
-  componentDidUpdate(pp, ps) { if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map && window.MDGCarte) this.map = window.MDGCarte.mount(el, { onSelect: s => this.setState({ csel: s }) }); if (!el && this.map) { this.map.destroy(); this.map = null; } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
+  /* La roue s'arrête sur un produit qui a des offres ou des demandes : un halo fait le tour de l'écran, une fois, vite,
+     à la couleur du signal (vert = offres, jaune = demandes, les deux = vert puis jaune), et le point du compteur pulse.
+     Rien pendant qu'on fait glisser la roue, rien sur un produit vide, rien au premier affichage. Styles : v3/ux.css (.mk-halo). */
+  signalMarche() {
+    const a = this._act, S = this.state; if (!a || S.dragging) return;
+    if (a.slug === this._sigSlug) return; const premier = this._sigSlug == null; this._sigSlug = a.slug;
+    if (premier || !(a.ao || a.ad) || S.stack[S.stack.length - 1] !== 'home' || S.menu || S.sheet) return;
+    // on attend que la roue se pose (glissement de 0,55 s) : le halo marque l'arrêt, pas le passage
+    clearTimeout(this._sigT); const slug = a.slug;
+    this._sigT = setTimeout(() => { const b = this._act, T = this.state; if (!b || b.slug !== slug || T.dragging || T.stack[T.stack.length - 1] !== 'home') return; this.halo(b); }, 420);
+  }
+  halo(a) {
+    const pg = document.querySelector('[data-pg="home"]'); if (!pg) return;
+    pg.querySelectorAll('.mk-halo').forEach(x => x.remove());
+    const el = document.createElement('div'); el.className = 'mk-halo'; el.setAttribute('aria-hidden', 'true');
+    el.style.setProperty('--c1', a.ao ? '#6CC58C' : '#F2C94C'); el.style.setProperty('--c2', a.ao && a.ad ? '#F2C94C' : a.ao ? '#A8E6BC' : '#FFE08A');
+    pg.appendChild(el); setTimeout(() => el.remove(), 1400);
+    pg.querySelectorAll(a.ao && a.ad ? '.mk-po,.mk-pd' : a.ao ? '.mk-po' : '.mk-pd').forEach(d => { d.classList.remove('is-ping'); void d.offsetWidth; d.classList.add('is-ping'); });
+    try { navigator.vibrate && navigator.vibrate(12); } catch (_) {}
+  }
+  componentDidUpdate(pp, ps) { this.signalMarche(); if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map && window.MDGCarte) this.map = window.MDGCarte.mount(el, { onSelect: s => this.setState({ csel: s }) }); if (!el && this.map) { this.map.destroy(); this.map = null; } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
   componentWillUnmount() { ['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.removeEventListener(t, this.noZoom)); document.removeEventListener('touchstart', this.tS); document.removeEventListener('touchmove', this.tM); document.removeEventListener('dblclick', this.noDbl); document.removeEventListener('contextmenu', this.noCtx); if (this.map) this.map.destroy(); if (window.visualViewport) { visualViewport.removeEventListener('resize', this.onVV); visualViewport.removeEventListener('scroll', this.onVV); } document.removeEventListener('scroll', this.onAnyScroll, true); removeEventListener('focusin', this.onFocus); removeEventListener('focusout', this.onBlur); removeEventListener('scroll', this.onVV); removeEventListener('resize', this.onResize); removeEventListener('storage', this.onData); removeEventListener('mdg:change', this.onData); removeEventListener('mdg:negoce', this.onData); removeEventListener('mdg:profil', this.onData); removeEventListener('popstate', this.onPop); clearInterval(this.clk); clearInterval(this.poll); }
   buildFams() {
     const M = window.MDG, A = window.MDGApp;
@@ -819,6 +839,7 @@ class Component extends DCLogic {
     const sacks = F.prods.filter(p => A.SACK[p.slug] != null).map(p => { const i = F.prods.indexOf(p), off = i - S.rot, a = Math.abs(off);
       return { src: A.IMG + 'produit-' + p.slug + '.webp', alt: p.name, op: Math.max(0, 1 - a * 1.4), tf: 'translateX(' + (off * 70) + 'px) scale(' + (1 - Math.min(a, 1) * .14) + ')', tr: S.dragging ? 'none' : 'opacity .45s,transform .55s cubic-bezier(.22,1,.36,1)' }; });
     const ao = O.filter(o => o.slug === act.slug).length, ad = D.filter(d => d.slug === act.slug).length;
+    this._act = { slug: act.slug, ao, ad };  // lu par signalMarche() une fois l'écran dessiné
 
     /* fiche */
     const FP = this.prod(S.slug), fo = O.filter(o => o.slug === S.slug), fd = D.filter(d => d.slug === S.slug), mk = this.market(S.slug, O), low = fo.filter(o => o.price).sort((a, b) => a.price - b.price)[0];

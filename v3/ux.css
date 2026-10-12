@@ -110,19 +110,14 @@ button[aria-busy="true"]:disabled::after{content:"";display:inline-block;width:1
 .dr-ico svg{width:26px;height:26px}
 .dr-ico img{width:30px;height:30px}
 
-/* ——— Application, roue des produits : la roue s'arrête sur un produit qui vit (offres ou demandes) → des ondes, comme une goutte dans l'eau ———
-   Un éclat doux au centre du sac, puis quatre cercles qui s'élargissent l'un après l'autre (220 ms d'écart) en s'effaçant ;
-   le trait s'affine en grandissant, comme une ride à la surface. 1,9 s en tout. Couleurs : --c1 / --c2 (vert = offres, jaune = demandes). */
-.mk-onde{position:absolute;z-index:6;width:0;height:0;pointer-events:none}
-.mk-onde>*{position:absolute;left:0;top:0;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;opacity:0}
-.mk-onde>i{background:radial-gradient(circle,var(--c1) 0%,transparent 66%);animation:mkEclat .9s cubic-bezier(.22,1,.36,1) forwards}
-.mk-onde>b{border:2px solid var(--c1);box-shadow:0 0 14px -2px var(--c1),inset 0 0 14px -6px var(--c2);animation:mkRide 1.6s cubic-bezier(.16,.84,.3,1) forwards}
-.mk-onde>b:nth-of-type(2){animation-delay:.22s;border-color:var(--c2)}
-.mk-onde>b:nth-of-type(3){animation-delay:.44s}
-.mk-onde>b:nth-of-type(4){animation-delay:.66s;border-color:var(--c2)}
-@keyframes mkEclat{0%{opacity:0;transform:scale(.4)}25%{opacity:.45}100%{opacity:0;transform:scale(1.6)}}
-@keyframes mkRide{0%{opacity:0;transform:scale(.25);border-width:3px}12%{opacity:.95}100%{opacity:0;transform:scale(4.6);border-width:.6px}}
-.mk-po.is-ping{animation:mkPingV .9s ease-out}.mk-pd.is-ping{animation:mkPingJ .9s ease-out}
-@keyframes mkPingV{0%{box-shadow:0 0 0 0 rgba(108,197,140,.75);transform:scale(1.35)}100%{box-shadow:0 0 0 11px rgba(108,197,140,0);transform:none}}
-@keyframes mkPingJ{0%{box-shadow:0 0 0 0 rgba(242,201,76,.75);transform:scale(1.35)}100%{box-shadow:0 0 0 11px rgba(242,201,76,0);transform:none}}
-@media (prefers-reduced-motion:reduce){.mk-onde>b{display:none}.mk-po.is-ping,.mk-pd.is-ping{animation:none}}
+/* ——— Application, roue des produits : le point « offre » scintille comme une luciole quand le produit a au moins une offre ———
+   Une lueur verte qui s'allume et s'éteint à un rythme irrégulier (deux éclats rapprochés, puis un repos), jamais un clignotement sec.
+   Mouvement réduit : une lueur fixe. */
+@keyframes mkLuciole{
+  0%,100%{background-color:#5BAF7A;box-shadow:0 0 0 0 rgba(108,197,140,0)}
+  14%{background-color:#B8F5CB;box-shadow:0 0 6px 2px rgba(140,230,170,.75),0 0 14px 4px rgba(108,197,140,.35)}
+  24%{background-color:#6CC58C;box-shadow:0 0 2px 0 rgba(108,197,140,.25)}
+  34%{background-color:#C8FAD6;box-shadow:0 0 8px 3px rgba(160,240,185,.8),0 0 18px 6px rgba(108,197,140,.3)}
+  52%{background-color:#5BAF7A;box-shadow:0 0 0 0 rgba(108,197,140,0)}
+}
+@media (prefers-reduced-motion:reduce){[style*="mkLuciole"]{animation:none!important;box-shadow:0 0 6px 2px rgba(108,197,140,.5)}}

@@ -27,14 +27,15 @@
   // à gauche les sillons d'un champ, à droite les étals ; au centre une porte ouverte d'où vient la lumière.
   // Le cercle vert (qui produit) et le carré jaune (qui cherche) marchent vers elle ; la ligne bleue (la rencontre) passe le seuil.
   // L'état du formulaire ouvre la porte (saisie), allume la lumière (envoi), fait se rejoindre les deux (réussite).
-  const SVG = `<svg class="ps" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+  // k : préfixe des identifiants (la scène peut être dessinée plusieurs fois dans la page : bandeau, fond de l'accueil, transition)
+  const scene = (k = 'ps') => `<svg class="ps" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
   <defs>
-    <radialGradient id="psL" cx="50%" cy="78%" r="60%"><stop offset="0" stop-color="#FCE6B8"/><stop offset=".45" stop-color="#E9A35E" stop-opacity=".55"/><stop offset="1" stop-color="#E07A3F" stop-opacity="0"/></radialGradient>
-    <linearGradient id="psD" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF3D6"/><stop offset="1" stop-color="#F2B872"/></linearGradient>
-    <linearGradient id="psSol" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C9A27A" stop-opacity="0"/><stop offset=".5" stop-color="#C9A27A" stop-opacity=".5"/><stop offset="1" stop-color="#F5F0E6" stop-opacity="0"/></linearGradient>
-    <clipPath id="psC"><path d="M178 112V52a22 22 0 0 1 44 0v60z"/></clipPath>
+    <radialGradient id="${k}L" cx="50%" cy="78%" r="60%"><stop offset="0" stop-color="#FCE6B8"/><stop offset=".45" stop-color="#E9A35E" stop-opacity=".55"/><stop offset="1" stop-color="#E07A3F" stop-opacity="0"/></radialGradient>
+    <linearGradient id="${k}D" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF3D6"/><stop offset="1" stop-color="#F2B872"/></linearGradient>
+    <linearGradient id="${k}Sol" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C9A27A" stop-opacity="0"/><stop offset=".5" stop-color="#C9A27A" stop-opacity=".5"/><stop offset="1" stop-color="#F5F0E6" stop-opacity="0"/></linearGradient>
+    <clipPath id="${k}C"><path d="M178 112V52a22 22 0 0 1 44 0v60z"/></clipPath>
   </defs>
-  <ellipse class="ps-halo" cx="200" cy="104" rx="150" ry="58" fill="url(#psL)"/>
+  <ellipse class="ps-halo" cx="200" cy="104" rx="150" ry="58" fill="url(#${k}L)"/>
   <g class="ps-champ" fill="none" stroke="#C9A27A" stroke-linecap="round">
     <path d="M-10 128C60 118 120 112 176 110" stroke-opacity=".5"/><path d="M-10 116C55 110 118 107 176 106" stroke-opacity=".38"/>
     <path d="M-10 104C52 101 116 101 176 102" stroke-opacity=".28"/><path d="M-10 92C50 92 114 95 176 99" stroke-opacity=".2"/>
@@ -47,13 +48,13 @@
     <g stroke-opacity=".15"><path d="M366 106V78M412 106V78"/><path d="M360 78h58l-5-12h-48z"/></g>
     <g fill="#F2C94C" stroke="none" fill-opacity=".35"><rect x="244" y="96" width="9" height="9" rx="1.5"/><rect x="256" y="98" width="7" height="7" rx="1.5"/><rect x="312" y="95" width="10" height="10" rx="1.5"/><rect x="326" y="98" width="7" height="7" rx="1.5"/></g>
   </g>
-  <path d="M0 112.5H400" stroke="url(#psSol)"/>
+  <path d="M0 112.5H400" stroke="url(#${k}Sol)"/>
   <g class="ps-porte">
     <path d="M172 112V52a28 28 0 0 1 56 0v60" fill="none" stroke="#F5F0E6" stroke-opacity=".55" stroke-width="1.5"/>
     <path d="M178 112V52a22 22 0 0 1 44 0v60z" fill="#120f0b"/>
-    <g clip-path="url(#psC)"><rect class="ps-jour" x="178" y="28" width="44" height="86" fill="url(#psD)"/>
+    <g clip-path="url(#${k}C)"><rect class="ps-jour" x="178" y="28" width="44" height="86" fill="url(#${k}D)"/>
       <path class="ps-battant" d="M178 112V30h22v82z" fill="#2b231a" stroke="#F5F0E6" stroke-opacity=".3"/></g>
-    <g class="ps-poussiere" fill="#FFF3D6" clip-path="url(#psC)"><circle cx="190" cy="104" r="1"/><circle cx="204" cy="108" r="1.2" style="animation-delay:-1.4s"/><circle cx="213" cy="102" r=".9" style="animation-delay:-2.6s"/><circle cx="196" cy="110" r=".8" style="animation-delay:-3.5s"/></g>
+    <g class="ps-poussiere" fill="#FFF3D6" clip-path="url(#${k}C)"><circle cx="190" cy="104" r="1"/><circle cx="204" cy="108" r="1.2" style="animation-delay:-1.4s"/><circle cx="213" cy="102" r=".9" style="animation-delay:-2.6s"/><circle cx="196" cy="110" r=".8" style="animation-delay:-3.5s"/></g>
     <path class="ps-faisceau" d="M180 112h40l38 20H142z" fill="#FCE6B8" fill-opacity=".22"/>
   </g>
   <path d="M70 118Q200 76 330 118" fill="none" stroke="#6AAEF0" stroke-opacity=".18" stroke-dasharray="2 5"/>
@@ -68,6 +69,7 @@
   <rect class="ps-a" x="323" y="111" width="14" height="14" rx="2.5" fill="#F2C94C"/>
   <circle class="ps-r" cx="200" cy="97" r="3.2" fill="#6AAEF0"/>
 </svg>`;
+  const SVG = scene('ps');
   const CSS = `.ps{position:absolute;inset:0;width:100%;height:100%;display:block}
 .ps *{transform-box:fill-box}
 .ps-halo{opacity:.55;transform-origin:50% 80%;transition:opacity .8s,transform .8s cubic-bezier(.22,1,.36,1)}
@@ -199,5 +201,70 @@
       arreter() { vivant = false; cancelAnimationFrame(raf); clearInterval(tm); ro && ro.disconnect(); removeEventListener('pointermove', onMove); document.removeEventListener('visibilitychange', onVis); }
     };
   }
-  window.MDGPorte = { monter };
+  function cssScene() { if (!document.getElementById('psCss')) { const st = document.createElement('style'); st.id = 'psCss'; st.textContent = CSS; document.head.appendChild(st); } }
+
+  /* ——— <mdg-marche> : le marché, derrière la roue des produits de l'accueil (application) ———
+     Comme une photo prise avec un arrière-plan doux : la scène de la porte (champ, étals, porte éclairée), floutée et assourdie,
+     posée sous le sac ; devant elle, nets, des points de lumière qui flottent lentement et des lueurs qui filent sur les fils.
+     La couche floutée ne bouge pas (elle n'est calculée qu'une fois : rien ne se re-floute à chaque image, la batterie est épargnée) ;
+     seuls les petits points nets s'animent, en transform/opacity. Mouvement réduit : tout est immobile. */
+  const MCSS = `mdg-marche{position:absolute;inset:0;z-index:0;display:block;pointer-events:none;overflow:hidden;contain:strict}
+.mf-cadre{position:absolute;left:-100%;width:300%;aspect-ratio:400/132;top:var(--mf-y,64%);transform:translateY(-85.3%);
+  -webkit-mask:linear-gradient(to bottom,transparent 0%,#000 22%,#000 80%,transparent 100%);mask:linear-gradient(to bottom,transparent 0%,#000 22%,#000 80%,transparent 100%)}
+.mf-flou{position:absolute;inset:0;filter:blur(5px) saturate(.95);opacity:.6;transform:translateZ(0)}
+.mf-flou .ps *{animation:none!important;transition:none!important}
+.mf-net{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.mf-bk{position:absolute;inset:0}
+.mf-bk i{position:absolute;border-radius:50%;opacity:0;background:radial-gradient(circle,var(--c) 0%,transparent 70%);animation:mfFlotte var(--d) ease-in-out infinite;animation-delay:var(--t)}
+@keyframes mfFlotte{0%{opacity:0;transform:translate3d(0,0,0) scale(.8)}25%{opacity:var(--o)}70%{opacity:calc(var(--o) * .7)}100%{opacity:0;transform:translate3d(var(--x),-46px,0) scale(1.1)}}
+@media (prefers-reduced-motion:reduce){.mf-bk i{animation:none;opacity:calc(var(--o) * .6)}}`;
+  const BOKEH = [[12, 58, 14, '#FCE6B8', .32, 11], [24, 70, 8, '#6CC58C', .4, 13], [37, 52, 18, '#F5D6A0', .22, 15], [50, 66, 10, '#FFF3D6', .45, 10], [61, 57, 7, '#F2C94C', .38, 12],
+    [72, 72, 16, '#FCE6B8', .26, 14], [84, 60, 9, '#6AAEF0', .32, 11], [91, 74, 12, '#F5D6A0', .24, 16], [6, 76, 6, '#F2C94C', .36, 12], [44, 80, 7, '#6CC58C', .3, 13]];
+  if (window.customElements && !customElements.get('mdg-marche')) customElements.define('mdg-marche', class extends HTMLElement {
+    connectedCallback() {
+      if (this._pret || this.closest('x-dc')) return; this._pret = true; cssScene();  // jamais dans le gabarit brut, avant que l'application ne le lise
+      if (!document.getElementById('mfCss')) { const st = document.createElement('style'); st.id = 'mfCss'; st.textContent = MCSS; document.head.appendChild(st); }
+      this.setAttribute('aria-hidden', 'true');
+      const flux = (d, dur, t, r) => `<circle r="${r}" fill="url(#mfG)" opacity="0"><animateMotion dur="${dur}s" begin="${t}s" repeatCount="indefinite" path="${d}"/><animate attributeName="opacity" values="0;1;0" dur="${dur}s" begin="${t}s" repeatCount="indefinite"/></circle>`;
+      const g = 'M70 118Q135 97 200 97', dr = 'M330 118Q265 97 200 97';
+      this.innerHTML = `<div class="mf-cadre"><div class="mf-flou pt" data-etat="saisie">${scene('mf')}</div>
+        <svg class="mf-net" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice"><defs><radialGradient id="mfG"><stop offset="0" stop-color="#FFF6DE"/><stop offset=".4" stop-color="#FCE6B8" stop-opacity=".6"/><stop offset="1" stop-color="#FCE6B8" stop-opacity="0"/></radialGradient></defs>
+        ${flux(g, 4.2, -.4, 3.2)}${flux(g, 4.2, -2.5, 2.4)}${flux(dr, 4.8, -1.3, 3.2)}${flux(dr, 4.8, -3.6, 2.4)}</svg></div>
+        <div class="mf-bk">${BOKEH.map(([x, y, sz, c, o, d], i) => `<i style="left:${x}%;top:${y}%;width:${sz}px;height:${sz}px;--c:${c};--o:${o};--d:${d}s;--t:${-(i * 1.7) % d}s;--x:${(i % 2 ? 1 : -1) * (6 + i % 4 * 4)}px"></i>`).join('')}</div>`;
+      try { const sv = this.querySelector('.mf-flou svg'); sv.pauseAnimations(); sv.setCurrentTime(1); } catch (_) {}
+      if (REDUIT.matches) try { this.querySelector('.mf-net').pauseAnimations(); } catch (_) {}
+      // l'horizon de la scène se pose sous le sac (mesuré : la roue change de taille selon l'écran)
+      this._place = () => { const pg = this.parentElement; if (!pg) return; const r0 = pg.getBoundingClientRect();
+        const img = [...pg.querySelectorAll('img')].map(i => i.getBoundingClientRect()).filter(r => r.width > 120 && r.height > 120).sort((a, b) => b.width * b.height - a.width * a.height)[0];
+        if (img && r0.height) this.style.setProperty('--mf-y', ((img.bottom - r0.top - img.height * .06) / r0.height * 100).toFixed(1) + '%'); };
+      this._ro = 'ResizeObserver' in window ? new ResizeObserver(() => this._place()) : null; this._ro && this._ro.observe(this);
+      setTimeout(this._place, 300); setTimeout(this._place, 1500);
+    }
+    disconnectedCallback() { this._ro && this._ro.disconnect(); this._pret = false; this.textContent = ''; }
+  });
+
+  /* ——— Entrer dans le marché : la transition après une connexion réussie (application) ———
+     La porte s'ouvre en grand, on avance dans sa lumière jusqu'à la traverser ; un instant, « Vous êtes dans le marché. »,
+     puis la lumière se retire sur l'accueil — et le marché flouté derrière la roue. ≈ 2,4 s. Mouvement réduit : rien, on arrive directement. */
+  function entrer(fini, couvert) {
+    const une = f => { let fait = false; return () => { if (fait) return; fait = true; try { f && f(); } catch (_) {} }; }, fin = une(fini), dessous = une(couvert);
+    if (REDUIT.matches || !document.documentElement.hasAttribute('data-app') || !Element.prototype.animate) { dessous(); return fin(); }
+    cssScene();
+    const ov = document.createElement('div'); ov.setAttribute('aria-hidden', 'true');
+    ov.style.cssText = 'position:fixed;inset:0;z-index:10050;background:radial-gradient(120% 80% at 50% 60%,#2a2219 0%,#120f0b 70%);overflow:hidden;opacity:0';
+    ov.innerHTML = `<div class="pt" data-etat="ok" data-mode="in" style="position:absolute;left:-40%;width:180%;top:46%;aspect-ratio:400/132;transform-origin:50% 60.6%;margin-top:calc(-180vw * 132 / 400 * .606)">${scene('me')}</div>
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#FFF6DE 0%,#FCE6B8 45%,#F2B872 100%);opacity:0"></div>
+      <p style="position:absolute;left:24px;right:24px;top:50%;margin:-24px 0 0;text-align:center;font:500 31px/1.15 'Cormorant Garamond',Georgia,serif;color:#171512;opacity:0">Vous êtes dans le marché.</p>`;
+    document.body.appendChild(ov);
+    const [sc, flash, txt] = ov.children, E = 'cubic-bezier(.22,1,.36,1)';
+    ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, fill: 'forwards' }).onfinish = dessous;  // ce qui était dessous (la fenêtre de connexion) se ferme une fois couvert
+    sc.animate([{ transform: 'scale(1)', easing: 'cubic-bezier(.3,0,.6,1)' }, { transform: 'scale(1.35)', offset: .35, easing: 'cubic-bezier(.55,0,.9,.4)' }, { transform: 'scale(12)' }], { duration: 1300, delay: 260, fill: 'forwards' });
+    flash.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, delay: 1080, easing: 'ease-in', fill: 'forwards' });
+    txt.animate([{ opacity: 0, transform: 'translateY(10px)', filter: 'blur(4px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 520, delay: 1380, easing: E, fill: 'forwards' });
+    const out = ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 560, delay: 2150, easing: 'ease-out', fill: 'forwards' });
+    out.onfinish = () => { ov.remove(); fin(); };
+    setTimeout(() => { if (ov.isConnected) { ov.remove(); dessous(); fin(); } }, 4200);  // filet de sécurité
+  }
+
+  window.MDGPorte = { monter, entrer };
 })();

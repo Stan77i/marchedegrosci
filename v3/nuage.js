@@ -376,7 +376,13 @@
         go.classList.add('is-ok'); go.removeAttribute('aria-busy'); go.querySelector('span').textContent = m0 === 'up' ? 'Compte créé. Préparation de votre espace…' : 'Connexion réussie. Préparation de votre espace…'; P && P.etat('ok');
         const fin = () => toast(m0 === 'up' ? 'Compte créé. Vos annonces partent maintenant.' : m0 === 'sos' ? 'Nouveau code enregistré. Vous êtes connecté.' : 'Connecté. Vos annonces partent maintenant.');
         const bienvenue = () => { fin(); if (m0 === 'up' && window.MDGCompte) setTimeout(() => MDGCompte.bienvenue({ identite: true }), 300); };
-        setTimeout(() => { bg.close(); if (r && r.secours) showSecours(r.secours, bienvenue); else bienvenue(); dispatchEvent(new CustomEvent('mdg:connecte', { detail: { raison } })); }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 250 : 900);
+        // application : on « entre dans le marché » (la porte s'ouvre, on la traverse) avant la suite (code de secours, bienvenue)
+        const suite = () => { if (r && r.secours) showSecours(r.secours, bienvenue); else bienvenue(); };
+        setTimeout(() => {
+          const fermer = () => { bg.close(); dispatchEvent(new CustomEvent('mdg:connecte', { detail: { raison } })); };
+          // la transition recouvre d'abord la fenêtre de connexion, qui se ferme dessous (pas d'éclair de l'accueil entre les deux)
+          if (window.MDGPorte && MDGPorte.entrer && document.documentElement.hasAttribute('data-app')) MDGPorte.entrer(suite, fermer); else { fermer(); suite(); }
+        }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 250 : 750);
       } catch (x) {
         occupe(false); go.querySelector('span').textContent = BTN[mode]; P && P.etat('erreur'); setTimeout(() => P && P.etat('saisie'), 1400);
         const msg = String(x.message || '');

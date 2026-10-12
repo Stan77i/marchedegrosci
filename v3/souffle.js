@@ -39,7 +39,7 @@
     // data-go="0" : attendre (l'application tient l'écran d'accueil) ; "1" ou absent : commencer
     attributeChangedCallback() { if (this.isConnected) this.connectedCallback(); }
     connectedCallback() {
-      if (this._pret || this.getAttribute('data-go') === '0') return; this._pret = true;
+      if (this._pret || this.closest('x-dc') || this.getAttribute('data-go') === '0') return; this._pret = true;
       if (!document.getElementById('sfCss')) { const st = document.createElement('style'); st.id = 'sfCss'; st.textContent = CSS; document.head.appendChild(st); }
       this.setAttribute('aria-hidden', 'true');
       this._i = -1; this._t = 0;

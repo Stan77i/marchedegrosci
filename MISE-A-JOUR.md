@@ -1,3 +1,13 @@
+# Mise à jour — 17 octobre 2026 (démarrage deux fois plus rapide)
+
+Service worker : `mgci-v64`.
+
+## Ce qui change
+- **Accueil utilisable en 2,0 s au lieu de 4,2 s** (connexion lente simulée : 150 ms de latence, 1,6 Mb/s, processeur ralenti ×4 ; moyenne de 3 essais).
+- Onze modules qui ne servent pas au premier écran (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications du téléphone, souffle, carte Canvas, carte en relief) sont chargés **juste après** l'affichage de l'accueil, dans le même ordre qu'avant (`MDGPlus` en tête de `application.dc.html`). L'application est prévenue quand ils sont prêts et se met à jour (menu, compteurs).
+- La carte en relief prend le relais même si elle arrive après la carte simple (ouverture directe sur `#/carte`, ou depuis le menu, première comme deuxième visite).
+- Transfert avant l'accueil : 1 004 → 641 Ko (sans compression ; GitHub Pages compresse, le gain réel en Ko est plus petit, le gain en temps d'exécution reste).
+
 # Mise à jour — 17 octobre 2026 (fenêtres sur papier clair)
 
 Service worker : `mgci-v63`. Outil : `tools/theme/papier.py` (table de correspondance nuit → papier).

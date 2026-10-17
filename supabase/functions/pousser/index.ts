@@ -3,7 +3,10 @@
 //  1. par la base (déclencheur public.push_message, via pg_net) à chaque nouveau message de négociation,
 //     avec l'en-tête x-mdg-cle (clé partagée rangée dans le coffre) et { message_id } ;
 //  2. par l'application, connectée, pour vérifier que les notifications marchent : { test: true } + le jeton de la session.
-//  3. par la base (déclencheur public.push_dm) à chaque message direct, avec { dm_id } (schema-8).
+//  3. par la base (déclencheur public.push_dm) à chaque message direct, avec { dm_id } (schema-8) ;
+//     un message d'un administrateur s'affiche au nom du « Marché de Gros » (schema-10) ;
+//  4. par la base (déclencheur public.push_alerte) quand quelqu'un essaie de sortir de l'application, avec { alerte_id } :
+//     tous les administrateurs sont prévenus (schema-10).
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
 import webpush from "npm:web-push@3.6.7";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -24,6 +27,11 @@ async function config() {
 
 const F = (n: number | null | undefined) => n == null ? "" : new Intl.NumberFormat("fr-FR").format(Number(n)).replace(/ | /g, " ") + " F";
 const coupe = (t: string, n: number) => t.length > n ? t.slice(0, n - 1) + "…" : t;
+
+async function estAdmin(uid: string) {
+  const { data } = await sb.from("admins").select("user_id").eq("user_id", uid).maybeSingle();
+  return !!data;
+}
 
 async function nomDe(uid: string) {
   const { data } = await sb.from("profils").select("pseudo, prenom, nom, nom_public, supprime_le").eq("user_id", uid).maybeSingle();
@@ -77,7 +85,19 @@ Deno.serve(async (req) => {
       if (!d) return json({ erreur: "conversation introuvable" }, 404);
       const dest = m.auteur_id === d.a_id ? d.b_id : d.a_id;
       const badge = (await sb.rpc("push_badge", { uid: dest })).data ?? 0;
-      return json(await envoyer(dest, { title: await nomDe(m.auteur_id), body: coupe(String(m.texte || ""), 140), tag: "dm-" + d.id, url: "application.dc.html#/?dm=" + d.id, dm: d.id, badge }));
+      const titre = (await estAdmin(m.auteur_id)) ? "Marché de Gros" : await nomDe(m.auteur_id);
+      return json(await envoyer(dest, { title: titre, body: coupe(String(m.texte || ""), 140), tag: "dm-" + d.id, url: "application.dc.html#/?dm=" + d.id, dm: d.id, badge }));
+    }
+
+    // 4. une tentative de sortir de l'application : tous les administrateurs sont prévenus
+    if (corps.alerte_id) {
+      const { data: a } = await sb.from("alertes").select("id, user_id, motif, source, extrait").eq("id", String(corps.alerte_id)).maybeSingle();
+      if (!a) return json({ erreur: "alerte introuvable" }, 404);
+      const qui = a.user_id ? await nomDe(a.user_id) : "Un membre";
+      const { data: ads } = await sb.from("admins").select("user_id");
+      const res = [];
+      for (const ad of ads || []) res.push(await envoyer(ad.user_id, { title: `Alerte : ${qui} veut sortir de l'application`, body: `${a.motif} dans ${a.source === "dm" ? "un message" : "une négociation"} — « ${coupe(String(a.extrait || ""), 90)} »`, tag: "alerte-" + a.id, url: "admin.html#messages" }));
+      return json({ admins: res.length, res });
     }
 
     const id = String(corps.message_id || "");

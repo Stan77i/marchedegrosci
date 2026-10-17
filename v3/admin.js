@@ -10,7 +10,7 @@
   const PROD = Object.fromEntries((window.MDG && MDG.products || []).map(p => [p.slug, p.name]));
   const date = t => t ? new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: new Date(t).getFullYear() === new Date().getFullYear() ? undefined : 'numeric' }) : '—';
   const ago = t => { if (!t) return 'jamais'; const m = (Date.now() - Date.parse(t)) / 60000; return m < 60 ? 'il y a ' + Math.max(1, Math.round(m)) + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : m < 2880 ? 'hier' : date(t); };
-  const D = { offres: [], demandes: [], signalements: [], comptes: [], negos: [], err: {} };
+  const D = { offres: [], demandes: [], signalements: [], comptes: [], negos: [], alertes: [], discussions: [], err: {} };
   let view = (location.hash.slice(1) || 'apercu'), filt = { type: 'tout', statut: 'tout', q: '' }, showN = 40;
 
   const ICO = {
@@ -19,6 +19,7 @@
     annonces: '<circle cx="7" cy="8" r="3"/><rect x="14" y="5" width="6" height="6" rx="1"/><path d="M4 15h16M4 19h10" stroke-linecap="round"/>',
     comptes: '<circle cx="12" cy="8.5" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0" stroke-linecap="round"/>',
     negos: '<path d="M4 7h11M4 7l3-3M4 7l3 3M20 17H9m11 0-3-3m3 3-3 3" stroke-linecap="round" stroke-linejoin="round"/>',
+    messages: '<path d="M4 5.5h16v10H9l-5 4z" stroke-linejoin="round"/><path d="M8 9.5h8M8 12.5h5" stroke-linecap="round"/>',
     site: '<path d="M4 12h16M12 4c3 3 3 13 0 16M12 4c-3 3-3 13 0 16"/><circle cx="12" cy="12" r="8"/>'
   };
   const ico = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">${ICO[k]}</svg>`;
@@ -45,7 +46,9 @@
       get('demandes', '/rest/v1/demandes?select=*&order=created_at.desc&limit=2000'),
       get('signalements', '/rest/v1/signalements?select=*&order=created_at.desc&limit=2000'),
       get('negos', '/rest/v1/negociations?select=*&order=updated_at.desc&limit=1000'),
-      N.rpc('admin_comptes').then(r => { D.comptes = r || []; delete D.err.comptes; }).catch(e => { D.err.comptes = e.message; })
+      N.rpc('admin_comptes').then(r => { D.comptes = r || []; delete D.err.comptes; }).catch(e => { D.err.comptes = e.message; }),
+      get('alertes', '/rest/v1/alertes?select=*&order=created_at.desc&limit=500'),
+      N.rpc('admin_discussions').then(r => { D.discussions = r || []; delete D.err.discussions; }).catch(e => { D.err.discussions = e.message; })
     ]);
     D.byUser = Object.fromEntries(D.comptes.map(c => [c.id, c]));
   }
@@ -70,7 +73,7 @@
     const nav = (k, t, n) => `<a class="nav" href="#${k}" ${view === k ? 'aria-current="page"' : ''}>${ico(k)}<span>${t}</span>${n ? `<em>${n}</em>` : ''}</a>`;
     root.innerHTML = `<div class="app"><nav class="rail" aria-label="Tableau de bord">
       <a class="brand" href="#apercu">${logo.replace('width="56" height="56"', 'width="34" height="34"')}<span><b>Marché de Gros</b><small>Tableau de bord</small></span></a>
-      ${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}
+      ${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}${nav('messages', 'Messages', D.alertes.filter(a => !a.vu).length)}
       <span class="sp"></span><a class="nav ext" href="./">${ico('site')}<span>Voir le site</span></a>
       <div class="who">Connecté en administrateur<b>${esc(fmtTel(N.session().user.tel))}</b></div></nav>
       <main id="main">${(VIEWS[view] || VIEWS.apercu)({ T, masq, toDo, conclu })}</main></div>`;
@@ -134,7 +137,7 @@
         <div><b>${esc(fmtTel(String(c.tel).replace(/^225/, '')))} ${c.admin ? '<span class="tag ok">admin</span>' : ''} ${c.secours ? '' : '<span class="tag acc">sans code de secours</span>'}</b><small>Inscrit le ${date(c.created_at)} · dernière connexion ${ago(c.last_sign_in_at)}</small></div>
         <div class="c3"><small>${fmt(c.offres)} offre(s) · ${fmt(c.demandes)} demande(s)</small><small>${fmt(c.negociations)} négociation(s)</small></div>
         <div class="c4">${c.signale ? `<span class="tag bad">${c.signale} signalement(s)</span>` : ''}</div>
-        <div class="acts"><button class="btn sm" data-voir="${c.id}">Ses annonces</button><button class="btn sm" data-code="${c.id}" data-tel="${esc(c.tel)}">Nouveau code</button></div></div>`).join('') : '<div class="empty"><b>Aucun compte</b></div>'}</div>`),
+        <div class="acts">${window.MDGMessages && !c.admin ? `<button class="btn sm" data-ecrire="${c.id}">Écrire</button>` : ''}<button class="btn sm" data-voir="${c.id}">Ses annonces</button><button class="btn sm" data-code="${c.id}" data-tel="${esc(c.tel)}">Nouveau code</button></div></div>`).join('') : '<div class="empty"><b>Aucun compte</b></div>'}</div>`),
     negos: () => {
       const L = D.negos;
       return top('Négociations', fmt(L.length) + ' au total : ' + fmt(L.filter(n => n.statut === 'ouverte').length) + ' en cours, ' + fmt(L.filter(n => n.statut === 'conclue').length) + ' conclues.') + `<div class="list">${L.length ? L.map(n => `
@@ -144,6 +147,29 @@
           <div class="c4"><span class="tag ${n.statut === 'conclue' ? 'ok' : n.statut === 'close' ? '' : 'acc'}">${n.statut === 'conclue' ? 'conclue' : n.statut === 'close' ? (n.motif_fin === 'annonce_retiree' ? 'annonce retirée' : 'arrêtée') : n.dernier_par && n.expire_le && Date.parse(n.expire_le) > Date.now() ? 'proposition en attente' : 'en cours'}</span></div>
           <div class="acts"><button class="btn sm" data-fil="${n.id}">Lire</button></div></div>`).join('') : '<div class="empty"><b>Aucune négociation</b>Elles apparaîtront ici dès qu’un acheteur proposera un prix.</div>'}</div>`;
     }
+  };
+  // ——— messages : écrire à tous, alertes « sortie de l'application », toutes les conversations ———
+  VIEWS.messages = () => {
+    const nv = D.alertes.filter(a => !a.vu).length, L = D.discussions;
+    const nomU = uid => { const c = D.byUser && D.byUser[uid]; return c ? fmtTel(String(c.tel).replace(/^225/, '')) : 'compte supprimé'; };
+    return top('Messages', 'Écrivez à tous les membres au nom du Marché de Gros, suivez les tentatives de sortir de l’application et lisez les conversations.') + `
+      <section class="sec"><div class="sec-h"><h2>Message à tous les membres</h2><p>Chacun le reçoit dans ses messages, avec le logo du Marché de Gros, et une notification.</p></div>
+        <div class="list" style="padding:16px 18px;display:flex;flex-direction:column;gap:12px"><textarea data-dif maxlength="2000" rows="4" placeholder="Bonjour, …" aria-label="Message à tous les membres" style="width:100%;box-sizing:border-box;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:#14120f;color:var(--ink);font:400 15px/1.45 Jost,sans-serif;resize:vertical"></textarea>
+        <div style="display:flex;justify-content:flex-end"><button class="btn pri" data-difgo>Envoyer à tous</button></div></div></section>
+      <section class="sec"><div class="sec-h"><h2>Alertes : sortie de l’application</h2><p>${nv ? nv + ' nouvelle' + (nv > 1 ? 's' : '') + '. ' : ''}Numéro, WhatsApp, autre messagerie ou lien écrit dans un message. Le numéro est masqué pour l’autre personne.</p></div>
+        <div class="list">${D.err.alertes ? '<div class="empty"><b>Alertes indisponibles</b>' + esc(D.err.alertes) + '</div>' : D.alertes.length ? D.alertes.map(a => `
+          <div class="row${a.vu ? ' is-hidden' : ''}"><span class="mk ${a.vu ? 'off' : 'd'}" style="background:${a.vu ? '' : '#E2735B'}"></span>
+            <div><b>${esc(a.motif)} · ${esc(nomU(a.user_id))}</b><small>« ${esc(a.extrait || '')} »</small></div>
+            <div class="c3"><small>${a.source === 'dm' ? 'message direct' : 'négociation'}</small><small>${ago(a.created_at)}</small></div>
+            <div class="c4">${a.vu ? '<span class="tag">vue</span>' : '<span class="tag bad">nouvelle</span>'}</div>
+            <div class="acts">${window.MDGMessages && a.user_id ? `<button class="btn sm" data-ecrire="${a.user_id}">Écrire</button>` : ''}${a.source === 'dm' && a.ref_id ? `<button class="btn sm" data-lire="${a.ref_id}">Lire</button>` : ''}${a.vu ? '' : `<button class="btn sm" data-vu="${a.id}">Vue</button>`}</div></div>`).join('') : '<div class="empty"><b>Aucune alerte</b>Personne n’a essayé de sortir de l’application.</div>'}</div></section>
+      <section class="sec"><div class="sec-h"><h2>Toutes les conversations</h2><p>${fmt(L.length)} conversation(s) des ${window.MDGMessages ? MDGMessages.JOURS : 7} derniers jours.</p></div>
+        <div class="list">${D.err.discussions ? '<div class="empty"><b>Conversations indisponibles</b>' + esc(D.err.discussions) + '</div>' : L.length ? L.map(d => `
+          <div class="row" data-row="${d.id}"><span class="mk o"></span>
+            <div><b>${esc(d.a_nom)} ↔ ${esc(d.b_nom)}</b><small>${esc(d.dernier_texte || '')}</small></div>
+            <div class="c3"><small>${esc(fmtTel(d.a_tel || ''))} · ${esc(fmtTel(d.b_tel || ''))}</small><small>${fmt(d.n)} message(s) · ${ago(d.updated_at)}</small></div>
+            <div class="c4">${d.alertes > 0 ? `<span class="tag bad">${d.alertes} alerte(s)</span>` : ''}</div>
+            <div class="acts"><button class="btn sm" data-lire="${d.id}">Lire</button></div></div>`).join('') : '<div class="empty"><b>Aucune conversation</b></div>'}</div></section>`;
   };
   function listeAnnonces(A) {
     if (!A.length) return `<div class="list"><div class="empty"><b>Aucune annonce</b>${filt.q || filt.type !== 'tout' || filt.statut !== 'tout' ? 'Aucune annonce ne correspond à ces filtres.' : 'Les annonces publiées apparaîtront ici.'}</div></div>`;
@@ -163,6 +189,20 @@
   /* ——— actions ——— */
   function bind() {
     const $$ = q => root.querySelectorAll(q);
+    $$('[data-ecrire]').forEach(b => b.onclick = () => MDGMessages.ecrire(b.dataset.ecrire, { nom: 'Membre' }));
+    $$('[data-vu]').forEach(b => b.onclick = async () => { b.disabled = true; try { await N.api('/rest/v1/alertes?id=eq.' + b.dataset.vu, { method: 'PATCH', auth: true, body: { vu: true }, prefer: 'return=minimal' }); const a = D.alertes.find(x => x.id === b.dataset.vu); if (a) a.vu = true; paint(); } catch (e) { b.disabled = false; toast('Impossible : ' + e.message); } });
+    const dg = root.querySelector('[data-difgo]'); if (dg) dg.onclick = async () => { const ta = root.querySelector('[data-dif]'), t = ta.value.trim(); if (!t) return toast('Écrivez d’abord le message.'); if (!confirm('Envoyer ce message à tous les membres ?')) return; dg.disabled = true;
+      try { const n = await N.rpc('admin_diffuser', { p_texte: t }); ta.value = ''; toast('Message envoyé à ' + n + ' membre(s).'); await load(); paint(); } catch (e) { dg.disabled = false; toast('Envoi impossible : ' + e.message); } };
+    $$('[data-lire]').forEach(b => b.onclick = async () => {
+      const row = root.querySelector(`[data-row="${b.dataset.lire}"]`) || b.closest('.row'), next = row.nextElementSibling;
+      if (next && next.classList.contains('fil')) { next.remove(); return; }
+      try {
+        const M = await N.rpc('admin_dm', { p_discussion: b.dataset.lire }) || [], d = D.discussions.find(x => x.id === b.dataset.lire);
+        const el = document.createElement('div'); el.className = 'fil';
+        el.innerHTML = M.length ? M.map(m => `<div class="${d && m.auteur_id === d.a_id ? '' : 'p'}"><em>${esc(d ? (m.auteur_id === d.a_id ? d.a_nom : d.b_nom) : '')} · ${esc(tel(m.auteur_id))} · ${ago(m.created_at)}</em>${esc(m.texte)}</div>`).join('') : '<div>Aucun message (effacés après 7 jours).</div>';
+        row.after(el);
+      } catch (e) { toast('Lecture impossible : ' + e.message); }
+    });
     $$('[data-reload]').forEach(b => b.onclick = async () => { b.disabled = true; await load(); paint(); toast('Données actualisées.'); });
     $$('[data-f]').forEach(b => b.onclick = () => { filt[b.dataset.f] = b.dataset.v; showN = 40; paint(); });
     const s = root.querySelector('.search'); if (s) s.oninput = () => { filt.q = s.value; showN = 40; const pos = s.selectionStart; paint(); const n = root.querySelector('.search'); n.focus(); n.setSelectionRange(pos, pos); };

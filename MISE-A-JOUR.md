@@ -1,3 +1,14 @@
+# Mise à jour — 17 octobre 2026 (2/4 : messages de l'administration, échanges contrôlés)
+
+Base Supabase déjà mise à jour (`supabase/schema-10-admin-messages.sql`), fonction Edge « pousser » redéployée (version 3).
+
+## Ce qui change
+- **Écrire au Marché de Gros** : dans Messages et dans le menu ; un administrateur répond. On ne peut toujours pas s'écrire à soi-même.
+- **Messages officiels** : les messages d'un administrateur s'affichent au nom du « Marché de Gros », avec le logo et la mention « Officiel » (liste, conversation, notification).
+- **Message à tous les membres** : depuis l'application (menu ou Messages) ou le tableau de bord ; chacun le reçoit dans ses messages, avec une notification.
+- **Les échanges restent dans l'application** : un numéro écrit dans un message ou une négociation est masqué (« [numéro masqué] »). Un numéro, WhatsApp, une autre messagerie ou un lien crée une alerte ; les administrateurs reçoivent une notification.
+- **Tableau de bord → Messages** : envoyer à tous, voir les alertes (écrire au membre, lire la conversation, marquer vue), lire toutes les conversations avec les numéros des deux comptes. Bouton « Écrire » sur chaque compte.
+
 # Mise à jour — 17 octobre 2026 (1/4 : comptes, contact dans l'application, villes)
 
 Service worker : `mgci-v49`. Base Supabase déjà mise à jour (`supabase/schema-9-lieu-contact.sql`).

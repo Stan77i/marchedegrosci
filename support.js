@@ -156,7 +156,8 @@
     runtime.setRootName(rootName);
     runtime.adoptParsed(rootName, parsed);
     if (!window.__resources) {
-      fetch(location.href).then((res) => res.ok ? res.text() : "").then((t) => {
+      // MGCI : relecture du modèle brut servie par le cache (la page vient d'être téléchargée) au lieu d'un second téléchargement — voir sw.js
+      fetch(location.href, { cache: "force-cache", headers: { "x-dc-source": "1" } }).then((res) => res.ok ? res.text() : "").then((t) => {
         const raw = t ? parseDcText(t) : null;
         if (raw?.template) runtime.updateHtml(rootName, raw.template);
       }).catch(() => {

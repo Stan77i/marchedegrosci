@@ -1,3 +1,16 @@
+# Mise à jour — 17 octobre 2026 (finitions : croix, chevrons, détails)
+
+Service worker : `mgci-v60`.
+
+## Ce qui change
+- **Une seule croix de fermeture**, dessinée et parfaitement centrée, partout : négociations, alertes, profil, messages, photos du profil (avant : le caractère « × » de la police, décentré). Elle ne tourne plus au survol.
+- **Chevrons** : le « ‹ » de retour des négociations et les « › » du menu Mon compte deviennent de vraies icônes.
+- **Messages (administration)** : l'icône de « Toutes les conversations » s'affichait en énorme bulle noire ; elle est maintenant une petite tuile bleue.
+- **Avatar** : sans nom, les initiales affichaient « 00 » (tirées du numéro) ; maintenant « ? ».
+- **Négociations vides** : icône poignée de main (bleu = échanges), comme Messages vides (icône passée en bleu).
+- **Site** : la croix de l'encart d'accueil (« Tu as quelque chose ? ») redessinée, zone tactile 36 px.
+- Audit complet : 11 écrans et 9 fenêtres de l'application (390 et 320 px), site sur ordinateur et téléphone : aucune erreur JavaScript, aucun débordement, aucune image cassée.
+
 # Mise à jour — 17 octobre 2026 (un seul jeu d'icônes partout)
 
 Service worker : `mgci-v59`.

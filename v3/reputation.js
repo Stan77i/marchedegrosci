@@ -80,7 +80,7 @@
 .rp-ed input{width:100%;box-sizing:border-box;height:50px;padding:0 14px;border:1px solid rgba(245,240,230,.16);border-radius:14px;background:#14120f;color:#F5F0E6;font:500 16px Jost,sans-serif}
 .rp-ed textarea{margin-top:0;min-height:120px}
 .rp-ed .grille{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.rp-ed .grille div{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#14120f}
-.rp-ed .grille img{width:100%;height:100%;object-fit:cover}.rp-ed .grille button{position:absolute;right:4px;top:4px;width:30px;height:30px;border:0;border-radius:50%;background:rgba(10,9,7,.75);color:#F5F0E6;font-size:16px;cursor:pointer}
+.rp-ed .grille img{width:100%;height:100%;object-fit:cover}.rp-ed .grille button{position:absolute;right:4px;top:4px;width:36px;height:36px;border:0;border-radius:50%;background:rgba(10,9,7,.75);color:#F5F0E6;cursor:pointer}
 .rp-ed .ajout{display:flex;align-items:center;justify-content:center;aspect-ratio:1;border:1.5px dashed rgba(245,240,230,.25);border-radius:14px;color:#B9AD98;font-size:13px;text-align:center;cursor:pointer;position:relative}
 .rp-ed .ajout input{position:absolute;inset:0;opacity:0;height:auto}
 .rp-lib{text-align:center;color:#F2C94C;font-weight:600;min-height:22px}
@@ -198,7 +198,7 @@
       <p class="rp-msg" data-msg></p><button type="button" class="rp-go" data-ok>Enregistrer</button></div>`, 'Mon profil public');
     const msg = t => { bg.querySelector('[data-msg]').textContent = t || ''; };
     const grille = () => { const g = bg.querySelector('[data-g]');
-      g.innerHTML = photos.map((p, i) => `<div><img src="${esc(photoUrl(p))}" alt=""><button type="button" data-rm="${i}" aria-label="Retirer la photo">×</button></div>`).join('') + (photos.length < 6 ? `<label class="ajout">+ Ajouter<input type="file" accept="image/*"></label>` : '');
+      g.innerHTML = photos.map((p, i) => `<div><img src="${esc(photoUrl(p))}" alt=""><button type="button" class="ui-x" data-rm="${i}" aria-label="Retirer la photo"></button></div>`).join('') + (photos.length < 6 ? `<label class="ajout">+ Ajouter<input type="file" accept="image/*"></label>` : '');
       g.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { photos.splice(+b.dataset.rm, 1); grille(); });
       const inp = g.querySelector('input[type=file]'); if (inp) inp.onchange = async () => { const f = inp.files && inp.files[0]; if (!f) return; msg('Envoi de la photo…');
         try { const blob = await reduire(f), chemin = s.user.id + '/' + Date.now() + '.jpg'; await N().televerser('activites/' + chemin, blob); photos.push(chemin); msg(''); grille(); }

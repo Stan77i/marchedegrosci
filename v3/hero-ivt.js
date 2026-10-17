@@ -446,7 +446,7 @@
       const K = 'mdg-v2:phrase-vue'; let vu = false; try { vu = sessionStorage.getItem(K) === '1'; } catch (_) {}
       if (vu) return;
       const t = document.createElement('aside'); t.className = 'hero__pitch'; t.setAttribute('role', 'note'); t.setAttribute('aria-label', 'Le principe du marché');
-      t.innerHTML = '<p><i class="hero__pitch-o" aria-hidden="true"></i><span><b>Tu as quelque chose ?</b> Trouvons ceux qui le cherchent.</span></p><p><i class="hero__pitch-c" aria-hidden="true"></i><span><b>Tu cherches quelque chose ?</b> Trouvons ceux qui l’ont.</span></p><button type="button" class="hero__pitch-x" aria-label="Fermer">×</button>';
+      t.innerHTML = '<p><i class="hero__pitch-o" aria-hidden="true"></i><span><b>Tu as quelque chose ?</b> Trouvons ceux qui le cherchent.</span></p><p><i class="hero__pitch-c" aria-hidden="true"></i><span><b>Tu cherches quelque chose ?</b> Trouvons ceux qui l’ont.</span></p><button type="button" class="hero__pitch-x" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>';
       root.appendChild(t);
       let tm = 0; const fermer = () => { clearTimeout(tm); t.classList.remove('is-on'); setTimeout(() => t.remove(), 400); try { sessionStorage.setItem(K, '1'); } catch (_) {} };
       t.querySelector('.hero__pitch-x').onclick = fermer;

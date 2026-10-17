@@ -249,7 +249,7 @@
 .ng-list{display:flex;flex-direction:column;gap:8px;margin:4px 0 6px}
 .ng-item{display:flex;align-items:center;gap:14px;width:100%;min-height:58px;padding:10px 16px;border:1px solid rgba(245,240,230,.12);border-radius:18px;background:rgba(245,240,230,.04);color:#F5F0E6;font:500 15px/1.3 Jost,sans-serif;text-align:left;text-decoration:none;cursor:pointer}
 .ng-item:hover{background:rgba(245,240,230,.08)}.ng-item:focus-visible{outline:2px solid #E07A3F;outline-offset:2px}
-.ng-item small{display:block;color:#B9AD98;font-size:12.5px;font-weight:400}.ng-item i{margin-left:auto;font-style:normal;color:#B9AD98}
+.ng-item small{display:block;color:#B9AD98;font-size:12.5px;font-weight:400}.ng-item i{margin-left:auto;font-style:normal;color:#B9AD98;display:grid;place-items:center}
 .ng-item .ng-dot{min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#E07A3F;color:#171512;font:700 12px/22px Jost,sans-serif;text-align:center}
 .ng-ticket{position:relative;margin:6px 0 16px;padding:20px 18px 18px;border:1.5px dashed rgba(243,180,138,.6);border-radius:20px;background:repeating-linear-gradient(-45deg,rgba(224,122,63,.06) 0 10px,transparent 10px 20px)}
 .ng-ticket output{display:block;font:600 clamp(21px,6.6vw,30px)/1.1 Jost,sans-serif;letter-spacing:.08em;color:#F5F0E6;text-align:center;white-space:nowrap;user-select:all;font-variant-numeric:tabular-nums}
@@ -458,14 +458,15 @@
   }
   async function openCompte(s, n) {
     const N = window.MDGNegoce, nonLus = N ? N.unread() : 0;
+    const CHEVD = (window.MDGIco && window.MDGIco.svg('suite', 18, 2)) || '›';   // chevron Lucide (app/icones.js)
     const bg = shell(`<h2 id="ngT">Mon compte</h2><div class="ng-me"><p style="margin:0">Connecté avec le numéro</p><b>${esc(fmtTel(s.user.tel))}</b>
       <p>${n ? n + (n > 1 ? ' annonces attendent' : ' annonce attend') + ' le réseau pour partir.' : 'Vos annonces sont visibles de tous.'}</p>
       <div class="ng-sos"></div>
       <div class="ng-list">
-        ${N ? `<button type="button" class="ng-item ng-nego"><span>Mes négociations<small>Prix proposés, réponses et accords</small></span>${nonLus ? `<span class="ng-dot" aria-label="${nonLus} non lues">${nonLus}</span>` : '<i aria-hidden="true">›</i>'}</button>` : ''}
-        ${window.MDGMessages ? `<button type="button" class="ng-item ng-dm"><span>Messages<small>Écrire directement à un membre · effacés après ${MDGMessages.JOURS} jours</small></span>${MDGMessages.unread() ? `<span class="ng-dot" aria-label="${MDGMessages.unread()} non lus">${MDGMessages.unread()}</span>` : '<i aria-hidden="true">›</i>'}</button>` : ''}
-        ${window.MDGSons ? `<button type="button" class="ng-item ng-sons"><span>Sons<small>${MDGSons.reglages().on ? 'Activés' : 'Désactivés'} · notes de balafon pour les propositions et les accords</small></span><i aria-hidden="true">›</i></button>` : ''}
-        <a class="ng-item ng-admin" href="admin.html" hidden><span>Tableau de bord<small>Administration : annonces, comptes, signalements</small></span><i aria-hidden="true">›</i></a>
+        ${N ? `<button type="button" class="ng-item ng-nego"><span>Mes négociations<small>Prix proposés, réponses et accords</small></span>${nonLus ? `<span class="ng-dot" aria-label="${nonLus} non lues">${nonLus}</span>` : '<i aria-hidden="true">${CHEVD}</i>'}</button>` : ''}
+        ${window.MDGMessages ? `<button type="button" class="ng-item ng-dm"><span>Messages<small>Écrire directement à un membre · effacés après ${MDGMessages.JOURS} jours</small></span>${MDGMessages.unread() ? `<span class="ng-dot" aria-label="${MDGMessages.unread()} non lus">${MDGMessages.unread()}</span>` : '<i aria-hidden="true">${CHEVD}</i>'}</button>` : ''}
+        ${window.MDGSons ? `<button type="button" class="ng-item ng-sons"><span>Sons<small>${MDGSons.reglages().on ? 'Activés' : 'Désactivés'} · notes de balafon pour les propositions et les accords</small></span><i aria-hidden="true">${CHEVD}</i></button>` : ''}
+        <a class="ng-item ng-admin" href="admin.html" hidden><span>Tableau de bord<small>Administration : annonces, comptes, signalements</small></span><i aria-hidden="true">${CHEVD}</i></a>
       </div>
       <button type="button" class="ng-out">Me déconnecter</button></div>`);
     bg.querySelector('.ng-out').onclick = () => { signOut(); bg.close(); toast('Déconnecté. Vos annonces restent publiées.'); };

@@ -34,7 +34,8 @@
   const code = o => o.mode === 'ph' ? 'ph:u=' + o.u + ';v=' + (o.v || 0) + ';f=' + (o.f >= 0 ? o.f : 0) : o.mode === 'ini' ? 'ini:f=' + (o.f >= 0 ? o.f : 0) : 'v1:c=' + o.c + ';t=' + o.t + ';k=' + o.k + ';f=' + o.f + (o.a ? ';a=' + o.a : '');
   const hash = s => { let h = 7; for (const ch of String(s || '')) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const initiales = nom => { const p = String(nom || '').trim().split(/\s+/).filter(Boolean); return ((p[0] || '?')[0] + (p[1] ? p[1][0] : '')).toUpperCase(); };
+  // seulement des mots avec des lettres : un numéro de téléphone donnait « 00 »
+  const initiales = nom => { const p = String(nom || '').trim().split(/\s+/).filter(w => /\p{L}/u.test(w)); return ((p[0] || '?')[0] + (p[1] ? p[1][0] : '')).toUpperCase(); };
 
   function coiffure(c, col, peau) {
     switch (c) {

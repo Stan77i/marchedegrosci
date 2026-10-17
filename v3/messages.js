@@ -95,13 +95,13 @@
 .dm-off{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:rgba(224,122,63,.2);color:#F3B48A;font:700 10.5px/1.6 Jost,sans-serif;letter-spacing:.06em;text-transform:uppercase;vertical-align:2px}
 .dm-act{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
 .dm-act button,.dm-act a{flex:1 1 200px;display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 14px;border:1px solid rgba(245,240,230,.14);border-radius:18px;background:rgba(245,240,230,.04);color:var(--ink);font:600 14.5px Jost,sans-serif;text-align:left;text-decoration:none;cursor:pointer}
-.dm-act small{display:block;color:var(--mute);font-size:12px;font-weight:400}
+.dm-act small{display:block;color:var(--mute);font-size:12px;font-weight:400}.dm-act a>svg{flex:none;width:34px;height:34px;padding:7px;border-radius:50%;background:rgba(106,174,240,.16);fill:none;stroke:#6AAEF0;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;box-sizing:border-box}
 .dm-dif{display:flex;flex-direction:column;gap:12px;padding:16px}
 .dm-dif textarea{min-height:160px;padding:14px 16px;border:1px solid rgba(245,240,230,.16);border-radius:18px;background:#14120f;color:var(--ink);font:400 16px/1.45 Jost,sans-serif;resize:vertical}
 .dm-dif textarea:focus{outline:none;border-color:var(--acc)}
 .dm-dif .go{min-height:52px;border:0;border-radius:999px;background:var(--acc);color:#171512;font:700 15.5px Jost,sans-serif;cursor:pointer}.dm-dif .go:disabled{opacity:.5}
 .dm-dif p{margin:0;color:var(--mute);font-size:13.5px;line-height:1.5}
-.dm-vide{padding:56px 18px;text-align:center;color:var(--mute);line-height:1.55}.dm-vide svg{width:54px;height:54px;margin:0 auto 14px;display:block;fill:none;stroke:#F3B48A;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.dm-vide{padding:56px 18px;text-align:center;color:var(--mute);line-height:1.55}.dm-vide svg{width:54px;height:54px;margin:0 auto 14px;display:block;fill:none;stroke:#6AAEF0;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .dm-vide b{display:block;margin:0 0 6px;font:500 25px/1.2 'Cormorant Garamond',serif;color:var(--ink)}
 .dm-vide button{margin-top:16px;min-height:46px;padding:0 18px;border:1px solid rgba(245,240,230,.22);border-radius:999px;background:none;color:var(--ink);font:600 14.5px Jost,sans-serif;cursor:pointer}
 @keyframes dmIn{from{opacity:0}}@keyframes dmUp{from{transform:translateY(30px);opacity:0}}@keyframes dmPop{from{transform:scale(.94);opacity:0}}

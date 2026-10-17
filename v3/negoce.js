@@ -136,7 +136,7 @@
 .nx-h{display:flex;align-items:center;gap:10px;padding:18px 18px 12px;border-bottom:1px solid var(--line)}
 .nx-h h2{flex:1;min-width:0;margin:0;font:500 26px/1.1 'Cormorant Garamond',Georgia,serif}
 .nx-h h2 small{display:block;margin-top:3px;font:400 13.5px/1.35 Jost,sans-serif;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.nx-ib{flex:none;width:42px;height:42px;border:0;border-radius:50%;background:rgba(245,240,230,.08);color:var(--ink);font-size:20px;line-height:1;cursor:pointer}
+.nx-ib{flex:none;width:44px;height:44px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:rgba(245,240,230,.08);color:var(--ink);font-size:20px;line-height:1;cursor:pointer}.nx-back svg{display:block}
 .nx-ib:focus-visible,.nx button:focus-visible,.nx input:focus-visible,.nx textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .nx-b{flex:1;overflow:auto;padding:16px 18px 20px;overscroll-behavior:contain}
 .nx-f{padding:12px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#1a1712}
@@ -184,7 +184,7 @@
 .nx-row small{grid-column:2;color:var(--mute);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nx-row .p{grid-row:span 2;text-align:right;font:500 22px/1 'Cormorant Garamond',serif}.nx-row .p small{display:block;margin-top:4px;font:400 11.5px Jost,sans-serif}
 .nx-row.is-new{border-color:rgba(224,122,63,.6)}.nx-row.is-new b::after{content:'';display:inline-block;width:8px;height:8px;margin-left:8px;border-radius:50%;background:var(--acc);vertical-align:middle}
-.nx-empty{padding:40px 8px;text-align:center;color:var(--mute);font-size:15px;line-height:1.55}.nx-empty b{display:block;margin:0 0 6px;font:500 24px/1.2 'Cormorant Garamond',serif;color:var(--ink)}
+.nx-empty{padding:40px 8px;text-align:center;color:var(--mute);font-size:15px;line-height:1.55}.nx-empty-ico{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 14px;border-radius:20px;background:rgba(106,174,240,.14);color:#6AAEF0;box-shadow:inset 0 0 0 1px rgba(106,174,240,.25)}.nx-empty b{display:block;margin:0 0 6px;font:500 24px/1.2 'Cormorant Garamond',serif;color:var(--ink)}
 /* fil */
 .nx-msgs{display:flex;flex-direction:column;gap:10px;margin:14px 0 0}
 .nx-m{max-width:82%;padding:10px 14px;border-radius:18px;font-size:15px;line-height:1.45;background:rgba(245,240,230,.07);align-self:flex-start;white-space:pre-wrap;overflow-wrap:anywhere}
@@ -283,7 +283,8 @@
   addEventListener('mdg:profils', () => { if (bg && redessiner) redessiner(); });
   function close(keep) { clearInterval(poll); poll = 0; if (bg) { bg.remove(); bg = null; } if (!keep) { document.removeEventListener('keydown', onKey); if (rendreFocus) { rendreFocus(); rendreFocus = null; } } }
   function onKey(e) { if (e.key === 'Escape' && bg) close(); }
-  const head = (t, sub, back) => `<div class="nx-h">${back ? '<button type="button" class="nx-ib" data-back aria-label="Retour à mes négociations">‹</button>' : ''}<h2>${esc(t)}${sub ? `<small>${esc(sub)}</small>` : ''}</h2><button type="button" class="nx-ib" data-x aria-label="Fermer">×</button></div>`;
+  const CHEV = (window.MDGIco && window.MDGIco.svg('retour', 22, 2)) || '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
+  const head = (t, sub, back) => `<div class="nx-h">${back ? '<button type="button" class="nx-ib nx-back" data-back aria-label="Retour à mes négociations">${CHEV}</button>' : ''}<h2>${esc(t)}${sub ? `<small>${esc(sub)}</small>` : ''}</h2><button type="button" class="nx-ib" data-x aria-label="Fermer">×</button></div>`;
   const bindSnd = () => { const b = bg && bg.querySelector('.nx-snd'); if (b) b.onclick = () => { close(); MDGSons.panneau(); }; };
 
   // la règle des prix : repère du prix affiché, dernier prix de chaque partie (atténué s'il n'est plus valable), écart
@@ -393,7 +394,7 @@
           <small><span class="nx-tag ${e.c}">${esc(e.t)}</span> avec ${leLa(lui)}${av.nom ? ' ' + esc(av.nom) : ''}${n.ville ? ' · ' + esc(n.ville) : ''} · ${ago(n.updated_at)}</small></button>`; };
       const grp = (t, L) => L.length ? `<section class="nx-grp"><h3>${t}</h3>${L.map(row).join('')}</section>` : '';
       bg.querySelector('.nx-b').innerHTML = liste.length ? grp('À vous de répondre', g.moi) + grp('En attente de réponse', g.eux) + grp('Accords conclus', g.ok) + grp('Sans proposition en cours', g.sans) + grp('Terminées', g.fin)
-        : `<div class="nx-empty"><b>Aucune négociation pour l’instant</b>Sur une offre ou une demande, touchez « Proposer un prix ». Les réponses arrivent ici.</div>`;
+        : `<div class="nx-empty">${window.MDGIco ? '<span class="nx-empty-ico">' + window.MDGIco.svg('negoce', 30, 1.8) + '</span>' : ''}<b>Aucune négociation pour l’instant</b>Sur une offre ou une demande, touchez « Proposer un prix ». Les réponses arrivent ici.</div>`;
       bg.querySelectorAll('.nx-row').forEach(b => { b.onclick = () => thread(b.dataset.id); glisser(b, () => masquer(b.dataset.id)); });
     };
     sheet(head('Mes négociations', 'Propositions, réponses et accords') + `<div class="nx-b"><div class="nx-empty">Chargement…</div></div>`, 'Mes négociations');

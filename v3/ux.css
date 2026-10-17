@@ -55,19 +55,17 @@ html{font-variant-numeric:lining-nums}
 /* ═════════ Passe du 11/10/2026 (2) ═════════ */
 
 /* ——— Croix de fermeture : une seule, partout (connexion, Mon espace, négociations, sons, fiches, catalogue, feuilles, recherche mobile).
-   Centrée par translate(-50%,-50%) (l'ancien « inset:auto » annulait left/top et décalait la croix, surtout sur iPhone). Visible 40 px, trait de 2 px dessiné en CSS (le « × » et le « ✕ » des polices n'avaient ni la même taille ni le même centre) ; zone tactile 44 px. ——— */
-:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x){position:relative;display:grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;
+   Centrée par translate(-50%,-50%) (l'ancien « inset:auto » annulait left/top et décalait la croix, surtout sur iPhone). Visible 40 px (44 au doigt), trait de 2 px dessiné en CSS, immobile (le « × » et le « ✕ » des polices n'avaient ni la même taille ni le même centre) ; zone tactile 44 px. ——— */
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x,.nx-ib[data-x],.al-x,.rp-x,.dm-ib[data-x],.ui-x){position:relative;display:grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;
   background:color-mix(in srgb,currentColor 9%,transparent);color:inherit;font-size:0!important;line-height:0;cursor:pointer;
   transition:background var(--ux-d2) var(--ux-std),transform var(--ux-d1) var(--ux-std)}
-:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)>*{display:none}
-:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)::before,
-:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)::after{content:""!important;position:absolute;inset:auto;left:50%;top:50%;right:auto;bottom:auto;width:16px;height:2px;margin:0;border-radius:2px;background:currentColor;transform:translate(-50%,-50%) rotate(45deg);transition:transform var(--ux-d2) var(--ux-out)}
-:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)::after{transform:translate(-50%,-50%) rotate(-45deg)}
-:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x):hover{background:color-mix(in srgb,currentColor 16%,transparent)}
-:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x):hover::before{transform:translate(-50%,-50%) rotate(135deg)}
-:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x):hover::after{transform:translate(-50%,-50%) rotate(45deg)}
-:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x):active{transform:scale(.92)}
-@media (pointer:coarse){:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x){width:44px;height:44px}}
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x,.nx-ib[data-x],.al-x,.rp-x,.dm-ib[data-x],.ui-x)>*{display:none}
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x,.nx-ib[data-x],.al-x,.rp-x,.dm-ib[data-x],.ui-x)::before,
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x,.nx-ib[data-x],.al-x,.rp-x,.dm-ib[data-x],.ui-x)::after{content:""!important;position:absolute;inset:auto;left:50%;top:50%;right:auto;bottom:auto;width:16px;height:2px;margin:0;border-radius:2px;background:currentColor;transform:translate(-50%,-50%) rotate(45deg);transition:transform var(--ux-d2) var(--ux-out)}
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x,.nx-ib[data-x],.al-x,.rp-x,.dm-ib[data-x],.ui-x)::after{transform:translate(-50%,-50%) rotate(-45deg)}
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x,.nx-ib[data-x],.al-x,.rp-x,.dm-ib[data-x],.ui-x):hover{background:color-mix(in srgb,currentColor 16%,transparent)}
+:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x,.nx-ib[data-x],.al-x,.rp-x,.dm-ib[data-x],.ui-x):active{transform:scale(.92)}
+@media (pointer:coarse){:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x,.nx-ib[data-x],.al-x,.rp-x,.dm-ib[data-x],.ui-x){width:44px;height:44px}}
 
 /* ——— Envoi en cours : le bouton garde sa place, dit ce qu'il fait et tourne ; il ne paraît jamais « fait » avant la réponse ——— */
 button[aria-busy="true"]:disabled{cursor:progress;opacity:1!important}
@@ -101,7 +99,7 @@ button[aria-busy="true"]:disabled::after{content:"";display:inline-block;width:1
   :where(.ax-rest,.pp-f,.odv__more)>summary::after{transition:none}
   .ux-tick{animation:none}
   button[aria-busy="true"]:disabled::after{animation-duration:2.4s}
-  :where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)::before,:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x)::after{transition:none}
+  :where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x,.nx-ib[data-x],.al-x,.rp-x,.dm-ib[data-x],.ui-x)::before,:where(.ng-x,.cp-x,.odv__x,.catdlg__close,.sheet .x,.sx__x,.nx-ib[data-x],.al-x,.rp-x,.dm-ib[data-x],.ui-x)::after{transition:none}
   :where(.btn,.fbtn,.ax-zp,.pp-chip,.vs-o,.nx-go,.nx-alt,.ng-go):active{transform:none}
 }
 

@@ -1,3 +1,14 @@
+# Mise à jour — 17 octobre 2026 (3/4 : carte plein écran, tout voir)
+
+Service worker : `mgci-v50`. Base Supabase déjà mise à jour (`supabase/schema-11-zones.sql`).
+
+## Ce qui change
+- **Carte plein écran** : la carte occupe toute la page ; titre, filtres et légende se posent dessus ; la liste est dans un panneau qu'on remonte (« N à voir »).
+- **Sans frontières** : plus de pays voisins ni de frontière en tirets, seulement le territoire et la côte.
+- **Marqueurs parlants** : 🧺 offres (vert), 🛒 demandes (jaune), chacun avec son nombre ; la légende donne les totaux et sert de filtre (toucher « Offres » ou « Demandes »).
+- **Forte demande** : un administrateur pose une zone 🔥 (produit, région, ville, note, 7/14/30 jours) depuis le panneau de la carte ; tout le monde la voit avec une onde rouge ; l'administrateur peut la retirer.
+- **Acheter → Offres / Demandes / Tout** : on voit toutes les publications, « J'ai » comme « Je cherche ».
+
 # Mise à jour — 17 octobre 2026 (2/4 : messages de l'administration, échanges contrôlés)
 
 Base Supabase déjà mise à jour (`supabase/schema-10-admin-messages.sql`), fonction Edge « pousser » redéployée (version 3).

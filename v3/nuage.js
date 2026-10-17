@@ -146,6 +146,9 @@
     demandes: d => ({ client_id: txt(d.id, 60), product_slug: txt(d.productSlug, 80), product_label: txt(d.productLabel || d.productName, 120), region_slug: txt(d.regionSlug, 60), city: txt(d.city, 80), quantity: num(d.quantity), unit: txt(d.unit, 20), budget: num(d.budget), deadline: txt(d.deadline, 40), buyer_type: txt(d.buyerType, 60), buyer_name: txt(d.buyerName, 80), phone: null, lieu: txt(d.lieu, 20) || null, negociable: d.negociable !== false }),
   };
   // annonces des autres seulement : celles publiées depuis ce téléphone sont déjà dans « mes annonces »
+  const zones = () => J('mdg-nuage:zones', []).filter(z => z && Date.parse(z.expire_le) > Date.now());
+  async function zoneAjouter(z) { const r = await api('/rest/v1/zones', { method: 'POST', auth: true, body: z, prefer: 'return=representation' }); W('mdg-nuage:zones', (r || []).concat(J('mdg-nuage:zones', []))); say('liste'); return r && r[0]; }
+  async function zoneRetirer(id) { await api('/rest/v1/zones?id=eq.' + encodeURIComponent(id), { method: 'DELETE', auth: true }); W('mdg-nuage:zones', J('mdg-nuage:zones', []).filter(z => z.id !== id)); say('liste'); }
   function list(kind) {
     const mine = new Set(local(kind).map(x => x.id)), cache = J(kind === 'offres' ? K.o : K.d, []);
     return cache.filter(x => x && x.productSlug !== undefined && !mine.has(x.client_id));
@@ -156,6 +159,8 @@
     try {
       const sel = '?select=*&status=eq.active&order=created_at.desc&limit=500';
       const [o, d] = await Promise.all([api('/rest/v1/offres' + sel), api('/rest/v1/demandes' + sel)]);
+      // zones de forte demande posées par l'administration (schema-11) : sans effet si la table n'existe pas encore
+      api('/rest/v1/zones?select=*&expire_le=gt.' + encodeURIComponent(new Date().toISOString()) + '&order=created_at.desc&limit=100').then(z => { const avantZ = JSON.stringify(J('mdg-nuage:zones', [])); W('mdg-nuage:zones', z || []); if (JSON.stringify(z || []) !== avantZ) say('liste'); }).catch(() => {});
       const sig = x => (x || []).map(r => r.id).join(','), was = sig(J(K.o, []).map(x => ({ id: x._rid }))) + '|' + sig(J(K.d, []).map(x => ({ id: x._rid })));
       const avant = new Set(J(K.o, []).concat(J(K.d, [])).map(x => x._rid)), premier = !J(K.t, 0);
       W(K.o, (o || []).map(fromRow.offres)); W(K.d, (d || []).map(fromRow.demandes)); W(K.t, Date.now());
@@ -510,5 +515,5 @@ html.kb .cp,html.kb .nx{height:calc(var(--vvh,100dvh) - 8px)!important}}`;
     vv.addEventListener('resize', plan); vv.addEventListener('scroll', plan); maj();
   })();
 
-  window.MDGNuage = { televerser, list, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
+  window.MDGNuage = { televerser, list, zones, zoneAjouter, zoneRetirer, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
 })();

@@ -4,7 +4,10 @@
    Distances : à vol d'oiseau (haversine), cercles 50 / 100 / 200 km autour de vous, échelle qui suit le zoom.
    Eau : fleuves et lacs Natural Earth 1:10m (vendor/ci-hydro.json) ; côte en trait plein, frontière terrestre en tirets ;
    un repère dit ce que l'on regarde (le pays, une partie du pays, les alentours d'un chef-lieu) — même langage que la carte du site.
-   Positions des publications : chef-lieu du district (aucune position inventée). */
+   Positions des publications : chef-lieu du district (aucune position inventée).
+   Octobre 2026 : la carte occupe tout l'écran (opt.insets() = place prise en haut et en bas par l'interface), sans frontières
+   ni pays voisins ; marqueurs parlants : 🧺 offres (vert), 🛒 demandes (jaune), 🔥 forte demande posée par l'administration,
+   chacun avec son nombre. */
 (function () {
   'use strict';
   const D2R = Math.PI / 180;
@@ -37,11 +40,12 @@
   function mount(host, opt) {
     opt = opt || {};
     const A = window.MDGApp;
-    host.style.position = 'relative'; host.style.touchAction = 'none'; host.style.userSelect = 'none';
+    if (getComputedStyle(host).position === 'static') host.style.position = 'relative'; host.style.touchAction = 'none'; host.style.userSelect = 'none';
     const cv = document.createElement('canvas'); cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;display:block';
     host.appendChild(cv);
     const ctx = cv.getContext('2d');
-    const ui = document.createElement('div'); ui.style.cssText = 'position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px;z-index:2';
+    const ins = () => { const i = opt.insets ? opt.insets() : null; return { t: (i && i.t) || 0, b: (i && i.b) || 0 }; };
+    const ui = document.createElement('div'); ui.style.cssText = 'position:absolute;right:10px;top:' + (ins().t + 10) + 'px;display:flex;flex-direction:column;gap:6px;z-index:2;transition:top .3s';
     const btn = (svg, lab, fn) => { const b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', lab); b.innerHTML = svg;
       b.style.cssText = 'width:40px;height:40px;border-radius:20px;border:1px solid rgba(245,240,230,.14);background:rgba(23,21,18,.72);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#F5F0E6;display:flex;align-items:center;justify-content:center;padding:0';
       b.addEventListener('pointerdown', e => e.stopPropagation()); b.addEventListener('click', e => { e.stopPropagation(); fn(); }); ui.appendChild(b); return b; };
@@ -50,10 +54,10 @@
     btn(ic('<path d="M5 12h14"/>'), 'Dézoomer', () => zoomBy(1 / 1.8));
     btn(ic('<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>'), 'Tout le pays', () => { opt.onSelect && opt.onSelect(''); fly(home(), 900); });
     host.appendChild(ui);
-    const note = document.createElement('div'); note.style.cssText = 'position:absolute;left:10px;top:10px;font:500 10.5px Jost,sans-serif;letter-spacing:.06em;color:rgba(245,240,230,.55);pointer-events:none;z-index:2;max-width:60%';
+    const note = document.createElement('div'); note.style.cssText = 'position:absolute;left:10px;top:' + (ins().t + 10) + 'px;font:500 10.5px Jost,sans-serif;letter-spacing:.06em;color:rgba(245,240,230,.55);pointer-events:none;z-index:2;max-width:60%';
     note.textContent = 'Chargement des frontières…'; host.appendChild(note);
 
-    let W = 0, H = 0, dpr = 1, civ = null, civBd = null, nb = {}, lakes = [], rivers = [], real = false, bb = null, cam = { x: -5.5, y: MY(7.5), z: 40 }, anim = null, inert = null, raf = 0, dirty = true, data = { pts: {}, pairs: [], me: '', sel: '' }, alive = true, t0 = performance.now();
+    let W = 0, H = 0, dpr = 1, civ = null, civBd = null, nb = {}, lakes = [], rivers = [], real = false, bb = null, cam = { x: -5.5, y: MY(7.5), z: 40 }, anim = null, inert = null, raf = 0, dirty = true, data = { pts: {}, pairs: [], me: '', sel: '', zones: [] }, alive = true, t0 = performance.now();
     const fallback = () => { const o = (A.OUT || []).map(p => [p[0], p[1]]); return [[o.concat([o[0]])]]; };
     const setGeo = (c, n, r) => { civ = W2(c); nb = {}; Object.keys(n || {}).forEach(k => { if (n[k]) nb[k] = W2(n[k]); }); real = r;
       let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9; civ.forEach(p => p[0].forEach(q => { x0 = Math.min(x0, q[0]); x1 = Math.max(x1, q[0]); y0 = Math.min(y0, q[1]); y1 = Math.max(y1, q[1]); }));
@@ -63,7 +67,8 @@
 
     hydro().then(h => { if (!alive) return; const w = pts => pts.map(q => [q[0], MY(q[1])]);
       lakes = h.lakes.map(l => l.p.map(w)); rivers = h.rivers.map(r => ({ w: r.r <= 5 ? 1.3 : r.r <= 7 ? 1 : .7, pts: w(r.p) })); dirty = true; kick(); }).catch(() => {});
-    const home = () => { const pad = 18, z = Math.min((W - pad * 2) / (bb.x1 - bb.x0), (H - pad * 2 - 20) / (bb.y1 - bb.y0)); return { x: (bb.x0 + bb.x1) / 2, y: (bb.y0 + bb.y1) / 2 + 8 / z, z }; };
+    // vue d'ensemble : le pays tient dans la partie visible (entre l'interface du haut et celle du bas)
+    const home = () => { const i = ins(), pad = 18, vh = Math.max(120, H - i.t - i.b), z = Math.min((W - pad * 2) / (bb.x1 - bb.x0), (vh - pad * 2 - 10) / (bb.y1 - bb.y0)); return { x: (bb.x0 + bb.x1) / 2, y: (bb.y0 + bb.y1) / 2 + ((i.b - i.t) / 2) / z, z }; };
     const zMin = () => home().z * .8, zMax = () => home().z * 4.5; // jusqu'au district : plus près ne montrerait rien de vrai
     const clampCam = c => { const h = home(); c.z = Math.max(zMin(), Math.min(zMax(), c.z)); const mx = (bb.x1 - bb.x0) * .6, my = (bb.y1 - bb.y0) * .6; c.x = Math.max(h.x - mx, Math.min(h.x + mx, c.x)); c.y = Math.max(h.y - my, Math.min(h.y + my, c.y)); return c; };
     const S = (wx, wy) => [(wx - cam.x) * cam.z + W / 2, (wy - cam.y) * cam.z + H / 2];
@@ -71,7 +76,7 @@
     const toW = (sx, sy) => [(sx - W / 2) / cam.z + cam.x, (sy - H / 2) / cam.z + cam.y];
 
     function resize() { const first = !W; W = Math.max(1, host.clientWidth); H = Math.max(1, host.clientHeight); dpr = Math.min(2, window.devicePixelRatio || 1);
-      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); if (first) cam = home(); clampCam(cam); dirty = true; kick(); }
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); if (first) cam = home(); clampCam(cam); ui.style.top = note.style.top = (ins().t + 10) + 'px'; dirty = true; kick(); }
     const ro = window.ResizeObserver ? new ResizeObserver(resize) : null; ro ? ro.observe(host) : addEventListener('resize', resize);
 
     function fly(to, dur) {
@@ -83,7 +88,7 @@
         cam = { x: fr.x + (to.x - fr.x) * e, y: fr.y + (to.y - fr.y) * e, z: Math.exp(l0 + (l1 - l0) * e - dip * Math.sin(Math.PI * e)) }; } };
       kick();
     }
-    function flyTo(slug, zf) { const r = A.REG[slug]; if (!r) return; fly({ x: r[1], y: MY(r[0]), z: home().z * (zf || 2.4) }, 1100); }
+    function flyTo(slug, zf) { const r = A.REG[slug]; if (!r) return; const z = home().z * (zf || 2.4), i = ins(); fly({ x: r[1], y: MY(r[0]) + ((i.b - i.t) / 2) / z, z }, 1100); }
     function zoomBy(f, sx, sy) { if (sx == null) { sx = W / 2; sy = H / 2; } const w = toW(sx, sy), z = Math.max(zMin(), Math.min(zMax(), cam.z * f));
       fly({ x: w[0] - (sx - W / 2) / z, y: w[1] - (sy - H / 2) / z, z }, 420); }
 
@@ -128,10 +133,7 @@
       // océan : légères lignes de houle
       ctx.strokeStyle = 'rgba(140,170,200,.05)'; ctx.lineWidth = 1;
       for (let lat = 2.4; lat < 5.4; lat += .32) { const a = SL(lat, -11), b = SL(lat, 0); if (a[1] < -10 || a[1] > H + 10) continue; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
-      // voisins
-      Object.keys(nb).forEach(k => { path(nb[k]); ctx.fillStyle = '#1d1b18'; ctx.fill(); ctx.strokeStyle = 'rgba(245,240,230,.13)'; ctx.lineWidth = .8; ctx.stroke(); });
-      ctx.font = '500 9.5px Jost,sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(245,240,230,.28)';
-      Object.keys(NEIGH).forEach(k => { const n = NEIGH[k], s = SL(n[1], n[2]); if (s[0] > 20 && s[0] < W - 20 && s[1] > 14 && s[1] < H - 14) { ctx.save(); ctx.letterSpacing = '3px'; ctx.fillText(n[0], s[0], s[1]); ctx.restore(); } });
+      // pas de pays voisins ni de frontières : seul le territoire, et la mer au sud
       { const s = SL(3.6, -5.4); ctx.font = 'italic 500 13px "Cormorant Garamond",serif'; ctx.fillStyle = 'rgba(160,190,215,.32)'; ctx.fillText('Golfe de Guinée', s[0], s[1]); }
       // Côte d'Ivoire : socle en relief
       ctx.save(); ctx.translate(0, Math.min(8, 2 + cam.z / 60)); path(civ); ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fill(); ctx.restore();
@@ -150,9 +152,9 @@
       // côte en trait plein (avec liseré d'eau peu profonde), frontière terrestre en tirets
       const segs = want => { ctx.beginPath(); civ.forEach((poly, a) => poly.forEach((ring, b) => { let pen = false; ring.forEach((q, i) => { const j = i + 1 < ring.length ? i + 1 : 0, f = civBd && civBd[a] && civBd[a][b], isB = f ? (f[i] && f[j]) : false;
         if (isB !== want) { pen = false; return; } const s0 = S(q[0], q[1]), s1 = S(ring[j][0], ring[j][1]); if (!pen) { ctx.moveTo(s0[0], s0[1]); pen = true; } ctx.lineTo(s1[0], s1[1]); }); })); };
-      segs(false); ctx.strokeStyle = 'rgba(216,204,182,.05)'; [16, 8].forEach(w => { ctx.lineWidth = w; ctx.stroke(); });
-      ctx.strokeStyle = 'rgba(224,196,140,.6)'; ctx.lineWidth = 1.3; ctx.stroke();
-      if (civBd) { segs(true); ctx.save(); ctx.setLineDash([5, 4]); ctx.strokeStyle = 'rgba(224,196,140,.5)'; ctx.lineWidth = 1.2; ctx.stroke(); ctx.restore(); }
+      // la côte seulement, en liseré doux (aucune frontière terrestre)
+      segs(false); ctx.strokeStyle = 'rgba(160,190,215,.07)'; [14, 6].forEach(w => { ctx.lineWidth = w; ctx.stroke(); });
+      ctx.strokeStyle = 'rgba(224,196,140,.28)'; ctx.lineWidth = 1; ctx.stroke();
 
       const me = data.me && A2.REG[data.me], sel = data.sel && A2.REG[data.sel];
       // cercles de distance autour de vous
@@ -176,16 +178,29 @@
       // villes, marqueurs, étiquettes sans chevauchement
       const occ = [], ent = Object.keys(A2.REG).map(s => { const r = A2.REG[s], q = SL(r[0], r[1]), v = data.pts[s] || {}; return { s, r, q, o: v.o || 0, d: v.d || 0 }; });
       ent.forEach(e => { e.q[0] < -40 || e.q[0] > W + 40 || e.q[1] < -40 || e.q[1] > H + 40 ? (e.off = 1) : 0; });
-      // marqueurs d'abord (ils réservent leur place)
-      ent.forEach(e => { if (e.off) return; const [x, y] = e.q, both = e.o && e.d;
-        ctx.fillStyle = e.o || e.d || e.s === data.sel ? '#E9E1D2' : 'rgba(245,240,230,.45)'; ctx.beginPath(); ctx.arc(x, y, 2.4, 0, 7); ctx.fill(); occ.push([x - 5, y - 5, x + 5, y + 5]);
-        if (e.s === data.sel) { const pr = 15 + Math.sin(t * 3) * 1.5; ctx.strokeStyle = '#E07A3F'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, y, pr, 0, 7); ctx.stroke(); }
-        if (e.o) { const r = 6.5 + Math.min(e.o, 6) * 1.1, cx = x - (both ? r + 1 : 0), cy = y - r - 3; ctx.fillStyle = '#6CC58C'; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.fill();
-          if (e.o > 1) { ctx.fillStyle = '#10200f'; ctx.font = '700 9.5px Jost,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e.o, cx, cy + .5); ctx.textBaseline = 'alphabetic'; } occ.push([cx - r, cy - r, cx + r, cy + r]); }
-        if (e.d) { const z = 12 + Math.min(e.d, 6) * 2, cx = x + (both ? z / 2 + 1 : 0), cy = y - z / 2 - 3, w = (t * .42 + e.s.length * .1) % 1;
-          ctx.strokeStyle = 'rgba(242,201,76,' + (1 - w) * .7 + ')'; ctx.lineWidth = 1.2; const zz = z * (1 + w * 1.2); ctx.strokeRect(cx - zz / 2, cy - zz / 2, zz, zz);
-          ctx.fillStyle = '#F2C94C'; ctx.fillRect(cx - z / 2, cy - z / 2, z, z);
-          if (e.d > 1) { ctx.fillStyle = '#2a2004'; ctx.font = '700 9.5px Jost,sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(e.d, cx, cy + .5); ctx.textBaseline = 'alphabetic'; } occ.push([cx - z / 2, cy - z / 2, cx + z / 2, cy + z / 2]); } });
+      // marqueurs d'abord (ils réservent leur place) : 🧺 offres, 🛒 demandes, chacun avec son nombre ; 🔥 forte demande
+      const zs = {}; (data.zones || []).forEach(z => { if (A2.REG[z.region]) (zs[z.region] = zs[z.region] || []).push(z); });
+      const pin = (x, y, r, fill, emo, n, rond) => {
+        ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 2; ctx.fillStyle = fill; ctx.beginPath();
+        if (rond) ctx.arc(x, y, r, 0, 7); else if (ctx.roundRect) ctx.roundRect(x - r, y - r, r * 2, r * 2, r * .42); else ctx.rect(x - r, y - r, r * 2, r * 2);
+        ctx.fill(); ctx.restore(); ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.lineWidth = 1.6; ctx.beginPath();
+        if (rond) ctx.arc(x, y, r, 0, 7); else if (ctx.roundRect) ctx.roundRect(x - r, y - r, r * 2, r * 2, r * .42); else ctx.rect(x - r, y - r, r * 2, r * 2); ctx.stroke();
+        ctx.font = Math.round(r * 1.05) + 'px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(emo, x, y + 1);
+        if (n) { const tx = String(n), bw = Math.max(16, 8 + tx.length * 6.5), bx = x + r * .72, by = y - r * .72; ctx.fillStyle = '#171512'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(bx - bw / 2, by - 8, bw, 16, 8); else ctx.rect(bx - bw / 2, by - 8, bw, 16); ctx.fill();
+          ctx.strokeStyle = fill; ctx.lineWidth = 1.4; ctx.stroke(); ctx.fillStyle = '#F5F0E6'; ctx.font = '700 10.5px Jost,sans-serif'; ctx.fillText(tx, bx, by + .5); }
+        ctx.textBaseline = 'alphabetic'; };
+      ent.forEach(e => { if (e.off) return; const [x, y] = e.q, both = e.o && e.d, z = zs[e.s];
+        ctx.fillStyle = e.o || e.d || z || e.s === data.sel ? '#E9E1D2' : 'rgba(245,240,230,.45)'; ctx.beginPath(); ctx.arc(x, y, 2.4, 0, 7); ctx.fill(); occ.push([x - 5, y - 5, x + 5, y + 5]);
+        if (e.s === data.sel) { const pr = 18 + Math.sin(t * 3) * 1.5; ctx.strokeStyle = '#E07A3F'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, y, pr, 0, 7); ctx.stroke(); }
+        if (z) { const w = (t * .5) % 1, cy = y + 2; [0, .5].forEach(k => { const ww = (w + k) % 1; ctx.strokeStyle = 'rgba(226,115,91,' + (1 - ww) * .75 + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, cy, 16 + ww * 30, 0, 7); ctx.stroke(); });
+          const g2 = ctx.createRadialGradient(x, cy, 2, x, cy, 34); g2.addColorStop(0, 'rgba(226,115,91,.35)'); g2.addColorStop(1, 'rgba(226,115,91,0)'); ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(x, cy, 34, 0, 7); ctx.fill();
+          pin(x, y + 22, 12, '#E2735B', '🔥', z.length > 1 ? z.length : 0, true); occ.push([x - 13, y + 9, x + 13, y + 35]);
+          const lab = 'Forte demande' + (z[0].label ? ' : ' + z[0].label : ''); ctx.font = '600 11px Jost,sans-serif'; ctx.textAlign = 'center'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(18,20,23,.9)'; ctx.strokeText(lab, x, y + 48); ctx.fillStyle = '#F3A08C'; ctx.fillText(lab, x, y + 48);
+          const lw = ctx.measureText(lab).width; occ.push([x - lw / 2, y + 38, x + lw / 2, y + 51]); }
+        if (e.o) { const r = 13 + Math.min(e.o, 8) * .6, cx = x - (both ? r + 2 : 0), cy = y - r - 5; pin(cx, cy, r, '#6CC58C', '🧺', e.o, true); occ.push([cx - r, cy - r - 8, cx + r + 10, cy + r]); }
+        if (e.d) { const r = 12 + Math.min(e.d, 8) * .6, cx = x + (both ? r + 2 : 0), cy = y - r - 5, w = (t * .42 + e.s.length * .1) % 1;
+          ctx.strokeStyle = 'rgba(242,201,76,' + (1 - w) * .6 + ')'; ctx.lineWidth = 1.2; const zz = r * (1 + w * 1.1); ctx.strokeRect(cx - zz, cy - zz, zz * 2, zz * 2);
+          pin(cx, cy, r, '#F2C94C', '🛒', e.d, false); occ.push([cx - r, cy - r - 8, cx + r + 10, cy + r]); } });
       if (me) { const [x, y] = SL(me[0], me[1]), w = (t / 2.2) % 1; ctx.strokeStyle = 'rgba(176,149,240,' + (1 - w) + ')'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(x, y - 6, 9 + w * 16, 0, 7); ctx.stroke();
         ctx.fillStyle = '#B095F0'; ctx.beginPath(); ctx.moveTo(x, y - 16); ctx.lineTo(x + 8, y - 2); ctx.lineTo(x - 8, y - 2); ctx.closePath(); ctx.fill(); occ.push([x - 9, y - 17, x + 9, y]); }
       // étiquettes : priorité sélection > vous > publications > grandes villes ; essais à droite, gauche, dessous, dessus ; sinon masquée
@@ -194,16 +209,16 @@
         const tw = ctx.measureText(e.r[2]).width, [x, y] = e.q, hgt = fs + 2;
         const cand = [[x + 7, y + fs / 2 - 1, 'left'], [x - 7, y + fs / 2 - 1, 'right'], [x, y + fs + 6, 'center'], [x, y - 9, 'center']];
         for (const c of cand) { const bx = c[2] === 'left' ? c[0] : c[2] === 'right' ? c[0] - tw : c[0] - tw / 2, b = [bx - 2, c[1] - hgt + 1, bx + tw + 2, c[1] + 3];
-          if (b[0] < 2 || b[2] > W - 52 && b[1] < 140 || b[2] > W - 2 || b[1] < 2 || b[3] > H - 26) continue;
+          const it = ins(); if (b[0] < 2 || b[2] > W - 52 && b[1] < it.t + 140 || b[2] > W - 2 || b[1] < it.t + 2 || b[3] > H - it.b - 26) continue;
           if (boxHit(b, occ)) continue; occ.push(b);
           ctx.textAlign = c[2]; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(18,20,23,.85)'; ctx.strokeText(e.r[2], c[0], c[1]);
           ctx.fillStyle = e.s === data.sel ? '#F3B48A' : strong ? '#F5F0E6' : 'rgba(245,240,230,.62)'; ctx.fillText(e.r[2], c[0], c[1]); break; } });
       // échelle
-      const kpp = kmPerPx(), km = nice(kpp * 90), px = km / kpp; ctx.textAlign = 'left';
-      ctx.strokeStyle = 'rgba(245,240,230,.7)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(12, H - 14); ctx.lineTo(12, H - 10); ctx.lineTo(12 + px, H - 10); ctx.lineTo(12 + px, H - 14); ctx.stroke();
-      ctx.font = '500 10px Jost,sans-serif'; ctx.fillStyle = 'rgba(245,240,230,.75)'; ctx.fillText(km + ' km', 16 + px, H - 9);
-      ctx.font = '500 15px "Cormorant Garamond",serif'; ctx.fillStyle = '#F5F0E6'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(18,20,23,.8)'; const wh = where(); ctx.strokeText(wh, 12, H - 22); ctx.fillText(wh, 12, H - 22);
-      ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(245,240,230,.32)'; ctx.font = '400 9px Jost,sans-serif'; ctx.fillText(real ? '© Natural Earth' : 'Contour simplifié', W - 10, H - 9);
+      const kpp = kmPerPx(), km = nice(kpp * 90), px = km / kpp, HB = H - ins().b; ctx.textAlign = 'left';
+      ctx.strokeStyle = 'rgba(245,240,230,.7)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(12, HB - 14); ctx.lineTo(12, HB - 10); ctx.lineTo(12 + px, HB - 10); ctx.lineTo(12 + px, HB - 14); ctx.stroke();
+      ctx.font = '500 10px Jost,sans-serif'; ctx.fillStyle = 'rgba(245,240,230,.75)'; ctx.fillText(km + ' km', 16 + px, HB - 9);
+      ctx.font = '500 15px "Cormorant Garamond",serif'; ctx.fillStyle = '#F5F0E6'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(18,20,23,.8)'; const wh = where(); ctx.strokeText(wh, 12, HB - 22); ctx.fillText(wh, 12, HB - 22);
+      ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(245,240,230,.32)'; ctx.font = '400 9px Jost,sans-serif'; ctx.fillText(real ? '© Natural Earth' : 'Contour simplifié', W - 10, HB - 9);
     }
 
     // ce que l'on regarde : le pays, une partie du pays, puis les alentours du chef-lieu le plus proche (distance et direction réelles)
@@ -221,7 +236,7 @@
       raf = 0; if (!alive) return; let more = false;
       if (anim) { const k = Math.min(1, (now - anim.t) / anim.dur); anim.step(k); dirty = true; if (k >= 1) anim = null; else more = true; }
       if (inert) { cam = clampCam({ x: cam.x - inert.v[0] / cam.z, y: cam.y - inert.v[1] / cam.z, z: cam.z }); inert.v = [inert.v[0] * .9, inert.v[1] * .9]; dirty = true; if (Math.hypot(inert.v[0], inert.v[1]) < .3) inert = null; else more = true; }
-      const live = !RM() && (data.pairs.length || data.me || data.sel || Object.values(data.pts).some(v => v.d));
+      const live = !RM() && (data.pairs.length || data.me || data.sel || (data.zones && data.zones.length) || Object.values(data.pts).some(v => v.d));
       if (dirty || live) { draw(now); dirty = false; }
       if ((more || live) && !document.hidden) raf = requestAnimationFrame(frame);
     }
@@ -230,11 +245,11 @@
     resize();
 
     const api = {
-      set(d) { const prev = data; data = Object.assign({ pts: {}, pairs: [], me: '', sel: '' }, d); dirty = true;
+      set(d) { const prev = data; data = Object.assign({ pts: {}, pairs: [], me: '', sel: '', zones: [] }, d); dirty = true;
         if (data.sel !== prev.sel) { if (data.sel) flyTo(data.sel, 2.6); else if (prev.sel) fly(home(), 1000); }
         else if (data.me !== prev.me && data.me) flyTo(data.me, 1.7);
         kick(); },
-      flyTo, home: () => fly(home(), 900),
+      flyTo, home: () => fly(home(), 900), relayout: () => { ui.style.top = note.style.top = (ins().t + 10) + 'px'; dirty = true; kick(); },
       destroy() { alive = false; cancelAnimationFrame(raf); ro && ro.disconnect(); document.removeEventListener('visibilitychange', vis); host.innerHTML = ''; }
     };
     return api;

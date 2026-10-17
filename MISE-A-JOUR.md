@@ -1,3 +1,13 @@
+# Mise à jour — 17 octobre 2026 (un seul jeu d'icônes partout)
+
+Service worker : `mgci-v59`.
+
+## Ce qui change
+- **Toutes les icônes de l'application** passent au même jeu (Lucide) : 58 icônes dessinées à la main remplacées (retour, chevrons, Signaler, Écrire, Proposer un prix = poignée de main, cadenas, cloche, partage, filtre, photo, lieu, info…). Même trait, mêmes arrondis partout.
+- **Fenêtres partagées avec le site** (compte, messages, administration) : mêmes icônes ; `app/icones.js` est aussi chargé par le site et l'administration.
+- **Acheter** : « 🧺 Offres · 🛒 Demandes · Tout » (comme la carte) au lieu de « J'ai · offres / Je cherche · demandes », qui passait sur deux lignes et prêtait à confusion.
+- **Annonces** : les étiquettes « Disponible maintenant », « Prix négociable » n'affichent plus une pastille dans la pastille.
+
 # Mise à jour — 17 octobre 2026 (« J'ai » / « Je cherche » refaits)
 
 Service worker : `mgci-v58`.

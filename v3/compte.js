@@ -214,7 +214,10 @@
     securite: '<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke-linecap="round"/>',
     admin: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="4" rx="1.5"/><rect x="13" y="10" width="7" height="10" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/>'
   };
-  const ico = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">${ICO[k]}</svg>`;
+  // même jeu d'icônes que l'application (app/icones.js, Lucide) ; les dessins ci-dessus restent en secours
+  const LUC = { profil: 'compte', activite: 'activite', notifs: 'cloche', prefs: 'reglages', securite: 'cadenas', admin: 'tableau' };
+  const ico = k => { const L = window.MDGIco && LUC[k] && window.MDGIco.corps(LUC[k]);
+    return L ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${L}</svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">${ICO[k]}</svg>`; };
   function cadre(html, label) {
     if (!css) { const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st); css = true; }
     fermer(true);

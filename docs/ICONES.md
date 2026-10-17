@@ -3,7 +3,9 @@
 ## Principe
 Une icône = une **tuile** de 40 px (56 px sur les pages d'aide), teintée par son **sens**, avec une icône au trait de 22 px. Pas d'animation. Même jeu partout (menu, aide, notifications, boutons de la carte).
 
-- Jeu d'icônes : Lucide (celui de shadcn/ui), licence ISC, embarqué dans `app/icones.js` (7,8 Ko, 38 icônes). On ne charge que les icônes utilisées.
+- Jeu d'icônes : Lucide (celui de shadcn/ui), licence ISC, embarqué dans `app/icones.js` (11,5 Ko, 63 icônes). On ne charge que les icônes utilisées.
+- Partout : application, site (`index-v3.html`), administration (`admin.html`), fenêtres partagées (compte, messages). Les modules partagés gardent leurs anciens dessins en secours si `app/icones.js` manque.
+- Icônes au fil du texte (retour, chevrons, drapeau « Signaler », bulle « Écrire », poignée de main « Proposer un prix », cadenas, cloche, partage…) : `tools/icones/remplacer.py application.dc.html` remplace un dessin fait main par l'icône Lucide de même sens, en gardant taille et couleur.
 - Ajouter une icône : l'inscrire dans `tools/icones/build.py` (nom de sens → nom Lucide), puis `python3 tools/icones/build.py <lucide-static>/icons`.
 - Utilisation : `MDGIco.svg('vendre')` (chaîne SVG) ; dans l'application `tuile('vendre', 'offre')` ou `ico('vendre:offre')`.
 

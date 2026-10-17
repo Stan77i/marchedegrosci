@@ -1,3 +1,14 @@
+# Mise à jour — 17 octobre 2026 (refonte 1 : fondations et performance)
+
+Service worker : `mgci-v52`. Audit complet : `docs/AUDIT-REFONTE.md`.
+
+## Ce qui change
+- **Variables de design** (`css/mgci-tokens.css`) : couleurs, tailles de texte, espaces, rayons, ombres, mouvement. Les écrans de l'application les utilisent (347 couleurs et 252 tailles remplacées).
+- **Lisibilité** : textes discrets, verts et rouille foncés pour dépasser 4,5:1 de contraste.
+- **Textes d'aide** corrigés : on échange dans l'application, plus de WhatsApp ni d'appel.
+- **Ouverture plus rapide** : l'écran d'accueil s'efface dès que l'application est prête.
+- **Moins de données** : 1 357 → 1 069 Ko au démarrage (photos chargées à la demande, relecture de la page servie par le cache).
+
 # Mise à jour — 17 octobre 2026 (4/4 : stock, alertes produits, profil public)
 
 Service worker : `mgci-v51`. Base Supabase déjà mise à jour (`supabase/schema-12-stock-alertes-profil.sql`), fonction Edge « pousser » redéployée (version 4).

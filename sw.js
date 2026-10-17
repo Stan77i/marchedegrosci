@@ -3,7 +3,7 @@
    installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
    Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v51';
+const CACHE = 'mgci-v52';
 
 // Indispensable : si l'un de ces fichiers manque, l'installation échoue et l'ancienne version reste active.
 const CORE = [
@@ -19,6 +19,7 @@ const CORE = [
   "v2/saisons.js",
   "v2/search.js",
   "css/fonts.css",
+  "css/mgci-tokens.css",
   "icons/icon-192.png",
   "icons/icon-512.png",
   "icons/apple-touch-icon.png",
@@ -135,6 +136,13 @@ self.addEventListener('fetch', e => {
         return hit || (await caches.match('application.dc.html')) || Response.error();
       }
     })());
+    return;
+  }
+
+  // Relecture du modèle par support.js (en-tête x-dc-source) : la page vient d'être téléchargée et mise en cache juste au-dessus ;
+  // on la sert depuis le cache au lieu de la retélécharger (210 Ko de moins à chaque ouverture).
+  if (req.headers.get('x-dc-source')) {
+    e.respondWith((async () => { const hit = await caches.match(req) || await caches.match(req, { ignoreSearch: true }); return hit || fetch(req); })());
     return;
   }
 

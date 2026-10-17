@@ -94,25 +94,67 @@
   });
 
   // réglages : panneau ouvert depuis « Mon compte »
+  /* le réglage des sons : même papier clair que « Mon compte » ; un interrupteur général, puis une ligne par moment
+     (👂 pour écouter, un interrupteur pour l'activer), et le volume entre 🔈 et 🔊 */
+  const PCSS = `.snp-bg{position:fixed;inset:0;z-index:9300;background:rgba(8,7,5,.62);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:snpIn .2s ease both}
+@media (min-width:720px){.snp-bg{align-items:center;padding:24px}}
+.snp{outline:none;position:relative;width:100%;max-width:520px;max-height:92dvh;overflow:auto;box-sizing:border-box;padding:12px 16px calc(24px + env(safe-area-inset-bottom));background:#F4EEE3;color:#171512;border-radius:28px 28px 0 0;font:400 15px/1.45 Jost,system-ui,sans-serif;box-shadow:0 -10px 60px rgba(0,0,0,.5);animation:snpUp .32s cubic-bezier(.22,1,.36,1) both}
+@media (min-width:720px){.snp{border-radius:28px;padding-bottom:24px}.snp::before{visibility:hidden}}
+.snp::before{content:"";display:block;width:38px;height:5px;margin:0 auto 10px;border-radius:3px;background:rgba(23,21,18,.16)}
+.snp-x{position:absolute;right:14px;top:16px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(23,21,18,.07);color:#171512;cursor:pointer}
+.snp h2{margin:8px 60px 4px 4px;font:500 32px/1.08 'Cormorant Garamond',Georgia,serif}
+.snp>p{margin:0 4px 16px;color:#655C4D;font-size:14px;line-height:1.5}
+.snp-lab{margin:22px 16px 8px;font:600 12px/1.2 Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#857A67}
+.snp-grp{background:#FFFDF8;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.04);transition:opacity .2s}
+.snp-grp.off{opacity:.45}
+.snp-r{position:relative;display:flex;align-items:center;gap:12px;min-height:62px;padding:9px 14px}
+.snp-r+.snp-r::before{content:"";position:absolute;left:14px;right:0;top:0;height:1px;background:rgba(23,21,18,.08)}
+.snp-ti{flex:none;width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:19px;line-height:1;background:rgba(224,122,63,.14)}
+.snp-t{flex:1;min-width:0}.snp-t b{display:block;font-weight:500;font-size:15.5px;line-height:1.25}.snp-t small{display:block;margin-top:2px;color:#655C4D;font-size:12.5px;line-height:1.3}
+.snp-ec{flex:none;width:44px;height:44px;border:0;border-radius:50%;background:#EFE7D9;font-size:21px;line-height:1;cursor:pointer;transition:transform .15s}
+.snp-ec:active{transform:scale(.9)}.snp-ec.joue{background:rgba(224,122,63,.22)}
+.snp-ec:disabled{opacity:.5;cursor:default}
+.snp-tog{-webkit-appearance:none;appearance:none;flex:none;position:relative;width:51px;height:31px;margin:0;border-radius:16px;background:rgba(23,21,18,.16);cursor:pointer;transition:background .2s}
+.snp-tog::after{content:"";position:absolute;left:2px;top:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .2s cubic-bezier(.22,1,.36,1)}
+.snp-tog:checked{background:#E07A3F}.snp-tog:checked::after{transform:translateX(20px)}
+.snp-tog:disabled{cursor:default}
+.snp-tog:focus-visible,.snp-ec:focus-visible,.snp-x:focus-visible,.snp-vol:focus-visible{outline:2px solid #E07A3F;outline-offset:2px}
+.snp-v{display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 16px}
+.snp-v span{flex:none;font-size:20px;line-height:1}
+.snp-vol{flex:1;min-width:0;height:44px;margin:0;background:none;-webkit-appearance:none;appearance:none;cursor:pointer;--p:60%}
+.snp-vol::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(90deg,#E07A3F var(--p),rgba(23,21,18,.14) var(--p))}
+.snp-vol::-moz-range-track{height:6px;border-radius:3px;background:rgba(23,21,18,.14)}.snp-vol::-moz-range-progress{height:6px;border-radius:3px;background:#E07A3F}
+.snp-vol::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-11px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.snp-vol::-moz-range-thumb{width:28px;height:28px;border:0;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.snp-note{margin:12px 16px 0;color:#857A67;font-size:12.5px;line-height:1.45}
+@keyframes snpIn{from{opacity:0}}@keyframes snpUp{from{transform:translateY(30px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.snp-bg,.snp{animation:none}.snp-tog,.snp-tog::after{transition:none}}`;
+  const EMO = { accord: '🤝', proposition: '💬', refus: '⏳', annonce: '🧺' };
+  const SOUS = { accord: 'Un prix accepté des deux côtés', proposition: 'Quelqu’un vous propose un prix', refus: 'Une proposition sans suite', annonce: 'Un produit que vous suivez' };
   function panneau() {
-    if (window.MDGNuage && MDGNuage.style) MDGNuage.style();
     const r = reglages(), esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-    const bg = document.createElement('div'); bg.className = 'ng-bg';
-    bg.innerHTML = `<div class="ng" role="dialog" aria-modal="true" aria-labelledby="sT"><button type="button" class="ng-x" aria-label="Fermer">×</button>
-      <h2 id="sT">Sons</h2><p>De courtes notes de balafon pour ce qui compte : une proposition qui arrive, un accord. Chaque son s'accompagne toujours d'un message à l'écran.</p>
-      <label class="sn-row sn-main"><span>Activer les sons</span><input type="checkbox" class="sn-on" ${r.on ? 'checked' : ''}></label>
-      <div class="sn-cats" ${r.on ? '' : 'aria-disabled="true"'}>${Object.entries(CATS).map(([k, c]) => `<div class="sn-row"><label for="sn-${k}">${esc(c.nom)}</label><span><button type="button" class="sn-try" data-k="${k}" aria-label="Écouter : ${esc(c.nom)}">Écouter</button><input id="sn-${k}" type="checkbox" data-k="${k}" ${r.cats[k] ? 'checked' : ''}></span></div>`).join('')}</div>
-      <label class="sn-row"><span>Volume</span><input type="range" class="sn-vol" min="0.1" max="1" step="0.05" value="${r.volume}" aria-label="Volume des sons"></label>
-      <p class="ng-note">Le volume suit aussi celui de votre appareil. En mode silencieux, rien ne joue. Quand l'onglet est en arrière-plan, le nombre d'événements s'affiche dans son titre et un seul son joue au retour.</p></div>`;
-    if (!document.getElementById('snCss')) { const st = document.createElement('style'); st.id = 'snCss'; st.textContent = `.ng label.sn-row,.sn-row label{margin:0;letter-spacing:0;font:500 15px/1.35 Jost,sans-serif;color:#F5F0E6}.ng label.sn-row{display:flex}.sn-row{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:52px;padding:6px 0;border-top:1px solid rgba(245,240,230,.1);font-size:15px;color:#F5F0E6}.sn-row span{display:flex;align-items:center;gap:10px}.sn-main{font-weight:600;border-top:0}.sn-row input[type=checkbox]{width:22px;height:22px;accent-color:#E07A3F}.sn-row input[type=range]{width:50%;accent-color:#E07A3F}.sn-cats[aria-disabled=true]{opacity:.45}.sn-try{min-height:36px;padding:0 12px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:#F5F0E6;font:600 13px Jost,sans-serif;cursor:pointer}`; document.head.appendChild(st); }
-    document.querySelector('.ng-bg')?.remove(); document.body.appendChild(bg);
-    const rendre = window.MDGNuage && MDGNuage.piege ? MDGNuage.piege(bg) : () => {}, close = () => { bg.remove(); rendre(); }; bg.querySelector('.ng-x').onclick = close; bg.addEventListener('click', e => { if (e.target === bg) close(); });
+    if (!document.getElementById('snpCss')) { const st = document.createElement('style'); st.id = 'snpCss'; st.textContent = PCSS; document.head.appendChild(st); }
+    const bg = document.createElement('div'); bg.className = 'snp-bg';
+    bg.innerHTML = `<div class="snp" role="dialog" aria-modal="true" aria-labelledby="snpT"><button type="button" class="snp-x ui-x" aria-label="Fermer"></button>
+      <h2 id="snpT">Sons</h2><p>De courtes notes de balafon pour ce qui compte. Chaque son s’accompagne toujours d’un message à l’écran.</p>
+      <div class="snp-grp"><label class="snp-r"><span class="snp-ti" aria-hidden="true">🎶</span><span class="snp-t"><b>Sons du marché</b><small>Notes de balafon</small></span><input type="checkbox" class="snp-tog" role="switch" data-on ${r.on ? 'checked' : ''}></label></div>
+      <p class="snp-lab">Quand jouer</p>
+      <div class="snp-grp${r.on ? '' : ' off'}" data-cats>${Object.entries(CATS).map(([k, c]) => `<div class="snp-r"><span class="snp-ti" aria-hidden="true">${EMO[k] || '🔔'}</span><label class="snp-t" for="snp-${k}"><b>${esc(c.nom)}</b><small>${esc(SOUS[k] || '')}</small></label><button type="button" class="snp-ec" data-k="${k}" aria-label="Écouter : ${esc(c.nom)}" title="Écouter" ${r.on ? '' : 'disabled'}>👂</button><input id="snp-${k}" type="checkbox" class="snp-tog" role="switch" data-k="${k}" ${r.cats[k] !== false ? 'checked' : ''} ${r.on ? '' : 'disabled'}></div>`).join('')}</div>
+      <p class="snp-lab">Volume</p>
+      <div class="snp-grp${r.on ? '' : ' off'}" data-volg><div class="snp-v"><span aria-hidden="true">🔈</span><input type="range" class="snp-vol" min="0.1" max="1" step="0.05" value="${r.volume}" aria-label="Volume des sons" ${r.on ? '' : 'disabled'}><span aria-hidden="true">🔊</span></div></div>
+      <p class="snp-note">Le volume suit aussi celui du téléphone ; en mode silencieux, rien ne joue. Application en arrière-plan : un seul son au retour.</p></div>`;
+    document.querySelector('.snp-bg')?.remove(); document.querySelector('.ng-bg .sn-on')?.closest('.ng-bg')?.remove(); document.body.appendChild(bg);
+    const rendre = window.MDGNuage && MDGNuage.piege ? MDGNuage.piege(bg) : () => {}, close = () => { bg.remove(); rendre(); };
+    bg.querySelector('.snp-x').onclick = close; bg.addEventListener('click', e => { if (e.target === bg) close(); });
     bg.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
-    bg.querySelector('.sn-on').onchange = e => { regler({ on: e.target.checked }); bg.querySelector('.sn-cats').toggleAttribute('aria-disabled', !e.target.checked); if (e.target.checked) { audio(); setTimeout(() => jouer('proposition'), 60); } };
-    bg.querySelectorAll('.sn-cats input').forEach(i => i.onchange = () => { const c = reglages().cats; c[i.dataset.k] = i.checked; regler({ cats: c }); });
-    bg.querySelectorAll('.sn-try').forEach(b => b.onclick = () => { audio(); setTimeout(() => jouer(b.dataset.k), 40); });
-    bg.querySelector('.sn-vol').onchange = e => { regler({ volume: +e.target.value }); audio(); setTimeout(() => jouer('proposition'), 40); };
-    setTimeout(() => bg.querySelector('.sn-on').focus(), 50);
+    const vol = bg.querySelector('.snp-vol'), remplir = () => vol.style.setProperty('--p', ((vol.value - vol.min) / (vol.max - vol.min) * 100) + '%'); remplir();
+    const etat = on => { bg.querySelector('[data-cats]').classList.toggle('off', !on); bg.querySelector('[data-volg]').classList.toggle('off', !on); bg.querySelectorAll('[data-cats] button, [data-cats] input, .snp-vol').forEach(x => { x.disabled = !on; }); };
+    bg.querySelector('[data-on]').onchange = e => { regler({ on: e.target.checked }); etat(e.target.checked); if (e.target.checked) { audio(); setTimeout(() => jouer('proposition'), 60); } };
+    bg.querySelectorAll('[data-cats] input').forEach(i => i.onchange = () => { const c = reglages().cats; c[i.dataset.k] = i.checked; regler({ cats: c }); });
+    bg.querySelectorAll('.snp-ec').forEach(b => b.onclick = () => { audio(); b.classList.add('joue'); setTimeout(() => jouer(b.dataset.k), 40); setTimeout(() => b.classList.remove('joue'), 700); });
+    vol.oninput = remplir;
+    vol.onchange = () => { regler({ volume: +vol.value }); audio(); setTimeout(() => jouer('proposition'), 40); };
+    bg.querySelector('.snp').setAttribute('tabindex', '-1'); setTimeout(() => bg.querySelector('.snp').focus({ preventScroll: true }), 50);   // la fenêtre prend la main (lecteur d'écran, clavier), sans anneau sur un bouton
   }
 
   window.MDGSons = { signal, reglages, regler, essayer: c => { audio(); setTimeout(() => jouer(c), 40); }, panneau, CATS };

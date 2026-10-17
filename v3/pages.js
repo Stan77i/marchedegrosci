@@ -43,7 +43,7 @@
     const I = window.MDGMarche.ICO, esc = window.MDGCTX.esc;
     const a = o.slug
       ? '<button type="button" class="nst-b nst-b--jai" data-match="jai" data-slug="' + o.slug + '">' + I.offre + 'J’ai ce produit</button><button type="button" class="nst-b nst-b--ch" data-match="cherche" data-slug="' + o.slug + '">' + I.demande + 'Je le cherche</button>'
-      : '<a class="nst-b nst-b--jai" href="#/vendre">' + I.offre + 'J’ai une offre</a><a class="nst-b nst-b--ch" href="#/demande">' + I.demande + 'Je cherche une offre</a>';
+      : '<a class="nst-b nst-b--jai" href="#/vendre">' + I.offre + 'J’ai à vendre</a><a class="nst-b nst-b--ch" href="#/demande">' + I.demande + 'Je cherche à acheter</a>';
     return '<div class="nst" role="status"><span class="nst-i" aria-hidden="true">' + I.match + '</span><h3>' + esc(o.title) + '</h3>' + (o.text ? '<p>' + esc(o.text) + '</p>' : '') + (o.actions === false ? '' : '<div class="nst-a">' + a + '</div>') + '</div>';
   };
 

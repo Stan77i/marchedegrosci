@@ -1,3 +1,14 @@
+# Mise à jour — 17 octobre 2026 (Sons refait, recoins corrigés)
+
+Service worker : `mgci-v67`.
+
+## Ce qui change
+- **Sons** : papier clair comme « Mon compte » ; un interrupteur général « Sons du marché » ; une ligne par moment avec son emoji (🤝 accord, 💬 proposition, ⏳ sans suite, 🧺 nouvelle annonce), une phrase claire, un bouton **👂** pour écouter et un vrai interrupteur ; le **volume entre 🔈 et 🔊**, curseur rempli en terracotta. Sons coupés : tout le reste s'estompe et se désactive.
+- **Produits sans photo** (carotte, mangue, maïs, poissons…) : leur emoji sur un fond teinté par la famille, au lieu de la photo de la famille (des poivrons pour une carotte).
+- **L'année du marché** : juin et juillet n'étaient plus distinguables (« JUI ») ; abréviations françaises : JANV, FÉVR, MARS, AVR, MAI, JUIN, JUIL, AOÛT, SEPT, OCT, NOV, DÉC.
+- **Mes publications** : le stock passe sur sa propre ligne (« STOCK 52 000 kg · Modifier ») ; le texte de l'annonce n'est plus écrasé.
+- **Site** : « J'ai — à vendre / Je cherche — à acheter » (avant : « une offre » sous les deux) ; en bas de page, « Contact bientôt disponible » devient **« Écrire au Marché de Gros »**.
+
 # Mise à jour — 17 octobre 2026 (carte nette, quartiers et rues)
 
 Service worker : `mgci-v66`.

@@ -142,7 +142,8 @@
       const civ = base.features.find(f => f.properties.k === 'civ');
       let bb = [180, 90, -180, -90]; civ.geometry.coordinates.forEach(p => p[0].forEach(q => { bb = [Math.min(bb[0], q[0]), Math.min(bb[1], q[1]), Math.max(bb[2], q[0]), Math.max(bb[3], q[1])]; }));
       const regXY = s => { const r = A.REG[s]; return r ? [r[1], r[0]] : null; };
-      const ou = x => { const v = x.city && villes[cle(x.city)]; if (v) return { xy: v.xy, approx: false, ville: v.n }; const r = regXY(x.region); return r ? { xy: r, approx: true, ville: (A.REG[x.region] || [])[2] } : null; };
+      // « Napié (près de Ferkessédougou) » : placée à la ville proche, signalée comme approximative
+      const ou = x => { const pr = /\(près de ([^)]+)\)/.exec(x.city || ''), vp = pr && villes[cle(pr[1])]; if (vp) return { xy: vp.xy, approx: true, ville: vp.n }; const v = x.city && villes[cle(x.city)]; if (v) return { xy: v.xy, approx: false, ville: v.n }; const r = regXY(x.region); return r ? { xy: r, approx: true, ville: (A.REG[x.region] || [])[2] } : null; };
 
       const enLigne = () => navigator.onLine !== false;
       const map = new ml.Map({ container: box, style: style(base, P), bounds: [[bb[0], bb[1]], [bb[2], bb[3]]], fitBoundsOptions: { padding: { top: ins().t + 20, bottom: ins().b + 20, left: 24, right: 24 } },

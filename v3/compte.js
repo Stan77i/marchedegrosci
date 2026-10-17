@@ -234,6 +234,7 @@ label.cp-r{cursor:pointer}
 .cp-pousse .cp-row{grid-column:1 / -1;gap:8px}
 .cp-pousse .cp-err{grid-column:1 / -1}
 /* avatar (page profil) */
+.cp-autre{display:grid;gap:6px;padding:12px;border-radius:14px;background:var(--card2)}.cp-autre[hidden]{display:none}.cp-fg2{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:10px}@media (max-width:380px){.cp-fg2{grid-template-columns:minmax(0,1fr)}}
 .cp-avz{display:grid;justify-items:center;gap:12px;margin:4px 0 0}
 .cp-avbig{position:relative;width:108px;height:108px;border-radius:50%;box-shadow:0 0 0 4px var(--bg),0 0 0 5.5px var(--line2)}
 .cp-avbig svg{display:block;border-radius:50%}
@@ -364,8 +365,56 @@ label.cp-r{cursor:pointer}
     ids.forEach(id => { const el = root.querySelector('#cp-' + id), m = VALID[id](el.value); el.setAttribute('aria-invalid', String(!!m)); root.querySelector('#cp-' + id + '-e').textContent = m; if (m) ok = false; });
     return ok;
   }
-  const lieu = p => `<div><label class="cp-l" for="cp-reg">Région où vous êtes d’habitude <i>· facultatif</i></label><select class="cp-sel" id="cp-reg"><option value="">—</option>${REGIONS().map(([s, n]) => `<option value="${s}" ${p.region_slug === s ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>
-    ${champ('cp-ville', 'Ville ou localité', p.ville, { facultatif: true, attrs: 'maxlength="80" autocomplete="address-level2"', aide: 'Pour vous montrer d’abord ce qui est proche. Vos annonces gardent chacune leur lieu.' })}`;
+  /* région et ville reliées (app/villes.js) : choisir une région montre ses villes ; choisir une ville remplit sa région.
+     Une localité absente de la liste : « Autre localité », avec son nom et la ville principale la plus proche, dans la même région.
+     On enregistre alors « Nom (près de Ville) » : la localité reste rattachée à une ville connue, donc à la carte et aux distances. */
+  const VL = () => window.MDGVilles;
+  const PRES = /^(.*?)\s*\(près de ([^)]+)\)\s*$/;
+  const lieu = p => `<div><label class="cp-l" for="cp-reg">Région où vous êtes d’habitude <i>· facultatif</i></label><select class="cp-sel" id="cp-reg"><option value="">—</option>${REGIONS().map(([s, n]) => `<option value="${s}" ${p.region_slug === s ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select><p class="cp-help" id="cp-reg-a" aria-live="polite"></p></div>
+    <div><label class="cp-l" for="cp-vsel">Ville ou localité <i>· facultatif</i></label><select class="cp-sel" id="cp-vsel"></select></div>
+    <div class="cp-autre" hidden><div class="cp-fg2"><div><label class="cp-l" for="cp-ville">Nom de votre localité</label><input class="cp-in" id="cp-ville" maxlength="48" autocomplete="address-level2" placeholder="ex. un village, un campement"></div>
+      <div><label class="cp-l" for="cp-pres">Près de quelle ville ?</label><select class="cp-sel" id="cp-pres"></select></div></div>
+      <p class="cp-help">Elle reste rattachée à cette ville de la région : on vous montre d’abord ce qui est proche. Vos annonces gardent chacune leur lieu.</p></div>`;
+  function lierLieu(root, p) {
+    const V = VL(), rs = root.querySelector('#cp-reg'), vs = root.querySelector('#cp-vsel'), box = root.querySelector('.cp-autre'), inp = root.querySelector('#cp-ville'), pres = root.querySelector('#cp-pres'), aide = root.querySelector('#cp-reg-a');
+    const nomR = s => (REGIONS().find(r => r[0] === s) || [])[1] || '';
+    const opt = (v, t, sel) => `<option value="${esc(v)}"${sel ? ' selected' : ''}>${esc(t)}</option>`;
+    // ce qui est enregistré : une ville de la liste, ou « Localité (près de Ville) »
+    const v0 = (p && p.ville) || '', m0 = PRES.exec(v0);
+    let ville = m0 ? '' : v0, autre = m0 ? m0[1] : '', proche = m0 ? m0[2] : '', enAutre = !!m0;
+    if (!V) { vs.innerHTML = opt('__autre', 'Écrire ma localité', true); box.hidden = false; inp.value = v0; pres.closest('div').hidden = true; return; }
+    if (ville && !V.region(ville)) { autre = ville; ville = ''; enAutre = true; }
+    function villes() {
+      const r = rs.value, L = r ? V.de(r) : V.toutes().sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+      const choisi = enAutre ? '__autre' : ville;
+      vs.innerHTML = opt('', r ? 'Choisissez (chef-lieu : ' + (V.de(r)[0] || '') + ')' : 'Choisissez d’abord la région, ou une ville', !choisi)
+        + (r ? L.map(n => opt(n, n, n === choisi)).join('') : L.map(c => opt(c.nom, c.nom + ' — ' + nomR(c.region), c.nom === choisi)).join(''))
+        + opt('__autre', 'Autre localité (village, campement…)', choisi === '__autre');
+      box.hidden = vs.value !== '__autre';
+      if (!box.hidden) { const R = r || V.region(proche); pres.innerHTML = (R ? V.de(R) : []).map(n => opt(n, n, n === (proche || V.de(R)[0]))).join('') || opt('', 'Choisissez d’abord la région', true); pres.disabled = !R; inp.value = autre; }
+    }
+    rs.onchange = () => { if (ville && V.region(ville) !== rs.value) ville = ''; if (proche && V.region(proche) !== rs.value) proche = ''; aide.textContent = ''; villes(); };
+    vs.onchange = () => {
+      const v = vs.value;
+      if (v === '__autre') { enAutre = true; ville = ''; villes(); setTimeout(() => inp.focus(), 30); return; }
+      enAutre = false; autre = ''; ville = v; const r = V.region(v);
+      if (r && r !== rs.value) { rs.value = r; aide.textContent = 'Région remplie d’après la ville : ' + nomR(r) + '.'; }
+      villes();
+    };
+    inp.oninput = () => { autre = inp.value; };
+    // une localité tapée qui est en fait une ville connue : on la reconnaît et on remplit sa région
+    inp.onblur = () => { const r = V.region(inp.value); if (r) { ville = V.propre(inp.value); autre = ''; enAutre = false; if (r !== rs.value) { rs.value = r; aide.textContent = 'Région remplie d’après la ville : ' + nomR(r) + '.'; } villes(); } };
+    pres.onchange = () => { proche = pres.value; };
+    villes();
+  }
+  const lieuVal = root => {
+    const V = VL(), r = root.querySelector('#cp-reg').value || null, vs = root.querySelector('#cp-vsel').value;
+    if (vs && vs !== '__autre') return { region_slug: r || (V && V.region(vs)) || null, ville: vs };
+    const nom = root.querySelector('#cp-ville').value.trim(), pr = root.querySelector('#cp-pres');
+    if (!nom) return { region_slug: r, ville: null };
+    const pres = pr && !pr.disabled && pr.value;
+    return { region_slug: r || (V && pres && V.region(pres)) || null, ville: pres ? nom + ' (près de ' + pres + ')' : nom };
+  };
   const roleSeg = p => `<div><span class="cp-l" id="cp-role-l">Vous êtes plutôt</span><div class="cp-seg" role="group" aria-labelledby="cp-role-l">${[['acheteur', 'J’achète'], ['vendeur', 'Je vends'], ['les_deux', 'Les deux']].map(([k, t]) => `<button type="button" data-role="${k}" aria-pressed="${p.role === k}">${t}</button>`).join('')}</div></div>`;
   const lierRole = root => root.querySelectorAll('[data-role]').forEach(b => b.onclick = () => root.querySelectorAll('[data-role]').forEach(x => x.setAttribute('aria-pressed', String(x === b && x.getAttribute('aria-pressed') !== 'true'))));
   const roleVal = root => { const b = root.querySelector('[data-role][aria-pressed=true]'); return b ? b.dataset.role : null; };
@@ -481,7 +530,7 @@ label.cp-r{cursor:pointer}
         <h3 class="cp-lab">Téléphone</h3>
         <div class="cp-grp">${ligne({ ico: ti('telephone', 'aide'), t: esc(N().fmtTel(u.tel)), s: 'Numéro du compte', cls: 'info', chev: false })}</div>
         <p class="cp-note">Le nom affiché sur chaque annonce (nom de vendeur ou d’exploitation) reste celui de l’annonce.</p></div>`;
-      lierRole(main);
+      lierRole(main); lierLieu(main, p);
       main.querySelector('[data-av]').onclick = () => choisirAvatar(() => ouvrir('profil'));
       const z = main.querySelector('[data-av0]'); if (z) z.onclick = async () => { try { await enregistrer({ avatar: null }); bg.rafraichir(); N().toast('Avatar : vos initiales.'); } catch (e) { N().toast(e.message); } };
       const f = main.querySelector('form'), msg = main.querySelector('.cp-msg'), go = main.querySelector('.cp-go');
@@ -490,7 +539,7 @@ label.cp-r{cursor:pointer}
         e.preventDefault(); msg.textContent = ''; if (!valider(f, ['prenom', 'nom', 'pseudo'])) { f.querySelector('[aria-invalid=true]').focus(); return; }
         if (!navigator.onLine) { msg.textContent = 'Pas de connexion internet : réessayez quand le réseau revient.'; return; }
         go.disabled = true; go.setAttribute('aria-busy', 'true'); go.textContent = 'Enregistrement…';
-        try { await enregistrer({ prenom: f.querySelector('#cp-prenom').value.trim(), nom: f.querySelector('#cp-nom').value.trim() || null, pseudo: f.querySelector('#cp-pseudo').value.trim() || null, role: roleVal(f), region_slug: f.querySelector('#cp-reg').value || null, ville: f.querySelector('#cp-ville').value.trim() || null });
+        try { await enregistrer(Object.assign({ prenom: f.querySelector('#cp-prenom').value.trim(), nom: f.querySelector('#cp-nom').value.trim() || null, pseudo: f.querySelector('#cp-pseudo').value.trim() || null, role: roleVal(f) }, lieuVal(f)));
           N().toast('Profil enregistré.'); bg.aller('accueil'); }
         catch (x) { go.disabled = false; go.removeAttribute('aria-busy'); go.textContent = 'Enregistrer'; if (/pseudonyme/i.test(x.message)) { f.querySelector('#cp-pseudo').setAttribute('aria-invalid', 'true'); f.querySelector('#cp-pseudo-e').textContent = x.message; } else msg.innerHTML = `<span class="cp-bad">${esc(x.message)}</span>`; }
       };
@@ -716,8 +765,8 @@ label.cp-r{cursor:pointer}
         w.querySelector('[data-ini]').onclick = () => suite(null);
       } else {
         w.innerHTML = `<h2>Ce que vous faites, et où</h2><p>Pour vous montrer d’abord ce qui vous concerne. Vous pouvez passer cette étape.</p><form class="cp-f cp-panel" novalidate>${roleSeg(p())}${lieu(p())}<div class="cp-row"><button class="cp-go">Terminer</button><button type="button" class="cp-alt" data-skip>Plus tard</button></div></form>`;
-        const f = w.querySelector('form'); lierRole(f);
-        f.onsubmit = e => { e.preventDefault(); suite({ role: roleVal(f), region_slug: f.querySelector('#cp-reg').value || null, ville: f.querySelector('#cp-ville').value.trim() || null }, true); };
+        const f = w.querySelector('form'); lierRole(f); lierLieu(f, p());
+        f.onsubmit = e => { e.preventDefault(); suite(Object.assign({ role: roleVal(f) }, lieuVal(f)), true); };
         w.querySelector('[data-skip]').onclick = () => suite(null, true);
       }
     }

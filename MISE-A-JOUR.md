@@ -1,3 +1,13 @@
+# Mise à jour — 17 octobre 2026 (région et ville reliées partout)
+
+Service worker : `mgci-v65`.
+
+## Ce qui change
+- **Profil et avatar** (et l'étape « Ce que vous faites, et où » de l'accueil d'un nouveau membre) : la ville est maintenant une liste reliée à la région. Choisir une région montre ses villes (chef-lieu indiqué) ; choisir une ville sans région, ou taper le nom d'une ville connue, remplit la région (« Région remplie d’après la ville : … »).
+- **Autre localité** (village, campement…) : on écrit son nom **et** on choisit la ville la plus proche dans la même région. On enregistre « Napié (près de Ferkessédougou) ». Même chose dans Vendre, Demander et la feuille rapide J'ai / Je cherche.
+- Changer de région : une ville d'une autre région est retirée ; une localité garde son nom mais doit être rattachée à une ville de la nouvelle région.
+- **Carte en relief** : une annonce « près de » est placée à la ville proche (position marquée approximative), plus au chef-lieu de la région.
+
 # Mise à jour — 17 octobre 2026 (démarrage deux fois plus rapide)
 
 Service worker : `mgci-v64`.

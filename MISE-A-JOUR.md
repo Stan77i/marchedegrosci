@@ -1,3 +1,14 @@
+# Mise à jour — 17 octobre 2026 (Mon compte : en-tête vivant, papier clair)
+
+Service worker : `mgci-v62`. Inspiré de la référence envoyée (en-tête coloré, contenu clair, activité par jour), adapté à notre identité.
+
+## Ce qui change
+- **En-tête en terre chaude** (dégradé terracotta → brique, fine trame) : grand avatar avec bouton appareil photo pour le changer, « Bonjour, Lévis », numéro, rôle et lieu, et deux grandes actions : **Messages** et **Négociations** (avec le nombre à traiter).
+- **Papier clair** qui remonte sur l'en-tête : les trois chiffres réels, la réputation, puis **Votre activité** regroupée par jour (« Aujourd’hui », « Hier », « 12 octobre ») : pastille ronde colorée par le sens (vert offre ou accord, jaune demande, bleu négociation), montant à droite (« 390 F / kg », « à discuter »), point orange si non lu ; « Tout afficher ».
+- **Votre compte** : des lignes sobres, icônes monochromes (Profil et avatar, Notifications, Sons, Confidentialité, Sécurité, **Écrire au Marché de Gros** comme service client, Tableau de bord pour l'administrateur), puis **Déconnexion** à part, en rouge.
+- Toutes les pages (profil, activité, notifications, réglages, sécurité, choix d'avatar, bienvenue) passent sur le même papier clair ; la barre du haut devient transparente sur l'en-tête puis se pose quand on fait défiler.
+- La logique des couleurs : la couleur dit le sens dans l'activité ; les réglages restent neutres.
+
 # Mise à jour — 17 octobre 2026 (Mon compte refait)
 
 Service worker : `mgci-v61`. Fichier : `v3/compte.js` (application et site).

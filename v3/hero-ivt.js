@@ -78,9 +78,9 @@
         <div class="hero__labels" role="tablist" aria-label="Produits"></div>
         <div class="hero__media"></div>
         <div class="hero__core" role="group" aria-label="J'ai ou je cherche ce produit">
-          <button type="button" class="hero__core-b hero__core-b--jai" data-match="jai" aria-haspopup="dialog" aria-expanded="false"><i aria-hidden="true">${ICO.offre}</i><span><b>J'ai</b><small>une offre</small></span></button>
+          <button type="button" class="hero__core-b hero__core-b--jai" data-match="jai" aria-haspopup="dialog" aria-expanded="false"><i aria-hidden="true">${ICO.offre}</i><span><b>J'ai</b><small>à vendre</small></span></button>
           <span class="hero__core-ln" aria-hidden="true">${ICO.match}</span>
-          <button type="button" class="hero__core-b hero__core-b--ch" data-match="cherche" aria-haspopup="dialog" aria-expanded="false"><i aria-hidden="true">${ICO.demande}</i><span><b>Je cherche</b><small>une offre</small></span></button>
+          <button type="button" class="hero__core-b hero__core-b--ch" data-match="cherche" aria-haspopup="dialog" aria-expanded="false"><i aria-hidden="true">${ICO.demande}</i><span><b>Je cherche</b><small>à acheter</small></span></button>
         </div>
         <a class="hero__deco hero__deco--a" href="#/"></a>
         <a class="hero__deco hero__deco--b" href="#/"></a>

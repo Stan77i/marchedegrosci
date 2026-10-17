@@ -1125,7 +1125,7 @@ body.dark footer#foot{margin-top:0;box-shadow:none}
 .ft-m{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--color-terre);color:var(--color-ivoire-t);font-family:var(--font-heading);font-size:22px}
 .ft-brand{display:flex;flex-direction:column;align-items:flex-start;gap:16px}
 .ft-brand p{margin:0;max-width:34ch;color:var(--color-sable);font-size:15px}
-.ft-soon{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 16px;border-radius:999px;font-size:13px;font-weight:700;color:var(--color-ivoire-t);background:color-mix(in srgb,var(--color-ivoire) 9%,transparent)}
+.ft-soon{border:0;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:999px;font-size:13px;font-weight:700;color:var(--color-ivoire-t);background:color-mix(in srgb,var(--color-ivoire) 9%,transparent)}
 .ft-soon .ico{width:16px;height:16px}
 .ft-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 .ft-cols h4{margin:0 0 8px;font-family:var(--font-body);font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--color-recolte)}
@@ -1247,7 +1247,7 @@ body.tzmode .tz{height:100svh}
     <div class="ft-brand">
       <a class="ft-logo" href="#/"><span class="ft-m" aria-hidden="true">M</span><span><b>Marché de Gros</b><small>Côte d'Ivoire</small></span></a>
       <p>Qui vend, où, combien. Producteurs et acheteurs se trouvent, puis se parlent en direct.</p>
-      <span class="ft-soon"><svg class="ico"><use href="#i-phone-off"/></svg>Contact bientôt disponible</span>
+      <button type="button" class="ft-soon" onclick="window.MDGMessages ? MDGMessages.ecrireMarche() : (window.MDGNuage && MDGNuage.open())"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></svg>Écrire au Marché de Gros</button>
     </div>
     <nav class="ft-cols" aria-label="Plan du site">
       <div><h4>Acheter</h4><a href="#/catalogue">Catalogue</a><a href="#/categories">Familles de produits</a><a href="#/carte">Carte du marché</a><a href="#/demande">Publier une demande</a></div>
@@ -1277,7 +1277,7 @@ body.tzmode .tz{height:100svh}
 <script src="v3/terre.js?v=20261011a"></script>
 <script src="v3/porte.js?v=20261012i"></script>
 <script src="v3/nuage.js?v=20261017c"></script>
-<script src="v3/sons.js?v=20261012b"></script>
+<script src="v3/sons.js?v=20261017i"></script>
 <script src="v3/negoce.js?v=20261017f"></script>
 <script src="v3/avatar.js?v=20261017c"></script>
 <script src="app/icones.js"></script>
@@ -1288,12 +1288,12 @@ body.tzmode .tz{height:100svh}
 <script src="v3/marche.js?v=20261011c"></script>
 <script src="v2/search.js"></script>
 <script src="v2/map.js"></script>
-<script src="v3/pages.js?v=20261011b"></script>
+<script src="v3/pages.js?v=20261017i"></script>
 <script src="v3/match.js?v=20261011n"></script>
 <script src="v3/acheter.js?v=20261011a"></script>
 <script src="v3/vendre.js?v=20261011n"></script>
 <script src="v3/scene-ivt.js?v=20261009o"></script>
-<script src="v3/hero-ivt.js?v=20261017c"></script>
+<script src="v3/hero-ivt.js?v=20261017i"></script>
 <script src="v3/annee.js?v=20261009z2"></script>
 <script src="v3/flou.js?v=20261011a"></script>
 <script src="v3/etat.js?v=20261010a"></script>

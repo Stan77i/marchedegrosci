@@ -1,0 +1,41 @@
+/* ═════════ Marché de Gros CI — composants de l'application (s'appuient sur css/mgci-tokens.css) ═════════
+   .an : la carte d'annonce, la même partout (fiche produit, Acheter). Pensée pour le commerce en gros :
+   quoi, combien, à quel prix, où, qui — puis une seule rangée d'actions. */
+.an { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: var(--r-lg); background: var(--carte); box-shadow: 0 0 0 1px var(--trait-doux); animation: mkFade .35s both; }
+.an-tete { display: flex; gap: 12px; align-items: flex-start; width: 100%; padding: 0; border: 0; background: none; color: var(--encre); text-align: left; cursor: pointer; font: inherit; }
+.an-tete:focus-visible, .an-act:focus-visible, .an-sig:focus-visible { outline: 2px solid var(--terre); outline-offset: 2px; border-radius: var(--r-sm); }
+.an-img { flex: none; width: 52px; height: 52px; border-radius: 12px; object-fit: cover; background: var(--sable-clair); }
+.an-img.sac { object-fit: contain; background: transparent; }
+.an-id { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.an-l1 { display: flex; align-items: baseline; gap: 8px; }
+.an-nom { flex: 1; min-width: 0; font-weight: 600; font-size: var(--t-lead); line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.an-quand { flex: none; font-size: var(--t-xs); color: var(--mute); white-space: nowrap; }
+.an-qui { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: var(--t-md); color: var(--texte-3); }
+.an-qui img { width: 18px; height: 18px; border-radius: 50%; flex: none; }
+.an-qui b { font-weight: 600; color: var(--texte-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.an-qui span { white-space: nowrap; }
+.an-forme { flex: none; width: 9px; height: 9px; }
+.an-chiffres { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); border-radius: 12px; background: var(--champ); box-shadow: inset 0 0 0 1px var(--trait-doux); overflow: hidden; }
+.an-chiffres > div { display: flex; flex-direction: column; gap: 2px; padding: 9px 12px; min-width: 0; }
+.an-chiffres > div + div { box-shadow: inset 1px 0 0 var(--trait-doux); }
+.an-chiffres small { font-size: var(--t-2xs); letter-spacing: .12em; text-transform: uppercase; font-weight: 600; color: var(--mute); }
+.an-chiffres b { font-size: var(--t-xl); font-weight: 700; color: var(--encre); line-height: 1.15; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.an-chiffres b em { font-style: normal; font-size: var(--t-sm); font-weight: 500; color: var(--texte-3); }
+.an-chiffres b.doux { font-size: var(--t-lead); font-weight: 600; color: var(--texte-3); }
+.an-infos { display: flex; flex-wrap: wrap; gap: 6px; }
+.an-infos span { display: inline-flex; align-items: center; gap: 5px; min-height: 26px; padding: 0 10px; border-radius: var(--r-rond); background: rgba(23, 21, 18, .05); font-size: var(--t-sm); color: var(--texte-2); }
+.an-infos .ok { background: rgba(108, 197, 140, .16); color: var(--offre-texte); }
+.an-infos .attn { background: rgba(226, 115, 91, .12); color: #9A3F2B; }
+.an-actions { display: flex; gap: 8px; align-items: center; }
+.an-act { flex: 1; min-width: 0; min-height: var(--cible); padding: 0 12px; border-radius: 22px; display: flex; align-items: center; justify-content: center; gap: 7px; font: 600 var(--t-base) var(--f-texte); cursor: pointer; white-space: nowrap; transition: transform var(--d-court) var(--courbe), background var(--d-court); }
+.an-act:active { transform: scale(.97); }
+.an-act svg { flex: none; }
+.an-act.plein { flex: 0 0 auto; padding: 0 18px; border: 0; background: var(--encre); color: var(--ivoire); }
+.an-act.plein:only-child, .an-actions > .an-act.plein:nth-last-child(2):first-child { flex: 1; }
+.an-act.trait { border: 1.5px solid var(--terre); background: transparent; color: var(--rouille-2); }
+.an-sig { flex: none; width: var(--cible); height: var(--cible); border-radius: 22px; border: 1px solid var(--trait); background: transparent; color: var(--mute); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.an-moi { display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 12px; background: rgba(23, 21, 18, .05); color: var(--texte-3); font-size: var(--t-md); }
+.an-moi i { width: 8px; height: 8px; border-radius: 50%; background: var(--terre); flex: none; }
+.an-alerte { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 12px; background: rgba(226, 115, 91, .1); color: #9A3F2B; font-size: var(--t-sm); line-height: 1.35; }
+@media (max-width: 360px) { .an-act { font-size: var(--t-md); padding: 0 10px; gap: 5px; } .an-act.plein { padding: 0 14px; } .an-act.trait svg { display: none; } .an-chiffres b { font-size: var(--t-lead); } .an { padding: 12px; } }
+@media (prefers-reduced-motion: reduce) { .an { animation: none; } .an-act { transition: none; } }

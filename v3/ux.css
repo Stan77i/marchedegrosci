@@ -105,10 +105,10 @@ button[aria-busy="true"]:disabled::after{content:"";display:inline-block;width:1
   :where(.btn,.fbtn,.ax-zp,.pp-chip,.vs-o,.nx-go,.nx-alt,.ng-go):active{transform:none}
 }
 
-/* ——— Tiroir de l'application (menu à gauche, comme Gmail) : icônes au trait, sans boîte, à la taille du texte ——— */
-.dr-ico>span,.dr-ico>span>svg{display:block}
-.dr-ico svg{width:26px;height:26px}
-.dr-ico img{width:30px;height:30px}
+/* ——— Tiroir de l'application : chaque icône est une tuile teintée par son sens (css/mgci-app.css .ui-tile) ; logo et photo à 38-40 px ——— */
+.dr-ico>.ui-tile{display:grid}
+.dr-ico>svg{display:block;width:38px;height:38px}
+.dr-ico img{display:block;width:40px;height:40px}
 
 /* ——— Application, roue des produits : le point « offre » scintille comme une luciole quand le produit a au moins une offre ———
    Une lueur verte qui s'allume et s'éteint à un rythme irrégulier (deux éclats rapprochés, puis un repos), jamais un clignotement sec.

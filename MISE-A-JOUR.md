@@ -1,3 +1,14 @@
+# Mise à jour — 17 octobre 2026 (icônes, carte figée, familles vivantes)
+
+Service worker : `mgci-v57`. Logique des icônes et couleurs : `docs/ICONES.md`.
+
+## Ce qui change
+- **Icônes** : un seul jeu (Lucide, celui de shadcn/ui), sans animation, dans des tuiles de 40 px teintées par leur sens : vert = je vends, jaune = je cherche/j'attends, violet = moi, bleu = échange entre deux personnes, terracotta = le marché, sable = l'aide. Menu, pages d'aide, notifications, boutons de la carte.
+- **Rôles de couleur façon shadcn** dans `css/mgci-tokens.css` (fond, texte, primaire, discret, bordure…), et primitives légères dans `css/mgci-app.css` (tuile, pastille, notification).
+- **Carte figée** : vue du dessus, nord en haut ; plus de rotation ni d'inclinaison (bouton 3D retiré, l'ombrage du relief reste) ; le pays prend toute la largeur ; on ne dézoome pas au-delà du pays et on ne glisse pas dans l'océan. Boutons en rangée en bas, sur la mer : ils ne cachent plus le pays. « Me localiser » : le bouton de la barre.
+- **Familles de produits** : sur chaque photo, le nombre d'offres (rond vert) et de demandes (carré jaune), et « Nouveau » quand une annonce est arrivée depuis la dernière visite. Les noms sous les photos s'affichent de nouveau.
+- **Notification en haut** à chaque nouvelle annonce d'un autre membre : « Nouvelle offre · Légumes et fruits — Tomate · 800 kg · Bouaké » ; toucher ouvre la fiche.
+
 # Mise à jour — 17 octobre 2026 (carte en relief, en ligne et hors connexion)
 
 Service worker : `mgci-v56`. Moteur : MapLibre GL 5.6.0 (dans `vendor/maplibre`, chargé seulement sur la page carte).

@@ -90,7 +90,7 @@
     const utiles = (d.offres || []).filter(x => mesDemandes.has(x.productSlug)).length + (d.demandes || []).filter(x => mesOffres.has(x.productSlug)).length;
     if (!utiles) return;
     signal('annonce');
-    if (window.MDGNuage) MDGNuage.toast(utiles > 1 ? utiles + ' nouvelles annonces sur vos produits.' : 'Une nouvelle annonce sur un de vos produits.');
+    if (window.MDGNuage && !window.MDGAnnonceHaut) MDGNuage.toast(utiles > 1 ? utiles + ' nouvelles annonces sur vos produits.' : 'Une nouvelle annonce sur un de vos produits.');
   });
 
   // réglages : panneau ouvert depuis « Mon compte »

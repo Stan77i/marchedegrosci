@@ -1,3 +1,13 @@
+# Mise à jour — 17 octobre 2026 (« J'ai » / « Je cherche » refaits)
+
+Service worker : `mgci-v58`.
+
+## Ce qui change
+- Les deux boutons sortent du cadre arrondi qui les enfermait : deux boutons séparés, posés sur la page.
+- Leur couleur ne change plus avec le produit : **J'ai = vert, 🧺** (l'offre, la marchandise) ; **Je cherche = jaune, 🛒** (la demande, l'acheteur) — les mêmes codes que « Offres ● / Demandes ■ » de la fiche et de la carte.
+- Texte encre sur couleur pleine : 8,7:1 sur le vert, 11,5:1 sur le jaune. Le nom du produit est lu par le lecteur d'écran (« J'ai tomate à vendre : publier une offre »).
+- Petits écrans (iPhone SE, 568 px de haut) : la roue se réduit un peu plus pour que les boutons ne soient plus coupés en bas.
+
 # Mise à jour — 17 octobre 2026 (icônes, carte figée, familles vivantes)
 
 Service worker : `mgci-v57`. Logique des icônes et couleurs : `docs/ICONES.md`.

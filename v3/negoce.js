@@ -412,7 +412,6 @@
     bg.querySelector('[data-back]').onclick = () => inbox();
     const $ = s => bg && bg.querySelector(s);
     const annonce = () => { const k = n.cible === 'offre' ? 'offres' : 'demandes'; return N().list(k).find(x => x._rid === n.cible_id); };
-    const phone = () => { if (me() !== n.auteur_id) return ''; const a = annonce(); const t = a && ((a.producer && a.producer.phone) || a.phone); return /^\d{10}$/.test(t || '') ? t : ''; };
     const ticket = (m, i, seen, anim) => {
       const R = roles(n), mine = m.auteur_id === me(), who = mine ? 'Vous' : Le(R[m.auteur_id]), u = n.unite || 'unité';
       const cls = (mine ? ' me' : '') + (anim && i >= seen ? ' nx-new' : ''), when = `<time datetime="${m.created_at}">${ago(m.created_at)}</time>`;
@@ -425,11 +424,11 @@
       return `<div class="nx-tk${cls} is-${iss || 'x'}"><div class="who">${mk(R[m.auteur_id])}${who} ${mine ? 'proposez' : 'propose'}<span class="nx-tag ${IS[1]}">${IS[0]}</span></div>
         <div class="amt">${fmt(m.prix)} <small>F / ${esc(u)}</small></div>${m.quantite ? `<div class="qty">${fq(m.quantite)} ${esc(u)} · total ${fmt(m.prix * m.quantite)} F</div>` : ''}${m.texte ? `<div class="t">${esc(m.texte)}</div>` : ''}${when}</div>`;
     };
-    const deal = () => { const ph = phone(), u = n.unite || 'unité', q = n.quantite_finale; return `<div class="nx-deal" role="status"><span class="nx-tag ok">Accord conclu le ${jour(n.conclu_le || n.updated_at)}</span>
+    const deal = () => { const u = n.unite || 'unité', q = n.quantite_finale; return `<div class="nx-deal" role="status"><span class="nx-tag ok">Accord conclu le ${jour(n.conclu_le || n.updated_at)}</span>
       <b>${q ? fq(q) + ' ' + esc(u) + ' × ' : ''}${fmt(n.prix_final)} F / ${esc(u)}</b>${q ? `<div class="nx-dtot">Total convenu : ${fmt(n.prix_final * q)} F</div>` : ''}
       ${n.conditions_finales ? `<p class="nx-cond"><span>Conditions</span>${esc(n.conditions_finales)}</p>` : ''}
       <p>Ces conditions sont figées. Convenez maintenant de la livraison et du paiement : rien n’est encore payé ni livré. Voyez la marchandise avant de payer.</p>
-      ${ph ? `<a href="tel:+225${ph}">Appeler</a><a class="ghost" href="https://wa.me/225${ph}?text=${encodeURIComponent('Bonjour, nous avons trouvé un accord sur Marché de Gros : ' + (n.produit || '') + (q ? ', ' + fq(q) + ' ' + u : '') + ' à ' + fmt(n.prix_final) + ' F / ' + u + '.')}" target="_blank" rel="noopener">WhatsApp</a>` : ''}</div>`; };
+      ${window.MDGMessages ? `<a href="#" data-deal-dm>Continuer dans les messages</a><p class="nx-cond"><span>Restez dans l’application</span>Gardez vos échanges ici : en cas de litige ou de vol, le Marché de Gros peut vérifier. Hors de l’application, personne ne peut vous aider.</p>` : ''}</div>`; };
     const paint = anim => {
       if (!bg || !n) return;
       const lui = autre(monRole(n)), u = n.unite || 'unité', proprio = me() === n.proprio_id;
@@ -446,6 +445,7 @@
       $('.nx-bottom').insertAdjacentHTML('beforeend', `<div class="nx-plus">${R ? `<button type="button" class="nx-pl" data-noter><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.6l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></svg>Noter ${esc(av.nom || leLa(lui))}</button><button type="button" class="nx-pl" data-profil>Voir son profil</button>` : ''}${window.MDGMessages ? '<button type="button" class="nx-pl" data-ecrire>Écrire en privé</button>' : ''}<button type="button" class="nx-pl" data-cacher>Retirer de ma liste</button></div>`);
       const bN = $('[data-noter]'), bP = $('[data-profil]'), bC = $('[data-cacher]'), bE = $('[data-ecrire]');
       if (bE) bE.onclick = () => { close(); MDGMessages.ecrire(idLui, { nom: av.nom || 'Membre' }); };
+      const bD = $('[data-deal-dm]'); if (bD) bD.onclick = e => { e.preventDefault(); close(); MDGMessages.ecrire(idLui, { nom: av.nom || 'Membre' }); };
       if (bN) bN.onclick = () => R.noter(idLui, av.nom || '');
       if (bP) bP.onclick = () => R.profil(idLui, { nom: av.nom || 'Membre', uri: avDe(n, 72).uri || '' });
       if (bC) bC.onclick = async () => { try { await masquer(n.id); inbox(); } catch (_) { N().toast('Impossible pour l’instant. Réessayez.'); } };

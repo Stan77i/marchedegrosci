@@ -52,7 +52,7 @@
     const t = tel10(tel); if (!t) throw new Error('Numéro à 10 chiffres, par exemple 07 01 02 03 04.');
     if (!/^\d{6}$/.test(code)) throw new Error('Le code secret fait 6 chiffres.');
     const j = await api('/auth/v1/token?grant_type=password', { method: 'POST', body: { email: email(t), password: code } }).catch(e => { throw e.status === 400 ? new Error('Numéro ou code incorrect.') : e; });
-    const s = keep(j); s.user.tel = s.user.tel || t; W(K.s, s); say('compte'); apresConnexion(); return s;
+    const s = keep(j); s.user.tel = s.user.tel || t; W(K.s, s); basculer(s.user.id); say('compte'); apresConnexion(); return s;
   }
   async function signUp(tel, code) {
     const t = tel10(tel); if (!t) throw new Error('Numéro à 10 chiffres, par exemple 07 01 02 03 04.');
@@ -61,7 +61,7 @@
     const j = await api('/auth/v1/signup', { method: 'POST', body: { email: email(t), password: code, data: { tel: t } } })
       .catch(e => { throw /already|registered|exists/i.test(e.message) ? new Error('Ce numéro a déjà un compte. Choisissez « J’ai déjà un compte ».') : e; });
     if (!j || !j.access_token) throw new Error('Compte créé, mais la connexion a échoué. Réessayez avec « J’ai déjà un compte ».');
-    const s = keep(j); s.user.tel = t; W(K.s, s); say('compte'); apresConnexion();
+    const s = keep(j); s.user.tel = t; W(K.s, s); basculer(s.user.id); say('compte'); apresConnexion();
     s.secours = await rpc('creer_secours').catch(() => null); // montré une seule fois
     return s;
   }
@@ -74,10 +74,47 @@
     const s = await signIn(t, code); s.secours = neuve; return s;
   }
   async function isAdmin() { if (!session()) return false; try { const a = !!(await rpc('est_admin')); W(K.a, a); return a; } catch (_) { return !!J(K.a, false); } }
+
+  /* ——— plusieurs comptes sur le même téléphone ———
+     « Mes annonces » (mdg-v2:*) appartiennent au compte noté dans K.own. Quand un autre compte se connecte, les annonces du
+     précédent sont rangées de côté (mdg-compte:<id>:*) et celles du nouveau compte reviennent. Une annonce qui n'est pas encore
+     partie (publiée hors connexion, juste avant de se connecter) suit le compte qui se connecte : c'est lui qui vient de la publier. */
+  const KOWN = 'mdg-nuage:proprio', KINC = 'mdg-compte:inconnu', sac = u => 'mdg-compte:' + u + ':';
+  function basculer(uid) {
+    if (!uid) return false;
+    const cur = J(KOWN, null);
+    if (cur === uid) return false;
+    if (!cur) { W(KOWN, uid); return false; } // premier compte connu sur ce téléphone : la vérification (verifier) trie le reste
+    const p = J(K.p, {}), e = J(K.e, {}), garde = {}, suit = {};
+    for (const k of ['offres', 'demandes']) { const L = local(k); garde[k] = L.filter(x => p[k + ':' + x.id]); suit[k] = L.filter(x => !p[k + ':' + x.id]); }
+    W(sac(cur) + 'offres', garde.offres); W(sac(cur) + 'demandes', garde.demandes); W(sac(cur) + 'pousse', p); W(sac(cur) + 'empreinte', e);
+    for (const k of ['offres', 'demandes']) { W('mdg-v2:' + k, J(sac(uid) + k, []).concat(suit[k])); localStorage.removeItem(sac(uid) + k); }
+    W(K.p, J(sac(uid) + 'pousse', {})); W(K.e, J(sac(uid) + 'empreinte', {}));
+    localStorage.removeItem(sac(uid) + 'pousse'); localStorage.removeItem(sac(uid) + 'empreinte');
+    W(KOWN, uid); say('mes'); return true;
+  }
+  // garde-fou (téléphones mis à jour depuis une ancienne version) : une annonce déjà envoyée qui n'est pas à ce compte sur le serveur
+  // est rangée de côté ; elle revient sur ce téléphone quand son compte se reconnecte.
+  async function verifier(s) {
+    const p = J(K.p, {}), e = J(K.e, {}), ids = new Set();
+    for (const k of ['offres', 'demandes']) { const rows = await api('/rest/v1/' + KIND[k] + '?select=id&user_id=eq.' + s.user.id + '&limit=1000', { auth: true }); (rows || []).forEach(r => ids.add(String(r.id))); }
+    let inc = J(KINC, []), bouge = false;
+    for (const k of ['offres', 'demandes']) {
+      const L = local(k), reste = [];
+      for (const x of L) { const key = k + ':' + x.id; if (p[key] && !ids.has(String(p[key]))) { inc.push({ k, x, pid: p[key], h: e[key] }); delete p[key]; delete e[key]; bouge = true; } else reste.push(x); }
+      const rev = inc.filter(i => i.k === k && ids.has(String(i.pid)) && !reste.some(y => y.id === i.x.id));
+      rev.forEach(i => { reste.push(i.x); p[k + ':' + i.x.id] = i.pid; if (i.h) e[k + ':' + i.x.id] = i.h; bouge = true; });
+      inc = inc.filter(i => !rev.includes(i));
+      if (bouge) W('mdg-v2:' + k, reste);
+    }
+    if (bouge) { W(K.p, p); W(K.e, e); W(KINC, inc.slice(-60)); say('mes'); }
+  }
   // après connexion : envoyer ce qui attend, puis rapatrier mes annonces publiées depuis un autre téléphone
   async function apresConnexion() { await sync(); await pullMine(); isAdmin().then(() => say('compte')); }
   async function pullMine() {
     const s = session(); if (!s || !navigator.onLine) return 0; let n = 0;
+    basculer(s.user.id);
+    try { await verifier(s); } catch (x) { if (x.code !== 'auth') console.warn('[nuage] vérification des annonces impossible', x.message); }
     try {
       const p = J(K.p, {}), e = J(K.e, {});
       for (const k of ['offres', 'demandes']) {
@@ -101,12 +138,12 @@
 
   /* ——— les annonces des autres (cache local) ——— */
   const fromRow = {
-    offres: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, _uid: r.user_id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', price: num(r.price), availableFrom: r.available_from || 'maintenant', createdAt: r.created_at, producer: { name: r.seller_name || 'Vendeur', phone: r.phone || '' }, producerName: r.seller_name || 'Vendeur', agent: r.agent || '', negociable: r.negociable !== false }),
-    demandes: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, _uid: r.user_id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', budget: num(r.budget), deadline: r.deadline || 'semaine', buyerType: r.buyer_type || 'Acheteur', buyerName: r.buyer_name || 'Acheteur', phone: r.phone || '', buyerContact: { tel: r.phone || '' }, createdAt: r.created_at, negociable: r.negociable !== false }),
+    offres: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, _uid: r.user_id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', price: num(r.price), availableFrom: r.available_from || 'maintenant', createdAt: r.created_at, producer: { name: r.seller_name || 'Vendeur', phone: r.phone || '' }, producerName: r.seller_name || 'Vendeur', agent: r.agent || '', negociable: r.negociable !== false, lieu: r.lieu || '' }),
+    demandes: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, _uid: r.user_id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', budget: num(r.budget), deadline: r.deadline || 'semaine', buyerType: r.buyer_type || 'Acheteur', buyerName: r.buyer_name || 'Acheteur', phone: r.phone || '', buyerContact: { tel: r.phone || '' }, createdAt: r.created_at, negociable: r.negociable !== false, lieu: r.lieu || '' }),
   };
   const toRow = {
-    offres: o => ({ client_id: txt(o.id, 60), product_slug: txt(o.productSlug, 80), product_label: txt(o.productLabel || o.productName, 120), region_slug: txt(o.regionSlug, 60), city: txt(o.city, 80), quantity: num(o.quantity), unit: txt(o.unit, 20), price: num(o.price), available_from: txt(o.availableFrom, 40), seller_name: txt((o.producer && o.producer.name) || o.producerName, 80), phone: tel10((o.producer && o.producer.phone) || o.phone), agent: txt(o.agent && typeof o.agent === 'object' ? (o.agent.name || 'Agent') : o.agent, 80) || null, negociable: o.negociable !== false }),
-    demandes: d => ({ client_id: txt(d.id, 60), product_slug: txt(d.productSlug, 80), product_label: txt(d.productLabel || d.productName, 120), region_slug: txt(d.regionSlug, 60), city: txt(d.city, 80), quantity: num(d.quantity), unit: txt(d.unit, 20), budget: num(d.budget), deadline: txt(d.deadline, 40), buyer_type: txt(d.buyerType, 60), buyer_name: txt(d.buyerName, 80), phone: tel10(d.phone || (d.buyerContact && d.buyerContact.tel)), negociable: d.negociable !== false }),
+    offres: o => ({ client_id: txt(o.id, 60), product_slug: txt(o.productSlug, 80), product_label: txt(o.productLabel || o.productName, 120), region_slug: txt(o.regionSlug, 60), city: txt(o.city, 80), quantity: num(o.quantity), unit: txt(o.unit, 20), price: num(o.price), available_from: txt(o.availableFrom, 40), seller_name: txt((o.producer && o.producer.name) || o.producerName, 80), phone: null, lieu: txt(o.lieu, 20) || null, agent: txt(o.agent && typeof o.agent === 'object' ? (o.agent.name || 'Agent') : o.agent, 80) || null, negociable: o.negociable !== false }),
+    demandes: d => ({ client_id: txt(d.id, 60), product_slug: txt(d.productSlug, 80), product_label: txt(d.productLabel || d.productName, 120), region_slug: txt(d.regionSlug, 60), city: txt(d.city, 80), quantity: num(d.quantity), unit: txt(d.unit, 20), budget: num(d.budget), deadline: txt(d.deadline, 40), buyer_type: txt(d.buyerType, 60), buyer_name: txt(d.buyerName, 80), phone: null, lieu: txt(d.lieu, 20) || null, negociable: d.negociable !== false }),
   };
   // annonces des autres seulement : celles publiées depuis ce téléphone sont déjà dans « mes annonces »
   function list(kind) {
@@ -133,6 +170,7 @@
   const waiting = () => { const p = J(K.p, {}); return ['offres', 'demandes'].reduce((n, k) => n + local(k).filter(x => x.productSlug && x.regionSlug && !p[k + ':' + x.id]).length, 0); };
   async function sync() {
     if (!navigator.onLine || busy & 2 || !session()) return false; busy |= 2; let changed = false;
+    basculer(session().user.id);
     try {
       const p = J(K.p, {}), em = J(K.e, {});
       for (const k of ['offres', 'demandes']) {

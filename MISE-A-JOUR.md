@@ -1,3 +1,15 @@
+# Mise à jour — 17 octobre 2026 (1/4 : comptes, contact dans l'application, villes)
+
+Service worker : `mgci-v49`. Base Supabase déjà mise à jour (`supabase/schema-9-lieu-contact.sql`).
+
+## Ce qui change
+- **Plusieurs comptes sur un téléphone** : « Mes publications » ne montre plus les annonces d'un autre compte. Au changement de compte, les annonces du précédent sont rangées de côté et reviennent quand il se reconnecte (`v3/nuage.js`).
+- **On ne s'appelle plus soi-même** : sur sa propre annonce, plus de bouton de contact, seulement « C'est votre annonce ».
+- **Contact dans l'application** : les boutons Appeler / WhatsApp sont remplacés par « Écrire au vendeur / à l'acheteur » (messagerie de l'application). Le numéro n'est plus publié avec les annonces (le serveur l'efface), il reste attaché au compte. Après un accord, « Continuer dans les messages » remplace l'appel.
+- **Numéro du compte** : plus de champ téléphone dans Vendre, Demander et la feuille rapide ; c'est le numéro d'inscription, non modifiable.
+- **Région ↔ ville** : choisir une région affiche ses villes ; choisir ou écrire une ville remplit la région (`app/villes.js`, 14 districts). Ville ajoutée aussi dans Demander et la feuille rapide.
+- **Publier ailleurs que chez soi** : si le lieu diffère du profil, on précise « Je suis intermédiaire » ou « J'ai un stock ici aussi » (colonne `lieu`). Sur la carte, plus de lien « compatibles » entre deux annonces de la même personne.
+
 # Mise à jour — 12 octobre 2026 (connexion, en-tête, avatar, négociation, carte)
 
 Déposer le contenu de ce dossier à la racine du dépôt `Stan77i/marchedegrosci` (branche `main`), en gardant les sous-dossiers. Service worker : `mgci-v19` (les téléphones prennent la nouvelle version au prochain chargement).

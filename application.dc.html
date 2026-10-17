@@ -1085,6 +1085,9 @@ class Component extends DCLogic {
         const M = ss && window.MDGMessages, dmN = M ? M.unread() : 0;
         if (M) compte.push(ln({ ico: h('svg', { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: '#F5F0E6', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }, h('path', { d: 'M4 5.5h16v10H9l-5 4z' }), h('path', { d: 'M8 9.5h8M8 12.5h5' })),
             t: 'Messages', s: 'Effacés après ' + M.JOURS + ' jours', n: dmN || '', nBg: '#E07A3F', nFg: '#171512', go: () => { this.setState({ menu: false }); setTimeout(() => M.boite(), 250); } }));
+        // écrire au Marché de Gros (ou, pour l'administrateur, à tous les membres)
+        if (M && M.ecrireMarche) { const adm = !!(window.MDGNuage && ls('mdg-nuage:admin') === true);
+          compte.push(ln({ ico: logoIco(26), t: adm ? 'Message à tous les membres' : 'Écrire au Marché de Gros', s: adm ? 'Au nom du Marché de Gros, avec le logo' : 'Une question, un problème : l\u2019équipe répond', go: () => { this.setState({ menu: false }); setTimeout(() => adm ? M.diffuser() : M.ecrireMarche(), 250); } })); }
         compte.push(pg('pubs', 'Mes publications', 'pubs', { n: mine.length || '' }));
         return [
           { sep: false, items: compte },

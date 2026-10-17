@@ -3,7 +3,10 @@
    Chaque message est effacé 7 jours après son envoi (base gratuite : pas de surcharge) ; on peut bloquer quelqu'un.
    Serveur : supabase/schema-8.sql (dm_ouvrir, dm_envoyer, dm_liste, dm_messages, dm_lu, dm_masquer, dm_bloquer) ;
    notification sur le téléphone : fonction Edge « pousser » (déclencheur push_dm).
-   API : MDGMessages.boite() · ecrire(uid, { nom, avatar }) · conversation(id) · unread() · refresh()
+   Les administrateurs écrivent au nom du « Marché de Gros » (logo, mention Officiel) ; chacun peut écrire au Marché de Gros ;
+   un administrateur peut écrire à tous les membres d'un coup (supabase/schema-10-admin-messages.sql).
+   Un numéro écrit dans un message est masqué par le serveur et signalé aux administrateurs : les échanges restent ici.
+   API : MDGMessages.boite() · ecrire(uid, { nom, avatar }) · ecrireMarche() · diffuser() · conversation(id) · unread() · refresh()
    Événement : mdg:dm { unread } quand le nombre de conversations à lire change. */
 (function () {
   'use strict';
@@ -15,7 +18,11 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const me = () => { const s = N() && N().session(); return s && s.user && s.user.id; };
   // l'avatar : celui que la liste du serveur donne, sinon celui des profils publics déjà connus (v3/compte.js), sinon les initiales
-  const av = (uid, code, nom, t) => { const u = !code && uid && window.MDGCompte ? MDGCompte.avatar(uid, { size: t, nom: nom || '?' }).uri : A() ? A().uri(code, { size: t, nom: nom || '?', seed: uid }) : '';
+  // le logo du Marché de Gros (messages de l'administration)
+  const LOGO = t => `<svg width="${t}" height="${t}" viewBox="0 0 38 38" aria-hidden="true" style="flex:none;border-radius:50%"><circle cx="19" cy="19" r="19" fill="#B85C38"/><g transform="translate(19 19) scale(.058) translate(-256 -256)" fill="none" stroke="#F5F0E6" stroke-linecap="round" stroke-linejoin="round"><path d="M394.6 117.4A196 196 0 1 0 452 256H372" stroke-width="26"/><circle cx="394.6" cy="117.4" r="22" fill="#F5F0E6" stroke="none"/><path d="M178 338V182L256 292L334 182V338" stroke-width="36"/></g></svg>`;
+  const OFF = '<span class="dm-off">Officiel</span>';
+  const admin = () => { try { return JSON.parse(localStorage.getItem('mdg-nuage:admin')) === true; } catch (_) { return false; } };
+  const av = (uid, code, nom, t, officiel) => { if (officiel) return LOGO(t); const u = !code && uid && window.MDGCompte ? MDGCompte.avatar(uid, { size: t, nom: nom || '?' }).uri : A() ? A().uri(code, { size: t, nom: nom || '?', seed: uid }) : '';
     return u ? `<img src="${u}" width="${t}" height="${t}" alt="">` : ''; };
   const heure = t => new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   const jour = t => { const d = new Date(t), a = new Date(); a.setHours(0, 0, 0, 0); const j = Math.round((a - new Date(d).setHours(0, 0, 0, 0)) / 864e5);
@@ -33,7 +40,7 @@
     if (!N() || !N().session()) { if (liste.length) { liste = []; W(KL, []); } annoncer(); return liste; }
     if (!navigator.onLine) { annoncer(); return liste; }
     try {
-      const avant = new Map(liste.map(c => [c.id, c.updated_at])), r = await N().rpc('dm_liste') || [];
+      const avant = new Map(liste.map(c => [c.id, c.updated_at])), r = await N().rpc('dm_liste2').catch(e => /dm_liste2|schema cache|Could not find|404/i.test(e.message + e.status) ? N().rpc('dm_liste') : Promise.reject(e)) || [];
       if (!premier) r.filter(c => c.non_lu && c.id !== ouverte && avant.get(c.id) !== c.updated_at).forEach(c => {
         N().toast(c.autre_nom + ' vous a écrit : « ' + String(c.dernier_texte || '').slice(0, 60) + (String(c.dernier_texte || '').length > 60 ? '…' : '') + ' »');
         window.MDGSons && MDGSons.signal('proposition');
@@ -85,6 +92,15 @@
 .dm-c time{color:var(--mute);font-size:12px;text-align:right}.dm-c i{grid-column:3;justify-self:end;width:10px;height:10px;border-radius:50%;background:var(--acc)}
 .dm-c.neuf b,.dm-c.neuf small{color:var(--ink);font-weight:600}.dm-c.neuf time{color:#F3B48A}
 .dm-l .sw{border-radius:18px}.dm-l .sw+.sw{margin-top:2px}.dm-l .sw>.sw-row{background-color:#1d1a15!important}
+.dm-off{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:rgba(224,122,63,.2);color:#F3B48A;font:700 10.5px/1.6 Jost,sans-serif;letter-spacing:.06em;text-transform:uppercase;vertical-align:2px}
+.dm-act{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.dm-act button,.dm-act a{flex:1 1 200px;display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 14px;border:1px solid rgba(245,240,230,.14);border-radius:18px;background:rgba(245,240,230,.04);color:var(--ink);font:600 14.5px Jost,sans-serif;text-align:left;text-decoration:none;cursor:pointer}
+.dm-act small{display:block;color:var(--mute);font-size:12px;font-weight:400}
+.dm-dif{display:flex;flex-direction:column;gap:12px;padding:16px}
+.dm-dif textarea{min-height:160px;padding:14px 16px;border:1px solid rgba(245,240,230,.16);border-radius:18px;background:#14120f;color:var(--ink);font:400 16px/1.45 Jost,sans-serif;resize:vertical}
+.dm-dif textarea:focus{outline:none;border-color:var(--acc)}
+.dm-dif .go{min-height:52px;border:0;border-radius:999px;background:var(--acc);color:#171512;font:700 15.5px Jost,sans-serif;cursor:pointer}.dm-dif .go:disabled{opacity:.5}
+.dm-dif p{margin:0;color:var(--mute);font-size:13.5px;line-height:1.5}
 .dm-vide{padding:56px 18px;text-align:center;color:var(--mute);line-height:1.55}.dm-vide svg{width:54px;height:54px;margin:0 auto 14px;display:block;fill:none;stroke:#F3B48A;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .dm-vide b{display:block;margin:0 0 6px;font:500 25px/1.2 'Cormorant Garamond',serif;color:var(--ink)}
 .dm-vide button{margin-top:16px;min-height:46px;padding:0 18px;border:1px solid rgba(245,240,230,.22);border-radius:999px;background:none;color:var(--ink);font:600 14.5px Jost,sans-serif;cursor:pointer}
@@ -128,7 +144,14 @@
   // ——— la boîte : toutes mes conversations ———
   function boite() {
     if (!N() || !N().session()) { N() && N().open('Connectez-vous pour voir vos messages.'); return; }
-    const b = feuille(`<div class="dm-h"><h2 class="dm-t">Messages<small>Effacés ${JOURS} jours après l’envoi</small></h2><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div><div class="dm-b"><div class="dm-l" data-l></div></div>`, 'Messages');
+    const b = feuille(`<div class="dm-h"><h2 class="dm-t">Messages<small>Effacés ${JOURS} jours après l’envoi</small></h2><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div><div class="dm-b"><div class="dm-act" data-act></div><div class="dm-l" data-l></div></div>`, 'Messages');
+    const actions = () => { const z = b.querySelector('[data-act]'); if (!z) return;
+      z.innerHTML = admin()
+        ? `<button type="button" data-tous>${LOGO(34)}<span>Message à tous les membres<small>Au nom du Marché de Gros, avec le logo</small></span></button><a href="admin.html#messages">${I.bulle}<span>Toutes les conversations<small>Lire, alertes de sortie de l’application</small></span></a>`
+        : `<button type="button" data-marche>${LOGO(34)}<span>Écrire au Marché de Gros<small>Une question, un problème, un vol : l’équipe vous répond ici</small></span></button>`;
+      const t = z.querySelector('[data-tous]'); if (t) t.onclick = () => diffuser();
+      const m = z.querySelector('[data-marche]'); if (m) m.onclick = () => ecrireMarche(); };
+    actions(); N().isAdmin().then(() => { if (bg === b) actions(); });
     const dessiner = () => {
       const box = b.querySelector('[data-l]'); if (!box) return; const u = me();
       if (!liste.length) {
@@ -136,7 +159,7 @@
         const t = box.querySelector('[data-top]'); if (t) t.onclick = () => { fermer(); MDGRep.classement(); };
         return;
       }
-      box.innerHTML = liste.map(c => `<button type="button" class="dm-c${c.non_lu ? ' neuf' : ''}" data-id="${c.id}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 46)}<b>${esc(c.autre_nom)}</b><time>${quand(c.updated_at)}</time><small>${c.dernier_par === u ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small>${c.non_lu ? '<i aria-label="Non lu"></i>' : ''}</button>`).join('');
+      box.innerHTML = liste.map(c => `<button type="button" class="dm-c${c.non_lu ? ' neuf' : ''}" data-id="${c.id}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 46, c.officiel)}<b>${esc(c.autre_nom)}${c.officiel ? OFF : ''}</b><time>${quand(c.updated_at)}</time><small>${c.dernier_par === u ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small>${c.non_lu ? '<i aria-label="Non lu"></i>' : ''}</button>`).join('');
       box.querySelectorAll('[data-id]').forEach(el => {
         el.onclick = () => conversation(el.dataset.id, true);
         if (window.MDGNegoce && MDGNegoce.glisser) MDGNegoce.glisser(el, async () => { await N().rpc('dm_masquer', { p_discussion: el.dataset.id }); liste = liste.filter(c => c.id !== el.dataset.id); W(KL, liste); annoncer(); N().toast('Conversation retirée de votre liste. Elle reviendra si la personne vous écrit.'); });
@@ -158,8 +181,31 @@
     if (uid === me()) { N().toast('C’est votre propre compte.'); return; }
     try {
       const id = await N().rpc('dm_ouvrir', { p_autre: uid });
-      conversation(id, false, { autre_id: uid, autre_nom: o.nom || 'Membre', autre_avatar: o.avatar || null });
+      conversation(id, false, { autre_id: uid, autre_nom: o.nom || 'Membre', autre_avatar: o.avatar || null, officiel: !!o.officiel });
     } catch (x) { N().toast(err(x)); }
+  }
+
+  // ——— écrire au Marché de Gros (un administrateur répond) ———
+  async function ecrireMarche() {
+    if (!N() || !N().session()) { N() && N().open('Connectez-vous pour écrire au Marché de Gros.'); return; }
+    try { const uid = await N().rpc('contact_marche'); if (!uid) throw new Error('Aucun administrateur pour l’instant.'); if (uid === me()) { N().toast('Vous êtes l’administrateur : écrivez à un membre, ou à tous.'); return; } ecrire(uid, { nom: 'Marché de Gros', officiel: true }); }
+    catch (x) { N().toast(/contact_marche|schema cache|Could not find/i.test(String(x.message)) ? 'Pas encore activé sur le serveur.' : err(x)); }
+  }
+  // ——— l'administration écrit à tous les membres ———
+  function diffuser() {
+    if (!admin()) { N().toast('Réservé aux administrateurs.'); return; }
+    const b = feuille(`<div class="dm-h"><button type="button" class="dm-ib" data-back aria-label="Retour aux messages">${I.retour}</button><h2 class="dm-t">Message à tous<small>Au nom du Marché de Gros</small></h2><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div>
+      <div class="dm-b"><div class="dm-dif"><div style="display:flex;align-items:center;gap:10px">${LOGO(40)}<b>Marché de Gros</b>${OFF}</div>
+      <textarea maxlength="2000" placeholder="Bonjour, …" aria-label="Message à tous les membres"></textarea>
+      <p>Chaque membre le reçoit dans ses messages, avec le logo, et une notification sur son téléphone. Il peut vous répondre.</p>
+      <button type="button" class="go" disabled>Envoyer à tous les membres</button></div></div>`, 'Message à tous les membres');
+    b.querySelector('[data-back]').onclick = () => boite();
+    const ta = b.querySelector('textarea'), go = b.querySelector('.go');
+    ta.oninput = () => { go.disabled = !ta.value.trim(); };
+    go.onclick = async () => { const t = ta.value.trim(); if (!t || !confirm('Envoyer ce message à tous les membres ?')) return; go.disabled = true; go.textContent = 'Envoi…';
+      try { const n = await N().rpc('admin_diffuser', { p_texte: t }); N().toast('Message envoyé à ' + n + ' membre' + (n > 1 ? 's' : '') + '.'); boite(); }
+      catch (x) { go.disabled = false; go.textContent = 'Envoyer à tous les membres'; N().toast(err(x)); } };
+    setTimeout(() => ta.focus(), 200);
   }
 
   // ——— une conversation ———
@@ -169,14 +215,14 @@
     if (!c.autre_id) { await refresh(); c = liste.find(x => x.id === id) || c; }
     const u = me(); ouverte = id;
     const b = feuille(`<div class="dm-h">${depuisBoite ? `<button type="button" class="dm-ib" data-back aria-label="Retour aux messages">${I.retour}</button>` : ''}
-      <button type="button" class="dm-qui" data-profil aria-label="Voir le profil de ${esc(c.autre_nom)}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 40)}<span><b>${esc(c.autre_nom || 'Membre')}</b><small data-rep>Voir son profil</small></span></button>
+      <button type="button" class="dm-qui" data-profil aria-label="${c.officiel ? 'Marché de Gros' : 'Voir le profil de ' + esc(c.autre_nom)}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 40, c.officiel)}<span><b>${esc(c.autre_nom || 'Membre')}${c.officiel ? OFF : ''}</b><small data-rep>${c.officiel ? 'L’équipe du Marché de Gros' : 'Voir son profil'}</small></span></button>
       <button type="button" class="dm-ib" data-plus aria-label="Plus d’options" aria-haspopup="menu">${I.plus}</button><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div>
-      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les messages s’effacent ${JOURS} jours après leur envoi.</div><div data-msgs></div></div>
+      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les messages s’effacent ${JOURS} jours après leur envoi. Restez ici : les numéros sont masqués et le Marché de Gros peut vérifier en cas de problème.</div><div data-msgs></div></div>
       <div class="dm-f" data-f></div>`, 'Conversation avec ' + (c.autre_nom || 'un membre'));
     const corps = b.querySelector('[data-b]'), zone = b.querySelector('[data-msgs]'), pied = b.querySelector('[data-f]');
     if (depuisBoite) b.querySelector('[data-back]').onclick = () => boite();
-    b.querySelector('[data-profil]').onclick = () => { if (window.MDGRep) { fermer(); MDGRep.profil(c.autre_id, { nom: c.autre_nom, avatar: c.autre_avatar }); } };
-    if (window.MDGRep && MDGRep.charger) { const r = MDGRep.resume && MDGRep.resume(c.autre_id); if (r && r.n) b.querySelector('[data-rep]').textContent = MDGRep.texteNote(r) + ' · voir son profil'; }
+    b.querySelector('[data-profil]').onclick = () => { if (c.officiel) return; if (window.MDGRep) { fermer(); MDGRep.profil(c.autre_id, { nom: c.autre_nom, avatar: c.autre_avatar }); } };
+    if (!c.officiel && window.MDGRep && MDGRep.charger) { const r = MDGRep.resume && MDGRep.resume(c.autre_id); if (r && r.n) b.querySelector('[data-rep]').textContent = MDGRep.texteNote(r) + ' · voir son profil'; }
 
     let msgs = [], attente = [];
     const enBas = () => corps.scrollHeight - corps.scrollTop - corps.clientHeight < 80;
@@ -242,7 +288,7 @@
     b.querySelector('[data-plus]').onclick = e => {
       e.stopPropagation(); const vieux = b.querySelector('.dm-menu'); if (vieux) { vieux.remove(); return; }
       const m = document.createElement('div'); m.className = 'dm-menu'; m.setAttribute('role', 'menu');
-      m.innerHTML = `${window.MDGRep ? '<button type="button" role="menuitem" data-a="profil">Voir son profil et sa note</button>' : ''}<button type="button" role="menuitem" data-a="retirer">Retirer de ma liste</button><button type="button" role="menuitem" class="rouge" data-a="bloquer">${c.je_bloque ? 'Débloquer' : 'Bloquer'} ${esc(c.autre_nom)}</button>`;
+      m.innerHTML = c.officiel ? '<button type="button" role="menuitem" data-a="retirer">Retirer de ma liste</button>' : `${window.MDGRep ? '<button type="button" role="menuitem" data-a="profil">Voir son profil et sa note</button>' : ''}<button type="button" role="menuitem" data-a="retirer">Retirer de ma liste</button><button type="button" role="menuitem" class="rouge" data-a="bloquer">${c.je_bloque ? 'Débloquer' : 'Bloquer'} ${esc(c.autre_nom)}</button>`;
       b.querySelector('.dm').appendChild(m); m.querySelector('button').focus();
       const loin = ev => { if (!m.contains(ev.target)) { m.remove(); document.removeEventListener('click', loin, true); } }; setTimeout(() => document.addEventListener('click', loin, true), 0);
       m.onclick = async ev => { const a = ev.target.closest('[data-a]'); if (!a) return; m.remove();
@@ -265,7 +311,7 @@
   }
   if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'mdg-dm' && e.data.dm) conversation(e.data.dm); });
 
-  window.MDGMessages = { boite, ecrire, conversation, unread, refresh, JOURS };
+  window.MDGMessages = { boite, ecrire, ecrireMarche, diffuser, conversation, unread, refresh, JOURS };
   addEventListener('mdg:connecte', () => { premier = true; setTimeout(refresh, 1200); });
   addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte' && !(N() && N().session())) { liste = []; W(KL, []); fermer(); annoncer(); } });
   addEventListener('hashchange', depuisAdresse);

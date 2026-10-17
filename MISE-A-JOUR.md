@@ -1,3 +1,12 @@
+# Mise à jour — 17 octobre 2026 (carte : attente propre, ouverture plus rapide)
+
+Service worker : `mgci-v68`.
+
+## Ce qui change
+- **Plus de silhouette du pays pendant le chargement** (elle ressemblait à un bug) : le fond de la carte, un petit anneau qui tourne et « Préparation de la carte… », puis la carte en fondu.
+- **La carte s'ouvre plus vite** : son moteur (MapLibre) et les données du pays sont téléchargés en avance, discrètement, quand l'accueil est calme (pas en économie de données ni en 2G). En connexion lente simulée, depuis le menu : la carte apparaît en ~4,7 s au lieu de ~14 s.
+- **La carte fonctionne vraiment hors connexion dès l'installation** : le moteur et ses polices font maintenant partie des fichiers gardés par l'application (avant : seulement si la carte avait déjà été ouverte en ligne).
+
 # Mise à jour — 17 octobre 2026 (Sons refait, recoins corrigés)
 
 Service worker : `mgci-v67`.

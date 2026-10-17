@@ -3,7 +3,7 @@
    installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
    Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v67';
+const CACHE = 'mgci-v68';
 // tuiles de la carte en relief déjà vues (relief Terrarium, rues OpenFreeMap) : gardées d'une version à l'autre, 1 500 au plus
 const TUILES = 'tuiles-mgci', TUILES_MAX = 1500, HOTES_TUILES = ['s3.amazonaws.com', 'tiles.openfreemap.org'];
 
@@ -107,11 +107,15 @@ const CORE = [
 // Images v2/img/ : mises en cache au mieux (une image manquante n'empêche pas l'installation).
 const IMAGES = ["evenement-camion-depart-paysage.webp", "evenement-camion-depart-portrait.webp", "evenement-piment-seche-paysage.webp", "evenement-piment-seche-portrait.webp", "evenement-soudure-etal-paysage.webp", "evenement-soudure-etal-portrait.webp", "evenement-vendeuse-monnaie-paysage.webp", "evenement-vendeuse-monnaie-portrait.webp", "famille-arachide-noix-et-oleagineux.webp", "famille-assaisonnements-epices-condiments.webp", "famille-autres-produits-vivriers.webp", "famille-cereales-et-riz-local.webp", "famille-legumes-et-fruits.webp", "famille-oeufs.webp", "famille-poissons.webp", "famille-produits-surgeles.webp", "famille-tubercules-et-feculents.webp", "famille-viande-de-brousse.webp", "famille-volaille.webp", "femme-marche-07-paysage.webp", "femme-marche-07-portrait.webp", "produit-ail.webp", "produit-ananas.webp", "produit-aubergine.webp", "produit-avocat.webp", "produit-banane-douce.webp", "produit-banane-plantain.webp", "produit-chou.webp", "produit-citron.webp", "produit-concombre.webp", "produit-gombo.webp", "produit-oignon.webp", "produit-orange.webp", "produit-papaye.webp", "produit-pasteque.webp", "produit-patate-douce.webp", "produit-piment-frais.webp", "produit-piment-garba.webp", "produit-poivron.webp", "produit-pomme-de-terre.webp", "produit-tomate.webp", "saison-01-janvier-paysage.webp", "saison-01-janvier-portrait.webp", "saison-02-fevrier-paysage.webp", "saison-02-fevrier-portrait.webp", "saison-05-mai-paysage.webp", "saison-05-mai-portrait.webp", "saison-07-juillet-paysage.webp", "saison-07-juillet-portrait.webp", "saison-08-aout-paysage.webp", "saison-08-aout-portrait.webp", "saison-09-septembre-paysage.webp", "saison-09-septembre-portrait.webp", "saison-10-octobre-paysage.webp", "saison-10-octobre-portrait.webp", "saison-11-novembre-paysage.webp", "saison-11-novembre-portrait.webp", "saison-12-decembre-paysage.webp", "saison-12-decembre-portrait.webp"].map(f => 'v2/img/' + f);
 
+// la carte en relief, pour qu'elle s'ouvre vite et sans connexion : son moteur et ses polices (Latin et ponctuation)
+const CARTE = ['vendor/maplibre/maplibre-gl.js', 'vendor/maplibre/maplibre-gl.css',
+  ...['Noto Sans Regular', 'Noto Sans Medium', 'Noto Sans Italic'].flatMap(f => ['0-255', '8192-8447'].map(r => 'vendor/glyphs/' + f + '/' + r + '.pbf'))];
 self.addEventListener('install', e => {
   e.waitUntil((async () => {
     const c = await caches.open(CACHE);
     await c.addAll(CORE.map(u => new Request(u, { cache: 'reload' })));
     await Promise.all(IMAGES.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})));
+    await Promise.all(CARTE.map(u => c.add(new Request(encodeURI(u), { cache: 'reload' })).catch(() => {})));   // sans bloquer l'installation si l'un manque
     await self.skipWaiting();
   })());
 });

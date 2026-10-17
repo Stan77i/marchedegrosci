@@ -1,3 +1,13 @@
+# Mise à jour — 17 octobre 2026 (refonte 2 : carte d'annonce commune)
+
+Service worker : `mgci-v53`.
+
+## Ce qui change
+- **Composants** : nouvelle feuille `css/mgci-app.css` (sur les variables de `css/mgci-tokens.css`).
+- **Carte d'annonce commune** (fiche produit et Acheter) : produit, vendeur (avec sa note) et lieu en tête ; **quantité** et **prix demandé / budget** en gros chiffres ; disponibilité, « Prix négociable / ferme », intermédiaire, agent terrain en étiquettes ; une seule rangée d'actions (Écrire, Proposer un prix, Signaler). Avant : trois boutons empilés, quantité noyée dans une ligne grise.
+- Une demande ouvre le profil de l'acheteur (avant : la même fiche produit).
+- Petits écrans (≤ 360 px) : boutons resserrés, rien ne déborde.
+
 # Mise à jour — 17 octobre 2026 (refonte 1 : fondations et performance)
 
 Service worker : `mgci-v52`. Audit complet : `docs/AUDIT-REFONTE.md`.

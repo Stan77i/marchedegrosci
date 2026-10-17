@@ -16,8 +16,7 @@
   const me = () => { const s = N() && N().session(); return s && s.user; };
   const ago = t => { const m = Math.max(0, (Date.now() - Date.parse(t)) / 60000); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + Math.round(m) + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }); };
   const REGIONS = () => ((window.MDG && MDG.regions) || []).map(r => [r.slug, r.name]);
-  const ROLES = [['acheteur', 'J’achète'], ['vendeur', 'Je vends ou je produis'], ['les_deux', 'Les deux']];
-  const prefs = () => Object.assign({ toasts: true }, J(KPF, {}));
+    const prefs = () => Object.assign({ toasts: true }, J(KPF, {}));
 
   /* ——— profil (le mien) ——— */
   let profil = J(KP, null);
@@ -66,92 +65,138 @@
   addEventListener('mdg:profils', () => hydrate());
 
   /* ——— apparence ——— */
-  const CSS = `.cp-bg{position:fixed;inset:0;z-index:8800;background:rgba(10,9,7,.62);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:cpIn var(--ux-d2,200ms) ease both}
+  const CSS = `.cp-bg{position:fixed;inset:0;z-index:8800;background:rgba(8,7,5,.66);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:cpIn var(--ux-d2,200ms) ease both}
 @media (min-width:760px){.cp-bg{align-items:center;padding:24px}}
-.cp{--ink:#F5F0E6;--mute:#B9AD98;--faint:#8f846f;--line:rgba(245,240,230,.12);--acc:#E07A3F;position:relative;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);width:100%;max-width:860px;height:min(94dvh,820px);background:#1d1a15;color:var(--ink);border-radius:28px 28px 0 0;box-shadow:0 30px 80px rgba(0,0,0,.5);font:400 15px/1.5 Jost,system-ui,sans-serif;font-variant-numeric:lining-nums;overflow:hidden;animation:cpUp var(--ux-d3,320ms) cubic-bezier(.22,1,.36,1) both}
-@media (min-width:760px){.cp{border-radius:28px;grid-template-columns:230px minmax(0,1fr);grid-template-rows:minmax(0,1fr)}}
-.cp-side{display:flex;flex-direction:column;gap:4px;padding:16px 16px 10px;border-bottom:1px solid var(--line);background:#191611}
-@media (min-width:760px){.cp-side{padding:22px 14px;border-bottom:0;border-right:1px solid var(--line)}}
-.cp-me{display:flex;align-items:center;gap:12px;padding:0 4px 12px}.cp-me svg{flex:none;border-radius:50%}
-.cp-me b{display:block;font:500 22px/1.1 'Cormorant Garamond',Georgia,serif}.cp-me small{color:var(--mute);font-size:13px}
-.cp-x{position:absolute;right:12px;top:12px;z-index:2;width:44px;height:44px;border:0;border-radius:50%;background:rgba(245,240,230,.08);color:var(--ink);font-size:20px;cursor:pointer}
-.cp-tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}
-@media (min-width:760px){.cp-tabs{flex-direction:column;overflow:visible;margin:0;padding:0}}
-.cp-tab{flex:none;display:flex;align-items:center;gap:10px;min-height:44px;padding:0 14px;border:0;border-radius:14px;background:none;color:var(--mute);font:500 14.5px Jost,sans-serif;text-align:left;cursor:pointer;transition:background var(--ux-d2,200ms),color var(--ux-d2,200ms)}
-.cp-admin{text-decoration:none;color:#F3B48A}@media (max-width:759px){.cp-admin{order:-1;background:rgba(224,122,63,.12)}}@media (min-width:760px){.cp-admin{margin-top:10px;box-shadow:inset 0 1px 0 var(--line);border-radius:0 0 14px 14px}}
-/* téléphone : tous les onglets tiennent à l'écran (icône + nom court), rien à faire glisser */
-.cp-tc{display:none}
-@media (max-width:759px){
-  .cp-tabs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:2px;overflow:visible;margin:0 -10px;padding:0}
-  .cp-tab{flex-direction:column;justify-content:center;gap:4px;min-height:56px;padding:6px 2px;border-radius:14px;text-align:center}
-  .cp-tab svg{width:20px;height:20px}
-  .cp-tl{display:none}.cp-tc{display:block;font-size:12px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-  .cp-tab em{position:absolute;margin:0;transform:translate(13px,-14px);min-width:18px;height:18px;font-size:10.5px;line-height:18px;padding:0 5px}
-  .cp-tab{position:relative}
-  .cp-admin{order:0}
-}
-.cp-tab:hover{color:var(--ink);background:rgba(245,240,230,.05)}.cp-tab[aria-selected=true]{color:var(--ink);background:rgba(245,240,230,.1)}
-.cp-tab svg{flex:none;width:18px;height:18px}.cp-tab em{margin-left:auto;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--acc);color:#171512;font:700 11.5px/20px Jost,sans-serif;font-style:normal;text-align:center}
-.cp-main{overflow:auto;padding:22px 20px 40px;overscroll-behavior:contain}
-@media (min-width:760px){.cp-main{padding:30px 34px 48px}}
-.cp-main h2{margin:0 0 4px;padding-right:44px;font:500 30px/1.1 'Cormorant Garamond',Georgia,serif}.cp-main h2+p{margin:0 0 20px;color:var(--mute);font-size:14px}
-.cp-main h3{margin:26px 0 10px;font:500 21px/1.2 'Cormorant Garamond',serif}
-.cp-panel{animation:cpFade var(--ux-d2,200ms) ease both}
-.cp-f{display:grid;gap:14px;max-width:520px}
-.cp-l{display:block;margin:0 0 6px;font-size:13.5px;color:var(--mute)}.cp-l i{font-style:normal;color:var(--faint)}
-.cp-in,.cp-sel{width:100%;box-sizing:border-box;height:50px;padding:0 14px;border:1px solid rgba(245,240,230,.16);border-radius:14px;background:#14120f;color:var(--ink);font:500 16px Jost,sans-serif;transition:border-color var(--ux-d2,200ms)}
-.cp-in:focus,.cp-sel:focus{outline:2px solid var(--acc);outline-offset:1px;border-color:transparent}
-.cp-in[aria-invalid=true]{border-color:#E2735B}
-.cp-err{min-height:0;margin:6px 0 0;color:#F3A08C;font-size:13.5px}
-.cp-help{margin:6px 0 0;color:var(--faint);font-size:12.5px;line-height:1.45}
-.cp-seg{display:flex;flex-wrap:wrap;gap:8px}
-.cp-seg button{min-height:44px;padding:0 16px;border:1px solid rgba(245,240,230,.18);border-radius:999px;background:none;color:var(--ink);font:500 14.5px Jost,sans-serif;cursor:pointer;transition:background var(--ux-d2,200ms),color var(--ux-d2,200ms)}
-.cp-seg button[aria-pressed=true]{background:var(--ink);color:#171512;border-color:var(--ink)}
-.cp-go{min-height:50px;padding:0 24px;border:0;border-radius:999px;background:var(--acc);color:#171512;font:700 15.5px Jost,sans-serif;cursor:pointer;transition:filter var(--ux-d2,200ms),opacity var(--ux-d2,200ms)}
-.cp-go:hover{filter:brightness(1.06)}.cp-go[disabled]{opacity:.55;cursor:default}
-.cp-alt{min-height:46px;padding:0 18px;border:1px solid rgba(245,240,230,.22);border-radius:999px;background:none;color:var(--ink);font:600 14.5px Jost,sans-serif;cursor:pointer}
-.cp-bad{color:#F3A08C;border-color:rgba(226,115,91,.45)}
-.cp-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.cp-ok{display:inline-flex;align-items:center;gap:6px;color:#9fd6ae;font-size:14px;font-weight:600}
-.cp-card{padding:16px 18px;border:1px solid var(--line);border-radius:20px;background:rgba(245,240,230,.03)}
-.cp-card+.cp-card{margin-top:10px}
-.cp-kv{display:flex;justify-content:space-between;gap:14px;align-items:center;min-height:52px;border-top:1px solid var(--line)}.cp-kv:first-child{border-top:0}
-.cp-kv span{color:var(--mute);font-size:14px}.cp-kv b{font-weight:600;text-align:right}
-.cp-tag{display:inline-block;padding:2px 9px;border-radius:999px;font:600 12px/1.5 Jost,sans-serif;background:rgba(245,240,230,.08);color:var(--mute)}
-.cp-tag.warn{background:rgba(242,201,76,.14);color:#F2DC9A}.cp-tag.ok{background:rgba(106,174,240,.16);color:#A9CDF5}.cp-tag.acc{background:rgba(224,122,63,.2);color:#F3B48A}
-.cp-list{display:flex;flex-direction:column;gap:8px}.cp-list .sw+.sw{margin-top:0}.cp-list .sw{border-radius:16px}
-.cp-item{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;align-items:center;width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:rgba(245,240,230,.03);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
-.cp-item:hover{background:rgba(245,240,230,.07)}.cp-item .mk{grid-row:span 2}.cp-item b{font-weight:600}.cp-item small{grid-column:2;color:var(--mute);font-size:13px}.cp-item .p{grid-row:span 2;text-align:right;font:500 20px/1 'Cormorant Garamond',serif}
-.cp-item.is-new{border-color:rgba(224,122,63,.6)}
-.cp-empty{padding:28px 18px;border:1px dashed var(--line);border-radius:20px;color:var(--mute);text-align:center;font-size:14.5px;line-height:1.55}.cp-empty b{display:block;margin:0 0 4px;color:var(--ink);font:500 20px/1.2 'Cormorant Garamond',serif}
-.cp-sw{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:56px;border-top:1px solid var(--line);cursor:pointer}.cp-sw:first-child{border-top:0}
-.cp-sw span small{display:block;color:var(--mute);font-size:13px}.cp-sw input{width:22px;height:22px;flex:none;accent-color:var(--acc)}
-.cp-na{opacity:.6;cursor:default}
-.cp-rep{display:grid;grid-template-columns:56px minmax(0,1fr) 18px;align-items:center;gap:14px;width:100%;margin:6px 0 20px;padding:12px 14px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(135deg,rgba(242,201,76,.09),rgba(245,240,230,.02));color:var(--ink);text-align:left;font:inherit;cursor:pointer}
-.cp-rep:active{transform:scale(.99)}.cp-rep-n{display:grid;place-items:center;width:56px;height:56px;border-radius:16px;background:rgba(242,201,76,.14);color:#F2C94C;font:500 26px/1 'Cormorant Garamond',Georgia,serif}
-.cp-rep b{display:block;font-size:15px}.cp-rep small{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:3px;color:var(--mute);font-size:13px;line-height:1.35}
-.cp-sec h3{margin:24px 0 8px;font:600 12px/1 Jost,sans-serif;letter-spacing:.06em;color:var(--faint)}
-.cp-grp{border:1px solid var(--line);border-radius:20px;overflow:hidden;background:rgba(245,240,230,.03)}
-.cp-act{display:grid;grid-template-columns:40px minmax(0,1fr) 18px;align-items:center;gap:14px;width:100%;min-height:66px;padding:10px 14px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);text-align:left;font:inherit;cursor:pointer;list-style:none;transition:background-color var(--ux-d2,200ms)}
-.cp-grp>.cp-act:first-child,.cp-grp>.cp-acc:first-child>.cp-act{border-top:0}.cp-act::-webkit-details-marker{display:none}
-.cp-act:hover{background:rgba(245,240,230,.04)}.cp-act:active{background:rgba(245,240,230,.08)}.cp-act--info{grid-template-columns:40px minmax(0,1fr);cursor:default}.cp-act--info:hover{background:none}
-.cp-act>i{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(245,240,230,.07);color:#E9E1D2}
-.cp-act>i svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.cp-act b{display:block;font-size:15px;font-weight:600;line-height:1.25}.cp-act small{display:block;margin-top:2px;color:var(--mute);font-size:13px;line-height:1.35}
-.cp-chev{width:16px;height:16px;fill:none;stroke:var(--faint);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform var(--ux-d3,320ms) cubic-bezier(.22,1,.36,1)}
-.cp-acc[open]>.cp-act .cp-chev{transform:rotate(90deg)}.cp-acc-c{padding:4px 16px 18px 68px;animation:cpFade var(--ux-d3,320ms) ease both}
+/* une seule logique : une page d'accueil (qui je suis, où j'en suis, mes réglages), puis des pages qu'on ouvre et qu'on referme */
+.cp{--bg:#17140F;--card:#221E18;--card2:#2B261F;--ink:#F5F0E6;--mute:#B9AD98;--faint:#8F846F;--line:rgba(245,240,230,.08);--acc:#E07A3F;--acc2:#F3B48A;--ok:#6CC58C;--warn:#F2C94C;--blue:#6AAEF0;--violet:#B095F0;--bad:#F08A73;
+  position:relative;display:flex;flex-direction:column;width:100%;max-width:600px;height:min(94dvh,860px);background:var(--bg);color:var(--ink);border-radius:28px 28px 0 0;box-shadow:0 -10px 60px rgba(0,0,0,.55);
+  font:400 15px/1.45 Jost,system-ui,sans-serif;font-variant-numeric:lining-nums tabular-nums;overflow:hidden;animation:cpUp var(--ux-d3,320ms) cubic-bezier(.22,1,.36,1) both}
+@media (min-width:760px){.cp{border-radius:28px;height:min(90dvh,820px);box-shadow:0 30px 90px rgba(0,0,0,.55)}}
+.cp::before{content:"";position:absolute;left:50%;top:8px;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:rgba(245,240,230,.18)}
+@media (min-width:760px){.cp::before{display:none}}
+/* barre du haut : retour à gauche, titre au centre, fermer à droite */
+.cp-top{flex:none;display:grid;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;min-height:64px;padding:12px 8px 4px}
+.cp-top-t{text-align:center;font:600 16px/1.2 Jost,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity var(--ux-d2,200ms)}
+.cp-top.titre .cp-top-t{opacity:1}
+.cp-back{width:44px;height:44px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:rgba(245,240,230,.08);color:var(--ink);cursor:pointer}
+.cp-back svg{width:22px;height:22px}
+.cp-x{position:absolute;right:14px;top:16px;z-index:3;width:44px;height:44px;border:0;border-radius:50%;background:rgba(245,240,230,.08);color:var(--ink);cursor:pointer}
+.cp-main{flex:1;min-height:0;overflow:auto;padding:4px 16px calc(36px + env(safe-area-inset-bottom));overscroll-behavior:contain;scroll-padding-top:16px}
+@media (min-width:760px){.cp-main{padding:4px 28px 40px}}
+.cp-main>h2,.cp-pg>h2,.cp-w>h2{margin:2px 4px 4px;font:500 32px/1.08 'Cormorant Garamond',Georgia,serif;letter-spacing:-.005em}
+.cp-main>h2+p,.cp-pg>h2+p,.cp-w>h2+p{margin:0 4px 18px;color:var(--mute);font-size:14px;line-height:1.5}
+.cp-pg{animation:cpFade var(--ux-d2,200ms) ease both}
+/* étiquette de section, comme les réglages de l'iPhone : petite, en capitales, hors des cartes */
+.cp-lab{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:24px 16px 8px;font:600 12px/1.2 Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.cp-lab em{font-style:normal;letter-spacing:0;color:var(--mute)}
+.cp-lab button{border:0;background:none;padding:6px 0;color:var(--acc2);font:600 13px Jost,sans-serif;letter-spacing:0;text-transform:none;cursor:pointer}
+.cp-note{margin:8px 16px 0;color:var(--faint);font-size:12.5px;line-height:1.45}
+/* carte groupée et ses lignes */
+.cp-grp{background:var(--card);border-radius:18px;overflow:hidden}
+.cp-grp+.cp-grp{margin-top:12px}
+.cp-r{position:relative;display:flex;align-items:center;gap:12px;width:100%;min-height:58px;padding:9px 14px;border:0;background:none;color:var(--ink);font:inherit;text-align:left;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color var(--ux-d1,120ms)}
+.cp-r+.cp-r::before,.cp-r+.cp-acc::before,.cp-acc+.cp-r::before{content:"";position:absolute;left:58px;right:0;top:0;height:1px;background:var(--line)}
+.cp-acc{position:relative}.cp-acc+.cp-acc::before{content:"";position:absolute;left:58px;right:0;top:0;height:1px;background:var(--line);z-index:1}
+.cp-r:active{background:rgba(245,240,230,.06)}@media (hover:hover){.cp-r:hover{background:rgba(245,240,230,.04)}}
+.cp-r.info{cursor:default}.cp-r.info:active,.cp-r.info:hover{background:none}
+.cp-r-t{flex:1;min-width:0;display:block}
+.cp-r-t b{display:block;font-weight:500;font-size:15.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cp-r-t small{display:block;margin-top:2px;color:var(--mute);font-size:13px;line-height:1.35}
+.cp-r-v{flex:none;max-width:45%;color:var(--mute);font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cp-r-v.fort{color:var(--ink);font-weight:600}
+.cp-chev{flex:none;width:16px;height:16px;fill:none;stroke:var(--faint);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;transition:transform var(--ux-d3,320ms) cubic-bezier(.22,1,.36,1)}
+.cp-r.bad{color:var(--bad)}.cp-r.centre{justify-content:center;font-weight:600}
+summary.cp-r{list-style:none}summary.cp-r::-webkit-details-marker{display:none}
+.cp-acc[open]>summary .cp-chev{transform:rotate(90deg)}
+.cp-acc-c{padding:2px 16px 18px 58px;animation:cpFade var(--ux-d3,320ms) ease both}
 @media (max-width:420px){.cp-acc-c{padding-left:16px}}
-.cp-act.cp-bad,.cp-bad{color:#F3A08C}.cp-act.cp-bad>i{background:rgba(226,115,91,.13);color:#F3A08C}.cp-grp--bad{border-color:rgba(226,115,91,.28)}
-.cp-sec .cp-grp{animation:cpLeve .45s cubic-bezier(.22,1,.36,1) both}.cp-sec .cp-grp:nth-of-type(2){animation-delay:.04s}.cp-sec .cp-grp:nth-of-type(3){animation-delay:.08s}.cp-sec .cp-grp:nth-of-type(4){animation-delay:.12s}.cp-sec .cp-grp:nth-of-type(5){animation-delay:.16s}
-@keyframes cpLeve{from{opacity:0;transform:translateY(10px)}}
-@media (prefers-reduced-motion:reduce){.cp-sec .cp-grp,.cp-acc-c{animation:none}}
-.cp-cloche{flex:none;width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:rgba(224,122,63,.14);color:#F3B48A}.cp-cloche svg{width:20px;height:20px}
-.cp-pousse.is-on .cp-cloche{background:rgba(108,197,140,.16);color:#9fe0b4}
-.cp-pousse.is-on .cp-cloche svg{animation:cpCloche 2.6s ease-in-out 1}
-@keyframes cpCloche{0%,60%,100%{transform:none}8%{transform:rotate(14deg)}16%{transform:rotate(-12deg)}24%{transform:rotate(8deg)}32%{transform:rotate(-5deg)}40%{transform:rotate(2deg)}}
-/* avatar */
-.cp-avz{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center;margin:0 0 6px}
-.cp-avbig{position:relative;width:112px;height:112px;border-radius:50%;box-shadow:0 0 0 4px rgba(245,240,230,.08)}
+/* tuile d'icône : la couleur dit le sens (vert vendre, jaune attendre, violet moi, bleu échanger, terracotta le marché, sable comprendre/protéger) */
+.cp-ti{--t:#CFC4B1;flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;color:var(--t);background:rgba(245,240,230,.06);background:color-mix(in srgb,var(--t) 17%,transparent)}
+.cp-ti svg{width:18px;height:18px}
+.cp-ti[data-ton=offre]{--t:var(--ok)}.cp-ti[data-ton=demande]{--t:var(--warn)}.cp-ti[data-ton=vous]{--t:var(--violet)}.cp-ti[data-ton=lien]{--t:var(--blue)}.cp-ti[data-ton=marche]{--t:#EE9A62}.cp-ti[data-ton=bad]{--t:var(--bad)}
+.cp-ti.lg{width:44px;height:44px;border-radius:13px}.cp-ti.lg svg{width:24px;height:24px}
+/* pastilles */
+.cp-n{flex:none;min-width:22px;height:22px;padding:0 7px;border-radius:11px;background:var(--acc);color:#171512;font:700 12px/22px Jost,sans-serif;text-align:center}
+.cp-tag{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:11px;font:600 12px/1 Jost,sans-serif;background:rgba(245,240,230,.08);color:var(--mute);white-space:nowrap}
+.cp-tag.warn{background:rgba(242,201,76,.15);color:#F2DC9A}.cp-tag.ok{background:rgba(108,197,140,.16);color:#A9E0BC}.cp-tag.acc{background:rgba(224,122,63,.2);color:var(--acc2)}.cp-tag.bleu{background:rgba(106,174,240,.16);color:#A9CDF5}
+/* accueil : la carte d'identité */
+.cp-id{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;padding:4px 4px 0}
+.cp-id-av{position:relative;width:76px;height:76px;border-radius:50%;box-shadow:0 0 0 3px var(--bg),0 0 0 4.5px rgba(245,240,230,.14)}
+.cp-id-av svg,.cp-id-av img{display:block;border-radius:50%}
+.cp-id h2{margin:0;font:500 30px/1.05 'Cormorant Garamond',Georgia,serif;overflow-wrap:anywhere}
+.cp-id p{margin:4px 0 0;color:var(--mute);font-size:14px}
+.cp-id-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+@media (max-width:360px){.cp-id{gap:12px}.cp-id-av{width:62px;height:62px}.cp-id-av svg{width:62px;height:62px}.cp-id h2{font-size:26px}.cp-st b{font-size:22px}}
+.cp-id-edit{grid-column:1 / -1;display:flex;align-items:center;justify-content:center;gap:8px;min-height:46px;margin-top:14px;border:0;border-radius:14px;background:var(--card);color:var(--ink);font:600 14.5px Jost,sans-serif;cursor:pointer}
+.cp-id-edit svg{width:17px;height:17px}
+/* accueil : trois chiffres réels, chacun ouvre le détail */
+.cp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.cp-st{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:86px;padding:12px;border:0;border-radius:16px;background:var(--card);color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.cp-st:active{transform:scale(.98)}
+.cp-st i{display:block;width:10px;height:10px;border-radius:50%;background:var(--ok)}.cp-st i.d{border-radius:2.5px;background:var(--warn)}.cp-st i.n{background:var(--blue)}
+.cp-st b{font:600 26px/1 Jost,sans-serif;letter-spacing:-.01em}
+.cp-st small{color:var(--mute);font-size:12.5px;line-height:1.2}
+/* réputation */
+.cp-rep{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border:0;border-radius:18px;background:linear-gradient(120deg,rgba(242,201,76,.12),var(--card) 60%);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.cp-rep-n{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:rgba(242,201,76,.16);color:var(--warn);font:700 18px/1 Jost,sans-serif}
+.cp-rep b{display:block;font-size:15px;font-weight:600}.cp-rep small{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:2px;color:var(--mute);font-size:13px;line-height:1.35}
+.cp-rep .cp-chev{margin-left:auto}
+/* annonces et négociations : une ligne nette, le montant aligné à droite */
+.cp-it{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:2px 12px;align-items:center}
+.cp-it .mk{grid-row:span 2;width:32px;height:32px;display:grid;place-items:center}
+.cp-it .mk i{display:block;width:11px;height:11px;border-radius:50%;background:var(--ok)}.cp-it .mk i.d{border-radius:2.5px;background:var(--warn)}
+.cp-it .mk svg{border-radius:50%}
+.cp-it b{font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cp-it small{grid-column:2;display:flex;align-items:center;flex-wrap:wrap;gap:6px;color:var(--mute);font-size:12.5px}
+.cp-it .p{grid-row:span 2;text-align:right;font:600 15px/1.1 Jost,sans-serif;white-space:nowrap}.cp-it .p em{display:block;margin-top:2px;font:400 11.5px Jost,sans-serif;font-style:normal;color:var(--faint)}
+.cp-it.neuf{box-shadow:inset 3px 0 0 var(--acc)}
+.cp-it .pt{grid-row:span 2;width:8px;height:8px;margin:0 12px;border-radius:50%;background:var(--acc)}.cp-it .pt.lu{background:transparent}
+.cp-vide{padding:16px;color:var(--mute);font-size:14px;line-height:1.5}
+.cp-vide b{display:block;color:var(--ink);font-weight:600;font-size:14.5px}
+/* interrupteur façon iPhone */
+.cp-tog{-webkit-appearance:none;appearance:none;flex:none;position:relative;width:51px;height:31px;margin:0;border-radius:16px;background:rgba(245,240,230,.16);cursor:pointer;transition:background var(--ux-d2,200ms)}
+.cp-tog::after{content:"";position:absolute;left:2px;top:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.35);transition:transform var(--ux-d2,200ms) cubic-bezier(.22,1,.36,1)}
+.cp-tog:checked{background:var(--acc)}.cp-tog:checked::after{transform:translateX(20px)}
+.cp-tog:focus-visible{outline:2px solid var(--acc2);outline-offset:2px}
+label.cp-r{cursor:pointer}
+/* formulaires */
+.cp-f{display:grid;gap:14px}
+.cp-fg{display:grid;gap:14px;padding:16px;background:var(--card);border-radius:18px}
+.cp-l{display:block;margin:0 0 6px;font-size:13px;font-weight:500;color:var(--mute)}.cp-l i{font-style:normal;font-weight:400;color:var(--faint)}
+.cp-in,.cp-sel{width:100%;box-sizing:border-box;height:50px;padding:0 14px;border:1px solid transparent;border-radius:13px;background:#14110D;color:var(--ink);font:500 16px Jost,sans-serif;transition:border-color var(--ux-d2,200ms),background var(--ux-d2,200ms)}
+.cp-in::placeholder{color:var(--faint)}
+.cp-in:focus,.cp-sel:focus{outline:none;border-color:var(--acc);background:#110F0B}
+.cp-in[aria-invalid=true]{border-color:var(--bad)}
+.cp-err{margin:6px 0 0;color:var(--bad);font-size:13px}.cp-err:empty{display:none}
+.cp-help{margin:6px 0 0;color:var(--faint);font-size:12.5px;line-height:1.45}
+.cp-seg{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:3px;padding:3px;border-radius:13px;background:#14110D}
+.cp-seg button{min-height:42px;padding:0 6px;border:0;border-radius:10px;background:none;color:var(--mute);font:600 13.5px/1.15 Jost,sans-serif;cursor:pointer;transition:background var(--ux-d2,200ms),color var(--ux-d2,200ms)}
+.cp-seg button[aria-pressed=true]{background:var(--card2);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.avx .cp-seg,.avx-sec .cp-seg{display:flex;flex-wrap:wrap;background:none;padding:0;gap:8px}.avx-sec .cp-seg button{min-height:40px;padding:0 14px;border:1px solid rgba(245,240,230,.16);border-radius:999px}.avx-sec .cp-seg button[aria-pressed=true]{background:var(--ink);color:#171512;box-shadow:none}
+.cp-go{min-height:52px;padding:0 24px;border:0;border-radius:15px;background:var(--acc);color:#171512;font:700 15.5px Jost,sans-serif;cursor:pointer;transition:filter var(--ux-d2,200ms),opacity var(--ux-d2,200ms)}
+.cp-go.plein{width:100%}
+.cp-go:active{filter:brightness(.94)}.cp-go[disabled]{opacity:.55;cursor:default}
+.cp-alt{min-height:46px;padding:0 18px;border:0;border-radius:13px;background:var(--card2);color:var(--ink);font:600 14.5px Jost,sans-serif;cursor:pointer}
+.cp-alt:active{filter:brightness(1.1)}
+.cp-bad{color:var(--bad)}
+.cp-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cp-msg:empty{display:none}
+.cp-ok{display:inline-flex;align-items:center;gap:6px;color:#A9E0BC;font-size:14px;font-weight:600}
+.cp-card{padding:14px;background:var(--card);border-radius:18px}
+.cp-card+.cp-card{margin-top:12px}
+.cp-kv{display:flex;justify-content:space-between;gap:14px;align-items:center;min-height:48px}
+.cp-kv span{color:var(--mute);font-size:14px}.cp-kv b{font-weight:600;text-align:right}
+/* notifications du téléphone */
+.cp-pousse{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start}
+.cp-pousse b{display:block;font-size:15px;font-weight:600;line-height:1.3}.cp-pousse small{display:block;margin-top:3px;color:var(--mute);font-size:13px;line-height:1.45}
+.cp-pousse .cp-row{grid-column:1 / -1;gap:8px}
+.cp-pousse .cp-err{grid-column:1 / -1}
+/* avatar (page profil) */
+.cp-avz{display:grid;justify-items:center;gap:12px;margin:4px 0 0}
+.cp-avbig{position:relative;width:108px;height:108px;border-radius:50%;box-shadow:0 0 0 4px var(--bg),0 0 0 5.5px rgba(245,240,230,.14)}
+.cp-avz .cp-row{justify-content:center}
+@media (prefers-reduced-motion:reduce){.cp-tog,.cp-tog::after,.cp-top-t{transition:none}}
+/* avatar (choix) */
 .cp-avbig svg{display:block;border-radius:50%}
 .cp-avp{display:grid;gap:16px}
 .cp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:10px}
@@ -162,7 +207,7 @@
 .cp-dot::before{content:"";position:absolute;inset:-5px}
 .cp-dot[aria-pressed=true]{box-shadow:0 0 0 3px #1d1a15,0 0 0 5px var(--acc)}
 /* étapes de bienvenue */
-.cp-steps{display:flex;gap:6px;margin:0 0 18px}.cp-steps i{flex:1;height:4px;border-radius:2px;background:rgba(245,240,230,.12);transition:background var(--ux-d3,320ms)}.cp-steps i.on{background:var(--acc)}
+.cp-steps{display:flex;gap:6px;margin:0 4px 18px}.cp-steps i{flex:1;height:4px;border-radius:2px;background:rgba(245,240,230,.12);transition:background var(--ux-d3,320ms)}.cp-steps i.on{background:var(--acc)}
 @keyframes cpIn{from{opacity:0}}@keyframes cpUp{from{transform:translateY(26px);opacity:0}}@keyframes cpFade{from{opacity:0;transform:translateY(6px)}}
 /* avatar : aperçu à gauche (fixe), réglages à droite */
 .avx{display:grid;gap:22px}
@@ -201,28 +246,18 @@
 .avx-zoom input{width:100%;accent-color:var(--ink);min-height:44px}
 .avx-crop .cp-help{text-align:center}.avx-crop .cp-row{justify-content:center}
 .avx-file{display:inline-flex;align-items:center}
-.avx-act{position:sticky;bottom:-40px;margin:22px -20px -40px;padding:14px 20px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,#1d1a15 26%);}
-@media (min-width:760px){.avx-act{margin:24px -34px -48px;padding:16px 34px 22px}}
+.avx-act{position:sticky;bottom:calc(-36px - env(safe-area-inset-bottom));margin:22px -16px calc(-36px - env(safe-area-inset-bottom));padding:14px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 26%)}
+@media (min-width:760px){.avx-act{bottom:-40px;margin:24px -28px -40px;padding:16px 28px 22px}}
 @keyframes avxIn{from{opacity:.4;transform:scale(.96)}}
 @media (prefers-reduced-motion:reduce){.cp-bg,.cp,.cp-panel{animation:none}.avx-big>*,.avx-p{animation:none}.avx-pick svg{transition:none}}`;
   let css = false, bg = null, rendre = null;
-  const ICO = {
-    profil: '<circle cx="12" cy="8.5" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0" stroke-linecap="round"/>',
-    activite: '<circle cx="7" cy="8" r="3"/><rect x="14" y="5" width="6" height="6" rx="1"/><path d="M4 15h16M4 19h10" stroke-linecap="round"/>',
-    notifs: '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15Z" stroke-linejoin="round"/><path d="M10 20a2 2 0 0 0 4 0" stroke-linecap="round"/>',
-    prefs: '<path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke-linecap="round"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
-    securite: '<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke-linecap="round"/>',
-    admin: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="4" rx="1.5"/><rect x="13" y="10" width="7" height="10" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/>'
-  };
-  // même jeu d'icônes que l'application (app/icones.js, Lucide) ; les dessins ci-dessus restent en secours
-  const LUC = { profil: 'compte', activite: 'activite', notifs: 'cloche', prefs: 'reglages', securite: 'cadenas', admin: 'tableau' };
-  const ico = k => { const L = window.MDGIco && LUC[k] && window.MDGIco.corps(LUC[k]);
-    return L ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${L}</svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">${ICO[k]}</svg>`; };
   function cadre(html, label) {
     if (!css) { const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st); css = true; }
     fermer(true);
     bg = document.createElement('div'); bg.className = 'cp-bg';
-    bg.innerHTML = `<div class="cp" role="dialog" aria-modal="true" aria-label="${esc(label)}"><button type="button" class="cp-x" aria-label="Fermer">×</button>${html}</div>`;
+    // toujours une barre du haut : la croix y a sa place et ne chevauche jamais le contenu qui défile
+    const tete = /^\s*<header class="cp-top"/.test(html) ? '' : '<header class="cp-top"><span></span><span class="cp-top-t"></span><span></span></header>';
+    bg.innerHTML = `<div class="cp" role="dialog" aria-modal="true" aria-label="${esc(label)}"><button type="button" class="cp-x" aria-label="Fermer">×</button>${tete}${html}</div>`;
     document.body.appendChild(bg);
     const r = N() && N().piege ? N().piege(bg) : null; if (!rendre) rendre = r;
     bg.addEventListener('click', e => { if (e.target === bg) fermer(); });
@@ -237,27 +272,41 @@
   const notifs = () => J(KN, []);
   const nonLues = () => notifs().filter(n => !n.lu).length;
 
-  /* ——— l'espace personnel ——— */
+  /* ——— l'espace personnel : une page d'accueil, puis des pages qu'on ouvre et qu'on referme (comme les Réglages du téléphone) ——— */
+  const IC = (n, t) => (window.MDGIco && window.MDGIco.svg(n, t || 18, 1.9)) || '';
+  const ti = (n, ton, lg) => `<span class="cp-ti${lg ? ' lg' : ''}" data-ton="${ton}" aria-hidden="true">${IC(n, lg ? 24 : 18)}</span>`;
+  const CHEV = '<svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
+  // une ligne : icône, titre (+ précision), valeur à droite, chevron
+  const ligne = o => `<${o.href ? `a href="${o.href}"` : 'button type="button"'} class="cp-r${o.cls ? ' ' + o.cls : ''}" ${o.attrs || ''}>${o.ico || ''}<span class="cp-r-t"><b>${o.t}</b>${o.s ? `<small>${o.s}</small>` : ''}</span>${o.v != null && o.v !== '' ? `<span class="cp-r-v${o.vf ? ' fort' : ''}">${o.v}</span>` : ''}${o.n ? `<span class="cp-n" aria-label="${o.n} nouveau${o.n > 1 ? 'x' : ''}">${o.n}</span>` : ''}${o.chev === false ? '' : CHEV}</${o.href ? 'a' : 'button'}>`;
+  const TITRES = { accueil: 'Mon compte', profil: 'Profil et avatar', activite: 'Mon activité', notifs: 'Notifications', prefs: 'Réglages', securite: 'Sécurité et compte' };
+  const negosDe = () => { const u = me(), L = J('mdg-negoce:liste', []), vive = n => n.statut === 'ouverte' && n.dernier_par && n.expire_le && Date.parse(n.expire_le) > Date.now();
+    return { vive, L, env: L.filter(n => vive(n) && n.dernier_par === u.id), rec: L.filter(n => vive(n) && n.dernier_par !== u.id), ok: L.filter(n => n.statut === 'conclue'), fin: L.filter(n => n.statut !== 'conclue' && !vive(n)) }; };
+  const mesAnn = k => J('mdg-v2:' + k, []).filter(x => x && x.productSlug);
+
   function ouvrir(onglet) {
     if (!N()) return; const u = me(); if (!u) return N().open();
-    let tab = onglet || 'profil';
-    const tete = () => { const p = profil || {}; return `<div class="cp-me">${A() ? A().svg(p.avatar, { size: 52, nom: nomAffiche(p) || N().fmtTel(u.tel), seed: u.id }) : ''}<span><b>${esc(nomAffiche(p) || 'Mon compte')}</b><small>${esc(N().fmtTel(u.tel))}</small></span></div>`; };
-    const tabs = () => [['profil', 'Mon profil', 'Profil'], ['activite', 'Mon activité', 'Activité'], ['notifs', 'Notifications', 'Alertes'], ['prefs', 'Préférences', 'Réglages'], ['securite', 'Sécurité et compte', 'Sécurité']]
-      .map(([k, t, c]) => `<button type="button" role="tab" class="cp-tab" data-t="${k}" aria-selected="${tab === k}" aria-label="${t}">${ico(k)}<span class="cp-tl">${t}</span><span class="cp-tc" aria-hidden="true">${c}</span>${k === 'notifs' && nonLues() ? `<em aria-label="${nonLues()} non lues">${nonLues()}</em>` : ''}</button>`).join('')
-      // administrateur seulement (vérifié par le serveur avec est_admin ; la page admin revérifie elle-même) : le lien vers le tableau de bord
-      + (J('mdg-nuage:admin', false) ? `<a class="cp-tab cp-admin" href="admin.html" aria-label="Tableau de bord">${ico('admin')}<span class="cp-tl">Tableau de bord</span><span class="cp-tc" aria-hidden="true">Admin</span></a>` : '');
-    cadre(`<nav class="cp-side" aria-label="Mon espace">${tete()}<div class="cp-tabs" role="tablist">${tabs()}</div></nav><div class="cp-main" role="tabpanel"></div>`, 'Mon espace');
-    const main = bg.querySelector('.cp-main');
-    const aller = t => { tab = t; bg.querySelector('.cp-side').innerHTML = tete() + `<div class="cp-tabs" role="tablist">${tabs()}</div>`; lier(); VUES[t](main); main.scrollTop = 0; };
-    const lier = () => bg.querySelectorAll('.cp-tab').forEach(b => b.onclick = () => aller(b.dataset.t));
-    lier(); VUES[tab](main);
-    bg.rafraichir = () => aller(tab);
+    let page = TITRES[onglet] ? onglet : 'accueil';
+    cadre(`<header class="cp-top"><span></span><span class="cp-top-t"></span><span></span></header><div class="cp-main"></div>`, 'Mon espace');
+    const main = bg.querySelector('.cp-main'), top = bg.querySelector('.cp-top');
+    const aller = p => {
+      page = p;
+      top.innerHTML = (p === 'accueil' ? '<span></span>' : `<button type="button" class="cp-back" data-retour aria-label="Retour à Mon compte">${IC('retour', 22) || '‹'}</button>`) + `<span class="cp-top-t" aria-hidden="true">${TITRES[p]}</span><span></span>`;
+      top.classList.remove('titre');
+      const r = top.querySelector('[data-retour]'); if (r) r.onclick = () => aller('accueil');
+      VUES[p](main); main.scrollTop = 0;
+      const h = main.querySelector('h2'); if (h) h.setAttribute('tabindex', '-1');
+    };
+    // le titre de la page apparaît dans la barre quand le grand titre est passé
+    main.addEventListener('scroll', () => top.classList.toggle('titre', main.scrollTop > 48), { passive: true });
+    bg.aller = aller;
+    aller(page);
+    bg.rafraichir = () => { const y = main.scrollTop; aller(page); main.scrollTop = y; };
     if (navigator.onLine) charger().then(() => bg && bg.rafraichir && bg.rafraichir());
     const adm0 = J('mdg-nuage:admin', false); if (N().isAdmin) N().isAdmin().then(a => { if (a !== adm0 && bg && bg.rafraichir) bg.rafraichir(); });
   }
 
   // un champ texte avec message d'erreur près de lui
-  const champ = (id, label, val, o = {}) => `<div><label class="cp-l" for="${id}">${label}${o.facultatif ? ' <i>facultatif</i>' : ''}</label><input class="cp-in" id="${id}" value="${esc(val || '')}" ${o.attrs || ''} aria-describedby="${id}-e"><p class="cp-err" id="${id}-e" role="alert"></p>${o.aide ? `<p class="cp-help">${o.aide}</p>` : ''}</div>`;
+  const champ = (id, label, val, o = {}) => `<div><label class="cp-l" for="${id}">${label}${o.facultatif ? ' <i>· facultatif</i>' : ''}</label><input class="cp-in" id="${id}" value="${esc(val || '')}" ${o.attrs || ''} aria-describedby="${id}-e${o.aide ? ' ' + id + '-a' : ''}"><p class="cp-err" id="${id}-e" role="alert"></p>${o.aide ? `<p class="cp-help" id="${id}-a">${o.aide}</p>` : ''}</div>`;
   const VALID = {
     prenom: v => !v.trim() ? 'Indiquez votre prénom.' : !/^[\p{L}][\p{L} '’.-]{0,39}$/u.test(v.trim()) ? 'Des lettres uniquement (espaces, tirets et apostrophes acceptés).' : '',
     nom: v => v.trim() && !/^[\p{L}][\p{L} '’.-]{0,59}$/u.test(v.trim()) ? 'Des lettres uniquement.' : '',
@@ -268,24 +317,26 @@
     ids.forEach(id => { const el = root.querySelector('#cp-' + id), m = VALID[id](el.value); el.setAttribute('aria-invalid', String(!!m)); root.querySelector('#cp-' + id + '-e').textContent = m; if (m) ok = false; });
     return ok;
   }
-  const lieu = p => `<div><label class="cp-l" for="cp-reg">Région où vous êtes d’habitude <i>facultatif</i></label><select class="cp-sel" id="cp-reg"><option value="">—</option>${REGIONS().map(([s, n]) => `<option value="${s}" ${p.region_slug === s ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>
-    ${champ('cp-ville', 'Ville ou localité', p.ville, { facultatif: true, attrs: 'maxlength="80" autocomplete="address-level2"', aide: 'Elle sert à vous proposer ce qui est proche. Changer votre lieu ne déplace pas vos annonces : chacune garde le sien.' })}`;
-  const roleSeg = p => `<div><span class="cp-l">Vous êtes plutôt</span><div class="cp-seg" role="group" aria-label="Rôle">${ROLES.map(([k, t]) => `<button type="button" data-role="${k}" aria-pressed="${p.role === k}">${t}</button>`).join('')}</div></div>`;
+  const lieu = p => `<div><label class="cp-l" for="cp-reg">Région où vous êtes d’habitude <i>· facultatif</i></label><select class="cp-sel" id="cp-reg"><option value="">—</option>${REGIONS().map(([s, n]) => `<option value="${s}" ${p.region_slug === s ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select></div>
+    ${champ('cp-ville', 'Ville ou localité', p.ville, { facultatif: true, attrs: 'maxlength="80" autocomplete="address-level2"', aide: 'Pour vous montrer d’abord ce qui est proche. Vos annonces gardent chacune leur lieu.' })}`;
+  const roleSeg = p => `<div><span class="cp-l" id="cp-role-l">Vous êtes plutôt</span><div class="cp-seg" role="group" aria-labelledby="cp-role-l">${[['acheteur', 'J’achète'], ['vendeur', 'Je vends'], ['les_deux', 'Les deux']].map(([k, t]) => `<button type="button" data-role="${k}" aria-pressed="${p.role === k}">${t}</button>`).join('')}</div></div>`;
   const lierRole = root => root.querySelectorAll('[data-role]').forEach(b => b.onclick = () => root.querySelectorAll('[data-role]').forEach(x => x.setAttribute('aria-pressed', String(x === b && x.getAttribute('aria-pressed') !== 'true'))));
   const roleVal = root => { const b = root.querySelector('[data-role][aria-pressed=true]'); return b ? b.dataset.role : null; };
+  const ROLE_TXT = { acheteur: 'Acheteur', vendeur: 'Vendeur', les_deux: 'Acheteur et vendeur' };
 
-  /* ——— Notifications sur ce téléphone (v3/pousse.js) : une carte qui dit l'état réel et propose l'action qui convient ——— */
+  /* ——— Notifications sur ce téléphone (v3/pousse.js) : l'état réel et l'action qui convient ——— */
+  const POUSSE_COURT = { actif: 'Activées', inactif: 'Désactivées', refuse: 'Bloquées', installer: 'À installer', impossible: 'Indisponibles' };
   async function cartePousse(el) {
     const P = window.MDGPousse; if (!el) return;
     const st = P ? await P.etat() : 'impossible';
     const T = {
-      actif: ['Notifications activées sur ce téléphone', 'Une réponse à votre prix, un accord, un refus : votre téléphone vous prévient tout de suite, même application fermée, avec le nombre de réponses sur l’icône.', '<button type="button" class="cp-alt" data-pe>Envoyer un essai</button><button type="button" class="cp-alt" data-pd>Désactiver</button>'],
-      inactif: ['Être prévenu même application fermée', 'Comme pour vos messages : dès qu’on répond à votre prix, votre téléphone vous le dit, et le nombre de réponses s’affiche sur l’icône.', '<button type="button" class="cp-go" data-pa>Activer les notifications</button>'],
-      refuse: ['Notifications bloquées sur ce téléphone', 'Elles ont été refusées. Pour les recevoir : Réglages du téléphone → Notifications → Marché de Gros → Autoriser, puis revenez ici.', ''],
-      installer: ['Sur iPhone : ajoutez d’abord l’application', 'Les notifications n’arrivent que dans l’application installée. Touchez Partager, puis « Sur l’écran d’accueil », ouvrez-la depuis l’icône et activez ici.', ''],
-      impossible: ['Notifications indisponibles ici', 'Ce navigateur ne permet pas les notifications. Ouvrez le Marché de Gros dans l’application installée ou dans Chrome, Safari ou Edge à jour.', '']
+      actif: ['Activées sur ce téléphone', 'Une réponse à votre prix, un accord, un refus : vous êtes prévenu tout de suite, même application fermée.', '<button type="button" class="cp-alt" data-pe>Envoyer un essai</button><button type="button" class="cp-alt" data-pd>Désactiver</button>', 'offre'],
+      inactif: ['Être prévenu même application fermée', 'Dès qu’on répond à votre prix, votre téléphone vous le dit, avec le nombre de réponses sur l’icône.', '<button type="button" class="cp-go plein" data-pa>Activer les notifications</button>', 'demande'],
+      refuse: ['Bloquées sur ce téléphone', 'Réglages du téléphone → Notifications → Marché de Gros → Autoriser, puis revenez ici.', '', 'bad'],
+      installer: ['Sur iPhone : ajoutez d’abord l’application', 'Touchez Partager, puis « Sur l’écran d’accueil ». Ouvrez-la depuis l’icône et activez ici.', '', 'demande'],
+      impossible: ['Indisponibles dans ce navigateur', 'Ouvrez le Marché de Gros dans l’application installée, ou dans Chrome, Safari ou Edge à jour.', '', 'aide']
     }[st];
-    el.innerHTML = `<div class="cp-card cp-pousse${st === 'actif' ? ' is-on' : ''}"><div style="display:flex;gap:12px;align-items:flex-start"><span aria-hidden="true" class="cp-cloche">${ico('notifs')}</span><span style="flex:1;min-width:0"><b style="display:block;font-size:15.5px;margin-bottom:4px">${T[0]}</b><small style="display:block;color:var(--mute);font-size:13.5px;line-height:1.45">${T[1]}</small></span></div>${T[2] ? `<div class="cp-row" style="margin-top:14px;gap:8px;flex-wrap:wrap">${T[2]}</div>` : ''}<p class="cp-err" role="status" style="margin-top:8px"></p></div>`;
+    el.innerHTML = `<div class="cp-card cp-pousse">${ti('cloche', T[3], true)}<span><b>${T[0]}</b><small>${T[1]}</small></span>${T[2] ? `<div class="cp-row">${T[2]}</div>` : ''}<p class="cp-err" role="status"></p></div>`;
     const msg = el.querySelector('.cp-err'), b = q => el.querySelector(q);
     if (b('[data-pa]')) b('[data-pa]').onclick = async e => { const t = e.currentTarget; t.disabled = true; t.textContent = 'Activation…'; t.setAttribute('aria-busy', 'true');
       try { await P.activer(); N().toast('Notifications activées. Une notification d’essai arrive.'); cartePousse(el); }
@@ -294,102 +345,152 @@
     if (b('[data-pd]')) b('[data-pd]').onclick = async () => { await P.desactiver(); N().toast('Notifications désactivées sur ce téléphone.'); cartePousse(el); };
   }
 
+  // réputation : la note réelle, sinon une phrase ; toucher ouvre le profil public
+  function remplirRep(b, p, u) {
+    const R = window.MDGRep; if (!b) return; if (!R) { b.remove(); return; }
+    b.onclick = () => R.profil(u.id, { nom: nomAffiche(p) || 'Moi', uri: A().uri(p.avatar, { size: 72, nom: nomAffiche(p) || '?', seed: u.id }) });
+    (async () => { let r = null; try { r = (await N().rpc('notes_publiques', { ids: [u.id] }))[0]; } catch (_) {}
+      if (!b.isConnected) return;
+      b.querySelector('[data-repn]').textContent = r ? String(r.moyenne).replace('.', ',') : '—';
+      b.querySelector('[data-rept]').innerHTML = r ? R.etoiles(r.moyenne, r.nombre, 13) + ' <span>' + r.nombre + ' avis</span>' : 'Pas encore d’avis : ils arrivent après vos négociations.'; })();
+  }
+  const repBtn = '<button type="button" class="cp-rep" data-rep><span class="cp-rep-n" data-repn aria-hidden="true">—</span><span><b>Ma réputation</b><small data-rept>Ce que vos partenaires disent de vous</small></span>' + CHEV + '</button>';
+
   const VUES = {
+    accueil(main) {
+      const p = profil || {}, u = me(), nom = nomAffiche(p), off = mesAnn('offres'), dem = mesAnn('demandes'), ng = negosDe();
+      const M = window.MDGMessages, dmN = M && M.unread ? M.unread() : 0, nl = nonLues(), S = window.MDGSons, sn = S ? S.reglages() : null;
+      const reg = (REGIONS().find(r => r[0] === p.region_slug) || [])[1], lieuTxt = p.ville || reg || '';
+      const adm = J('mdg-nuage:admin', false);
+      main.innerHTML = `<div class="cp-pg">
+        <section class="cp-id" aria-label="Mon identité"><div class="cp-id-av">${A() ? A().svg(p.avatar, { size: 76, nom: nom || '?', seed: u.id }) : ''}</div>
+          <div><h2>${esc(nom || 'Mon compte')}</h2><p>${esc(N().fmtTel(u.tel))}</p><div class="cp-id-tags">${p.role ? `<span class="cp-tag bleu">${ROLE_TXT[p.role] || ''}</span>` : ''}${lieuTxt ? `<span class="cp-tag">${IC('lieu', 12)}${esc(lieuTxt)}</span>` : ''}${!nom ? '<span class="cp-tag warn">Profil à compléter</span>' : ''}</div></div>
+          <button type="button" class="cp-id-edit" data-go="profil">${IC('crayon', 17)}Modifier mon profil</button></section>
+        <div class="cp-stats">
+          <button type="button" class="cp-st" data-go="activite" aria-label="${off.length} offre${off.length > 1 ? 's' : ''} : voir mon activité"><i></i><b>${off.length}</b><small>offre${off.length > 1 ? 's' : ''}</small></button>
+          <button type="button" class="cp-st" data-go="activite" aria-label="${dem.length} demande${dem.length > 1 ? 's' : ''} : voir mon activité"><i class="d"></i><b>${dem.length}</b><small>demande${dem.length > 1 ? 's' : ''}</small></button>
+          <button type="button" class="cp-st" data-go="activite" aria-label="${ng.env.length + ng.rec.length} négociation${ng.env.length + ng.rec.length > 1 ? 's' : ''} en cours : voir mon activité"><i class="n"></i><b>${ng.env.length + ng.rec.length}</b><small>en négociation</small></button>
+        </div>
+        ${repBtn}
+        <h3 class="cp-lab">Échanges</h3>
+        <div class="cp-grp">
+          ${M ? ligne({ ico: ti('messages', 'lien'), t: 'Messages', s: 'Effacés ' + M.JOURS + ' jours après l’envoi', n: dmN, attrs: 'data-dm' }) : ''}
+          ${ligne({ ico: ti('negoce', 'lien'), t: 'Négociations', s: ng.rec.length ? ng.rec.length + ' à vous de répondre' : ng.ok.length ? ng.ok.length + ' accord' + (ng.ok.length > 1 ? 's' : '') + ' conclu' + (ng.ok.length > 1 ? 's' : '') : 'Propositions, réponses et accords', n: ng.rec.length, attrs: 'data-go="activite"' })}
+          ${ligne({ ico: ti('publications', 'offre'), t: 'Mes annonces', v: String(off.length + dem.length), attrs: 'data-go="activite"' })}
+        </div>
+        <h3 class="cp-lab">Réglages</h3>
+        <div class="cp-grp">
+          ${ligne({ ico: ti('cloche', 'demande'), t: 'Notifications', v: '<span data-pst>…</span>', n: nl, attrs: 'data-go="notifs"' })}
+          ${S ? ligne({ ico: ti('son', 'marche'), t: 'Sons', v: sn && sn.on ? 'Activés' : 'Désactivés', attrs: 'data-sons' }) : ''}
+          ${ligne({ ico: ti('oeil', 'vous'), t: 'Confidentialité et affichage', v: p.nom_public ? 'Nom visible' : 'Initiale', attrs: 'data-go="prefs"' })}
+        </div>
+        <h3 class="cp-lab">Compte</h3>
+        <div class="cp-grp">
+          ${ligne({ ico: ti('cadenas', 'aide'), t: 'Sécurité et code secret', attrs: 'data-go="securite"' })}
+          ${adm ? ligne({ ico: ti('tableau', 'marche'), t: 'Tableau de bord', s: 'Administration', href: 'admin.html' }) : ''}
+        </div>
+        <div class="cp-grp">${ligne({ t: 'Me déconnecter', cls: 'bad centre', chev: false, attrs: 'data-out' })}</div>
+        <p class="cp-note">Votre numéro n’est pas vérifié par SMS. Rien n’est compté ici qui n’ait eu lieu.</p></div>`;
+      main.querySelectorAll('[data-go]').forEach(b => b.onclick = () => bg.aller(b.dataset.go));
+      const d = main.querySelector('[data-dm]'); if (d) d.onclick = () => { fermer(); M.boite(); };
+      const s = main.querySelector('[data-sons]'); if (s) s.onclick = () => { fermer(); S.panneau(); };
+      main.querySelector('[data-out]').onclick = deconnecter;
+      remplirRep(main.querySelector('[data-rep]'), p, u);
+      const pst = main.querySelector('[data-pst]'); (window.MDGPousse ? MDGPousse.etat() : Promise.resolve('impossible')).then(st => { if (pst.isConnected) pst.textContent = POUSSE_COURT[st] || ''; }).catch(() => { pst.textContent = ''; });
+    },
     profil(main) {
       const p = profil || {}, u = me();
-      main.innerHTML = `<div class="cp-panel"><h2>Mon profil</h2><p>Ce que les autres voient quand vous publiez ou négociez : votre avatar et ${p.pseudo ? 'votre pseudonyme' : 'votre prénom'}${p.nom_public ? ' et votre nom' : ', avec l’initiale de votre nom'}.</p>
-        <div class="cp-avz"><div class="cp-avbig">${A().svg(p.avatar, { size: 112, nom: nomAffiche(p) || '?', seed: u.id })}</div><div class="cp-row"><button type="button" class="cp-alt" data-av>Choisir mon avatar</button>${p.avatar ? '<button type="button" class="cp-alt" data-av0>Revenir aux initiales</button>' : ''}</div></div>
-        <button type="button" class="cp-rep" data-rep><span class="cp-rep-n" data-repn>—</span><span><b>Ma réputation</b><small data-rept>Ce que vos partenaires disent de vous</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
-        <form class="cp-f" novalidate>${champ('cp-prenom', 'Prénom', p.prenom, { attrs: 'maxlength="40" autocomplete="given-name" required' })}${champ('cp-nom', 'Nom', p.nom, { facultatif: true, attrs: 'maxlength="60" autocomplete="family-name"', aide: 'Montré seulement si vous l’acceptez (Préférences). Sinon : son initiale.' })}
-        ${champ('cp-pseudo', 'Pseudonyme', p.pseudo, { facultatif: true, attrs: 'maxlength="24" autocomplete="nickname" spellcheck="false"', aide: 'S’il est rempli, il remplace votre prénom auprès des autres. Unique sur le Marché de Gros.' })}
-        ${roleSeg(p)}${lieu(p)}
-        <div class="cp-row"><button type="submit" class="cp-go">Enregistrer</button><span class="cp-msg" role="status"></span></div></form>
-        <h3>Téléphone</h3><div class="cp-card"><div class="cp-kv"><span>Numéro du compte</span><b>${esc(N().fmtTel(u.tel))}</b></div></div>
-        <p class="cp-help">Le nom affiché sur chaque annonce (votre nom de vendeur ou d’exploitation) reste celui de l’annonce.</p></div>`;
+      main.innerHTML = `<div class="cp-pg"><h2>Profil et avatar</h2><p>Ce que les autres voient quand vous publiez ou négociez : votre avatar et ${p.pseudo ? 'votre pseudonyme' : 'votre prénom'}${p.nom_public ? ' et votre nom' : ', avec l’initiale de votre nom'}.</p>
+        <div class="cp-avz"><div class="cp-avbig">${A().svg(p.avatar, { size: 108, nom: nomAffiche(p) || '?', seed: u.id })}</div><div class="cp-row"><button type="button" class="cp-alt" data-av>${p.avatar ? 'Changer d’avatar' : 'Choisir mon avatar'}</button>${p.avatar ? '<button type="button" class="cp-alt" data-av0>Mes initiales</button>' : ''}</div></div>
+        <form class="cp-f" novalidate>
+          <h3 class="cp-lab">Comment on vous appelle</h3>
+          <div class="cp-fg">${champ('cp-prenom', 'Prénom', p.prenom, { attrs: 'maxlength="40" autocomplete="given-name" required' })}${champ('cp-nom', 'Nom', p.nom, { facultatif: true, attrs: 'maxlength="60" autocomplete="family-name"', aide: 'Les autres ne voient que son initiale, sauf si vous choisissez de le montrer (Confidentialité).' })}
+          ${champ('cp-pseudo', 'Pseudonyme', p.pseudo, { facultatif: true, attrs: 'maxlength="24" autocomplete="nickname" spellcheck="false" autocapitalize="off"', aide: 'S’il est rempli, il remplace votre prénom. Unique sur le Marché de Gros.' })}</div>
+          <h3 class="cp-lab">Ce que vous faites, et où</h3>
+          <div class="cp-fg">${roleSeg(p)}${lieu(p)}</div>
+          <button type="submit" class="cp-go plein">Enregistrer</button><span class="cp-msg" role="status"></span></form>
+        <h3 class="cp-lab">Téléphone</h3>
+        <div class="cp-grp">${ligne({ ico: ti('telephone', 'aide'), t: esc(N().fmtTel(u.tel)), s: 'Numéro du compte', cls: 'info', chev: false })}</div>
+        <p class="cp-note">Le nom affiché sur chaque annonce (nom de vendeur ou d’exploitation) reste celui de l’annonce.</p></div>`;
       lierRole(main);
-      main.querySelector('[data-av]').onclick = () => choisirAvatar(() => bg && bg.rafraichir());
-      (async () => { const R = window.MDGRep, b = main.querySelector('[data-rep]'); if (!b || !R) { b && b.remove(); return; }
-        b.onclick = () => R.profil(u.id, { nom: nomAffiche(p) || 'Moi', uri: A().uri(p.avatar, { size: 72, nom: nomAffiche(p) || '?', seed: u.id }) });
-        let r = null; try { r = (await N().rpc('notes_publiques', { ids: [u.id] }))[0]; } catch (_) {}
-        if (!b.isConnected) return;
-        b.querySelector('[data-repn]').textContent = r ? String(r.moyenne).replace('.', ',') : '—';
-        b.querySelector('[data-rept]').innerHTML = r ? R.etoiles(r.moyenne, r.nombre, 13) + ' <span>' + r.nombre + ' avis · voir le détail</span>' : 'Pas encore d’avis : ils arrivent quand vos partenaires vous notent après une négociation.'; })();
+      main.querySelector('[data-av]').onclick = () => choisirAvatar(() => ouvrir('profil'));
       const z = main.querySelector('[data-av0]'); if (z) z.onclick = async () => { try { await enregistrer({ avatar: null }); bg.rafraichir(); N().toast('Avatar : vos initiales.'); } catch (e) { N().toast(e.message); } };
       const f = main.querySelector('form'), msg = main.querySelector('.cp-msg'), go = main.querySelector('.cp-go');
       f.querySelectorAll('.cp-in').forEach(i => i.addEventListener('blur', () => { const k = i.id.slice(3); if (VALID[k] && i.value) valider(f, [k]); }));
       f.onsubmit = async e => {
         e.preventDefault(); msg.textContent = ''; if (!valider(f, ['prenom', 'nom', 'pseudo'])) { f.querySelector('[aria-invalid=true]').focus(); return; }
         if (!navigator.onLine) { msg.textContent = 'Pas de connexion internet : réessayez quand le réseau revient.'; return; }
-        go.disabled = true; go.setAttribute('aria-busy', 'true'); go.textContent = 'Enregistrement';
+        go.disabled = true; go.setAttribute('aria-busy', 'true'); go.textContent = 'Enregistrement…';
         try { await enregistrer({ prenom: f.querySelector('#cp-prenom').value.trim(), nom: f.querySelector('#cp-nom').value.trim() || null, pseudo: f.querySelector('#cp-pseudo').value.trim() || null, role: roleVal(f), region_slug: f.querySelector('#cp-reg').value || null, ville: f.querySelector('#cp-ville').value.trim() || null });
-          bg.rafraichir(); N().toast('Profil enregistré.'); }
-        catch (x) { go.disabled = false; go.textContent = 'Enregistrer'; const champPseudo = /pseudonyme/i.test(x.message); if (champPseudo) { f.querySelector('#cp-pseudo').setAttribute('aria-invalid', 'true'); f.querySelector('#cp-pseudo-e').textContent = x.message; } else msg.innerHTML = `<span style="color:#F3A08C">${esc(x.message)}</span>`; }
+          N().toast('Profil enregistré.'); bg.aller('accueil'); }
+        catch (x) { go.disabled = false; go.removeAttribute('aria-busy'); go.textContent = 'Enregistrer'; if (/pseudonyme/i.test(x.message)) { f.querySelector('#cp-pseudo').setAttribute('aria-invalid', 'true'); f.querySelector('#cp-pseudo-e').textContent = x.message; } else msg.innerHTML = `<span class="cp-bad">${esc(x.message)}</span>`; }
       };
     },
     activite(main) {
-      const G = window.MDGNegoce, u = me(), local = k => J('mdg-v2:' + k, []).filter(x => x && x.productSlug), p = J('mdg-nuage:pousse', {});
-      const off = local('offres'), dem = local('demandes'), negos = J('mdg-negoce:liste', []);
-      // une proposition n'est « envoyée » ou « reçue » que tant qu'elle attend une réponse ; retirée, refusée ou expirée, elle passe dans « Sans suite »
-      const vive = n => n.statut === 'ouverte' && n.dernier_par && n.expire_le && Date.parse(n.expire_le) > Date.now();
-      const env = negos.filter(n => vive(n) && n.dernier_par === u.id), rec = negos.filter(n => vive(n) && n.dernier_par !== u.id), ok = negos.filter(n => n.statut === 'conclue'), fin = negos.filter(n => n.statut !== 'conclue' && !vive(n));
-      const mk = k => k === 'offres' ? '<svg class="mk" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="6.5" fill="#6CC58C"/></svg>' : '<svg class="mk" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="5.5" y="5.5" width="13" height="13" rx="1.5" fill="#F2C94C"/></svg>';
-      const ann = (k, x) => `<div class="cp-item" style="cursor:default">${mk(k)}<b>${esc(x.productLabel || x.productName || x.productSlug)}${x.quantity ? ' · ' + fmt(x.quantity) + ' ' + esc(x.unit || '') : ''}</b><span class="p">${(k === 'offres' ? x.price : x.budget) ? fmt(k === 'offres' ? x.price : x.budget) : '—'}</span><small>${p[k + ':' + x.id] ? '<span class="cp-tag ok">En ligne</span>' : '<span class="cp-tag warn">Sur cet appareil, en attente d’envoi</span>'} ${x.negociable === false ? '· prix ferme ' : ''}· ${x.createdAt ? ago(x.createdAt) : ''}</small></div>`;
-      const neg = n => { const e = n.statut === 'conclue' ? ['Accord conclu', 'ok'] : n.statut === 'close' ? [n.motif_fin === 'annonce_retiree' ? 'Annonce retirée' : 'Négociation arrêtée', ''] : vive(n) ? (n.dernier_par === u.id ? ['En attente de réponse', 'warn'] : ['À vous de répondre', 'acc']) : n.dernier_par ? ['Expirée sans réponse', ''] : ['Proposition retirée ou refusée', ''];
-        const lui = n.auteur_id === u.id ? n.proprio_id : n.auteur_id, roleLui = (lui === n.proprio_id) === (n.cible === 'offre') ? 'Vendeur' : 'Acheteur', av = avatar(lui, { size: 30, nom: roleLui });
-        return `<button type="button" class="cp-item" data-nego="${n.id}"><span style="grid-row:span 2">${av.svg}</span><b>${esc(n.produit || 'Annonce')}</b><span class="p">${n.statut === 'conclue' ? fmt(n.prix_final) : vive(n) ? fmt(n.dernier_prix) : '—'}</span><small><span class="cp-tag ${e[1]}">${e[0]}</span> ${esc(av.nom ? 'avec ' + av.nom : '')}</small></button>`; };
-      // messagerie directe (v3/messages.js) : les conversations récentes, toucher pour ouvrir
-      const dms = J('mdg-dm:liste', []), dm = c => `<button type="button" class="cp-item" data-dm="${c.id}"><span style="grid-row:span 2">${avatar(c.autre_id, { size: 30, nom: c.autre_nom }).svg}</span><b>${esc(c.autre_nom)}</b><span class="p" style="font-size:13px">${c.non_lu ? '<span class="cp-tag acc">Nouveau</span>' : ''}</span><small>${c.dernier_par === u.id ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small></button>`;
-      const sec = (t, L, f, vide) => `<h3>${t} <span class="cp-tag">${L.length}</span></h3>` + (L.length ? `<div class="cp-list">${L.slice(0, 20).map(f).join('')}</div>` : `<div class="cp-empty">${vide}</div>`);
-      main.innerHTML = `<div class="cp-panel"><h2>Mon activité</h2><p>Vos annonces et vos négociations réelles. Rien n’est compté qui n’ait eu lieu.</p>
-        ${window.MDGMessages ? sec('Messages', dms, dm, '<b>Aucune conversation</b>Touchez la photo d’un vendeur ou d’un acheteur, puis « Écrire ». Les messages s’effacent ' + MDGMessages.JOURS + ' jours après l’envoi.') : ''}
-        ${sec('Mes offres', off, x => ann('offres', x), '<b>Aucune offre</b>Publiez ce que vous avez avec « Vendre ».')}
-        ${sec('Mes demandes', dem, x => ann('demandes', x), '<b>Aucune demande</b>Dites ce qu’il vous faut avec « Demander ».')}
-        ${sec('Propositions envoyées', env, neg, '<b>Aucune proposition envoyée</b>Sur une annonce, touchez « Proposer un prix ».')}
-        ${sec('Propositions reçues', rec, neg, '<b>Aucune proposition reçue</b>Elles arrivent ici quand un acheteur ou un vendeur répond à vos annonces.')}
-        ${sec('Accords conclus', ok, neg, '<b>Aucun accord pour l’instant</b>')}
-        ${fin.length ? sec('Sans suite', fin, neg, '') : ''}</div>`;
+      const G = window.MDGNegoce, u = me(), pp = J('mdg-nuage:pousse', {}), off = mesAnn('offres'), dem = mesAnn('demandes'), ng = negosDe();
+      const prix = (k, x) => { const v = k === 'offres' ? x.price : x.budget; return v ? `${fmt(v)} F<em>${k === 'offres' ? 'prix' : 'budget'} / ${esc(x.unit || 'kg')}</em>` : '<em>à discuter</em>'; };
+      const ann = (k, x) => `<div class="cp-r cp-it info"><span class="mk" aria-hidden="true"><i${k === 'offres' ? '' : ' class="d"'}></i></span><b>${esc(x.productLabel || x.productName || x.productSlug)}${x.quantity ? ' · ' + fmt(x.quantity) + ' ' + esc(x.unit || '') : ''}</b><span class="p">${prix(k, x)}</span><small>${pp[k + ':' + x.id] ? '<span class="cp-tag ok">En ligne</span>' : '<span class="cp-tag warn">En attente d’envoi</span>'}${x.negociable === false ? '<span>Prix ferme</span>' : ''}<span>${x.createdAt ? ago(x.createdAt) : ''}</span></small></div>`;
+      const neg = n => { const e = n.statut === 'conclue' ? ['Accord conclu', 'ok'] : n.statut === 'close' ? [n.motif_fin === 'annonce_retiree' ? 'Annonce retirée' : 'Arrêtée', ''] : ng.vive(n) ? (n.dernier_par === u.id ? ['En attente', 'warn'] : ['À vous de répondre', 'acc']) : n.dernier_par ? ['Expirée', ''] : ['Retirée ou refusée', ''];
+        const lui = n.auteur_id === u.id ? n.proprio_id : n.auteur_id, roleLui = (lui === n.proprio_id) === (n.cible === 'offre') ? 'Vendeur' : 'Acheteur', av = avatar(lui, { size: 32, nom: roleLui }), v = n.statut === 'conclue' ? n.prix_final : ng.vive(n) ? n.dernier_prix : null;
+        return `<button type="button" class="cp-r cp-it" data-nego="${n.id}"><span class="mk" aria-hidden="true">${av.svg}</span><b>${esc(n.produit || 'Annonce')}</b><span class="p">${v ? fmt(v) + ' F' : '—'}</span><small><span class="cp-tag ${e[1]}">${e[0]}</span>${av.nom ? '<span>avec ' + esc(av.nom) + '</span>' : ''}</small></button>`; };
+      const dms = J('mdg-dm:liste', []), dm = c => `<button type="button" class="cp-r cp-it${c.non_lu ? ' neuf' : ''}" data-dm="${c.id}"><span class="mk" aria-hidden="true">${avatar(c.autre_id, { size: 32, nom: c.autre_nom }).svg}</span><b>${esc(c.autre_nom)}</b><span class="p">${c.non_lu ? '<span class="cp-tag acc">Nouveau</span>' : ''}</span><small><span>${c.dernier_par === u.id ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</span></small></button>`;
+      const sec = (t, L, f, vide) => `<h3 class="cp-lab">${t}<em>${L.length}</em></h3><div class="cp-grp">${L.length ? L.slice(0, 20).map(f).join('') : `<p class="cp-vide">${vide}</p>`}</div>`;
+      main.innerHTML = `<div class="cp-pg"><h2>Mon activité</h2><p>Vos annonces et vos négociations réelles. Rien n’est compté qui n’ait eu lieu.</p>
+        ${ng.rec.length ? sec('À vous de répondre', ng.rec, neg, '') : ''}
+        ${sec('Mes offres', off, x => ann('offres', x), '<b>Aucune offre</b>Publiez ce que vous avez avec « J’ai ».')}
+        ${sec('Mes demandes', dem, x => ann('demandes', x), '<b>Aucune demande</b>Dites ce qu’il vous faut avec « Je cherche ».')}
+        ${sec('Propositions envoyées', ng.env, neg, 'Sur une annonce, touchez « Proposer un prix ».')}
+        ${ng.ok.length ? sec('Accords conclus', ng.ok, neg, '') : ''}
+        ${window.MDGMessages ? sec('Messages', dms, dm, 'Touchez la photo d’un membre, puis « Écrire ». Effacés ' + MDGMessages.JOURS + ' jours après l’envoi.') : ''}
+        ${ng.fin.length ? sec('Sans suite', ng.fin, neg, '') : ''}
+        ${!ng.rec.length ? '<p class="cp-note">Les propositions reçues apparaîtront ici, en haut, dès qu’un membre répond à vos annonces.</p>' : ''}</div>`;
       main.querySelectorAll('[data-nego]').forEach(b => b.onclick = () => { fermer(); G && G.thread(b.dataset.nego); });
       main.querySelectorAll('[data-dm]').forEach(b => b.onclick = () => { fermer(); MDGMessages.conversation(b.dataset.dm); });
       // glisser une négociation vers la gauche pour la retirer de sa liste
       if (G && G.glisser) main.querySelectorAll('[data-nego]').forEach(b => G.glisser(b, async () => { await G.masquer(b.dataset.nego); }));
-      if (G) G.refresh().then(() => { if (bg && main.isConnected && JSON.stringify(J('mdg-negoce:liste', [])) !== JSON.stringify(negos)) VUES.activite(main); });
+      if (G) G.refresh().then(() => { if (bg && main.isConnected && JSON.stringify(J('mdg-negoce:liste', [])) !== JSON.stringify(ng.L)) VUES.activite(main); });
     },
     notifs(main) {
       const L = notifs();
-      main.innerHTML = `<div class="cp-panel"><h2>Notifications</h2><p>Propositions, contre-propositions, accords, refus et expirations de vos négociations, et nouvelles annonces sur vos produits.</p>
-        <div data-pousse style="margin:0 0 18px"></div>
-        ${L.length ? `<div class="cp-row" style="margin:0 0 12px"><button type="button" class="cp-alt" data-lu>Tout marquer comme lu</button></div><div class="cp-list">${L.slice(0, 60).map((n, i) => `<button type="button" class="cp-item${n.lu ? '' : ' is-new'}" data-i="${i}"><span style="grid-row:span 2;width:10px;height:10px;border-radius:50%;background:${n.lu ? 'transparent' : 'var(--acc)'}"></span><b>${esc(n.texte)}</b><span></span><small>${ago(n.t)}</small></button>`).join('')}</div>`
-          : '<div class="cp-empty"><b>Rien de nouveau</b>Les réponses à vos propositions et les accords apparaîtront ici.</div>'}</div>`;
+      main.innerHTML = `<div class="cp-pg"><h2>Notifications</h2><p>Propositions, contre-propositions, accords, refus et expirations, et nouvelles annonces sur vos produits.</p>
+        <div data-pousse></div>
+        <h3 class="cp-lab">Récentes${L.some(n => !n.lu) ? '<button type="button" data-lu>Tout marquer comme lu</button>' : ''}</h3>
+        <div class="cp-grp">${L.length ? L.slice(0, 60).map((n, i) => `<button type="button" class="cp-r cp-it${n.lu ? '' : ' neuf'}" data-i="${i}"><span class="pt${n.lu ? ' lu' : ''}" aria-label="${n.lu ? 'Lue' : 'Non lue'}"></span><b style="white-space:normal">${esc(n.texte)}</b><span></span><small><span>${ago(n.t)}</span></small></button>`).join('')
+          : '<p class="cp-vide"><b>Rien de nouveau</b>Les réponses à vos propositions et les accords apparaîtront ici.</p>'}</div></div>`;
       cartePousse(main.querySelector('[data-pousse]'));
       const lu = main.querySelector('[data-lu]'); if (lu) lu.onclick = () => { W(KN, notifs().map(n => Object.assign(n, { lu: true }))); bg.rafraichir(); };
       main.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const all = notifs(), n = all[+b.dataset.i]; if (!n) return; n.lu = true; W(KN, all); if (n.nego && window.MDGNegoce) { fermer(); MDGNegoce.thread(n.nego); } else bg.rafraichir(); });
     },
     prefs(main) {
       const pf = prefs(), p = profil || {}, S = window.MDGSons, sn = S ? S.reglages() : null;
-      main.innerHTML = `<div class="cp-panel"><h2>Préférences</h2><p>Chaque réglage agit vraiment ; ce qui n’existe pas encore est indiqué.</p>
-        <h3>Notifications</h3><div class="cp-card">
-          <label class="cp-sw"><span>Messages à l’écran<small>Une ligne en bas de l’écran quand une proposition arrive, est acceptée ou refusée</small></span><input type="checkbox" data-pf="toasts" ${pf.toasts ? 'checked' : ''}></label>
-</div><div data-pousse style="margin-top:10px"></div>
-        <h3>Sons</h3><div class="cp-card"><div class="cp-kv"><span>${sn && sn.on ? 'Activés' : 'Désactivés'} · notes de balafon</span><button type="button" class="cp-alt" data-sons>Régler les sons</button></div></div>
-        <h3>Confidentialité</h3><div class="cp-card">
-          <label class="cp-sw"><span>Montrer mon nom de famille<small>Sinon, les autres voient « ${esc(p.prenom || 'Prénom')} ${esc(p.nom ? p.nom[0] + '.' : 'N.')} »${p.pseudo ? ' (votre pseudonyme passe avant)' : ''}</small></span><input type="checkbox" data-np ${p.nom_public ? 'checked' : ''}></label></div>
-        <p class="cp-help">Le numéro inscrit sur une annonce est visible de tous : c’est ainsi que les acheteurs vous appellent. Vous le choisissez annonce par annonce.</p></div>`;
-      main.querySelectorAll('[data-pf]').forEach(i => i.onchange = () => { const o = prefs(); o[i.dataset.pf] = i.checked; W(KPF, o); N().toast('Préférence enregistrée.'); });
+      main.innerHTML = `<div class="cp-pg"><h2>Réglages</h2><p>Chaque réglage agit vraiment ; ce qui n’existe pas encore n’est pas montré.</p>
+        <h3 class="cp-lab">Confidentialité</h3>
+        <div class="cp-grp"><label class="cp-r">${ti('oeil', 'vous')}<span class="cp-r-t"><b>Montrer mon nom de famille</b><small>Sinon, les autres voient « ${esc(p.prenom || 'Prénom')} ${esc(p.nom ? p.nom[0] + '.' : 'N.')} »${p.pseudo ? ' (votre pseudonyme passe avant)' : ''}</small></span><input type="checkbox" class="cp-tog" role="switch" data-np ${p.nom_public ? 'checked' : ''}></label></div>
+        <p class="cp-note">Votre numéro n’est jamais affiché sur vos annonces : on vous écrit et on vous propose un prix dans l’application.</p>
+        <h3 class="cp-lab">À l’écran</h3>
+        <div class="cp-grp"><label class="cp-r">${ti('ecran', 'lien')}<span class="cp-r-t"><b>Messages à l’écran</b><small>Une ligne en bas quand une proposition arrive, est acceptée ou refusée</small></span><input type="checkbox" class="cp-tog" role="switch" data-pf="toasts" ${pf.toasts ? 'checked' : ''}></label>
+          ${S ? ligne({ ico: ti('son', 'marche'), t: 'Sons', s: 'Notes de balafon', v: sn && sn.on ? 'Activés' : 'Désactivés', attrs: 'data-sons' }) : ''}</div>
+        <h3 class="cp-lab">Sur ce téléphone</h3>
+        <div data-pousse></div></div>`;
+      main.querySelectorAll('[data-pf]').forEach(i => i.onchange = () => { const o = prefs(); o[i.dataset.pf] = i.checked; W(KPF, o); N().toast('Réglage enregistré.'); });
       const s = main.querySelector('[data-sons]'); if (s) s.onclick = () => { fermer(); S && S.panneau(); };
       cartePousse(main.querySelector('[data-pousse]'));
-      main.querySelector('[data-np]').onchange = async e => { try { await enregistrer({ nom_public: e.target.checked }); N().toast('Préférence enregistrée.'); bg.rafraichir(); } catch (x) { e.target.checked = !e.target.checked; N().toast(x.message); } };
+      main.querySelector('[data-np]').onchange = async e => { try { await enregistrer({ nom_public: e.target.checked }); N().toast('Réglage enregistré.'); } catch (x) { e.target.checked = !e.target.checked; N().toast(x.message); } };
     },
     securite(main) {
       const u = me();
-      main.innerHTML = `<div class="cp-panel cp-sec"><h2>Sécurité et compte</h2><p>Votre numéro et votre code secret à 6 chiffres protègent votre compte.</p>
-        <h3>Votre compte</h3><div class="cp-grp"><div class="cp-act cp-act--info"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3h10a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"/><path d="M11 18h2"/></svg></i><span><b>${esc(N().fmtTel(u.tel))}</b><small>Votre numéro de connexion. Pour en changer, contactez le Marché de Gros.</small></span></div></div>
-        <h3>Code secret</h3><div class="cp-grp"><details class="cp-acc"><summary class="cp-act"><i aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="m11 12 8-8M16 7l2 2M14 9l2 2"/></svg></i><span><b>Changer mon code secret</b><small>Il vous faut votre code actuel</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></summary><div class="cp-acc-c"><form class="cp-f cp-code" novalidate>${champ('cp-c0', 'Code actuel', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}${champ('cp-c1', 'Nouveau code (6 chiffres)', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}${champ('cp-c2', 'Retapez le nouveau code', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}
-          <div class="cp-row"><button type="submit" class="cp-go">Enregistrer le nouveau code</button><span class="cp-msg" role="status"></span></div></form></div></details>
-          <button type="button" class="cp-act" data-sos><i aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="m6 6 3.5 3.5M18 6l-3.5 3.5M6 18l3.5-3.5M18 18l-3.5-3.5"/></svg></i><span><b>Créer un nouveau code de secours</b><small>Pour retrouver votre compte si vous oubliez votre code</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
-        <h3>Connexions</h3><div class="cp-grp"><button type="button" class="cp-act" data-out><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 21V4.5A1.5 1.5 0 0 1 6.5 3H14a1.5 1.5 0 0 1 1.5 1.5V21"/><path d="M12 12h9M18 9l3 3-3 3"/><path d="M3 21h13"/></svg></i><span><b>Me déconnecter</b><small>Sur ce téléphone seulement</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
-          <button type="button" class="cp-act" data-outall><i aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="11" height="8" rx="1.5"/><rect x="14" y="9" width="7" height="11" rx="1.5"/><path d="M6 17h5"/></svg></i><span><b>Déconnecter tous mes appareils</b><small>Téléphone perdu ou prêté ? Tous devront se reconnecter</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>
-        <h3>Zone sensible</h3><div class="cp-grp cp-grp--bad"><details class="cp-acc"><summary class="cp-act cp-bad"><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></i><span><b>Supprimer mon compte</b><small>Définitif : vos annonces sont retirées</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></summary><div class="cp-acc-c"><p style="margin:0 0 12px;color:var(--mute);font-size:14px;line-height:1.5">Vos annonces sont retirées et les négociations en cours fermées. Votre profil et votre code de secours sont effacés, et la connexion est bloquée. Les accords déjà conclus et les messages restent visibles des deux parties, pour la trace des échanges ; l’autre partie y voit « Compte supprimé ».</p><button type="button" class="cp-alt cp-bad" data-del>Je veux supprimer mon compte…</button></div></details></div>
-        <div class="cp-grp" style="margin-top:22px"><details class="cp-acc"><summary class="cp-act"><i aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/></svg></i><span><b>Données conservées</b><small>Ce que nous gardons, et pourquoi</small></span><svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></summary><div class="cp-acc-c"><p class="cp-help" style="font-size:13.5px;margin:0">Numéro et code secret (chiffré) : pour vous connecter. Profil : pour vous présenter aux autres. Annonces : pour être trouvées. Négociations et messages : pour que les deux parties gardent la trace de leurs échanges. Signalements : pour la modération. Sur cet appareil : vos annonces en attente, vos réglages et une copie des annonces des autres pour l’usage hors connexion.</p></div></details></div></div>`;
+      const acc = (ico, t, s, corps, cls) => `<details class="cp-acc"><summary class="cp-r${cls ? ' ' + cls : ''}">${ico}<span class="cp-r-t"><b>${t}</b><small>${s}</small></span>${CHEV}</summary><div class="cp-acc-c">${corps}</div></details>`;
+      main.innerHTML = `<div class="cp-pg"><h2>Sécurité et compte</h2><p>Votre numéro et votre code secret à 6 chiffres protègent votre compte.</p>
+        <h3 class="cp-lab">Connexion</h3>
+        <div class="cp-grp">${ligne({ ico: ti('telephone', 'aide'), t: esc(N().fmtTel(u.tel)), s: 'Votre numéro de connexion. Pour en changer, écrivez au Marché de Gros.', cls: 'info', chev: false })}
+          ${acc(ti('cle', 'vous'), 'Changer mon code secret', 'Il vous faut votre code actuel', `<form class="cp-f cp-code" novalidate>${champ('cp-c0', 'Code actuel', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}${champ('cp-c1', 'Nouveau code (6 chiffres)', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}${champ('cp-c2', 'Retapez le nouveau code', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}<button type="submit" class="cp-go plein">Enregistrer le nouveau code</button><span class="cp-msg" role="status"></span></form>`)}
+          ${ligne({ ico: ti('bouee', 'demande'), t: 'Nouveau code de secours', s: 'Pour retrouver votre compte si vous oubliez votre code', attrs: 'data-sos' })}</div>
+        <h3 class="cp-lab">Appareils</h3>
+        <div class="cp-grp">${ligne({ ico: ti('sortir', 'marche'), t: 'Me déconnecter', s: 'Sur ce téléphone seulement', attrs: 'data-out' })}
+          ${ligne({ ico: ti('appareils', 'marche'), t: 'Déconnecter tous mes appareils', s: 'Téléphone perdu ou prêté ? Tous devront se reconnecter', attrs: 'data-outall' })}</div>
+        <h3 class="cp-lab">Vos données</h3>
+        <div class="cp-grp">${acc(ti('donnees', 'aide'), 'Ce que nous gardons', 'Et pourquoi', '<p class="cp-help" style="font-size:13.5px;margin:0">Numéro et code secret (chiffré) : pour vous connecter. Profil : pour vous présenter aux autres. Annonces : pour être trouvées. Négociations et messages : pour que les deux parties gardent la trace de leurs échanges. Signalements : pour la modération. Sur cet appareil : vos annonces en attente, vos réglages et une copie des annonces des autres pour l’usage hors connexion.</p>')}
+          ${acc(ti('supprimer', 'bad'), 'Supprimer mon compte', 'Définitif : vos annonces sont retirées', '<p style="margin:0 0 12px;color:var(--mute);font-size:14px;line-height:1.5">Vos annonces sont retirées et les négociations en cours fermées. Votre profil et votre code de secours sont effacés, et la connexion est bloquée. Les accords déjà conclus et les messages restent visibles des deux parties, pour la trace des échanges ; l’autre partie y voit « Compte supprimé ».</p><button type="button" class="cp-alt cp-bad" data-del>Je veux supprimer mon compte…</button>', 'bad')}</div></div>`;
       const f = main.querySelector('.cp-code'), msg = f.querySelector('.cp-msg'), go = f.querySelector('.cp-go');
       f.onsubmit = async e => {
         e.preventDefault(); const c0 = f.querySelector('#cp-c0').value, c1 = f.querySelector('#cp-c1').value, c2 = f.querySelector('#cp-c2').value;
@@ -398,17 +499,19 @@
         if (!/^\d{6}$/.test(c1)) return err('cp-c1', 'Le nouveau code fait 6 chiffres.');
         if (/^(\d)\1{5}$/.test(c1) || c1 === '123456' || c1 === '654321') return err('cp-c1', 'Trop facile à deviner : évitez 123456 ou 6 fois le même chiffre.');
         if (c1 !== c2) return err('cp-c2', 'Les deux codes ne sont pas identiques.');
-        go.disabled = true; go.setAttribute('aria-busy', 'true'); go.textContent = 'Vérification'; msg.textContent = '';
+        go.disabled = true; go.setAttribute('aria-busy', 'true'); go.textContent = 'Vérification…'; msg.textContent = '';
         try { await N().signIn(u.tel, c0); await N().api('/auth/v1/user', { method: 'PUT', auth: true, body: { password: c1 } }); f.reset(); msg.innerHTML = '<span class="cp-ok">✓ Code changé</span>'; }
-        catch (x) { msg.innerHTML = `<span style="color:#F3A08C">${esc(/incorrect/i.test(x.message) ? 'Code actuel incorrect.' : x.message)}</span>`; }
-        go.disabled = false; go.textContent = 'Changer mon code';
+        catch (x) { msg.innerHTML = `<span class="cp-bad">${esc(/incorrect/i.test(x.message) ? 'Code actuel incorrect.' : x.message)}</span>`; }
+        go.disabled = false; go.removeAttribute('aria-busy'); go.textContent = 'Enregistrer le nouveau code';
       };
-      main.querySelector('[data-sos]').onclick = async e => { if (!confirm('Créer un nouveau code de secours ? L’ancien ne fonctionnera plus.')) return; e.target.disabled = true; try { const c = await N().rpc('creer_secours'); fermer(); N().showSecours ? N().showSecours(c) : alert('Votre code de secours : ' + c); } catch (x) { e.target.disabled = false; N().toast(x.message); } };
-      main.querySelector('[data-out]').onclick = () => { fermer(); const fin = () => N().toast('Vous êtes sorti du marché. Vos annonces restent publiées.'); if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N().signOut()); else { N().signOut(); fin(); } };  // dans l'application : on « sort du marché » (v3/porte.js)
+      main.querySelector('[data-sos]').onclick = async e => { if (!confirm('Créer un nouveau code de secours ? L’ancien ne fonctionnera plus.')) return; const b = e.currentTarget; b.disabled = true; try { const c = await N().rpc('creer_secours'); fermer(); N().showSecours ? N().showSecours(c) : alert('Votre code de secours : ' + c); } catch (x) { b.disabled = false; N().toast(x.message); } };
+      main.querySelector('[data-out]').onclick = deconnecter;
       main.querySelector('[data-outall]').onclick = async () => { if (!confirm('Déconnecter tous vos appareils, celui-ci compris ?')) return; try { await N().api('/auth/v1/logout?scope=global', { method: 'POST', auth: true }); } catch (_) {} fermer(); N().signOut(); N().toast('Tous vos appareils sont déconnectés.'); };
       main.querySelector('[data-del]').onclick = () => supprimer(main);
     }
   };
+  // dans l'application : on « sort du marché » (v3/porte.js)
+  function deconnecter() { fermer(); const fin = () => N().toast('Vous êtes sorti du marché. Vos annonces restent publiées.'); if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N().signOut()); else { N().signOut(); fin(); } }
   function supprimer(main) {
     const box = document.createElement('div'); box.className = 'cp-card'; box.style.marginTop = '10px';
     box.innerHTML = `<form class="cp-f" novalidate><p style="margin:0;font-size:14.5px">Pour confirmer, tapez votre code secret.</p>${champ('cp-dc', 'Code secret', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}<div class="cp-row"><button type="submit" class="cp-go" style="background:#E2735B">Supprimer définitivement</button><button type="button" class="cp-alt" data-no>Annuler</button></div></form>`;
@@ -534,7 +637,7 @@
     function dessiner() {
       pas();
       if (etape === 1) {
-        w.innerHTML = `<h2>Comment vous appelle-t-on ?</h2><p>C’est ce que verront les vendeurs et les acheteurs avec qui vous échangez.</p><form class="cp-f cp-panel" novalidate>${champ('cp-prenom', 'Prénom', p().prenom, { attrs: 'maxlength="40" autocomplete="given-name"' })}${champ('cp-nom', 'Nom', p().nom, { facultatif: true, attrs: 'maxlength="60" autocomplete="family-name"', aide: 'Les autres ne voient que son initiale, sauf si vous choisissez de le montrer.' })}<div class="cp-row"><button class="cp-go">Continuer</button><span class="cp-msg" role="status"></span></div></form>`;
+        w.innerHTML = `<h2>Comment vous appelle-t-on&nbsp;?</h2><p>C’est ce que verront les vendeurs et les acheteurs avec qui vous échangez.</p><form class="cp-f cp-panel" novalidate>${champ('cp-prenom', 'Prénom', p().prenom, { attrs: 'maxlength="40" autocomplete="given-name"' })}${champ('cp-nom', 'Nom', p().nom, { facultatif: true, attrs: 'maxlength="60" autocomplete="family-name"', aide: 'Les autres ne voient que son initiale, sauf si vous choisissez de le montrer.' })}<div class="cp-row"><button class="cp-go">Continuer</button><span class="cp-msg" role="status"></span></div></form>`;
         const f = w.querySelector('form'); setTimeout(() => f.querySelector('#cp-prenom').focus(), 60);
         f.onsubmit = async e => { e.preventDefault(); if (!valider(f, ['prenom', 'nom'])) return; const m = await suite({ prenom: f.querySelector('#cp-prenom').value.trim(), nom: f.querySelector('#cp-nom').value.trim() || null }); if (m) f.querySelector('.cp-msg').textContent = m; };
       } else if (etape === 2) {

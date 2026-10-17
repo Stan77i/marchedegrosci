@@ -1,3 +1,26 @@
+# Mise à jour — 17 octobre 2026 (Mon compte refait)
+
+Service worker : `mgci-v61`. Fichier : `v3/compte.js` (application et site).
+
+## La logique
+Comme les Réglages de l'iPhone : **une page d'accueil**, puis des pages qu'on ouvre (retour ‹) et qu'on referme. Avant : 5 onglets serrés, de grands titres partout, des cadres en pointillés.
+
+## Accueil
+- **Qui je suis** : avatar, nom, numéro, rôle (« Acheteur et vendeur »), lieu ; « Profil à compléter » si le nom manque ; bouton « Modifier mon profil ».
+- **Où j'en suis** : trois chiffres réels (offres ● vertes, demandes ■ jaunes, négociations en cours ● bleues) ; toucher ouvre le détail. Réputation juste dessous.
+- **Échanges** : Messages, Négociations (« 1 à vous de répondre »), Mes annonces.
+- **Réglages** : Notifications (état réel : Activées, Désactivées, Bloquées…), Sons, Confidentialité.
+- **Compte** : Sécurité et code secret, Tableau de bord (administrateur), Me déconnecter.
+
+## Pages
+- **Profil et avatar** : avatar au centre, champs groupés, rôle en sélecteur à trois cases, bouton Enregistrer pleine largeur ; après l'enregistrement on revient à l'accueil.
+- **Mon activité** : « À vous de répondre » en premier ; montants alignés à droite avec l'unité (« 125 F · prix / kg », « à discuter ») ; plus de chiffres en police de titre ; listes vides sur une ligne.
+- **Notifications** : la carte du téléphone, puis les notifications récentes (point orange = non lue).
+- **Réglages** : vrais interrupteurs (comme l'iPhone) au lieu des cases blanches.
+- **Sécurité** : connexion, appareils, données, suppression du compte (en rouge), chacune avec son icône.
+- **Partout** : petites étiquettes de section en capitales, cartes groupées, icônes colorées par sens (même logique que le menu), barre du haut avec retour et croix, titre qui apparaît dans la barre quand on fait défiler.
+- Le choix d'avatar et l'accueil d'un nouveau membre suivent le même style (la croix ne chevauche plus le contenu).
+
 # Mise à jour — 17 octobre 2026 (finitions : croix, chevrons, détails)
 
 Service worker : `mgci-v60`.

@@ -24,6 +24,9 @@ NOMS = {
   # fenêtres partagées avec le site (compte, messages, administration)
   'reglages': 'sliders-horizontal', 'activite': 'clipboard-list', 'tableau': 'layout-dashboard', 'horloge': 'clock', 'envoyer': 'send-horizontal',
   'options': 'ellipsis', 'apercu': 'chart-column', 'traiter': 'triangle-alert', 'comptes': 'users', 'site': 'globe',
+  # Mon compte
+  'son': 'volume-2', 'oeil': 'eye', 'telephone': 'smartphone', 'cle': 'key-round', 'bouee': 'life-buoy', 'appareils': 'monitor-smartphone',
+  'donnees': 'database', 'crayon': 'pencil', 'ecran': 'message-square-dot',
 }
 src = sys.argv[1]; out = {}
 for k, n in NOMS.items():

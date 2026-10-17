@@ -24,6 +24,7 @@
 .an-chiffres b.doux { font-size: var(--t-lead); font-weight: 600; color: var(--texte-3); }
 .an-infos { display: flex; flex-wrap: wrap; gap: 6px; }
 .an-infos span { display: inline-flex; align-items: center; gap: 5px; min-height: 26px; padding: 0 10px; border-radius: var(--r-rond); background: rgba(23, 21, 18, .05); font-size: var(--t-sm); color: var(--texte-2); }
+.an-infos span span { display: inline; min-height: 0; padding: 0; border-radius: 0; background: none; color: inherit; }   /* le moteur enveloppe le texte : pas de pastille dans la pastille */
 .an-infos .ok { background: rgba(108, 197, 140, .16); color: var(--offre-texte); }
 .an-infos .attn { background: rgba(226, 115, 91, .12); color: #9A3F2B; }
 .an-actions { display: flex; gap: 8px; align-items: center; }

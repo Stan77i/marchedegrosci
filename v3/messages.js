@@ -78,7 +78,7 @@
 .dm-f textarea{flex:1;min-width:0;min-height:46px;max-height:132px;margin:0;padding:12px 16px;border:1px solid rgba(245,240,230,.14);border-radius:23px;background:#14120f;color:var(--ink);font:400 16px/1.35 Jost,sans-serif;resize:none;box-sizing:border-box}
 .dm-f textarea:focus{outline:none;border-color:var(--acc)}
 .dm-env{flex:none;width:46px;height:46px;border:0;border-radius:50%;background:var(--acc);color:#171512;display:grid;place-items:center;cursor:pointer;transition:transform .15s,opacity .2s}
-.dm-env svg{width:20px;height:20px;fill:currentColor}.dm-env:disabled{opacity:.35;cursor:default}.dm-env:not(:disabled):active{transform:scale(.92)}
+.dm-env svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.dm-env:disabled{opacity:.35;cursor:default}.dm-env:not(:disabled):active{transform:scale(.92)}
 .dm-stop{flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;color:var(--mute);font-size:14px}
 .dm-stop button{flex:none;min-height:40px;padding:0 14px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:var(--ink);font:600 13.5px Jost,sans-serif;cursor:pointer}
 .dm-menu{position:absolute;right:10px;top:calc(60px + env(safe-area-inset-top));z-index:3;min-width:220px;padding:6px;border-radius:18px;background:#2a251e;box-shadow:0 18px 40px rgba(0,0,0,.5);animation:dmPop .2s ease both}
@@ -106,7 +106,7 @@
 .dm-vide button{margin-top:16px;min-height:46px;padding:0 18px;border:1px solid rgba(245,240,230,.22);border-radius:999px;background:none;color:var(--ink);font:600 14.5px Jost,sans-serif;cursor:pointer}
 @keyframes dmIn{from{opacity:0}}@keyframes dmUp{from{transform:translateY(30px);opacity:0}}@keyframes dmPop{from{transform:scale(.94);opacity:0}}
 @media (prefers-reduced-motion:reduce){.dm-bg,.dm,.dm-m.neuf p,.dm-menu{animation:none}}`;
-  const I = {
+  const I0 = {
     retour: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
     x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>',
     plus: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>',
@@ -114,6 +114,9 @@
     envoyer: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.4 20.4 21 12 3.4 3.6l2.2 7.1 8.4 1.3-8.4 1.3z"/></svg>',
     bulle: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>'
   };
+  // même jeu d'icônes que l'application (app/icones.js, Lucide), sinon les dessins ci-dessus
+  const LUC = { retour: 'retour', x: 'fermer', plus: 'options', horloge: 'horloge', envoyer: 'envoyer', bulle: 'messages' };
+  const I = {}; Object.keys(I0).forEach(k => { const L = window.MDGIco && window.MDGIco.corps(LUC[k]); I[k] = L ? '<svg viewBox="0 0 24 24" aria-hidden="true">' + L + '</svg>' : I0[k]; });
   let bg = null, rendre = null, minuteur = 0;
   function feuille(html, label) {
     if (!document.getElementById('dmCss')) { const st = document.createElement('style'); st.id = 'dmCss'; st.textContent = CSS; document.head.appendChild(st); }

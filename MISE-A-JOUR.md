@@ -1,3 +1,13 @@
+# Mise à jour — 17 octobre 2026 (fenêtres sur papier clair)
+
+Service worker : `mgci-v63`. Outil : `tools/theme/papier.py` (table de correspondance nuit → papier).
+
+## Ce qui change
+- **Messages, conversation, Mes négociations, détail d'une négociation, Proposer un prix, Alertes produits, Alerte d'un produit, Profil public, Les mieux notés, Modifier mon profil public, Écrire au Marché de Gros** : même papier clair que « Mon compte ». Texte encre, champs blancs, cartes blanches à ombre douce, boutons secondaires en fond teinté (plus de contours fins), titres de section en petites capitales, interrupteurs à pastille blanche. Vos messages : bulle encre ; ceux des autres : bulle claire.
+- **Bug corrigé** : le bouton retour du détail d'une négociation affichait « ${CHE » au lieu de la flèche.
+- **Proposer un prix** : le bouton « Envoyer ma proposition » grisé ne laisse plus voir le champ en dessous.
+- Restent sombres, volontairement : la porte de connexion (scène immersive) et le réglage des sons.
+
 # Mise à jour — 17 octobre 2026 (Mon compte : en-tête vivant, papier clair)
 
 Service worker : `mgci-v62`. Inspiré de la référence envoyée (en-tête coloré, contenu clair, activité par jour), adapté à notre identité.

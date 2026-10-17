@@ -68,7 +68,7 @@
     hydro().then(h => { if (!alive) return; const w = pts => pts.map(q => [q[0], MY(q[1])]);
       lakes = h.lakes.map(l => l.p.map(w)); rivers = h.rivers.map(r => ({ w: r.r <= 5 ? 1.3 : r.r <= 7 ? 1 : .7, pts: w(r.p) })); dirty = true; kick(); }).catch(() => {});
     // vue d'ensemble : le pays tient dans la partie visible (entre l'interface du haut et celle du bas)
-    const home = () => { const i = ins(), pad = 18, vh = Math.max(120, H - i.t - i.b), z = Math.min((W - pad * 2) / (bb.x1 - bb.x0), (vh - pad * 2 - 10) / (bb.y1 - bb.y0)); return { x: (bb.x0 + bb.x1) / 2, y: (bb.y0 + bb.y1) / 2 + ((i.b - i.t) / 2) / z, z }; };
+    const home = () => { const i = ins(), pad = 18, padX = 30, vh = Math.max(120, H - i.t - i.b), z = Math.min((W - padX * 2) / (bb.x1 - bb.x0), (vh - pad * 2 - 10) / (bb.y1 - bb.y0)); return { x: (bb.x0 + bb.x1) / 2, y: (bb.y0 + bb.y1) / 2 + ((i.b - i.t) / 2) / z, z }; };
     const zMin = () => home().z * .8, zMax = () => home().z * 4.5; // jusqu'au district : plus près ne montrerait rien de vrai
     const clampCam = c => { const h = home(); c.z = Math.max(zMin(), Math.min(zMax(), c.z)); const mx = (bb.x1 - bb.x0) * .6, my = (bb.y1 - bb.y0) * .6; c.x = Math.max(h.x - mx, Math.min(h.x + mx, c.x)); c.y = Math.max(h.y - my, Math.min(h.y + my, c.y)); return c; };
     const S = (wx, wy) => [(wx - cam.x) * cam.z + W / 2, (wy - cam.y) * cam.z + H / 2];
@@ -218,7 +218,7 @@
       ctx.strokeStyle = 'rgba(245,240,230,.7)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(12, HB - 14); ctx.lineTo(12, HB - 10); ctx.lineTo(12 + px, HB - 10); ctx.lineTo(12 + px, HB - 14); ctx.stroke();
       ctx.font = '500 10px Jost,sans-serif'; ctx.fillStyle = 'rgba(245,240,230,.75)'; ctx.fillText(km + ' km', 16 + px, HB - 9);
       ctx.font = '500 15px "Cormorant Garamond",serif'; ctx.fillStyle = '#F5F0E6'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(18,20,23,.8)'; const wh = where(); ctx.strokeText(wh, 12, HB - 22); ctx.fillText(wh, 12, HB - 22);
-      ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(245,240,230,.32)'; ctx.font = '400 9px Jost,sans-serif'; ctx.fillText(real ? '© Natural Earth' : 'Contour simplifié', W - 10, HB - 9);
+      ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(245,240,230,.32)'; ctx.font = '400 9px Jost,sans-serif'; ctx.fillText(real ? '© Natural Earth' : 'Contour simplifié', W - 10, HB - 9); ctx.fillStyle = 'rgba(245,240,230,.5)'; ctx.fillText('Points au chef-lieu du district', W - 10, HB - 21);
     }
 
     // ce que l'on regarde : le pays, une partie du pays, puis les alentours du chef-lieu le plus proche (distance et direction réelles)

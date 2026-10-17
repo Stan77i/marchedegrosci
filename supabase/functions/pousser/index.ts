@@ -6,7 +6,9 @@
 //  3. par la base (déclencheur public.push_dm) à chaque message direct, avec { dm_id } (schema-8) ;
 //     un message d'un administrateur s'affiche au nom du « Marché de Gros » (schema-10) ;
 //  4. par la base (déclencheur public.push_alerte) quand quelqu'un essaie de sortir de l'application, avec { alerte_id } :
-//     tous les administrateurs sont prévenus (schema-10).
+//     tous les administrateurs sont prévenus (schema-10) ;
+//  5. par la base (déclencheur public.push_annonce) à chaque nouvelle annonce, avec { annonce: 'offres' | 'demandes', id } :
+//     ceux qui suivent ce produit (table alertes_produits) sont prévenus (schema-12).
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
 import webpush from "npm:web-push@3.6.7";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -98,6 +100,19 @@ Deno.serve(async (req) => {
       const res = [];
       for (const ad of ads || []) res.push(await envoyer(ad.user_id, { title: `Alerte : ${qui} veut sortir de l'application`, body: `${a.motif} dans ${a.source === "dm" ? "un message" : "une négociation"} — « ${coupe(String(a.extrait || ""), 90)} »`, tag: "alerte-" + a.id, url: "admin.html#messages" }));
       return json({ admins: res.length, res });
+    }
+
+    // 5. une nouvelle annonce : ceux qui suivent ce produit sont prévenus
+    if (corps.annonce && corps.id) {
+      const t = corps.annonce === "demandes" ? "demandes" : "offres";
+      const { data: a } = await sb.from(t).select("*").eq("id", String(corps.id)).maybeSingle();
+      if (!a || a.status !== "active") return json({ rien: true });
+      const { data: abos } = await sb.from("alertes_produits").select("user_id").eq("product_slug", a.product_slug).eq(t, true).neq("user_id", a.user_id);
+      const nom = a.product_label || a.product_slug, u = a.unit || "kg", px = t === "offres" ? a.price : a.budget;
+      const corpsTxt = [a.quantity ? new Intl.NumberFormat("fr-FR").format(a.quantity) + " " + u : "", a.city || "", px ? (t === "offres" ? "" : "budget ") + F(px) + " / " + u : ""].filter(Boolean).join(" · ");
+      const res = [];
+      for (const ab of abos || []) res.push(await envoyer(ab.user_id, { title: (t === "offres" ? "Nouvelle offre : " : "Nouvelle demande : ") + nom, body: corpsTxt || "Touchez pour voir", tag: "annonce-" + a.id, url: "application.dc.html#/produits/" + a.product_slug }));
+      return json({ abonnes: res.length, res });
     }
 
     const id = String(corps.message_id || "");

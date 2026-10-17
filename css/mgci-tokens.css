@@ -71,6 +71,32 @@
   /* ——— profondeurs ——— */
   --z-page: 1; --z-barre: 3; --z-feuille: 40; --z-fenetre: 9000; --z-toast: 9500;
 
+  /* ——— rôles (même logique que shadcn/ui : on nomme le rôle, pas la couleur) ———
+     Les écrans lisent ces noms ; changer la marque = changer ces lignes. */
+  --background: var(--encre);      /* fond des écrans sombres */
+  --foreground: var(--ivoire);
+  --card: var(--nuit-2);           /* surfaces posées sur le fond */
+  --card-foreground: var(--ivoire);
+  --primary: var(--terre);         /* action principale */
+  --primary-foreground: var(--encre);
+  --muted: rgba(245, 240, 230, .06);
+  --muted-foreground: var(--sable);
+  --accent: rgba(245, 240, 230, .08);
+  --destructive: var(--alerte);
+  --border: var(--trait-d);
+  --ring: var(--terre-clair);
+  --radius: 14px;
+
+  /* ——— tons des icônes : la couleur dit le sens (voir docs/ICONES.md) ———
+     offre = ce que je vends · demande = ce que je cherche ou attends · vous = moi · lien = l'échange entre deux personnes
+     marché = le marché lui-même · aide = comprendre, se protéger */
+  --ton-offre: var(--offre);
+  --ton-demande: var(--demande);
+  --ton-vous: var(--vous);
+  --ton-lien: var(--compat);
+  --ton-marche: #EE9A62;           /* terracotta éclairci : lisible sur la nuit (7,5:1) */
+  --ton-aide: #CFC4B1;
+
   /* ——— tactile ——— */
   --cible: 44px;           /* cible tactile minimale */
 }

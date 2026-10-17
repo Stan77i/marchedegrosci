@@ -1,11 +1,12 @@
 /* ═════════ Marché de Gros CI — la carte du réseau, en profondeur (MapLibre GL) ═════════
    Une vraie carte : routes, rail, fleuves, lacs, villes et 3 700 localités de Côte d'Ivoire, EMBARQUÉES (app/geo/ci.json) —
-   elle s'ouvre sans connexion. En ligne, elle gagne le relief en 3D (Terrarium, AWS Open Data) et, de près, les rues,
+   elle s'ouvre sans connexion. En ligne, elle gagne l'ombrage du relief (Terrarium, AWS Open Data) et, de près, les rues,
    les quartiers et les bâtiments en volume (OpenFreeMap, données OpenStreetMap).
    Les annonces sont des bulles de prix (« 350 F/kg ») posées dans la ville déclarée par le membre (jamais une adresse exacte) ;
    de loin, elles se regroupent par district. Un calque « chaleur » montre où la demande se concentre.
    Repli : sans WebGL, sur un appareil faible, ou si un fichier manque, l'application garde la carte Canvas (app/carte-app.js).
-   API : MDGCarteGL.capable() · mount(host, opt) → Promise<api|null> ; api.set(data) · relayout() · destroy() · home().
+   Carte figée : vue du dessus, nord en haut, ni rotation ni inclinaison ; on ne dézoome pas au-delà du pays entier.
+   API : MDGCarteGL.capable() · mount(host, opt) → Promise<api|null> ; api.set(data) · relayout() · destroy() · home() · localiser().
    opt : onSelect(region) · onPick(ids) · onLocate(lat, lon) · insets() → { t, b } (place prise par l'interface en haut et en bas). */
 (function () {
   'use strict';
@@ -112,14 +113,14 @@
 .cgl-moi::after{content:"";position:absolute;inset:-12px;border-radius:50%;border:2px solid rgba(176,149,240,.6);animation:cglOnde 2.4s ease-out infinite}
 @keyframes cglOnde{from{transform:scale(.4);opacity:1}to{transform:scale(1.6);opacity:0}}
 .cgl-dist{padding:4px 9px;border-radius:12px;background:rgba(23,21,18,.9);color:#E6DCFF;font:600 12px Jost,sans-serif;white-space:nowrap;box-shadow:0 0 0 1px rgba(176,149,240,.5)}
-.cgl-ui{position:absolute;right:10px;display:flex;flex-direction:column;gap:6px;z-index:2;transition:top .3s}
-.cgl-ui button{width:40px;height:40px;border-radius:20px;border:1px solid rgba(245,240,230,.14);background:rgba(23,21,18,.78);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#F5F0E6;display:flex;align-items:center;justify-content:center;padding:0;font:700 11.5px Jost,sans-serif;cursor:pointer}
+.cgl-ui{position:absolute;right:10px;display:flex;flex-direction:row;gap:8px;z-index:2;transition:bottom .3s}@media (max-width:360px){.cgl-ui{gap:5px}.cgl-ui button{width:40px!important;height:40px!important}}
+.cgl-ui button{width:44px;height:44px;border-radius:22px;border:1px solid rgba(245,240,230,.14);background:rgba(23,21,18,.78);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#F5F0E6;display:flex;align-items:center;justify-content:center;padding:0;font:700 11.5px Jost,sans-serif;cursor:pointer}
 .cgl-ui button[aria-pressed=true]{background:#F5F0E6;color:#171512}
 .cgl.jour .cgl-ui button{background:rgba(255,253,248,.92);color:#171512;border-color:rgba(23,21,18,.1);box-shadow:0 2px 8px rgba(80,60,30,.15)}.cgl.jour .cgl-ui button[aria-pressed=true]{background:#171512;color:#F5F0E6}
 .cgl-etat{position:absolute;left:10px;z-index:2;display:flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:13px;background:rgba(23,21,18,.72);color:#E6DCCB;font:500 11px Jost,sans-serif;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);pointer-events:none;transition:top .3s}
 .cgl-etat i{width:7px;height:7px;border-radius:50%;background:#6CC58C}.cgl-etat.hors i{background:#B9AD98}
 .cgl.jour .cgl-etat{background:rgba(255,253,248,.9);color:#3b342a;box-shadow:0 2px 8px rgba(80,60,30,.15)}
-.cgl-echelle{position:absolute;left:10px;z-index:2;font:600 15px 'Cormorant Garamond',serif;color:#F5F0E6;text-shadow:0 1px 8px rgba(0,0,0,.8);pointer-events:none;transition:bottom .3s}
+.cgl-echelle{position:absolute;left:12px;z-index:2;font:600 17px 'Cormorant Garamond',serif;color:#F5F0E6;text-shadow:0 1px 8px rgba(0,0,0,.8);pointer-events:none;transition:top .3s}
 .cgl.jour .cgl-echelle{color:#231f19;text-shadow:0 1px 6px rgba(255,255,255,.9)}
 @media (prefers-reduced-motion:reduce){.cgl,.cgl-pill{transition:none}.cgl-feu,.cgl-moi::after{animation:none}}`;
 
@@ -129,7 +130,7 @@
     return Promise.all([lib(), geo()]).then(([ml, base]) => new Promise(resolve => {
       if (!document.getElementById('cglCss')) { const st = document.createElement('style'); st.id = 'cglCss'; st.textContent = CSS; document.head.appendChild(st); }
       const A = window.MDGApp, LS = k => { try { return localStorage.getItem(k); } catch (_) { return null; } }, SS = (k, v) => { try { localStorage.setItem(k, v); } catch (_) {} };
-      let theme = LS('mdg-carte:theme') === 'jour' ? 'jour' : 'nuit', P = PAL[theme], relief3d = LS('mdg-carte:3d') !== 'non', chaleur = LS('mdg-carte:chaleur') === 'oui';
+      let theme = LS('mdg-carte:theme') === 'jour' ? 'jour' : 'nuit', P = PAL[theme], chaleur = LS('mdg-carte:chaleur') === 'oui';
       const box = document.createElement('div'); box.className = 'cgl' + (theme === 'jour' ? ' jour' : ''); host.appendChild(box);
       // toucher un repère ne doit jamais faire défiler la page qui contient la carte (le navigateur « montre » l'élément touché)
       const bloque = [], fige = e => { const t = e.currentTarget; if (t.scrollTop || t.scrollLeft) { t.scrollTop = 0; t.scrollLeft = 0; } };
@@ -145,25 +146,25 @@
 
       const enLigne = () => navigator.onLine !== false;
       const map = new ml.Map({ container: box, style: style(base, P), bounds: [[bb[0], bb[1]], [bb[2], bb[3]]], fitBoundsOptions: { padding: { top: ins().t + 20, bottom: ins().b + 20, left: 24, right: 24 } },
-        minZoom: 4.6, maxZoom: 17.5, maxPitch: 70, attributionControl: { compact: true }, dragRotate: true, pitchWithRotate: true, touchPitch: true, renderWorldCopies: false, fadeDuration: 150,
-        maxBounds: [[bb[0] - 6, bb[1] - 5], [bb[2] + 6, bb[3] + 5]] });
-      map.touchZoomRotate.enableRotation();
+        minZoom: 4.6, maxZoom: 17.5, maxPitch: 0, attributionControl: { compact: true }, dragRotate: false, pitchWithRotate: false, touchPitch: false, renderWorldCopies: false, fadeDuration: 150 });
+      // carte figée : vue du dessus, nord en haut ; on glisse et on zoome, on ne la tourne pas
+      map.touchZoomRotate.disableRotation(); map.keyboard.disableRotation();
 
-      // ——— contrôles : zoomer, recentrer, me localiser, 3D, jour/nuit, chaleur ———
+      // ——— contrôles : zoomer, tout le pays, jour/nuit, chaleur (« me localiser » est dans la barre de l'application) ———
       const ui = document.createElement('div'); ui.className = 'cgl-ui'; box.appendChild(ui);
       const ic = d => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
+      const I = n => window.MDGIco ? window.MDGIco.svg(n, 20, 2) : ic('');   // même jeu d'icônes que l'application (app/icones.js)
       const btn = (html, lab, fn, press) => { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = html; b.setAttribute('aria-label', lab); b.title = lab; if (press != null) b.setAttribute('aria-pressed', String(press));
         b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); ui.appendChild(b); return b; };
-      btn(ic('<path d="M12 5v14M5 12h14"/>'), 'Zoomer', () => map.zoomIn());
-      btn(ic('<path d="M5 12h14"/>'), 'Dézoomer', () => map.zoomOut());
-      btn(ic('<path d="M3 10.5 12 4l9 6.5"/><path d="M5 9.5V20h14V9.5"/>'), 'Tout le pays', () => { opt.onSelect && opt.onSelect(''); home(); });
-      btn(ic('<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>'), 'Me localiser', () => localiser());
-      const b3d = btn('3D', 'Vue en relief', b => { relief3d = !relief3d; SS('mdg-carte:3d', relief3d ? 'oui' : 'non'); b.setAttribute('aria-pressed', String(relief3d)); appliquerRelief(true); }, relief3d);
-      const bJour = btn(ic('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'), 'Carte de jour', b => { theme = theme === 'jour' ? 'nuit' : 'jour'; SS('mdg-carte:theme', theme); b.setAttribute('aria-pressed', String(theme === 'jour')); ambiance(); }, theme === 'jour');
-      const bChal = btn(ic('<path d="M12 3c3 4 6 6.5 6 10a6 6 0 0 1-12 0c0-2 1-3.5 2-4.5.2 2 1.2 3 2.5 3.5C10 9 10.5 6 12 3z"/>'), 'Chaleur de la demande', b => { chaleur = !chaleur; SS('mdg-carte:chaleur', chaleur ? 'oui' : 'non'); b.setAttribute('aria-pressed', String(chaleur)); map.setLayoutProperty('chaleur', 'visibility', chaleur ? 'visible' : 'none'); }, chaleur);
+      btn(I('plus'), 'Zoomer', () => map.zoomIn());
+      btn(I('moins'), 'Dézoomer', () => map.zoomOut());
+      btn(I('pays'), 'Tout le pays', () => { opt.onSelect && opt.onSelect(''); home(); });
+      const bJour = btn(I('jour'), 'Carte de jour', b => { theme = theme === 'jour' ? 'nuit' : 'jour'; SS('mdg-carte:theme', theme); b.setAttribute('aria-pressed', String(theme === 'jour')); ambiance(); }, theme === 'jour');
+      const bChal = btn(I('chaleur'), 'Chaleur de la demande', b => { chaleur = !chaleur; SS('mdg-carte:chaleur', chaleur ? 'oui' : 'non'); b.setAttribute('aria-pressed', String(chaleur)); map.setLayoutProperty('chaleur', 'visibility', chaleur ? 'visible' : 'none'); }, chaleur);
       const etat = document.createElement('div'); etat.className = 'cgl-etat'; box.appendChild(etat);
       const ech = document.createElement('div'); ech.className = 'cgl-echelle'; box.appendChild(ech);
-      const placer = () => { const i = ins(); ui.style.top = (i.t + 10) + 'px'; etat.style.top = (i.t + 10) + 'px'; ech.style.bottom = (i.b + 22) + 'px'; map.setPadding({ top: i.t, bottom: i.b, left: 0, right: 0 }); };
+      // en haut à gauche : où l'on regarde, et l'état du réseau ; en bas à droite, sur la mer : les boutons (ils ne cachent pas le pays)
+      const placer = () => { const i = ins(); etat.style.top = (i.t + 34) + 'px'; ech.style.top = (i.t + 4) + 'px'; ui.style.bottom = (i.b + 12) + 'px'; map.setPadding({ top: i.t + 30, bottom: i.b + 62, left: 0, right: 0 }); };
       const dire = (en, txt) => { etat.className = 'cgl-etat' + (en ? '' : ' hors'); etat.innerHTML = '<i></i>' + esc(txt); };
 
       // ——— en ligne : relief (Terrarium) et rues, quartiers, bâtiments (OpenFreeMap) ; hors ligne : la carte embarquée seule ———
@@ -172,18 +173,12 @@
         if (demOk || !enLigne()) return;
         try {
           map.addSource('dem', { type: 'raster-dem', tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'], encoding: 'terrarium', tileSize: 256, maxzoom: 12, attribution: 'Relief : Terrarium (AWS Open Data)' });
-          map.addSource('dem3d', { type: 'raster-dem', tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'], encoding: 'terrarium', tileSize: 256, maxzoom: 12 });
           map.addLayer({ id: 'relief', type: 'hillshade', source: 'dem', paint: { 'hillshade-exaggeration': theme === 'jour' ? .35 : .5, 'hillshade-shadow-color': P.ombre, 'hillshade-highlight-color': theme === 'jour' ? 'rgba(255,255,255,.35)' : 'rgba(255,230,190,.12)', 'hillshade-accent-color': P.ombre } }, 'ville');
           demOk = true;
         } catch (_) {}
       }
-      function appliquerRelief(anim) {
-        try {
-          if (relief3d && demOk) { map.setTerrain({ source: 'dem3d', exaggeration: 2.2 }); if (anim && map.getPitch() < 20) map.easeTo({ pitch: 45, bearing: -10, duration: MOTION() ? 900 : 0 }); }
-          else { map.setTerrain(null); if (anim) map.easeTo({ pitch: 0, bearing: 0, duration: MOTION() ? 700 : 0 }); }
-          map.setSky({ 'sky-color': P.ciel, 'horizon-color': P.horizon, 'fog-color': P.brume, 'sky-horizon-blend': .6, 'horizon-fog-blend': .5, 'fog-ground-blend': .7 });
-        } catch (_) {}
-      }
+      // le relief reste un ombrage (vue du dessus) : la profondeur sans inclinaison
+      function appliquerRelief() {}
       function ajouterRues() {
         if (rues || !enLigne()) return;
         const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 5000);
@@ -256,7 +251,7 @@
             el.className = 'cgl-amas';
             el.innerHTML = (nO ? '<span>🧺<b>' + nO + '</b></span>' : '') + (nD ? '<span>🛒<b>' + nD + '</b></span>' : '');
             el.setAttribute('aria-label', (nO ? nO + ' offre' + (nO > 1 ? 's' : '') : '') + (nO && nD ? ' et ' : '') + (nD ? nD + ' demande' + (nD > 1 ? 's' : '') : '') + ' près de ' + ((A.REG[g.region] || [])[2] || ''));
-            el.addEventListener('click', e => { e.stopPropagation(); opt.onSelect && opt.onSelect(g.region); map.flyTo({ center: g.xy, zoom: 9, pitch: relief3d && demOk ? 50 : 0, duration: MOTION() ? 1100 : 0, essential: true }); });
+            el.addEventListener('click', e => { e.stopPropagation(); opt.onSelect && opt.onSelect(g.region); map.flyTo({ center: g.xy, zoom: 9, duration: MOTION() ? 1100 : 0, essential: true }); });
           } else {
             const sel = ids.some(id => picked.includes(id)), seul = g.items.length === 1, x = g.items[0];
             el.className = 'cgl-pill' + (seul && x.kind !== 'offre' ? ' d' : '') + (g.approx ? ' approx' : '') + (sel ? ' sel' : '');
@@ -329,8 +324,22 @@
         map.getSource('arcs').setData({ type: 'FeatureCollection', features: arcs });
       }
 
-      function home(dur) { const p = relief3d && demOk ? 34 : 0, c = map.cameraForBounds([[bb[0], bb[1]], [bb[2], bb[3]]], { padding: { top: 8, bottom: 8, left: 10, right: 10 } });
-        if (!c) return; map.easeTo({ center: c.center, zoom: c.zoom + (p ? .18 : 0), pitch: p, bearing: p ? -6 : 0, duration: dur != null ? dur : MOTION() ? 1000 : 0 }); }
+      // la vue « tout le pays » : le pays occupe toute la largeur libre ; c'est aussi la limite : on ne dézoome pas plus loin,
+      // on ne glisse pas au-delà (pas d'océan ni de pays voisins à perte de vue)
+      let vuePays = null;
+      function cadrer() {
+        map.setMaxBounds(null); map.setMinZoom(0);
+        const c = map.cameraForBounds([[bb[0], bb[1]], [bb[2], bb[3]]], { padding: { top: 4, bottom: 4, left: 16, right: 16 } });
+        if (!c) return;
+        const avant = { center: map.getCenter(), zoom: map.getZoom() };
+        map.jumpTo({ center: c.center, zoom: c.zoom, bearing: 0, pitch: 0 });
+        const b = map.getBounds(), mx = (b.getEast() - b.getWest()) * .04, my = (b.getNorth() - b.getSouth()) * .04;
+        vuePays = c;
+        map.setMinZoom(c.zoom - .02);
+        map.setMaxBounds([[b.getWest() - mx, b.getSouth() - my], [b.getEast() + mx, b.getNorth() + my]]);
+        if (pret && avant.zoom > c.zoom + .05) map.jumpTo(avant);
+      }
+      function home(dur) { if (!vuePays) cadrer(); if (!vuePays) return; map.easeTo({ center: vuePays.center, zoom: vuePays.zoom, bearing: 0, pitch: 0, duration: dur != null ? dur : MOTION() ? 800 : 0 }); }
       const echelle = () => { const z = map.getZoom(), c = map.getCenter(), lat = c.lat;
         let best = null, bk = 1e9; Object.keys(A.REG).forEach(k => { const R = A.REG[k], d = km([c.lng, c.lat], [R[1], R[0]]); if (d < bk) { bk = d; best = R; } });
         ech.textContent = z < 6.4 ? 'Tout le pays' : z < 7.6 ? ((lat > 8.6 ? 'Nord' : lat < 6.4 ? 'Sud' : 'Centre') + (c.lng < -6.3 ? '-ouest' : c.lng > -4.6 ? '-est' : '') + ' du pays') : best ? (bk < 15 ? 'Autour de ' : 'Près de ') + best[2] : ''; };
@@ -341,12 +350,10 @@
       map.on('click', () => { if (picked.length) { picked = []; dessinerAnnonces(); calques(); opt.onPick && opt.onPick([]); tracer(null); } });
       map.on('error', () => {});   // une tuile en ligne qui échoue ne casse rien : la carte embarquée reste
       map.once('load', () => {
-        pret = true; placer(); majEtat(); dessinerMoi(); calques(); dessinerAnnonces(); echelle();
+        placer(); cadrer(); pret = true; majEtat(); dessinerMoi(); calques(); dessinerAnnonces(); echelle();
         if (chaleur) map.setLayoutProperty('chaleur', 'visibility', 'visible');
         if (enLigne()) { ajouterRelief(); ajouterRues(); }
         appliquerRelief(false);
-        // entrée : de haut, puis la caméra s'incline sur le pays (le relief se lève)
-        if (relief3d && demOk) setTimeout(() => alive && home(MOTION() ? 1600 : 0), 250);
         requestAnimationFrame(() => box.classList.add('on'));
         resolve(api);
       });
@@ -361,8 +368,8 @@
           if (data.sel && data.sel !== prev.sel) { const xy = regXY(data.sel); if (xy) map.flyTo({ center: xy, zoom: 8.6, duration: MOTION() ? 1100 : 0, essential: true }); }
           else if (!data.sel && prev.sel) home();
         },
-        relayout() { placer(); map.resize(); },
-        home,
+        relayout() { placer(); map.resize(); cadrer(); },
+        home, localiser,
         pick(ids) { picked = ids || []; dessinerAnnonces(); calques(); if (!picked.length) tracer(null); },
         destroy() { bloque.forEach(n => n.removeEventListener('scroll', fige)); alive = false; removeEventListener('online', surReseau); removeEventListener('offline', majEtat); markers.forEach(m => m.remove()); if (moiM) moiM.remove(); if (distM) distM.remove(); try { map.remove(); } catch (_) {} box.remove(); }
       };

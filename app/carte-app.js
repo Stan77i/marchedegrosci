@@ -250,7 +250,7 @@
         else if (data.me !== prev.me && data.me) flyTo(data.me, 1.7);
         kick(); },
       flyTo, home: () => fly(home(), 900), relayout: () => { ui.style.top = note.style.top = (ins().t + 10) + 'px'; dirty = true; kick(); },
-      destroy() { alive = false; cancelAnimationFrame(raf); ro && ro.disconnect(); document.removeEventListener('visibilitychange', vis); host.innerHTML = ''; }
+      destroy() { alive = false; cancelAnimationFrame(raf); ro && ro.disconnect(); document.removeEventListener('visibilitychange', vis); [cv, ui, note].forEach(n => n.remove()); }   // seulement ses propres éléments : la carte en relief peut partager l'hôte
     };
     return api;
   }

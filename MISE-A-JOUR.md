@@ -1,3 +1,15 @@
+# Mise à jour — 17 octobre 2026 (carte en relief, en ligne et hors connexion)
+
+Service worker : `mgci-v56`. Moteur : MapLibre GL 5.6.0 (dans `vendor/maplibre`, chargé seulement sur la page carte).
+
+## Ce qui change
+- **Hors connexion** : carte embarquée (`app/geo/ci.json`, 76 Ko compressé) : côte, mer, lacs, fleuves, routes, rail, 3 700 localités (grandes villes → villages selon le zoom). Polices dans `vendor/glyphs`.
+- **En ligne** : relief 3D (inclinaison, ombrage des montagnes, vers Man), rues et bâtiments en volume au zoom ville (OpenFreeMap), itinéraire par la route (OSRM). Les tuiles vues restent dans le téléphone (cache `tuiles-mgci`, 1 500 au plus).
+- **Annonces** : de loin, regroupées par district (🧺 offres · 🛒 demandes) ; de près, bulles de prix façon Airbnb (« 350 F/kg », « cherche 600 kg »). Toucher une bulle : la carte d'annonce s'ouvre en bas, la carte trace le trajet depuis votre position et les liens vers les annonces compatibles.
+- **Contrôles** : zoom, tout le pays, me localiser, 3D, carte de jour, chaleur de la demande. Indicateur « En ligne · relief et rues » / « Hors connexion · carte embarquée ».
+- **Repli** : téléphones sans WebGL ou à petite mémoire, ou en économie de données : l'ancienne carte Canvas reste.
+- Données : Natural Earth (domaine public), GeoNames via cities.json (CC BY 4.0), relief Terrarium (AWS Open Data), rues © OpenStreetMap. Script : `tools/carte/build.py`.
+
 # Mise à jour — 17 octobre 2026 (refonte 3 : carte et liste reliées, recherche, petits écrans)
 
 Service worker : `mgci-v54`. Rapport complet : `docs/RAPPORT-REFONTE.md`.

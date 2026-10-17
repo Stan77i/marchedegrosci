@@ -3,7 +3,9 @@
    installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
    Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v54';
+const CACHE = 'mgci-v56';
+// tuiles de la carte en relief déjà vues (relief Terrarium, rues OpenFreeMap) : gardées d'une version à l'autre, 1 500 au plus
+const TUILES = 'tuiles-mgci', TUILES_MAX = 1500, HOTES_TUILES = ['s3.amazonaws.com', 'tiles.openfreemap.org'];
 
 // Indispensable : si l'un de ces fichiers manque, l'installation échoue et l'ancienne version reste active.
 const CORE = [
@@ -15,6 +17,8 @@ const CORE = [
   "app/marche-app.js",
   "app/carte-app.js",
   "app/villes.js",
+  "app/carte-gl.js",
+  "app/geo/ci.json",
   "v2/data.js",
   "v2/saisons.js",
   "v2/search.js",
@@ -123,7 +127,20 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  if (url.origin !== self.location.origin) return; // liens externes (WhatsApp, etc.) : réseau normal
+  // carte en relief : une tuile déjà vue reste lisible sans connexion (le cache d'abord, puis le réseau)
+  if (HOTES_TUILES.includes(url.hostname) && (/\/terrarium\//.test(url.pathname) || url.hostname === 'tiles.openfreemap.org')) {
+    e.respondWith((async () => {
+      const c = await caches.open(TUILES);
+      if (url.pathname === '/planet') { try { const r = await fetch(req); if (r && r.ok) c.put(req, r.clone()); return r; } catch (_) { return (await c.match(req)) || Response.error(); } }  // la description des tuiles change : le réseau d'abord
+      const hit = await c.match(req);
+      if (hit) return hit;
+      const res = await fetch(req);
+      if (res && res.ok) { c.put(req, res.clone()); e.waitUntil(c.keys().then(k => k.length > TUILES_MAX ? Promise.all(k.slice(0, k.length - TUILES_MAX).map(r => c.delete(r))) : 0)); }
+      return res;
+    })());
+    return;
+  }
+  if (url.origin !== self.location.origin) return; // liens externes : réseau normal
 
   // Pages : le réseau d'abord, le cache si le réseau échoue.
   if (req.mode === 'navigate' || req.destination === 'document') {

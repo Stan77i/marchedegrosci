@@ -55,7 +55,7 @@
 .rp textarea{width:100%;min-height:84px;margin-top:14px;padding:12px 14px;border:1px solid rgba(245,240,230,.16);border-radius:16px;background:#14120f;color:#F5F0E6;font:400 15px/1.45 Jost,sans-serif;resize:vertical;box-sizing:border-box}
 .rp textarea:focus{outline:none;border-color:#E07A3F;box-shadow:0 0 0 3px rgba(224,122,63,.2)}
 .rp-msg{min-height:20px;margin:8px 2px 0;color:#F3A08C;font-size:13.5px}
-.rp-tete{display:flex;align-items:center;gap:16px;margin:0 0 18px}.rp-tete img{border-radius:50%;box-shadow:0 0 0 3px rgba(245,240,230,.08)}
+.rp-tete{display:flex;align-items:center;gap:16px;margin:0 0 18px;padding-right:44px}.rp-tete img{border-radius:50%;box-shadow:0 0 0 3px rgba(245,240,230,.08)}
 .rp-tete b{display:block;font:500 28px/1.05 'Cormorant Garamond',Georgia,serif}.rp-tete small{display:flex;align-items:center;gap:8px;margin-top:6px;color:#B9AD98;font-size:13.5px}
 .rp-score{display:flex;align-items:center;gap:16px;padding:16px;border-radius:20px;background:rgba(245,240,230,.04);box-shadow:inset 0 0 0 1px rgba(245,240,230,.08)}
 .rp-score strong{font:500 46px/1 'Cormorant Garamond',Georgia,serif}.rp-score span{display:flex;flex-direction:column;gap:6px;color:#B9AD98;font-size:13px}
@@ -66,6 +66,23 @@
 .rp-vide{padding:22px 16px;border:1px dashed rgba(245,240,230,.16);border-radius:18px;text-align:center;color:#B9AD98;font-size:14px}
 .rp-big{display:flex;justify-content:center;gap:6px;margin:6px 0 4px}.rp-big button{width:52px;height:52px;border:0;background:none;padding:4px;cursor:pointer;transition:transform .18s cubic-bezier(.22,1,.36,1)}
 .rp-big button:active{transform:scale(.9)}.rp-big svg{width:100%;height:100%}.rp-big path{fill:rgba(245,240,230,.14);transition:fill .2s}.rp-big button.on path{fill:#F2C94C}.rp-big button.pop{animation:rpPop .35s cubic-bezier(.22,1,.36,1)}
+.rp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 16px}.rp-stats div{padding:12px 10px;border-radius:16px;background:rgba(245,240,230,.04);box-shadow:inset 0 0 0 1px rgba(245,240,230,.08);text-align:center}
+.rp-stats b{display:block;font:500 28px/1 'Cormorant Garamond',serif}.rp-stats small{display:block;margin-top:4px;color:#B9AD98;font-size:12px;line-height:1.25}
+.rp-sec{margin:18px 0 0}.rp-sec h3{margin:0 0 8px;font:600 11px Jost,sans-serif;letter-spacing:.16em;color:#B9AD98;text-transform:uppercase}
+.rp-bio{margin:0;color:#E9E1D2;font-size:15px;line-height:1.55;white-space:pre-wrap}
+.rp-tags{display:flex;flex-wrap:wrap;gap:6px}.rp-tags span{padding:5px 11px;border-radius:999px;background:rgba(245,240,230,.07);color:#E9E1D2;font-size:13px}
+.rp-ph{display:flex;gap:8px;overflow-x:auto;margin:0 -20px;padding:0 20px 4px;scroll-snap-type:x mandatory}.rp-ph img{flex:none;width:150px;height:150px;object-fit:cover;border-radius:16px;scroll-snap-align:start;background:#14120f}
+.rp-li{display:grid;gap:6px}.rp-li div{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(245,240,230,.03);box-shadow:inset 0 0 0 1px rgba(245,240,230,.07);font-size:14px}
+.rp-li i{flex:none;width:10px;height:10px}.rp-li .o{border-radius:50%;background:#6CC58C}.rp-li .d{border-radius:2px;background:#F2C94C}.rp-li .v{border-radius:50%;background:#6AAEF0}
+.rp-li span{flex:1;min-width:0}.rp-li small{color:#8f846f;font-size:12px;white-space:nowrap}
+.rp-off{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:rgba(224,122,63,.2);color:#F3B48A;font:700 10.5px/1.7 Jost,sans-serif;letter-spacing:.06em;text-transform:uppercase;vertical-align:4px}
+.rp-ed label{display:block;margin:14px 0 6px;font:500 14px Jost,sans-serif;color:#E9E1D2}.rp-ed label i{font-style:normal;color:#8f846f;font-size:12.5px;margin-left:6px}
+.rp-ed input{width:100%;box-sizing:border-box;height:50px;padding:0 14px;border:1px solid rgba(245,240,230,.16);border-radius:14px;background:#14120f;color:#F5F0E6;font:500 16px Jost,sans-serif}
+.rp-ed textarea{margin-top:0;min-height:120px}
+.rp-ed .grille{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.rp-ed .grille div{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#14120f}
+.rp-ed .grille img{width:100%;height:100%;object-fit:cover}.rp-ed .grille button{position:absolute;right:4px;top:4px;width:30px;height:30px;border:0;border-radius:50%;background:rgba(10,9,7,.75);color:#F5F0E6;font-size:16px;cursor:pointer}
+.rp-ed .ajout{display:flex;align-items:center;justify-content:center;aspect-ratio:1;border:1.5px dashed rgba(245,240,230,.25);border-radius:14px;color:#B9AD98;font-size:13px;text-align:center;cursor:pointer;position:relative}
+.rp-ed .ajout input{position:absolute;inset:0;opacity:0;height:auto}
 .rp-lib{text-align:center;color:#F2C94C;font-weight:600;min-height:22px}
 .rp-cl{display:grid;gap:8px}.rp-cl button{display:grid;grid-template-columns:26px 44px 1fr auto;align-items:center;gap:12px;width:100%;padding:10px 12px;border:0;border-radius:18px;background:rgba(245,240,230,.03);box-shadow:inset 0 0 0 1px rgba(245,240,230,.07);color:#F5F0E6;text-align:left;cursor:pointer;font:inherit}
 .rp-cl em{font-style:normal;font:500 20px/1 'Cormorant Garamond',serif;color:#8f846f;text-align:center}.rp-cl button:nth-child(-n+3) em{color:#F2C94C}
@@ -125,21 +142,74 @@
     };
   }
 
-  // ——— fiche profil : note, répartition, avis, et noter ———
+  // ——— fiche profil : qui il est, ce qu'il fait, ce qu'il a vendu, où ; note, avis, et noter ———
+  const REGN = slug => { const r = window.MDG && MDG.regions && MDG.regions.find(x => x.slug === slug); return r ? r.name : slug; };
+  const mois = t => t ? new Date(t).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : '';
+  const actif = t => { if (!t) return ''; const m = (Date.now() - Date.parse(t)) / 6e4; return m < 10 ? 'actif à l’instant' : m < 60 ? 'actif il y a ' + Math.round(m) + ' min' : m < 1440 ? 'actif il y a ' + Math.round(m / 60) + ' h' : m < 2880 ? 'actif hier' : 'actif il y a ' + Math.round(m / 1440) + ' j'; };
+  const fq = n => n == null ? '' : Number(n).toLocaleString('fr-FR').replace(/ | /g, ' ');
+  const photoUrl = p => /^https?:/.test(p) ? p : (N() && N().URL ? N().URL + '/storage/v1/object/public/activites/' + p : '');
   async function profil(uid, o = {}) {
     if (!uid) return;
     const moi = N() && N().session() && N().session().user.id === uid;
-    const bg = feuille(`<div class="rp-tete">${avatar(uid, o.avatar, o.nom, 72, o.uri)}<span><b>${esc(o.nom || 'Membre')}</b><small data-sc>…</small></span></div><div data-corps><div class="rp-vide">Chargement des avis…</div></div>`, 'Profil de ' + (o.nom || 'membre'));
-    let liste = []; try { liste = await N().rpc('avis_de', { p_cible: uid }, !!N().session()) || []; } catch (_) {}
+    const bg = feuille(`<div class="rp-tete">${avatar(uid, o.avatar, o.nom, 72, o.uri)}<span><b data-nom>${esc(o.nom || 'Membre')}</b><small data-sc>…</small><small data-dep></small></span></div><div data-pp></div><div data-corps><div class="rp-vide">Chargement du profil…</div></div>`, 'Profil de ' + (o.nom || 'membre'));
+    const auth = !!N().session();
+    const [liste, pp] = await Promise.all([N().rpc('avis_de', { p_cible: uid }, auth).catch(() => []), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null)]);
     if (!bg.isConnected) return;
-    const nb = liste.length, moy = nb ? liste.reduce((s, a) => s + a.note, 0) / nb : 0, rep = [5, 4, 3, 2, 1].map(k => liste.filter(a => a.note === k).length);
+    const nb = (liste || []).length, moy = nb ? liste.reduce((s, a) => s + a.note, 0) / nb : 0, rep = [5, 4, 3, 2, 1].map(k => liste.filter(a => a.note === k).length);
     bg.querySelector('[data-sc]').innerHTML = nb ? etoiles(moy, nb, 14) + ' ' + moy.toFixed(1).replace('.', ',') + ' · ' + nb + ' avis' : 'Pas encore noté';
+    let haut = '';
+    if (pp) {
+      if (pp.affichage) bg.querySelector('[data-nom]').innerHTML = esc(pp.affichage) + (pp.officiel ? '<span class="rp-off">Officiel</span>' : '');
+      bg.querySelector('[data-dep]').textContent = [pp.membre_depuis ? 'Membre depuis ' + mois(pp.membre_depuis) : '', actif(pp.vu_le)].filter(Boolean).join(' · ');
+      const enLigne = (pp.offres_actives || 0) + (pp.demandes_actives || 0);
+      haut += `<div class="rp-stats"><div><b>${fq(pp.ventes || 0)}</b><small>vente${pp.ventes > 1 ? 's' : ''} conclue${pp.ventes > 1 ? 's' : ''}</small></div><div><b>${fq(pp.achats || 0)}</b><small>achat${pp.achats > 1 ? 's' : ''}</small></div><div><b>${fq(enLigne)}</b><small>annonce${enLigne > 1 ? 's' : ''} en ligne · ${fq(pp.annonces_total || 0)} en tout</small></div></div>`;
+      if (pp.bio) haut += `<div class="rp-sec"><h3>${pp.role === 'acheteur' ? 'Acheteur' : pp.role === 'vendeur' ? 'Vendeur' : pp.role === 'les_deux' ? 'Vendeur et acheteur' : 'Présentation'}${pp.ville || pp.region_slug ? ' · ' + esc(pp.ville || REGN(pp.region_slug)) : ''}</h3><p class="rp-bio">${esc(pp.bio)}</p></div>`;
+      if (pp.activites) haut += `<div class="rp-sec"><h3>Ses activités</h3><div class="rp-tags">${pp.activites.split(/[,;·\n]/).map(x => x.trim()).filter(Boolean).slice(0, 12).map(x => `<span>${esc(x)}</span>`).join('')}</div></div>`;
+      if (pp.photos && pp.photos.length) haut += `<div class="rp-sec"><h3>En images</h3><div class="rp-ph">${pp.photos.map(p => `<img src="${esc(photoUrl(p))}" alt="" loading="lazy">`).join('')}</div></div>`;
+      // ses annonces en ce moment (celles que ce téléphone connaît déjà)
+      const L = N().list ? N().list('offres').filter(x => x._uid === uid).map(x => ['o', x]).concat(N().list('demandes').filter(x => x._uid === uid).map(x => ['d', x])) : [];
+      if (L.length) haut += `<div class="rp-sec"><h3>En ce moment</h3><div class="rp-li">${L.slice(0, 8).map(([k, x]) => `<div><i class="${k}"></i><span>${esc(x.productLabel || x.productSlug)} · ${fq(x.quantity)} ${esc(x.unit || '')}</span><small>${esc(x.city || REGN(x.regionSlug))}</small></div>`).join('')}</div></div>`;
+      if (pp.lieux && pp.lieux.length) haut += `<div class="rp-sec"><h3>Où il a publié</h3><div class="rp-tags">${pp.lieux.slice(0, 14).map(l => `<span>${esc(REGN(l))}</span>`).join('')}</div></div>`;
+      if (pp.historique && pp.historique.length) haut += `<div class="rp-sec"><h3>Ventes et achats conclus</h3><div class="rp-li">${pp.historique.map(h => `<div><i class="${h.sens === 'vente' ? 'o' : 'v'}"></i><span>${h.sens === 'vente' ? 'Vendu' : 'Acheté'} : ${esc(h.produit || 'produit')}${h.quantite ? ' · ' + fq(h.quantite) + ' ' + esc(h.unite || '') : ''}${h.prix ? ' à ' + fq(h.prix) + ' F' : ''}${h.ville ? ' · ' + esc(h.ville) : ''}</span><small>${quand(h.quand)}</small></div>`).join('')}</div></div>`;
+      else if (!moi) haut += `<div class="rp-sec"><h3>Ventes et achats conclus</h3><div class="rp-vide">Aucune vente conclue dans l’application pour l’instant.</div></div>`;
+      haut += `<div class="rp-sec"><h3>Avis</h3></div>`;
+    }
+    bg.querySelector('[data-pp]').innerHTML = haut;
     bg.querySelector('[data-corps]').innerHTML = (nb ? `<div class="rp-score"><strong>${moy.toFixed(1).replace('.', ',')}</strong><span>${etoiles(moy, nb, 15)}${nb} avis</span><div class="rp-barres">${rep.map((c, i) => `<div><em style="font-style:normal">${5 - i}</em><i><b style="width:${nb ? c / nb * 100 : 0}%"></b></i></div>`).join('')}</div></div>
       <div class="rp-av">${liste.map(a => `<article><header>${avatar(a.auteur, a.avatar, a.auteur, 26)}<b>${esc(a.auteur)}</b>${etoiles(a.note, 1, 11)}<small>${quand(a.quand)}</small></header>${a.texte ? `<p>${esc(a.texte)}</p>` : ''}</article>`).join('')}</div>`
       : `<div class="rp-vide">${moi ? 'Vous n’avez pas encore d’avis. Ils arrivent quand vos partenaires vous notent après une négociation.' : 'Pas encore d’avis. Négociez avec ce membre pour pouvoir le noter.'}</div>`)
-      + (moi ? '' : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire</button>` : ''}<button type="button" class="rp-go" data-noter>Noter ${esc(o.nom || 'ce membre')}</button></div>`);
+      + (moi ? `<button type="button" class="rp-go" data-modif>Modifier mon profil public</button>` : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire</button>` : ''}<button type="button" class="rp-go" data-noter>Noter ${esc(o.nom || 'ce membre')}</button></div>`);
     const b = bg.querySelector('[data-noter]'); if (b) b.onclick = () => { bg.fermer(); noter(uid, o.nom, () => profil(uid, o)); };
     const e = bg.querySelector('[data-ecrire]'); if (e) e.onclick = () => { bg.fermer(); MDGMessages.ecrire(uid, { nom: o.nom, avatar: o.avatar }); };
+    const m = bg.querySelector('[data-modif]'); if (m) m.onclick = () => { bg.fermer(); modifier(pp || {}, () => profil(uid, o)); };
+  }
+
+  // ——— modifier son profil public : présentation, activités, photos (6 au plus) ———
+  const reduire = file => new Promise((ok, ko) => { const r = new FileReader(); r.onerror = ko; r.onload = () => { const im = new Image(); im.onerror = ko; im.onload = () => {
+    const s = Math.min(1, 1000 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); c.toBlob(b => b ? ok(b) : ko(new Error('Photo illisible')), 'image/jpeg', .74); }; im.src = r.result; }; r.readAsDataURL(file); });
+  function modifier(pp, apres) {
+    const s = N() && N().session(); if (!s) return;
+    let photos = (pp.photos || []).slice(0, 6);
+    const bg = feuille(`<h2>Mon profil public</h2><p>Ce que les autres membres voient en touchant votre nom : qui vous êtes, ce que vous faites, ce que vous avez.</p>
+      <div class="rp-ed"><label for="rpBio">Présentation <i>600 caractères</i></label><textarea id="rpBio" maxlength="600" placeholder="ex. Coopérative de 40 producteurs d’igname à Bouaké. Livraison possible à Abidjan.">${esc(pp.bio || '')}</textarea>
+      <label for="rpAct">Activités <i>séparées par des virgules</i></label><input id="rpAct" maxlength="200" placeholder="ex. Igname, manioc, transport, stockage" value="${esc(pp.activites || '')}">
+      <label>Photos <i>6 au plus : champ, stock, magasin…</i></label><div class="grille" data-g></div>
+      <p class="rp-msg" data-msg></p><button type="button" class="rp-go" data-ok>Enregistrer</button></div>`, 'Mon profil public');
+    const msg = t => { bg.querySelector('[data-msg]').textContent = t || ''; };
+    const grille = () => { const g = bg.querySelector('[data-g]');
+      g.innerHTML = photos.map((p, i) => `<div><img src="${esc(photoUrl(p))}" alt=""><button type="button" data-rm="${i}" aria-label="Retirer la photo">×</button></div>`).join('') + (photos.length < 6 ? `<label class="ajout">+ Ajouter<input type="file" accept="image/*"></label>` : '');
+      g.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { photos.splice(+b.dataset.rm, 1); grille(); });
+      const inp = g.querySelector('input[type=file]'); if (inp) inp.onchange = async () => { const f = inp.files && inp.files[0]; if (!f) return; msg('Envoi de la photo…');
+        try { const blob = await reduire(f), chemin = s.user.id + '/' + Date.now() + '.jpg'; await N().televerser('activites/' + chemin, blob); photos.push(chemin); msg(''); grille(); }
+        catch (x) { msg(/Bucket not found|not found|403|row-level/i.test(String(x.message)) ? 'Les photos ne sont pas encore activées sur le serveur.' : 'Envoi impossible : ' + x.message); } }; };
+    grille();
+    bg.querySelector('[data-ok]').onclick = async ev => { ev.target.disabled = true; msg('');
+      const corps = { bio: bg.querySelector('#rpBio').value.trim() || null, activites: bg.querySelector('#rpAct').value.trim() || null, photos };
+      try { const r = await N().api('/rest/v1/profils?user_id=eq.' + s.user.id, { method: 'PATCH', auth: true, body: corps, prefer: 'return=representation' });
+        if (!r || !r.length) await N().api('/rest/v1/profils', { method: 'POST', auth: true, body: Object.assign({ user_id: s.user.id }, corps), prefer: 'return=minimal' });
+        bg.fermer(); N().toast('Profil enregistré.'); dispatchEvent(new CustomEvent('mdg:profil')); apres && apres(); }
+      catch (x) { ev.target.disabled = false; msg('Enregistrement impossible : ' + x.message); } };
   }
 
   // ——— les mieux notés ———
@@ -153,5 +223,5 @@
     box.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const x = l[+b.dataset.i]; bg.fermer(); profil(x.user_id, { nom: x.affichage, avatar: x.avatar }); });
   }
 
-  window.MDGRep = { etoiles, texteNote, resume, charger, signal, chargerSignal, profil, noter, classement, signaler, RAISONS };
+  window.MDGRep = { etoiles, texteNote, resume, charger, signal, chargerSignal, profil, modifier, noter, classement, signaler, RAISONS };
 })();

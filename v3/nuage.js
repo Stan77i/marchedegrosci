@@ -166,9 +166,22 @@
       W(K.o, (o || []).map(fromRow.offres)); W(K.d, (d || []).map(fromRow.demandes)); W(K.t, Date.now());
       if (!premier) { const neuves = { offres: list('offres').filter(x => !avant.has(x._rid)), demandes: list('demandes').filter(x => !avant.has(x._rid)) }; if (neuves.offres.length || neuves.demandes.length) dispatchEvent(new CustomEvent('mdg:nouvelles', { detail: neuves })); }
       if (was !== sig(o) + '|' + sig(d)) say('liste'); // ne prévenir que s'il y a du nouveau
+      await stockDuServeur();
       return true;
     } catch (e) { console.warn('[nuage] lecture impossible', e.message); return false; }
     finally { busy &= ~1; }
+  }
+
+  /* ——— mon stock : la quantité baisse sur le serveur à chaque vente conclue (schema-12) ; le téléphone la reprend ——— */
+  async function stockDuServeur() {
+    const s = session(); if (!s) return;
+    try {
+      const rows = await api('/rest/v1/offres?select=client_id,quantity,status&user_id=eq.' + s.user.id + '&limit=500', { auth: true }) || [];
+      const by = new Map(rows.map(r => [r.client_id, r])), em = J(K.e, {}); let bouge = false;
+      const L = J('mdg-v2:offres', []).map(x => { const r = x && by.get(x.id); if (!r || r.status === 'masquee') return x; const q = num(r.quantity), ep = r.status === 'retiree' && !(q > 0);
+        if (q === num(x.quantity) && !!x.epuise === ep) return x; bouge = true; const y = Object.assign({}, x, { quantity: q == null ? x.quantity : q, epuise: ep }); em['offres:' + x.id] = hash(toRow.offres(y)); return y; });
+      if (bouge) { W('mdg-v2:offres', L); W(K.e, em); say('mes'); }
+    } catch (_) {}
   }
 
   /* ——— mes annonces : envoyer celles qui attendent, retirer celles supprimées sur le téléphone ——— */
@@ -184,7 +197,9 @@
           if (!x.productSlug || !x.regionSlug) continue;
           const key = k + ':' + x.id, row = toRow[k](x), h = hash(row);
           if (p[key] && (!em[key] || em[key] === h)) { if (!em[key]) { em[key] = h; W(K.e, em); } continue; } // déjà envoyée, inchangée
-          try { const r = await api('/rest/v1/' + KIND[k] + '?on_conflict=user_id,client_id', { method: 'POST', body: row, auth: true, prefer: 'return=representation,resolution=merge-duplicates' }); if (r && r[0]) { p[key] = r[0].id; em[key] = h; changed = true; W(K.p, p); W(K.e, em); } }
+          try { const r = await api('/rest/v1/' + KIND[k] + '?on_conflict=user_id,client_id', { method: 'POST', body: row, auth: true, prefer: 'return=representation,resolution=merge-duplicates' }); if (r && r[0]) { p[key] = r[0].id; em[key] = h; changed = true; W(K.p, p); W(K.e, em);
+              // stock à zéro sur le téléphone : l'annonce sort du marché ; stock remis : elle revient (jamais une annonce masquée par l'administration)
+              if (k === 'offres') await api('/rest/v1/offres?id=eq.' + r[0].id + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: x.epuise || !(+x.quantity > 0) ? 'retiree' : 'active' }, prefer: 'return=minimal' }).catch(() => {}); } }
           catch (e) { if (e.code === 'auth') throw e; console.warn('[nuage] envoi refusé', e.message); if (/Limite atteinte/.test(e.message)) toast(e.message); }
         }
         for (const key of Object.keys(p)) {
@@ -515,5 +530,5 @@ html.kb .cp,html.kb .nx{height:calc(var(--vvh,100dvh) - 8px)!important}}`;
     vv.addEventListener('resize', plan); vv.addEventListener('scroll', plan); maj();
   })();
 
-  window.MDGNuage = { televerser, list, zones, zoneAjouter, zoneRetirer, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
+  window.MDGNuage = { URL: URL0, televerser, list, zones, zoneAjouter, zoneRetirer, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
 })();

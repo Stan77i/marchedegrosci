@@ -22,7 +22,8 @@
 <script src="v3/souffle.js"></script>
 <script src="v3/pousse.js"></script>
 <script src="v3/reputation.js?v=20261012c"></script>
-<script src="v3/messages.js?v=20261012a"></script>
+<script src="v3/messages.js?v=20261017a"></script>
+<script src="v3/alertes.js"></script>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -134,7 +135,8 @@
   <div style="background:#24201A;color:#F5F0E6;flex:none;padding-top:{{ topPad }}">
     <div style="display:flex;align-items:center;height:52px;padding:0 8px">
       <button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button>
-      <span style="flex:1;text-align:center;font-size:11.5px;letter-spacing:.2em;color:#B9AD98;font-weight:500">{{ fp.famCaps }}</span>
+      <span style="width:44px;flex:none"></span><span style="flex:1;text-align:center;font-size:11.5px;letter-spacing:.2em;color:#B9AD98;font-weight:500">{{ fp.famCaps }}</span>
+      <button onClick="{{ ficheAlerte }}" aria-label="{{ fAlerte.l }}" title="{{ fAlerte.l }}" style="width:44px;height:44px;border:0;background:transparent;color:{{ fAlerte.c }};display:flex;align-items:center;justify-content:center"><svg width="21" height="21" viewBox="0 0 24 24" fill="{{ fAlerte.f }}" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"></path><path d="M10 20.5a2 2 0 0 0 4 0"></path></svg></button>
       <button onClick="{{ share }}" aria-label="Partager" style="width:44px;height:44px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5M5 13v7h14v-7"></path></svg></button>
     </div>
   </div>
@@ -415,10 +417,12 @@
 <sc-if value="{{ on.pubs }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid rgba(23,21,18,.1)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg></button><span style="flex:1;text-align:center;font-size:15px;font-weight:600">Mes publications</span><span style="width:44px"></span></div></div>
   <div style="flex:1;overflow-y:auto;padding:18px 18px 40px;display:flex;flex-direction:column;gap:10px">
+    <sc-if value="{{ stockOn }}" hint-placeholder-val="{{ false }}"><div style="background:#24201A;color:#F5F0E6;border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:10px"><span style="font-size:11px;letter-spacing:.2em;color:#B9AD98;font-weight:600">MON STOCK EN LIGNE</span><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ stockSum }}" as="k" hint-placeholder-count="3"><span style="padding:6px 11px;border-radius:999px;background:rgba(245,240,230,.08);font-size:13.5px"><b style="font-weight:700">{{ k.q }}</b> {{ k.n }}</span></sc-for></div><span style="font-size:12.5px;color:#B9AD98;line-height:1.45">À chaque vente conclue dans l’application, la quantité baisse toute seule. Touchez « Stock » pour la corriger.</span></div></sc-if>
     <sc-for list="{{ myPubs }}" as="p" hint-placeholder-count="0">
       <div style="background:#faf4e9;border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;animation:mkFade .35s both">
         <img sc-camel-src="{{ p.thumb }}" alt="" style="width:48px;height:48px;object-fit:{{ p.fit }};border-radius:{{ p.rad }};flex:none">
-        <button onClick="{{ p.go }}" style="flex:1;border:0;background:transparent;padding:0;text-align:left;display:flex;flex-direction:column;gap:3px;color:#171512;min-width:0"><span style="font-size:11.5px;letter-spacing:.14em;color:{{ p.typeColor }};font-weight:600;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:{{ p.shapeRad }};background:{{ p.shapeBg }}"></span>{{ p.type }}</span><span style="font-weight:500;font-size:15.5px">{{ p.name }}</span><span style="font-size:12.5px;color:#847966">{{ p.line }}</span><span style="font-size:12.5px;color:#61846b">{{ p.match }}</span></button>
+        <button onClick="{{ p.go }}" style="flex:1;border:0;background:transparent;padding:0;text-align:left;display:flex;flex-direction:column;gap:3px;color:#171512;min-width:0"><span style="font-size:11.5px;letter-spacing:.14em;color:{{ p.typeColor }};font-weight:600;display:flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:{{ p.shapeRad }};background:{{ p.shapeBg }}"></span>{{ p.type }}</span><span style="font-weight:500;font-size:15.5px">{{ p.name }}</span><span style="font-size:12.5px;color:#847966">{{ p.line }}</span><span style="font-size:12.5px;color:#61846b">{{ p.match }}</span><sc-if value="{{ p.epuise }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;margin-top:2px;padding:2px 9px;border-radius:999px;background:#efe0cf;color:#904515;font-size:11.5px;font-weight:700;letter-spacing:.04em">ÉPUISÉ · TOUT EST VENDU</span></sc-if></button>
+        <sc-if value="{{ p.hasStock }}" hint-placeholder-val="{{ false }}"><button onClick="{{ p.stock }}" aria-label="Modifier la quantité" style="flex:none;min-width:64px;height:44px;padding:0 10px;border-radius:14px;border:1px solid rgba(23,21,18,.16);background:#fffaf3;color:#171512;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1"><span style="font-size:10px;letter-spacing:.12em;color:#847966;font-weight:600">STOCK</span><span style="font-size:14px;font-weight:700">{{ p.stockTxt }}</span></button></sc-if>
         <button onClick="{{ p.del }}" aria-label="Retirer" style="width:44px;height:44px;border:0;background:transparent;color:#847966;display:flex;align-items:center;justify-content:center;border-radius:22px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"></path></svg></button>
       </div>
     </sc-for>
@@ -641,7 +645,7 @@ class Component extends DCLogic {
     addEventListener('focusin', this.onFocus); addEventListener('focusout', this.onBlur); addEventListener('scroll', this.onVV);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { this._w = {}; this.forceUpdate(); });
     this.setIcons(this.isDark());
-    addEventListener('resize', this.onResize); addEventListener('storage', this.onData); addEventListener('mdg:change', this.onData); addEventListener('mdg:negoce', this.onData); addEventListener('mdg:dm', this.onData); addEventListener('mdg:rep', this.onData); addEventListener('mdg:profil', this.onData); addEventListener('popstate', this.onPop);
+    addEventListener('resize', this.onResize); addEventListener('storage', this.onData); addEventListener('mdg:change', this.onData); addEventListener('mdg:negoce', this.onData); addEventListener('mdg:dm', this.onData); addEventListener('mdg:rep', this.onData); addEventListener('mdg:profil', this.onData); addEventListener('mdg:alertes', this.onData); addEventListener('popstate', this.onPop);
     const tick = () => { const d = new Date(); this.setState({ clock: d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0') }); }; tick(); this.clk = setInterval(tick, 20000);
     const boot = () => {
       if (!window.MDG || !window.MDG.products || !window.MDGApp) return false;
@@ -680,7 +684,8 @@ class Component extends DCLogic {
   hashOf(s, st) { st = st || this.state; return s === 'fiche' ? '#/produits/' + st.slug : s === 'vendeur' ? '#/producteurs/' + st.vid : s === 'info' ? '#/' + st.infoK : (HASH[s] || '#/'); }
 
   /* ——— données (partagées avec le site) ——— */
-  offers() { const A = window.MDGApp, N = window.MDGNuage; return A.read('offres').concat(N ? N.list('offres') : []).filter(o => o && o.productSlug).map(o => ({ id: o.id, remote: !!o._remote, rid: o._rid, kind: 'offre', slug: o.productSlug, qty: +o.quantity || 0, unit: o.unit || 'kg', region: o.regionSlug, city: o.city || '', price: o.price != null && o.price !== '' ? +o.price : null, when: o.availableFrom || 'maintenant', name: (o.producer && o.producer.name) || o.producerName || 'Vendeur', phone: (o.producer && o.producer.phone) || o.phone || '', at: o.createdAt, photo: o.photo || '', agent: o.agent || '', neg: o.negociable !== false, uid: o._uid || null, lieu: o.lieu || '' })); }
+  offers() { return this.offersAll().filter(o => !o.epuise); }  // une offre épuisée sort du marché (elle reste dans Mes publications)
+  offersAll() { const A = window.MDGApp, N = window.MDGNuage; return A.read('offres').concat(N ? N.list('offres') : []).filter(o => o && o.productSlug).map(o => ({ id: o.id, remote: !!o._remote, rid: o._rid, kind: 'offre', slug: o.productSlug, qty: +o.quantity || 0, unit: o.unit || 'kg', region: o.regionSlug, city: o.city || '', price: o.price != null && o.price !== '' ? +o.price : null, when: o.availableFrom || 'maintenant', name: (o.producer && o.producer.name) || o.producerName || 'Vendeur', phone: (o.producer && o.producer.phone) || o.phone || '', at: o.createdAt, photo: o.photo || '', agent: o.agent || '', neg: o.negociable !== false, uid: o._uid || null, lieu: o.lieu || '', epuise: !!o.epuise })); }
   demands() { const A = window.MDGApp, N = window.MDGNuage; return A.read('demandes').concat(N ? N.list('demandes') : []).filter(d => d && d.productSlug).map(d => ({ id: d.id, remote: !!d._remote, rid: d._rid, kind: 'demande', slug: d.productSlug, qty: +d.quantity || 0, unit: d.unit || 'kg', region: d.regionSlug, city: d.city || '', deadline: d.deadline || 'semaine', budget: d.budget != null && d.budget !== '' ? +d.budget : null, name: d.buyerName || 'Acheteur', phone: d.phone || (d.buyerContact && d.buyerContact.tel) || '', at: d.createdAt, neg: d.negociable !== false, uid: d._uid || null, lieu: d.lieu || '' })); }
   /* « J'ai » et « Je cherche » prennent la couleur du produit, sans jamais être de la même couleur tous les deux.
      J'ai (bouton plein) : la teinte du produit elle-même, éclaircie pour rester lisible (les jaunes et les verts-jaunes plus clairs encore).
@@ -1015,12 +1020,17 @@ class Component extends DCLogic {
     const mGroups = ['plein', 'debut', 'fin'].map(lv => ({ label: A.LV[lv][0], c: A.LV[lv][2], items: mE.filter(e => e[2][S.month] === lv).map(e => ({ name: e[1], note: e[4], src: e[3], go: () => this.openFiche(e[0]) })) })).filter(g => g.items.length);
 
     /* publications */
-    const mine = [...O, ...D].filter(x => !x.remote).sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0));
+    const mine = [...this.offersAll(), ...D].filter(x => !x.remote).sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0));
     const myPubs = mine.map(x => { const P = this.prod(x.slug), c = this.card(x), m = (x.kind === 'offre' ? D : O).filter(y => y.slug === x.slug).length;
       return { thumb: c.img, fit: c.fit, rad: x.photo ? '10px' : P.rad, type: x.kind === 'offre' ? "J'AI" : 'JE CHERCHE', typeColor: x.kind === 'offre' ? '#31543C' : '#765802', shapeRad: c.shapeRad, shapeBg: c.shapeBg, name: P.name, line: c.line + ' · ' + c.ago,
         match: m ? m + (x.kind === 'offre' ? ' demande' : ' offre') + (m > 1 ? 's' : '') + ' compatible' + (m > 1 ? 's' : '') : '', go: () => this.openFiche(x.slug),
+        epuise: !!x.epuise || (x.kind === 'offre' && x.qty <= 0), hasStock: x.kind === 'offre', stockTxt: A.fmt(x.qty) + ' ' + x.unit,
+        stock: () => { const v = prompt('Quantité de ' + P.name.toLowerCase() + ' encore disponible (' + x.unit + ') :', String(x.qty)); if (v == null) return; const q = +String(v).replace(',', '.').replace(/\s/g, ''); if (!(q >= 0)) { this.say('Quantité invalide'); return; }
+          A.write('offres', A.read('offres').map(y => y.id === x.id ? Object.assign({}, y, { quantity: q, epuise: q <= 0 }) : y)); this.say(q > 0 ? 'Stock mis à jour : ' + A.fmt(q) + ' ' + x.unit : 'Stock à zéro : l\u2019offre ne sera plus proposée'); },
         del: () => { const k = x.kind === 'offre' ? 'offres' : 'demandes'; A.write(k, A.read(k).filter(y => y.id !== x.id)); this.say('Publication retirée'); } }; });
 
+    const stockMap = {}; mine.filter(x => x.kind === 'offre' && x.qty > 0 && !x.epuise).forEach(x => { const k = x.slug + '|' + x.unit; stockMap[k] = stockMap[k] || { n: this.prod(x.slug).name.toLowerCase(), u: x.unit, q: 0 }; stockMap[k].q += x.qty; });
+    const stockSum = Object.values(stockMap).map(k => ({ q: A.fmt(k.q) + ' ' + k.u, n: k.n }));
     /* vendeur */
     const vo = O.find(o => o.id === S.vid), vkey = vo ? (vo.uid || (vo.remote ? 'n:' + vo.name : 'moi')) : null, vlist = vo ? O.filter(o => (o.uid || (o.remote ? 'n:' + o.name : 'moi')) === vkey) : [], vMine = vo ? this.isMine(vo) : false;
     const vd = vo ? { name: vo.name, place: this.place(vo) + ', ' + this.regName(vo.region), agent: vo.agent ? 'Publié par l\u2019agent terrain ' + vo.agent : '', mine: vMine,
@@ -1120,7 +1130,9 @@ class Component extends DCLogic {
       yearEl: html(A.yearSVG(S.month, cm), { onClick: e => { const t = e.target.closest && e.target.closest('[data-m]'); if (t) this.setState({ month: +t.dataset.m }); } }),
       mPrev: () => this.setState(s => ({ month: s.month === 1 ? 12 : s.month - 1 })), mNext: () => this.setState(s => ({ month: s.month === 12 ? 1 : s.month + 1 })),
       mName: A.MOIS[S.month - 1], mKicker: S.month === cm ? 'CE MOIS-CI' : String(S.month).padStart(2, '0') + ' / 12', mGroups, mEmpty: !mGroups.length,
-      myPubs, pubsEmpty: !myPubs.length, vd, info,
+      myPubs, pubsEmpty: !myPubs.length, stockOn: stockSum.length > 0, stockSum,
+      fAlerte: (() => { const AL = window.MDGAlertes, a = AL && AL.suit(S.slug); return { l: a ? 'Alertes activées pour ce produit' : 'M\u2019alerter pour ce produit', c: a ? '#F3B48A' : 'inherit', f: a ? 'rgba(243,180,138,.35)' : 'none' }; })(),
+      ficheAlerte: () => window.MDGAlertes && window.MDGAlertes.panneau(S.slug, FP.name), vd, info,
       scrimOp: anyS ? Math.max(0, 1 - dy / 400) : 0, scrimBg: S.menu ? 'rgba(8,7,5,.74)' : 'rgba(10,9,7,.55)', scrimFlou: S.menu ? 'blur(3px)' : 'none',  // tiroir ouvert : l'accueil s'efface davantage (rien ne semble dépasser du tiroir)
        scrimPe: anyS ? 'auto' : 'none', closeAll: () => this.closeAll(),
       sheetTr: this.sd ? 'none' : 'transform .45s cubic-bezier(.22,1,.36,1)', sDown: e => this.sDown(e), sMove: e => this.sMove(e), sUp: () => this.sUp(),
@@ -1143,7 +1155,11 @@ class Component extends DCLogic {
         // écrire au Marché de Gros (ou, pour l'administrateur, à tous les membres)
         if (M && M.ecrireMarche) { const adm = !!(window.MDGNuage && ls('mdg-nuage:admin') === true);
           compte.push(ln({ ico: logoIco(26), t: adm ? 'Message à tous les membres' : 'Écrire au Marché de Gros', s: adm ? 'Au nom du Marché de Gros, avec le logo' : 'Une question, un problème : l\u2019équipe répond', go: () => { this.setState({ menu: false }); setTimeout(() => adm ? M.diffuser() : M.ecrireMarche(), 250); } })); }
-        compte.push(pg('pubs', 'Mes publications', 'pubs', { n: mine.length || '' }));
+        compte.push(pg('pubs', 'Mes publications', 'pubs', { n: mine.length || '', s: stockSum.length ? 'Et mon stock' : '' }));
+        if (ss && window.MDGRep) compte.push(ln({ ico: h('svg', { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: '#F5F0E6', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }, h('rect', { x: 3.5, y: 5, width: 17, height: 14, rx: 2.5 }), h('circle', { cx: 9, cy: 11, r: 2.4 }), h('path', { d: 'M5.5 17a3.6 3.6 0 0 1 7 0M14.5 10h4M14.5 13.5h3' })),
+            t: 'Mon profil public', s: 'Ce que les autres voient de vous', go: () => { this.setState({ menu: false }); setTimeout(() => window.MDGRep.profil(ss.user.id, { nom: nomP || 'Moi' }), 250); } }));
+        if (ss && window.MDGAlertes) { const nA = window.MDGAlertes.liste().length; compte.push(ln({ ico: h('svg', { width: 26, height: 26, viewBox: '0 0 24 24', fill: 'none', stroke: '#F5F0E6', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }, h('path', { d: 'M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z' }), h('path', { d: 'M10 20.5a2 2 0 0 0 4 0' })),
+            t: 'Alertes produits', s: nA ? nA + ' produit' + (nA > 1 ? 's' : '') + ' suivi' + (nA > 1 ? 's' : '') : 'Igname, tomate… : soyez prévenu', go: () => { this.setState({ menu: false }); setTimeout(() => window.MDGAlertes.gerer(), 250); } })); }
         return [
           { sep: false, items: compte },
           { sep: true, items: [pg('cherche', 'Acheter', 'acheter'), pg('jai', 'Vendre', 'vendre'), pg('demande', 'Demander', 'demande')] },

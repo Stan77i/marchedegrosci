@@ -1,3 +1,12 @@
+# Mise à jour — 17 octobre 2026 (4/4 : stock, alertes produits, profil public)
+
+Service worker : `mgci-v51`. Base Supabase déjà mise à jour (`supabase/schema-12-stock-alertes-profil.sql`), fonction Edge « pousser » redéployée (version 4).
+
+## Ce qui change
+- **Stock** : à chaque vente conclue (négociation acceptée avec une quantité), la quantité de l'offre baisse sur le serveur ; à zéro, l'offre sort du marché. « Mes publications » montre « Mon stock en ligne » (15 kg tomate, 25 kg oignon…), un bouton « Stock » pour corriger la quantité, et « Épuisé » quand tout est vendu.
+- **Alertes produits** : une cloche sur chaque fiche produit et « Alertes produits » dans le menu ; on choisit les nouvelles offres, les nouvelles demandes, ou les deux. Une notification arrive à chaque nouvelle annonce du produit (`v3/alertes.js`).
+- **Profil public** : en touchant un membre, on voit son ancienneté, sa dernière activité, ses ventes et achats conclus (produit, quantité, prix, lieu), ses annonces en cours, les lieux où il a publié, sa présentation, ses activités, ses photos, puis ses avis. « Mon profil public » dans le menu permet de le remplir (présentation, activités, 6 photos).
+
 # Mise à jour — 17 octobre 2026 (3/4 : carte plein écran, tout voir)
 
 Service worker : `mgci-v50`. Base Supabase déjà mise à jour (`supabase/schema-11-zones.sql`).

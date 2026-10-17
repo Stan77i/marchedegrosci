@@ -1,3 +1,19 @@
+# Mise à jour — 17 octobre 2026 (carte nette, quartiers et rues)
+
+Service worker : `mgci-v66`.
+
+## Ce qui change
+- **Plus de carte qui en remplace une autre** : sur un téléphone capable, la carte en relief s'ouvre directement. Pendant qu'elle se prépare, la silhouette du pays et « Préparation de la carte… » ; la carte apparaît en fondu par-dessus. La carte simple ne sert plus qu'en secours (téléphone trop ancien, ou échec).
+- **Quartiers et rues, comme Yango** (en ligne, seulement pour la zone regardée, gardé ensuite dans le téléphone) :
+  - les zones : habitations, commerces, industries, écoles et hôpitaux, parcs et bois, cours d'eau ;
+  - **toutes les rues** : grands axes, rues, ruelles, voies de service, pistes en pointillé, avec bordure ; leur nom à partir du zoom rue ;
+  - **les bâtiments**, un par un (aplat et liseré) ;
+  - **les lieux utiles** : marchés (en terracotta), écoles, lieux de culte, santé et pharmacies, carburant, banques, gares ;
+  - **les numéros de maison** au zoom maximal ;
+  - les noms de quartiers (Riviera, Cocody…).
+- **Zoom jusqu'au niveau de la rue** (19 au lieu de 17,5).
+- Hors connexion : la carte embarquée (villes, villages, routes) reste ; les quartiers déjà vus restent disponibles.
+
 # Mise à jour — 17 octobre 2026 (région et ville reliées partout)
 
 Service worker : `mgci-v65`.

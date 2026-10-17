@@ -41,10 +41,10 @@
   // ——— deux ambiances, mêmes repères : nuit (l'application) et jour (comme les applications de transport) ———
   const PAL = {
     nuit: { mer: '#0f1417', voisin: '#1a1814', civ: '#2a241b', ville: '#3a3023', lac: '#1b2e34', fleuve: '#3d6166', r1: '#d9b07a', r2: '#9d8463', r3: '#5f5344', casing: '#14110d', rail: '#6f6455',
-      t1: '#F5F0E6', t2: '#E6DCCB', t3: '#B9AD98', halo: 'rgba(15,13,10,.92)', bat: '#4a3e2e', ombre: 'rgba(0,0,0,.45)',
+      t1: '#F5F0E6', t2: '#E6DCCB', t3: '#B9AD98', halo: 'rgba(15,13,10,.92)', bat: '#4a3e2e', batBord: '#5d4f3b', solHab: '#30291f', solCom: '#3a2d22', solInd: '#2c2a26', solPub: '#2b2e2a', parc: '#24301f', piste: '#7a6a52', marche: '#F3B48A', ombre: 'rgba(0,0,0,.45)',
       ciel: '#1a1e24', horizon: '#3a2f25', brume: '#2a2620' },
     jour: { mer: '#bcdbe6', voisin: '#e9e3d6', civ: '#f7f2e8', ville: '#f0e2c9', lac: '#a9d0de', fleuve: '#86bdd0', r1: '#ea9a4e', r2: '#f2c27e', r3: '#ddcfb7', casing: '#c98a4a', rail: '#a99d8a',
-      t1: '#231f19', t2: '#3b342a', t3: '#6f6553', halo: 'rgba(255,253,248,.95)', bat: '#e6d7bf', ombre: 'rgba(80,60,30,.2)',
+      t1: '#231f19', t2: '#3b342a', t3: '#6f6553', halo: 'rgba(255,253,248,.95)', bat: '#e8dcc6', batBord: '#d2c1a3', solHab: '#f1e8d8', solCom: '#f4e0cf', solInd: '#ebe6dc', solPub: '#e9eadf', parc: '#dde8cf', piste: '#b9a27e', marche: '#B85C38', ombre: 'rgba(80,60,30,.2)',
       ciel: '#cfe6f2', horizon: '#f6ead8', brume: '#efe6d6' }
   };
   const FONT_R = ['Noto Sans Regular'], FONT_M = ['Noto Sans Medium'], FONT_I = ['Noto Sans Italic'];
@@ -146,8 +146,10 @@
       const ou = x => { const pr = /\(près de ([^)]+)\)/.exec(x.city || ''), vp = pr && villes[cle(pr[1])]; if (vp) return { xy: vp.xy, approx: true, ville: vp.n }; const v = x.city && villes[cle(x.city)]; if (v) return { xy: v.xy, approx: false, ville: v.n }; const r = regXY(x.region); return r ? { xy: r, approx: true, ville: (A.REG[x.region] || [])[2] } : null; };
 
       const enLigne = () => navigator.onLine !== false;
+      // une tuile en ligne qui échoue ne casse rien (la carte embarquée reste) ; on garde la trace pour le contrôle (MDGCarteGL.erreurs)
+      const erreur = e => { const m = String((e && e.message) || e || ''); if (m && !/Failed to fetch|NetworkError|AbortError|aborted/i.test(m)) (window.MDGCarteGL.erreurs = window.MDGCarteGL.erreurs || []).push(m.slice(0, 200)); };
       const map = new ml.Map({ container: box, style: style(base, P), bounds: [[bb[0], bb[1]], [bb[2], bb[3]]], fitBoundsOptions: { padding: { top: ins().t + 20, bottom: ins().b + 20, left: 24, right: 24 } },
-        minZoom: 4.6, maxZoom: 17.5, maxPitch: 0, attributionControl: { compact: true }, dragRotate: false, pitchWithRotate: false, touchPitch: false, renderWorldCopies: false, fadeDuration: 150 });
+        minZoom: 4.6, maxZoom: 19, maxPitch: 0, attributionControl: { compact: true }, dragRotate: false, pitchWithRotate: false, touchPitch: false, renderWorldCopies: false, fadeDuration: 150 });
       // carte figée : vue du dessus, nord en haut ; on glisse et on zoome, on ne la tourne pas
       map.touchZoomRotate.disableRotation(); map.keyboard.disableRotation();
 
@@ -182,23 +184,47 @@
       function appliquerRelief() {}
       function ajouterRues() {
         if (rues || !enLigne()) return;
-        const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 5000);
+        const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 6000);
         fetch('https://tiles.openfreemap.org/planet', { signal: ctl.signal }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(tj => {
           clearTimeout(t); if (!alive || rues) return; rues = true;
+          // tuiles vectorielles OpenStreetMap (schéma OpenMapTiles) : chargées seulement pour la zone regardée, gardées ensuite dans le téléphone (sw.js)
           map.addSource('osm', { type: 'vector', tiles: tj.tiles, minzoom: tj.minzoom || 0, maxzoom: tj.maxzoom || 14, attribution: '© OpenStreetMap · OpenFreeMap' });
-          const L = (o, avant) => { try { map.addLayer(o, avant); } catch (_) {} };
+          const L = (o, avant) => { try { map.addLayer(o, avant); } catch (e) { erreur(e); } };
+          const nom = ['coalesce', ['get', 'name:fr'], ['get', 'name']];
+          const CL = { grandes: ['motorway', 'trunk', 'primary'], moyennes: ['secondary', 'tertiary'], petites: ['minor', 'service', 'street', 'residential', 'unclassified'], pistes: ['track', 'path', 'pedestrian'] };
+          const larg = (a, b, c, d) => ['interpolate', ['exponential', 1.6], ['zoom'], 10, ['match', ['get', 'class'], CL.grandes, a[0], CL.moyennes, b[0], CL.petites, c[0], d[0]], 15, ['match', ['get', 'class'], CL.grandes, a[1], CL.moyennes, b[1], CL.petites, c[1], d[1]], 19, ['match', ['get', 'class'], CL.grandes, a[2], CL.moyennes, b[2], CL.petites, c[2], d[2]]];
+          // le sol : quartiers d'habitation, commerces, parcs, bois, eau
+          L({ id: 'osm-sol', type: 'fill', source: 'osm', 'source-layer': 'landuse', minzoom: 11, filter: ['match', ['get', 'class'], ['residential', 'suburb', 'neighbourhood', 'commercial', 'retail', 'industrial', 'school', 'hospital', 'cemetery', 'stadium'], true, false],
+            paint: { 'fill-color': ['match', ['get', 'class'], ['commercial', 'retail'], P.solCom, ['industrial'], P.solInd, ['school', 'hospital'], P.solPub, ['cemetery'], P.parc, P.solHab], 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 11, 0, 13, 1] } }, 'lac');
+          L({ id: 'osm-parc', type: 'fill', source: 'osm', 'source-layer': 'park', minzoom: 11, paint: { 'fill-color': P.parc } }, 'lac');
+          L({ id: 'osm-vert', type: 'fill', source: 'osm', 'source-layer': 'landcover', minzoom: 11, filter: ['match', ['get', 'class'], ['wood', 'grass', 'wetland'], true, false], paint: { 'fill-color': P.parc, 'fill-opacity': .7 } }, 'lac');
           L({ id: 'osm-eau', type: 'fill', source: 'osm', 'source-layer': 'water', minzoom: 8, paint: { 'fill-color': P.lac } }, 'fleuve');
-          L({ id: 'osm-rue', type: 'line', source: 'osm', 'source-layer': 'transportation', minzoom: 10, filter: ['match', ['get', 'class'], ['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'minor', 'service', 'track'], true, false],
-            layout: { 'line-cap': 'round', 'line-join': 'round' },
-            paint: { 'line-color': ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], P.r1, ['secondary', 'tertiary'], P.r2, P.r3],
-              'line-width': ['interpolate', ['exponential', 1.6], ['zoom'], 10, ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], 1.6, ['secondary', 'tertiary'], .9, .3], 16, ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], 14, ['secondary', 'tertiary'], 10, 5]] } }, 'arcs');
-          L({ id: 'osm-bati', type: 'fill-extrusion', source: 'osm', 'source-layer': 'building', minzoom: 14,
-            paint: { 'fill-extrusion-color': P.bat, 'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 6], 'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0], 'fill-extrusion-opacity': .85 } }, 'arcs');
-          L({ id: 'osm-quartier', type: 'symbol', source: 'osm', 'source-layer': 'place', minzoom: 11, filter: ['match', ['get', 'class'], ['suburb', 'neighbourhood', 'quarter', 'village', 'hamlet'], true, false],
-            layout: { 'text-field': ['coalesce', ['get', 'name:fr'], ['get', 'name']], 'text-font': FONT_M, 'text-size': 11, 'text-transform': 'uppercase', 'text-letter-spacing': .08 },
-            paint: { 'text-color': P.t3, 'text-halo-color': P.halo, 'text-halo-width': 1.4 } }, 'lieu-point');
-          L({ id: 'osm-nom-rue', type: 'symbol', source: 'osm', 'source-layer': 'transportation_name', minzoom: 14, layout: { 'symbol-placement': 'line', 'text-field': ['coalesce', ['get', 'name:fr'], ['get', 'name']], 'text-font': FONT_R, 'text-size': 11 },
+          L({ id: 'osm-cours', type: 'line', source: 'osm', 'source-layer': 'waterway', minzoom: 12, paint: { 'line-color': P.lac, 'line-width': ['interpolate', ['linear'], ['zoom'], 12, .6, 17, 3] } }, 'fleuve');
+          // les bâtiments, un par un (vue du dessus : un aplat et un liseré)
+          L({ id: 'osm-bati', type: 'fill', source: 'osm', 'source-layer': 'building', minzoom: 14, paint: { 'fill-color': P.bat, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, .9] } }, 'arcs');
+          L({ id: 'osm-bati-bord', type: 'line', source: 'osm', 'source-layer': 'building', minzoom: 15.5, paint: { 'line-color': P.batBord, 'line-width': .6 } }, 'arcs');
+          // les rues : bordure puis chaussée, des grands axes aux ruelles et pistes
+          const routes = ['match', ['get', 'class'], [...CL.grandes, ...CL.moyennes, ...CL.petites, ...CL.pistes], true, false];
+          L({ id: 'osm-rue-bord', type: 'line', source: 'osm', 'source-layer': 'transportation', minzoom: 13, filter: ['all', routes, ['!', ['match', ['get', 'class'], CL.pistes, true, false]]], layout: { 'line-cap': 'round', 'line-join': 'round' },
+            paint: { 'line-color': P.casing, 'line-width': larg([2.4, 16, 34], [1.6, 12, 26], [.8, 7, 18], [0, 0, 0]) } }, 'arcs');
+          L({ id: 'osm-rue', type: 'line', source: 'osm', 'source-layer': 'transportation', minzoom: 10, filter: routes, layout: { 'line-cap': 'round', 'line-join': 'round' },
+            paint: { 'line-color': ['match', ['get', 'class'], CL.grandes, P.r1, CL.moyennes, P.r2, CL.pistes, P.piste, P.r3],
+              'line-width': larg([1.6, 13, 30], [.9, 9.5, 22], [.3, 5, 14], [.2, 1.4, 3.5]) } }, 'arcs');
+          L({ id: 'osm-piste', type: 'line', source: 'osm', 'source-layer': 'transportation', minzoom: 14, filter: ['match', ['get', 'class'], CL.pistes, true, false], paint: { 'line-color': P.piste, 'line-width': ['interpolate', ['linear'], ['zoom'], 14, .8, 19, 2.4], 'line-dasharray': [2, 1.5] } }, 'arcs');
+          // les noms : quartiers, rues, lieux utiles, numéros de maison
+          L({ id: 'osm-quartier', type: 'symbol', source: 'osm', 'source-layer': 'place', minzoom: 11, filter: ['match', ['get', 'class'], ['suburb', 'neighbourhood', 'quarter', 'village', 'hamlet', 'isolated_dwelling'], true, false],
+            layout: { 'text-field': nom, 'text-font': FONT_M, 'text-size': ['interpolate', ['linear'], ['zoom'], 11, 10.5, 16, 13.5], 'text-transform': 'uppercase', 'text-letter-spacing': .08, 'text-max-width': 8,
+              'symbol-sort-key': ['match', ['get', 'class'], 'suburb', 0, 'quarter', 1, 'neighbourhood', 2, 3] },
+            paint: { 'text-color': P.t3, 'text-halo-color': P.halo, 'text-halo-width': 1.4, 'text-opacity': ['step', ['zoom'], ['match', ['get', 'class'], ['suburb', 'village'], 1, 0], 13, 1] } }, 'lieu-point');
+          L({ id: 'osm-nom-rue', type: 'symbol', source: 'osm', 'source-layer': 'transportation_name', minzoom: 14, layout: { 'symbol-placement': 'line', 'text-field': nom, 'text-font': FONT_R, 'text-size': ['interpolate', ['linear'], ['zoom'], 14, 10.5, 18, 13], 'symbol-spacing': 280 },
             paint: { 'text-color': P.t2, 'text-halo-color': P.halo, 'text-halo-width': 1.4 } }, 'lieu-point');
+          const UTILES = ['marketplace', 'grocery', 'shop', 'supermarket', 'school', 'college', 'university', 'place_of_worship', 'hospital', 'doctors', 'pharmacy', 'fuel', 'bank', 'bus', 'railway', 'police', 'townhall', 'post'];
+          L({ id: 'osm-utile', type: 'symbol', source: 'osm', 'source-layer': 'poi', minzoom: 15, filter: ['all', ['has', 'name'], ['any', ['match', ['get', 'class'], UTILES, true, false], ['match', ['get', 'subclass'], ['marketplace', 'mosque', 'church'], true, false]]],
+            layout: { 'text-field': nom, 'text-font': FONT_R, 'text-size': 11.5, 'text-max-width': 9, 'text-anchor': 'top', 'text-offset': [0, .55], 'symbol-sort-key': ['get', 'rank'] },
+            paint: { 'text-color': ['match', ['get', 'subclass'], 'marketplace', P.marche, P.t2], 'text-halo-color': P.halo, 'text-halo-width': 1.4 } }, 'lieu-point');
+          L({ id: 'osm-utile-pt', type: 'circle', source: 'osm', 'source-layer': 'poi', minzoom: 15, filter: ['all', ['has', 'name'], ['any', ['match', ['get', 'class'], UTILES, true, false], ['match', ['get', 'subclass'], ['marketplace', 'mosque', 'church'], true, false]]],
+            paint: { 'circle-radius': ['match', ['get', 'subclass'], 'marketplace', 5, 3.2], 'circle-color': ['match', ['get', 'subclass'], 'marketplace', P.marche, ['match', ['get', 'class'], ['hospital', 'doctors', 'pharmacy'], '#E2735B', ['school', 'college', 'university'], '#6AAEF0', ['place_of_worship'], '#B095F0', P.t3]], 'circle-stroke-color': P.halo, 'circle-stroke-width': 1.2 } }, 'lieu-point');
+          L({ id: 'osm-numero', type: 'symbol', source: 'osm', 'source-layer': 'housenumber', minzoom: 17, layout: { 'text-field': ['get', 'housenumber'], 'text-font': FONT_R, 'text-size': 10 }, paint: { 'text-color': P.t3, 'text-halo-color': P.halo, 'text-halo-width': 1.2 } }, 'lieu-point');
           ['route', 'route-bord'].forEach(id => map.setLayerZoomRange(id, 0, 10.5));   // de près, les rues d'OpenStreetMap prennent le relais
           majEtat();
         }).catch(() => { clearTimeout(t); majEtat(); });
@@ -216,7 +242,9 @@
         set('route-bord', 'line-color', P.casing); set('route', 'line-color', ['match', ['get', 'r'], 1, P.r1, 2, P.r2, P.r3]); set('trajet-bord', 'line-color', P.casing);
         ['route-nom', 'lieu-4', 'lieu-3', 'lieu-2', 'lieu-1', 'osm-quartier', 'osm-nom-rue'].forEach(id => set(id, 'text-halo-color', P.halo));
         set('route-nom', 'text-color', P.t2); set('lieu-4', 'text-color', P.t3); set('lieu-3', 'text-color', P.t2); set('lieu-2', 'text-color', P.t1); set('lieu-1', 'text-color', P.t1); set('lieu-point', 'circle-color', P.t3);
-        set('osm-eau', 'fill-color', P.lac); set('osm-rue', 'line-color', ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], P.r1, ['secondary', 'tertiary'], P.r2, P.r3]); set('osm-bati', 'fill-extrusion-color', P.bat);
+        set('osm-eau', 'fill-color', P.lac); set('osm-cours', 'line-color', P.lac); set('osm-parc', 'fill-color', P.parc); set('osm-vert', 'fill-color', P.parc); set('osm-bati-bord', 'line-color', P.batBord); set('osm-rue-bord', 'line-color', P.casing); set('osm-piste', 'line-color', P.piste);
+        set('osm-sol', 'fill-color', ['match', ['get', 'class'], ['commercial', 'retail'], P.solCom, ['industrial'], P.solInd, ['school', 'hospital'], P.solPub, ['cemetery'], P.parc, P.solHab]);
+        ['osm-utile', 'osm-numero'].forEach(id => set(id, 'text-halo-color', P.halo)); set('osm-numero', 'text-color', P.t3); set('osm-utile-pt', 'circle-stroke-color', P.halo); set('osm-rue', 'line-color', ['match', ['get', 'class'], ['motorway', 'trunk', 'primary'], P.r1, ['secondary', 'tertiary'], P.r2, ['track', 'path', 'pedestrian'], P.piste, P.r3]); set('osm-bati', 'fill-color', P.bat);
         set('osm-quartier', 'text-color', P.t3); set('osm-nom-rue', 'text-color', P.t2);
         set('relief', 'hillshade-shadow-color', P.ombre); set('relief', 'hillshade-accent-color', P.ombre); set('relief', 'hillshade-exaggeration', theme === 'jour' ? .35 : .5);
         appliquerRelief(false);
@@ -349,13 +377,13 @@
       map.on('zoomend', () => { zPrec = map.getZoom(); dessinerAnnonces(); });   // les bulles se regroupent ou se séparent selon le zoom
       map.on('moveend', echelle);
       map.on('click', () => { if (picked.length) { picked = []; dessinerAnnonces(); calques(); opt.onPick && opt.onPick([]); tracer(null); } });
-      map.on('error', () => {});   // une tuile en ligne qui échoue ne casse rien : la carte embarquée reste
+      map.on('error', e => erreur(e && e.error));   // une tuile en ligne qui échoue ne casse rien : la carte embarquée reste
       map.once('load', () => {
         placer(); cadrer(); pret = true; majEtat(); dessinerMoi(); calques(); dessinerAnnonces(); echelle();
         if (chaleur) map.setLayoutProperty('chaleur', 'visibility', 'visible');
         if (enLigne()) { ajouterRelief(); ajouterRues(); }
         appliquerRelief(false);
-        requestAnimationFrame(() => box.classList.add('on'));
+        requestAnimationFrame(() => box.classList.add('on')); window.MDGCarteGL.actif = api;
         resolve(api);
       });
       setTimeout(() => { if (!box.classList.contains('on')) resolve(null); }, 15000);   // trop lent : on garde la carte Canvas
@@ -371,6 +399,7 @@
         },
         relayout() { placer(); map.resize(); cadrer(); },
         home, localiser,
+        voir(lng, lat, z) { map.jumpTo({ center: [lng, lat], zoom: z == null ? 15 : z }); },
         pick(ids) { picked = ids || []; dessinerAnnonces(); calques(); if (!picked.length) tracer(null); },
         destroy() { bloque.forEach(n => n.removeEventListener('scroll', fige)); alive = false; removeEventListener('online', surReseau); removeEventListener('offline', majEtat); markers.forEach(m => m.remove()); if (moiM) moiM.remove(); if (distM) distM.remove(); try { map.remove(); } catch (_) {} box.remove(); }
       };

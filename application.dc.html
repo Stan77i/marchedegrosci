@@ -19,10 +19,10 @@
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['v3/porte.js','v3/sons.js','v3/negoce.js?v=20261017f','v3/compte.js?v=20261017g','v3/souffle.js','v3/pousse.js','v3/reputation.js?v=20261017f','v3/messages.js?v=20261017f','v3/alertes.js?v=20261017f','app/carte-app.js','app/carte-gl.js?v=20261017g'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['v3/porte.js','v3/sons.js','v3/negoce.js?v=20261017f','v3/compte.js?v=20261017g','v3/souffle.js','v3/pousse.js','v3/reputation.js?v=20261017f','v3/messages.js?v=20261017f','v3/alertes.js?v=20261017f','app/carte-app.js','app/carte-gl.js?v=20261017h'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 addEventListener('load',function(){setTimeout(charger,400);});
-return{charger:charger,quand:function(f){if(prets)prets.push(f);else f();}};})();
+return{charger:charger,pret:function(){return !prets;},quand:function(f){if(prets)prets.push(f);else f();}};})();
 </script>
 <script src="./support.js"></script>
 </head>
@@ -315,7 +315,7 @@ return{charger:charger,quand:function(f){if(prets)prets.push(f);else f();}};})()
 <div data-pg="carte" data-screen-label="Carte" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#121417;color:var(--ivoire);overflow:hidden;overflow:clip;transform:{{ tf.carte }};visibility:{{ vis.carte }};z-index:{{ zi.carte }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
 <sc-if value="{{ on.carte }}" hint-placeholder-val="{{ false }}">
   <!-- la carte occupe tout l'écran ; l'interface se pose dessus -->
-  <div ref="{{ mapRef }}" style="position:absolute;inset:0;background:#121417"></div>
+  <div ref="{{ mapRef }}" class="carte-hote" style="position:absolute;inset:0;background:#121417"></div>
   <div style="position:absolute;left:0;right:0;top:0;z-index:3;padding-top:{{ topPad }};background:linear-gradient(to bottom,rgba(18,20,23,.96) 0%,rgba(18,20,23,.88) 70%,rgba(18,20,23,0) 100%);pointer-events:none">
     <div style="display:flex;align-items:center;height:52px;padding:0 8px;pointer-events:auto"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:var(--ivoire);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span style="flex:1;text-align:center;font-family:'Cormorant Garamond',serif;font-size:24px;line-height:1">Qui a quoi, <em style="color:var(--terre)">et où ?</em></span><span style="width:44px"></span></div>
     <div style="display:flex;gap:6px;overflow-x:auto;padding:0 12px 8px;pointer-events:auto;scrollbar-width:none">
@@ -665,20 +665,27 @@ class Component extends DCLogic {
     if (st.includes(prev)) { go(top, T_OFF, T_IN); go(prev, T_IN, T_UNDER); } else { go(prev, T_IN, T_OFF); go(top, T_UNDER, T_IN); }
     this.animT = setTimeout(() => { (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; }, 650);
   }
-  componentDidUpdate(pp, ps) { if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map && window.MDGCarte) { this.map = window.MDGCarte.mount(el, { onSelect: s => this.setState({ csel: s, cOpen: !!s }), insets: () => this.carteIns() }); this.versRelief(el); } if (el && this.map && !this.glOn && !this._glEssai && window.MDGCarteGL) this.versRelief(el);   /* le module du relief est arrivé après la carte (chargement différé) */ if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this._glEssai = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
+  componentDidUpdate(pp, ps) { if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
   /* carte en profondeur (app/carte-gl.js) : chargée après l'affichage de la carte Canvas, elle la remplace en fondu.
      Sans WebGL, sur un appareil faible ou si un fichier manque, la carte Canvas reste. */
-  versRelief(el) {
-    const G = window.MDGCarteGL; if (!G || this._glEnCours) return; this._glEnCours = true; this._glEssai = true;
+  /* la carte : une seule, sans changement visible. Téléphone capable → la carte en relief directement (fond de la même couleur pendant
+     qu'elle se prépare) ; sinon, ou si elle échoue, la carte simple (app/carte-app.js). Avant : la carte simple apparaissait puis
+     disparaissait en fondu sous la nouvelle, ce qui se voyait. On attend que les modules différés soient tous là (MDGPlus.pret). */
+  monterCarte(el) {
+    if (this._carteEnCours || (window.MDGPlus && !window.MDGPlus.pret())) return;
+    const G = window.MDGCarteGL, simple = () => { if (this.mapRef.current === el && !this.map && window.MDGCarte) { this.map = window.MDGCarte.mount(el, { onSelect: s => this.setState({ csel: s, cOpen: !!s }), insets: () => this.carteIns() }); this._mk = ''; this.forceUpdate(); } };
+    if (!G || !G.capable()) return simple();
+    this._carteEnCours = true;
     // toucher un district : la carte zoome, le panneau reste replié ; toucher une bulle : la carte d'annonce s'ouvre en bas
     G.mount(el, { onSelect: s => this.setState({ csel: s, cOpen: false, cPick: null }), onPick: ids => this.setState({ cPick: ids && ids.length ? ids : null, cOpen: false }),
       onLocate: (la, lo) => { const A = window.MDGApp; let best = '', bd = 1e9; Object.keys(A.REG).forEach(k => { const d = A.km([la, lo], A.REG[k]); if (d < bd) { bd = d; best = k; } }); if (best && bd < 400) { this.me.region = best; ls('mdg-app:moi', this.me); this.setState({ cme: best }); } },
       insets: () => this.carteIns() }).then(api => {
-      this._glEnCours = false; if (!api) return;
-      if (this.mapRef.current !== el || !this.map) { api.destroy(); return; }
-      const ancien = this.map; this.map = api; this.glOn = true; if (this.mapData) { api.set(this.mapData); this._mk = JSON.stringify(this.mapData); }
-      setTimeout(() => { try { ancien.destroy(); } catch (_) {} }, 650); this.forceUpdate();
-    });
+      this._carteEnCours = false;
+      if (!api) return simple();
+      if (this.mapRef.current !== el || this.map) { api.destroy(); return; }
+      this.map = api; this.glOn = true; if (this.mapData) { api.set(this.mapData); this._mk = JSON.stringify(this.mapData); }
+      this.forceUpdate();
+    }).catch(() => { this._carteEnCours = false; simple(); });
   }
   /* une annonce vient d'arriver (v3/nuage.js « mdg:nouvelles ») : notification en haut, avec sa famille, son produit, sa quantité, son lieu.
      Toucher ouvre la fiche du produit. Les annonces de ce compte ne sont pas signalées. */

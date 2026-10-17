@@ -1,3 +1,14 @@
+# Mise à jour — 17 octobre 2026 (refonte 3 : carte et liste reliées, recherche, petits écrans)
+
+Service worker : `mgci-v54`. Rapport complet : `docs/RAPPORT-REFONTE.md`.
+
+## Ce qui change
+- **Carte ↔ liste** : bouton 📍 sur chaque annonce de la liste (centre la carte sur son district et filtre la liste).
+- **Positions honnêtes** : « Chaque point est placé au chef-lieu du district » dans le panneau, « Points au chef-lieu du district » sur la carte.
+- **Près de vous d'abord** : par tranches de distance, puis par quantité (pas seulement la distance).
+- **Recherche** : toutes les villes des districts sont reconnues (Bondoukou, San-Pédro, Grand-Bassam…).
+- **Petits écrans** : bouton de la page d'aide qui était écrasé corrigé ; légende de la carte et points de familles plus faciles à toucher ; marqueurs plus loin du bord.
+
 # Mise à jour — 17 octobre 2026 (refonte 2 : carte d'annonce commune)
 
 Service worker : `mgci-v53`.

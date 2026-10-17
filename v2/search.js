@@ -64,6 +64,8 @@
   });
   const exact = new Map(); terms.forEach(t => { const k = t.key.join(' '); exact.set(k, [...(exact.get(k) || []), t]); });
   const cities = new Map(); producers.forEach(p => { if (!cities.has(p.city)) cities.set(p.city, p.regionSlug); });
+  // toutes les villes et villages des districts (app/villes.js), pas seulement celles des producteurs d'exemple
+  if (window.MDGVilles) window.MDGVilles.toutes().forEach(c => { if (!cities.has(c.nom)) cities.set(c.nom, c.region); });
   const places = [...cities].map(([name, regionSlug]) => ({ name, kind: 'ville', regionSlug, key: termKey(name) }))
     .concat(regions.map(r => ({ name: r.name, kind: 'region', regionSlug: r.slug, key: termKey(r.name) })));
   const regionName = new Map(regions.map(r => [r.slug, r.name]));

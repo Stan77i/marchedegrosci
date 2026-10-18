@@ -164,7 +164,7 @@
         const t = box.querySelector('[data-top]'); if (t) t.onclick = () => { fermer(); MDGRep.classement(); };
         return;
       }
-      box.innerHTML = liste.map(c => `<button type="button" class="dm-c${c.non_lu ? ' neuf' : ''}" data-id="${c.id}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 46, c.officiel)}<b>${esc(c.autre_nom)}${c.officiel ? OFF : ''}</b><time>${quand(c.updated_at)}</time><small>${c.dernier_par === u ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small>${c.non_lu ? '<i aria-label="Non lu"></i>' : ''}</button>`).join('');
+      box.innerHTML = liste.map(c => `<button type="button" class="dm-c${c.non_lu ? ' neuf' : ''}" data-id="${c.id}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 46, c.officiel)}<b>${esc(c.autre_nom)}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 14 }) : ''}</b><time>${quand(c.updated_at)}</time><small>${c.dernier_par === u ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small>${c.non_lu ? '<i aria-label="Non lu"></i>' : ''}</button>`).join('');
       box.querySelectorAll('[data-id]').forEach(el => {
         el.onclick = () => conversation(el.dataset.id, true);
         if (window.MDGNegoce && MDGNegoce.glisser) MDGNegoce.glisser(el, async () => { await N().rpc('dm_masquer', { p_discussion: el.dataset.id }); liste = liste.filter(c => c.id !== el.dataset.id); W(KL, liste); annoncer(); N().toast('Conversation retirée de votre liste. Elle reviendra si la personne vous écrit.'); });
@@ -220,7 +220,7 @@
     if (!c.autre_id) { await refresh(); c = liste.find(x => x.id === id) || c; }
     const u = me(); ouverte = id;
     const b = feuille(`<div class="dm-h">${depuisBoite ? `<button type="button" class="dm-ib" data-back aria-label="Retour aux messages">${I.retour}</button>` : ''}
-      <button type="button" class="dm-qui" data-profil aria-label="${c.officiel ? 'Marché de Gros' : 'Voir le profil de ' + esc(c.autre_nom)}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 40, c.officiel)}<span><b>${esc(c.autre_nom || 'Membre')}${c.officiel ? OFF : ''}</b><small data-rep>${c.officiel ? 'L’équipe du Marché de Gros' : 'Voir son profil'}</small></span></button>
+      <button type="button" class="dm-qui" data-profil aria-label="${c.officiel ? 'Marché de Gros' : 'Voir le profil de ' + esc(c.autre_nom)}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 40, c.officiel)}<span><b>${esc(c.autre_nom || 'Membre')}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 15 }) : ''}</b><small data-rep>${c.officiel ? 'L’équipe du Marché de Gros' : window.MDGStatut && MDGStatut.liste(c.autre_id).length ? MDGStatut.puces(c.autre_id, { max: 2, sceau: false }) : 'Voir son profil'}</small></span></button>
       <button type="button" class="dm-ib" data-plus aria-label="Plus d’options" aria-haspopup="menu">${I.plus}</button><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div>
       <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les messages s’effacent ${JOURS} jours après leur envoi. Restez ici : les numéros sont masqués et le Marché de Gros peut vérifier en cas de problème.</div>${!c.officiel && window.MDGIdentite && MDGIdentite.gardePaiement ? `<div class="dm-garde" data-garde>${MDGIdentite.gardePaiement(c.autre_id, c.autre_nom)}</div>` : ''}<div data-msgs></div></div>
       <div class="dm-f" data-f></div>`, 'Conversation avec ' + (c.autre_nom || 'un membre'));
@@ -229,7 +229,7 @@
     if (garde) { const maj = () => { if (!garde.isConnected) return removeEventListener('mdg:identite', maj); garde.innerHTML = MDGIdentite.gardePaiement(c.autre_id, c.autre_nom); }; addEventListener('mdg:identite', maj); }
     if (depuisBoite) b.querySelector('[data-back]').onclick = () => boite();
     b.querySelector('[data-profil]').onclick = () => { if (c.officiel) return; if (window.MDGRep) { fermer(); MDGRep.profil(c.autre_id, { nom: c.autre_nom, avatar: c.autre_avatar }); } };
-    if (!c.officiel && window.MDGRep && MDGRep.charger) { const r = MDGRep.resume && MDGRep.resume(c.autre_id); if (r && r.n) b.querySelector('[data-rep]').textContent = MDGRep.texteNote(r) + ' · voir son profil'; }
+    if (!c.officiel && window.MDGRep && MDGRep.charger) { const r = MDGRep.resume && MDGRep.resume(c.autre_id); if (r && r.n) b.querySelector('[data-rep]').innerHTML = (window.MDGStatut ? MDGStatut.puces(c.autre_id, { max: 1, sceau: false }) + ' ' : '') + MDGRep.texteNote(r) + ' · voir son profil'; }
 
     let msgs = [], attente = [];
     const enBas = () => corps.scrollHeight - corps.scrollTop - corps.clientHeight < 80;

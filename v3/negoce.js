@@ -391,7 +391,7 @@
         const av = avDe(n, 36);
         return `<button type="button" class="nx-row${nonLu(n) ? ' is-new' : ''}" data-id="${n.id}"><span class="nx-av">${av.svg || mk(lui)}${av.svg ? `<i>${mk(lui)}</i>` : ''}</span><b>${esc(n.produit || 'Annonce')}</b>
           <span class="p">${p ? fmt(p) : '—'}<small>${p ? 'F / ' + esc(n.unite || 'unité') + (q ? ' × ' + fq(q) : '') : ''}</small></span>
-          <small><span class="nx-tag ${e.c}">${esc(e.t)}</span> avec ${leLa(lui)}${av.nom ? ' ' + esc(av.nom) : ''}${n.ville ? ' · ' + esc(n.ville) : ''} · ${ago(n.updated_at)}</small></button>`; };
+          <small><span class="nx-tag ${e.c}">${esc(e.t)}</span> avec ${leLa(lui)}${av.nom ? ' ' + esc(av.nom) : ''}${window.MDGStatut ? ' ' + MDGStatut.puces(autreId(n), { max: 0, t: 13 }) : ''}${n.ville ? ' · ' + esc(n.ville) : ''} · ${ago(n.updated_at)}</small></button>`; };
       const grp = (t, L) => L.length ? `<section class="nx-grp"><h3>${t}</h3>${L.map(row).join('')}</section>` : '';
       bg.querySelector('.nx-b').innerHTML = liste.length ? grp('À vous de répondre', g.moi) + grp('En attente de réponse', g.eux) + grp('Accords conclus', g.ok) + grp('Sans proposition en cours', g.sans) + grp('Terminées', g.fin)
         : `<div class="nx-empty">${window.MDGIco ? '<span class="nx-empty-ico">' + window.MDGIco.svg('negoce', 30, 1.8) + '</span>' : ''}<b>Aucune négociation pour l’instant</b>Sur une offre ou une demande, touchez « Proposer un prix ». Les réponses arrivent ici.</div>`;
@@ -434,7 +434,7 @@
       if (!bg || !n) return;
       const lui = autre(monRole(n)), u = n.unite || 'unité', proprio = me() === n.proprio_id;
       const av = avDe(n, 40); $('.nx-h').classList.toggle('has-av', !!av.svg); let ha = $('.nx-h .nx-hav'); if (!ha && av.svg) { ha = document.createElement('span'); ha.className = 'nx-hav'; $('.nx-h h2').before(ha); } if (ha) ha.innerHTML = av.svg;
-      $('.nx-h h2').innerHTML = esc(n.produit || 'Négociation') + `<small>Avec ${leLa(lui)}${av.nom ? ' ' + esc(av.nom) : ''}${n.ville ? ' · ' + esc(n.ville) : ''}${n.quantite ? ' · annonce de ' + fq(n.quantite) + ' ' + esc(u) : ''}</small>`;
+      $('.nx-h h2').innerHTML = esc(n.produit || 'Négociation') + `<small>Avec ${leLa(lui)}${av.nom ? ' ' + esc(av.nom) : ''}${window.MDGStatut ? ' ' + MDGStatut.puces(autreId(n), { max: 1, t: 14 }) : ''}${n.ville ? ' · ' + esc(n.ville) : ''}${n.quantite ? ' · annonce de ' + fq(n.quantite) + ' ' + esc(u) : ''}</small>`;
       const e = etat(n);
       $('.nx-top').innerHTML = `<div class="nx-state"><span class="nx-tag ${e.c}">${esc(e.t)}</span>${n.prix_annonce ? `<span>Prix affiché ${fmt(n.prix_annonce)} F / ${esc(u)}</span>` : ''}</div>` + rail(n, msgs)
         + (proprio && dispo && dispo.quantite ? `<p class="nx-dispo">Sur votre annonce : ${fq(dispo.convenue)} / ${fq(dispo.quantite)} ${esc(u)} déjà convenus${dispo.en_cours > 1 ? ' · ' + (dispo.en_cours - 1) + ' autre' + (dispo.en_cours > 2 ? 's' : '') + ' négociation' + (dispo.en_cours > 2 ? 's' : '') + ' en cours' : ''}</p>` : '');

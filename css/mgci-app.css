@@ -12,6 +12,7 @@
 .an-quand { flex: none; font-size: var(--t-xs); color: var(--mute); white-space: nowrap; }
 .an-qui { display: flex; align-items: center; gap: 6px; min-width: 0; font-size: var(--t-md); color: var(--texte-3); }
 .an-qui img { width: 18px; height: 18px; border-radius: 50%; flex: none; }
+.an-st { flex: none; display: inline-flex; }
 .an-qui b { font-weight: 600; color: var(--texte-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .an-qui span { white-space: nowrap; }
 .an-forme { flex: none; width: 9px; height: 9px; }

@@ -1,3 +1,25 @@
+# Mise à jour — 18 octobre 2026 (boutons aux couleurs du logo, guide « Comment ça marche », signaler avec preuves)
+
+Service worker : `mgci-v81`. Base de données : `supabase/schema-18-signalements-preuves.sql`, **déjà appliqué**.
+
+## Boutons aux couleurs du logo
+- **Boutons d'action** : vert forêt avec texte crème sur les pages claires, crème avec texte vert sur les écrans sombres.
+- **Petits accents** (repère de la roue, points, compteurs) : maïs. **Liens** sur fond clair : vert.
+- Le vert menthe (offres) et le jaune (demandes) ne changent pas.
+
+## Guide « Comment ça marche » (`v3/guide.js`)
+- « L'essentiel en 3 gestes », puis une fiche par partie de l'app (accueil, vendre, demander, le réseau, catégories, prix, année, messages, négociation, Mon compte, identité…).
+- Chaque fiche donne à quoi ça sert, 3 ou 4 étapes et un conseil, avec un bouton « Montrer dans l'app ».
+- Deux fiches en plus : « Pour être en sécurité » et « Si ça ne marche pas ».
+- Grandes lettres, mots simples. Ouvert depuis le menu (« Comment ça marche », « Aide producteur »). À la première ouverture, une pastille « Comment ça marche ? » apparaît une seule fois.
+
+## Signaler une personne : preuve ou plusieurs plaintes
+- **Étapes** : le motif, une phrase d'au moins 15 caractères, puis une preuve. La preuve peut être jusqu'à 3 photos ou captures, ou la conversation, jointe d'office si on signale depuis une discussion ou une négociation.
+- **Sans preuve** : on coche « Je n'ai pas de preuve ». Le signalement compte alors seulement pour le nombre de plaintes.
+- **Limites** : on ne signale le même compte qu'une fois tous les 7 jours. Un compte passe « à examiner en priorité » avec une preuve, ou avec 3 personnes différentes en 30 jours. Rien n'est public, rien n'est automatique.
+- **Tableau de bord** : les signalements sont regroupés par compte, avec les photos (liens de 2 minutes), la discussion jointe, et les actions Traité, Écrire, Bannir.
+- Les photos sont dans un espace privé (« preuves ») : seul l'administrateur peut les lire.
+
 # Mise à jour — 18 octobre 2026 (plus de page blanche à l'ouverture ; messages après une action refaits, avec un son)
 
 Service worker : `mgci-v80`.

@@ -159,7 +159,9 @@
     bg.querySelector('[data-sc]').innerHTML = nb ? etoiles(moy, nb, 14) + ' ' + moy.toFixed(1).replace('.', ',') + ' · ' + nb + ' avis' : 'Pas encore noté';
     let haut = '';
     if (pp) {
-      if (pp.affichage) bg.querySelector('[data-nom]').innerHTML = esc(pp.affichage) + (pp.officiel ? '<span class="rp-off">Officiel</span>' : '');
+      const nomH = () => esc(pp.affichage || o.nom || 'Membre') + (pp.officiel ? '<span class="rp-off">Officiel</span>' : '') + (window.MDGIdentite && MDGIdentite.estVerifie(uid) ? ' ' + MDGIdentite.badge(18, true) : '');
+      bg.querySelector('[data-nom]').innerHTML = nomH();
+      if (window.MDGIdentite) { const maj = () => { if (!bg.isConnected) return removeEventListener('mdg:identite', maj); bg.querySelector('[data-nom]').innerHTML = nomH(); }; addEventListener('mdg:identite', maj); }
       bg.querySelector('[data-dep]').textContent = [pp.membre_depuis ? 'Membre depuis ' + mois(pp.membre_depuis) : '', actif(pp.vu_le)].filter(Boolean).join(' · ');
       const enLigne = (pp.offres_actives || 0) + (pp.demandes_actives || 0);
       haut += `<div class="rp-stats"><div><b>${fq(pp.ventes || 0)}</b><small>vente${pp.ventes > 1 ? 's' : ''} conclue${pp.ventes > 1 ? 's' : ''}</small></div><div><b>${fq(pp.achats || 0)}</b><small>achat${pp.achats > 1 ? 's' : ''}</small></div><div><b>${fq(enLigne)}</b><small>annonce${enLigne > 1 ? 's' : ''} en ligne · ${fq(pp.annonces_total || 0)} en tout</small></div></div>`;

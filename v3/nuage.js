@@ -508,6 +508,19 @@
     if (!r.ok) { let m = ''; try { const j = await r.json(); m = j.message || j.error || ''; } catch (_) {} throw Object.assign(new Error(m || 'Envoi refusé (' + r.status + ')'), { status: r.status }); }
     return true;
   }
+  // espace privé (pièces d'identité) : dépôt sans remplacement, effacement, lien signé de courte durée (administrateurs)
+  async function stockage(path, { method = 'POST', body, type, json = true } = {}) {
+    const s = await token(); if (!s) throw Object.assign(new Error('non connecté'), { code: 'auth' });
+    const h = { apikey: KEY, Authorization: 'Bearer ' + s.access_token };
+    if (json) h['Content-Type'] = 'application/json'; else { h['Content-Type'] = type || 'image/jpeg'; h['x-upsert'] = 'false'; }
+    const r = await fetch(URL0 + '/storage/v1/' + path, { method, headers: h, body: json && body ? JSON.stringify(body) : body });
+    const t = await r.text(); let j = null; try { j = t ? JSON.parse(t) : null; } catch (_) {}
+    if (!r.ok) throw Object.assign(new Error((j && (j.message || j.error)) || ('Envoi refusé (' + r.status + ')')), { status: r.status, body: j });
+    return j;
+  }
+  const deposerPrive = (bucket, chemin, blob) => stockage('object/' + bucket + '/' + chemin, { body: blob, type: blob.type, json: false });
+  const effacerPrive = (bucket, chemins) => stockage('object/' + bucket, { method: 'DELETE', body: { prefixes: chemins } });
+  const lienSigne = (bucket, chemin, secondes = 60) => stockage('object/sign/' + bucket + '/' + chemin, { body: { expiresIn: secondes } }).then(j => j && j.signedURL ? URL0 + '/storage/v1' + j.signedURL : null);
   // ——— clavier du téléphone : sur iPhone, la page ne rétrécit pas quand le clavier s'ouvre ; seule la zone visible (visualViewport) rétrécit.
   // Les fenêtres posées par-dessus (connexion, Mon espace, négociation) suivent donc cette zone visible : elles tiennent au-dessus du clavier
   // et défilent à l'intérieur, au lieu de cacher les champs du bas sous le clavier. Clavier ouvert : l'image de la porte se replie.
@@ -531,5 +544,5 @@ html.kb .cp,html.kb .nx{height:calc(var(--vvh,100dvh) - 8px)!important}}`;
     vv.addEventListener('resize', plan); vv.addEventListener('scroll', plan); maj();
   })();
 
-  window.MDGNuage = { URL: URL0, televerser, list, zones, zoneAjouter, zoneRetirer, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
+  window.MDGNuage = { URL: URL0, televerser, deposerPrive, effacerPrive, lienSigne, list, zones, zoneAjouter, zoneRetirer, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
 })();

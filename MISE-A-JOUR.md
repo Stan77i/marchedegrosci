@@ -1,3 +1,27 @@
+# Mise à jour — 18 octobre 2026 (vérification d'identité, gratuite et examinée par une personne)
+
+Service worker : `mgci-v70`.
+
+## À faire une fois par le propriétaire
+- Lancer **`supabase/schema-13-identite.sql`** dans l'éditeur SQL de Supabase. Tant que ce n'est pas fait, la ligne « Identité » de Mon compte affiche « La vérification n'est pas encore disponible » et aucun badge n'apparaît. Le fichier termine par une vérification : l'espace `identite` doit sortir avec `public = false`.
+
+## Ce qui change
+- **Mon compte → Identité** : un parcours en étapes, sur téléphone comme sur ordinateur. Accord de la personne, choix de la pièce (CNI, passeport, carte consulaire, permis), photo du recto, du verso (sauf passeport), puis un **selfie en tenant un code à 4 chiffres** écrit à la main (le code est tiré par le serveur), puis le nom comme sur la pièce, et l'envoi.
+- **Statuts** : non vérifiée, à terminer, en cours d'examen, photos à refaire, vérifiée, refusée (nouvel essai possible 7 jours après). La personne peut retirer son dossier tant qu'il n'est pas décidé : ses photos sont effacées.
+- **Badge « Identité vérifiée »** (sceau bleu) : seulement après la décision d'un administrateur. Il s'affiche à côté du nom sur les cartes d'annonce de l'application, dans la fiche profil, et dans l'en-tête de Mon compte. Il disparaît si l'administrateur le retire ou si le compte est supprimé.
+- **Tableau de bord → Identités** : la file des dossiers, le plus ancien en premier. « Examiner » ouvre les trois photos (liens signés valables 2 minutes), le code attendu, le nom saisi et le nom lu sur la pièce. Trois décisions : Identité vérifiée, Photos à refaire (avec ce qu'il faut refaire), Refuser (avec le motif). **Les photos sont effacées juste après chaque décision.**
+- **Lecture de la bande MRZ** (les lignes `<<<` en bas de la pièce) dans le téléphone, avec Tesseract.js (libre, Apache-2.0, `vendor/tesseract/`, chargé seulement pendant la vérification). Elle pré-remplit le nom et indique à l'administrateur si les chiffres de contrôle sont justes. **Ce n'est qu'une aide : rien n'est jamais déclaré vérifié automatiquement.**
+
+## Sécurité
+- Table `verifications` sans aucun accès direct : tout passe par des fonctions serveur. Un membre ne peut pas changer son statut ; seules les fonctions réservées aux administrateurs (`est_admin()`) décident.
+- Photos dans un espace de stockage **privé** (`identite`, JPEG de 1,5 Mo au plus). Un membre ne peut déposer que dans son propre dossier en cours, sans rien remplacer. Aucune adresse publique.
+- Aucune clé secrète dans le code. Le numéro de la pièce n'est pas enregistré, et rien de la pièce n'est écrit dans la console.
+
+## Testé, et ce qui reste une hypothèse
+- Testé : les règles SQL sur une base Postgres 16 locale (accès refusé, dépôt limité, pas d'auto-vérification, motif obligatoire, badge qui apparaît puis disparaît, délai de 7 jours, renvoi après « photos à refaire », retrait) ; le parcours complet et l'onglet admin dans Chromium à 390 px et 1280 px ; la lecture MRZ sur une carte de synthèse au format TD1 (nom lu en moins d'une seconde).
+- Hypothèse : la lecture sur de **vraies** cartes ivoiriennes (police OCR-B, reflets, photos prises au téléphone) n'est pas encore éprouvée. Sur la carte de synthèse, le nom était juste mais deux caractères mal lus faisaient échouer les chiffres de contrôle : le dossier est alors marqué « MRZ douteuse » pour l'administrateur.
+- Pas fait : comparaison automatique des visages et détection de vivacité (pas d'outil gratuit assez fiable dans le navigateur) ; c'est le code écrit à la main, vérifié par une personne, qui joue ce rôle. Suppression automatique des dossiers abandonnés : prévue en étape 3, avec votre accord.
+
 # Mise à jour — 18 octobre 2026 (« quand » : une étiquette qui dit l'urgence ; logo animé à l'ouverture)
 
 Service worker : `mgci-v69`.

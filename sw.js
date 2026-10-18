@@ -3,7 +3,7 @@
    installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
    Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v76';
+const CACHE = 'mgci-v77';
 // tuiles de la carte en relief déjà vues (relief Terrarium, rues OpenFreeMap) : gardées d'une version à l'autre, 1 500 au plus
 const TUILES = 'tuiles-mgci', TUILES_MAX = 1500, HOTES_TUILES = ['s3.amazonaws.com', 'tiles.openfreemap.org'];
 
@@ -20,6 +20,7 @@ const CORE = [
   "app/carte-gl.js",
   "app/icones.js",
   "app/marque.js",
+  "app/icone.js",
   "app/geo/ci.json",
   "v2/data.js",
   "v2/saisons.js",
@@ -27,15 +28,15 @@ const CORE = [
   "css/fonts.css",
   "css/mgci-tokens.css",
   "css/mgci-app.css",
-  "icons/icon-192.png",
-  "icons/icon-512.png",
-  "icons/apple-touch-icon.png",
-  "icons/apple-touch-icon-noir.png",
-  "icons/icon-maskable-512.png",
-  "icons/favicon.svg",
-  "icons/favicon-32.png",
-  "icons/favicon-noir.svg",
-  "icons/favicon-noir-32.png",
+  "icons/v2/icon-192.png",
+  "icons/v2/icon-512.png",
+  "icons/v2/apple-touch-icon.png",
+  "icons/v2/apple-touch-icon-noir.png",
+  "icons/v2/icon-maskable-512.png",
+  "icons/v2/favicon.svg",
+  "icons/v2/favicon-32.png",
+  "icons/v2/favicon-noir.svg",
+  "icons/v2/favicon-noir-32.png",
   "vendor/babel.min.js",
   "vendor/countries-110m.json",
   "vendor/countries-50m.json",
@@ -209,7 +210,7 @@ self.addEventListener('push', e => {
   try { d = e.data ? e.data.json() : {}; } catch (_) { d = { body: e.data ? e.data.text() : '' }; }
   e.waitUntil((async () => {
     await self.registration.showNotification(d.title || 'Marché de Gros', {
-      body: d.body || '', tag: d.tag || 'mdg', renotify: true, icon: 'icons/icon-192.png', badge: 'icons/badge-96.png',
+      body: d.body || '', tag: d.tag || 'mdg', renotify: true, icon: 'icons/v2/icon-192.png', badge: 'icons/v2/badge-96.png',
       vibrate: [70, 40, 70], timestamp: Date.now(), data: { url: d.url || 'application.dc.html#/', nego: d.nego || null, dm: d.dm || null }
     });
     try { if (self.navigator.setAppBadge) { if (d.badge) await self.navigator.setAppBadge(d.badge); else if (d.badge === 0) await self.navigator.clearAppBadge(); } } catch (_) {}

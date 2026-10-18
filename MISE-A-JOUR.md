@@ -1,3 +1,18 @@
+# Mise à jour — 18 octobre 2026 (l'ancien M disparaît partout ; icône du téléphone)
+
+Service worker : `mgci-v77`.
+
+- **Carte** : pendant qu'elle se prépare, c'est le « dG » du nouveau logo qui respire, plus l'ancien M.
+- **Tableau de bord** : le nom « marché de Gros » remplace l'ancien logo dans l'en-tête.
+- **Fichiers du logo** (`logo/`) : remplacés par le nouveau logo, avec les mêmes noms. Cela concerne aussi l'**image de partage** sur WhatsApp et Facebook, `partage-reseaux-1200.png`.
+- **Icône de l'écran d'accueil** :
+  - les icônes sont maintenant dans `icons/v2/`. Cette nouvelle adresse oblige le téléphone à reprendre l'icône, et les anciennes adresses donnent aussi le nouveau logo ;
+  - **Android** : l'icône se met à jour toute seule quand le téléphone est connecté. C'est Chrome qui le fait, parfois en quelques jours ;
+  - **iPhone** : Apple fige l'icône au jour de l'ajout, aucune application ne peut la changer. Il faut supprimer l'icône et rajouter l'app ;
+  - dans l'**application installée**, une petite carte « Nouveau logo » l'explique une seule fois, avec les gestes pour iPhone ou pour Android.
+- Hors connexion, le téléphone ne peut pas changer son icône (c'est lui qui la gère, pas l'application). Tout le reste (logo dans l'app, ouverture, carte) est gardé hors ligne.
+- **Prochain changement de logo** : refaire les fichiers dans un dossier `icons/v3/`, puis passer `ICONE` à `'3'` dans `app/icone.js`.
+
 # Mise à jour — 18 octobre 2026 (écran d'ouverture « le sac qui se remplit »)
 
 Service worker : `mgci-v76`.

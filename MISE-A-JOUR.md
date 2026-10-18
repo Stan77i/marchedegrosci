@@ -1,3 +1,28 @@
+# Mise à jour — 18 octobre 2026 (Prix du marché, L'année du marché, Catégories)
+
+Service worker : `mgci-v79`. Les nouvelles feuilles de style (`css/annee-app.css`, `css/categories-app.css`) sont gardées pour le hors-ligne.
+
+## Prix du marché
+- « Le juste prix, en direct » : prix vendeurs (● vert) et budgets acheteurs (■ jaune) de chaque produit, sur une même échelle.
+- Pour chaque produit : fourchettes, médianes et un verdict (« Accord possible » ou « Écart de 16 % »).
+- Prix observé : la fourchette quand il y a assez de prix, sinon une jauge de ce qu'il manque.
+- Filtres : Tout · Prix vendeurs · Budgets · De saison · Ma région.
+- Page vide utile : boutons pour publier, produits de saison sans prix, « Comment lire ces prix ».
+- Les prix comparés sont toujours dans la même unité.
+
+## L'année du marché
+- Cadran aux couleurs du logo : le mois choisi est en maïs, le mois actuel est souligné. On change de mois en touchant ou en glissant.
+- Une bande des 12 mois montre combien de cultures sont en récolte chaque mois.
+- Le mois est rangé en groupes : en pleine récolte, ça commence, ça se termine, arrive bientôt, hors saison (soudure).
+- Chaque culture montre sa vignette, la tendance générale des prix, et ses offres et demandes en cours. Au toucher : sa frise sur l'année, sa source et la fiche.
+- Les sources restent affichées. Les tendances sont générales, jamais une promesse.
+
+## Catégories
+- En-tête vert « 11 familles, tout le vivrier » avec trois chiffres : produits, en saison ce mois, annonces en ligne.
+- Une recherche de produit (noms et alias) et des filtres Tout · En saison · Avec annonces. La barre reste visible quand on défile.
+- Les familles sont en grandes tuiles photo, la plus active en grand. Chaque tuile a ses pastilles offres, demandes et « en saison ».
+- Famille ouverte : ses produits en vignettes, avec le prix observé ou « dès … F », et les annonces. Toucher une vignette ouvre la fiche.
+
 # Mise à jour — 18 octobre 2026 (statuts des comptes : vérifié, vendeur de confiance, acheteur sérieux…)
 
 Service worker : `mgci-v78`. Base de données : `supabase/schema-17-statuts.sql`, **déjà appliqué**.

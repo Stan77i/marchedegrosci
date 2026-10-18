@@ -428,7 +428,7 @@
     const deal = () => { const u = n.unite || 'unité', q = n.quantite_finale; return `<div class="nx-deal" role="status"><span class="nx-tag ok">Accord conclu le ${jour(n.conclu_le || n.updated_at)}</span>
       <b>${q ? fq(q) + ' ' + esc(u) + ' × ' : ''}${fmt(n.prix_final)} F / ${esc(u)}</b>${q ? `<div class="nx-dtot">Total convenu : ${fmt(n.prix_final * q)} F</div>` : ''}
       ${n.conditions_finales ? `<p class="nx-cond"><span>Conditions</span>${esc(n.conditions_finales)}</p>` : ''}
-      <p>Ces conditions sont figées. Convenez maintenant de la livraison et du paiement : rien n’est encore payé ni livré. Voyez la marchandise avant de payer.</p>
+      <p>Ces conditions sont figées. Convenez maintenant de la livraison et du paiement : rien n’est encore payé ni livré.</p>${window.MDGIdentite && MDGIdentite.gardePaiement ? `<p class="nx-warn">${MDGIdentite.gardePaiement(autreId(n), avDe(n, 40).nom || '')}</p>` : '<p>Voyez la marchandise avant de payer.</p>'}
       ${window.MDGMessages ? `<a href="#" data-deal-dm>Continuer dans les messages</a><p class="nx-cond"><span>Restez dans l’application</span>Gardez vos échanges ici : en cas de litige ou de vol, le Marché de Gros peut vérifier. Hors de l’application, personne ne peut vous aider.</p>` : ''}</div>`; };
     const paint = anim => {
       if (!bg || !n) return;
@@ -443,7 +443,8 @@
       $('.nx-bottom').innerHTML = n.statut === 'conclue' ? deal() : '';
       // en bas du fil : noter la personne (étoiles, v3/reputation.js) et retirer la négociation de sa liste
       const idLui = autreId(n), R = window.MDGRep;
-      $('.nx-bottom').insertAdjacentHTML('beforeend', `<div class="nx-plus">${R ? `<button type="button" class="nx-pl" data-noter><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.6l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></svg>Noter ${esc(av.nom || leLa(lui))}</button><button type="button" class="nx-pl" data-profil>Voir son profil</button>` : ''}${window.MDGMessages ? '<button type="button" class="nx-pl" data-ecrire>Écrire en privé</button>' : ''}<button type="button" class="nx-pl" data-cacher>Retirer de ma liste</button></div>`);
+      $('.nx-bottom').insertAdjacentHTML('beforeend', `<div class="nx-plus">${R ? `<button type="button" class="nx-pl" data-noter><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.6l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></svg>Noter ${esc(av.nom || leLa(lui))}</button><button type="button" class="nx-pl" data-profil>Voir son profil</button>` : ''}${window.MDGMessages ? '<button type="button" class="nx-pl" data-ecrire>Écrire en privé</button>' : ''}<button type="button" class="nx-pl" data-cacher>Retirer de ma liste</button>${window.MDGIdentite && MDGIdentite.signaler ? '<button type="button" class="nx-pl" data-signaler>Signaler cette personne</button>' : ''}</div>`);
+      const bS = $('[data-signaler]'); if (bS) bS.onclick = () => MDGIdentite.signaler(idLui, { nom: av.nom || '', source: 'negociation', ref: n.id });
       const bN = $('[data-noter]'), bP = $('[data-profil]'), bC = $('[data-cacher]'), bE = $('[data-ecrire]');
       if (bE) bE.onclick = () => { close(); MDGMessages.ecrire(idLui, { nom: av.nom || 'Membre' }); };
       const bD = $('[data-deal-dm]'); if (bD) bD.onclick = e => { e.preventDefault(); close(); MDGMessages.ecrire(idLui, { nom: av.nom || 'Membre' }); };
@@ -459,7 +460,7 @@
       let h = '';
       const P = n.dernier_prix, Q = n.dernier_quantite, prop = (msgs || []).find(m => m.id === n.dernier_msg);
       if (mode === 'edit') h = `<div class="nx-edbox nx-edf"></div><button type="button" class="nx-alt nx-cancel" style="width:100%;margin-top:8px">Annuler</button>`;
-      else if (mode === 'accord') h = `<div class="nx-confirm"><b>Vous acceptez :</b><div class="nx-big">${Q ? fq(Q) + ' ' + esc(u) + ' × ' : ''}${fmt(P)} F / ${esc(u)}</div>${Q ? `<div class="nx-dtot">Total : ${fmt(P * Q)} F</div>` : ''}${prop && prop.texte ? `<p class="nx-cond"><span>Conditions</span>${esc(prop.texte)}</p>` : ''}<p>Une fois confirmé, l’accord est figé : il ne pourra plus être modifié. Ce n’est pas un paiement.</p>
+      else if (mode === 'accord') h = `<div class="nx-confirm"><b>Vous acceptez :</b><div class="nx-big">${Q ? fq(Q) + ' ' + esc(u) + ' × ' : ''}${fmt(P)} F / ${esc(u)}</div>${Q ? `<div class="nx-dtot">Total : ${fmt(P * Q)} F</div>` : ''}${prop && prop.texte ? `<p class="nx-cond"><span>Conditions</span>${esc(prop.texte)}</p>` : ''}<p>Une fois confirmé, l’accord est figé : il ne pourra plus être modifié. Ce n’est pas un paiement.</p>${window.MDGIdentite && MDGIdentite.gardePaiement ? `<p class="nx-warn" style="margin:0 0 12px">${MDGIdentite.gardePaiement(autreId(n), avDe(n, 40).nom || '')}</p>` : ''}
         <div class="nx-act"><button type="button" class="nx-go" data-g="accord-ok">Confirmer l’accord</button><button type="button" class="nx-alt" data-g="annuler" style="grid-column:1 / -1">Retour</button></div><p class="nx-err" role="alert"></p></div>`;
       else {
         if (n.statut === 'ouverte' && aMoi(n)) h += `<div class="nx-pend"><span>${Le(lui)} propose ${Q ? fq(Q) + ' ' + esc(u) + ' × ' : ''}<b>${fmt(P)} F</b>${Q ? ' = ' + fmt(P * Q) + ' F' : ''} · ${reste(n.expire_le)}</span></div>

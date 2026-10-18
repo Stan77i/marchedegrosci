@@ -65,6 +65,7 @@
 .dm-t{flex:1;min-width:0;margin:0 0 0 6px;font:500 26px/1.1 'Cormorant Garamond',Georgia,serif}.dm-t small{display:block;margin-top:2px;font:400 12.5px Jost,sans-serif;color:var(--mute)}
 .dm-b{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:14px 14px 18px;-webkit-overflow-scrolling:touch}
 .dm-info{display:flex;align-items:center;justify-content:center;gap:7px;margin:2px auto 14px;padding:7px 12px;max-width:340px;border-radius:999px;background:rgba(23,21,18,.05);color:var(--mute);font-size:12.5px;text-align:center}
+.dm-garde{margin:-6px auto 14px;padding:9px 12px;max-width:380px;border-radius:14px;background:rgba(242,201,76,.22);color:#5B4300;font-size:12.5px;line-height:1.45;text-align:center}
 .dm-info svg{flex:none;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
 .dm-jour{margin:16px 0 8px;text-align:center;color:var(--mute);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:capitalize}
 .dm-m{display:flex;margin:3px 0}.dm-m.me{justify-content:flex-end}
@@ -221,9 +222,11 @@
     const b = feuille(`<div class="dm-h">${depuisBoite ? `<button type="button" class="dm-ib" data-back aria-label="Retour aux messages">${I.retour}</button>` : ''}
       <button type="button" class="dm-qui" data-profil aria-label="${c.officiel ? 'Marché de Gros' : 'Voir le profil de ' + esc(c.autre_nom)}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 40, c.officiel)}<span><b>${esc(c.autre_nom || 'Membre')}${c.officiel ? OFF : ''}</b><small data-rep>${c.officiel ? 'L’équipe du Marché de Gros' : 'Voir son profil'}</small></span></button>
       <button type="button" class="dm-ib" data-plus aria-label="Plus d’options" aria-haspopup="menu">${I.plus}</button><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div>
-      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les messages s’effacent ${JOURS} jours après leur envoi. Restez ici : les numéros sont masqués et le Marché de Gros peut vérifier en cas de problème.</div><div data-msgs></div></div>
+      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les messages s’effacent ${JOURS} jours après leur envoi. Restez ici : les numéros sont masqués et le Marché de Gros peut vérifier en cas de problème.</div>${!c.officiel && window.MDGIdentite && MDGIdentite.gardePaiement ? `<div class="dm-garde" data-garde>${MDGIdentite.gardePaiement(c.autre_id, c.autre_nom)}</div>` : ''}<div data-msgs></div></div>
       <div class="dm-f" data-f></div>`, 'Conversation avec ' + (c.autre_nom || 'un membre'));
     const corps = b.querySelector('[data-b]'), zone = b.querySelector('[data-msgs]'), pied = b.querySelector('[data-f]');
+    const garde = b.querySelector('[data-garde]');
+    if (garde) { const maj = () => { if (!garde.isConnected) return removeEventListener('mdg:identite', maj); garde.innerHTML = MDGIdentite.gardePaiement(c.autre_id, c.autre_nom); }; addEventListener('mdg:identite', maj); }
     if (depuisBoite) b.querySelector('[data-back]').onclick = () => boite();
     b.querySelector('[data-profil]').onclick = () => { if (c.officiel) return; if (window.MDGRep) { fermer(); MDGRep.profil(c.autre_id, { nom: c.autre_nom, avatar: c.autre_avatar }); } };
     if (!c.officiel && window.MDGRep && MDGRep.charger) { const r = MDGRep.resume && MDGRep.resume(c.autre_id); if (r && r.n) b.querySelector('[data-rep]').textContent = MDGRep.texteNote(r) + ' · voir son profil'; }
@@ -292,12 +295,13 @@
     b.querySelector('[data-plus]').onclick = e => {
       e.stopPropagation(); const vieux = b.querySelector('.dm-menu'); if (vieux) { vieux.remove(); return; }
       const m = document.createElement('div'); m.className = 'dm-menu'; m.setAttribute('role', 'menu');
-      m.innerHTML = c.officiel ? '<button type="button" role="menuitem" data-a="retirer">Retirer de ma liste</button>' : `${window.MDGRep ? '<button type="button" role="menuitem" data-a="profil">Voir son profil et sa note</button>' : ''}<button type="button" role="menuitem" data-a="retirer">Retirer de ma liste</button><button type="button" role="menuitem" class="rouge" data-a="bloquer">${c.je_bloque ? 'Débloquer' : 'Bloquer'} ${esc(c.autre_nom)}</button>`;
+      m.innerHTML = c.officiel ? '<button type="button" role="menuitem" data-a="retirer">Retirer de ma liste</button>' : `${window.MDGRep ? '<button type="button" role="menuitem" data-a="profil">Voir son profil et sa note</button>' : ''}<button type="button" role="menuitem" data-a="retirer">Retirer de ma liste</button>${window.MDGIdentite && MDGIdentite.signaler ? '<button type="button" role="menuitem" class="rouge" data-a="signaler">Signaler cette personne</button>' : ''}<button type="button" role="menuitem" class="rouge" data-a="bloquer">${c.je_bloque ? 'Débloquer' : 'Bloquer'} ${esc(c.autre_nom)}</button>`;
       b.querySelector('.dm').appendChild(m); m.querySelector('button').focus();
       const loin = ev => { if (!m.contains(ev.target)) { m.remove(); document.removeEventListener('click', loin, true); } }; setTimeout(() => document.addEventListener('click', loin, true), 0);
       m.onclick = async ev => { const a = ev.target.closest('[data-a]'); if (!a) return; m.remove();
         if (a.dataset.a === 'profil') b.querySelector('[data-profil]').click();
         else if (a.dataset.a === 'retirer') { try { await N().rpc('dm_masquer', { p_discussion: id }); liste = liste.filter(x => x.id !== id); W(KL, liste); N().toast('Conversation retirée de votre liste. Elle reviendra si la personne vous écrit.'); depuisBoite ? boite() : fermer(); } catch (x) { N().toast(err(x)); } }
+        else if (a.dataset.a === 'signaler') MDGIdentite.signaler(c.autre_id, { nom: c.autre_nom, source: 'dm', ref: id, bloquer: c.je_bloque ? null : () => bloquer(true) });
         else if (a.dataset.a === 'bloquer') { if (c.je_bloque) bloquer(false); else if (confirm('Bloquer ' + c.autre_nom + ' ? Vous ne pourrez plus vous écrire, ni l’un ni l’autre, tant que vous ne le débloquez pas.')) bloquer(true); } };
     };
     piedDe(); dessiner(); zone.innerHTML = '<div class="dm-vide" style="padding:30px 10px">Chargement…</div>';

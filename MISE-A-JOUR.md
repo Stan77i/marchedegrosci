@@ -1,3 +1,24 @@
+# Mise à jour — 18 octobre 2026 (signaler une personne, filtre « Vérifiés », rappel avant de payer, dossiers abandonnés)
+
+Service worker : `mgci-v74`.
+
+## À faire une fois par le propriétaire
+- Lancer **`supabase/schema-15-signalements-purge.sql`** dans l'éditeur SQL de Supabase (après le schéma 14). Il termine en affichant `dossiers_a_effacer` : le nombre de dossiers d'identité dont les photos seront effacées à la prochaine ouverture du tableau de bord.
+
+## Ce qui change
+- **Signaler cette personne** : dans une discussion (menu « … ») et en bas d'une négociation. Motifs : arnaque, insultes ou menaces, mauvais produits, autre (avec une précision facultative). La personne signalée ne sait pas qui l'a signalée. Après l'envoi, on propose de la bloquer aussi. Une même personne ne peut signaler quelqu'un qu'une fois par motif, et 10 fois par jour au plus.
+- **Tableau de bord → Messages → Personnes signalées** : motif, précision, d'où vient le signalement, combien de personnes différentes ont signalé ce compte, et les boutons Lire (la discussion), Écrire, Traité et Bannir. Le nombre à traiter s'ajoute à la pastille de Messages.
+- **Filtre « Vérifiés »** dans Acheter (application) : n'affiche que les annonces de personnes à l'identité vérifiée.
+- **Rappel avant de payer** : en haut de chaque discussion et au moment de confirmer un accord, quand l'autre n'a pas fait vérifier son identité : « Ne payez jamais d'avance : voyez la marchandise, puis payez à la livraison. » Avec une personne vérifiée, un rappel plus court.
+- **Dossiers d'identité abandonnés** : un dossier jamais envoyé, ou laissé « photos à refaire » depuis 30 jours, est fermé et ses photos sont effacées. Les photos d'un dossier retiré ou décidé dont l'effacement avait échoué sont aussi effacées. Cela se fait tout seul à chaque ouverture du tableau de bord par un administrateur (gratuit, sans tâche planifiée à payer).
+
+## Sécurité
+- Les signalements sont dans une table sans aucun accès direct ; seules les fonctions réservées aux administrateurs les lisent. Un compte banni ne peut pas signaler.
+
+## Testé
+- Postgres 16 local : un signalement en double ne crée qu'une ligne, on ne peut pas se signaler soi-même, un motif inconnu est refusé, un membre ne lit ni la table ni la liste, un banni ne peut pas signaler, l'administrateur voit et marque « traité » ; un brouillon de 40 jours est fermé et marqué effacé, un brouillon de 2 jours reste.
+- Playwright : filtre « Vérifiés », rappel dans une discussion, signalement envoyé avec les bons champs, liste et purge du tableau de bord.
+
 # Mise à jour — 18 octobre 2026 (3 annonces gratuites, puis identité vérifiée ; bannissement à vie)
 
 Service worker : `mgci-v73`.

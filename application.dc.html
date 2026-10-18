@@ -20,7 +20,7 @@
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['v3/porte.js','v3/sons.js?v=20261017i','v3/negoce.js?v=20261017f','v3/compte.js?v=20261018c','v3/souffle.js?v=20261018b','v3/pousse.js','v3/reputation.js?v=20261018a','v3/messages.js?v=20261018b','v3/alertes.js?v=20261017f','app/carte-app.js','app/carte-gl.js?v=20261017h','v3/identite.js?v=20261018c'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['v3/porte.js','v3/sons.js?v=20261017i','v3/negoce.js?v=20261018d','v3/compte.js?v=20261018c','v3/souffle.js?v=20261018b','v3/pousse.js','v3/reputation.js?v=20261018a','v3/messages.js?v=20261018d','v3/alertes.js?v=20261017f','app/carte-app.js','app/carte-gl.js?v=20261017h','v3/identite.js?v=20261018d'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -205,6 +205,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
     </div>
     <div style="display:flex;gap:6px;overflow-x:auto;padding:0 16px 12px">
       <button onClick="{{ toggleFilters }}" style="flex:none;height:36px;padding:0 14px;border-radius:18px;border:1px solid {{ fBtn.bd }};background:{{ fBtn.bg }};color:{{ fBtn.color }};font-size:var(--t-md);font-weight:500;display:flex;align-items:center;gap:6px"><svg width="14" height="14" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="filtre"><path d="M3 6h18"></path><path d="M7 12h10"></path><path d="M10 18h4"></path></svg>{{ fBtn.l }}</button>
+      <button onClick="{{ vfBtn.go }}" aria-pressed="{{ vfBtn.pressed }}" style="flex:none;height:36px;padding:0 12px;border-radius:18px;border:1px solid {{ vfBtn.bd }};background:{{ vfBtn.bg }};color:{{ vfBtn.color }};font-size:var(--t-md);font-weight:500;display:flex;align-items:center;gap:5px;white-space:nowrap"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4A8FD6" d="M12 1.6l2.6 1.9 3.2-.2 1 3 2.6 1.9-1 3.1 1 3.1-2.6 1.9-1 3-3.2-.2L12 22.4l-2.6-1.9-3.2.2-1-3-2.6-1.9 1-3.1-1-3.1 2.6-1.9 1-3 3.2.2z"></path><path d="m8 12.2 2.7 2.7L16.2 9.4" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path></svg>Vérifiés</button>
       <sc-for list="{{ famChips }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.go }}" style="flex:none;height:36px;padding:0 14px;border-radius:18px;border:1px solid {{ c.bd }};background:{{ c.bg }};color:{{ c.color }};font-size:var(--t-md);font-weight:500;white-space:nowrap">{{ c.l }}</button></sc-for>
     </div>
   </div>
@@ -606,7 +607,7 @@ class Component extends DCLogic {
     const draft = ls('mdg-app:brouillon-offre') || {};
     this.state = { ready: false, stack: ['home'], fam: 0, rot: 0, dragging: false, slug: 'tomate', vid: null, infoK: 'comment-ca-marche',
       menu: false, sheet: null, sheetDy: 0, pick: null, pq: '', mode: 'jai', mf: this.blankM('tomate'), mErr: {}, done: null,
-      aq: '', af: { cat: '', reg: '', qmin: '', pmax: '' }, fOpen: false,
+      aq: '', af: { cat: '', reg: '', qmin: '', pmax: '', vf: false }, fOpen: false,
       vf: Object.assign({ step: 1, mode: 'moi', slug: '', photo: '', qty: '', unit: 'kg', price: '', neg: true, region: me.region || '', city: me.city || '', avail: 'maintenant', date: '', agent: '', name: me.name || '' }, draft, { step: 1 }), vErr: {},
       df: { slug: '', qty: '', unit: 'kg', region: me.region || '', city: me.city || '', deadline: 'semaine', budget: '', name: me.name || '' }, dErr: {},
       cprod: '', cme: me.region || '', csel: '', month: new Date().getMonth() + 1,
@@ -1004,7 +1005,7 @@ class Component extends DCLogic {
     const qn = A.norm((parsed && parsed.productText) || S.aq.trim()), uCode = parsed && parsed.unit ? (parsed.unit.code || parsed.unit.label || String(parsed.unit)) : '';
     const aK = S.aK || 'offre', aSrc = aK === 'offre' ? O : aK === 'demande' ? D : [...O, ...D].sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0));
     const prixDe = x => x.kind === 'offre' ? x.price : x.budget;
-    let aL = aSrc.filter(o => (!pslug || o.slug === pslug) && (pslug || (cands.length ? cands.includes(o.slug) : (!qn || A.norm(this.prod(o.slug).name).includes(qn)))) && (!S.af.cat || this.prod(o.slug).cat === S.af.cat) && (!lreg || o.region === lreg) && (!+S.af.qmin || o.qty >= +S.af.qmin) && (!+S.af.pmax || (prixDe(o) != null && prixDe(o) <= +S.af.pmax)));
+    let aL = aSrc.filter(o => (!pslug || o.slug === pslug) && (pslug || (cands.length ? cands.includes(o.slug) : (!qn || A.norm(this.prod(o.slug).name).includes(qn)))) && (!S.af.cat || this.prod(o.slug).cat === S.af.cat) && (!lreg || o.region === lreg) && (!+S.af.qmin || o.qty >= +S.af.qmin) && (!+S.af.pmax || (prixDe(o) != null && prixDe(o) <= +S.af.pmax)) && (!S.af.vf || !!(o.uid && window.MDGIdentite && window.MDGIdentite.estVerifie(o.uid))));
     const chipsU = []; if (parsed) { if (parsed.product) chipsU.push({ k: 'Produit', v: parsed.product.name }); if (parsed.quantity) chipsU.push({ k: 'Quantité', v: parsed.quantity + ' ' + (parsed.unit ? (parsed.unit.label || parsed.unit.code || '') : '') }); if (loc) chipsU.push({ k: 'Lieu', v: loc.name || loc.label || this.regName(loc.regionSlug) }); if (parsed.intent) chipsU.push({ k: 'Intention', v: String(parsed.intent) }); }
     const sug = cands.length ? cands.map(s => M.products.find(p => p.slug === s)).filter(Boolean).map(p => ({ slug: p.slug, name: p.name })) : (S.aq.trim() && !pslug && M.search ? M.search.suggest((parsed && parsed.productText) || S.aq, 5) : []);
     const nF = [S.af.reg, S.af.qmin, S.af.pmax].filter(Boolean).length;
@@ -1143,7 +1144,8 @@ class Component extends DCLogic {
       aRef: this.aRef, aq: S.aq, onAq: e => this.setState({ aq: e.target.value }), aqHas: !!S.aq, clearAq: () => this.setState({ aq: '' }),
       toggleFilters: () => this.setState(s => ({ fOpen: !s.fOpen })), fOpen: S.fOpen, fBtn: Object.assign(chip(nF > 0 || S.fOpen), { l: nF ? 'Filtres · ' + nF : 'Filtrer' }),
       famChips: [{ slug: '', name: 'Tout' }, ...this.cats].map(c => Object.assign(chip(S.af.cat === c.slug), { l: c.name.split(/[ ,]/)[0], go: () => this.setState(s => ({ af: Object.assign({}, s.af, { cat: c.slug }) })) })),
-      af: S.af, afh: { reg: setA('reg'), qmin: setA('qmin'), pmax: setA('pmax') }, resetFilters: () => this.setState({ af: { cat: '', reg: '', qmin: '', pmax: '' } }),
+      af: S.af, afh: { reg: setA('reg'), qmin: setA('qmin'), pmax: setA('pmax') }, resetFilters: () => this.setState({ af: { cat: '', reg: '', qmin: '', pmax: '', vf: false } }),
+      vfBtn: Object.assign(chip(!!S.af.vf), { pressed: S.af.vf ? 'true' : 'false', go: () => this.setState(s => ({ af: Object.assign({}, s.af, { vf: !s.af.vf }) })) }),
       understood: { on: chipsU.length > 0, chips: chipsU },
       sugg: { on: sug.length > 0, list: sug.map(s => Object.assign(mini(s), { sub: s.matchedAlias ? 'aussi appelé « ' + s.matchedAlias + ' »' : this.prod(s.slug).catName, go: () => this.setState({ aq: parsed && parsed.productText && S.aq.includes(parsed.productText) ? S.aq.replace(parsed.productText, s.name) : s.name }) })) },
       aCount: (n => aK === 'offre' ? (n ? n + ' OFFRE' + (n > 1 ? 'S' : '') : 'OFFRES') : aK === 'demande' ? (n ? n + ' DEMANDE' + (n > 1 ? 'S' : '') : 'DEMANDES') : (n ? n + ' PUBLICATION' + (n > 1 ? 'S' : '') : 'PUBLICATIONS'))(aL.length),

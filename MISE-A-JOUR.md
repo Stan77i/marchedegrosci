@@ -1,3 +1,13 @@
+# Mise à jour — 18 octobre 2026 (lecture des vraies CNI ivoiriennes)
+
+Service worker : `mgci-v71`.
+
+- Testée sur une vraie CNI ivoirienne (verso photographié de travers) : la bande est maintenant trouvée dans les quatre sens de la photo, et les **quatre chiffres de contrôle passent** (numéro, naissance, expiration, contrôle global).
+- La CNI ivoirienne a un numéro long (`CI002829027`, 11 caractères) : sa fin et sa clé sont placées au début du champ facultatif. Le contrôle en tient compte.
+- Chaque ligne de la bande est relue seule, de plusieurs façons (les lettres très espacées faisaient perdre des morceaux de ligne).
+- Corrections limitées aux confusions typiques (O/N/D lus pour 0 dans le numéro, L/K/4 lus pour « < » dans le remplissage), deux au plus, et seulement si elles font passer des contrôles. Un chiffre de contrôle faux n'est jamais « corrigé ».
+- Le nom de famille est lu juste ; la fin des prénoms est parfois coupée. On ne pré-remplit que les mots lus au moins deux fois, et l'écran demande de vérifier les prénoms.
+
 # Mise à jour — 18 octobre 2026 (vérification d'identité, gratuite et examinée par une personne)
 
 Service worker : `mgci-v70`.

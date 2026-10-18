@@ -69,33 +69,80 @@
   const cle = s => { let t = 0; for (let i = 0; i < s.length; i++) { const v = VAL(s[i]); if (v < 0) return -1; t += v * [7, 3, 1][i % 3]; } return t % 10; };
   const chiffre = s => s.replace(/[OQD]/g, '0').replace(/[IL]/g, '1').replace(/Z/g, '2').replace(/S/g, '5').replace(/B/g, '8').replace(/G/g, '6');
   const ok1 = (champ, c) => cle(champ) === +chiffre(c);
+  const NORM = l => String(l || '').toUpperCase().replace(/[\s«»]/g, '').replace(/[^A-Z0-9<]/g, '<');
   const nomDe = l => { const [nom, prenoms] = l.replace(/<+$/, '').split('<<'); const net = s => (s || '').replace(/</g, ' ').replace(/\s+/g, ' ').trim(); return { nom: net(nom), prenoms: net(prenoms) }; };
-  // texte OCR → { format, nom, prenoms, valide } ; valide = tous les chiffres de contrôle sont justes
+  const cale = (l, n) => (l + '<'.repeat(n)).slice(0, n);
+  // les quatre contrôles d'une carte (TD1) ; le numéro long (CNI ivoirienne : CI002829027) met « < » dans la case de contrôle,
+  // la suite du numéro et sa clé au début du champ facultatif
+  function notesTD1(l1, l2) {
+    let docOk;
+    if (l1[14] === '<') { const suite = (l1.slice(15).match(/^[A-Z0-9]+/) || [''])[0]; docOk = suite.length >= 2 && ok1(l1.slice(5, 14) + suite.slice(0, -1), suite.slice(-1)); }
+    else docOk = ok1(l1.slice(5, 14), l1[14]);
+    const naiss = chiffre(l2.slice(0, 6)), exp = chiffre(l2.slice(8, 14));
+    return [docOk, ok1(naiss, l2[6]), ok1(exp, l2[14]), ok1(l1.slice(5, 30) + naiss + l2[6] + exp + l2[14] + l2.slice(18, 29), l2[29])].filter(Boolean).length;
+  }
+  function notesTD3(l2) {
+    const doc = l2.slice(0, 9), naiss = chiffre(l2.slice(13, 19)), exp = chiffre(l2.slice(21, 27));
+    return [ok1(doc, l2[9]), ok1(naiss, l2[19]), ok1(exp, l2[27]), ok1(doc + l2[9] + naiss + l2[19] + exp + l2[27] + l2.slice(28, 43), l2[43])].filter(Boolean).length;
+  }
+  // Corrections permises : seulement des confusions typiques à des endroits où elles sont plausibles (O/N/D lus pour 0 dans le
+  // numéro, L/K/4 lus pour « < » dans le remplissage), deux au plus, et seulement si elles font passer des contrôles.
+  // « valide » n'est donné que si les quatre chiffres de contrôle sont justes. Un chiffre juste mais mal placé n'est jamais « corrigé ».
+  const remplissage = (l, i) => 'LK4SRE'.includes(l[i]) && (l[i - 1] === '<' || l[i + 1] === '<') ? '<' : '';
+  const versChiffre = c => ({ O: '0', D: '0', Q: '0', N: '0', I: '1', L: '1' })[c] || '';
+  function alternatives(l, i, zones) { const z = zones.find(z => i >= z[0] && i < z[1]); return z ? [versChiffre(l[i]), remplissage(l, i)].filter(Boolean) : []; }
+  function corriger(lignes, noter, zones) {
+    let cur = lignes.slice(), best = noter(...cur), n = 0;
+    while (best < 4 && n < 2) {
+      let gain = null;
+      cur.forEach((l, k) => { for (let i = 0; i < l.length; i++) for (const a of alternatives(l, i, zones[k] || [])) {
+        const t = cur.slice(); t[k] = l.slice(0, i) + a + l.slice(i + 1); const v = noter(...t);
+        if (v > best && (!gain || v > gain.v)) gain = { v, t }; } });
+      if (!gain) break; cur = gain.t; best = gain.v; n++;
+    }
+    return { lignes: cur, note: best };
+  }
+  // le nom : chaque mot doit avoir été lu au moins deux fois (une lecture isolée est souvent un morceau ou du bruit)
+  function choisirNom(L) {
+    const N = L.map(nomDe).filter(n => n.nom); if (!N.length) return { nom: '', prenoms: '' };
+    if (N.length === 1) return N[0];
+    const nom = vote(N.map(n => n.nom)), c = {};
+    N.forEach(n => new Set(n.prenoms.split(' ').filter(Boolean)).forEach(m => { c[m] = (c[m] || 0) + 1; }));
+    const ordre = N.filter(n => n.nom === nom).map(n => n.prenoms.split(' ').filter(m => c[m] >= 2)).sort((a, b) => b.length - a.length)[0] || [];
+    return { nom, prenoms: ordre.join(' ') };
+  }
+  const vote = L => { const c = {}; L.forEach(x => { if (x) c[x] = (c[x] || 0) + 1; }); return Object.keys(c).sort((a, b) => c[b] - c[a] || b.length - a.length)[0] || ''; };
+  // lectures : pour chaque ligne de la bande (de haut en bas), une ou plusieurs lectures → { format, nom, prenoms, valide }
+  function analyserLectures(lect) {
+    lect = lect.map(c => c.map(NORM).filter(l => l.length >= 10));
+    if (lect.length < 2 || lect.some(c => !c.length)) return null;
+    const moy = lect.map(c => Math.max(...c.map(l => l.length))).reduce((a, b) => a + b, 0) / lect.length;
+    if (lect.length === 2 && moy > 37) {   // passeport (TD3) : 2 lignes de 44
+      let mieux = null;
+      for (const b of lect[1]) { const r = corriger([cale(b, 44)], notesTD3, [[[0, 9], [28, 43]]]); if (!mieux || r.note > mieux.note) mieux = r; }
+      const n = choisirNom(lect[0].filter(l => l[0] === 'P').map(l => cale(l, 44).slice(5)));
+      return n.nom ? { format: 'TD3', nom: n.nom, prenoms: n.prenoms, valide: mieux.note === 4 } : null;
+    }
+    const L3 = lect.slice(-3);   // carte (TD1) : 3 lignes de 30
+    if (L3.length < 3) return null;
+    // un bord de carte lu comme une lettre en tête de ligne : on essaie aussi sans les un ou deux premiers caractères
+    const sans = (L, ok) => [...new Set(L.flatMap(l => [l, l.slice(1), l.slice(2)].filter(ok)))];
+    L3[0] = sans(L3[0], l => /^[ACI]/.test(l) && l.length >= 26);
+    L3[1] = sans(L3[1], l => /^\d{6}/.test(chiffre(l.slice(0, 6))) && l.length >= 20);
+    L3[2] = L3[2].map(l => l.replace(/^[^A-Z]+/, ''));
+    if (L3.some(c => !c.length)) return null;
+    let mieux = null;
+    for (const a of L3[0]) for (const b of L3[1]) { const r = corriger([cale(a, 30), cale(b, 30)], notesTD1, [[[5, 30]], [[18, 29]]]); if (!mieux || r.note > mieux.note) mieux = r; if (r.note === 4) break; }
+    const n = choisirNom(L3[2].map(l => l.replace(/[^A-Z<]/g, '<')));
+    return n.nom ? { format: 'TD1', nom: n.nom, prenoms: n.prenoms, valide: mieux.note === 4 } : null;
+  }
+  // texte OCR brut (une lecture par ligne) → même résultat
   function analyserMRZ(texte) {
-    const L = String(texte || '').toUpperCase().split(/\n+/).map(l => l.replace(/[\s«»]/g, '').replace(/[^A-Z0-9<]/g, '<')).filter(l => l.length >= 28 && (l.match(/[A-Z0-9<]/g) || []).length / l.length > 0.9 && l.includes('<'));
-    // passeport (TD3) : 2 lignes de 44
-    for (let i = 0; i + 1 < L.length; i++) {
-      const a = L[i], b = L[i + 1];
-      if (a.length >= 42 && b.length >= 42 && a[0] === 'P') {
-        const l1 = (a + '<'.repeat(44)).slice(0, 44), l2 = (b + '<'.repeat(44)).slice(0, 44), n = nomDe(l1.slice(5));
-        const doc = l2.slice(0, 9), naiss = chiffre(l2.slice(13, 19)), exp = chiffre(l2.slice(21, 27));
-        const valide = ok1(doc, l2[9]) && ok1(naiss, l2[19]) && ok1(exp, l2[27]) && ok1(doc + l2[9] + naiss + l2[19] + exp + l2[27] + l2.slice(28, 43), l2[43]);
-        return { format: 'TD3', nom: n.nom, prenoms: n.prenoms, valide };
-      }
-    }
-    // carte (TD1) : 3 lignes de 30
-    for (let i = 0; i + 2 < L.length; i++) {
-      const a = L[i], b = L[i + 1], c = L[i + 2];
-      if (a.length >= 28 && b.length >= 28 && c.length >= 20 && /^[ACI]/.test(a)) {
-        const l1 = (a + '<'.repeat(30)).slice(0, 30), l2 = (b + '<'.repeat(30)).slice(0, 30), n = nomDe(c);
-        const doc = l1.slice(5, 14), naiss = chiffre(l2.slice(0, 6)), exp = chiffre(l2.slice(8, 14));
-        const valide = ok1(doc, l1[14]) && ok1(naiss, l2[6]) && ok1(exp, l2[14]) && ok1(l1.slice(5, 30) + naiss + l2[6] + exp + l2[14] + l2.slice(18, 29), l2[29]);
-        return { format: 'TD1', nom: n.nom, prenoms: n.prenoms, valide };
-      }
-    }
+    const L = String(texte || '').split(/\n+/).map(NORM).filter(l => l.length >= 28 && l.includes('<'));
+    for (let i = 0; i + 1 < L.length; i++) if (L[i][0] === 'P' && L[i].length >= 40) return analyserLectures([[L[i]], [L[i + 1]]]);
+    for (let i = 0; i + 2 < L.length; i++) if (/^[ACI]/.test(L[i])) return analyserLectures([[L[i]], [L[i + 1]], [L[i + 2]]]);
     return null;
   }
-  // la bande est en bas : on lit le bas de la photo (40 %), agrandi, en gris contrasté
   let ocr = null;
   function chargerScript(src) { return new Promise((ok, ko) => { if (window.Tesseract) return ok(); const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => ko(new Error('Lecture automatique indisponible')); document.head.appendChild(s); }); }
   async function moteur() {
@@ -103,24 +150,54 @@
     ocr = (async () => {
       await chargerScript('vendor/tesseract/tesseract.min.js');
       const base = new URL('vendor/tesseract/', location.href).href;
-      const w = await window.Tesseract.createWorker('eng', 1, { workerPath: base + 'worker.min.js', corePath: base + 'core/', langPath: base + 'lang', gzip: true, workerBlobURL: false, logger: () => {} });
-      await w.setParameters({ tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<', tessedit_pageseg_mode: '6', preserve_interword_spaces: '0' });
+      const w = await window.Tesseract.createWorker('eng', 1, { workerPath: base + 'worker.min.js', corePath: base + 'core/', langPath: base + 'lang', gzip: true, workerBlobURL: false, logger: () => {} }, { load_system_dawg: '0', load_freq_dawg: '0' });   // pas de dictionnaire : la bande n'a pas de vrais mots
+      await w.setParameters({ tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<', preserve_interword_spaces: '0' });
       return w;
     })();
     ocr.catch(() => { ocr = null; });
     return ocr;
   }
+  // La photo peut être prise de travers (carte couchée dans une photo en hauteur) : on essaie les quatre sens.
+  // Une première lecture trouve les lignes de la bande ; chacune est ensuite relue seule, de plusieurs façons,
+  // car les lettres très espacées de la bande font perdre des morceaux de ligne à une lecture d'ensemble.
   async function lireMRZ(blob) {
     const w = await moteur(), url = URL.createObjectURL(blob);
     try {
       const im = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = url; });
-      const essais = [[0.58, 0.42], [0.45, 0.55], [0, 1]];   // bas de la photo d'abord, puis plus haut, puis tout
-      for (const [y0, h] of essais) {
-        const sy = Math.round(im.naturalHeight * y0), sh = Math.round(im.naturalHeight * h), k = Math.min(3, 1800 / im.naturalWidth);
-        const cv = document.createElement('canvas'); cv.width = Math.round(im.naturalWidth * k); cv.height = Math.round(sh * k);
-        const x = cv.getContext('2d'); x.filter = 'grayscale(1) contrast(1.6)'; x.drawImage(im, 0, sy, im.naturalWidth, sh, 0, 0, cv.width, cv.height);
-        const r = await w.recognize(cv), m = analyserMRZ(r && r.data && r.data.text);
-        if (m && m.nom) return m;
+      const vue = (rot, y0, h) => {
+        const tourne = rot % 180 !== 0, W = tourne ? im.naturalHeight : im.naturalWidth, H = tourne ? im.naturalWidth : im.naturalHeight, k = Math.min(2, 1500 / W);
+        const cv = document.createElement('canvas'); cv.width = Math.round(W * k); cv.height = Math.round(H * h * k);
+        const x = cv.getContext('2d'); x.filter = 'grayscale(1)';
+        x.translate(0, -H * y0 * k); x.translate(W * k / 2, H * k / 2); x.rotate(rot * Math.PI / 180); x.scale(k, k);
+        x.drawImage(im, -im.naturalWidth / 2, -im.naturalHeight / 2);
+        return cv;
+      };
+      for (const rot of [0, 90, 270, 180]) {
+        for (const [y0, h] of [[0.5, 0.5], [0, 1]]) {   // la bande est en bas : le bas d'abord, puis tout
+          const cv = vue(rot, y0, h);
+          await w.setParameters({ tessedit_pageseg_mode: '6' });
+          const r = await w.recognize(cv, {}, { blocks: true }), L = [];
+          ((r && r.data && r.data.blocks) || []).forEach(b => b.paragraphs.forEach(p => p.lines.forEach(l => L.push({ t: NORM(l.text), b: l.bbox }))));
+          const M = L.filter(l => l.t.length >= 12 && ((l.t.match(/</g) || []).length >= 2 || /\d{6}/.test(l.t))).slice(-3);
+          if (M.length < 2) continue;
+          const lect = M.map(l => [l.t]), hl = Math.min(...M.map(l => l.b.y1 - l.b.y0));
+          // une fois les contrôles justes, on ne relit plus que la ligne du nom (pour l'avoir en entier)
+          let res = analyserLectures(lect);
+          await w.setParameters({ tessedit_pageseg_mode: '7' });
+          for (const [f, sc] of [[0.6, 1], [1, 1], [1, 0.75], [1, 0.6]]) {   // bande plus ou moins haute, lettres resserrées
+            for (let k = 0; k < M.length; k++) {
+              if (res && res.valide && k < M.length - 1) continue;
+              const tdNom = k === M.length - 1 && M.length === 3;   // la ligne du nom d'une carte : rien que des lettres et des « < »
+              await w.setParameters({ tessedit_char_whitelist: tdNom ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ<' : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<' });
+              const hb = Math.round(hl * (1 + f)), c = document.createElement('canvas'); c.width = Math.round(cv.width * sc); c.height = hb;
+              c.getContext('2d').drawImage(cv, 0, Math.round(M[k].b.y0 + hl / 2 - hb / 2), cv.width, hb, 0, 0, c.width, hb);
+              lect[k].push((await w.recognize(c)).data.text);
+            }
+            await w.setParameters({ tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<' });
+            const r2 = analyserLectures(lect); if (r2 && (!res || !res.valide || r2.valide)) res = r2;
+          }
+          return res;   // la bande est trouvée dans ce sens : inutile d'essayer les autres
+        }
       }
       return null;
     } finally { URL.revokeObjectURL(url); }
@@ -302,7 +379,7 @@
       } else if (e === 'nom') {
         const lu = st.mrz ? [st.mrz.prenoms, st.mrz.nom].filter(Boolean).join(' ') : '';
         const info = st.mrzEtat === 'lecture' ? `<div class="idv-lu">${IC('horloge', 18)}<span>Lecture de votre pièce en cours… Vous pouvez aussi écrire votre nom.</span></div>`
-          : st.mrz && st.mrz.valide ? `<div class="idv-lu">${IC('verifie', 18)}<span>Lu sur la pièce : <b>${esc(lu)}</b>. Corrigez si besoin (accents, ordre).</span></div>`
+          : st.mrz && st.mrz.valide ? `<div class="idv-lu">${IC('verifie', 18)}<span>Lu sur la pièce : <b>${esc(lu)}</b>. Vérifiez surtout vos prénoms : la lecture en coupe parfois la fin. Ajoutez les accents si besoin.</span></div>`
           : st.mrz ? `<div class="idv-lu doute">${IC('info', 18)}<span>Lu sur la pièce, peut-être mal : <b>${esc(lu)}</b>. Vérifiez.</span></div>`
           : st.mrzEtat === 'vide' ? `<div class="idv-lu doute">${IC('info', 18)}<span>Votre pièce n’a pas pu être lue automatiquement. Ce n’est pas grave : écrivez votre nom.</span></div>` : '';
         main.innerHTML = `<h2>Votre nom, comme sur la pièce</h2><p>Prénoms et nom, tels qu’ils sont écrits.</p>${info}

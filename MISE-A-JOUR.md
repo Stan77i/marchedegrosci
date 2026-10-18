@@ -1,3 +1,21 @@
+# Mise à jour — 18 octobre 2026 (Prix du marché refait)
+
+Service worker : `mgci-v77`.
+
+« Prix du marché » répond maintenant à une question simple : **combien ça coûte, en ce moment, et vendeurs et acheteurs sont-ils d'accord ?**
+- **En haut** : « Le juste prix, en direct », avec trois chiffres : les produits qui ont un prix, les prix vendeurs et les budgets acheteurs.
+- **Filtres** : Tout · Prix vendeurs · Budgets · De saison · Ma région (si votre région est connue).
+- **Pour chaque produit** :
+  - une **échelle** avec les prix vendeurs (● vert), les budgets acheteurs (■ jaune) et la zone du prix observé quand elle existe ;
+  - deux cases **Vendeurs / Acheteurs** : la fourchette, la médiane et le nombre d'annonces ;
+  - un **verdict** : « Accord possible : un acheteur propose 340 F, un vendeur demande 300 F », ou « Écart de 16 % » ;
+  - le **prix observé** (10e – 90e centile, au moins 5 prix de 3 vendeurs sur 30 jours), ou une jauge qui dit ce qu'il manque (« encore 2 prix vendeurs ») ;
+  - la saison (pleine récolte, début, fin) et la date du dernier prix.
+- **Sans prix** : un message clair avec deux boutons (publier une offre avec un prix, une demande avec un budget), et « De saison ce mois, sans prix encore ».
+- **« Comment lire ces prix »** : les définitions, repliées par défaut.
+- Les prix comparés sont toujours dans la même unité : celle que le produit utilise le plus.
+- Correction : une accolade en trop dans `css/mgci-app.css` (laissée par la mise à jour de l'écran d'ouverture) est retirée.
+
 # Mise à jour — 18 octobre 2026 (écran d'ouverture « le sac qui se remplit »)
 
 Service worker : `mgci-v76`.

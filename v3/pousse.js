@@ -67,9 +67,9 @@
     if (!document.documentElement.hasAttribute('data-app') || (await etat()) !== 'inactif') return;
     try { localStorage.setItem('mdg-pousse:invite', String(Date.now())); } catch (_) {}
     if (!document.getElementById('ppCss')) { const st = document.createElement('style'); st.id = 'ppCss'; st.textContent = `.pp-inv{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:9500;display:flex;gap:12px;align-items:center;padding:14px 14px 14px 16px;border-radius:22px;background:#24201A;color:#F5F0E6;box-shadow:0 18px 50px rgba(0,0,0,.55),inset 0 0 0 1px rgba(245,240,230,.08);font-family:Jost,system-ui,sans-serif;animation:ppIn .5s cubic-bezier(.22,1,.36,1) both}
-.pp-inv.is-out{animation:ppOut .3s ease-in forwards}.pp-inv i{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:rgba(224,122,63,.16);color:#F3B48A}
+.pp-inv.is-out{animation:ppOut .3s ease-in forwards}.pp-inv i{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:rgba(242,194,48,.16);color:#F2C230}
 .pp-inv i svg{animation:ppSonne 2.4s ease-in-out .5s 1}.pp-inv b{display:block;font-size:15px;font-weight:600;line-height:1.25}.pp-inv small{display:block;color:#B9AD98;font-size:12.5px;line-height:1.35;margin-top:2px}
-.pp-inv span{flex:1;min-width:0}.pp-inv button{flex:none;min-height:44px;border:0;border-radius:999px;font:600 14px Jost,sans-serif;cursor:pointer}.pp-oui{padding:0 16px;background:#E07A3F;color:#171512}.pp-non{padding:0 10px;background:none;color:#B9AD98}
+.pp-inv span{flex:1;min-width:0}.pp-inv button{flex:none;min-height:44px;border:0;border-radius:999px;font:600 14px Jost,sans-serif;cursor:pointer}.pp-oui{padding:0 16px;background:#F3EFE4;color:#10392B}.pp-non{padding:0 10px;background:none;color:#B9AD98}
 @keyframes ppIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}@keyframes ppOut{to{opacity:0;transform:translateY(20px)}}
 @keyframes ppSonne{0%,60%,100%{transform:none}8%{transform:rotate(14deg)}16%{transform:rotate(-12deg)}24%{transform:rotate(8deg)}32%{transform:rotate(-5deg)}}
 @media (prefers-reduced-motion:reduce){.pp-inv,.pp-inv i svg{animation:none}}`; document.head.appendChild(st); }

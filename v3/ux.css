@@ -8,7 +8,7 @@
   --ux-out:cubic-bezier(.22,1,.36,1);--ux-std:cubic-bezier(.2,.8,.2,1);--ux-in:cubic-bezier(.4,0,1,1);
   --ux-hit:44px;--ux-ico-s:14px;--ux-ico-m:18px;--ux-ico-l:22px;
   --ux-r-s:10px;--ux-r-m:16px;--ux-r-l:24px;--ux-r-pill:999px;
-  --ux-focus:var(--color-ambre,#E07A3F)
+  --ux-focus:var(--terre,#F2C230)
 }
 
 /* ——— Chiffres : Cormorant dessine « 1 » comme un « I » et « 0 » comme un « O » ; on force des chiffres alignés, lisibles ——— */

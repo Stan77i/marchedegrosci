@@ -29,11 +29,18 @@
   --trait-d: rgba(245, 240, 230, .12);
 
   /* ——— marque ——— */
-  --terre: #E07A3F;        /* action principale (texte encre dessus : 6,1:1) */
-  --terre-clair: #F3B48A;  /* accent sur fond sombre */
-  --brique: #B85C38;       /* logo terracotta */
-  --rouille: #904515;      /* liens sur fond clair (5,8:1) */
-  --rouille-2: #A0492A;    /* texte des boutons « Proposer un prix » (5,1:1 ; avant #B85C38 à 3,8:1) */
+  /* couleurs du logo (vert forêt, maïs, crème) ; le vert menthe et le jaune restent réservés aux offres et aux demandes */
+  --logo-vert: #10392B;
+  --logo-mais: #F2C230;
+  --logo-creme: #F3EFE4;
+  /* bouton d'action : sur fond sombre (défaut) crème + texte vert ; sur les pages claires vert + texte crème (voir plus bas) */
+  --action: var(--logo-creme);
+  --action-t: var(--logo-vert);
+  --terre: var(--logo-mais);    /* petit accent (point, contour, flèche) : maïs sur fond sombre, vert sur fond clair */
+  --terre-clair: var(--logo-mais);  /* accent sur fond sombre */
+  --brique: var(--logo-vert);
+  --rouille: var(--logo-vert);  /* liens et mots en valeur sur fond clair */
+  --rouille-2: var(--logo-vert);  /* texte des boutons « Proposer un prix » */
 
   /* ——— marché ——— */
   --offre: #6CC58C;        /* rond vert : j'ai, à vendre */
@@ -101,3 +108,10 @@
   --cible: 44px;           /* cible tactile minimale */
 }
 @media (prefers-reduced-motion: reduce) { :root { --d-court: 0ms; --d-moyen: 0ms; --d-long: 0ms; } }
+
+/* pages claires (papier) : bouton d'action vert du logo, texte crème ; accents en vert */
+[data-pg="acheter"], [data-pg="categories"], [data-pg="demande"], [data-pg="fiche"], [data-pg="prix"], [data-pg="pubs"], [data-pg="vendeur"], [data-pg="vendre"] {
+  --action: var(--logo-vert);
+  --action-t: var(--logo-creme);
+  --terre: var(--logo-vert);
+}

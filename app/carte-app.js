@@ -191,7 +191,7 @@
         ctx.textBaseline = 'alphabetic'; };
       ent.forEach(e => { if (e.off) return; const [x, y] = e.q, both = e.o && e.d, z = zs[e.s];
         ctx.fillStyle = e.o || e.d || z || e.s === data.sel ? '#E9E1D2' : 'rgba(245,240,230,.45)'; ctx.beginPath(); ctx.arc(x, y, 2.4, 0, 7); ctx.fill(); occ.push([x - 5, y - 5, x + 5, y + 5]);
-        if (e.s === data.sel) { const pr = 18 + Math.sin(t * 3) * 1.5; ctx.strokeStyle = '#E07A3F'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, y, pr, 0, 7); ctx.stroke(); }
+        if (e.s === data.sel) { const pr = 18 + Math.sin(t * 3) * 1.5; ctx.strokeStyle = '#F2C230'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, y, pr, 0, 7); ctx.stroke(); }
         if (z) { const w = (t * .5) % 1, cy = y + 2; [0, .5].forEach(k => { const ww = (w + k) % 1; ctx.strokeStyle = 'rgba(226,115,91,' + (1 - ww) * .75 + ')'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, cy, 16 + ww * 30, 0, 7); ctx.stroke(); });
           const g2 = ctx.createRadialGradient(x, cy, 2, x, cy, 34); g2.addColorStop(0, 'rgba(226,115,91,.35)'); g2.addColorStop(1, 'rgba(226,115,91,0)'); ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(x, cy, 34, 0, 7); ctx.fill();
           pin(x, y + 22, 12, '#E2735B', '🔥', z.length > 1 ? z.length : 0, true); occ.push([x - 13, y + 9, x + 13, y + 35]);

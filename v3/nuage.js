@@ -238,10 +238,10 @@
 .ng-tabs button{flex:1;min-height:42px;border:0;border-radius:999px;background:none;color:#B9AD98;font:600 14px Jost,sans-serif;cursor:pointer}.ng-tabs button[aria-selected=true]{background:#F5F0E6;color:#171512}
 .ng label{display:block;margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;color:#B9AD98}
 .ng input{width:100%;box-sizing:border-box;height:52px;margin:0 0 14px;padding:0 16px;border:1px solid rgba(245,240,230,.16);border-radius:16px;background:#14120f;color:#F5F0E6;font:500 18px Jost,sans-serif;letter-spacing:.06em}
-.ng input{transition:border-color .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s cubic-bezier(.2,.8,.2,1)}.ng input:focus{outline:none;border-color:#E07A3F;box-shadow:0 0 0 3px rgba(224,122,63,.22)}
-.ng-go{width:100%;min-height:52px;border:0;border-radius:999px;background:#E07A3F;color:#171512;font:700 16px Jost,sans-serif;cursor:pointer}.ng-go[disabled]{opacity:.6}
+.ng input{transition:border-color .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s cubic-bezier(.2,.8,.2,1)}.ng input:focus{outline:none;border-color:#F2C230;box-shadow:0 0 0 3px rgba(242,194,48,.22)}
+.ng-go{width:100%;min-height:52px;border:0;border-radius:999px;background:#F3EFE4;color:#10392B;font:700 16px Jost,sans-serif;cursor:pointer}.ng-go[disabled]{opacity:.6}
 .ng-x{float:right;width:40px;height:40px;margin:-6px -6px 0 0;border:0;border-radius:50%;background:rgba(245,240,230,.08);color:#F5F0E6;font-size:20px;cursor:pointer}
-.ng-err:empty{min-height:0;margin:0 0 14px}.ng-err{min-height:20px;margin:-4px 0 12px;color:#F3B48A;font-size:14px}.ng-note{margin:16px 0 0;font-size:12.5px;color:#8f846f;line-height:1.5}
+.ng-err:empty{min-height:0;margin:0 0 14px}.ng-err{min-height:20px;margin:-4px 0 12px;color:#F2C230;font-size:14px}.ng-note{margin:16px 0 0;font-size:12.5px;color:#8f846f;line-height:1.5}
 .ng-me{display:flex;flex-direction:column;gap:12px}.ng-me b{font:500 24px/1 'Cormorant Garamond',serif}.ng-out{min-height:48px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:#F5F0E6;font:600 15px Jost,sans-serif;cursor:pointer}
 @keyframes ngIn{from{opacity:0}}@keyframes ngUp{from{transform:translateY(24px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.ng-bg,.ng{animation:none}}`;
@@ -254,19 +254,19 @@
     el.textContent = m; el.style.opacity = '1'; clearTimeout(toastT); toastT = setTimeout(() => { el.style.opacity = '0'; }, 4200);
   }
   const CSS2 = `.ng-id2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}@media (max-width:360px){.ng-id2{grid-template-columns:minmax(0,1fr)}}
-.ng-link{display:inline;padding:0;border:0;background:none;color:#F3B48A;font:600 14px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.ng-link{display:inline;padding:0;border:0;background:none;color:#F2C230;font:600 14px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .ng-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:-4px 0 14px}
 .ng-list{display:flex;flex-direction:column;gap:8px;margin:4px 0 6px}
 .ng-item{display:flex;align-items:center;gap:14px;width:100%;min-height:58px;padding:10px 16px;border:1px solid rgba(245,240,230,.12);border-radius:18px;background:rgba(245,240,230,.04);color:#F5F0E6;font:500 15px/1.3 Jost,sans-serif;text-align:left;text-decoration:none;cursor:pointer}
-.ng-item:hover{background:rgba(245,240,230,.08)}.ng-item:focus-visible{outline:2px solid #E07A3F;outline-offset:2px}
+.ng-item:hover{background:rgba(245,240,230,.08)}.ng-item:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
 .ng-item small{display:block;color:#B9AD98;font-size:12.5px;font-weight:400}.ng-item i{margin-left:auto;font-style:normal;color:#B9AD98;display:grid;place-items:center}
-.ng-item .ng-dot{min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#E07A3F;color:#171512;font:700 12px/22px Jost,sans-serif;text-align:center}
-.ng-ticket{position:relative;margin:6px 0 16px;padding:20px 18px 18px;border:1.5px dashed rgba(243,180,138,.6);border-radius:20px;background:repeating-linear-gradient(-45deg,rgba(224,122,63,.06) 0 10px,transparent 10px 20px)}
+.ng-item .ng-dot{min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#F3EFE4;color:#10392B;font:700 12px/22px Jost,sans-serif;text-align:center}
+.ng-ticket{position:relative;margin:6px 0 16px;padding:20px 18px 18px;border:1.5px dashed rgba(243,180,138,.6);border-radius:20px;background:repeating-linear-gradient(-45deg,rgba(242,194,48,.06) 0 10px,transparent 10px 20px)}
 .ng-ticket output{display:block;font:600 clamp(21px,6.6vw,30px)/1.1 Jost,sans-serif;letter-spacing:.08em;color:#F5F0E6;text-align:center;white-space:nowrap;user-select:all;font-variant-numeric:tabular-nums}
 .ng [hidden]{display:none!important}
 .ng-ticket small{display:block;margin-top:10px;color:#B9AD98;font-size:12.5px;text-align:center}
 .ng-alt{width:100%;min-height:48px;margin:0 0 10px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:#F5F0E6;font:600 15px Jost,sans-serif;cursor:pointer}
-.ng-warn{padding:12px 14px;border-radius:16px;background:rgba(224,122,63,.12);color:#F3D2BC;font-size:13.5px;line-height:1.45;margin:0 0 14px}
+.ng-warn{padding:12px 14px;border-radius:16px;background:rgba(242,194,48,.12);color:#F3D2BC;font-size:13.5px;line-height:1.45;margin:0 0 14px}
 /* ——— la porte : scène + formulaire ——— */
 .ng--porte{position:relative;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:132px minmax(0,1fr);max-width:440px;max-height:calc(100dvh - 16px);padding:0;overflow:hidden}
 .ng-scene{position:relative;overflow:hidden;background:radial-gradient(90% 120% at 50% 100%,#2a2219 0%,#15120e 70%);border-bottom:1px solid rgba(245,240,230,.08)}
@@ -280,7 +280,7 @@
 .ng-fd{margin:0 0 14px}
 .ng--porte label{margin:0 0 7px;font-size:14px;font-weight:500;letter-spacing:0;color:#E9E1D2}.ng--porte label i{font-style:normal;color:#8f846f;margin-left:6px;font-size:13px}
 .ng-ip{position:relative;display:flex;align-items:center;border:1px solid rgba(245,240,230,.16);border-radius:16px;background:#14120f;transition:border-color .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s cubic-bezier(.2,.8,.2,1)}
-.ng-ip:focus-within{border-color:#E07A3F;box-shadow:0 0 0 3px rgba(224,122,63,.2)}
+.ng-ip:focus-within{border-color:#F2C230;box-shadow:0 0 0 3px rgba(242,194,48,.2)}
 .ng-ip.is-bad{border-color:#E2735B}.ng-ip.is-bad:focus-within{box-shadow:0 0 0 3px rgba(226,115,91,.22)}
 .ng--porte .ng-ip input{flex:1;min-width:0;height:54px;margin:0;border:0;background:none;box-shadow:none;outline:none;padding:0 16px;font:500 19px Jost,sans-serif;letter-spacing:.06em;font-variant-numeric:tabular-nums}
 .ng--porte .ng-ip input:focus{border:0;box-shadow:none}

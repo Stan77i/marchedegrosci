@@ -256,6 +256,15 @@
 .idv-go[disabled]{opacity:.45;cursor:default}
 .idv-alt{min-height:46px;border:0;border-radius:23px;background:rgba(23,21,18,.07);color:var(--ink);font:500 15px Jost,sans-serif;cursor:pointer}
 .idv-bad{color:var(--bad);font-size:14px}
+.idv-sg-t{margin-top:4px;font:600 12px Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.idv-sg-p{font-size:14px}
+.idv-l i{font-style:normal;float:right;color:var(--faint);font-weight:400}
+.idv-preuves{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.idv-pv{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:var(--card)}
+.idv-pv img{width:100%;height:100%;object-fit:cover;display:block}
+.idv-pv button{position:absolute;top:4px;right:4px;width:30px;height:30px;border:0;border-radius:50%;background:rgba(23,21,18,.72);color:#fff;font-size:18px;line-height:1;cursor:pointer}
+.idv-pv-add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed rgba(23,21,18,.25);color:var(--mute);font-size:13px;font-weight:500;cursor:pointer;text-align:center;padding:6px}
+.idv-pv-add input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .idv-chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;color:var(--ink)}.idv-chk input{width:22px;height:22px;flex:none;margin:0;accent-color:var(--acc)}
 .idv-etat{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:18px 6px}
 .idv-etat .rond{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:rgba(23,21,18,.06);color:var(--mute)}
@@ -295,27 +304,83 @@
     etat(s);
   }
 
-  // « Signaler cette personne » (discussions, négociations) : l'équipe reçoit le signalement dans le tableau de bord ; la personne n'en sait rien
+  // « Signaler cette personne » (discussions, négociations, profil) : un signalement doit être sérieux.
+  // Une phrase obligatoire + une PREUVE : jusqu'à 3 photos / captures d'écran (espace privé « preuves »), ou la conversation
+  // d'où l'on signale (jointe d'office). Sans preuve, on coche « Je n'ai pas de preuve » : le signalement compte alors pour
+  // le nombre (3 personnes en 30 jours = examen prioritaire). Serveur : supabase/schema-18-signalements-preuves.sql
   const MOTIFS = [['arnaque', 'Arnaque ou tentative', 'Paiement demandé d’avance, marchandise jamais livrée, faux vendeur'], ['insultes', 'Insultes ou menaces', 'Propos injurieux, harcèlement'], ['mauvais_produits', 'Mauvais produits', 'Marchandise différente de l’annonce, abîmée, trompeuse'], ['autre', 'Autre chose', 'Expliquez en quelques mots']];
+  const EXEMPLES = { arnaque: 'Par exemple : il m’a demandé 50 000 F d’avance par Mobile Money, puis il ne répond plus.', insultes: 'Par exemple : il m’a insulté quand j’ai refusé son prix.', mauvais_produits: 'Par exemple : les sacs livrés étaient pourris, rien à voir avec l’annonce.', autre: 'Expliquez en une ou deux phrases ce qui s’est passé.' };
+  // photo de preuve : réduite dans le téléphone (≈ 400 Ko au plus)
+  async function reduirePreuve(f) {
+    const url = URL.createObjectURL(f);
+    try {
+      const im = await new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ko(new Error('Photo illisible. Choisissez-en une autre.')); i.src = url; });
+      for (const cote of [1400, 1100, 850]) {
+        const k = Math.min(1, cote / Math.max(im.naturalWidth, im.naturalHeight)), cv = document.createElement('canvas');
+        cv.width = Math.round(im.naturalWidth * k); cv.height = Math.round(im.naturalHeight * k); cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+        for (const q of [0.78, 0.64, 0.5]) { const b = await new Promise(ok => cv.toBlob(ok, 'image/jpeg', q)); if (b && b.size < 420000) return b; }
+      }
+      throw new Error('Photo trop lourde. Choisissez-en une autre.');
+    } finally { URL.revokeObjectURL(url); }
+  }
   function signaler(uid, o = {}) {
     if (!uid) return; if (!me()) { if (N()) N().open(); return; }
     feuille('Signaler cette personne');
-    const main = bg.querySelector('.idv-main'); let motif = '';
-    main.innerHTML = `<h2>Que s’est-il passé${o.nom ? ' avec ' + esc(o.nom) : ''} ?</h2><p>L’équipe du Marché de Gros lit chaque signalement. ${o.nom ? esc(o.nom) : 'La personne'} ne saura pas que c’est vous. En cas d’arnaque, de mauvais produits à répétition ou d’insultes, le compte est banni à vie.</p>
+    const main = bg.querySelector('.idv-main'), conv = (o.source === 'dm' || o.source === 'negociation') && !!o.ref;
+    const st = { motif: '', photos: [], sans: false };
+    const qui = o.nom ? esc(o.nom) : 'la personne';
+    main.innerHTML = `<h2>Que s’est-il passé${o.nom ? ' avec ' + esc(o.nom) : ''} ?</h2>
+      <p>L’équipe du Marché de Gros lit chaque signalement. ${o.nom ? esc(o.nom) : 'La personne'} ne saura pas que c’est vous.</p>
+      <div class="idv-sg-t">1 · Le motif</div>
       <div class="idv-choix" role="group" aria-label="Motif">${MOTIFS.map(m => `<button type="button" data-m="${m[0]}" aria-pressed="false"><span><b>${m[1]}</b><small>${m[2]}</small></span></button>`).join('')}</div>
-      <div><label class="idv-l" for="idv-sig">Ce qui s’est passé (facultatif)</label><textarea id="idv-sig" class="idv-in" maxlength="500" rows="3" style="height:auto;padding:12px 14px;font-size:15px;resize:vertical" placeholder="Par exemple : il demande de payer avant de voir la marchandise"></textarea></div>
+      <div class="idv-sg-t">2 · En une phrase</div>
+      <div><label class="idv-l" for="idv-sig">Ce qui s’est passé <i data-cpt>0 / 15 caractères minimum</i></label><textarea id="idv-sig" class="idv-in" maxlength="500" rows="3" style="height:auto;padding:12px 14px;font-size:15px;resize:vertical" placeholder="${esc(EXEMPLES.arnaque)}"></textarea></div>
+      <div class="idv-sg-t">3 · La preuve</div>
+      ${conv ? `<div class="idv-lu">${IC('verifie', 18)}<span>La ${o.source === 'dm' ? 'discussion' : 'négociation'} est jointe : l’équipe peut la lire. Vous pouvez aussi ajouter des captures d’écran.</span></div>` : '<p class="idv-sg-p">Une capture d’écran de la conversation, une photo de la marchandise, un reçu de paiement…</p>'}
+      <div class="idv-preuves" data-ph></div>
+      ${conv ? '' : `<label class="idv-chk"><input type="checkbox" data-sans> <span>Je n’ai pas de preuve. <small style="display:block;color:var(--faint)">Sans preuve, il faut que plusieurs personnes signalent ce compte pour que l’équipe agisse.</small></span></label>`}
       <p class="idv-bad" data-err role="alert"></p>
       <div class="idv-act"><button type="button" class="idv-go" data-go disabled>Envoyer le signalement</button><button type="button" class="idv-alt" data-fin>Annuler</button></div>`;
-    const q = x => main.querySelector(x), go = q('[data-go]');
-    main.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { motif = b.dataset.m; main.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); go.disabled = false; });
+    const q = x => main.querySelector(x), go = q('[data-go]'), ta = q('textarea'), err = q('[data-err]');
+    const preuve = () => st.photos.length > 0 || conv;
+    const maj = () => {
+      const n = ta.value.trim().length; q('[data-cpt]').textContent = n >= 15 ? '✓' : n + ' / 15 caractères minimum';
+      go.disabled = !st.motif || n < 15 || !(preuve() || st.sans);
+      go.textContent = st.sans && !preuve() ? 'Envoyer sans preuve' : 'Envoyer le signalement';
+    };
+    const photos = () => {
+      const box = q('[data-ph]');
+      box.innerHTML = st.photos.map((b, i) => `<div class="idv-pv"><img src="${URL.createObjectURL(b)}" alt="Preuve ${i + 1}"><button type="button" data-rm="${i}" aria-label="Retirer la photo ${i + 1}">×</button></div>`).join('')
+        + (st.photos.length < 3 ? `<label class="idv-pv idv-pv-add">${IC('photo', 24)}<span>${st.photos.length ? 'Ajouter' : 'Ajouter une photo'}</span><input type="file" accept="image/*" aria-label="Ajouter une photo de preuve"></label>` : '');
+      box.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { st.photos.splice(+b.dataset.rm, 1); photos(); maj(); });
+      const inp = box.querySelector('input[type=file]');
+      if (inp) inp.onchange = async () => { const f = inp.files && inp.files[0]; if (!f) return; err.textContent = '';
+        try { st.photos.push(await reduirePreuve(f)); if (q('[data-sans]')) { q('[data-sans]').checked = false; st.sans = false; } } catch (x) { err.textContent = x.message; }
+        photos(); maj(); };
+    };
+    photos();
+    main.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { st.motif = b.dataset.m; ta.placeholder = EXEMPLES[st.motif]; main.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); maj(); });
+    ta.oninput = maj;
+    if (q('[data-sans]')) q('[data-sans]').onchange = e => { st.sans = e.target.checked; maj(); };
     q('[data-fin]').onclick = fermer;
     go.onclick = async () => {
-      const t = q('textarea').value.trim(); if (motif === 'autre' && !t) { q('[data-err]').textContent = 'Expliquez en quelques mots ce qui s’est passé.'; return; }
-      go.disabled = true; go.textContent = 'Envoi…'; q('[data-err]').textContent = '';
-      try { await N().rpc('signaler_membre', { p_cible: uid, p_motif: motif, p_detail: t || null, p_source: o.source || 'profil', p_ref: o.ref || null });
-        main.innerHTML = `<div class="idv-etat"><div class="rond ok">${IC('verifie', 34)}</div><h2>Merci, c’est envoyé</h2><p>L’équipe va regarder. Si vous vous sentez en danger ou si on vous demande de payer d’avance, arrêtez l’échange et ne payez rien.</p></div><div class="idv-act">${o.bloquer ? '<button type="button" class="idv-go" data-bl>Bloquer aussi cette personne</button>' : ''}<button type="button" class="idv-alt" data-fin>Fermer</button></div>`;
+      go.disabled = true; err.textContent = '';
+      try {
+        const u = me(), chemins = [];
+        for (let i = 0; i < st.photos.length; i++) {
+          go.textContent = 'Envoi de la photo ' + (i + 1) + ' sur ' + st.photos.length + '…';
+          const c = u.id + '/' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8) + '.jpg';
+          await N().deposerPrive('preuves', c, st.photos[i]); chemins.push(c);
+        }
+        go.textContent = 'Envoi…';
+        await N().rpc('signaler_membre', { p_cible: uid, p_motif: st.motif, p_detail: ta.value.trim(), p_source: o.source || 'profil', p_ref: o.ref || null, p_preuves: chemins, p_sans_preuve: !preuve() && st.sans });
+        const avec = preuve();
+        main.innerHTML = `<div class="idv-etat"><div class="rond ok">${IC('verifie', 34)}</div><h2>Merci, c’est envoyé</h2>
+          <p>${avec ? 'Avec votre preuve, l’équipe peut agir : elle examine votre signalement.' : 'Votre signalement est enregistré. Si d’autres personnes signalent ce compte, l’équipe l’examinera en priorité.'} En cas d’arnaque, de mauvais produits à répétition ou d’insultes, le compte est banni à vie.</p>
+          <p>Si on vous demande de payer d’avance, arrêtez l’échange et ne payez rien.</p></div>
+          <div class="idv-act">${o.bloquer ? '<button type="button" class="idv-go" data-bl>Bloquer aussi ' + qui + '</button>' : ''}<button type="button" class="idv-alt" data-fin>Fermer</button></div>`;
         main.querySelector('[data-fin]').onclick = fermer; const bl = main.querySelector('[data-bl]'); if (bl) bl.onclick = () => { fermer(); o.bloquer(); };
-      } catch (e) { go.disabled = false; go.textContent = 'Envoyer le signalement'; q('[data-err]').textContent = /signaler_membre|schema cache|Could not find/i.test(e.message) ? 'Le signalement n’est pas encore disponible. Écrivez au Marché de Gros.' : !navigator.onLine ? 'Pas de connexion internet : réessayez quand le réseau revient.' : String(e.message || 'Impossible pour l’instant.').replace(/^COMPTE_BANNI : /, ''); }
+      } catch (e) { maj(); err.textContent = /schema cache|Could not find the function|Bucket not found/i.test(e.message) ? 'Le signalement n’est pas encore disponible. Écrivez au Marché de Gros.' : !navigator.onLine ? 'Pas de connexion internet : réessayez quand le réseau revient.' : String(e.message || 'Impossible pour l’instant.').replace(/^COMPTE_BANNI : /, ''); }
     };
   }
 

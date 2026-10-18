@@ -1,3 +1,15 @@
+# Mise à jour — 19 octobre 2026 (un seul logo partout : plus de « dG »)
+
+Service worker : `mgci-v83`.
+
+- Le petit « dG » disparaît. Partout dans l'application, la petite icône montre maintenant **« marché de Gros » sur deux lignes**, exactement comme l'icône de l'écran d'accueil :
+  - messages officiels du Marché de Gros (rond) ;
+  - carte « Nouveau logo » ;
+  - carte pendant son chargement (icône plus grande) ;
+  - écran vert de la toute première seconde ;
+  - onglet du navigateur.
+- `MDGMarque.dg()` dessine désormais cette icône (le nom de la fonction ne change pas). `tools/logo/marque.py` fabrique les favicons à partir du même dessin.
+
 # Mise à jour — 18 octobre 2026 (74 images de produits, 28 nouveaux produits, famille « Viandes et abats »)
 
 Service worker : `mgci-v82`.

@@ -41,8 +41,8 @@ def dg(fond, rx=112, couleur=MAIS, plein=True):
 DOSSIERS = [os.path.join(rac, 'icons', 'v2'), os.path.join(rac, 'icons')]
 def ecr(n, s):
     for d in DOSSIERS: open(os.path.join(d, n), 'w').write(s)
-ecr('favicon.svg', dg('vert'))
-ecr('favicon-noir.svg', dg('noir'))
+ecr('favicon.svg', carre('vert', 1.42, rx=112))
+ecr('favicon-noir.svg', carre('noir', 1.42, rx=112))
 ecr('icon-plein.svg', carre('vert', 1.42))
 ecr('icon-plein-noir.svg', carre('noir', 1.42))
 ecr('icon-maskable.svg', carre('vert', 1.1))
@@ -52,7 +52,7 @@ js = r"""/* Marque « Étal vert » : le nom « marché de Gros » dessiné en t
    Fabriqué par tools/logo/marque.py — ne pas modifier à la main.
    MDGMarque.empile({fond, h, cls})  : le nom sur deux lignes (accueil, ouverture)
    MDGMarque.ligne({fond, h, cls})   : le nom sur une ligne (en-têtes)
-   MDGMarque.dg(t, {fond, rond})     : le petit « dG » (messages officiels, onglet)
+   MDGMarque.dg(t, {fond, rond})     : la petite icône, le nom sur deux lignes (messages officiels, cartes, onglet)
    fond : 'vert' (crème + maïs, sur fond foncé) · 'noir' (pareil) · 'clair' (vert, trait maïs) */
 (function () {
   var D = __D__;
@@ -72,10 +72,14 @@ js = r"""/* Marque « Étal vert » : le nom « marché de Gros » dessiné en t
       (o.fond === 'clair' && o.trait ? '<rect class="mq-b" x="352" y="-23" width="424" height="36" fill="' + C.mais + '"/>' : '') +
       '<g transform="translate(-6.5 0)"><path class="mq-m" fill="' + c[0] + '" d="' + D.m + '"/></g>' +
       '<g transform="translate(356.6 0) scale(1.091)"><path class="mq-g" fill="' + c[1] + '" d="' + D.g + '"/></g>'); }
-  function dg(t, o) { o = o || {}; t = t || 38; var bg = o.fond === 'noir' ? C.noir : C.vert;
+  // la petite icône (messages officiels, cartes, onglet) : le même dessin que l'icône de l'écran d'accueil,
+  // « marché de Gros » sur deux lignes sur un carré vert arrondi (ou un rond : le nom est alors un peu plus petit pour tenir)
+  function dg(t, o) { o = o || {}; t = t || 38; var bg = o.fond === 'noir' ? C.noir : C.vert, k = o.rond ? 1.12 : 1.42, w = 320 * k, h = 128 * k;
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="' + t + '" height="' + t + '" aria-hidden="true" style="display:block;flex:none">' +
-      '<rect width="512" height="512" rx="' + (o.rond ? 256 : 120) + '" fill="' + bg + '"' + (o.fond === 'noir' ? ' stroke="rgba(243,239,228,.3)" stroke-width="10"' : '') + '/>' +
-      '<path fill="' + C.mais + '" transform="translate(77.3 343.3) scale(2.45)" d="' + D.dg + '"/></svg>'; }
+      '<rect width="512" height="512" rx="' + (o.rond ? 256 : 112) + '" fill="' + bg + '"' + (o.fond === 'noir' ? ' stroke="rgba(243,239,228,.3)" stroke-width="10"' : '') + '/>' +
+      '<g transform="translate(' + ((512 - w) / 2).toFixed(1) + ' ' + ((512 - h) / 2 - 2 * k).toFixed(1) + ') scale(' + k + ')">' +
+      '<g transform="translate(-2.5 51) scale(.7)"><path fill="' + C.creme + '" d="' + D.m + '"/></g>' +
+      '<g transform="translate(-1 121.5) scale(.82)"><path fill="' + C.mais + '" d="' + D.g + '"/></g></g></svg>'; }
   window.MDGMarque = { empile: empile, ligne: ligne, dg: dg, C: C };
   // pages statiques : <span data-mq="ligne|empile" data-fond="clair" data-h="24"></span> se remplit tout seul
   function remplir() { var L = document.querySelectorAll('[data-mq]:not([data-mq-ok])');

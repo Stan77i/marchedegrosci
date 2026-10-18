@@ -1,3 +1,26 @@
+# Mise à jour — 18 octobre 2026 (nouveau logo « Étal vert »)
+
+Service worker : `mgci-v72`.
+
+## Ce qui change
+- **Le logo est maintenant le nom écrit** : « marché » droit, « **de Gros** » en italique gras. Plus de M ni de G. Couleurs : vert forêt `#10392B`, maïs `#F2C230`, crème `#F3EFE4`.
+- **Icône de l'application** (écran d'accueil du téléphone, Android et iPhone) : carré vert avec le nom en crème et maïs. Le fond de lancement Android est vert.
+- **Onglet du navigateur** : un petit « dG » maïs sur vert.
+- **Application** :
+  - écran d'ouverture « le nom qui se pose » : « marché » monte, « de Gros » s'écrit, puis un trait maïs court tant que l'application se prépare ;
+  - barre du haut : le nom s'écrit à l'ouverture, puis les phrases défilent comme avant ;
+  - en-tête du menu : le nom seul.
+- **Messages officiels** (« Écrire au Marché de Gros », message à tous) : le rond « dG » remplace l'ancien M.
+- **Site** : le nom seul dans l'en-tête (maïs sur fond sombre, surligné de maïs sur fond clair) et dans le pied de page.
+- **Option « Logo noir »** (menu) : toujours là, même nom sur fond noir. L'ancien « Logo terracotta » s'appelle « Logo vert ».
+
+## Comment c'est fait
+- Le nom est dessiné en tracés vectoriels (police Archivo, licence OFL). Aucune police en plus à télécharger. Tout tient dans `app/marque.js` (13 Ko, gardé hors ligne).
+- Les fichiers sont fabriqués par `tools/logo/build.py`, puis `tools/logo/marque.py`, puis `tools/logo/png.js` (PNG).
+
+## Volontairement pas changé
+- **Les couleurs des boutons de l'application restent terracotta.** Le vert et le jaune du logo sont déjà ceux des **offres (vert)** et des **demandes (jaune)**. Mettre tous les boutons en vert ou en jaune mélangerait le sens des couleurs. À décider ensemble si on veut une autre couleur d'action.
+
 # Mise à jour — 18 octobre 2026 (lecture des vraies CNI ivoiriennes)
 
 Service worker : `mgci-v71`.

@@ -16,10 +16,11 @@
 <script src="v3/nuage.js?v=20261018a"></script>
 <script src="v3/avatar.js?v=20261017c"></script>
 <script src="app/icones.js"></script>
+<script src="app/marque.js?v=20261018a"></script>
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['v3/porte.js','v3/sons.js?v=20261017i','v3/negoce.js?v=20261017f','v3/compte.js?v=20261018a','v3/souffle.js','v3/pousse.js','v3/reputation.js?v=20261018a','v3/messages.js?v=20261017f','v3/alertes.js?v=20261017f','app/carte-app.js','app/carte-gl.js?v=20261017h','v3/identite.js?v=20261018b'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['v3/porte.js','v3/sons.js?v=20261017i','v3/negoce.js?v=20261017f','v3/compte.js?v=20261018a','v3/souffle.js?v=20261018b','v3/pousse.js','v3/reputation.js?v=20261018a','v3/messages.js?v=20261018b','v3/alertes.js?v=20261017f','app/carte-app.js','app/carte-gl.js?v=20261017h','v3/identite.js?v=20261018b'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -467,7 +468,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <!-- ═══ MENU : tiroir à gauche, comme Gmail — le nom en haut, le compte d'abord, puis tout le reste ; glisser vers la gauche pour fermer ═══ -->
 <div role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="{{ menuHid }}" onPointerDown="{{ dDown }}" onPointerMove="{{ dMove }}" onPointerUp="{{ dUp }}" onPointerCancel="{{ dUp }}" style="position:absolute;left:0;top:0;bottom:0;width:min(86%,340px);display:flex;flex-direction:column;background:#211D17;color:var(--ivoire);border-radius:0 26px 26px 0;transform:{{ menuTf }};transition:{{ drTr }};box-shadow:14px 0 44px rgba(0,0,0,.5);touch-action:pan-y;visibility:{{ menuVis }}">
   <div style="height:{{ topPad }};flex:none"></div>
-  <div style="display:flex;align-items:center;gap:12px;padding:16px 20px 18px;flex:none;border-bottom:1px solid rgba(245,240,230,.09)"><span aria-hidden="true" style="position:relative;width:38px;height:38px;flex:none;display:block">{{ markEl }}</span><span style="font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:500;line-height:1">Marché de Gros</span></div>
+  <div style="display:flex;align-items:center;gap:12px;padding:16px 20px 18px;flex:none;border-bottom:1px solid rgba(245,240,230,.09)"><span class="mq-menu">{{ markEl }}</span></div>
   <div style="flex:1;min-height:0;overflow-y:auto;padding:6px 12px 10px 0;overscroll-behavior:contain">
     <sc-for list="{{ menu }}" as="g" hint-placeholder-count="4">
       <sc-if value="{{ g.sep }}" hint-placeholder-val="{{ true }}"><div style="height:1px;background:rgba(245,240,230,.09);margin:8px 0 8px 70px"></div></sc-if>
@@ -573,10 +574,10 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <div style="position:absolute;left:50%;bottom:8px;width:134px;height:5px;margin-left:-67px;border-radius:3px;background:{{ sbColor }};opacity:.8;pointer-events:none;z-index:20"></div>
 </sc-if>
 
-<div style="position:absolute;inset:0;background:var(--encre);color:var(--ivoire);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;opacity:{{ splashOp }};pointer-events:{{ splashPe }};transition:opacity .6s ease;z-index:30">
+<div class="spl" style="position:absolute;inset:0;background:{{ splashBg }};color:var(--ivoire);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:{{ splashOp }};pointer-events:{{ splashPe }};transition:opacity .6s ease;z-index:30">
   <div class="spl-marque">{{ splashMark }}</div>
-  <span class="spl-nom" style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500">Marché de Gros</span>
-  <span class="spl-dev" style="font-size:var(--t-2xs);letter-spacing:.26em;color:var(--sable)">LE MARCHÉ EST UNE CONNEXION</span>
+  <div class="spl-trait" aria-hidden="true"><i></i></div>
+  <span class="spl-dev">LE MARCHÉ EST UNE CONNEXION</span>
 </div>
 
 </div>
@@ -941,21 +942,16 @@ class Component extends DCLogic {
     return s + own.replace('/>', ' style="animation:mkPop .5s both"/>') + '</svg>';
   }
 
-  // écran d'ouverture : la marque se dessine (disque, G, point, M), puis un halo respire tant que l'application se prépare (css/mgci-app.css .spl-*)
-  splashMark() { const h = React.createElement, noir = this.isDark();
-    return h('svg', { width: 116, height: 116, viewBox: '0 0 512 512', role: 'img', 'aria-label': 'Marché de Gros', style: { display: 'block', overflow: 'visible' } },
-      h('circle', { className: 'spl-halo', cx: 256, cy: 256, r: 248, fill: 'none', stroke: noir ? 'rgba(245,240,230,.4)' : '#E07A3F', strokeWidth: 6 }),
-      h('circle', { className: 'spl-disque', cx: 256, cy: 256, r: 248, fill: noir ? '#0B0A08' : '#B85C38', stroke: noir ? 'rgba(245,240,230,.28)' : 'none', strokeWidth: 8 }),
-      h('g', { transform: 'translate(256 256) scale(.86) translate(-256 -256)', fill: 'none', stroke: '#F5F0E6', strokeLinecap: 'round', strokeLinejoin: 'round' },
-        h('path', { className: 'spl-g', d: 'M394.6 117.4A196 196 0 1 0 452 256H372', strokeWidth: 24 }),
-        h('path', { className: 'spl-m', d: 'M178 338V182L256 292L334 182V338', strokeWidth: 34 }),
-        h('circle', { className: 'spl-point', cx: 394.6, cy: 117.4, r: 20.4, fill: '#F5F0E6', stroke: 'none' }))); }
+  // écran d'ouverture : « marché » se pose, « de Gros » s'écrit, un trait maïs court tant que l'application se prépare (css/mgci-app.css .spl-*)
+  splashMark() { const h = React.createElement;
+    if (!window.MDGMarque) return h('span', { className: 'spl-repli' }, 'Marché de Gros');
+    return h('div', { dangerouslySetInnerHTML: { __html: MDGMarque.empile({ fond: this.isDark() ? 'noir' : 'vert', cls: 'spl-mq' }) } }); }
   renderVals() {
     const S = this.state, framed = S.vw >= 500, sc = framed ? Math.min((S.vh - 32) / 866, (S.vw - 32) / 412, 1) : 1; this.sc = sc;
     const kbH = !framed && S.kbH ? S.kbH : 0;
     const base = { shellAlign: framed ? 'center' : 'flex-start', shellPad: framed ? '11px' : '0', shellRad: framed ? '64px' : '0', scale: sc, W: framed ? '390px' : '100vw', H: framed ? '844px' : kbH ? kbH + 'px' : '100dvh', rad: framed ? '53px' : '0', framed,
       topPad: framed ? '50px' : 'max(12px, env(safe-area-inset-top))', botPad: framed ? '34px' : 'max(18px, env(safe-area-inset-bottom))', clock: S.clock,
-      splashOp: S.splash === 'on' || !S.ready ? 1 : 0, splashPe: S.splash === 'off' && S.ready ? 'none' : 'auto', splashLine: S.splashLine ? '56px' : '0px', splashMark: S.splash === 'off' && S.ready ? null : this.splashMark(), toast: S.toast, toastOp: S.toastOn ? 1 : 0, toastY: S.toastOn ? '0' : '12px' };
+      splashBg: this.isDark() ? '#141414' : '#10392B', splashOp: S.splash === 'on' || !S.ready ? 1 : 0, splashPe: S.splash === 'off' && S.ready ? 'none' : 'auto', splashLine: S.splashLine ? '56px' : '0px', splashMark: S.splash === 'off' && S.ready ? null : this.splashMark(), toast: S.toast, toastOp: S.toastOn ? 1 : 0, toastY: S.toastOn ? '0' : '12px' };
     if (!S.ready) return base;
     const A = window.MDGApp, M = window.MDG, h = React.createElement, html = (x, extra) => h('div', Object.assign({ dangerouslySetInnerHTML: { __html: x } }, extra || {}));
     // icônes : une tuile teintée par le sens (css/mgci-app.css .ui-tile) ; « nom:ton » ou une clé ci-dessous
@@ -1118,7 +1114,7 @@ class Component extends DCLogic {
     const light = ['acheter', 'vendre', 'demande', 'categories', 'prix', 'pubs'].includes(top) || !!S.pick;
     const sheetOn = S.sheet === 'match', dy = S.sheetDy, anyS = S.menu || sheetOn || S.sheet === 'fam';
     const mi = (k, t, s, go) => ({ ico: ico(k), t, s, go });
-    const logoIco = (sz) => h('svg', { width: sz, height: sz, viewBox: '0 0 38 38', style: { display: 'block' } }, h('circle', { cx: 19, cy: 19, r: 17, fill: this.isDark() ? '#0B0A08' : '#B85C38', stroke: this.isDark() ? 'rgba(245,240,230,.28)' : 'none', strokeWidth: .8 }), h('g', { transform: 'translate(19 19) scale(.058) translate(-256 -256)', fill: 'none', stroke: '#F5F0E6', strokeLinecap: 'round', strokeLinejoin: 'round' }, h('path', { d: 'M394.6 117.4A196 196 0 1 0 452 256H372', strokeWidth: 26 }), h('circle', { cx: 394.6, cy: 117.4, r: 22, fill: '#F5F0E6', stroke: 'none' }), h('path', { d: 'M178 338V182L256 292L334 182V338', strokeWidth: 36 })));
+    const logoIco = (sz) => window.MDGMarque ? h('span', { style: { display: 'block', flex: 'none' }, dangerouslySetInnerHTML: { __html: MDGMarque.dg(sz, { fond: this.isDark() ? 'noir' : 'vert' }) } }) : null;
     // le compte, à droite de la barre du haut : votre avatar (ou une silhouette pour se connecter)
     const moiN = window.MDGNuage, moiS = moiN && moiN.session(), moiC = window.MDGCompte, moiP = moiS && moiC ? moiC.profil() : null;
     const moiEl = moiS && window.MDGAvatar
@@ -1137,13 +1133,7 @@ class Component extends DCLogic {
       wDown: e => this.wDown(e), wMove: e => this.wMove(e), wUp: () => this.wUp(), labels, ticks, sacks,
       jute: { op: act.sack ? 0 : 1, tf: act.sack ? 'scale(.86)' : 'none', mound: act.tint, l1: act.name.toUpperCase(), fs: act.name.length > 14 ? '14px' : act.name.length > 9 ? '17px' : '21px' },
       prev: () => this.snap(Math.round(S.rot) - 1), next: () => this.snap(Math.round(S.rot) + 1),
-      markEl: h('svg', { width: 38, height: 38, viewBox: '0 0 38 38', style: { display: 'block', overflow: 'visible' } },
-        h('circle', { cx: 19, cy: 19, r: 18, fill: 'none', stroke: act.tint, strokeOpacity: .55, strokeWidth: 1, strokeDasharray: '113.1', strokeDashoffset: S.splash === 'off' ? 0 : 113.1, style: { transition: 'stroke-dashoffset 1.4s cubic-bezier(.22,1,.36,1) .2s, stroke .6s' } }),
-        h('circle', { key: 'p' + act.slug, cx: 19, cy: 19, r: 15, fill: 'none', stroke: act.tint, strokeWidth: 1.2, style: { transformOrigin: '19px 19px', animation: 'mkWave 1.1s ease-out both' } }),
-        h('circle', { cx: 19, cy: 19, r: 15, fill: this.isDark() ? '#0B0A08' : '#B85C38', stroke: this.isDark() ? 'rgba(245,240,230,.28)' : 'none', strokeWidth: .8, style: { transition: 'fill .4s' } }),
-        h('g', { transform: 'translate(19 19) scale(.058) translate(-256 -256)', fill: 'none', stroke: '#F5F0E6', strokeLinecap: 'round', strokeLinejoin: 'round' }, h('path', { d: 'M394.6 117.4A196 196 0 1 0 452 256H372', strokeWidth: 26 }), h('circle', { cx: 394.6, cy: 117.4, r: 22, fill: '#F5F0E6', stroke: 'none' }), h('path', { d: 'M178 338V182L256 292L334 182V338', strokeWidth: 36 })),
-        h('g', { style: { transformOrigin: '19px 19px', transform: 'rotate(' + (a0 * 2.2).toFixed(1) + 'deg)', transition: S.dragging ? 'none' : 'transform .55s cubic-bezier(.22,1,.36,1)' } },
-          h('circle', { cx: 19, cy: 1, r: 2.6, fill: '#E07A3F', stroke: '#171512', strokeWidth: 1.2 }))),
+      markEl: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.ligne({ fond: 'vert', h: 24 }) } }) : 'Marché de Gros',
       act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, oAnim: ao ? 'mkLuciole 3.2s ease-in-out infinite' : 'none', dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
       openFicheAct: () => this.openFiche(act.slug),
       duoH: { jaiL: 'J\u2019ai ' + act.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + act.name.toLowerCase() + ' à acheter : publier une demande' }, duoF: { jaiL: 'J\u2019ai ' + FP.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + FP.name.toLowerCase() + ' à acheter : publier une demande' },
@@ -1227,7 +1217,7 @@ class Component extends DCLogic {
           { sep: true, items: [pg('cherche', 'Acheter', 'acheter'), pg('jai', 'Vendre', 'vendre'), pg('demande', 'Demander', 'demande')] },
           { sep: true, items: [pg('carte', 'Le réseau', 'carte'), pg('categories', 'Catégories', 'categories', { n: this.cats.length }), pg('prix', 'Prix du marché', 'prix'), pg('annee', 'L\u2019année du marché', 'annee'), ln({ ico: tuile('notes', 'marche'), t: 'Les mieux notés', go: () => { this.setState({ menu: false }); setTimeout(() => window.MDGRep && window.MDGRep.classement(), 250); } })] },
           { sep: true, items: [pg('comment', 'Comment ça marche', 'info', { args: { infoK: 'comment-ca-marche' }, page: null }), pg('aide', 'Aide producteur', 'info', { args: { infoK: 'aide-producteur' }, page: null }), pg('confiance', 'Confiance', 'info', { args: { infoK: 'confiance' }, page: null }),
-            ln({ ico: logoIco(38), t: this.isDark() ? 'Logo noir' : 'Logo terracotta', s: this.isDark() ? 'Toucher pour revenir au terracotta' : 'Toucher pour passer au noir', go: () => this.toggleLogo() })] }
+            ln({ ico: logoIco(38), t: this.isDark() ? 'Logo noir' : 'Logo vert', s: this.isDark() ? 'Toucher pour revenir au vert' : 'Toucher pour passer au noir', go: () => this.toggleLogo() })] }
         ];
       })(),
       // familles : sur chaque photo, le nombre d'offres (rond vert) et de demandes (carré jaune), et « nouveau » depuis la dernière visite

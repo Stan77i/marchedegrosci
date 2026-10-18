@@ -1,20 +1,17 @@
-# Mise à jour — 18 octobre 2026 (Prix du marché refait)
+# Mise à jour — 18 octobre 2026 (l'ancien M disparaît partout ; icône du téléphone)
 
 Service worker : `mgci-v77`.
 
-« Prix du marché » répond maintenant à une question simple : **combien ça coûte, en ce moment, et vendeurs et acheteurs sont-ils d'accord ?**
-- **En haut** : « Le juste prix, en direct », avec trois chiffres : les produits qui ont un prix, les prix vendeurs et les budgets acheteurs.
-- **Filtres** : Tout · Prix vendeurs · Budgets · De saison · Ma région (si votre région est connue).
-- **Pour chaque produit** :
-  - une **échelle** avec les prix vendeurs (● vert), les budgets acheteurs (■ jaune) et la zone du prix observé quand elle existe ;
-  - deux cases **Vendeurs / Acheteurs** : la fourchette, la médiane et le nombre d'annonces ;
-  - un **verdict** : « Accord possible : un acheteur propose 340 F, un vendeur demande 300 F », ou « Écart de 16 % » ;
-  - le **prix observé** (10e – 90e centile, au moins 5 prix de 3 vendeurs sur 30 jours), ou une jauge qui dit ce qu'il manque (« encore 2 prix vendeurs ») ;
-  - la saison (pleine récolte, début, fin) et la date du dernier prix.
-- **Sans prix** : un message clair avec deux boutons (publier une offre avec un prix, une demande avec un budget), et « De saison ce mois, sans prix encore ».
-- **« Comment lire ces prix »** : les définitions, repliées par défaut.
-- Les prix comparés sont toujours dans la même unité : celle que le produit utilise le plus.
-- Correction : une accolade en trop dans `css/mgci-app.css` (laissée par la mise à jour de l'écran d'ouverture) est retirée.
+- **Carte** : pendant qu'elle se prépare, c'est le « dG » du nouveau logo qui respire, plus l'ancien M.
+- **Tableau de bord** : le nom « marché de Gros » remplace l'ancien logo dans l'en-tête.
+- **Fichiers du logo** (`logo/`) : remplacés par le nouveau logo, avec les mêmes noms. Cela concerne aussi l'**image de partage** sur WhatsApp et Facebook, `partage-reseaux-1200.png`.
+- **Icône de l'écran d'accueil** :
+  - les icônes sont maintenant dans `icons/v2/`. Cette nouvelle adresse oblige le téléphone à reprendre l'icône, et les anciennes adresses donnent aussi le nouveau logo ;
+  - **Android** : l'icône se met à jour toute seule quand le téléphone est connecté. C'est Chrome qui le fait, parfois en quelques jours ;
+  - **iPhone** : Apple fige l'icône au jour de l'ajout, aucune application ne peut la changer. Il faut supprimer l'icône et rajouter l'app ;
+  - dans l'**application installée**, une petite carte « Nouveau logo » l'explique une seule fois, avec les gestes pour iPhone ou pour Android.
+- Hors connexion, le téléphone ne peut pas changer son icône (c'est lui qui la gère, pas l'application). Tout le reste (logo dans l'app, ouverture, carte) est gardé hors ligne.
+- **Prochain changement de logo** : refaire les fichiers dans un dossier `icons/v3/`, puis passer `ICONE` à `'3'` dans `app/icone.js`.
 
 # Mise à jour — 18 octobre 2026 (écran d'ouverture « le sac qui se remplit »)
 

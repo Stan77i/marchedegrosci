@@ -79,7 +79,7 @@
 .dm-f{flex:none;display:flex;align-items:flex-end;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#EFE7D9}
 .dm-f textarea{flex:1;min-width:0;min-height:46px;max-height:132px;margin:0;padding:12px 16px;border:1px solid rgba(23,21,18,.14);border-radius:23px;background:#FFFFFF;color:var(--ink);font:400 16px/1.35 Jost,sans-serif;resize:none;box-sizing:border-box}
 .dm-f textarea:focus{outline:none;border-color:var(--acc)}
-.dm-env{flex:none;width:46px;height:46px;border:0;border-radius:50%;background:var(--acc);color:#171512;display:grid;place-items:center;cursor:pointer;transition:transform .15s,opacity .2s}
+.dm-env{flex:none;width:46px;height:46px;border:0;border-radius:50%;background:var(--acc);color:#F3EFE4;display:grid;place-items:center;cursor:pointer;transition:transform .15s,opacity .2s}
 .dm-env svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.dm-env:disabled{opacity:.35;cursor:default}.dm-env:not(:disabled):active{transform:scale(.92)}
 .dm-stop{flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;color:var(--mute);font-size:14px}
 .dm-stop button{flex:none;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:#EFE7D9;color:var(--ink);font:600 13.5px Jost,sans-serif;cursor:pointer}
@@ -101,7 +101,7 @@
 .dm-dif{display:flex;flex-direction:column;gap:12px;padding:16px}
 .dm-dif textarea{min-height:160px;padding:14px 16px;border:1px solid rgba(23,21,18,.16);border-radius:18px;background:#FFFFFF;color:var(--ink);font:400 16px/1.45 Jost,sans-serif;resize:vertical}
 .dm-dif textarea:focus{outline:none;border-color:var(--acc)}
-.dm-dif .go{min-height:52px;border:0;border-radius:999px;background:var(--acc);color:#171512;font:700 15.5px Jost,sans-serif;cursor:pointer}.dm-dif .go:disabled{opacity:.5}
+.dm-dif .go{min-height:52px;border:0;border-radius:999px;background:var(--acc);color:#F3EFE4;font:700 15.5px Jost,sans-serif;cursor:pointer}.dm-dif .go:disabled{opacity:.5}
 .dm-dif p{margin:0;color:var(--mute);font-size:13.5px;line-height:1.5}
 .dm-vide{padding:56px 18px;text-align:center;color:var(--mute);line-height:1.55}.dm-vide svg{width:54px;height:54px;margin:0 auto 14px;display:block;fill:none;stroke:#6AAEF0;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .dm-vide b{display:block;margin:0 0 6px;font:500 25px/1.2 'Cormorant Garamond',serif;color:var(--ink)}

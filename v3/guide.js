@@ -165,6 +165,9 @@
     requestAnimationFrame(() => requestAnimationFrame(() => p.classList.add('on')));
     p.querySelector('[data-o]').onclick = () => ouvrir();
     p.querySelector('[data-x]').onclick = vu;
+    // un toucher ailleurs (ouvrir le menu, une fenêtre…) : la pastille s'efface, elle ne reste pas par-dessus
+    const ailleurs = e => { if (p.contains(e.target)) return; removeEventListener('pointerdown', ailleurs, true); if (p.isConnected) { p.classList.remove('on'); setTimeout(() => p.remove(), 400); } try { localStorage.setItem(CLE, '1'); } catch (_) {} };
+    addEventListener('pointerdown', ailleurs, true);
     setTimeout(() => { if (p.isConnected) { p.classList.remove('on'); setTimeout(() => p.remove(), 400); try { localStorage.setItem(CLE, '1'); } catch (_) {} } }, 10000);
   }
   setTimeout(proposer, 3200);

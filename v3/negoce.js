@@ -140,7 +140,7 @@
 .nx-ib:focus-visible,.nx button:focus-visible,.nx input:focus-visible,.nx textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .nx-b{flex:1;overflow:auto;padding:16px 18px 20px;overscroll-behavior:contain}
 .nx-f{padding:12px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#EFE7D9}
-.nx-go{width:100%;min-height:54px;border:0;border-radius:999px;background:var(--acc);color:#171512;font:700 16px Jost,sans-serif;cursor:pointer}.nx-go[disabled]{background:#E9C9B4;color:rgba(23,21,18,.5);cursor:default}
+.nx-go{width:100%;min-height:54px;border:0;border-radius:999px;background:var(--acc);color:#F3EFE4;font:700 16px Jost,sans-serif;cursor:pointer}.nx-go[disabled]{background:#DDE6DE;color:#5C6B61;opacity:1;cursor:default}
 .nx-alt{min-height:48px;padding:0 18px;border:0;border-radius:999px;background:#EFE7D9;color:var(--ink);font:600 15px Jost,sans-serif;cursor:pointer}
 .nx-err{min-height:18px;margin:8px 0 0;color:#10392B;font-size:14px}
 .nx-note{margin:14px 0 0;color:#857A67;font-size:12.5px;line-height:1.5}
@@ -205,7 +205,7 @@
 .nx-act{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}.nx-act .nx-go{grid-column:1 / -1}
 .nx-comp{display:flex;gap:8px;align-items:flex-end}
 .nx-comp textarea{flex:1;min-height:48px;height:48px;margin:0;resize:none}
-.nx-comp .nx-ib{width:48px;height:48px;background:var(--acc);color:#171512}
+.nx-comp .nx-ib{width:48px;height:48px;background:var(--acc);color:#F3EFE4}
 .nx-cp{display:flex;gap:8px;align-items:center;margin:0 0 10px}.nx-cp input{flex:1;min-width:0;height:48px;padding:0 14px;border:1px solid rgba(23,21,18,.16);border-radius:14px;background:#FFFFFF;color:var(--ink);font:500 18px Jost,sans-serif}
 .nx-tag{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:999px;font:600 12px/1.5 Jost,sans-serif;background:rgba(23,21,18,.08);color:var(--mute);white-space:nowrap}
 .nx-tag.ok{background:rgba(106,174,240,.16);color:#2C6CB0}.nx-tag.acc{background:rgba(16,57,43,.2);color:#10392B}.nx-tag.wait{background:rgba(242,201,76,.14);color:#8A6400}.nx-tag.bad{background:rgba(226,115,91,.16);color:#C0442B}
@@ -260,7 +260,10 @@
 .nx-cd .nx-chip[aria-pressed=true]{background:rgba(23,21,18,.08);border-color:rgba(23,21,18,.34);color:var(--ink)}
 .nx-cd .nx-chip[aria-pressed=true]::before{background:var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='m3.5 7.2 2.3 2.3 4.7-4.9' fill='none' stroke='%23171512' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat;box-shadow:none}
 .nx textarea{min-height:64px;border-radius:14px;transition:border-color .2s}
-.nx-send{position:sticky;bottom:0;margin-top:18px;box-shadow:0 -14px 24px 6px #F4EEE3,0 36px 0 30px #F4EEE3}
+/* pied collant de la feuille « Proposer un prix » : fond plein d'un bord à l'autre, léger fondu au-dessus ; rien ne passe dessous */
+.nx-pied{position:sticky;bottom:-20px;z-index:3;margin:18px -18px -20px;padding:12px 18px calc(20px + env(safe-area-inset-bottom,0px));background:#F4EEE3}
+.nx-pied::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:22px;background:linear-gradient(rgba(244,238,227,0),#F4EEE3);pointer-events:none}
+.nx-pied .nx-send{margin-top:0}.nx-pied .nx-err:empty{display:none}
 @media (prefers-reduced-motion:reduce){.nx-px::after{transition:none}}
 @media (prefers-reduced-motion:reduce){.nx-bg,.nx,.nx-new{animation:none}.nx-rail .gap,.nx-rail .pin{transition:none}}`;
   let css = false, bg = null, poll = 0;
@@ -330,7 +333,7 @@
       <label class="nx-lbl" for="nxT" style="margin-top:14px">Conditions (facultatif)</label>
       <div class="nx-chips nx-cd" style="margin-top:4px">${(ctx.pour === 'vendeur' ? ['Paiement à la livraison', 'Je viens chercher', 'Livraison sous 3 jours'] : ['Je peux livrer', 'Disponible maintenant', 'Qualité vérifiable sur place']).map(t => `<button type="button" class="nx-chip" data-t="${esc(t)}">${esc(t)}</button>`).join('')}</div>
       <textarea id="nxT" maxlength="500" placeholder="Livraison, paiement, délai…"></textarea>
-      <button type="button" class="nx-go nx-send" disabled>${esc(label || 'Envoyer ma proposition')}</button><p class="nx-err" role="alert"></p></div>`;
+      <div class="nx-pied"><button type="button" class="nx-go nx-send" disabled>${esc(label || 'Envoyer ma proposition')}</button><p class="nx-err" role="alert"></p></div></div>`;
     const $ = s => box.querySelector(s), ip = $('#nxP'), iq = $('#nxQ'), go = $('.nx-send'), out = $('#nxD');
     const vals = () => ({ p: num(ip.value), q: num(iq.value) || null, t: $('#nxT').value.trim() });
     const upd = () => {

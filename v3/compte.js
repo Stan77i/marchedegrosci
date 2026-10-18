@@ -160,6 +160,9 @@
 .cp-vide{padding:18px 16px;color:var(--mute);font-size:14px;line-height:1.5}
 .cp-vide b{display:block;color:var(--ink);font-weight:600;font-size:15px}
 /* listes : réglages sobres (icône monochrome), comme des pages d'un carnet */
+.cp-statuts{padding:16px;display:flex;flex-direction:column;gap:14px}.cp-statuts .cp-vide{margin:0;padding:0;text-align:left}
+.cp-st-l{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.cp-st-l .st-p{height:26px;padding:0 11px;font-size:13px}
+.cp-st-go{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:rgba(44,108,176,.1);color:#2C6CB0;font:600 14px Jost,system-ui,sans-serif}
 .cp-grp{background:var(--card);border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.04)}
 .cp-grp+.cp-grp,.cp-grp+.cp-sh{margin-top:12px}
 .cp-r{position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:60px;padding:10px 16px;border:0;background:none;color:var(--ink);font:inherit;text-align:left;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color var(--ux-d1,120ms)}
@@ -497,6 +500,14 @@ label.cp-r{cursor:pointer}
       evs.forEach(e => { const j = jour(e.t); if (j !== jPrec) { fil += (jPrec ? '</div>' : '') + `<p class="cp-day">${j}</p><div class="cp-feed">`; jPrec = j; }
         fil += `<button type="button" class="cp-ev${e.neuf ? ' neuf' : ''}" data-ton="${e.ton}" ${e.attrs}><span class="o" aria-hidden="true">${IC(e.ico, 22)}</span><b${e.long ? ' class="long"' : ''}>${e.titre}</b><span class="m">${e.m}</span><small>${e.sous} ${heure(e.t)}</small></button>`; });
       if (fil) fil += '</div>';
+      // vos statuts (v3/statuts.js) : ceux gagnés, et ce qui reste à faire pour les suivants
+      const SG = window.MDGStatut;
+      if (SG && !SG.get(u.id)) addEventListener('mdg:rep', function f() { removeEventListener('mdg:rep', f); if (bg && bg.rafraichir && main.isConnected) bg.rafraichir(); });
+      const stBloc = !SG ? '' : (() => { const gag = SG.liste(u.id), but = SG.progres(u.id), v = idS === 'verifie';
+        return `<div class="cp-sh"><h3>Vos statuts</h3><small>Ils se gagnent, ils ne s’achètent pas</small></div>
+          <div class="cp-grp cp-statuts">${gag.length || v ? `<div class="cp-st-l">${SG.puces(u.id, { max: 9, t: 18 })}</div>` : '<p class="cp-vide">Pas encore de statut. Votre identité vérifiée, vos ventes conclues et vos réponses rapides en font gagner, et les autres membres les voient partout : annonces, carte, messages.</p>'}
+          ${!v && ID && !(idC && idC.exempt) ? '<button type="button" class="cp-st-go" data-idv2>' + (ID.badge ? ID.badge(16) : '') + 'Faire vérifier mon identité</button>' : ''}
+          ${but.map(x => `<div class="st-but"><b>${x.t}</b><small>${x.fait} sur ${x.total} ${x.txt}</small><div class="st-jauge" role="img" aria-label="${x.fait} sur ${x.total}"><i style="width:${Math.min(100, x.fait / x.total * 100)}%"></i></div></div>`).join('')}</div>`; })();
       main.innerHTML = `<div class="cp-pg">
         <section class="cp-hero" aria-label="Mon identité">
           <div class="cp-hero-av">${A() ? A().svg(p.avatar, { size: 114, nom: nom || '?', seed: u.id }) : ''}<button type="button" class="cp-hero-cam" data-av aria-label="Changer mon avatar">${IC('photo', 18)}</button></div>
@@ -516,6 +527,7 @@ label.cp-r{cursor:pointer}
             <button type="button" class="cp-st" data-go="activite" aria-label="${ng.env.length + ng.rec.length} négociation${ng.env.length + ng.rec.length > 1 ? 's' : ''} en cours : voir mon activité"><i class="n"></i><b>${ng.env.length + ng.rec.length}</b><small>en négociation</small></button>
           </div>
           ${repBtn}
+          ${stBloc}
           <div class="cp-sh"><h3>Votre activité</h3><button type="button" data-go="activite">Tout afficher</button></div>
           ${fil || '<div class="cp-feed"><p class="cp-vide"><b>Rien pour l’instant</b>Vos annonces, propositions et accords s’afficheront ici, jour par jour.</p></div>'}
           <div class="cp-sh"><h3>Votre compte</h3><small>${esc(N().fmtTel(u.tel))}</small></div>
@@ -537,6 +549,7 @@ label.cp-r{cursor:pointer}
       if (q('[data-dm]')) q('[data-dm]').onclick = () => { fermer(); M.boite(); };
       q('[data-nego]').onclick = () => { if (G && G.inbox) { fermer(); G.inbox(); } else bg.aller('activite'); };
       q('[data-av]').onclick = () => choisirAvatar(() => ouvrir());
+      if (q('[data-idv2]')) q('[data-idv2]').onclick = () => { fermer(); ID.ouvrir(); };
       if (q('[data-sons]')) q('[data-sons]').onclick = () => { fermer(); S.panneau(); };
       if (q('[data-marche]')) q('[data-marche]').onclick = () => { fermer(); M.ecrireMarche(); };
       main.querySelectorAll('[data-idv]').forEach(b => b.onclick = () => { fermer(); ID.ouvrir(); });

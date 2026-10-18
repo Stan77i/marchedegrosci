@@ -98,6 +98,7 @@
 .cgl-pill{position:relative;display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px 0 9px;border:0;border-radius:15px;background:#FAF4E9;color:#171512;font:700 13px Jost,sans-serif;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.35),0 0 0 1px rgba(23,21,18,.08);cursor:pointer;transform-origin:50% 100%;transition:transform .18s cubic-bezier(.22,1,.36,1),background .18s,color .18s}
 .cgl-pill::after{content:"";position:absolute;left:50%;bottom:-5px;width:10px;height:10px;margin-left:-5px;background:inherit;transform:rotate(45deg);border-radius:0 0 3px 0;box-shadow:2px 2px 3px rgba(0,0,0,.12)}
 .cgl-pill i{flex:none;width:9px;height:9px;border-radius:50%;background:#6CC58C}.cgl-pill i.d{border-radius:2px;background:#F2C94C}
+.cgl-v{flex:none;display:inline-flex;color:#2C6CB0;margin-left:-2px}
 .cgl-pill small{font-weight:500;font-size:11px;color:#655C4D}.cgl-pill b{font-weight:700}
 .cgl-pill.d{background:#FFF6DA}.cgl-pill.approx{box-shadow:0 2px 10px rgba(0,0,0,.35),0 0 0 1.5px rgba(23,21,18,.25)}
 .cgl-pill:hover,.cgl-pill:focus-visible{transform:scale(1.06);z-index:3;outline:none}
@@ -283,11 +284,14 @@
             el.addEventListener('click', e => { e.stopPropagation(); opt.onSelect && opt.onSelect(g.region); map.flyTo({ center: g.xy, zoom: 9, duration: MOTION() ? 1100 : 0, essential: true }); });
           } else {
             const sel = ids.some(id => picked.includes(id)), seul = g.items.length === 1, x = g.items[0];
+            // sceau « identité vérifiée » (v3/statuts.js) : sur la bulle d'un membre vérifié, ou d'un groupe qui en contient un
+            const verif = y => !!(y.uid && window.MDGStatut && MDGStatut.estVerifie(y.uid)), nV = g.items.filter(verif).length;
+            const SCEAU = '<span class="cgl-v" title="Identité vérifiée"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.6l2.6 1.9 3.2-.2 1 3 2.6 1.9-1 3.1 1 3.1-2.6 1.9-1 3-3.2-.2L12 22.4l-2.6-1.9-3.2.2-1-3-2.6-1.9 1-3.1-1-3.1 2.6-1.9 1-3 3.2.2z"/><path d="m8 12.2 2.7 2.7L16.2 9.4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
             el.className = 'cgl-pill' + (seul && x.kind !== 'offre' ? ' d' : '') + (g.approx ? ' approx' : '') + (sel ? ' sel' : '');
-            if (seul) el.innerHTML = '<i class="' + (x.kind === 'offre' ? '' : 'd') + '"></i>' + court(x);
+            if (seul) el.innerHTML = '<i class="' + (x.kind === 'offre' ? '' : 'd') + '"></i>' + court(x) + (nV ? SCEAU : '');
             else { const prix = g.items.filter(y => y.kind === 'offre' && y.price).map(y => y.price), mini = prix.length ? Math.min(...prix) : null;
-              el.innerHTML = (nO ? '<i></i>' : '') + (nD ? '<i class="d"></i>' : '') + '<b>' + g.items.length + '</b>' + (mini ? '<small>dès ' + fmt(mini) + ' F</small>' : '<small>annonces</small>'); }
-            el.setAttribute('aria-label', g.items.map(y => (y.kind === 'offre' ? 'Offre ' : 'Demande ') + y.product + ', ' + fmt(y.qty) + ' ' + y.unit).join(' ; ') + ' — ' + (g.ville || '') + (g.approx ? ' (position approchée : chef-lieu)' : ''));
+              el.innerHTML = (nO ? '<i></i>' : '') + (nD ? '<i class="d"></i>' : '') + '<b>' + g.items.length + '</b>' + (mini ? '<small>dès ' + fmt(mini) + ' F</small>' : '<small>annonces</small>') + (nV ? SCEAU : ''); }
+            el.setAttribute('aria-label', g.items.map(y => (y.kind === 'offre' ? 'Offre ' : 'Demande ') + y.product + ', ' + fmt(y.qty) + ' ' + y.unit).join(' ; ') + ' — ' + (g.ville || '') + (g.approx ? ' (position approchée : chef-lieu)' : '') + (nV ? (seul ? ' — identité vérifiée' : ' — dont ' + nV + ' vérifié' + (nV > 1 ? 's' : '')) : ''));
             el.addEventListener('click', e => { e.stopPropagation(); choisir(ids, g.xy); });
           }
           const m = new ml.Marker({ element: enveloppe(el), anchor: 'bottom', offset: z < Z_VILLE ? [0, -6] : [0, -6] }).setLngLat(g.xy).addTo(map); if (g.items.some(y => picked.includes(y.id))) m.getElement().style.zIndex = 5; markers.push(m);
@@ -374,7 +378,8 @@
         ech.textContent = z < 6.4 ? 'Tout le pays' : z < 7.6 ? ((lat > 8.6 ? 'Nord' : lat < 6.4 ? 'Sud' : 'Centre') + (c.lng < -6.3 ? '-ouest' : c.lng > -4.6 ? '-est' : '') + ' du pays') : best ? (bk < 15 ? 'Autour de ' : 'Près de ') + best[2] : ''; };
 
       let zPrec = null;
-      map.on('zoomend', () => { zPrec = map.getZoom(); dessinerAnnonces(); });   // les bulles se regroupent ou se séparent selon le zoom
+      map.on('zoomend', () => { zPrec = map.getZoom(); dessinerAnnonces(); });
+      const surStatuts = () => { if (alive && pret) dessinerAnnonces(); }; addEventListener('mdg:rep', surStatuts);   // les sceaux arrivent après les annonces   // les bulles se regroupent ou se séparent selon le zoom
       map.on('moveend', echelle);
       map.on('click', () => { if (picked.length) { picked = []; dessinerAnnonces(); calques(); opt.onPick && opt.onPick([]); tracer(null); } });
       map.on('error', e => erreur(e && e.error));   // une tuile en ligne qui échoue ne casse rien : la carte embarquée reste
@@ -401,7 +406,7 @@
         home, localiser,
         voir(lng, lat, z) { map.jumpTo({ center: [lng, lat], zoom: z == null ? 15 : z }); },
         pick(ids) { picked = ids || []; dessinerAnnonces(); calques(); if (!picked.length) tracer(null); },
-        destroy() { bloque.forEach(n => n.removeEventListener('scroll', fige)); alive = false; removeEventListener('online', surReseau); removeEventListener('offline', majEtat); markers.forEach(m => m.remove()); if (moiM) moiM.remove(); if (distM) distM.remove(); try { map.remove(); } catch (_) {} box.remove(); }
+        destroy() { bloque.forEach(n => n.removeEventListener('scroll', fige)); alive = false; removeEventListener('mdg:rep', surStatuts); removeEventListener('online', surReseau); removeEventListener('offline', majEtat); markers.forEach(m => m.remove()); if (moiM) moiM.remove(); if (distM) distM.remove(); try { map.remove(); } catch (_) {} box.remove(); }
       };
     })).catch(() => null);
   }

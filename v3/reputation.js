@@ -165,6 +165,8 @@
       bg.querySelector('[data-dep]').textContent = [pp.membre_depuis ? 'Membre depuis ' + mois(pp.membre_depuis) : '', actif(pp.vu_le)].filter(Boolean).join(' · ');
       const enLigne = (pp.offres_actives || 0) + (pp.demandes_actives || 0);
       haut += `<div class="rp-stats"><div><b>${fq(pp.ventes || 0)}</b><small>vente${pp.ventes > 1 ? 's' : ''} conclue${pp.ventes > 1 ? 's' : ''}</small></div><div><b>${fq(pp.achats || 0)}</b><small>achat${pp.achats > 1 ? 's' : ''}</small></div><div><b>${fq(enLigne)}</b><small>annonce${enLigne > 1 ? 's' : ''} en ligne · ${fq(pp.annonces_total || 0)} en tout</small></div></div>`;
+      // statuts gagnés (v3/statuts.js) : ce que chacun prouve
+      if (window.MDGStatut) haut += `<div class="rp-sec"><h3>Ses statuts</h3><div data-st>${MDGStatut.detail(uid) || '<div class="rp-vide">Chargement…</div>'}</div></div>`;
       if (pp.bio) haut += `<div class="rp-sec"><h3>${pp.role === 'acheteur' ? 'Acheteur' : pp.role === 'vendeur' ? 'Vendeur' : pp.role === 'les_deux' ? 'Vendeur et acheteur' : 'Présentation'}${pp.ville || pp.region_slug ? ' · ' + esc(pp.ville || REGN(pp.region_slug)) : ''}</h3><p class="rp-bio">${esc(pp.bio)}</p></div>`;
       if (pp.activites) haut += `<div class="rp-sec"><h3>Ses activités</h3><div class="rp-tags">${pp.activites.split(/[,;·\n]/).map(x => x.trim()).filter(Boolean).slice(0, 12).map(x => `<span>${esc(x)}</span>`).join('')}</div></div>`;
       if (pp.photos && pp.photos.length) haut += `<div class="rp-sec"><h3>En images</h3><div class="rp-ph">${pp.photos.map(p => `<img src="${esc(photoUrl(p))}" alt="" loading="lazy">`).join('')}</div></div>`;
@@ -177,6 +179,7 @@
       haut += `<div class="rp-sec"><h3>Avis</h3></div>`;
     }
     bg.querySelector('[data-pp]').innerHTML = haut;
+    if (window.MDGStatut && bg.querySelector('[data-st]')) { const majSt = () => { const z = bg.querySelector('[data-st]'); if (!bg.isConnected || !z) return removeEventListener('mdg:rep', majSt); z.innerHTML = MDGStatut.detail(uid) || '<div class="rp-vide">Pas encore de statut : ce membre commence sur le Marché de Gros.</div>'; }; addEventListener('mdg:rep', majSt); }
     bg.querySelector('[data-corps]').innerHTML = (nb ? `<div class="rp-score"><strong>${moy.toFixed(1).replace('.', ',')}</strong><span>${etoiles(moy, nb, 15)}${nb} avis</span><div class="rp-barres">${rep.map((c, i) => `<div><em style="font-style:normal">${5 - i}</em><i><b style="width:${nb ? c / nb * 100 : 0}%"></b></i></div>`).join('')}</div></div>
       <div class="rp-av">${liste.map(a => `<article><header>${avatar(a.auteur, a.avatar, a.auteur, 26)}<b>${esc(a.auteur)}</b>${etoiles(a.note, 1, 11)}<small>${quand(a.quand)}</small></header>${a.texte ? `<p>${esc(a.texte)}</p>` : ''}</article>`).join('')}</div>`
       : `<div class="rp-vide">${moi ? 'Vous n’avez pas encore d’avis. Ils arrivent quand vos partenaires vous notent après une négociation.' : 'Pas encore d’avis. Négociez avec ce membre pour pouvoir le noter.'}</div>`)
@@ -221,7 +224,7 @@
     if (!bg.isConnected) return;
     const box = bg.querySelector('[data-l]');
     if (!l.length) { box.innerHTML = '<div class="rp-vide">Personne n’est encore noté. Après une négociation, notez votre partenaire : il apparaîtra ici.</div>'; return; }
-    box.innerHTML = l.map((x, i) => `<button type="button" data-i="${i}"><em>${i + 1}</em>${avatar(x.user_id, x.avatar, x.affichage, 44)}<span><b>${esc(x.affichage)}</b><small>${etoiles(x.moyenne, x.nombre, 12)} ${String(x.moyenne).replace('.', ',')} · ${x.nombre} avis</small></span><i>${x.annonces ? x.annonces + ' annonce' + (x.annonces > 1 ? 's' : '') : ''}</i></button>`).join('');
+    box.innerHTML = l.map((x, i) => `<button type="button" data-i="${i}"><em>${i + 1}</em>${avatar(x.user_id, x.avatar, x.affichage, 44)}<span><b>${esc(x.affichage)}${window.MDGStatut ? ' ' + MDGStatut.puces(x.user_id, { max: 1, t: 14 }) : ''}</b><small>${etoiles(x.moyenne, x.nombre, 12)} ${String(x.moyenne).replace('.', ',')} · ${x.nombre} avis</small></span><i>${x.annonces ? x.annonces + ' annonce' + (x.annonces > 1 ? 's' : '') : ''}</i></button>`).join('');
     box.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const x = l[+b.dataset.i]; bg.fermer(); profil(x.user_id, { nom: x.affichage, avatar: x.avatar }); });
   }
 

@@ -1,3 +1,30 @@
+# Mise à jour — 18 octobre 2026 (statuts des comptes : vérifié, vendeur de confiance, acheteur sérieux…)
+
+Service worker : `mgci-v78`. Base de données : `supabase/schema-17-statuts.sql`, **déjà appliqué**.
+
+## La philosophie
+Un statut se **gagne par des faits** (pièce d'identité, ventes conclues, avis, réponses, activité). Il ne s'achète pas et ne se déclare pas. Chaque statut dit ce qu'il prouve, et Mon compte dit comment obtenir les suivants.
+
+| Statut | Ce qu'il prouve |
+|---|---|
+| Identité vérifiée (sceau bleu) | L'équipe a comparé la pièce, encore valide, et le selfie |
+| Vendeur de confiance (maïs) | Au moins 3 ventes conclues sur le Marché de Gros, et une note d'au moins 4,2/5 s'il a au moins 3 avis |
+| Acheteur sérieux (vert) | Au moins 3 achats conclus, et une note d'au moins 4/5 s'il a au moins 3 avis |
+| Répond vite (bleu) | Répond en moins de 24 h à 80 % des personnes qui le contactent (au moins 3) |
+| Actif aujourd'hui / cette semaine | A publié ou écrit récemment |
+| Nouveau membre | Inscrit depuis moins de 30 jours (rappel : voir la marchandise avant de payer) |
+
+Un compte banni ou supprimé n'a aucun statut. Le serveur ne donne que des chiffres, jamais de données privées.
+
+## Où on les voit
+- **Annonces** de l'application (accueil, listes, fiche produit) : le sceau et le statut le plus fort à côté du nom.
+- **Carte** : sceau sur la bulle d'un membre vérifié. Pour un groupe : « dont N vérifiés ». La carte du bas (au toucher) montre aussi les statuts.
+- **Profil public** : une section « Ses statuts », avec ce que chacun prouve.
+- **Messages** : le sceau dans la liste, et les statuts en haut de la conversation.
+- **Négociations** : le sceau dans la liste, et le sceau avec le statut en haut de la négociation.
+- **Les mieux notés** : le sceau et le statut.
+- **Mon compte** : « Vos statuts » (ils se gagnent, ils ne s'achètent pas), avec des jauges pour ceux qui restent (« 1 sur 3 ventes conclues ») et un bouton pour faire vérifier son identité.
+- **Site** (ordinateur) : le sceau et le statut sur les listes d'offres et de demandes.
 # Mise à jour — 18 octobre 2026 (l'ancien M disparaît partout ; icône du téléphone)
 
 Service worker : `mgci-v77`.

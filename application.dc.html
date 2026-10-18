@@ -37,6 +37,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/mgci-tokens.css">
 <link rel="stylesheet" href="css/mgci-app.css">
+<link rel="stylesheet" href="css/annee-app.css">
 <link rel="stylesheet" href="v3/ux.css?v=20261017c">
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
@@ -390,24 +391,53 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 </div>
 
 <!-- ═══ L'ANNÉE ═══ -->
-<div data-pg="annee" data-screen-label="L'année du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:var(--encre);color:var(--ivoire);display:flex;flex-direction:column;transform:{{ tf.annee }};visibility:{{ vis.annee }};z-index:{{ zi.annee }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
+<div data-pg="annee" data-screen-label="L'année du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" class="an2" style="position:absolute;inset:0;display:flex;flex-direction:column;transform:{{ tf.annee }};visibility:{{ vis.annee }};z-index:{{ zi.annee }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
 <sc-if value="{{ on.annee }}" hint-placeholder-val="{{ false }}">
-  <div style="flex:none;padding-top:{{ topPad }}"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:var(--ivoire);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span style="flex:1;text-align:center;font-size:var(--t-lead);font-weight:600">L'année du marché</span><span style="width:44px"></span></div></div>
-  <div style="flex:1;overflow-y:auto;padding:0 18px 40px;display:flex;flex-direction:column;gap:16px">
-    <div style="padding:0 10px">{{ yearEl }}</div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <button onClick="{{ mPrev }}" aria-label="Mois précédent" style="width:44px;height:44px;border-radius:22px;border:1px solid rgba(245,240,230,.2);background:transparent;color:var(--ivoire);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button>
-      <div style="flex:1;text-align:center;display:flex;flex-direction:column"><span style="font-family:'Cormorant Garamond',serif;font-size:40px;line-height:1">{{ mName }}</span><span style="font-size:var(--t-xs);letter-spacing:.2em;color:#D6A83E;font-weight:600;margin-top:4px">{{ mKicker }}</span></div>
-      <button onClick="{{ mNext }}" aria-label="Mois suivant" style="width:44px;height:44px;border-radius:22px;border:1px solid rgba(245,240,230,.2);background:transparent;color:var(--ivoire);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="suite"><path d="m9 18 6-6-6-6"></path></svg></button>
+  <div style="flex:none;padding-top:{{ topPad }}"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" class="an2-ib"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span style="flex:1;text-align:center;font-size:var(--t-lead);font-weight:600">L'année du marché</span><span style="width:44px"></span></div></div>
+  <div class="an2-scroll">
+    <div class="an2-hero">
+      <p class="an2-k">CALENDRIER DES RÉCOLTES</p>
+      <h1 class="an2-h">Ce qui se récolte, <em>mois après mois.</em></h1>
+      {{ yearEl }}
+      <div class="an2-leg" aria-hidden="true"><span><i style="background:#6CC58C"></i>Pleine récolte</span><span><i style="background:#B5DEC1"></i>Ça commence</span><span><i style="background:#F2C230"></i>Ça se termine</span></div>
     </div>
-    <sc-for list="{{ mGroups }}" as="g" hint-placeholder-count="1">
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <span style="font-size:var(--t-sm);color:var(--sable);display:flex;align-items:center;gap:8px"><span style="width:10px;height:10px;border-radius:3px;background:{{ g.c }}"></span>{{ g.label }}</span>
-        <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2"><button onClick="{{ it.go }}" style="border:0;background:rgba(245,240,230,.05);border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;color:var(--ivoire);animation:mkFade .35s both"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:var(--t-lead);font-weight:500">{{ it.name }}</span><span style="font-size:var(--t-sm);color:var(--sable)">{{ it.note }}</span></span><span style="font-size:var(--t-sm);color:var(--mute-d);white-space:nowrap">{{ it.src }}</span></button></sc-for>
-      </div>
+    <div class="an2-nav">
+      <button onClick="{{ mPrev }}" aria-label="Mois précédent" class="an2-rd"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+      <div class="an2-mo" aria-live="polite"><span class="an2-mn">{{ mName }}</span><span class="an2-mk">{{ mKicker }}</span></div>
+      <button onClick="{{ mNext }}" aria-label="Mois suivant" class="an2-rd"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+    </div>
+    <div class="an2-strip" role="group" aria-label="Choisir un mois">
+      <sc-for list="{{ anStrip }}" as="b" hint-placeholder-count="12"><button onClick="{{ b.go }}" class="{{ b.cls }}" aria-label="{{ b.aria }}" aria-pressed="{{ b.cur }}"><span class="an2-bar" style="height:{{ b.h }}"><i style="height:{{ b.h2 }}"></i></span><small>{{ b.l }}</small></button></sc-for>
+    </div>
+    <p class="an2-res">{{ anResume }}</p>
+    <sc-for list="{{ mGroups }}" as="g" hint-placeholder-count="2">
+      <section class="an2-g">
+        <div class="an2-gh"><i style="background:{{ g.c }}"></i><div><h2>{{ g.label }}</h2><p>{{ g.sub }}</p></div></div>
+        <div class="an2-list">
+          <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+            <div class="an2-it">
+              <button onClick="{{ it.toggle }}" class="an2-row" aria-expanded="{{ it.exp }}">
+                <img sc-camel-src="{{ it.thumb }}" alt="" style="object-fit:{{ it.fit }};border-radius:{{ it.rad }}">
+                <span class="an2-tx"><b>{{ it.name }}</b><small>{{ it.note }}</small>
+                  <sc-if value="{{ it.hasOD }}" hint-placeholder-val="{{ false }}"><span class="an2-od"><sc-if value="{{ it.hasO }}" hint-placeholder-val="{{ false }}"><em class="o">{{ it.oTxt }}</em></sc-if><sc-if value="{{ it.hasD }}" hint-placeholder-val="{{ false }}"><em class="d">{{ it.dTxt }}</em></sc-if></span></sc-if>
+                </span>
+                <span class="{{ it.tCls }}">{{ it.tTxt }}</span>
+                <svg class="an2-chev" style="transform:{{ it.chev }}" width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+              </button>
+              <sc-if value="{{ it.open }}" hint-placeholder-val="{{ false }}">
+                <div class="an2-det">
+                  <span class="an2-dk">CE PRODUIT DANS L’ANNÉE</span>
+                  <div class="an2-frise" role="img" aria-label="{{ it.fLeg }}"><sc-for list="{{ it.frise }}" as="f" hint-placeholder-count="12"><span class="{{ f.sel }}" title="{{ f.t }}"><span class="an2-fc"><i style="height:{{ f.h }};background:{{ f.c }}"></i></span><small>{{ f.l }}</small></span></sc-for></div>
+                  <p class="an2-fl">{{ it.fLeg }} Source : {{ it.src }}.</p>
+                  <button onClick="{{ it.fiche }}" class="an2-go">Voir la fiche, les prix et les annonces<svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </section>
     </sc-for>
-    <sc-if value="{{ mEmpty }}" hint-placeholder-val="{{ false }}"><span style="font-size:var(--t-base);color:var(--sable);line-height:1.5;text-align:center">Aucune récolte sourcée ce mois-ci dans notre calendrier.</span></sc-if>
-    <span style="font-size:var(--t-sm);color:var(--mute-d);line-height:1.5;text-align:center">Calendrier indicatif : il varie selon les pluies et les régions. Chaque entrée renvoie à une source publique.</span>
+    <p class="an2-src">Calendrier indicatif : il varie selon les pluies et les régions. Chaque culture renvoie à une source publique (FAO GIEWS, FEWS NET, IDESSA, AIP, Conseil café-cacao, Conseil coton-anacarde). Les tendances de prix sont générales, jamais une promesse.</p>
   </div>
 </sc-if>
 </div>
@@ -890,6 +920,30 @@ class Component extends DCLogic {
   leave() { const st = this.state.stack; if (st.length < 2) return; clearTimeout(this.lvT); this.setState({ leaving: st[st.length - 1] }); this.lvT = setTimeout(() => this.setState({ leaving: null }), 480); }
   back() { const now = Date.now(); if (now - (this._bk || 0) < 500) return; this._bk = now; if (this.hist > 0) { history.back(); return; } this.leave(); this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack }), () => { try { history.replaceState(null, '', this.hashOf(this.state.stack[this.state.stack.length - 1])); } catch (_) {} }); }
   openFiche(slug) { this.push('fiche', { slug }); }
+  // « L'année du marché » : cadran annuel (un anneau par culture sourcée, un secteur par mois ; css/annee-app.css)
+  anDial(month, now, anim) {
+    const A = window.MDGApp, rows = A.CAL, cx = 170, cy = 170, r0 = 68, step = 7.8, W = 5.8, rOut = r0 + (rows.length - 1) * step;
+    const COL = { plein: '#6CC58C', debut: '#B5DEC1', fin: '#F2C230' };
+    const am = m => (m - 1) / 12 * Math.PI * 2 - Math.PI / 2, pt = (r, a) => [(cx + r * Math.cos(a)).toFixed(1), (cy + r * Math.sin(a)).toFixed(1)];
+    const arc = (r, a0, a1) => { const [x0, y0] = pt(r, a0), [x1, y1] = pt(r, a1); return `M${x0} ${y0}A${r} ${r} 0 0 1 ${x1} ${y1}`; };
+    const secteur = (ri, ro, a0, a1) => { const [a, b] = pt(ro, a0), [c, d] = pt(ro, a1), [e, f] = pt(ri, a1), [g, h] = pt(ri, a0); return `M${a} ${b}A${ro} ${ro} 0 0 1 ${c} ${d}L${e} ${f}A${ri} ${ri} 0 0 0 ${g} ${h}Z`; };
+    const n = rows.filter(e => e[2][month]).length;
+    let s = `<svg class="an2-svg" viewBox="-14 -14 368 368" role="img" aria-label="Calendrier des récoltes, ${A.MOIS[month - 1]} sélectionné">`;
+    s += `<circle cx="${cx}" cy="${cy}" r="${rOut + 12}" fill="rgba(243,239,228,.03)"/>`;
+    s += `<path d="${secteur(r0 - 9, rOut + 9, am(month) + .004, am(month + 1) - .004)}" fill="rgba(242,194,48,.13)" stroke="rgba(242,194,48,.55)" stroke-width="1"/>`;
+    rows.forEach((e, i) => { const r = r0 + i * step;
+      s += `<circle cx="${cx}" cy="${cy}" r="${r}" stroke="rgba(243,239,228,.07)" stroke-width="${W}" fill="none"/>`;
+      Object.entries(e[2]).forEach(([m, lv]) => { m = +m; const on = m === month;
+        s += `<path d="${arc(r, am(m) + .035, am(m + 1) - .035)}" stroke="${COL[lv]}" stroke-opacity="${on ? 1 : .42}" stroke-width="${W}" stroke-linecap="round" fill="none"${anim ? ` style="stroke-dasharray:60;stroke-dashoffset:60;animation:mkArc .9s ${(i * .04 + m * .02).toFixed(2)}s cubic-bezier(.22,1,.36,1) forwards"` : ''}/>`; }); });
+    const LAB = ['JANV', 'FÉVR', 'MARS', 'AVR', 'MAI', 'JUIN', 'JUIL', 'AOÛT', 'SEPT', 'OCT', 'NOV', 'DÉC'];
+    LAB.forEach((t, i) => { const m = i + 1, a = am(m) + Math.PI / 12, [x, y] = pt(rOut + 25, a), sel = m === month, auj = m === now;
+      s += `<text x="${x}" y="${(+y + 4).toFixed(1)}" text-anchor="middle" class="an2-mois${sel ? ' sel' : ''}${auj ? ' auj' : ''}" data-m="${m}">${t}</text>`;
+    });
+    for (let m = 1; m <= 12; m++) s += `<path d="${secteur(r0 - 12, rOut + 34, am(m), am(m + 1))}" fill="transparent" data-m="${m}" class="an2-zone"><title>${A.MOIS[m - 1]}</title></path>`;
+    s += `<text x="${cx}" y="${cy - 2}" text-anchor="middle" class="an2-c1">${A.MOIS[month - 1]}</text>`;
+    s += `<text x="${cx}" y="${cy + 17}" text-anchor="middle" class="an2-c2">${n ? n + ' RÉCOLTE' + (n > 1 ? 'S' : '') + ' EN COURS' : 'HORS RÉCOLTES'}</text></svg>`;
+    return s;
+  }
   openVendeur(vid) { this.push('vendeur', { vid }); }
   openSheet(mode, slug) { this.setState(st => ({ sheet: 'match', mode, menu: false, done: null, mErr: {}, sheetDy: 0, mf: Object.assign(this.blankM(slug || st.mf.slug), { unit: st.mf.unit }) })); }
   isDark() { return this.state.logoDark != null ? this.state.logoDark : ls('mdg-app:logo-noir') === true; }
@@ -1081,8 +1135,36 @@ class Component extends DCLogic {
     const cSheet = { open: cOpen, h: cOpen ? Math.round((framed ? 844 : (S.vh || 800)) * .6) + 'px' : cBotPx + 'px', chev: cOpen ? 'rotate(180deg)' : 'none', l: cOpen ? 'Voir la carte' : nTot + ' à voir', toggle: () => this.setState(s => ({ cOpen: !s.cOpen })) };
 
     /* année */
-    const mE = A.CAL.filter(c => c[2][S.month]);
-    const mGroups = ['plein', 'debut', 'fin'].map(lv => ({ label: A.LV[lv][0], c: A.LV[lv][2], items: mE.filter(e => e[2][S.month] === lv).map(e => ({ name: e[1], note: e[4], src: e[3], go: () => this.openFiche(e[0]) })) })).filter(g => g.items.length);
+    // chaque culture du calendrier est rangée pour le mois choisi : pleine récolte, ça commence, ça se termine, bientôt, hors saison
+    const anM = S.month, mn = k => ((anM - 1 + k) % 12) + 1;
+    const anCOL = { plein: '#6CC58C', debut: '#B5DEC1', fin: '#F2C230' };
+    const GRP = {
+      plein: ['En pleine récolte', 'Beaucoup de marchandise : en général, les prix baissent.', 'bas', '↓ moins cher'],
+      debut: ['Ça commence', 'Les premières quantités arrivent sur les marchés.', 'baisse', '↘ arrive'],
+      fin: ['Ça se termine', 'Les dernières quantités : le produit se raréfie.', 'hausse', '↗ se raréfie'],
+      bientot: ['Arrive bientôt', 'La récolte commence dans un ou deux mois.', 'neutre', ''],
+      hors: ['Hors saison, plus rare', 'Vendu sur les stocks : en général, les prix sont plus hauts. C’est la soudure.', 'haut', '↑ plus cher']
+    };
+    const anRang = e => { const lv = e[2][anM]; if (lv) return lv; for (let k = 1; k <= 2; k++) if (e[2][mn(k)]) return 'bientot'; return 'hors'; };
+    const anRow = (e, i) => { const k = anRang(e), P = this.prod(e[0]), o = O.filter(x => x.slug === e[0]).length, d = D.filter(x => x.slug === e[0]).length, open = S.anOpen === i;
+      let dans = 0; if (k === 'bientot') for (let j = 1; j <= 2 && !dans; j++) if (e[2][mn(j)]) dans = j;
+      return { name: e[1], note: e[4], src: e[3], thumb: P.thumb, fit: P.fit, rad: P.rad, tTxt: k === 'bientot' ? 'dans ' + dans + ' mois' : GRP[k][3], tCls: 'an2-t ' + GRP[k][2],
+        hasO: !!o, oTxt: o + ' offre' + (o > 1 ? 's' : ''), hasD: !!d, dTxt: d + ' demande' + (d > 1 ? 's' : ''), hasOD: !!(o || d),
+        open, exp: open ? 'true' : 'false', chev: open ? 'rotate(180deg)' : 'none', toggle: () => this.setState(s => ({ anOpen: s.anOpen === i ? null : i })),
+        fiche: () => this.openFiche(e[0]),
+        frise: A.MOIS.map((mo, j) => { const lv = e[2][j + 1]; return { l: mo[0], h: lv === 'plein' ? '100%' : lv ? '62%' : '14%', c: lv ? anCOL[lv] : 'rgba(243,239,228,.16)', sel: j + 1 === anM ? 'an2-fb sel' : 'an2-fb', t: mo + ' : ' + (lv ? A.LV[lv][0].toLowerCase() : 'hors récolte') }; }),
+        fLeg: 'Récolte : ' + A.MOIS.filter((_, j) => e[2][j + 1]).map(x => x.toLowerCase()).join(', ') + '.' };
+    };
+    const anAll = A.CAL.map((e, i) => [anRang(e), anRow(e, i)]);
+    const mGroups = ['plein', 'debut', 'fin', 'bientot', 'hors'].map(k => ({ k, label: GRP[k][0], sub: GRP[k][1], c: k === 'bientot' ? 'rgba(243,239,228,.5)' : k === 'hors' ? '#E2735B' : anCOL[k],
+      items: anAll.filter(x => x[0] === k).map(x => x[1]) })).filter(g => g.items.length);
+    const anN = A.CAL.filter(e => e[2][anM]).length;
+    const anMax = Math.max(1, ...A.MOIS.map((_, j) => A.CAL.filter(e => e[2][j + 1]).length));
+    if (top === 'annee' && !this._anVu && !this._anT) this._anT = setTimeout(() => { this._anVu = true; }, 1600);
+    const anLab = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+    const anStrip = A.MOIS.map((mo, j) => { const m = j + 1, L = A.CAL.filter(e => e[2][m]), pl = L.filter(e => e[2][m] === 'plein').length;
+      return { l: anLab[j], h: Math.round(6 + 34 * L.length / anMax) + 'px', h2: Math.round(34 * pl / anMax) + 'px', cls: 'an2-sm' + (m === anM ? ' sel' : '') + (m === cm ? ' auj' : ''),
+        aria: mo + ' : ' + L.length + ' récolte' + (L.length > 1 ? 's' : ''), cur: m === anM ? 'true' : 'false', go: () => this.setState({ month: m, anOpen: null }) }; });
 
     /* publications */
     const mine = [...this.offersAll(), ...D].filter(x => !x.remote).sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0));
@@ -1188,9 +1270,11 @@ class Component extends DCLogic {
           toggle: () => this.setState(s => ({ openFam: s.openFam === c.slug ? null : c.slug })),
           products: op ? ps.map(p => { const o = O.filter(x => x.slug === p.slug).length, d = D.filter(x => x.slug === p.slug).length; return { name: p.name, sea: !!inSeason(p.slug, cm), badge: [o && o + ' offre' + (o > 1 ? 's' : ''), d && d + ' demande' + (d > 1 ? 's' : '')].filter(Boolean).join(' · '), go: () => this.openFiche(p.slug), jai: () => this.openSheet('jai', p.slug), cherche: () => this.openSheet('cherche', p.slug) }; }) : [] }; }),
       prixRows, prixEmpty: !prixRows.length,
-      yearEl: html(A.yearSVG(S.month, cm), { onClick: e => { const t = e.target.closest && e.target.closest('[data-m]'); if (t) this.setState({ month: +t.dataset.m }); } }),
-      mPrev: () => this.setState(s => ({ month: s.month === 1 ? 12 : s.month - 1 })), mNext: () => this.setState(s => ({ month: s.month === 12 ? 1 : s.month + 1 })),
-      mName: A.MOIS[S.month - 1], mKicker: S.month === cm ? 'CE MOIS-CI' : String(S.month).padStart(2, '0') + ' / 12', mGroups, mEmpty: !mGroups.length,
+      yearEl: html(this.anDial(S.month, cm, !this._anVu), { className: 'an2-dial', onClick: e => { const t = e.target.closest && e.target.closest('[data-m]'); if (t) this.setState({ month: +t.dataset.m, anOpen: null }); },
+        onPointerDown: e => { this._anX = e.clientX; }, onPointerUp: e => { const dx = e.clientX - (this._anX == null ? e.clientX : this._anX); this._anX = null; if (Math.abs(dx) > 48) this.setState(s => ({ month: dx < 0 ? (s.month === 12 ? 1 : s.month + 1) : (s.month === 1 ? 12 : s.month - 1), anOpen: null })); } }),
+      mPrev: () => this.setState(s => ({ month: s.month === 1 ? 12 : s.month - 1, anOpen: null })), mNext: () => this.setState(s => ({ month: s.month === 12 ? 1 : s.month + 1, anOpen: null })),
+      mName: A.MOIS[S.month - 1], mKicker: S.month === cm ? 'CE MOIS-CI' : S.month === (cm % 12) + 1 ? 'LE MOIS PROCHAIN' : String(S.month).padStart(2, '0') + ' / 12', mGroups, mEmpty: !mGroups.length,
+      anStrip, anResume: anN ? anN + ' culture' + (anN > 1 ? 's' : '') + ' en récolte en ' + A.MOIS[S.month - 1].toLowerCase() + '. Touchez un produit pour voir son année.' : 'Aucune récolte sourcée ce mois-ci : la plupart des produits viennent des stocks.',
       myPubs, pubsEmpty: !myPubs.length, stockOn: stockSum.length > 0, stockSum,
       fAlerte: (() => { const AL = window.MDGAlertes, a = AL && AL.suit(S.slug); return { l: a ? 'Alertes activées pour ce produit' : 'M\u2019alerter pour ce produit', c: a ? '#F3B48A' : 'inherit', f: a ? 'rgba(243,180,138,.35)' : 'none' }; })(),
       ficheAlerte: () => window.MDGAlertes && window.MDGAlertes.panneau(S.slug, FP.name), vd, info,

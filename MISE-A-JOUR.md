@@ -1,3 +1,18 @@
+# Mise à jour — 18 octobre 2026 (« quand » : une étiquette qui dit l'urgence)
+
+Service worker : `mgci-v69`.
+
+## Ce qui change
+- **« Il le faut dès que possible », « Disponible maintenant », « … cette semaine »** ne sont plus perdus au bout de la ligne grise : ils deviennent une étiquette à part, jamais coupée en deux, dont la couleur et le signe disent l'urgence :
+  - **Il le faut dès que possible** : terre cuite, avec un point qui bat ;
+  - **Il le faut cette semaine / Disponible cette semaine** : ocre, avec un sablier ;
+  - **Il le faut ce mois-ci / Disponible ce mois-ci / Disponible dès le 27 oct.** : sobre, avec un calendrier ;
+  - **Disponible maintenant** : vert, avec un point allumé.
+- Partout dans l'application : Mes publications, cartes d'annonce (Acheter, fiche produit), liste du réseau sur la carte (version nuit), offres proposées dans Demander, propositions de la feuille J'ai / Je cherche, fiche vendeur, aperçu de Vendre.
+- Une offre « cette semaine » se lit maintenant « Disponible cette semaine » (avant : « cette semaine » seul).
+- Mouvement réduit demandé par le téléphone : le point ne bat plus.
+- Code : `quand(x)` dans `application.dc.html`, styles `.qd` dans `css/mgci-app.css`.
+
 # Mise à jour — 17 octobre 2026 (carte : attente propre, ouverture plus rapide)
 
 Service worker : `mgci-v68`.

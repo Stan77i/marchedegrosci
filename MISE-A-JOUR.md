@@ -1,3 +1,20 @@
+# Mise à jour — 18 octobre 2026 (74 images de produits, 28 nouveaux produits, famille « Viandes et abats »)
+
+Service worker : `mgci-v82`.
+
+- **Les images que vous avez envoyées** (91 fichiers) sont intégrées. Les doublons (variantes -2, « ancienne », fautes de frappe) sont laissés de côté.
+- **Format** : 74 images de produits, chacune posée sur un carré transparent de 800 × 800, en WebP. 6,4 Mo en tout, au lieu de 332 Mo.
+- La teinte de fond de chaque vignette est calculée sur l'image. Ces photos apparaissent sur la roue de l'accueil, les fiches, les annonces, les catégories et la carte.
+- **46 produits existants** reçoivent leur photo : igname, manioc, attiéké, fonio, riz, maïs, arachides, karité, épices, viande de brousse, noix, huiles…
+- **28 nouveaux produits** :
+  - farine et semoule de maïs, gari, amidon de manioc ;
+  - corossol, goyave, mandarine, pamplemousse, melon, fruit de la passion, pomme de cajou, kplala, gnangnan, feuilles de baobab ;
+  - cannelle, muscade, thym, tomate séchée, pâte de tomate ;
+  - huile de coco, huile de palme raffinée, pois de terre ;
+  - rat de Gambie.
+- **Nouvelle famille « Viandes et abats »** : bœuf, mouton, chèvre, porc, abats. Le catalogue passe à 12 familles et 162 produits.
+- **Outil** : `tools/images/produits.py` refait tout à partir du dossier d'images. La liste des correspondances (fichier → produit) est en haut du fichier.
+
 # Mise à jour — 18 octobre 2026 (boutons aux couleurs du logo, guide « Comment ça marche », signaler avec preuves)
 
 Service worker : `mgci-v81`. Base de données : `supabase/schema-18-signalements-preuves.sql`, **déjà appliqué**.

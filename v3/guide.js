@@ -40,7 +40,7 @@
     { id: 'negoce', ico: 'negoce', ton: 'marche', t: 'Proposer un prix', sert: 'Négocier calmement, par écrit, jusqu’à un accord.',
       etapes: ['Sur une annonce, touchez « Proposer un prix ». Écrivez votre prix et la quantité.', 'L’autre personne a 48 heures pour accepter, refuser ou proposer un autre prix.', 'Quand vous êtes d’accord, l’accord est conclu : le prix et la quantité ne bougent plus.', 'Ensuite, entendez-vous sur la livraison et le paiement.'],
       conseil: 'Un accord conclu n’est pas un paiement : voyez toujours la marchandise avant de payer.', aller: FEN('MDGNegoce', 'inbox') },
-    { id: 'categories', ico: 'categories', ton: 'marche', t: 'Les familles de produits', sert: 'Tous les produits vivriers, rangés en 11 familles.',
+    { id: 'categories', ico: 'categories', ton: 'marche', t: 'Les familles de produits', sert: 'Tous les produits vivriers, rangés en 12 familles.',
       etapes: ['Touchez « Catégories » dans le menu.', 'Touchez une famille, par exemple « Tubercules et féculents ».', 'Touchez un produit pour ouvrir sa fiche.'],
       conseil: 'La recherche en haut comprend aussi les noms locaux.', aller: PAGE('categories') },
     { id: 'prix', ico: 'prix', ton: 'offre', t: 'Le prix du marché', sert: 'Savoir combien demandent les vendeurs et combien proposent les acheteurs.',

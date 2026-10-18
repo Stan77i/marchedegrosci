@@ -38,6 +38,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/mgci-tokens.css">
 <link rel="stylesheet" href="css/mgci-app.css">
 <link rel="stylesheet" href="css/annee-app.css">
+<link rel="stylesheet" href="css/categories-app.css?v=20261018a">
 <link rel="stylesheet" href="v3/ux.css?v=20261017c">
 <script src="v2/data.js"></script>
 <script src="app/marche-app.js"></script>
@@ -356,14 +357,55 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <div data-pg="categories" data-screen-label="Catégories" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:var(--papier);color:var(--encre);display:flex;flex-direction:column;transform:{{ tf.categories }};visibility:{{ vis.categories }};z-index:{{ zi.categories }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.categories }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid var(--trait-doux)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" stroke="#171512" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span style="flex:1;text-align:center;font-size:var(--t-lead);font-weight:600">Catégories</span><span style="width:44px"></span></div></div>
-  <div style="flex:1;overflow-y:auto;padding:8px 0 40px">
-    <div style="padding:16px 20px 12px;font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1.05">{{ catTitle }}<br><em style="color:var(--rouille)">tout le vivrier.</em></div>
-    <sc-for list="{{ cats }}" as="c" hint-placeholder-count="11">
-      <div style="border-bottom:1px solid rgba(23,21,18,.08)">
-        <button onClick="{{ c.toggle }}" aria-expanded="{{ c.open }}" style="width:100%;border:0;background:transparent;display:flex;align-items:center;gap:14px;padding:12px 20px;text-align:left;color:var(--encre)"><img sc-camel-src="{{ c.img }}" alt="" style="width:56px;height:56px;border-radius:14px;object-fit:cover;flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:var(--t-lg);font-weight:500">{{ c.name }}</span><span style="font-size:var(--t-md);color:var(--mute)">{{ c.sub }}</span></span><svg width="18" height="18" stroke="#847966" stroke-width="1.8" aria-hidden="true" style="flex:none;transform:{{ c.chev }};transition:transform .2s cubic-bezier(.22,1,.36,1)" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="bas"><path d="m6 9 6 6 6-6"></path></svg></button>
-        <sc-if value="{{ c.open }}" hint-placeholder-val="{{ false }}"><div style="padding:0 20px 14px 90px;display:flex;flex-direction:column;animation:mkFade .3s both"><sc-for list="{{ c.products }}" as="p" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:8px;min-height:48px;border-top:1px solid rgba(23,21,18,.06)"><button onClick="{{ p.go }}" style="flex:1;border:0;background:transparent;padding:0;text-align:left;display:flex;flex-direction:column;gap:1px;color:var(--encre)"><span style="font-size:var(--t-lead)">{{ p.name }}</span><span style="display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:3px"><sc-if value="{{ p.sea }}" hint-placeholder-val="{{ false }}"><span class="en-saison sz-pill"><svg class="sz-pousse" width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 11V6.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M6 7C3.6 7 2.3 5.6 2.2 3.4c2.3 0 3.7 1.3 3.8 3.6zM6.2 6.2c.2-2.2 1.6-3.4 3.7-3.4-.1 2.1-1.5 3.4-3.7 3.4z" fill="currentColor"/></svg>En saison</span></sc-if><span style="font-size:var(--t-sm);color:var(--vert-texte)">{{ p.badge }}</span></span></button><button onClick="{{ p.jai }}" aria-label="J'ai" style="width:44px;height:44px;margin:0 -4px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><span style="width:36px;height:36px;border-radius:18px;border:1px solid rgba(23,21,18,.15);display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border-radius:50%;background:var(--offre)"></span></span></button><button onClick="{{ p.cherche }}" aria-label="Je cherche" style="width:44px;height:44px;margin:0 -4px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><span style="width:36px;height:36px;border-radius:18px;border:1px solid rgba(23,21,18,.15);display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border-radius:2px;background:var(--demande)"></span></span></button></div></sc-for></div></sc-if>
+  <div class="ct">
+    <!-- en-tête : le catalogue, ses chiffres vivants -->
+    <header class="ct-tete">
+      <p class="ct-k">Le catalogue du Marché de Gros</p>
+      <h1 class="ct-h">{{ catTitle }}<br><em>tout le vivrier.</em></h1>
+      <div class="ct-chiffres">
+        <div><b>{{ ctNb.prod }}</b><small>produits</small></div>
+        <div><b>{{ ctNb.saison }}</b><small>en saison · {{ ctNb.mois }}</small></div>
+        <div><b>{{ ctNb.ann }}</b><small><i class="o"></i>{{ ctNb.o }} <i class="d"></i>{{ ctNb.d }} en ligne</small></div>
       </div>
-    </sc-for>
+    </header>
+    <!-- chercher, trier -->
+    <div class="ct-outils">
+      <label class="ct-cherche"><svg width="18" height="18" stroke="currentColor" stroke-width="1.9" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><input value="{{ ctQ }}" onChange="{{ ctOnQ }}" placeholder="Chercher un produit : aloco, gombo…" aria-label="Chercher un produit dans les familles" enterkeyhint="search"><sc-if value="{{ ctHasQ }}" hint-placeholder-val="{{ false }}"><button onClick="{{ ctClearQ }}" aria-label="Effacer la recherche" class="ct-x"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></sc-if></label>
+      <div class="ct-puces" role="group" aria-label="Trier">
+        <sc-for list="{{ ctFiltres }}" as="f" hint-placeholder-count="3"><button onClick="{{ f.go }}" aria-pressed="{{ f.on }}" class="ct-puce">{{ f.t }}<sc-if value="{{ f.hasN }}" hint-placeholder-val="{{ false }}"><em>{{ f.n }}</em></sc-if></button></sc-for>
+      </div>
+    </div>
+
+    <!-- une famille ouverte : ses produits -->
+    <sc-if value="{{ ctFamOn }}" hint-placeholder-val="{{ false }}">
+      <section class="ct-fam" aria-label="{{ ctFam.name }}">
+        <button onClick="{{ ctFam.fermer }}" class="ct-retour"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>Toutes les familles</button>
+        <div class="ct-banniere"><img sc-camel-src="{{ ctFam.img }}" alt=""><div><h2>{{ ctFam.name }}</h2><p>{{ ctFam.sub }}</p></div></div>
+        <sc-if value="{{ ctFam.vide }}" hint-placeholder-val="{{ false }}"><p class="ct-vide">Aucun produit de cette famille ne correspond à ce tri.</p></sc-if>
+        <div class="ct-grille">
+          <sc-for list="{{ ctFam.produits }}" as="p" hint-placeholder-count="6"><button onClick="{{ p.go }}" class="ct-pr" aria-label="{{ p.aria }}"><span class="ct-pr-img" style="background:{{ p.bg }}"><img sc-camel-src="{{ p.thumb }}" alt="" style="object-fit:{{ p.fit }}"><sc-if value="{{ p.sea }}" hint-placeholder-val="{{ false }}"><span class="ct-saison">En saison</span></sc-if></span><b>{{ p.name }}</b><small class="ct-prix">{{ p.prix }}</small><span class="ct-ann"><sc-if value="{{ p.hasO }}" hint-placeholder-val="{{ false }}"><span class="o"><i></i>{{ p.o }}</span></sc-if><sc-if value="{{ p.hasD }}" hint-placeholder-val="{{ false }}"><span class="d"><i></i>{{ p.d }}</span></sc-if></span></button></sc-for>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- une recherche : les produits trouvés, toutes familles -->
+    <sc-if value="{{ ctRechOn }}" hint-placeholder-val="{{ false }}">
+      <section class="ct-fam" aria-label="Résultats">
+        <p class="ct-res">{{ ctRechT }}</p>
+        <div class="ct-grille">
+          <sc-for list="{{ ctRech }}" as="p" hint-placeholder-count="4"><button onClick="{{ p.go }}" class="ct-pr" aria-label="{{ p.aria }}"><span class="ct-pr-img" style="background:{{ p.bg }}"><img sc-camel-src="{{ p.thumb }}" alt="" style="object-fit:{{ p.fit }}"><sc-if value="{{ p.sea }}" hint-placeholder-val="{{ false }}"><span class="ct-saison">En saison</span></sc-if></span><b>{{ p.name }}</b><small class="ct-fam-n">{{ p.fam }}</small><small class="ct-prix">{{ p.prix }}</small><span class="ct-ann"><sc-if value="{{ p.hasO }}" hint-placeholder-val="{{ false }}"><span class="o"><i></i>{{ p.o }}</span></sc-if><sc-if value="{{ p.hasD }}" hint-placeholder-val="{{ false }}"><span class="d"><i></i>{{ p.d }}</span></sc-if></span></button></sc-for>
+        </div>
+      </section>
+    </sc-if>
+
+    <!-- les familles, en grandes tuiles (la plus active en grand) -->
+    <sc-if value="{{ ctGrilleOn }}" hint-placeholder-val="{{ true }}">
+      <div class="ct-tuiles">
+        <sc-for list="{{ cats }}" as="c" hint-placeholder-count="11"><button onClick="{{ c.toggle }}" class="ct-tuile {{ c.cls }}" aria-label="{{ c.aria }}"><img sc-camel-src="{{ c.img }}" alt="" loading="lazy"><span class="ct-voile"></span><span class="ct-t"><b>{{ c.name }}</b><small>{{ c.nb }}</small><span class="ct-pas"><sc-if value="{{ c.hasO }}" hint-placeholder-val="{{ false }}"><span class="o"><i></i>{{ c.o }}</span></sc-if><sc-if value="{{ c.hasD }}" hint-placeholder-val="{{ false }}"><span class="d"><i></i>{{ c.d }}</span></sc-if><sc-if value="{{ c.hasS }}" hint-placeholder-val="{{ false }}"><span class="s">{{ c.s }} en saison</span></sc-if></span></span></button></sc-for>
+      </div>
+      <sc-if value="{{ ctAucune }}" hint-placeholder-val="{{ false }}"><p class="ct-vide">Aucune famille ne correspond à ce tri pour l’instant.</p></sc-if>
+    </sc-if>
+    <p class="ct-pied">Touchez une famille pour voir ses produits, leurs prix et les annonces en cours.</p>
   </div>
 </sc-if>
 </div>
@@ -372,20 +414,52 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <div data-pg="prix" data-screen-label="Prix du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:var(--papier);color:var(--encre);display:flex;flex-direction:column;transform:{{ tf.prix }};visibility:{{ vis.prix }};z-index:{{ zi.prix }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.prix }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid var(--trait-doux)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" stroke="#171512" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span style="flex:1;text-align:center;font-size:var(--t-lead);font-weight:600">Prix du marché</span><span style="width:44px"></span></div></div>
-  <div style="flex:1;overflow-y:auto;padding:22px 18px 40px;display:flex;flex-direction:column;gap:18px">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1.05">Un prix qui se <em style="color:var(--rouille)">mérite.</em></div>
-    <div style="background:var(--nuit-2);color:var(--ivoire);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px">
-      <div style="display:flex;gap:12px;align-items:flex-start"><svg width="22" height="22" stroke="#E07A3F" stroke-width="1.8" style="flex:none;margin-top:2px" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="etiquette"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"></circle></svg><span style="display:flex;flex-direction:column;gap:3px"><b style="font-weight:600;font-size:var(--t-lead)">Prix vendeur</b><span style="font-size:var(--t-md);color:var(--sable);line-height:1.45">Déclaré par un vendeur, toujours lié à son nom, sa ville et sa date.</span></span></div>
-      <div style="display:flex;gap:12px;align-items:flex-start"><svg width="22" height="22" stroke="#6CC58C" stroke-width="1.8" style="flex:none;margin-top:2px" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="barres"><line x1="18" x2="18" y1="20" y2="10"></line><line x1="12" x2="12" y1="20" y2="4"></line><line x1="6" x2="6" y1="20" y2="14"></line></svg><span style="display:flex;flex-direction:column;gap:3px"><b style="font-weight:600;font-size:var(--t-lead)">Prix observé du marché</b><span style="font-size:var(--t-md);color:var(--sable);line-height:1.45">Une fourchette (10e – 90e centile), calculée seulement avec au moins 5 observations, 3 vendeurs, sur 30 jours.</span></span></div>
+  <div class="px-page">
+    <header class="px-hero">
+      <h1>Le juste prix, <em>en direct.</em></h1>
+      <p>Ce que demandent les vendeurs, ce que proposent les acheteurs. Rien d’inventé : chaque prix vient d’une annonce publiée.</p>
+      <div class="px-chiffres">
+        <div><b>{{ px.nP }}</b><small>produits avec un prix</small></div>
+        <div class="o"><b>{{ px.nO }}</b><small>prix vendeurs</small></div>
+        <div class="d"><b>{{ px.nD }}</b><small>budgets acheteurs</small></div>
+      </div>
+    </header>
+    <div class="px-filtres" role="group" aria-label="Filtrer les prix">
+      <sc-for list="{{ px.filtres }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.go }}" aria-pressed="{{ f.on }}">{{ f.t }}<span>{{ f.n }}</span></button></sc-for>
     </div>
-    <span style="font-size:var(--t-xs);letter-spacing:.2em;color:var(--texte-3);font-weight:600">PRODUITS AVEC DES PRIX</span>
-    <sc-for list="{{ prixRows }}" as="r" hint-placeholder-count="0">
-      <button onClick="{{ r.go }}" style="border:0;background:var(--carte);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;text-align:left;color:var(--encre);animation:mkFade .35s both">
-        <span style="display:flex;align-items:center;gap:12px;width:100%"><img sc-camel-src="{{ r.thumb }}" alt="" style="width:44px;height:44px;object-fit:{{ r.fit }};border-radius:{{ r.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-weight:500;font-size:var(--t-lead)">{{ r.name }}</span><span style="font-size:var(--t-sm);color:var(--mute)">{{ r.sub }}</span></span><span style="font-weight:600;font-size:var(--t-base);white-space:nowrap">{{ r.price }}</span></span>
-        <span style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%"><sc-for list="{{ r.meter }}" as="m" hint-placeholder-count="2"><span style="display:flex;flex-direction:column;gap:5px"><span style="height:4px;border-radius:2px;background:var(--lin-2);overflow:hidden;display:block"><span style="display:block;height:100%;width:{{ m.pct }};background:var(--offre-texte)"></span></span><span style="font-size:var(--t-xs);color:var(--texte-3)">{{ m.txt }}</span></span></sc-for></span>
-      </button>
+    <sc-for list="{{ px.rows }}" as="r" hint-placeholder-count="0">
+      <article class="px-c">
+        <button class="px-c-t" onClick="{{ r.go }}" aria-label="{{ r.aria }}">
+          <img sc-camel-src="{{ r.thumb }}" alt="" style="object-fit:{{ r.fit }}">
+          <span class="px-c-n"><b>{{ r.name }}</b><small>{{ r.sub }}</small></span>
+          <sc-if value="{{ r.hasSais }}" hint-placeholder-val="{{ false }}"><span class="px-sais" data-k="{{ r.saisK }}">{{ r.sais }}</span></sc-if>
+        </button>
+        <div class="px-echelle" role="img" aria-label="{{ r.echL }}">
+          <div class="px-rail"><sc-if value="{{ r.hasZone }}" hint-placeholder-val="{{ false }}"><i class="px-zone" style="left:{{ r.zL }};width:{{ r.zW }}"></i></sc-if>
+            <sc-for list="{{ r.pts }}" as="q" hint-placeholder-count="3"><i class="px-pt" data-k="{{ q.k }}" style="left:{{ q.x }}"></i></sc-for></div>
+          <div class="px-bornes"><span>{{ r.min }}</span><span>{{ r.max }}</span></div>
+        </div>
+        <div class="px-deux">
+          <div class="o"><small>Vendeurs</small><b>{{ r.vTxt }}</b><em>{{ r.vN }}</em></div>
+          <div class="d"><small>Acheteurs</small><b>{{ r.aTxt }}</b><em>{{ r.aN }}</em></div>
+        </div>
+        <p class="px-verdict" data-k="{{ r.verK }}"><i></i>{{ r.verdict }}</p>
+        <div class="px-obs">
+          <sc-if value="{{ r.obsOk }}" hint-placeholder-val="{{ false }}"><span><b>Prix observé</b> {{ r.obs }}</span></sc-if>
+          <sc-if value="{{ r.obsNon }}" hint-placeholder-val="{{ true }}"><span class="px-obs-j"><span><b>Prix observé</b> {{ r.obsRest }}</span><span class="px-jauge"><i style="width:{{ r.obsPct }}"></i></span></span></sc-if>
+          <small>{{ r.frais }}</small>
+        </div>
+      </article>
     </sc-for>
-    <sc-if value="{{ prixEmpty }}" hint-placeholder-val="{{ true }}"><div style="border:1px dashed rgba(23,21,18,.22);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;align-items:flex-start"><span style="font-size:var(--t-lead);font-weight:500">Données en cours de constitution</span><span style="font-size:var(--t-base);color:var(--texte-3);line-height:1.5">Aucun prix vendeur publié pour l'instant. Chaque offre avec un prix fait avancer le prix du marché.</span><button onClick="{{ goVendre }}" style="height:44px;padding:0 20px;border-radius:22px;border:0;background:var(--terre);color:var(--encre);font-weight:600;font-size:var(--t-base)">Publier une offre</button></div></sc-if>
+    <sc-if value="{{ px.vide }}" hint-placeholder-val="{{ true }}"><div class="px-vide"><b>{{ px.videT }}</b><span>{{ px.videS }}</span>
+      <div class="px-cta"><button onClick="{{ goVendre }}" class="o">Publier une offre avec un prix</button><button onClick="{{ goDemande }}" class="d">Publier une demande avec un budget</button></div></div></sc-if>
+    <sc-if value="{{ px.hasSais }}" hint-placeholder-val="{{ false }}"><section class="px-saison"><h2>De saison ce mois, sans prix encore</h2><p>Ces produits sont en récolte : c’est le bon moment pour publier un prix.</p>
+      <div><sc-for list="{{ px.sais }}" as="z" hint-placeholder-count="6"><button onClick="{{ z.go }}"><img sc-camel-src="{{ z.thumb }}" alt="" style="object-fit:{{ z.fit }}">{{ z.name }}</button></sc-for></div></section></sc-if>
+    <details class="px-lire"><summary>Comment lire ces prix</summary>
+      <dl><dt class="o">Prix vendeur</dt><dd>Le prix affiché par un vendeur sur son offre, lié à son nom, sa ville et sa date.</dd>
+      <dt class="d">Budget acheteur</dt><dd>Le prix qu’un acheteur est prêt à payer, écrit sur sa demande.</dd>
+      <dt>Prix observé</dt><dd>Une fourchette (du 10e au 90e centile) calculée seulement avec au moins 5 prix vendeurs de 3 vendeurs différents, sur les 30 derniers jours. Avant, on ne l’affiche pas : un prix se mérite.</dd>
+      <dt>Accord possible</dt><dd>Au moins un acheteur propose un budget égal ou supérieur au prix le plus bas d’un vendeur, dans la même unité.</dd></dl></details>
   </div>
 </sc-if>
 </div>
@@ -887,8 +961,8 @@ class Component extends DCLogic {
     const units = {}; list.forEach(o => (units[o.unit] = units[o.unit] || []).push(o));
     const top = Object.entries(units).sort((a, b) => b[1].length - a[1].length)[0], grp = top ? top[1] : [], unit = top ? top[0] : 'kg';
     const vend = new Set(grp.map(o => o.uid || o.name)).size, ok = grp.length >= 5 && vend >= 3;
-    let range = ''; if (ok) { const v = grp.map(o => o.price).sort((a, b) => a - b), q = k => v[Math.min(v.length - 1, Math.floor(k * (v.length - 1)))]; range = window.MDGApp.fmt(q(.1)) + ' – ' + window.MDGApp.fmt(q(.9)) + ' F CFA / ' + unit; }
-    return { obs: grp.length, vend, ok, range, unit };
+    let range = '', q10 = 0, q90 = 0; if (ok) { const v = grp.map(o => o.price).sort((a, b) => a - b), q = k => v[Math.min(v.length - 1, Math.floor(k * (v.length - 1)))]; q10 = q(.1); q90 = q(.9); range = window.MDGApp.fmt(q10) + ' – ' + window.MDGApp.fmt(q90) + ' F CFA / ' + unit; }
+    return { obs: grp.length, vend, ok, range, unit, q10, q90 };
   }
   saveMe(f) { this.me = { name: f.name || this.me.name, phone: this.telCompte() || this.me.phone, region: this.me.region || f.region, city: this.me.city || f.city }; ls('mdg-app:moi', this.me); }
   pubOffer(f) {
@@ -1192,11 +1266,53 @@ class Component extends DCLogic {
     const IN = INFO[S.infoK] || INFO['comment-ca-marche'];
     const info = { title: IN[0], lead: IN[1], steps: IN[2].map((s, i) => ({ ico: ico(s[0], 'lg'), n: 'ÉTAPE ' + (i + 1), t: s[1], x: s[2] })), cta: IN[3], go: () => this.push(IN[4]) };
 
-    /* prix */
-    const withP = [...new Set(O.filter(o => o.price != null).map(o => o.slug))];
-    const prixRows = withP.map(slug => { const P = this.prod(slug), m = this.market(slug, O), lo = O.filter(o => o.slug === slug && o.price).sort((a, b) => a.price - b.price)[0];
-      return { name: P.name, thumb: P.thumb, fit: P.fit, rad: P.rad, sub: m.ok ? 'Prix observé : ' + m.range : 'Prix vendeur · ' + lo.name + ', ' + this.place(lo), price: 'dès ' + A.fmt(lo.price) + ' F/' + lo.unit,
-        meter: [{ pct: Math.min(100, m.obs / 5 * 100) + '%', txt: m.obs + ' / 5 obs.' }, { pct: Math.min(100, m.vend / 3 * 100) + '%', txt: m.vend + ' / 3 vendeurs' }], go: () => this.openFiche(slug) }; });
+    /* prix du marché : prix vendeurs (offres) et budgets acheteurs (demandes), dans l'unité la plus courante du produit, sur 90 jours */
+    const px = (() => {
+      const now = Date.now(), recent = x => !x.at || now - Date.parse(x.at) <= 90 * 864e5, F = S.prixF || 'tout', reg = this.me && this.me.region;
+      const vP = O.filter(o => o.price != null && o.price > 0 && recent(o)), vB = D.filter(d => d.budget != null && d.budget > 0 && recent(d));
+      const slugs = [...new Set(vP.map(o => o.slug).concat(vB.map(d => d.slug)))];
+      const F_ = v => A.fmt(Math.round(v));
+      const med = v => { const t = v.slice().sort((a, b) => a - b), k = Math.floor(t.length / 2); return t.length % 2 ? t[k] : (t[k - 1] + t[k]) / 2; };
+      const etat = slug => { const e = A.CAL.find(x => x[0] === slug && x[2][cm]); return e ? e[2][cm] : null; };
+      const SAIS = { debut: 'début de récolte', plein: 'pleine récolte', fin: 'fin de récolte' };
+      const lignes = slugs.map(slug => {
+        const P = this.prod(slug), os = vP.filter(o => o.slug === slug), ds = vB.filter(d => d.slug === slug);
+        const units = {}; os.concat(ds).forEach(x => { units[x.unit] = (units[x.unit] || 0) + 1; });
+        const unit = Object.keys(units).sort((a, b) => units[b] - units[a])[0] || 'kg';
+        const op = os.filter(o => o.unit === unit).map(o => o.price), dp = ds.filter(d => d.unit === unit).map(d => d.budget);
+        const tout = op.concat(dp), lo = Math.min(...tout), hi = Math.max(...tout), pad = hi === lo ? Math.max(1, lo * .1) : (hi - lo) * .06;
+        const x0 = lo - pad, x1 = hi + pad, X = v => ((v - x0) / (x1 - x0) * 100).toFixed(1) + '%';
+        const m = this.market(slug, O), dern = Math.max(...os.concat(ds).map(x => x.at ? Date.parse(x.at) : 0));
+        let verK = 'neutre', verdict;
+        if (op.length && dp.length) { const minV = Math.min(...op), maxA = Math.max(...dp);
+          if (maxA >= minV) { verK = 'ok'; verdict = 'Accord possible : un acheteur propose ' + F_(maxA) + ' F, un vendeur demande ' + F_(minV) + ' F.'; }
+          else { verK = 'ecart'; verdict = 'Écart de ' + Math.round((minV - maxA) / minV * 100) + ' % entre le prix vendeur le plus bas et le meilleur budget.'; } }
+        else verdict = op.length ? 'Pas encore de budget acheteur pour ' + P.name.toLowerCase() + '.' : 'Aucun vendeur n’affiche encore de prix.';
+        const sk = etat(slug), rng = v => v.length ? (v.length === 1 ? F_(v[0]) + ' F' : F_(Math.min(...v)) + ' – ' + F_(Math.max(...v)) + ' F') : '—';
+        const enReg = !reg || os.concat(ds).some(x => x.region === reg);
+        return { slug, P, op, dp, unit, sk, enReg, n: tout.length, dern, row: {
+          name: P.name, thumb: P.thumb, fit: P.fit, sub: 'par ' + unit + ' · ' + tout.length + ' prix', aria: 'Voir la fiche ' + P.name,
+          hasSais: !!sk, saisK: sk || '', sais: SAIS[sk] || '',
+          pts: op.map(v => ({ k: 'o', x: X(v) })).concat(dp.map(v => ({ k: 'd', x: X(v) }))),
+          hasZone: m.ok, zL: m.ok ? X(m.q10) : '0%', zW: m.ok ? ((m.q90 - m.q10) / (x1 - x0) * 100).toFixed(1) + '%' : '0%',
+          min: lo === hi ? '' : F_(lo) + ' F', max: lo === hi ? '' : F_(hi) + ' F', echL: P.name + ' : prix de ' + F_(lo) + ' à ' + F_(hi) + ' F par ' + unit,
+          vTxt: rng(op), vN: op.length ? (op.length > 1 ? 'médiane ' + F_(med(op)) + ' F · ' : '') + op.length + ' offre' + (op.length > 1 ? 's' : '') : 'aucune offre avec prix',
+          aTxt: rng(dp), aN: dp.length ? (dp.length > 1 ? 'médiane ' + F_(med(dp)) + ' F · ' : '') + dp.length + ' demande' + (dp.length > 1 ? 's' : '') : 'aucun budget',
+          verK, verdict, obsOk: m.ok, obsNon: !m.ok, obs: m.range,
+          obsRest: m.obs >= 5 ? 'encore ' + (3 - m.vend) + ' vendeur' + (3 - m.vend > 1 ? 's' : '') + ' différent' + (3 - m.vend > 1 ? 's' : '') : 'encore ' + (5 - m.obs) + ' prix vendeur' + (5 - m.obs > 1 ? 's' : ''),
+          obsPct: Math.round(Math.min(1, m.obs / 5) * 50 + Math.min(1, m.vend / 3) * 50) + '%',
+          frais: dern ? 'dernier prix ' + A.ago(new Date(dern).toISOString()).toLowerCase() : '', go: () => this.openFiche(slug) } };
+      }).sort((a, b) => b.n - a.n || b.dern - a.dern);
+      const garde = { tout: () => true, vendeurs: l => l.op.length, acheteurs: l => l.dp.length, saison: l => !!l.sk, region: l => l.enReg };
+      const vis = lignes.filter(garde[F] || garde.tout);
+      const filtres = [['tout', 'Tout'], ['vendeurs', 'Prix vendeurs'], ['acheteurs', 'Budgets'], ['saison', 'De saison']].concat(reg ? [['region', 'Ma région']] : [])
+        .map(([k, t]) => ({ t, n: lignes.filter(garde[k]).length, on: F === k ? 'true' : 'false', go: () => this.setState({ prixF: k }) }));
+      const avecPrix = new Set(slugs), sais = M.products.filter(p => !avecPrix.has(p.slug) && inSeason(p.slug, cm)).slice(0, 12)
+        .map(p => { const Q = this.prod(p.slug); return { name: Q.name, thumb: Q.thumb, fit: Q.fit, go: () => this.openFiche(p.slug) }; });
+      return { nP: slugs.length, nO: vP.length, nD: vB.length, filtres, rows: vis.map(l => l.row), vide: !vis.length,
+        videT: lignes.length ? 'Aucun produit pour ce filtre' : 'Pas encore de prix publié', videS: lignes.length ? 'Essayez « Tout » pour voir tous les produits qui ont un prix.' : 'Le prix du marché se construit avec vos annonces : chaque offre avec un prix et chaque demande avec un budget le font avancer, pour tout le monde.',
+        hasSais: sais.length > 0, sais };
+    })();
 
     /* sélecteur de produit */
     const pq = A.norm(S.pq), pl = M.products.filter(p => !pq || A.norm(p.name).includes(pq) || (p.aliases || []).some(a => A.norm(a).includes(pq)));
@@ -1267,11 +1383,39 @@ class Component extends DCLogic {
       cPick: () => this.openPick('carte'), cLocate: () => { if (this.glOn && this.map && this.map.localiser) this.map.localiser(); else this.locate(); }, mapRef: this.mapRef, cDist, cLeg, cSheet, cZones, cAdmin: isAdm, cZoneAdd: () => this.zoneForm(), cProdL: S.cprod ? this.prod(S.cprod).name : 'Tous les produits', cMe: S.cme, onMe: e => { const v = e.target.value; this.setState({ cme: v, csel: '' }); if (v) { this.me.region = v; ls('mdg-app:moi', this.me); } },
       cPickOn: cPicked.length > 0, cPicked, cPickN: cPicked.length > 1 ? cPicked.length + ' annonces ici' : 'Annonce', cPickBas: (this.cIns ? this.cIns.b : 80) + 10 + 'px', cPickFermer: () => { this.setState({ cPick: null }); this.map && this.map.pick && this.map.pick([]); },
       cListT, cList, cEmpty: !cList.length && !cZones.length, cEmptyTxt: 'Le réseau se dessine à chaque publication. Aucune offre ni demande ' + (S.csel ? 'ici' : (S.cprod ? 'pour ce produit' : '')) + ' pour l\u2019instant.',
-      catTitle: this.cats.length + ' familles,', cats: this.cats.map(c => { const ps = M.products.filter(p => p.categorySlug === c.slug), op = S.openFam === c.slug, actv = ps.filter(p => O.some(o => o.slug === p.slug) || D.some(d => d.slug === p.slug)).length, seas = ps.filter(p => inSeason(p.slug, cm)).length;
-        return { name: c.name, img: A.IMG + 'famille-' + c.slug + '.webp', sub: ps.length + ' produits' + (actv ? ' · ' + actv + ' actifs' : '') + (seas ? ' · ' + seas + ' en saison' : ''), open: op, chev: op ? 'rotate(180deg)' : 'none',
-          toggle: () => this.setState(s => ({ openFam: s.openFam === c.slug ? null : c.slug })),
-          products: op ? ps.map(p => { const o = O.filter(x => x.slug === p.slug).length, d = D.filter(x => x.slug === p.slug).length; return { name: p.name, sea: !!inSeason(p.slug, cm), badge: [o && o + ' offre' + (o > 1 ? 's' : ''), d && d + ' demande' + (d > 1 ? 's' : '')].filter(Boolean).join(' · '), go: () => this.openFiche(p.slug), jai: () => this.openSheet('jai', p.slug), cherche: () => this.openSheet('cherche', p.slug) }; }) : [] }; }),
-      prixRows, prixEmpty: !prixRows.length,
+      // catalogue : chiffres, tri (tout · en saison · avec annonces), recherche, familles en tuiles, famille ouverte en grille (css/categories-app.css)
+      ...(() => {
+        const oN = {}, dN = {}; O.forEach(o => { oN[o.slug] = (oN[o.slug] || 0) + 1; }); D.forEach(d => { dN[d.slug] = (dN[d.slug] || 0) + 1; });
+        const sea = p => !!inSeason(p.slug, cm), ann = p => (oN[p.slug] || 0) + (dN[p.slug] || 0) > 0, f = S.catF || 'tout';
+        const garde = p => f === 'saison' ? sea(p) : f === 'annonces' ? ann(p) : true;
+        const pl = n => n > 1 ? 's' : '';
+        const vign = p => { const P = this.prod(p.slug), o = oN[p.slug] || 0, d = dN[p.slug] || 0, m = this.market(p.slug, O), lo = O.filter(x => x.slug === p.slug && x.price).sort((a, b) => a.price - b.price)[0];
+          const prix = m.ok ? m.range.replace(' F CFA', ' F') : lo ? 'dès ' + A.fmt(lo.price) + ' F/' + lo.unit : (o + d ? 'Prix à discuter' : 'Pas d’annonce');
+          return { name: P.name, thumb: P.thumb, fit: P.fit, bg: P.sack ? 'oklch(0.93 0.035 ' + P.hue + ')' : 'transparent', sea: sea(p), prix, fam: P.catName, o, d, hasO: o > 0, hasD: d > 0,
+            aria: P.name + (o ? ', ' + o + ' offre' + pl(o) : '') + (d ? ', ' + d + ' demande' + pl(d) : '') + (sea(p) ? ', en saison' : ''), go: () => this.openFiche(p.slug) }; };
+        const fams = this.cats.map(c => { const ps = M.products.filter(p => p.categorySlug === c.slug), o = ps.reduce((t, p) => t + (oN[p.slug] || 0), 0), d = ps.reduce((t, p) => t + (dN[p.slug] || 0), 0), s2 = ps.filter(sea).length;
+          return { c, ps, o, d, s: s2, n: ps.filter(garde).length }; });
+        const visibles = fams.filter(x => x.n > 0), star = visibles.slice().sort((a, b) => (b.o + b.d) - (a.o + a.d) || b.s - a.s)[0];
+        const ordre = star ? [star].concat(visibles.filter(x => x !== star)) : [];
+        const q = A.norm(S.catQ || ''), open = !q && S.openFam ? fams.find(x => x.c.slug === S.openFam) : null;
+        const trouve = q ? M.products.filter(p => (A.norm(p.name).includes(q) || (p.aliases || []).some(a => A.norm(a).includes(q))) && garde(p)) : [];
+        const nO = O.length, nD = D.length, nS = M.products.filter(sea).length, nA = M.products.filter(ann).length;
+        return {
+          catTitle: this.cats.length + ' familles,',
+          ctNb: { prod: M.products.length, saison: nS, mois: A.MOIS[cm - 1].toLowerCase(), ann: nO + nD, o: nO, d: nD },
+          ctQ: S.catQ || '', ctHasQ: !!q, ctOnQ: e => this.setState({ catQ: e.target.value }), ctClearQ: () => this.setState({ catQ: '' }),
+          ctFiltres: [['tout', 'Tout', M.products.length], ['saison', 'En saison', nS], ['annonces', 'Avec annonces', nA]].map(([k, t, n]) => ({ t, n, hasN: k !== 'tout', on: f === k ? 'true' : 'false', go: () => this.setState({ catF: k }) })),
+          ctFamOn: !!open, ctFam: open ? { name: open.c.name, img: A.IMG + 'famille-' + open.c.slug + '.webp', sub: open.ps.length + ' produit' + pl(open.ps.length) + (open.s ? ' · ' + open.s + ' en saison' : '') + (open.o + open.d ? ' · ' + (open.o + open.d) + ' annonce' + pl(open.o + open.d) + ' en ligne' : ''),
+            produits: open.ps.filter(garde).sort((a, b) => (ann(b) - ann(a)) || (sea(b) - sea(a))).map(vign), vide: !open.ps.filter(garde).length, fermer: () => this.setState({ openFam: null }) } : { produits: [] },
+          ctRechOn: !!q, ctRech: trouve.slice(0, 40).map(vign), ctRechT: trouve.length ? trouve.length + ' produit' + pl(trouve.length) + ' trouvé' + pl(trouve.length) : 'Aucun produit trouvé. Essayez un autre nom (aloco, attiéké, gombo…).',
+          ctGrilleOn: !q && !open, ctAucune: !ordre.length,
+          cats: ordre.map((x, i) => ({ name: x.c.name, img: A.IMG + 'famille-' + x.c.slug + '.webp', cls: i === 0 ? 'grand' : '',
+            nb: (f === 'tout' ? x.ps.length : x.n + ' sur ' + x.ps.length) + ' produit' + pl(x.ps.length), o: x.o, d: x.d, s: x.s, hasO: x.o > 0, hasD: x.d > 0, hasS: x.s > 0,
+            aria: x.c.name + ', ' + x.ps.length + ' produits' + (x.o ? ', ' + x.o + ' offre' + pl(x.o) : '') + (x.d ? ', ' + x.d + ' demande' + pl(x.d) : '') + (x.s ? ', ' + x.s + ' en saison' : ''),
+            toggle: () => { this.setState({ openFam: x.c.slug }); const sc = document.querySelector('[data-pg="categories"] .ct'); if (sc) sc.scrollTop = 0; } }))
+        };
+      })(),
+      px, goDemande: () => this.push('demande'),
       yearEl: html(this.anDial(S.month, cm, !this._anVu), { className: 'an2-dial', onClick: e => { const t = e.target.closest && e.target.closest('[data-m]'); if (t) this.setState({ month: +t.dataset.m, anOpen: null }); },
         onPointerDown: e => { this._anX = e.clientX; }, onPointerUp: e => { const dx = e.clientX - (this._anX == null ? e.clientX : this._anX); this._anX = null; if (Math.abs(dx) > 48) this.setState(s => ({ month: dx < 0 ? (s.month === 12 ? 1 : s.month + 1) : (s.month === 1 ? 12 : s.month - 1), anOpen: null })); } }),
       mPrev: () => this.setState(s => ({ month: s.month === 1 ? 12 : s.month - 1, anOpen: null })), mNext: () => this.setState(s => ({ month: s.month === 12 ? 1 : s.month + 1, anOpen: null })),

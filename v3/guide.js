@@ -1,0 +1,173 @@
+/* ═════════ Marché de Gros CI — « Comment ça marche » : le guide de l'application, pour tout le monde ═════════
+   Écrit simple : phrases courtes, un geste par étape, des mots de tous les jours, vouvoiement.
+   Un sommaire en tuiles → une fiche par partie de l'application (à quoi ça sert, comment faire, un conseil)
+   → « Montrer dans l'app » ouvre la page concernée (événement « mdg:aller » écouté par l'application).
+   Une seule fois, à la première ouverture, une petite pastille « Comment ça marche ? » s'affiche en haut.
+   API : MDGGuide.ouvrir(id?) · fermer() */
+(function () {
+  'use strict';
+  const IC = (n, t, s) => window.MDGIco ? MDGIco.svg(n, t || 26, s || 1.8) : '';
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  // aller quelque part dans l'application : une page (l'application écoute « mdg:aller ») ou une fenêtre (module chargé)
+  const PAGE = p => () => dispatchEvent(new CustomEvent('mdg:aller', { detail: { page: p } }));
+  const FEN = (mod, fn) => () => { const m = window[mod]; if (m && typeof m[fn] === 'function') m[fn](); };
+
+  /* ——— le contenu ——— (ton : couleur de la tuile ; aller : ce que fait « Montrer dans l'app ») */
+  const GESTES = [
+    { ico: 'chercher', ton: 'marche', t: 'Cherchez un produit', x: 'Touchez la barre en haut et écrivez un nom : tomate, aloco, gombo… Ou faites tourner la roue avec le doigt.' },
+    { ico: 'vendre', ton: 'offre', t: 'Vous vendez ? Touchez « J’ai »', x: 'Le bouton vert, en bas. Vous publiez une offre : les acheteurs vous trouvent.' },
+    { ico: 'acheter', ton: 'demande', t: 'Vous achetez ? Touchez « Je cherche »', x: 'Le bouton jaune, en bas. Vous publiez une demande : les vendeurs viennent à vous.' }
+  ];
+  const FICHES = [
+    { id: 'accueil', ico: 'apercu', ton: 'marche', t: 'L’accueil et la roue', sert: 'L’accueil montre un produit à la fois, avec ses offres et ses demandes du moment.',
+      etapes: ['Glissez le doigt vers la gauche ou la droite pour changer de produit.', 'Touchez le nom de la famille en haut (par exemple « Légumes et fruits ») pour en choisir une autre.', 'Touchez « Voir la fiche » pour tout savoir sur ce produit.'],
+      conseil: 'Le menu (les trois traits en haut à gauche) mène partout dans l’application.' },
+    { id: 'vendre', ico: 'vendre', ton: 'offre', t: 'Vendre : publier une offre', sert: 'Vous avez un produit ? Dites-le, et les acheteurs vous écrivent.',
+      etapes: ['Touchez « J’ai » (le bouton vert), ou « Vendre » dans le menu.', 'Choisissez le produit, ajoutez une photo si vous pouvez, puis la quantité. Touchez « Suivant ».', 'Écrivez votre prix, ou laissez « À discuter ». Dites où se trouve la marchandise.', 'Vérifiez, puis touchez « Publier mon offre ».'],
+      conseil: 'Une photo et un prix clair attirent beaucoup plus d’acheteurs.', aller: PAGE('vendre') },
+    { id: 'demande', ico: 'demander', ton: 'demande', t: 'Acheter : publier une demande', sert: 'Vous cherchez un produit ? Dites ce qu’il vous faut, et les vendeurs viennent à vous.',
+      etapes: ['Touchez « Je cherche » (le bouton jaune), ou « Demander » dans le menu.', 'Dites quoi, combien, où et pour quand.', 'Donnez votre budget si vous le connaissez.', 'Touchez « Publier ma demande ».'],
+      conseil: 'Avec un budget, les vendeurs savent tout de suite s’ils peuvent vous servir.', aller: PAGE('demande') },
+    { id: 'acheter', ico: 'acheter', ton: 'offre', t: 'Trouver une offre', sert: 'Voir tout ce qui est à vendre, et contacter le vendeur.',
+      etapes: ['Touchez « Acheter » dans le menu, ou cherchez un produit en haut de l’accueil.', 'Faites défiler les offres : produit, quantité, prix, lieu et nom du vendeur.', 'Touchez « Écrire » pour lui parler, ou « Proposer un prix » pour négocier.'],
+      conseil: 'Le sceau bleu à côté d’un nom veut dire : identité vérifiée par l’équipe.', aller: PAGE('acheter') },
+    { id: 'reseau', ico: 'reseau', ton: 'lien', t: 'Le réseau : la carte', sert: 'La carte de la Côte d’Ivoire montre où sont les offres et les demandes.',
+      etapes: ['Touchez « Le réseau » dans le menu.', 'Chaque bulle est une ville : verte pour les offres, jaune pour les demandes. Touchez-en une pour voir les annonces.', 'En haut, choisissez un produit ou « Où êtes-vous ? » pour voir ce qui est près de vous.', 'Touchez + ou − en bas pour vous approcher ou vous éloigner.'],
+      conseil: 'La position est toujours celle de la ville, jamais l’adresse exacte d’une personne.', aller: PAGE('carte') },
+    { id: 'messages', ico: 'messages', ton: 'lien', t: 'Écrire à quelqu’un', sert: 'Parler avec un vendeur ou un acheteur, sans donner votre numéro.',
+      etapes: ['Sur une annonce, touchez « Écrire ».', 'Écrivez votre message et envoyez-le.', 'Retrouvez vos conversations dans le menu, à « Messages ».'],
+      conseil: 'Restez dans les messages de l’application : votre numéro reste caché. Les messages s’effacent après 7 jours.', aller: FEN('MDGMessages', 'boite') },
+    { id: 'negoce', ico: 'negoce', ton: 'marche', t: 'Proposer un prix', sert: 'Négocier calmement, par écrit, jusqu’à un accord.',
+      etapes: ['Sur une annonce, touchez « Proposer un prix ». Écrivez votre prix et la quantité.', 'L’autre personne a 48 heures pour accepter, refuser ou proposer un autre prix.', 'Quand vous êtes d’accord, l’accord est conclu : le prix et la quantité ne bougent plus.', 'Ensuite, entendez-vous sur la livraison et le paiement.'],
+      conseil: 'Un accord conclu n’est pas un paiement : voyez toujours la marchandise avant de payer.', aller: FEN('MDGNegoce', 'inbox') },
+    { id: 'categories', ico: 'categories', ton: 'marche', t: 'Les familles de produits', sert: 'Tous les produits vivriers, rangés en 11 familles.',
+      etapes: ['Touchez « Catégories » dans le menu.', 'Touchez une famille, par exemple « Tubercules et féculents ».', 'Touchez un produit pour ouvrir sa fiche.'],
+      conseil: 'La recherche en haut comprend aussi les noms locaux.', aller: PAGE('categories') },
+    { id: 'prix', ico: 'prix', ton: 'offre', t: 'Le prix du marché', sert: 'Savoir combien demandent les vendeurs et combien proposent les acheteurs.',
+      etapes: ['Touchez « Prix du marché » dans le menu.', 'Pour chaque produit : les ronds verts sont les prix des vendeurs, les carrés jaunes les budgets des acheteurs.', 'Lisez la phrase en dessous : « Accord possible » veut dire qu’un acheteur paie au moins le prix d’un vendeur.'],
+      conseil: 'Tous les prix viennent d’annonces publiées : rien n’est inventé.', aller: PAGE('prix') },
+    { id: 'annee', ico: 'annee', ton: 'demande', t: 'L’année du marché', sert: 'Savoir quels produits sont en récolte, mois par mois.',
+      etapes: ['Touchez « L’année du marché » dans le menu.', 'Touchez un mois, ou glissez le doigt sur le cercle.', 'Touchez un produit pour voir ses mois de récolte.'],
+      conseil: 'En pleine récolte, il y a beaucoup de marchandise : les prix baissent souvent.', aller: PAGE('annee') },
+    { id: 'confiance', ico: 'confiance', ton: 'vous', t: 'Notes et statuts', sert: 'Savoir à qui vous avez affaire avant d’acheter ou de vendre.',
+      etapes: ['Touchez le nom d’un membre pour voir son profil, ses notes et ses statuts.', 'Après une négociation, vous pouvez noter l’autre personne.', '« Vendeur de confiance », « Acheteur sérieux », « Répond vite » : ces statuts se gagnent par des ventes et des réponses réelles.'],
+      conseil: 'Un statut ne s’achète pas. « Nouveau membre » veut dire : soyez encore plus prudent.', aller: FEN('MDGRep', 'classement') },
+    { id: 'identite', ico: 'verifie', ton: 'lien', t: 'Faire vérifier son identité', sert: 'Le sceau bleu rassure vos acheteurs et vos vendeurs.',
+      etapes: ['Dans Mon compte, touchez « Identité ».', 'Prenez en photo votre pièce (recto et verso), puis un selfie en tenant le code affiché, écrit sur un papier.', 'Une personne de l’équipe compare et décide, en quelques jours.'],
+      conseil: 'Vos 3 premières annonces sont gratuites ; ensuite, la vérification est demandée. Une pièce expirée est refusée.', aller: FEN('MDGIdentite', 'ouvrir') },
+    { id: 'compte', ico: 'compte', ton: 'vous', t: 'Mon compte', sert: 'Votre profil, vos annonces, vos réglages.',
+      etapes: ['Touchez le petit bonhomme en haut à droite.', 'Retrouvez vos offres, vos demandes, vos négociations et vos statuts.', 'Réglez les notifications, les sons et votre code secret.'],
+      conseil: 'Dans le menu, « Alertes produits » vous prévient quand votre produit arrive.', aller: FEN('MDGCompte', 'ouvrir') },
+    { id: 'securite', ico: 'cadenas', ton: 'aide', t: 'Pour être en sécurité', sert: 'Quelques règles simples protègent contre les arnaques.',
+      etapes: ['Voyez toujours la marchandise avant de payer. Ne payez jamais d’avance.', 'Restez dans les messages de l’application : votre numéro reste caché.', 'Préférez les membres avec le sceau bleu et de bonnes notes.', 'Quelque chose ne va pas ? Touchez « Signaler » sur l’annonce ou sur le profil : l’équipe regarde chaque signalement.'],
+      conseil: 'Si quelqu’un vous presse de payer vite, arrêtez l’échange.' },
+    { id: 'probleme', ico: 'bouee', ton: 'aide', t: 'Si ça ne marche pas', sert: 'Les solutions aux soucis les plus courants.',
+      etapes: ['Pas de réseau : les annonces déjà vues restent affichées. Réessayez quand le réseau revient.', 'L’application semble bloquée : fermez-la complètement, puis rouvrez-la.', 'Toujours un souci : dans le menu, touchez « Écrire au Marché de Gros ». L’équipe vous répond ici.'],
+      conseil: 'Vos annonces publiées restent en ligne, même si votre téléphone s’éteint.', aller: FEN('MDGMessages', 'ecrireMarche') }
+  ];
+  const TON = { marche: ['#10392B', '#F2C230'], offre: ['#DDF0E3', '#23744A'], demande: ['#FBEFC4', '#7A5600'], lien: ['#DDE9F6', '#1F5A96'], vous: ['#EFE3F5', '#6B3C86'], aide: ['#F7E1DA', '#9A3B22'] };
+
+  const CSS = `.gd{position:fixed;inset:0;z-index:9000;background:#F6F1E7;color:#171512;display:flex;flex-direction:column;font:400 17px/1.5 Jost,system-ui,sans-serif;
+  transform:translateY(100%);transition:transform .38s cubic-bezier(.22,1,.36,1);padding-top:env(safe-area-inset-top)}
+.gd.on{transform:none}
+.gd-h{flex:none;display:flex;align-items:center;gap:4px;height:56px;padding:0 6px;border-bottom:1px solid rgba(23,21,18,.08)}
+.gd-h button{width:48px;height:48px;border:0;background:none;border-radius:24px;display:grid;place-items:center;color:#171512}
+.gd-h b{flex:1;text-align:center;font-weight:600;font-size:17px}
+.gd-b{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:20px 18px calc(36px + env(safe-area-inset-bottom))}
+.gd-t{margin:0;font:500 38px/1.02 'Cormorant Garamond',serif}.gd-t em{color:#10392B}
+.gd-lead{margin:10px 0 0;color:#5b5348;font-size:17px}
+.gd-3{margin:20px 0 0;background:#10392B;color:#F3EFE4;border-radius:24px;padding:18px 16px;display:flex;flex-direction:column;gap:14px}
+.gd-3 h2{margin:0;font:600 13px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#F2C230}
+.gd-g{display:flex;gap:12px;align-items:flex-start}
+.gd-g i{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:700 16px Jost,sans-serif;font-style:normal;background:#F2C230;color:#10392B}
+.gd-g b{display:block;font-size:18px;font-weight:600;line-height:1.3}.gd-g span{display:block;color:rgba(243,239,228,.82);font-size:16px;margin-top:2px}
+.gd-sh{margin:28px 0 12px;font:600 13px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7a7064}
+.gd-tu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gd-tu button{min-height:118px;border:0;border-radius:20px;background:#FFFCF6;box-shadow:0 1px 2px rgba(23,21,18,.06),0 6px 16px rgba(23,21,18,.05);padding:14px;text-align:left;color:#171512;display:flex;flex-direction:column;gap:10px;align-items:flex-start;font:inherit}
+.gd-tu button span{width:44px;height:44px;border-radius:14px;display:grid;place-items:center}
+.gd-tu button b{font-size:16.5px;font-weight:600;line-height:1.25}
+.gd-tu .large{grid-column:1/-1;min-height:0;flex-direction:row;align-items:center}
+.gd-f h2{margin:16px 0 0;font:500 34px/1.05 'Cormorant Garamond',serif}
+.gd-f .gd-ico{width:64px;height:64px;border-radius:20px;display:grid;place-items:center}
+.gd-sert{margin:10px 0 0;font-size:18px;color:#3d372f}
+.gd-et{list-style:none;margin:22px 0 0;padding:0;display:flex;flex-direction:column;gap:14px;counter-reset:e}
+.gd-et li{counter-increment:e;display:flex;gap:14px;align-items:flex-start;background:#FFFCF6;border-radius:18px;padding:14px;font-size:17px}
+.gd-et li::before{content:counter(e);flex:none;width:34px;height:34px;border-radius:50%;background:#10392B;color:#F3EFE4;display:grid;place-items:center;font-weight:700;font-size:16px}
+.gd-cs{margin:18px 0 0;display:flex;gap:12px;align-items:flex-start;background:#FBEFC4;border-radius:18px;padding:14px 16px;color:#4d3a00;font-size:16.5px}
+.gd-cs b{display:block;font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px}
+.gd-go{margin:22px 0 0;width:100%;min-height:54px;border:0;border-radius:27px;background:#10392B;color:#F3EFE4;font:600 17px Jost,sans-serif;display:flex;align-items:center;justify-content:center;gap:10px}
+.gd-nav{margin:12px 0 0;display:flex;gap:10px}
+.gd-nav button{flex:1;min-height:48px;border-radius:24px;border:1px solid rgba(23,21,18,.16);background:none;color:#171512;font:500 16px Jost,sans-serif;padding:0 12px}
+.gd-pied{margin:28px 0 0;text-align:center;color:#7a7064;font-size:15px}
+.gd-pastille{position:fixed;left:50%;top:calc(76px + env(safe-area-inset-top));z-index:8500;transform:translate(-50%,-10px);opacity:0;transition:opacity .35s,transform .35s;
+  display:flex;align-items:center;gap:8px;min-height:44px;padding:0 6px 0 16px;border-radius:22px;background:#10392B;color:#F3EFE4;box-shadow:0 10px 26px rgba(0,0,0,.35);font:500 15px Jost,sans-serif;white-space:nowrap}
+.gd-pastille.on{opacity:1;transform:translate(-50%,0)}
+.gd-pastille button{border:0;background:none;color:inherit;font:inherit;min-height:44px;padding:0;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.gd-pastille .x{width:36px;height:36px;border-radius:18px;display:grid;place-items:center;color:rgba(243,239,228,.7)}
+@media (prefers-reduced-motion:reduce){.gd,.gd-pastille{transition:none}}`;
+
+  let el = null, pile = [];
+  function style() { if (document.getElementById('gdCss')) return; const s = document.createElement('style'); s.id = 'gdCss'; s.textContent = CSS; document.head.appendChild(s); }
+  const pastille = ([fond, encre]) => `style="background:${fond};color:${encre}"`;
+
+  function sommaire() {
+    return `<h1 class="gd-t">Comment ça <em>marche</em></h1>
+      <p class="gd-lead">Le Marché de Gros met en relation ceux qui vendent et ceux qui achètent des produits vivriers, partout en Côte d’Ivoire. Voici l’essentiel.</p>
+      <section class="gd-3" aria-label="L’essentiel en 3 gestes"><h2>L’essentiel en 3 gestes</h2>
+        ${GESTES.map((g, i) => `<div class="gd-g"><i>${i + 1}</i><div><b>${esc(g.t)}</b><span>${esc(g.x)}</span></div></div>`).join('')}</section>
+      <h2 class="gd-sh">Partie par partie</h2>
+      <div class="gd-tu">${FICHES.filter(f => !['securite', 'probleme'].includes(f.id)).map((f, i, L) => `<button type="button"${L.length % 2 && i === L.length - 1 ? ' class="large"' : ''} data-f="${f.id}"><span ${pastille(TON[f.ton])}>${IC(f.ico, 24)}</span><b>${esc(f.t)}</b></button>`).join('')}</div>
+      <h2 class="gd-sh">Bon à savoir</h2>
+      <div class="gd-tu">${['securite', 'probleme'].map(id => FICHES.find(f => f.id === id)).map(f => `<button type="button" class="large" data-f="${f.id}"><span ${pastille(TON[f.ton])}>${IC(f.ico, 24)}</span><b>${esc(f.t)}</b></button>`).join('')}</div>
+      <p class="gd-pied">Une question ? Menu → « Écrire au Marché de Gros ».</p>`;
+  }
+  function fiche(f) {
+    const i = FICHES.indexOf(f), av = FICHES[i - 1], ap = FICHES[i + 1];
+    return `<article class="gd-f"><span class="gd-ico" ${pastille(TON[f.ton])}>${IC(f.ico, 32)}</span><h2>${esc(f.t)}</h2><p class="gd-sert">${esc(f.sert)}</p>
+      <ol class="gd-et">${f.etapes.map(e => `<li>${esc(e)}</li>`).join('')}</ol>
+      <p class="gd-cs">${IC('info', 22)}<span><b>Conseil</b>${esc(f.conseil)}</span></p>
+      ${f.aller ? `<button type="button" class="gd-go" data-aller>Montrer dans l’app ${IC('fleche', 20, 2)}</button>` : ''}
+      <div class="gd-nav">${av ? `<button type="button" data-f="${av.id}">‹ ${esc(av.t)}</button>` : ''}${ap ? `<button type="button" data-f="${ap.id}">${esc(ap.t)} ›</button>` : ''}</div></article>`;
+  }
+  function dessiner() {
+    const id = pile[pile.length - 1], f = id && FICHES.find(x => x.id === id), b = el.querySelector('.gd-b');
+    b.innerHTML = f ? fiche(f) : sommaire(); b.scrollTop = 0;
+    el.querySelector('.gd-h b').textContent = f ? 'Comment ça marche' : 'Le guide';
+    b.querySelectorAll('[data-f]').forEach(x => x.onclick = () => { pile.push(x.dataset.f); dessiner(); });
+    const go = b.querySelector('[data-aller]'); if (go) go.onclick = () => { const a = f.aller; fermer(); setTimeout(a, 380); };
+  }
+  function ouvrir(id) {
+    style(); vu();
+    if (!el) {
+      el = document.createElement('div'); el.className = 'gd'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', 'Comment ça marche');
+      el.innerHTML = `<div class="gd-h"><button type="button" data-r aria-label="Retour">${IC('retour', 24, 2)}</button><b>Le guide</b><button type="button" data-x aria-label="Fermer">${IC('fermer', 22, 2)}</button></div><div class="gd-b"></div>`;
+      document.body.appendChild(el);
+      el.querySelector('[data-x]').onclick = fermer;
+      el.querySelector('[data-r]').onclick = () => { if (pile.length) { pile.pop(); dessiner(); } else fermer(); };
+      el.addEventListener('keydown', e => { if (e.key === 'Escape') fermer(); });
+    }
+    pile = id && FICHES.some(f => f.id === id) ? [id] : [];
+    dessiner();
+    requestAnimationFrame(() => requestAnimationFrame(() => { el.classList.add('on'); const x = el.querySelector('[data-x]'); if (x) x.focus({ preventScroll: true }); }));
+  }
+  function fermer() { if (!el) return; el.classList.remove('on'); const e = el; el = null; setTimeout(() => e.remove(), 400); }
+
+  // la pastille de la première ouverture (une seule fois)
+  const CLE = 'mdg-guide:vu';
+  function vu() { try { localStorage.setItem(CLE, '1'); } catch (_) {} const p = document.querySelector('.gd-pastille'); if (p) p.remove(); }
+  function proposer() {
+    try { if (localStorage.getItem(CLE)) return; } catch (_) { return; }
+    if (document.getElementById('mdg-icone')) return;   // la carte « Nouveau logo » passe d'abord
+    style();
+    const p = document.createElement('div'); p.className = 'gd-pastille'; p.setAttribute('role', 'status');
+    p.innerHTML = `<button type="button" data-o>${IC('comment', 18, 2)} Comment ça marche ?</button><button type="button" class="x" data-x aria-label="Fermer">${IC('fermer', 16, 2)}</button>`;
+    document.body.appendChild(p);
+    requestAnimationFrame(() => requestAnimationFrame(() => p.classList.add('on')));
+    p.querySelector('[data-o]').onclick = () => ouvrir();
+    p.querySelector('[data-x]').onclick = vu;
+    setTimeout(() => { if (p.isConnected) { p.classList.remove('on'); setTimeout(() => p.remove(), 400); try { localStorage.setItem(CLE, '1'); } catch (_) {} } }, 10000);
+  }
+  setTimeout(proposer, 3200);
+
+  window.MDGGuide = { ouvrir, fermer, FICHES };
+})();

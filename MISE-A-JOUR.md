@@ -1,4 +1,4 @@
-# Mise à jour — 18 octobre 2026 (« quand » : une étiquette qui dit l'urgence)
+# Mise à jour — 18 octobre 2026 (« quand » : une étiquette qui dit l'urgence ; logo animé à l'ouverture)
 
 Service worker : `mgci-v69`.
 
@@ -12,6 +12,9 @@ Service worker : `mgci-v69`.
 - Une offre « cette semaine » se lit maintenant « Disponible cette semaine » (avant : « cette semaine » seul).
 - Mouvement réduit demandé par le téléphone : le point ne bat plus.
 - Code : `quand(x)` dans `application.dc.html`, styles `.qd` dans `css/mgci-app.css`.
+- **Écran d'ouverture** : le logo MG se dessine (le disque terracotta, ou noir si « Logo noir » est choisi, puis le G, le M et le point), « Marché de Gros » et la devise montent en fondu ; si l'application tarde, un halo respire autour du logo. L'animation dure ~0,85 s ; l'écran reste au moins 0,95 s (avant 0,65 s) pour qu'on la voie en entier.
+- **Chargement de la carte** : l'anneau gris qui tournait est remplacé par le logo MG qui respire, au-dessus de « Préparation de la carte… ».
+- Le logo lui-même ne change pas.
 
 # Mise à jour — 17 octobre 2026 (carte : attente propre, ouverture plus rapide)
 

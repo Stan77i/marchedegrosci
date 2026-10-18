@@ -103,13 +103,13 @@
 @media (max-height: 700px) { .duo2 button { height: 56px; border-radius: 18px; } .duo2 .emo { width: 38px; height: 38px; font-size: 21px; } }
 @media (prefers-reduced-motion: reduce) { .duo2 button { transition: none; } }
 
-/* carte : pendant qu'elle se prépare, un petit anneau qui tourne et une phrase, sur le fond de la carte (la carte apparaît en fondu par-dessus) */
+/* carte : pendant qu'elle se prépare, la marque qui respire (comme l'écran d'ouverture) et une phrase, sur le fond de la carte (la carte apparaît en fondu par-dessus) */
 .carte-hote>*{z-index:1}.carte-hote::before,.carte-hote::after{z-index:0}
 .carte-hote:has(.cgl.on)::before,.carte-hote:has(.cgl.on)::after,.carte-hote:has(canvas)::before,.carte-hote:has(canvas)::after{display:none}
-.carte-hote::before{content:"";position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-36px 0 0 -13px;border-radius:50%;border:2.5px solid rgba(245,240,230,.14);border-top-color:var(--terre-clair);animation:carteTourne .9s linear infinite}
+.carte-hote::before{content:"";position:absolute;left:50%;top:50%;width:34px;height:34px;margin:-44px 0 0 -17px;border-radius:50%;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Ccircle cx='256' cy='256' r='248' fill='%23B85C38'/%3E%3Cg transform='translate(256 256) scale(.86) translate(-256 -256)' fill='none' stroke='%23F5F0E6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M394.6 117.4A196 196 0 1 0 452 256H372' stroke-width='24'/%3E%3Cpath d='M178 338V182L256 292L334 182V338' stroke-width='34'/%3E%3Ccircle cx='394.6' cy='117.4' r='20.4' fill='%23F5F0E6' stroke='none'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat;animation:carteSouffle 1.6s ease-out infinite}
 .carte-hote::after{content:"Préparation de la carte…";position:absolute;left:0;right:0;top:50%;margin-top:4px;text-align:center;color:var(--sable);font:500 var(--t-sm)/1 var(--f-texte);letter-spacing:.02em;animation:carteApparait .4s .3s both}
-@keyframes carteTourne{to{transform:rotate(360deg)}}@keyframes carteApparait{from{opacity:0}}
-@media (prefers-reduced-motion:reduce){.carte-hote::before{animation-duration:2.4s}}
+@keyframes carteSouffle{0%{box-shadow:0 0 0 0 rgba(224,122,63,.55)}75%{box-shadow:0 0 0 12px rgba(224,122,63,0)}100%{box-shadow:0 0 0 0 rgba(224,122,63,0)}}@keyframes carteApparait{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){.carte-hote::before{animation:none}}
 
 /* « quand » : il le faut dès que possible, disponible maintenant, cette semaine…
    Une étiquette à part, jamais coupée, dont la couleur et le signe disent l'urgence :
@@ -132,3 +132,22 @@
 .qd[data-u="vite"].nuit { --qd-bg: rgba(224, 122, 63, .14); --qd-bd: rgba(224, 122, 63, .45); --qd-fg: var(--terre-clair); }
 .qd[data-u="semaine"].nuit { --qd-bg: rgba(242, 201, 76, .12); --qd-bd: rgba(242, 201, 76, .4); --qd-fg: var(--demande); }
 .qd[data-u="dispo"].nuit { --qd-bg: rgba(108, 197, 140, .12); --qd-bd: rgba(108, 197, 140, .4); --qd-fg: var(--offre); }
+
+/* écran d'ouverture : la marque se dessine en ~0,85 s (disque, G, M, point), puis un halo respire tant que l'application se prépare */
+.spl-marque { width: 116px; height: 116px; }
+.spl-disque { transform-box: fill-box; transform-origin: center; animation: splDisque .4s cubic-bezier(.2, .9, .3, 1.15) both; }
+.spl-g { stroke-dasharray: 1160; stroke-dashoffset: 1160; animation: splTrace .5s .1s cubic-bezier(.65, 0, .35, 1) forwards; }
+.spl-m { stroke-dasharray: 590; stroke-dashoffset: 590; animation: splTrace .4s .3s cubic-bezier(.65, 0, .35, 1) forwards; }
+.spl-point { transform-box: fill-box; transform-origin: center; transform: scale(0); animation: splPoint .25s .6s cubic-bezier(.2, .9, .3, 1.5) forwards; }
+.spl-halo { transform-box: fill-box; transform-origin: center; opacity: 0; animation: splHalo 1.8s .9s ease-out infinite; }
+.spl-nom { animation: splMonte .45s .25s cubic-bezier(.22, 1, .36, 1) both; }
+.spl-dev { animation: splMonte .45s .4s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes splDisque { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes splTrace { to { stroke-dashoffset: 0; } }
+@keyframes splPoint { to { transform: scale(1); } }
+@keyframes splHalo { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(1.32); opacity: 0; } }
+@keyframes splMonte { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .spl-disque, .spl-g, .spl-m, .spl-point, .spl-nom, .spl-dev { animation: none; stroke-dashoffset: 0; transform: none; opacity: 1; }
+  .spl-halo { animation: none; opacity: 0; }
+}

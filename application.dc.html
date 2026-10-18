@@ -574,9 +574,9 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 </sc-if>
 
 <div style="position:absolute;inset:0;background:var(--encre);color:var(--ivoire);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;opacity:{{ splashOp }};pointer-events:{{ splashPe }};transition:opacity .6s ease;z-index:30">
-  <div style="display:flex;align-items:center"><span style="width:13px;height:13px;border-radius:50%;background:var(--offre)"></span><span style="width:{{ splashLine }};height:2px;background:var(--compat);transition:width 1s cubic-bezier(.22,1,.36,1)"></span><span style="width:13px;height:13px;border-radius:3px;background:var(--demande)"></span></div>
-  <span style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500">Marché de Gros</span>
-  <span style="font-size:var(--t-2xs);letter-spacing:.26em;color:var(--sable)">LE MARCHÉ EST UNE CONNEXION</span>
+  <div class="spl-marque">{{ splashMark }}</div>
+  <span class="spl-nom" style="font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:500">Marché de Gros</span>
+  <span class="spl-dev" style="font-size:var(--t-2xs);letter-spacing:.26em;color:var(--sable)">LE MARCHÉ EST UNE CONNEXION</span>
 </div>
 
 </div>
@@ -656,7 +656,7 @@ class Component extends DCLogic {
     };
     if (!boot()) this.poll = setInterval(() => { if (boot()) clearInterval(this.poll); }, 60);
     if (this.state.splash === 'on') { const t0 = Date.now(); setTimeout(() => this.setState({ splashLine: true }), 80);
-      const fin = () => { if (this.state.splash !== 'on') return; const r = Math.max(0, 650 - (Date.now() - t0)); setTimeout(() => this.setState({ splash: 'fade' }), r); setTimeout(() => this.setState({ splash: 'off' }), r + 450); };
+      const fin = () => { if (this.state.splash !== 'on') return; const r = Math.max(0, 950 - (Date.now() - t0)); setTimeout(() => this.setState({ splash: 'fade' }), r); setTimeout(() => this.setState({ splash: 'off' }), r + 450); };
       this.finSplash = fin; const chk = setInterval(() => { if (this.state.ready) { clearInterval(chk); fin(); } }, 100); setTimeout(() => { clearInterval(chk); fin(); }, 2200); }
   }
   slide(prevStack) {
@@ -940,12 +940,21 @@ class Component extends DCLogic {
     return s + own.replace('/>', ' style="animation:mkPop .5s both"/>') + '</svg>';
   }
 
+  // écran d'ouverture : la marque se dessine (disque, G, point, M), puis un halo respire tant que l'application se prépare (css/mgci-app.css .spl-*)
+  splashMark() { const h = React.createElement, noir = this.isDark();
+    return h('svg', { width: 116, height: 116, viewBox: '0 0 512 512', role: 'img', 'aria-label': 'Marché de Gros', style: { display: 'block', overflow: 'visible' } },
+      h('circle', { className: 'spl-halo', cx: 256, cy: 256, r: 248, fill: 'none', stroke: noir ? 'rgba(245,240,230,.4)' : '#E07A3F', strokeWidth: 6 }),
+      h('circle', { className: 'spl-disque', cx: 256, cy: 256, r: 248, fill: noir ? '#0B0A08' : '#B85C38', stroke: noir ? 'rgba(245,240,230,.28)' : 'none', strokeWidth: 8 }),
+      h('g', { transform: 'translate(256 256) scale(.86) translate(-256 -256)', fill: 'none', stroke: '#F5F0E6', strokeLinecap: 'round', strokeLinejoin: 'round' },
+        h('path', { className: 'spl-g', d: 'M394.6 117.4A196 196 0 1 0 452 256H372', strokeWidth: 24 }),
+        h('path', { className: 'spl-m', d: 'M178 338V182L256 292L334 182V338', strokeWidth: 34 }),
+        h('circle', { className: 'spl-point', cx: 394.6, cy: 117.4, r: 20.4, fill: '#F5F0E6', stroke: 'none' }))); }
   renderVals() {
     const S = this.state, framed = S.vw >= 500, sc = framed ? Math.min((S.vh - 32) / 866, (S.vw - 32) / 412, 1) : 1; this.sc = sc;
     const kbH = !framed && S.kbH ? S.kbH : 0;
     const base = { shellAlign: framed ? 'center' : 'flex-start', shellPad: framed ? '11px' : '0', shellRad: framed ? '64px' : '0', scale: sc, W: framed ? '390px' : '100vw', H: framed ? '844px' : kbH ? kbH + 'px' : '100dvh', rad: framed ? '53px' : '0', framed,
       topPad: framed ? '50px' : 'max(12px, env(safe-area-inset-top))', botPad: framed ? '34px' : 'max(18px, env(safe-area-inset-bottom))', clock: S.clock,
-      splashOp: S.splash === 'on' || !S.ready ? 1 : 0, splashPe: S.splash === 'off' && S.ready ? 'none' : 'auto', splashLine: S.splashLine ? '56px' : '0px', toast: S.toast, toastOp: S.toastOn ? 1 : 0, toastY: S.toastOn ? '0' : '12px' };
+      splashOp: S.splash === 'on' || !S.ready ? 1 : 0, splashPe: S.splash === 'off' && S.ready ? 'none' : 'auto', splashLine: S.splashLine ? '56px' : '0px', splashMark: S.splash === 'off' && S.ready ? null : this.splashMark(), toast: S.toast, toastOp: S.toastOn ? 1 : 0, toastY: S.toastOn ? '0' : '12px' };
     if (!S.ready) return base;
     const A = window.MDGApp, M = window.MDG, h = React.createElement, html = (x, extra) => h('div', Object.assign({ dangerouslySetInnerHTML: { __html: x } }, extra || {}));
     // icônes : une tuile teintée par le sens (css/mgci-app.css .ui-tile) ; « nom:ton » ou une clé ci-dessous

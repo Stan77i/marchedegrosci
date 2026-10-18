@@ -13,7 +13,7 @@
     alerte: '<path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
     erreur: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'
   };
-  const deviner = t => /impossible|erreur|échou|refus|pas de connexion|sans réseau|introuvable|invalide|incorrect|banni|trop lourd/i.test(t) ? 'erreur'
+  const deviner = t => /impossible|erreur|échou|refus|pas de connexion|sans réseau|introuvable|invalide|incorrect|banni|trop lourd|mémoire pleine|n’a pas pu|n'a pas pu/i.test(t) ? 'erreur'
     : /attention|vérifiez|limite|bientôt|n’est pas encore|n'est pas encore|indiquez|choisissez|complétez/i.test(t) ? 'alerte'
     : /connecté|en ligne|publié|envoyé|enregistr|vérifié|copié|merci|ajouté|créé|signalé|retiré|supprimé|à jour|accept|conclu|c’est fait|c'est fait/i.test(t) ? 'ok' : 'info';
   const CSS = `.mt-pile{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top, 0px) + 10px);z-index:9600;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;padding:0 12px}

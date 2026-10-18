@@ -222,7 +222,7 @@
 .idv-badge.txt{padding:3px 10px 3px 6px;border-radius:999px;background:rgba(106,174,240,.18);font:600 12.5px/1.2 Jost,system-ui,sans-serif;vertical-align:middle}
 .idv-bg{position:fixed;inset:0;z-index:9400;background:rgba(8,7,5,.62);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:idvF .2s both}
 @media (min-width:760px){.idv-bg{align-items:center;padding:24px}}
-.idv{--bg:#F4EEE3;--card:#FFFDF8;--card2:#EFE7D9;--ink:#171512;--mute:#655C4D;--faint:#857A67;--line2:rgba(23,21,18,.14);--acc:#E07A3F;--acc-t:#A0492A;--ok:#2E7D4F;--bad:#C0442B;--blue:#2C6CB0;
+.idv{--bg:#F4EEE3;--card:#FFFDF8;--card2:#EFE7D9;--ink:#171512;--mute:#655C4D;--faint:#857A67;--line2:rgba(23,21,18,.14);--acc:#10392B;--acc-t:#10392B;--ok:#2E7D4F;--bad:#C0442B;--blue:#2C6CB0;
   position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:min(94dvh,860px);background:var(--bg);color:var(--ink);border-radius:28px 28px 0 0;font:400 15px/1.45 Jost,system-ui,sans-serif;overflow:hidden;animation:idvUp .32s cubic-bezier(.22,1,.36,1) both}
 @media (min-width:760px){.idv{border-radius:28px;height:min(90dvh,820px);box-shadow:0 30px 90px rgba(0,0,0,.5)}}
 .idv-top{flex:none;display:grid;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;min-height:60px;padding:10px 8px 4px}
@@ -252,7 +252,7 @@
 .idv-lu{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:rgba(106,174,240,.14);color:#234f80;font-size:13.5px;line-height:1.4}
 .idv-lu.doute{background:rgba(242,201,76,.22);color:#6b4e00}
 .idv-act{display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:6px}
-.idv-go{min-height:54px;border:0;border-radius:27px;background:var(--ink);color:#F5F0E6;font:600 16px Jost,sans-serif;cursor:pointer}
+.idv-go{min-height:54px;border:0;border-radius:27px;background:#10392B;color:#F3EFE4;font:600 16px Jost,sans-serif;cursor:pointer}
 .idv-go[disabled]{opacity:.45;cursor:default}
 .idv-alt{min-height:46px;border:0;border-radius:23px;background:rgba(23,21,18,.07);color:var(--ink);font:500 15px Jost,sans-serif;cursor:pointer}
 .idv-bad{color:var(--bad);font-size:14px}

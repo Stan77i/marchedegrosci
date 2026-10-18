@@ -23,7 +23,8 @@
   const CSS = `mdg-souffle{position:relative;display:block;flex:1;min-width:0;height:100%;overflow:hidden;pointer-events:none}
 .sf-l{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;white-space:nowrap}
 .sf-nom{font:600 20px/1 Jost,system-ui,sans-serif;color:#F3EFE4}
-.sf-nom svg{height:21px;width:auto}
+.sf-nom>span{display:block;max-width:100%;padding:0 4px;box-sizing:border-box}
+.sf-nom svg{display:block;height:auto;max-height:21px;width:170px;max-width:100%;margin:0 auto}
 .sf-mq.sf-in span{animation:none;opacity:1;filter:none}
 .sf-mq.sf-in .mq-m{animation:sfIn .62s cubic-bezier(.22,1,.36,1) both}
 .sf-mq.sf-in .mq-g{animation:sfEcrit .7s .25s cubic-bezier(.65,0,.35,1) both}

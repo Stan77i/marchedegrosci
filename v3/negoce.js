@@ -140,7 +140,7 @@
 .nx-ib:focus-visible,.nx button:focus-visible,.nx input:focus-visible,.nx textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .nx-b{flex:1;overflow:auto;padding:16px 18px 20px;overscroll-behavior:contain}
 .nx-f{padding:12px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#EFE7D9}
-.nx-go{width:100%;min-height:54px;border:0;border-radius:999px;background:var(--acc);color:#171512;font:700 16px Jost,sans-serif;cursor:pointer}.nx-go[disabled]{background:#E9C9B4;color:rgba(23,21,18,.5);cursor:default}
+.nx-go{width:100%;min-height:54px;border:0;border-radius:999px;background:var(--acc);color:#F3EFE4;font:700 16px Jost,sans-serif;cursor:pointer}.nx-go[disabled]{background:#DDE3DA;color:rgba(23,21,18,.45);cursor:default}
 .nx-alt{min-height:48px;padding:0 18px;border:0;border-radius:999px;background:#EFE7D9;color:var(--ink);font:600 15px Jost,sans-serif;cursor:pointer}
 .nx-err{min-height:18px;margin:8px 0 0;color:#10392B;font-size:14px}
 .nx-note{margin:14px 0 0;color:#857A67;font-size:12.5px;line-height:1.5}
@@ -205,7 +205,7 @@
 .nx-act{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}.nx-act .nx-go{grid-column:1 / -1}
 .nx-comp{display:flex;gap:8px;align-items:flex-end}
 .nx-comp textarea{flex:1;min-height:48px;height:48px;margin:0;resize:none}
-.nx-comp .nx-ib{width:48px;height:48px;background:var(--acc);color:#171512}
+.nx-comp .nx-ib{width:48px;height:48px;background:var(--acc);color:#F3EFE4}
 .nx-cp{display:flex;gap:8px;align-items:center;margin:0 0 10px}.nx-cp input{flex:1;min-width:0;height:48px;padding:0 14px;border:1px solid rgba(23,21,18,.16);border-radius:14px;background:#FFFFFF;color:var(--ink);font:500 18px Jost,sans-serif}
 .nx-tag{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:999px;font:600 12px/1.5 Jost,sans-serif;background:rgba(23,21,18,.08);color:var(--mute);white-space:nowrap}
 .nx-tag.ok{background:rgba(106,174,240,.16);color:#2C6CB0}.nx-tag.acc{background:rgba(16,57,43,.2);color:#10392B}.nx-tag.wait{background:rgba(242,201,76,.14);color:#8A6400}.nx-tag.bad{background:rgba(226,115,91,.16);color:#C0442B}

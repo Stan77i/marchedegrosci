@@ -53,7 +53,7 @@
 .rp-ch{display:flex;flex-wrap:wrap;gap:8px}.rp-ch button{min-height:44px;padding:0 15px;border:1px solid rgba(23,21,18,.18);border-radius:999px;background:none;color:#2A251E;font:500 14px Jost,sans-serif;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
 .rp-ch button[aria-pressed=true]{background:#171512;border-color:#171512;color:#F5F0E6}
 .rp textarea{width:100%;min-height:84px;margin-top:14px;padding:12px 14px;border:1px solid rgba(23,21,18,.16);border-radius:16px;background:#FFFFFF;color:#171512;font:400 15px/1.45 Jost,sans-serif;resize:vertical;box-sizing:border-box}
-.rp textarea:focus{outline:none;border-color:#E07A3F;box-shadow:0 0 0 3px rgba(16,57,43,.2)}
+.rp textarea:focus{outline:none;border-color:#10392B;box-shadow:0 0 0 3px rgba(16,57,43,.2)}
 .rp-msg{min-height:20px;margin:8px 2px 0;color:#C0442B;font-size:13.5px}
 .rp-tete{display:flex;align-items:center;gap:16px;margin:0 0 18px;padding-right:44px}.rp-tete img{border-radius:50%;box-shadow:0 0 0 3px rgba(23,21,18,.08)}
 .rp-tete b{display:block;font:500 28px/1.05 'Cormorant Garamond',Georgia,serif}.rp-tete small{display:flex;align-items:center;gap:8px;margin-top:6px;color:#655C4D;font-size:13.5px}

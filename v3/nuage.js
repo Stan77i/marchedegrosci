@@ -187,7 +187,7 @@
   /* ——— mes annonces : envoyer celles qui attendent, retirer celles supprimées sur le téléphone ——— */
   const waiting = () => { const p = J(K.p, {}); return ['offres', 'demandes'].reduce((n, k) => n + local(k).filter(x => x.productSlug && x.regionSlug && !p[k + ':' + x.id]).length, 0); };
   async function sync() {
-    if (!navigator.onLine || busy & 2 || !session()) return false; busy |= 2; let changed = false;
+    if (!navigator.onLine || busy & 2 || !session()) return false; busy |= 2; let changed = false, refus = '';
     basculer(session().user.id);
     try {
       const p = J(K.p, {}), em = J(K.e, {});
@@ -200,7 +200,8 @@
           try { const r = await api('/rest/v1/' + KIND[k] + '?on_conflict=user_id,client_id', { method: 'POST', body: row, auth: true, prefer: 'return=representation,resolution=merge-duplicates' }); if (r && r[0]) { p[key] = r[0].id; em[key] = h; changed = true; W(K.p, p); W(K.e, em);
               // stock à zéro sur le téléphone : l'annonce sort du marché ; stock remis : elle revient (jamais une annonce masquée par l'administration)
               if (k === 'offres') await api('/rest/v1/offres?id=eq.' + r[0].id + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: x.epuise || !(+x.quantity > 0) ? 'retiree' : 'active' }, prefer: 'return=minimal' }).catch(() => {}); } }
-          catch (e) { if (e.code === 'auth') throw e; console.warn('[nuage] envoi refusé', e.message); if (/Limite atteinte/.test(e.message)) toast(e.message); }
+          catch (e) { if (e.code === 'auth') throw e; console.warn('[nuage] envoi refusé', e.message); if (/Limite atteinte/.test(e.message)) toast(e.message);
+            else if (/COMPTE_BANNI/.test(e.message)) refus = 'banni'; else if (/VERIFICATION_REQUISE/.test(e.message) && refus !== 'banni') refus = 'limite'; }
         }
         for (const key of Object.keys(p)) {
           if (!key.startsWith(k + ':') || ids.has(key.slice(k.length + 1))) continue;
@@ -211,7 +212,16 @@
     } catch (e) { if (e.code !== 'auth') console.warn('[nuage] synchronisation interrompue', e.message); }
     finally { busy &= ~2; }
     if (changed) { refresh(); say('mes'); }
+    if (refus) refuse(refus);
     return changed;
+  }
+  // la base refuse une annonce : 3 annonces gratuites déjà publiées sans identité vérifiée, ou compte banni.
+  // On le dit une fois par session (sync repasse souvent) ; l'annonce reste sur le téléphone et repartira après vérification.
+  function refuse(r) {
+    const k = 'mdg-nuage:refus:' + r; try { if (sessionStorage.getItem(k)) return; sessionStorage.setItem(k, '1'); } catch (_) {}
+    const ID = window.MDGIdentite;
+    if (ID && ID.inviter) ID.inviter(r);
+    else toast(r === 'banni' ? 'Ce compte a été banni du Marché de Gros.' : 'Vos 3 annonces gratuites sont publiées : faites vérifier votre identité (Mon compte) pour publier les suivantes.');
   }
   async function report(kind, rid, motif) {
     const cible = kind === 'demandes' || kind === 'demande' ? 'demande' : 'offre';

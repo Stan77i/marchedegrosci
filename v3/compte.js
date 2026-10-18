@@ -111,6 +111,13 @@
 .cp-hero-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:10px}
 .cp-hero-tags span{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:13px;background:rgba(255,255,255,.16);color:#fff;font:600 12.5px/1 Jost,sans-serif}
 .cp-hero-tags span.a{background:#FFE7A8;color:#5B3D00}
+.cp-hero-tags span.idok{background:#fff;color:var(--blue)}
+.cp-idv{display:flex;flex-direction:column;gap:10px;margin:0 0 14px;padding:16px;border-radius:20px;background:var(--warn-bg);box-shadow:inset 0 0 0 1.5px rgba(138,100,0,.28);color:var(--ink)}
+.cp-idv.bleu{background:var(--blue-bg);box-shadow:inset 0 0 0 1.5px rgba(44,108,176,.28)}.cp-idv.ko{background:var(--bad-bg);box-shadow:inset 0 0 0 1.5px rgba(192,68,43,.3)}
+.cp-idv-t{display:flex;gap:12px;align-items:flex-start}.cp-idv-t>span{flex:none;color:var(--warn)}.cp-idv.bleu .cp-idv-t>span{color:var(--blue)}.cp-idv.ko .cp-idv-t>span{color:var(--bad)}
+.cp-idv b{display:block;font:600 16.5px/1.25 Jost,sans-serif}.cp-idv p{margin:4px 0 0;color:var(--mute);font-size:14px;line-height:1.45}
+.cp-idv-j{display:flex;gap:5px}.cp-idv-j i{flex:1;height:6px;border-radius:3px;background:rgba(23,21,18,.12)}.cp-idv-j i.on{background:var(--warn)}
+.cp-idv button{min-height:48px;border:0;border-radius:24px;background:var(--ink);color:#F5F0E6;font:600 15.5px Jost,sans-serif;cursor:pointer}
 .cp-hero-act{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
 .cp-hero-act button{position:relative;display:flex;align-items:center;justify-content:center;gap:9px;min-height:56px;padding:0 12px;border:1px solid rgba(255,255,255,.22);border-radius:18px;background:rgba(255,255,255,.14);color:#fff;font:600 15px Jost,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .cp-hero-act button:active{background:rgba(255,255,255,.22)}
@@ -459,7 +466,23 @@ label.cp-r{cursor:pointer}
       const reg = (REGIONS().find(r => r[0] === p.region_slug) || [])[1], lieuTxt = p.ville || reg || '', adm = J('mdg-nuage:admin', false);
       const mono = n => `<span class="cp-ico" aria-hidden="true">${IC(n, 22)}</span>`;
       const ID = window.MDGIdentite, idC = ID && ID.statutCache(), idS = idC ? idC.statut : 'non_verifie';
-      if (ID && navigator.onLine) ID.statut().then(s => { if (s && s.statut !== idS && bg && bg.rafraichir && main.isConnected) bg.rafraichir(); }).catch(() => {});
+      if (ID && navigator.onLine) ID.statut().then(s => { if (s && JSON.stringify(s) !== JSON.stringify(idC) && bg && bg.rafraichir && main.isConnected) bg.rafraichir(); }).catch(() => {});
+      // la vérification d'identité, bien en vue tant qu'elle n'est pas faite : 3 annonces gratuites, puis elle est demandée pour publier
+      const idBandeau = (() => {
+        if (!ID || !idC || idC.exempt || idS === 'verifie') return '';
+        const T = (cls, ico, t, txt, btn, extra) => `<section class="cp-idv ${cls}" aria-label="Vérification d’identité"><div class="cp-idv-t"><span aria-hidden="true">${ico}</span><div><b>${t}</b><p>${txt}</p></div></div>${extra || ''}${btn ? `<button type="button" data-idv>${btn}</button>` : ''}</section>`;
+        if (idC.banni) return T('ko', IC('fermer', 26), 'Ce compte est banni', 'Il ne peut plus publier, négocier ni écrire sur le Marché de Gros.', 'En savoir plus');
+        if (idS === 'en_attente') return T('bleu', IC('horloge', 26), 'Vérification en cours', 'L’équipe examine votre dossier. Le badge apparaîtra ici dès qu’elle aura validé.', '');
+        if (idS === 'verification_manuelle') return T('', IC('photo', 26), 'Des photos sont à refaire', 'L’équipe n’a pas pu terminer la vérification de votre identité.', 'Renvoyer mes photos');
+        if (idS === 'refuse') return T('ko', IC('fermer', 26), 'Vérification refusée', 'Lisez le motif donné par l’équipe, puis refaites une demande.', 'Voir le motif');
+        const n = idC.gratuites || 3, r = ID.gratuitesRestantes(idC), u = Math.min(n, idC.annonces || 0);
+        const jauge = `<div class="cp-idv-j" role="img" aria-label="${u} annonce${u > 1 ? 's' : ''} gratuite${u > 1 ? 's' : ''} utilisée${u > 1 ? 's' : ''} sur ${n}">${Array.from({ length: n }, (_, i) => `<i${i < u ? ' class="on"' : ''}></i>`).join('')}</div>`;
+        return T('', ID.badge(26), idS === 'brouillon' ? 'Terminez la vérification de votre identité' : 'Faites vérifier votre identité',
+          r === null ? 'Le badge « Identité vérifiée » rassure vos acheteurs et vos vendeurs. C’est gratuit et cela prend quelques minutes.'
+            : r === 0 ? `Vos ${n} annonces gratuites sont utilisées. Pour publier les suivantes, la vérification est obligatoire. C’est gratuit et cela protège tout le monde.`
+            : `Il vous reste ${r} annonce${r > 1 ? 's' : ''} gratuite${r > 1 ? 's' : ''} sur ${n}. Ensuite, la vérification sera obligatoire pour publier. C’est gratuit, et le badge rassure vos acheteurs.`,
+          idS === 'brouillon' ? 'Reprendre ma vérification' : 'Vérifier mon identité', r === null ? '' : jauge);
+      })();
       // l'activité : ce qui s'est vraiment passé, du plus récent au plus ancien, regroupé par jour
       const montant = t => { const m = /(\d[\d  .]*)\s*F(?:\s*\/\s*([\p{L}]+))?/u.exec(t || ''); return m ? `${m[1].trim()} F${m[2] ? `<em>/ ${esc(m[2])}</em>` : ''}` : ''; };
       const evs = notifs().slice(0, 40).map((n, i) => { const nego = /propos|accord|accept|refus|expir|prix/i.test(n.texte), ok = /accord|accept/i.test(n.texte);
@@ -478,13 +501,14 @@ label.cp-r{cursor:pointer}
           <div class="cp-hero-av">${A() ? A().svg(p.avatar, { size: 114, nom: nom || '?', seed: u.id }) : ''}<button type="button" class="cp-hero-cam" data-av aria-label="Changer mon avatar">${IC('photo', 18)}</button></div>
           <h2>${esc(nom ? 'Bonjour, ' + (p.pseudo || p.prenom || nom) : 'Bienvenue')}${idS === 'verifie' ? ' ' + ID.badge(22) : ''}</h2>
           <p>${esc(N().fmtTel(u.tel))}</p>
-          <div class="cp-hero-tags">${p.role ? `<span>${ROLE_TXT[p.role] || ''}</span>` : ''}${lieuTxt ? `<span>${IC('lieu', 13)}${esc(lieuTxt)}</span>` : ''}${!nom ? '<span class="a">Profil à compléter</span>' : ''}</div>
+          <div class="cp-hero-tags">${p.role ? `<span>${ROLE_TXT[p.role] || ''}</span>` : ''}${lieuTxt ? `<span>${IC('lieu', 13)}${esc(lieuTxt)}</span>` : ''}${!nom ? '<span class="a">Profil à compléter</span>' : ''}${ID && idC && !idC.exempt ? (idS === 'verifie' ? `<span class="idok">${ID.badge(14)}Identité vérifiée</span>` : idC.banni ? '<span class="a">Compte banni</span>' : '<span class="a">Identité non vérifiée</span>') : ''}</div>
           <div class="cp-hero-act">
             ${M ? `<button type="button" data-dm>${IC('messages', 20)}Messages${dmN ? `<em aria-label="${dmN} non lus">${dmN}</em>` : ''}</button>` : ''}
             <button type="button" data-nego>${IC('negoce', 20)}Négociations${ng.rec.length ? `<em aria-label="${ng.rec.length} à vous de répondre">${ng.rec.length}</em>` : ''}</button>
           </div>
         </section>
         <div class="cp-body">
+          ${idBandeau}
           <div class="cp-stats">
             <button type="button" class="cp-st" data-go="activite" aria-label="${off.length} offre${off.length > 1 ? 's' : ''} : voir mon activité"><i></i><b>${off.length}</b><small>offre${off.length > 1 ? 's' : ''} en ligne</small></button>
             <button type="button" class="cp-st" data-go="activite" aria-label="${dem.length} demande${dem.length > 1 ? 's' : ''} : voir mon activité"><i class="d"></i><b>${dem.length}</b><small>demande${dem.length > 1 ? 's' : ''}</small></button>
@@ -514,7 +538,7 @@ label.cp-r{cursor:pointer}
       q('[data-av]').onclick = () => choisirAvatar(() => ouvrir());
       if (q('[data-sons]')) q('[data-sons]').onclick = () => { fermer(); S.panneau(); };
       if (q('[data-marche]')) q('[data-marche]').onclick = () => { fermer(); M.ecrireMarche(); };
-      if (q('[data-idv]')) q('[data-idv]').onclick = () => { fermer(); ID.ouvrir(); };
+      main.querySelectorAll('[data-idv]').forEach(b => b.onclick = () => { fermer(); ID.ouvrir(); });
       q('[data-out]').onclick = deconnecter;
       main.querySelectorAll('[data-ni]').forEach(b => b.onclick = () => { const all = notifs(), n = all[+b.dataset.ni]; if (!n) return; n.lu = true; W(KN, all); if (n.nego && G) { fermer(); G.thread(n.nego); } else bg.aller('notifs'); });
       remplirRep(q('[data-rep]'), p, u);

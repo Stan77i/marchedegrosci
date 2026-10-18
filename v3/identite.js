@@ -2,7 +2,7 @@
    Parcours : la pièce (recto, verso), un selfie tenant un code écrit à la main, le nom comme sur la pièce, puis l'envoi.
    Un administrateur décide (admin.html, onglet Identités). Rien n'est jamais déclaré « vérifié » automatiquement :
    la lecture de la bande MRZ (Tesseract.js, dans le téléphone) pré-remplit le nom et n'est qu'une indication pour l'administrateur.
-   API : MDGIdentite.ouvrir() · statut(force) · estVerifie(uid) · badge(taille, texte?) · lireMRZ(blob, piece) · analyserMRZ(texte)
+   API : MDGIdentite.ouvrir() · inviter('limite'|'banni') · gratuitesRestantes() · statut(force) · estVerifie(uid) · badge(taille, texte?) · lireMRZ(blob, piece) · analyserMRZ(texte)
    Événement « mdg:identite » quand un statut ou un badge arrive. Aucune donnée de la pièce n'est écrite dans la console. */
 (function () {
   const N = () => window.MDGNuage;
@@ -277,8 +277,35 @@
     main.innerHTML = '<p>Chargement…</p>';
     let s; try { s = await statut(true); } catch (e) { main.innerHTML = `<div class="idv-etat"><p class="idv-bad">${!navigator.onLine ? 'Pas de connexion internet : réessayez quand le réseau revient.' : 'La vérification n’est pas encore disponible. Réessayez plus tard.'}</p></div>`; return; }
     if (!bg) return;
+    if (s.banni) return etat(Object.assign({}, s, { statut: 'banni' }));
     if (s.statut === 'non_verifie' || s.statut === 'brouillon') return parcours(s);
     etat(s);
+  }
+
+  // annonces gratuites restantes avant que la vérification soit demandée (null si inconnu ou sans objet)
+  function gratuitesRestantes(s) {
+    s = s || statutCache();
+    if (!s || s.exempt || s.banni || s.statut === 'verifie' || s.gratuites == null) return null;
+    return Math.max(0, s.gratuites - (s.annonces || 0));
+  }
+
+  // appelé quand la base refuse une annonce : « limite » (3 annonces gratuites publiées) ou « banni »
+  async function inviter(raison) {
+    if (!me()) return;
+    feuille();
+    const main = bg.querySelector('.idv-main');
+    let s = statutCache() || { statut: 'non_verifie' };
+    try { s = await statut(true); } catch (_) {}
+    if (!bg) return;
+    if (raison === 'banni' || s.banni) return etat(Object.assign({}, s, { statut: 'banni' }));
+    if (!['non_verifie', 'brouillon'].includes(s.statut)) return etat(s);
+    const n = s.gratuites || 3;
+    main.innerHTML = `<div class="idv-etat"><div class="rond att">${badge(40)}</div><h2>Vos ${n} annonces gratuites sont publiées</h2>
+      <p>Pour publier la suivante, faites vérifier votre identité. C’est gratuit, cela prend quelques minutes, et cela protège tout le monde contre les faux vendeurs et les arnaques.</p>
+      <p>Votre nouvelle annonce reste enregistrée sur ce téléphone. Elle partira en ligne dès que l’équipe aura validé votre identité.</p></div>
+      <div class="idv-act"><button type="button" class="idv-go" data-go>Vérifier mon identité</button><button type="button" class="idv-alt" data-fin>Plus tard</button></div>`;
+    main.querySelector('[data-go]').onclick = () => parcours(s);
+    main.querySelector('[data-fin]').onclick = fermer;
   }
 
   // dossier déjà envoyé, à revoir, vérifié ou refusé
@@ -288,9 +315,10 @@
       en_attente: ['att', IC('horloge', 34), 'Votre dossier est en cours d’examen', `Envoyé le ${dateFr(s.soumis_le)} (${esc(PIECE_TXT[s.piece] || 'pièce')}). Une personne de l’équipe compare votre pièce et votre selfie. Vous serez prévenu ici.`],
       verification_manuelle: ['att', IC('photo', 34), 'Quelques photos sont à refaire', 'L’équipe n’a pas pu terminer l’examen. Voici ce qu’elle demande :'],
       verifie: ['ok', badge(40), 'Identité vérifiée', `Vérifiée le ${dateFr(s.decide_le)}. Le badge apparaît sur votre profil et à côté de votre nom sur vos annonces.`],
-      refuse: ['ko', IC('fermer', 34), 'Vérification refusée', 'Motif donné par l’équipe :']
+      refuse: ['ko', IC('fermer', 34), 'Vérification refusée', 'Motif donné par l’équipe :'],
+      banni: ['ko', IC('fermer', 34), 'Ce compte est banni', 'L’équipe du Marché de Gros a banni ce compte à vie, à la suite d’abus (arnaque, mauvais produits répétés ou insultes). Ses annonces ne sont plus visibles et il ne peut plus publier, négocier ni écrire. Si vous pensez qu’il s’agit d’une erreur, contactez l’équipe du Marché de Gros.']
     }[s.statut] || ['', '', 'Statut inconnu', ''];
-    main.innerHTML = `<div class="idv-etat"><div class="rond ${V[0]}">${V[1]}</div><h2>${V[2]}</h2><p>${V[3]}</p>${s.motif ? `<div class="idv-motif">${esc(s.motif)}</div>` : ''}
+    main.innerHTML = `<div class="idv-etat"><div class="rond ${V[0]}">${V[1]}</div><h2>${V[2]}</h2><p>${V[3]}</p>${s.motif && s.statut !== 'banni' ? `<div class="idv-motif">${esc(s.motif)}</div>` : ''}
       ${s.statut === 'refuse' && s.nouvel_essai_le ? `<p>Vous pourrez refaire une demande à partir du ${dateFr(s.nouvel_essai_le)}.</p>` : ''}</div>
       <div class="idv-act">${s.statut === 'verification_manuelle' ? '<button type="button" class="idv-go" data-refaire>Renvoyer mes photos</button>' : ''}
       ${s.statut === 'refuse' && (!s.nouvel_essai_le || Date.parse(s.nouvel_essai_le) <= Date.now()) ? '<button type="button" class="idv-go" data-refaire>Refaire une demande</button>' : ''}
@@ -424,5 +452,5 @@
   // vider le cache de statut quand on change de compte
   addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte') { const u = me(), c = J(KS, null); if (!u || (c && c.uid !== u.id)) { try { localStorage.removeItem(KS); } catch (_) {} dire(); } } });
 
-  window.MDGIdentite = { ouvrir, statut, statutCache, RESUME, estVerifie, badge, lireMRZ, analyserMRZ, retirer };
+  window.MDGIdentite = { ouvrir, inviter, gratuitesRestantes, statut, statutCache, RESUME, estVerifie, badge, lireMRZ, analyserMRZ, retirer };
 })();

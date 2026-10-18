@@ -138,10 +138,10 @@
     },
     comptes: () => top('Comptes', D.err.comptes ? '' : fmt(D.comptes.length) + ' comptes, du plus récent au plus ancien.') + (D.err.comptes ? '' : `<div class="list">${D.comptes.length ? D.comptes.map(c => `
       <div class="row"><span class="mk ${c.admin ? 'o' : 'off'}" style="border-radius:50%" title="${c.admin ? 'administrateur' : ''}"></span>
-        <div><b>${esc(fmtTel(String(c.tel).replace(/^225/, '')))} ${c.admin ? '<span class="tag ok">admin</span>' : ''} ${c.secours ? '' : '<span class="tag acc">sans code de secours</span>'}</b><small>Inscrit le ${date(c.created_at)} · dernière connexion ${ago(c.last_sign_in_at)}</small></div>
-        <div class="c3"><small>${fmt(c.offres)} offre(s) · ${fmt(c.demandes)} demande(s)</small><small>${fmt(c.negociations)} négociation(s)</small></div>
+        <div><b>${esc(fmtTel(String(c.tel).replace(/^225/, '')))} ${c.banni ? `<span class="tag bad">banni · ${esc(MOTIF_BAN[c.banni_motif] || c.banni_motif || '')}</span>` : ''} ${c.verifie ? '<span class="tag ok">identité vérifiée</span>' : ''} ${c.admin ? '<span class="tag ok">admin</span>' : ''} ${c.secours ? '' : '<span class="tag acc">sans code de secours</span>'}</b><small>Inscrit le ${date(c.created_at)} · dernière connexion ${ago(c.last_sign_in_at)}</small></div>
+        <div class="c3"><small>${fmt(c.offres)} offre(s) · ${fmt(c.demandes)} demande(s)</small><small>${fmt(c.negociations)} négociation(s)${c.publiees != null && !c.verifie && !c.admin ? ' · ' + Math.min(c.publiees, 3) + '/3 gratuites' : ''}</small></div>
         <div class="c4">${c.signale ? `<span class="tag bad">${c.signale} signalement(s)</span>` : ''}</div>
-        <div class="acts">${window.MDGMessages && !c.admin ? `<button class="btn sm" data-ecrire="${c.id}">Écrire</button>` : ''}<button class="btn sm" data-voir="${c.id}">Ses annonces</button><button class="btn sm" data-code="${c.id}" data-tel="${esc(c.tel)}">Nouveau code</button></div></div>`).join('') : '<div class="empty"><b>Aucun compte</b></div>'}</div>`),
+        <div class="acts">${window.MDGMessages && !c.admin ? `<button class="btn sm" data-ecrire="${c.id}">Écrire</button>` : ''}<button class="btn sm" data-voir="${c.id}">Ses annonces</button><button class="btn sm" data-code="${c.id}" data-tel="${esc(c.tel)}">Nouveau code</button>${c.admin || c.banni == null ? '' : c.banni ? `<button class="btn sm" data-deban="${c.id}">Lever le bannissement</button>` : `<button class="btn sm bad" data-bannir="${c.id}">Bannir</button>`}</div></div>`).join('') : '<div class="empty"><b>Aucun compte</b></div>'}</div>`),
     negos: () => {
       const L = D.negos;
       return top('Négociations', fmt(L.length) + ' au total : ' + fmt(L.filter(n => n.statut === 'ouverte').length) + ' en cours, ' + fmt(L.filter(n => n.statut === 'conclue').length) + ' conclues.') + `<div class="list">${L.length ? L.map(n => `
@@ -166,7 +166,7 @@
             <div><b>${esc(a.motif)} · ${esc(nomU(a.user_id))}</b><small>« ${esc(a.extrait || '')} »</small></div>
             <div class="c3"><small>${a.source === 'dm' ? 'message direct' : 'négociation'}</small><small>${ago(a.created_at)}</small></div>
             <div class="c4">${a.vu ? '<span class="tag">vue</span>' : '<span class="tag bad">nouvelle</span>'}</div>
-            <div class="acts">${window.MDGMessages && a.user_id ? `<button class="btn sm" data-ecrire="${a.user_id}">Écrire</button>` : ''}${a.source === 'dm' && a.ref_id ? `<button class="btn sm" data-lire="${a.ref_id}">Lire</button>` : ''}${a.vu ? '' : `<button class="btn sm" data-vu="${a.id}">Vue</button>`}</div></div>`).join('') : '<div class="empty"><b>Aucune alerte</b>Personne n’a essayé de sortir de l’application.</div>'}</div></section>
+            <div class="acts">${window.MDGMessages && a.user_id ? `<button class="btn sm" data-ecrire="${a.user_id}">Écrire</button>` : ''}${a.source === 'dm' && a.ref_id ? `<button class="btn sm" data-lire="${a.ref_id}">Lire</button>` : ''}${a.vu ? '' : `<button class="btn sm" data-vu="${a.id}">Vue</button>`}${a.user_id && D.byUser[a.user_id] && D.byUser[a.user_id].banni === false && !D.byUser[a.user_id].admin ? `<button class="btn sm bad" data-bannir="${a.user_id}">Bannir</button>` : ''}</div></div>`).join('') : '<div class="empty"><b>Aucune alerte</b>Personne n’a essayé de sortir de l’application.</div>'}</div></section>
       <section class="sec"><div class="sec-h"><h2>Toutes les conversations</h2><p>${fmt(L.length)} conversation(s) des ${window.MDGMessages ? MDGMessages.JOURS : 7} derniers jours.</p></div>
         <div class="list">${D.err.discussions ? '<div class="empty"><b>Conversations indisponibles</b>' + esc(D.err.discussions) + '</div>' : L.length ? L.map(d => `
           <div class="row" data-row="${d.id}"><span class="mk o"></span>
@@ -182,7 +182,7 @@
     const carte = v => `<div class="row" data-row="${v.id}"><span class="mk ${v.statut === 'en_attente' ? 'd' : 'off'}"></span>
         <div><b>${esc(v.nom_saisi || '—')}</b><small>${esc(PIECE[v.piece] || v.piece)} · envoyé ${ago(v.soumis_le)}${v.essais > 1 ? ' · ' + v.essais + 'e envoi' : ''}</small></div>
         <div class="c3"><small>Compte ${esc(fmtTel(String(v.tel || '').replace(/^225/, '')))} · inscrit le ${date(v.membre_depuis)}</small><small>Profil : ${esc(v.profil_pseudo || v.profil_nom || '—')}</small></div>
-        <div class="c4">${v.statut === 'en_attente' ? (v.mrz_ok ? '<span class="tag ok">bande MRZ lisible</span>' : v.nom_lu ? '<span class="tag acc">MRZ douteuse</span>' : '<span class="tag">MRZ non lue</span>') : '<span class="tag acc">photos demandées</span>'}</div>
+        <div class="c4">${v.statut === 'en_attente' ? (v.mrz_ok ? '<span class="tag ok">bande MRZ lisible</span>' : v.nom_lu ? '<span class="tag acc">MRZ douteuse</span>' : '<span class="tag">MRZ non lue</span>') : '<span class="tag acc">photos demandées</span>'}${v.nom_banni ? ' <span class="tag bad" title="Une personne bannie a été vérifiée sous ce nom">nom déjà banni</span>' : ''}</div>
         <div class="acts">${v.statut === 'en_attente' ? `<button class="btn sm pri" data-idv="${v.id}">Examiner</button>` : `<button class="btn sm bad" data-iddec="refuse" data-id="${v.id}">Refuser</button>`}</div></div>`;
     return top('Identités', 'Comparez la pièce, le selfie et le code écrit à la main, puis décidez. Les photos sont effacées après chaque décision.') + (D.identAbsent ? `<div class="list"><div class="empty"><b>Pas encore installé</b>Lancez supabase/schema-13-identite.sql dans l’éditeur SQL de Supabase.</div></div>` : `
       <section class="sec"><div class="sec-h"><h2>À examiner</h2><p>${att.length} dossier${att.length > 1 ? 's' : ''}, le plus ancien en premier.</p></div>
@@ -205,6 +205,22 @@
         <div class="acts" style="justify-content:flex-start"><button class="btn pri" data-iddec="verifie" data-id="${v.id}">Identité vérifiée</button><button class="btn" data-iddec="verification_manuelle" data-id="${v.id}">Photos à refaire</button><button class="btn bad" data-iddec="refuse" data-id="${v.id}">Refuser</button></div>
         <p style="color:var(--faint);font-size:12.5px">Les liens des photos expirent après deux minutes. Rien n’est téléchargé sur cet ordinateur.</p></div>`;
     bindIdent(el);
+  }
+  // ——— bannissement à vie (supabase/schema-14-confiance.sql) ———
+  const MOTIF_BAN = { arnaque: 'arnaque', mauvais_produits: 'mauvais produits', insultes: 'insultes', autre: 'autre' };
+  async function bannir(uid) {
+    const c = D.byUser[uid], qui = c ? fmtTel(String(c.tel).replace(/^225/, '')) : 'ce compte';
+    const ch = prompt('Bannir ' + qui + ' à vie. Motif :\n1 · Arnaque\n2 · Mauvais produits à répétition\n3 · Insultes dans les discussions\n4 · Autre\n\nTapez le chiffre :');
+    if (ch == null) return; const motif = ['arnaque', 'mauvais_produits', 'insultes', 'autre'][+ch.trim() - 1]; if (!motif) return toast('Tapez 1, 2, 3 ou 4.');
+    const detail = prompt('Précisez en une phrase (pour l’équipe, le membre ne le lit pas) :'); if (detail == null) return;
+    if (!confirm('Confirmer le bannissement à vie de ' + qui + ' ?\nSes annonces seront masquées ; il ne pourra plus publier, négocier, écrire ni faire vérifier son identité.')) return;
+    try { await N.rpc('admin_bannir', { p_user: uid, p_motif: motif, p_detail: detail.trim() || null }); await load(); paint(); toast('Compte banni. Ses annonces sont masquées.'); }
+    catch (e) { toast(/admin_bannir|schema cache|Could not find/i.test(e.message) ? 'Fonction pas encore installée : lancez supabase/schema-14-confiance.sql.' : 'Impossible : ' + e.message); }
+  }
+  async function lever(uid) {
+    const c = D.byUser[uid], qui = c ? fmtTel(String(c.tel).replace(/^225/, '')) : 'ce compte';
+    if (!confirm('Lever le bannissement de ' + qui + ' ? Ses annonces restent masquées : rétablissez-les une par une si besoin.')) return;
+    try { await N.rpc('admin_lever_bannissement', { p_user: uid }); await load(); paint(); toast('Bannissement levé.'); } catch (e) { toast('Impossible : ' + e.message); }
   }
   async function decider(b) {
     const v = D.ident.find(x => x.id === b.dataset.id), st = b.dataset.iddec; if (!v) return;
@@ -279,6 +295,8 @@
         await load(); paint(); toast(act === 'supprimer' ? 'Annonce supprimée.' : act === 'active' ? 'Annonce rétablie.' : 'Annonce masquée.');
       } catch (e) { b.disabled = false; toast('Action impossible : ' + e.message); }
     });
+    $$('[data-bannir]').forEach(b => b.onclick = () => bannir(b.dataset.bannir));
+    $$('[data-deban]').forEach(b => b.onclick = () => lever(b.dataset.deban));
     $$('[data-code]').forEach(b => b.onclick = async () => {
       const c = prompt('Nouveau code secret à 6 chiffres pour le ' + fmtTel(String(b.dataset.tel).replace(/^225/, '')) + ' :\n(Communiquez-le à la personne par téléphone, de vive voix.)');
       if (c == null) return; if (!/^\d{6}$/.test(c.trim())) return toast('Le code doit faire 6 chiffres.');

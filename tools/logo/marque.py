@@ -36,8 +36,11 @@ def dg(fond, rx=112, couleur=MAIS, plein=True):
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">{bg}'
             f'<path fill="{couleur}" transform="translate({x:.1f} {y:.1f}) scale({s})" d="{M["dg"]["d"]}"/></svg>')
 
-ic = os.path.join(rac, 'icons')
-ecr = lambda n, s: open(os.path.join(ic, n), 'w').write(s)
+# icons/v2/ : adresses lues par les pages et le manifeste (changer de dossier force les téléphones à reprendre l'icône) ;
+# icons/ : mêmes fichiers pour les anciennes adresses encore en cache
+DOSSIERS = [os.path.join(rac, 'icons', 'v2'), os.path.join(rac, 'icons')]
+def ecr(n, s):
+    for d in DOSSIERS: open(os.path.join(d, n), 'w').write(s)
 ecr('favicon.svg', dg('vert'))
 ecr('favicon-noir.svg', dg('noir'))
 ecr('icon-plein.svg', carre('vert', 1.42))

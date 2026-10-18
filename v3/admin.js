@@ -30,7 +30,7 @@
   function toast(m) { let el = document.querySelector('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); } el.textContent = m; el.style.opacity = '1'; clearTimeout(toastT); toastT = setTimeout(() => { el.style.opacity = '0'; }, 4000); }
 
   /* ——— porte d'entrée ——— */
-  const logo = '<svg width="56" height="56" viewBox="0 0 38 38" aria-hidden="true"><circle cx="19" cy="19" r="17" fill="#B85C38"/><g transform="translate(19 19) scale(.058) translate(-256 -256)" fill="none" stroke="#F5F0E6" stroke-linecap="round" stroke-linejoin="round"><path d="M394.6 117.4A196 196 0 1 0 452 256H372" stroke-width="26"/><circle cx="394.6" cy="117.4" r="22" fill="#F5F0E6" stroke="none"/><path d="M178 338V182L256 292L334 182V338" stroke-width="36"/></g></svg>';
+  const logo = window.MDGMarque ? MDGMarque.empile({ fond: 'vert', h: 64 }).replace('style="', 'style="margin:0 auto 6px;') : '';
   function gate(t, p, btn) {
     root.innerHTML = `<div class="gate"><div class="card">${logo}<h1>${t}</h1><p>${p}</p>${btn || ''}<p style="margin-top:22px"><a href="./" style="color:var(--mute)">Retour au Marché de Gros</a></p></div></div>`;
     const b = root.querySelector('[data-login]'); if (b) b.onclick = () => N.open();

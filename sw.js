@@ -3,7 +3,7 @@
    installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
    Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v79';
+const CACHE = 'mgci-v80';
 // tuiles de la carte en relief déjà vues (relief Terrarium, rues OpenFreeMap) : gardées d'une version à l'autre, 1 500 au plus
 const TUILES = 'tuiles-mgci', TUILES_MAX = 1500, HOTES_TUILES = ['s3.amazonaws.com', 'tiles.openfreemap.org'];
 
@@ -21,6 +21,7 @@ const CORE = [
   "app/icones.js",
   "app/marque.js",
   "app/icone.js",
+  "app/toast.js",
   "app/geo/ci.json",
   "v2/data.js",
   "v2/saisons.js",
@@ -156,13 +157,17 @@ self.addEventListener('fetch', e => {
   // Pages : le réseau d'abord, le cache si le réseau échoue.
   if (req.mode === 'navigate' || req.destination === 'document') {
     e.respondWith((async () => {
+      // au réveil du téléphone, le réseau « se connecte » sans répondre : on n'attend pas plus de 3 s une page déjà gardée
+      const copie = async () => (await caches.match(req, { ignoreSearch: true })) || (await caches.match('application.dc.html'));
+      const reseau = fetch(req).then(async res => { if (res && res.ok) { const c = await caches.open(CACHE); await c.put(req, res.clone()); } return res; });
       try {
-        const res = await fetch(req);
-        if (res && res.ok) { const c = await caches.open(CACHE); c.put(req, res.clone()); }
-        return res;
+        const res = await Promise.race([reseau, new Promise((_, ko) => setTimeout(() => ko(new Error('lent')), 3000))]);
+        if (res && res.ok) return res;
+        return (await copie()) || res;
       } catch (_) {
-        const hit = await caches.match(req, { ignoreSearch: true });
-        return hit || (await caches.match('application.dc.html')) || Response.error();
+        const hit = await copie();
+        if (hit) { e.waitUntil(reseau.catch(() => {})); return hit; }
+        return reseau.catch(() => Response.error());
       }
     })());
     return;
@@ -177,6 +182,17 @@ self.addEventListener('fetch', e => {
 
   // Code (JS, CSS, JSON, manifeste) : le réseau d'abord — revalidé auprès du serveur, jamais une vieille copie du navigateur —,
   // le cache si le réseau échoue ou traîne plus de 4 s.
+  // Fichier versionné (« ?v=… ») : son contenu ne change jamais pour cette adresse → le cache d'abord, ouverture instantanée hors ligne
+  if (/[?&]v=/.test(url.search) && /\.(js|css)$/.test(url.pathname)) {
+    e.respondWith((async () => {
+      const hit = await caches.match(req);
+      if (hit) return hit;
+      const res = await fetch(req);
+      if (res && res.ok && res.type === 'basic') { const c = await caches.open(CACHE); c.put(req, res.clone()); }
+      return res;
+    })());
+    return;
+  }
   if (/\.(js|css|json|webmanifest|html)$/.test(url.pathname) || ['script', 'style', 'manifest'].includes(req.destination)) {
     e.respondWith((async () => {
       const reseau = fetch(req, { cache: 'no-cache' }).then(async res => {
@@ -185,7 +201,7 @@ self.addEventListener('fetch', e => {
       });
       const copie = () => caches.match(req).then(h => h || caches.match(req, { ignoreSearch: true }));
       try {
-        const res = await Promise.race([reseau, new Promise((_, ko) => setTimeout(() => ko(new Error('lent')), 4000))]);
+        const res = await Promise.race([reseau, new Promise((_, ko) => setTimeout(() => ko(new Error('lent')), 2500))]);
         if (res && res.ok) return res;
         return (await copie()) || res;
       } catch (_) {

@@ -1,6 +1,6 @@
 /* ═════════ Marché de Gros CI — langage sonore ═════════
    Des sons courts de balafon, synthétisés dans le navigateur (aucun fichier, aucune bibliothèque).
-   Désactivés par défaut : ils ne jouent qu'après activation explicite dans « Mon compte → Sons ».
+   Activés par défaut, discrets ; tout se coupe ou se règle dans « Mon compte → Sons ».
    Hiérarchie (un seul son par lot d'événements, le plus important gagne) :
      1. accord      — une proposition est acceptée : la connexion commerciale est établie (trois notes montantes)
      2. proposition — une proposition ou une contre-proposition arrive (deux notes montantes)
@@ -18,10 +18,12 @@
     accord: { nom: 'Accords conclus', p: 4 },
     proposition: { nom: 'Propositions et contre-propositions reçues', p: 3 },
     refus: { nom: 'Refus, retraits et expirations', p: 2 },
-    annonce: { nom: 'Nouvelles annonces sur vos produits', p: 1 }
+    annonce: { nom: 'Nouvelles annonces sur vos produits', p: 1 },
+    confirmation: { nom: 'Confirmations à l’écran (connecté, annonce en ligne…)', p: 0 }
   };
   const J = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } };
-  const reglages = () => Object.assign({ on: false, volume: 0.6, cats: { accord: true, proposition: true, refus: true, annonce: false } }, J(KS, {}));
+  // sons activés par défaut, discrets ; chacun se coupe dans Mon compte → Sons
+  const reglages = () => { const r = Object.assign({ on: true, volume: 0.6 }, J(KS, {})); r.cats = Object.assign({ accord: true, proposition: true, refus: true, annonce: false, confirmation: true }, r.cats || {}); return r; };
   const regler = r => { try { localStorage.setItem(KS, JSON.stringify(Object.assign(reglages(), r))); } catch (_) {} };
 
   let ctx = null;
@@ -53,9 +55,13 @@
     accord: [['G4', 0], ['C5', 0.11], ['E5', 0.22], ['G5', 0.36]],
     proposition: [['D5', 0], ['G5', 0.12]],
     refus: [['E4', 0], ['C4', 0.16]],
-    annonce: [['A5', 0]]
+    annonce: [['A5', 0]],
+    ok: [['C5', 0], ['G5', 0.09]],
+    info: [['E5', 0]],
+    alerte: [['A4', 0], ['A4', 0.13]],
+    erreur: [['D4', 0], ['G3', 0.12]]
   };
-  const VOL = { accord: 0.32, proposition: 0.26, refus: 0.18, annonce: 0.12 };
+  const VOL = { accord: 0.32, proposition: 0.26, refus: 0.18, annonce: 0.12, ok: 0.14, info: 0.09, alerte: 0.13, erreur: 0.15 };
   function jouer(cat) {
     const c = audio(); if (!c || c.state !== 'running') return false;
     const r = reglages(), t0 = c.currentTime + 0.02;
@@ -129,8 +135,8 @@
 .snp-note{margin:12px 16px 0;color:#857A67;font-size:12.5px;line-height:1.45}
 @keyframes snpIn{from{opacity:0}}@keyframes snpUp{from{transform:translateY(30px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.snp-bg,.snp{animation:none}.snp-tog,.snp-tog::after{transition:none}}`;
-  const EMO = { accord: '🤝', proposition: '💬', refus: '⏳', annonce: '🧺' };
-  const SOUS = { accord: 'Un prix accepté des deux côtés', proposition: 'Quelqu’un vous propose un prix', refus: 'Une proposition sans suite', annonce: 'Un produit que vous suivez' };
+  const EMO = { accord: '🤝', proposition: '💬', refus: '⏳', annonce: '🧺', confirmation: '✅' };
+  const SOUS = { accord: 'Un prix accepté des deux côtés', proposition: 'Quelqu’un vous propose un prix', refus: 'Une proposition sans suite', annonce: 'Un produit que vous suivez', confirmation: 'Connecté, annonce en ligne, message envoyé…' };
   function panneau() {
     const r = reglages(), esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
     if (!document.getElementById('snpCss')) { const st = document.createElement('style'); st.id = 'snpCss'; st.textContent = PCSS; document.head.appendChild(st); }
@@ -157,5 +163,7 @@
     bg.querySelector('.snp').setAttribute('tabindex', '-1'); setTimeout(() => bg.querySelector('.snp').focus({ preventScroll: true }), 50);   // la fenêtre prend la main (lecteur d'écran, clavier), sans anneau sur un bouton
   }
 
-  window.MDGSons = { signal, reglages, regler, essayer: c => { audio(); setTimeout(() => jouer(c), 40); }, panneau, CATS };
+  // un message à l'écran (app/toast.js) : son immédiat et léger, selon son sens (réussi, à savoir, attention, échec)
+  function confirmer(type) { const r = reglages(); if (!r.on || !r.cats.confirmation || document.hidden || !MOTIFS[type]) return; audio(); setTimeout(() => jouer(type), 30); }
+  window.MDGSons = { signal, reglages, regler, confirmer, essayer: c => { audio(); setTimeout(() => jouer(c === 'confirmation' ? 'ok' : c), 40); }, panneau, CATS };
 })();

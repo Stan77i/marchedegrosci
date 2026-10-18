@@ -1,3 +1,22 @@
+# Mise à jour — 18 octobre 2026 (plus de page blanche à l'ouverture ; messages après une action refaits, avec un son)
+
+Service worker : `mgci-v80`.
+
+## Plus de page blanche
+- **Cause** : au réveil du téléphone, le réseau « se connecte » sans répondre. L'application l'attendait sans limite, et l'écran restait blanc.
+- **Correction** :
+  - après 3 secondes, l'application s'ouvre avec la copie gardée sur le téléphone. La nouvelle version arrive en arrière-plan ;
+  - dès la première image, le fond est vert avec le « dG » du logo, jamais blanc ;
+  - les fichiers versionnés (`?v=…`) s'ouvrent directement depuis le téléphone. **À retenir : changer un de ces fichiers oblige à changer son numéro `?v=`.**
+- Testé : réseau qui ne répond pas, application ouverte en 1,8 s.
+
+## Messages après une action (« Vous êtes connecté », « Votre annonce est en ligne »…)
+- Un seul système pour toute l'application (`app/toast.js`) : une bannière en haut de l'écran, vert du logo.
+- Une icône dit le sens : ✓ réussi (vert), i à savoir, ! attention (maïs), × échec (rouge).
+- Une barre montre le temps restant. On touche la bannière ou on la glisse vers le haut pour la fermer.
+- **Un son court** selon le sens (balafon : deux notes qui montent quand c'est réussi, deux qui descendent quand ça échoue). Une petite vibration en cas d'échec.
+- Les sons sont maintenant **activés par défaut**, discrets. Chacun se coupe dans Mon compte → Sons, nouvelle ligne « Confirmations à l'écran ».
+
 # Mise à jour — 18 octobre 2026 (Prix du marché, L'année du marché, Catégories)
 
 Service worker : `mgci-v79`. Les nouvelles feuilles de style (`css/annee-app.css`, `css/categories-app.css`) sont gardées pour le hors-ligne.

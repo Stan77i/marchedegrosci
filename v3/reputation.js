@@ -46,14 +46,14 @@
 .rp h2{margin:0 44px 4px 0;font:500 28px/1.1 'Cormorant Garamond',Georgia,serif}.rp>p{margin:0 0 16px;color:#655C4D;font-size:14px}
 .rp-x{position:absolute;right:14px;top:14px;width:42px;height:42px;border:0;border-radius:50%;background:rgba(23,21,18,.08);color:#171512;font-size:0;cursor:pointer}
 .rp-x::before,.rp-x::after{content:"";position:absolute;left:50%;top:50%;width:15px;height:2px;border-radius:2px;background:currentColor;transform:translate(-50%,-50%) rotate(45deg)}.rp-x::after{transform:translate(-50%,-50%) rotate(-45deg)}
-.rp-go{width:100%;min-height:54px;margin-top:16px;border:0;border-radius:999px;background:#E07A3F;color:#171512;font:700 16px Jost,sans-serif;cursor:pointer}.rp-go:disabled{opacity:.45;cursor:default}
+.rp-go{width:100%;min-height:54px;margin-top:16px;border:0;border-radius:999px;background:#10392B;color:#F3EFE4;font:700 16px Jost,sans-serif;cursor:pointer}.rp-go:disabled{opacity:.45;cursor:default}
 .rp-duo{display:flex;gap:8px}.rp-duo .rp-go{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 14px}.rp-duo .rp-ecr{flex:0 0 38%;background:none;box-shadow:inset 0 0 0 1.5px rgba(23,21,18,.28);color:#171512}
 .rp-alt{min-height:44px;padding:0 16px;border:0;border-radius:999px;background:#EFE7D9;color:#171512;font:600 14px Jost,sans-serif;cursor:pointer}
 .rp-et{display:inline-flex;vertical-align:middle}.rp-et-f{position:relative;display:inline-block;line-height:0}.rp-et-f>span{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap}
 .rp-ch{display:flex;flex-wrap:wrap;gap:8px}.rp-ch button{min-height:44px;padding:0 15px;border:1px solid rgba(23,21,18,.18);border-radius:999px;background:none;color:#2A251E;font:500 14px Jost,sans-serif;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
 .rp-ch button[aria-pressed=true]{background:#171512;border-color:#171512;color:#F5F0E6}
 .rp textarea{width:100%;min-height:84px;margin-top:14px;padding:12px 14px;border:1px solid rgba(23,21,18,.16);border-radius:16px;background:#FFFFFF;color:#171512;font:400 15px/1.45 Jost,sans-serif;resize:vertical;box-sizing:border-box}
-.rp textarea:focus{outline:none;border-color:#E07A3F;box-shadow:0 0 0 3px rgba(224,122,63,.2)}
+.rp textarea:focus{outline:none;border-color:#E07A3F;box-shadow:0 0 0 3px rgba(16,57,43,.2)}
 .rp-msg{min-height:20px;margin:8px 2px 0;color:#C0442B;font-size:13.5px}
 .rp-tete{display:flex;align-items:center;gap:16px;margin:0 0 18px;padding-right:44px}.rp-tete img{border-radius:50%;box-shadow:0 0 0 3px rgba(23,21,18,.08)}
 .rp-tete b{display:block;font:500 28px/1.05 'Cormorant Garamond',Georgia,serif}.rp-tete small{display:flex;align-items:center;gap:8px;margin-top:6px;color:#655C4D;font-size:13.5px}
@@ -75,7 +75,7 @@
 .rp-li{display:grid;gap:6px}.rp-li div{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(23,21,18,.03);box-shadow:inset 0 0 0 1px rgba(23,21,18,.07);font-size:14px}
 .rp-li i{flex:none;width:10px;height:10px}.rp-li .o{border-radius:50%;background:#6CC58C}.rp-li .d{border-radius:2px;background:#F2C94C}.rp-li .v{border-radius:50%;background:#6AAEF0}
 .rp-li span{flex:1;min-width:0}.rp-li small{color:#857A67;font-size:12px;white-space:nowrap}
-.rp-off{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:rgba(224,122,63,.2);color:#A0492A;font:700 10.5px/1.7 Jost,sans-serif;letter-spacing:.06em;text-transform:uppercase;vertical-align:4px}
+.rp-off{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:rgba(16,57,43,.2);color:#A0492A;font:700 10.5px/1.7 Jost,sans-serif;letter-spacing:.06em;text-transform:uppercase;vertical-align:4px}
 .rp-ed label{display:block;margin:14px 0 6px;font:500 14px Jost,sans-serif;color:#2A251E}.rp-ed label i{font-style:normal;color:#857A67;font-size:12.5px;margin-left:6px}
 .rp-ed input{width:100%;box-sizing:border-box;height:50px;padding:0 14px;border:1px solid rgba(23,21,18,.16);border-radius:14px;background:#FFFFFF;color:#171512;font:500 16px Jost,sans-serif}
 .rp-ed textarea{margin-top:0;min-height:120px}

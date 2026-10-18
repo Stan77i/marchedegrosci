@@ -10,7 +10,7 @@
   const PROD = Object.fromEntries((window.MDG && MDG.products || []).map(p => [p.slug, p.name]));
   const date = t => t ? new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: new Date(t).getFullYear() === new Date().getFullYear() ? undefined : 'numeric' }) : '—';
   const ago = t => { if (!t) return 'jamais'; const m = (Date.now() - Date.parse(t)) / 60000; return m < 60 ? 'il y a ' + Math.max(1, Math.round(m)) + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : m < 2880 ? 'hier' : date(t); };
-  const D = { offres: [], demandes: [], signalements: [], comptes: [], negos: [], alertes: [], discussions: [], ident: [], sigm: [], err: {} };
+  const D = { offres: [], demandes: [], signalements: [], comptes: [], negos: [], alertes: [], discussions: [], ident: [], sigm: [], sigc: null, err: {} };
   let view = (location.hash.slice(1) || 'apercu'), filt = { type: 'tout', statut: 'tout', q: '' }, showN = 40;
 
   const ICO = {
@@ -52,6 +52,8 @@
       N.rpc('admin_comptes').then(r => { D.comptes = r || []; delete D.err.comptes; }).catch(e => { D.err.comptes = e.message; }),
       get('alertes', '/rest/v1/alertes?select=*&order=created_at.desc&limit=500'),
       N.rpc('admin_discussions').then(r => { D.discussions = r || []; delete D.err.discussions; }).catch(e => { D.err.discussions = e.message; }),
+      // signalements regroupés par compte, avec preuves et priorité (schéma 18) ; sinon l'ancienne liste
+      N.rpc('admin_signalements_comptes').then(r => { D.sigc = r || []; }).catch(() => { D.sigc = null; }),
       N.rpc('admin_signalements_membres').then(r => { D.sigm = r || []; delete D.err.sigm; }).catch(e => { D.sigm = []; if (!/admin_signalements_membres|schema cache|Could not find/i.test(e.message)) D.err.sigm = e.message; }),
       // admin_identite_dossiers (schéma 16 : dates d'expiration, numéro) ; sinon l'ancienne liste
       N.rpc('admin_identite_dossiers').catch(e => { if (/admin_identite_dossiers|schema cache|Could not find/i.test(e.message)) return N.rpc('admin_identite_file'); throw e; })
@@ -176,8 +178,8 @@
       <section class="sec"><div class="sec-h"><h2>Message à tous les membres</h2><p>Chacun le reçoit dans ses messages, avec le logo du Marché de Gros, et une notification.</p></div>
         <div class="list" style="padding:16px 18px;display:flex;flex-direction:column;gap:12px"><textarea data-dif maxlength="2000" rows="4" placeholder="Bonjour, …" aria-label="Message à tous les membres" style="width:100%;box-sizing:border-box;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:#14120f;color:var(--ink);font:400 15px/1.45 Jost,sans-serif;resize:vertical"></textarea>
         <div style="display:flex;justify-content:flex-end"><button class="btn pri" data-difgo>Envoyer à tous</button></div></div></section>
-      <section class="sec"><div class="sec-h"><h2>Personnes signalées</h2><p>${D.sigm.filter(x => !x.traite).length ? D.sigm.filter(x => !x.traite).length + ' à traiter. ' : ''}Arnaque, insultes ou mauvais produits, signalés depuis une discussion ou une négociation. La personne signalée ne sait pas qui l’a signalée.</p></div>
-        <div class="list">${D.err.sigm ? '<div class="empty"><b>Signalements indisponibles</b>' + esc(D.err.sigm) + '</div>' : D.sigm.length ? D.sigm.map(x => `
+      <section class="sec"><div class="sec-h"><h2>Personnes signalées</h2><p>${D.sigc ? (D.sigc.filter(x => x.priorite).length ? D.sigc.filter(x => x.priorite).length + ' à examiner en priorité. ' : '') : D.sigm.filter(x => !x.traite).length ? D.sigm.filter(x => !x.traite).length + ' à traiter. ' : ''}Priorité : une preuve (photo ou conversation jointe), ou au moins 3 personnes différentes en 30 jours. La personne signalée ne sait pas qui l’a signalée. Rien n’est automatique : c’est vous qui décidez.</p></div>
+        <div class="list">${D.sigc ? sigComptes() : D.err.sigm ? '<div class="empty"><b>Signalements indisponibles</b>' + esc(D.err.sigm) + '</div>' : D.sigm.length ? D.sigm.map(x => `
           <div class="row${x.traite ? ' is-hidden' : ''}"><span class="mk ${x.traite ? 'off' : 'd'}" style="background:${x.traite ? '' : '#E2735B'}"></span>
             <div><b>${esc(MOTIF_BAN[x.motif] || x.motif)} · ${esc(fmtTel(String(x.cible_tel || '').replace(/^225/, '')) || 'compte supprimé')}</b><small>${x.detail ? '« ' + esc(x.detail) + ' »' : 'Sans précision'}</small></div>
             <div class="c3"><small>${x.source === 'dm' ? 'message direct' : x.source === 'negociation' ? 'négociation' : 'profil'} · par ${esc(fmtTel(String(x.auteur_tel || '').replace(/^225/, '')))}</small><small>${ago(x.created_at)}</small></div>
@@ -198,6 +200,33 @@
             <div class="c4">${d.alertes > 0 ? `<span class="tag bad">${d.alertes} alerte(s)</span>` : ''}</div>
             <div class="acts"><button class="btn sm" data-lire="${d.id}">Lire</button></div></div>`).join('') : '<div class="empty"><b>Aucune conversation</b></div>'}</div></section>`;
   };
+  // ——— personnes signalées, regroupées par compte (schéma 18) ———
+  const SRC = { dm: 'discussion', negociation: 'négociation', profil: 'profil' };
+  function sigComptes() {
+    if (!D.sigc.length) return '<div class="empty"><b>Aucun signalement</b>Les personnes signalées par les membres apparaîtront ici.</div>';
+    const tel = t => esc(fmtTel(String(t || '').replace(/^225/, '')) || 'compte supprimé');
+    return D.sigc.map(g => { const L = g.signalements || [], nPh = L.reduce((t, x) => t + ((x.preuves || []).length), 0);
+      return `<div class="row${g.a_traiter ? '' : ' is-hidden'}" data-sigc="${g.cible_id}"><span class="mk ${g.a_traiter ? 'd' : 'off'}" style="background:${g.priorite ? '#E2735B' : g.a_traiter ? '#E2B33C' : ''}"></span>
+        <div><b>${tel(g.cible_tel)}</b><small>${L.length} signalement${L.length > 1 ? 's' : ''} · dernier ${ago(g.dernier)}</small></div>
+        <div class="c3"><small>${g.personnes_30j} personne${g.personnes_30j > 1 ? 's' : ''} différente${g.personnes_30j > 1 ? 's' : ''} en 30 jours</small><small>${g.avec_preuve ? 'avec preuve' : 'sans preuve'}${nPh ? ' · ' + nPh + ' photo' + (nPh > 1 ? 's' : '') : ''}</small></div>
+        <div class="c4">${g.priorite ? '<span class="tag bad">à examiner en priorité</span> ' : ''}${g.cible_banni ? '<span class="tag bad">banni</span>' : g.cible_verifie ? '<span class="tag ok">vérifié</span>' : ''}</div>
+        <div class="acts"><button class="btn sm pri" data-sigvoir="${g.cible_id}">Examiner</button>${window.MDGMessages && g.cible_id ? `<button class="btn sm" data-ecrire="${g.cible_id}">Écrire</button>` : ''}${g.a_traiter ? `<button class="btn sm" data-sigtout="${g.cible_id}">Traité</button>` : ''}${g.cible_banni || !g.cible_id ? '' : `<button class="btn sm bad" data-bannir="${g.cible_id}">Bannir</button>`}</div></div>`; }).join('');
+  }
+  async function sigExaminer(cid, row) {
+    const next = row.nextElementSibling; if (next && next.classList.contains('fil')) { next.remove(); return; }
+    const g = D.sigc.find(x => x.cible_id === cid); if (!g) return;
+    const el = document.createElement('div'); el.className = 'fil idx'; el.innerHTML = '<div>Chargement des preuves…</div>'; row.after(el);
+    const L = g.signalements || [];
+    const liens = await Promise.all(L.map(x => Promise.all((x.preuves || []).map(c => N.lienSigne('preuves', c, 120).catch(() => null)))));
+    if (!el.isConnected) return;
+    el.innerHTML = L.map((x, i) => `<div style="display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)">
+        <p style="margin:0"><b>${esc(MOTIF_BAN[x.motif] || x.motif)}</b> · par ${esc(fmtTel(String(x.auteur_tel || '').replace(/^225/, '')))} · ${ago(x.created_at)} · depuis ${SRC[x.source] || x.source}${x.traite ? ' · traité' : ''}</p>
+        <p style="margin:0">« ${esc(x.detail || 'sans précision')} »</p>
+        ${liens[i].length ? `<div class="idx-ph">${liens[i].map((u, k) => u ? `<figure><figcaption>Preuve ${k + 1}</figcaption><a href="${esc(u)}" target="_blank" rel="noopener noreferrer"><img src="${esc(u)}" alt="Preuve ${k + 1}" referrerpolicy="no-referrer"></a></figure>` : '<p>Photo introuvable</p>').join('')}</div>` : ''}
+        <p style="margin:0;color:var(--faint);font-size:13px">${x.source === 'dm' && x.ref_id ? `Discussion jointe : <button class="btn sm" data-lire="${x.ref_id}">Lire la discussion</button>` : x.source === 'negociation' && x.ref_id ? 'Négociation jointe : elle apparaît dans l’onglet Négociations.' : x.sans_preuve ? 'Sans preuve : compte seulement pour le nombre de personnes.' : ''}</p></div>`).join('')
+      + '<p style="color:var(--faint);font-size:12.5px;margin:8px 0 0">Les liens des photos expirent après deux minutes.</p>';
+    el.querySelectorAll('[data-lire]').forEach(b => { const o = document.querySelector('[data-lire="' + b.dataset.lire + '"]:not(.fil [data-lire])'); b.onclick = () => o ? o.click() : toast('Ouvrez la discussion depuis la liste des conversations.'); });
+  }
   // ——— identités : dossiers à examiner (supabase/schema-13-identite.sql). Personne n'est « vérifié » sans décision ici. ———
   const PIECE = { cni: 'Carte nationale d’identité', passeport: 'Passeport', carte_consulaire: 'Carte consulaire', permis: 'Permis de conduire' };
   const auj = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
@@ -365,6 +394,8 @@
       } catch (e) { b.disabled = false; toast('Action impossible : ' + e.message); }
     });
     $$('[data-bannir]').forEach(b => b.onclick = () => bannir(b.dataset.bannir));
+    $$('[data-sigvoir]').forEach(b => b.onclick = () => sigExaminer(b.dataset.sigvoir, b.closest('.row')));
+    $$('[data-sigtout]').forEach(b => b.onclick = async () => { b.disabled = true; try { await N.rpc('admin_signalements_cible_traites', { p_cible: b.dataset.sigtout }); await load(); paint(); toast('Signalements marqués traités.'); } catch (e) { b.disabled = false; toast('Impossible : ' + e.message); } });
     $$('[data-sigok]').forEach(b => b.onclick = async () => { b.disabled = true; try { await N.rpc('admin_signalement_membre_traite', { p_id: b.dataset.sigok }); const x = D.sigm.find(y => y.id === b.dataset.sigok); if (x) x.traite = true; paint(); } catch (e) { b.disabled = false; toast('Impossible : ' + e.message); } });
     $$('[data-deban]').forEach(b => b.onclick = () => lever(b.dataset.deban));
     $$('[data-code]').forEach(b => b.onclick = async () => {

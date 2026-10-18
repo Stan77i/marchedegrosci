@@ -131,7 +131,7 @@
   /* ——— apparence ——— */
   const CSS = `.nx-bg{position:fixed;inset:0;z-index:8900;background:rgba(10,9,7,.62);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:nxIn .22s ease both}
 @media (min-width:720px){.nx-bg{align-items:center;padding:24px}}
-.nx{--v:#6CC58C;--a:#F2C94C;--ok:#6AAEF0;--ink:#171512;--mute:#655C4D;--line:rgba(23,21,18,.12);--acc:#E07A3F;position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:min(92dvh,820px);background:#F4EEE3;color:var(--ink);border-radius:28px 28px 0 0;box-shadow:0 30px 80px rgba(0,0,0,.5);font-family:Jost,system-ui,sans-serif;font-variant-numeric:lining-nums;animation:nxUp .38s cubic-bezier(.22,1,.36,1) both;overflow:hidden}
+.nx{--v:#6CC58C;--a:#F2C94C;--ok:#6AAEF0;--ink:#171512;--mute:#655C4D;--line:rgba(23,21,18,.12);--acc:#10392B;position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:min(92dvh,820px);background:#F4EEE3;color:var(--ink);border-radius:28px 28px 0 0;box-shadow:0 30px 80px rgba(0,0,0,.5);font-family:Jost,system-ui,sans-serif;font-variant-numeric:lining-nums;animation:nxUp .38s cubic-bezier(.22,1,.36,1) both;overflow:hidden}
 @media (min-width:720px){.nx{border-radius:28px}}
 .nx-h{display:flex;align-items:center;gap:10px;padding:18px 18px 12px;border-bottom:1px solid var(--line)}
 .nx-h h2{flex:1;min-width:0;margin:0;font:500 26px/1.1 'Cormorant Garamond',Georgia,serif}
@@ -142,7 +142,7 @@
 .nx-f{padding:12px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#EFE7D9}
 .nx-go{width:100%;min-height:54px;border:0;border-radius:999px;background:var(--acc);color:#171512;font:700 16px Jost,sans-serif;cursor:pointer}.nx-go[disabled]{background:#E9C9B4;color:rgba(23,21,18,.5);cursor:default}
 .nx-alt{min-height:48px;padding:0 18px;border:0;border-radius:999px;background:#EFE7D9;color:var(--ink);font:600 15px Jost,sans-serif;cursor:pointer}
-.nx-err{min-height:18px;margin:8px 0 0;color:#A0492A;font-size:14px}
+.nx-err{min-height:18px;margin:8px 0 0;color:#10392B;font-size:14px}
 .nx-note{margin:14px 0 0;color:#857A67;font-size:12.5px;line-height:1.5}
 /* la règle des prix */
 .nx-rail{position:relative;margin:4px 0 6px;padding:46px 6px 34px}
@@ -183,7 +183,7 @@
 .nx-row .mk{grid-row:span 2}.nx-row b{font-weight:600;font-size:15.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nx-row small{grid-column:2;color:var(--mute);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nx-row .p{grid-row:span 2;text-align:right;font:500 22px/1 'Cormorant Garamond',serif}.nx-row .p small{display:block;margin-top:4px;font:400 11.5px Jost,sans-serif}
-.nx-row.is-new{border-color:rgba(224,122,63,.6)}.nx-row.is-new b::after{content:'';display:inline-block;width:8px;height:8px;margin-left:8px;border-radius:50%;background:var(--acc);vertical-align:middle}
+.nx-row.is-new{border-color:rgba(16,57,43,.6)}.nx-row.is-new b::after{content:'';display:inline-block;width:8px;height:8px;margin-left:8px;border-radius:50%;background:var(--acc);vertical-align:middle}
 .nx-empty{padding:40px 8px;text-align:center;color:var(--mute);font-size:15px;line-height:1.55}.nx-empty-ico{display:grid;place-items:center;width:64px;height:64px;margin:0 auto 14px;border-radius:20px;background:rgba(106,174,240,.14);color:#6AAEF0;box-shadow:inset 0 0 0 1px rgba(106,174,240,.25)}.nx-empty b{display:block;margin:0 0 6px;font:500 24px/1.2 'Cormorant Garamond',serif;color:var(--ink)}
 /* fil */
 .nx-msgs{display:flex;flex-direction:column;gap:10px;margin:14px 0 0}
@@ -208,7 +208,7 @@
 .nx-comp .nx-ib{width:48px;height:48px;background:var(--acc);color:#171512}
 .nx-cp{display:flex;gap:8px;align-items:center;margin:0 0 10px}.nx-cp input{flex:1;min-width:0;height:48px;padding:0 14px;border:1px solid rgba(23,21,18,.16);border-radius:14px;background:#FFFFFF;color:var(--ink);font:500 18px Jost,sans-serif}
 .nx-tag{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:999px;font:600 12px/1.5 Jost,sans-serif;background:rgba(23,21,18,.08);color:var(--mute);white-space:nowrap}
-.nx-tag.ok{background:rgba(106,174,240,.16);color:#2C6CB0}.nx-tag.acc{background:rgba(224,122,63,.2);color:#A0492A}.nx-tag.wait{background:rgba(242,201,76,.14);color:#8A6400}.nx-tag.bad{background:rgba(226,115,91,.16);color:#C0442B}
+.nx-tag.ok{background:rgba(106,174,240,.16);color:#2C6CB0}.nx-tag.acc{background:rgba(16,57,43,.2);color:#10392B}.nx-tag.wait{background:rgba(242,201,76,.14);color:#8A6400}.nx-tag.bad{background:rgba(226,115,91,.16);color:#C0442B}
 .nx-row small .nx-tag{margin:0 4px 0 0}
 .nx-state{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;font-size:13.5px;color:var(--mute)}.nx-state .nx-tag{margin:0}
 .nx-dispo{margin:4px 0 0;font-size:13.5px;color:var(--mute)}
@@ -219,7 +219,7 @@
 .nx-qr{margin:16px 0 0}.nx-q{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .nx-q input{width:140px;height:48px;padding:0 14px;border:1px solid rgba(23,21,18,.16);border-radius:14px;background:#FFFFFF;color:var(--ink);font:500 18px Jost,sans-serif}.nx-q span{color:var(--mute)}
 .nx-tot{display:flex;flex-direction:column;gap:6px;margin:14px 0 0}.nx-sum small{font-weight:400;color:var(--mute)}
-.nx-warn{margin:8px 0 0;padding:10px 12px;border-radius:14px;background:rgba(224,122,63,.12);color:#7A3418;font-size:13.5px;line-height:1.45}
+.nx-warn{margin:8px 0 0;padding:10px 12px;border-radius:14px;background:rgba(242,194,48,.2);color:#5F4500;font-size:13.5px;line-height:1.45}
 .nx-send{margin-top:16px}.nx-edf{max-height:min(60dvh,560px);overflow:auto;padding:2px}
 .nx-pend{margin:0 0 10px;padding:12px 14px;border-radius:16px;background:rgba(23,21,18,.05);font-size:14.5px;line-height:1.45}.nx-pend b{font-weight:700}
 .nx-confirm>b{color:var(--mute);font-size:14px;font-weight:600}.nx-big{margin:6px 0 2px;font:500 34px/1.1 'Cormorant Garamond',serif}.nx-dtot{font-size:15px;font-weight:600}

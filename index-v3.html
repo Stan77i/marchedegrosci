@@ -9,10 +9,10 @@
 <title>Marché de Gros de Côte d'Ivoire — du producteur à l'acheteur, en direct</title>
 <meta name="description" content="Trouvez les produits des marchés ivoiriens directement auprès de ceux qui les produisent : riz local, igname, tomate, poisson fumé, djoumblé… Contact direct, carte, demande d'achat.">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/svg+xml" href="icons/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<script>try{if(JSON.parse(localStorage.getItem("mdg-app:logo-noir"))===true){document.querySelectorAll('link[rel="icon"]').forEach(function(l){l.href=l.type==="image/svg+xml"?"icons/favicon-noir.svg":"icons/favicon-noir-32.png"});document.querySelector('link[rel="apple-touch-icon"]').href="icons/apple-touch-icon-noir.png"}}catch(e){}</script>
+<link rel="icon" type="image/svg+xml" href="icons/v2/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/v2/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/v2/apple-touch-icon.png">
+<script>try{if(JSON.parse(localStorage.getItem("mdg-app:logo-noir"))===true){document.querySelectorAll('link[rel="icon"]').forEach(function(l){l.href=l.type==="image/svg+xml"?"icons/v2/favicon-noir.svg":"icons/v2/favicon-noir-32.png"});document.querySelector('link[rel="apple-touch-icon"]').href="icons/v2/apple-touch-icon-noir.png"}}catch(e){}</script>
 <script>/* service worker : vérifie les mises à jour à chaque retour sur l'application ; quand une nouvelle version prend la main, la page se recharge (tout de suite si elle vient de s'ouvrir, sinon au prochain retour, jamais pendant une saisie) */if('serviceWorker' in navigator){(function(){var sw=navigator.serviceWorker,avant=!!sw.controller,t0=Date.now(),attente=false;sw.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(attente)location.reload();else r.update().catch(function(){})}})}).catch(function(){});sw.addEventListener('controllerchange',function(){if(!avant||attente)return;if(Date.now()-t0<6000)location.reload();else attente=true})})()}</script>
 <!-- polices hébergées dans le projet (hors connexion) -->
 <link rel="stylesheet" href="css/fonts.css">

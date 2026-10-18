@@ -92,7 +92,7 @@
     const conclu = D.negos.filter(n => n.statut === 'conclue').length;
     const nav = (k, t, n) => `<a class="nav" href="#${k}" ${view === k ? 'aria-current="page"' : ''}>${ico(k)}<span>${t}</span>${n ? `<em>${n}</em>` : ''}</a>`;
     root.innerHTML = `<div class="app"><nav class="rail" aria-label="Tableau de bord">
-      <a class="brand" href="#apercu">${logo.replace('width="56" height="56"', 'width="34" height="34"')}<span><b>Marché de Gros</b><small>Tableau de bord</small></span></a>
+      <a class="brand" href="#apercu" aria-label="Marché de Gros, tableau de bord" style="flex-direction:column;align-items:flex-start;gap:6px">${window.MDGMarque ? MDGMarque.ligne({ fond: 'vert', h: 22 }) : '<b>Marché de Gros</b>'}<small>Tableau de bord</small></a>
       ${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}${nav('messages', 'Messages', D.alertes.filter(a => !a.vu).length + D.sigm.filter(x => !x.traite).length)}${nav('identites', 'Identités', D.ident.filter(v => v.statut === 'en_attente').length)}
       <span class="sp"></span><a class="nav ext" href="./">${ico('site')}<span>Voir le site</span></a>
       <div class="who">Connecté en administrateur<b>${esc(fmtTel(N.session().user.tel))}</b></div></nav>

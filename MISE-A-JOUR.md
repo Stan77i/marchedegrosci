@@ -1,3 +1,14 @@
+# Mise à jour — 18 octobre 2026 (écran d'ouverture « le sac qui se remplit »)
+
+Service worker : `mgci-v76`.
+
+- Nouvel écran d'ouverture de l'application, aux couleurs du logo :
+  - trois produits tombent dans un sac de jute, et le sac se remplit ;
+  - puis « marché » monte et « de Gros » s'écrit, avec « On remplit les étals… » en dessous ;
+  - les produits continuent de tomber tant que l'application se prépare.
+- Durée minimale : 1,3 s au lieu de 0,95 s, le temps de voir le sac se remplir. Si l'application est prête plus tard, l'écran reste jusqu'à ce qu'elle le soit.
+- Mouvement réduit (réglage du téléphone) : le sac plein et le nom s'affichent sans animation.
+
 # Mise à jour — 18 octobre 2026 (pièces expirées refusées, dossiers d'identité conservés 5 ans, activité du réseau)
 
 Service worker : `mgci-v75`. Base de données : `supabase/schema-16-identite-conservation.sql`, **déjà appliqué** sur le projet.

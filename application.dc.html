@@ -577,8 +577,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 
 <div class="spl" style="position:absolute;inset:0;background:{{ splashBg }};color:var(--ivoire);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:{{ splashOp }};pointer-events:{{ splashPe }};transition:opacity .6s ease;z-index:30">
   <div class="spl-marque">{{ splashMark }}</div>
-  <div class="spl-trait" aria-hidden="true"><i></i></div>
-  <span class="spl-dev">LE MARCHÉ EST UNE CONNEXION</span>
+  <span class="spl-dev">On remplit les étals…</span>
 </div>
 
 </div>
@@ -658,7 +657,7 @@ class Component extends DCLogic {
     };
     if (!boot()) this.poll = setInterval(() => { if (boot()) clearInterval(this.poll); }, 60);
     if (this.state.splash === 'on') { const t0 = Date.now(); setTimeout(() => this.setState({ splashLine: true }), 80);
-      const fin = () => { if (this.state.splash !== 'on') return; const r = Math.max(0, 950 - (Date.now() - t0)); setTimeout(() => this.setState({ splash: 'fade' }), r); setTimeout(() => this.setState({ splash: 'off' }), r + 450); };
+      const fin = () => { if (this.state.splash !== 'on') return; const r = Math.max(0, 1300 - (Date.now() - t0)); setTimeout(() => this.setState({ splash: 'fade' }), r); setTimeout(() => this.setState({ splash: 'off' }), r + 450); };
       this.finSplash = fin; const chk = setInterval(() => { if (this.state.ready) { clearInterval(chk); fin(); } }, 100); setTimeout(() => { clearInterval(chk); fin(); }, 2200); }
   }
   slide(prevStack) {
@@ -943,10 +942,18 @@ class Component extends DCLogic {
     return s + own.replace('/>', ' style="animation:mkPop .5s both"/>') + '</svg>';
   }
 
-  // écran d'ouverture : « marché » se pose, « de Gros » s'écrit, un trait maïs court tant que l'application se prépare (css/mgci-app.css .spl-*)
+  // écran d'ouverture « le sac qui se remplit » : trois produits tombent dans un sac de jute qui se remplit, puis le nom se pose (css/mgci-app.css .spl-*, .sac-*)
   splashMark() { const h = React.createElement;
-    if (!window.MDGMarque) return h('span', { className: 'spl-repli' }, 'Marché de Gros');
-    return h('div', { dangerouslySetInnerHTML: { __html: MDGMarque.empile({ fond: this.isDark() ? 'noir' : 'vert', cls: 'spl-mq' }) } }); }
+    const sac = 'M52 70Q40 150 46 214Q50 238 110 240Q170 238 174 214Q180 150 168 70Z';
+    const svg = '<svg class="spl-sac" viewBox="0 0 220 250" aria-hidden="true">' +
+      '<defs><clipPath id="splSac"><path d="' + sac + '"/></clipPath><pattern id="splJute" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M0 4H8M4 0V8" stroke="rgba(23,21,18,.18)" stroke-width="1.2"/></pattern></defs>' +
+      '<circle class="sac-a" cx="92" cy="40" r="10" fill="#E2552F"/><circle class="sac-b" cx="122" cy="30" r="9" fill="#6CC58C"/><circle class="sac-c" cx="140" cy="46" r="8" fill="#F2C94C"/>' +
+      '<path d="' + sac + '" fill="#B99C72"/><path d="' + sac + '" fill="url(#splJute)"/>' +
+      '<g clip-path="url(#splSac)"><g class="sac-plein"><rect x="30" y="92" width="160" height="160" fill="rgba(23,21,18,.28)"/>' +
+      '<circle cx="70" cy="96" r="13" fill="#D9472B"/><circle cx="96" cy="90" r="14" fill="#E2552F"/><circle cx="124" cy="94" r="13" fill="#6CC58C"/><circle cx="150" cy="98" r="12" fill="#F2C94C"/></g></g>' +
+      '<path d="M44 72Q110 52 176 72Q172 84 110 82Q48 84 44 72Z" fill="#9C8058"/><path d="M60 150Q110 158 160 150" stroke="rgba(23,21,18,.22)" stroke-width="2" fill="none"/></svg>';
+    const nom = window.MDGMarque ? MDGMarque.empile({ fond: this.isDark() ? 'noir' : 'vert', cls: 'spl-mq' }) : '<span class="spl-repli">Marché de Gros</span>';
+    return h('div', { className: 'spl-bloc', dangerouslySetInnerHTML: { __html: svg + nom } }); }
   renderVals() {
     const S = this.state, framed = S.vw >= 500, sc = framed ? Math.min((S.vh - 32) / 866, (S.vw - 32) / 412, 1) : 1; this.sc = sc;
     const kbH = !framed && S.kbH ? S.kbH : 0;

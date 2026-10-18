@@ -1,3 +1,24 @@
+# Mise à jour — 18 octobre 2026 (3 annonces gratuites, puis identité vérifiée ; bannissement à vie)
+
+Service worker : `mgci-v72`.
+
+## À faire une fois par le propriétaire
+- Lancer **`supabase/schema-14-confiance.sql`** dans l'éditeur SQL de Supabase (après `schema-13-identite.sql`). Il termine en affichant `comptes_au_dela_de_3` : le nombre de comptes qui ont déjà 3 annonces ou plus. Ils gardent leurs annonces en ligne, mais devront se faire vérifier pour la suivante.
+
+## Ce qui change
+- **3 annonces gratuites** par compte (offres et demandes confondues). La 4e demande une identité vérifiée. Modifier une annonce déjà publiée ne compte pas ; supprimer une annonce ne rend pas de place (sinon on contournerait la règle). Les administrateurs ne sont pas concernés.
+- Quand la base refuse la 4e annonce, l'application ouvre une fenêtre : « Vos 3 annonces gratuites sont publiées », avec « Vérifier mon identité » ou « Plus tard ». L'annonce reste sur le téléphone et part toute seule après la validation.
+- **Mon compte** : tant que l'identité n'est pas vérifiée, un encadré en haut de la page le demande, avec une jauge « X annonces gratuites sur 3 » et le bouton « Vérifier mon identité ». L'en-tête affiche « Identité non vérifiée » ou « Identité vérifiée » (sceau bleu). L'encadré suit le dossier : en cours d'examen, photos à refaire, refusé.
+- **Bannissement à vie** (Tableau de bord → Comptes → « Bannir », aussi depuis une alerte de Messages) : motif arnaque, mauvais produits à répétition, insultes, ou autre, avec une précision pour l'équipe. Les annonces du compte sont masquées ; il ne peut plus publier, réactiver une annonce, ouvrir une négociation, écrire ni faire vérifier son identité ; son badge disparaît. « Lever le bannissement » existe en cas d'erreur (les annonces restent masquées).
+- **Identités** : un dossier envoyé sous le nom d'une personne déjà bannie est marqué « nom déjà banni ».
+- **Comptes** : étiquettes « identité vérifiée » et « banni · motif », et le nombre d'annonces gratuites utilisées.
+
+## Sécurité
+- Tout est contrôlé par la base (déclencheurs `garde_publication` et `garde_banni`), pas par l'application : un membre ne peut ni lire, ni modifier son compteur ou la liste des bannis. Seules les fonctions réservées aux administrateurs bannissent ou lèvent un bannissement. Un administrateur ne peut pas être banni.
+
+## Testé
+- Sur un Postgres 16 local avec les politiques du projet : 3 annonces passent, la 4e est refusée, modifier une annonce passe, supprimer puis republier est refusé, un compte vérifié publie, un compte qui avait déjà 4 annonces est refusé pour la suivante, un banni ne peut plus publier, écrire, réactiver ni demander une vérification, son badge disparaît, un membre ne peut ni lire les bannis ni bannir, une annonce masquée le reste.
+
 # Mise à jour — 18 octobre 2026 (lecture des vraies CNI ivoiriennes)
 
 Service worker : `mgci-v71`.

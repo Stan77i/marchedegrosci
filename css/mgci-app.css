@@ -133,21 +133,23 @@
 .qd[data-u="semaine"].nuit { --qd-bg: rgba(242, 201, 76, .12); --qd-bd: rgba(242, 201, 76, .4); --qd-fg: var(--demande); }
 .qd[data-u="dispo"].nuit { --qd-bg: rgba(108, 197, 140, .12); --qd-bd: rgba(108, 197, 140, .4); --qd-fg: var(--offre); }
 
-/* écran d'ouverture : la marque se dessine en ~0,85 s (disque, G, M, point), puis un halo respire tant que l'application se prépare */
-.spl-marque { width: 116px; height: 116px; }
-.spl-disque { transform-box: fill-box; transform-origin: center; animation: splDisque .4s cubic-bezier(.2, .9, .3, 1.15) both; }
-.spl-g { stroke-dasharray: 1160; stroke-dashoffset: 1160; animation: splTrace .5s .1s cubic-bezier(.65, 0, .35, 1) forwards; }
-.spl-m { stroke-dasharray: 590; stroke-dashoffset: 590; animation: splTrace .4s .3s cubic-bezier(.65, 0, .35, 1) forwards; }
-.spl-point { transform-box: fill-box; transform-origin: center; transform: scale(0); animation: splPoint .25s .6s cubic-bezier(.2, .9, .3, 1.5) forwards; }
-.spl-halo { transform-box: fill-box; transform-origin: center; opacity: 0; animation: splHalo 1.8s .9s ease-out infinite; }
-.spl-nom { animation: splMonte .45s .25s cubic-bezier(.22, 1, .36, 1) both; }
-.spl-dev { animation: splMonte .45s .4s cubic-bezier(.22, 1, .36, 1) both; }
-@keyframes splDisque { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-@keyframes splTrace { to { stroke-dashoffset: 0; } }
-@keyframes splPoint { to { transform: scale(1); } }
-@keyframes splHalo { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(1.32); opacity: 0; } }
-@keyframes splMonte { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* écran d'ouverture « le nom qui se pose » : « marché » monte, « de Gros » s'écrit de gauche à droite,
+   puis un trait maïs court sous le nom tant que l'application se prépare (logo Étal vert, app/marque.js) */
+.spl-marque { width: min(288px, 72vw); }
+.spl-mq { width: 100%; height: auto; }
+.spl-mq .mq-m { animation: splMonte .4s cubic-bezier(.22, 1, .36, 1) both; }
+.spl-mq .mq-g { animation: splEcrit .45s .12s cubic-bezier(.65, 0, .35, 1) both; }
+.spl-repli { font: 600 34px/1 Jost, sans-serif; color: #F3EFE4; }
+.spl-trait { width: min(288px, 72vw); height: 3px; margin-top: 22px; border-radius: 2px; background: rgba(243, 239, 228, .12); overflow: hidden; }
+.spl-trait i { display: block; height: 100%; width: 38%; border-radius: 2px; background: #F2C230; transform: translateX(-100%); animation: splCourt 1.25s .5s cubic-bezier(.65, 0, .35, 1) infinite; }
+.spl-dev { margin-top: 20px; font-size: var(--t-2xs); letter-spacing: .26em; color: rgba(243, 239, 228, .62); animation: splMonte .45s .35s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes splMonte { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes splEcrit { from { clip-path: inset(-20% 100% -20% 0); } to { clip-path: inset(-20% -5% -20% 0); } }
+@keyframes splCourt { from { transform: translateX(-100%); } to { transform: translateX(270%); } }
 @media (prefers-reduced-motion: reduce) {
-  .spl-disque, .spl-g, .spl-m, .spl-point, .spl-nom, .spl-dev { animation: none; stroke-dashoffset: 0; transform: none; opacity: 1; }
-  .spl-halo { animation: none; opacity: 0; }
+  .spl-mq .mq-m, .spl-mq .mq-g, .spl-dev { animation: none; }
+  .spl-trait i { animation: none; transform: none; width: 100%; opacity: .5; }
+}
+/* en-tête du menu : le nom seul, sans symbole */
+.mq-menu { display: block; line-height: 0; }
 }

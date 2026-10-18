@@ -19,7 +19,8 @@
   const me = () => { const s = N() && N().session(); return s && s.user && s.user.id; };
   // l'avatar : celui que la liste du serveur donne, sinon celui des profils publics déjà connus (v3/compte.js), sinon les initiales
   // le logo du Marché de Gros (messages de l'administration)
-  const LOGO = t => `<svg width="${t}" height="${t}" viewBox="0 0 38 38" aria-hidden="true" style="flex:none;border-radius:50%"><circle cx="19" cy="19" r="19" fill="#B85C38"/><g transform="translate(19 19) scale(.058) translate(-256 -256)" fill="none" stroke="#F5F0E6" stroke-linecap="round" stroke-linejoin="round"><path d="M394.6 117.4A196 196 0 1 0 452 256H372" stroke-width="26"/><circle cx="394.6" cy="117.4" r="22" fill="#F5F0E6" stroke="none"/><path d="M178 338V182L256 292L334 182V338" stroke-width="36"/></g></svg>`;
+  // le petit « dG » du logo Étal vert (app/marque.js), rond comme les autres avatars
+  const LOGO = t => window.MDGMarque ? MDGMarque.dg(t, { rond: true }) : `<span aria-hidden="true" style="flex:none;width:${t}px;height:${t}px;border-radius:50%;background:#10392B"></span>`;
   const OFF = '<span class="dm-off">Officiel</span>';
   const admin = () => { try { return JSON.parse(localStorage.getItem('mdg-nuage:admin')) === true; } catch (_) { return false; } };
   const av = (uid, code, nom, t, officiel) => { if (officiel) return LOGO(t); const u = !code && uid && window.MDGCompte ? MDGCompte.avatar(uid, { size: t, nom: nom || '?' }).uri : A() ? A().uri(code, { size: t, nom: nom || '?', seed: uid }) : '';

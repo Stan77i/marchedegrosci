@@ -10,7 +10,7 @@
   const PROD = Object.fromEntries((window.MDG && MDG.products || []).map(p => [p.slug, p.name]));
   const date = t => t ? new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: new Date(t).getFullYear() === new Date().getFullYear() ? undefined : 'numeric' }) : '—';
   const ago = t => { if (!t) return 'jamais'; const m = (Date.now() - Date.parse(t)) / 60000; return m < 60 ? 'il y a ' + Math.max(1, Math.round(m)) + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : m < 2880 ? 'hier' : date(t); };
-  const D = { offres: [], demandes: [], signalements: [], comptes: [], negos: [], alertes: [], discussions: [], ident: [], err: {} };
+  const D = { offres: [], demandes: [], signalements: [], comptes: [], negos: [], alertes: [], discussions: [], ident: [], sigm: [], err: {} };
   let view = (location.hash.slice(1) || 'apercu'), filt = { type: 'tout', statut: 'tout', q: '' }, showN = 40;
 
   const ICO = {
@@ -52,9 +52,22 @@
       N.rpc('admin_comptes').then(r => { D.comptes = r || []; delete D.err.comptes; }).catch(e => { D.err.comptes = e.message; }),
       get('alertes', '/rest/v1/alertes?select=*&order=created_at.desc&limit=500'),
       N.rpc('admin_discussions').then(r => { D.discussions = r || []; delete D.err.discussions; }).catch(e => { D.err.discussions = e.message; }),
+      N.rpc('admin_signalements_membres').then(r => { D.sigm = r || []; delete D.err.sigm; }).catch(e => { D.sigm = []; if (!/admin_signalements_membres|schema cache|Could not find/i.test(e.message)) D.err.sigm = e.message; }),
       N.rpc('admin_identite_file').then(r => { D.ident = r || []; delete D.err.identites; }).catch(e => { D.ident = []; if (!/admin_identite_file|schema cache|Could not find/i.test(e.message)) D.err.identites = e.message; else D.identAbsent = true; })
     ]);
     D.byUser = Object.fromEntries(D.comptes.map(c => [c.id, c]));
+    purger();
+  }
+  // dossiers d'identité abandonnés (30 jours) ou dont l'effacement avait échoué : photos effacées à chaque ouverture (schema-15)
+  let purgeFaite = false;
+  async function purger() {
+    if (purgeFaite) return; purgeFaite = true;
+    let L; try { L = await N.rpc('admin_identite_a_purger'); } catch (_) { return; }
+    let n = 0;
+    for (const v of L || []) {
+      try { await N.effacerPrive('identite', ['recto', 'verso', 'selfie'].map(x => v.dossier + '/' + x + '.jpg')); await N.rpc('admin_identite_purger', { p_id: v.id }); n++; } catch (_) {}
+    }
+    if (n) toast(n > 1 ? n + ' dossiers d’identité anciens ont été effacés.' : 'Un dossier d’identité ancien a été effacé.');
   }
 
   /* ——— modèle ——— */
@@ -77,7 +90,7 @@
     const nav = (k, t, n) => `<a class="nav" href="#${k}" ${view === k ? 'aria-current="page"' : ''}>${ico(k)}<span>${t}</span>${n ? `<em>${n}</em>` : ''}</a>`;
     root.innerHTML = `<div class="app"><nav class="rail" aria-label="Tableau de bord">
       <a class="brand" href="#apercu">${logo.replace('width="56" height="56"', 'width="34" height="34"')}<span><b>Marché de Gros</b><small>Tableau de bord</small></span></a>
-      ${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}${nav('messages', 'Messages', D.alertes.filter(a => !a.vu).length)}${nav('identites', 'Identités', D.ident.filter(v => v.statut === 'en_attente').length)}
+      ${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}${nav('messages', 'Messages', D.alertes.filter(a => !a.vu).length + D.sigm.filter(x => !x.traite).length)}${nav('identites', 'Identités', D.ident.filter(v => v.statut === 'en_attente').length)}
       <span class="sp"></span><a class="nav ext" href="./">${ico('site')}<span>Voir le site</span></a>
       <div class="who">Connecté en administrateur<b>${esc(fmtTel(N.session().user.tel))}</b></div></nav>
       <main id="main">${(VIEWS[view] || VIEWS.apercu)({ T, masq, toDo, conclu })}</main></div>`;
@@ -160,6 +173,13 @@
       <section class="sec"><div class="sec-h"><h2>Message à tous les membres</h2><p>Chacun le reçoit dans ses messages, avec le logo du Marché de Gros, et une notification.</p></div>
         <div class="list" style="padding:16px 18px;display:flex;flex-direction:column;gap:12px"><textarea data-dif maxlength="2000" rows="4" placeholder="Bonjour, …" aria-label="Message à tous les membres" style="width:100%;box-sizing:border-box;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:#14120f;color:var(--ink);font:400 15px/1.45 Jost,sans-serif;resize:vertical"></textarea>
         <div style="display:flex;justify-content:flex-end"><button class="btn pri" data-difgo>Envoyer à tous</button></div></div></section>
+      <section class="sec"><div class="sec-h"><h2>Personnes signalées</h2><p>${D.sigm.filter(x => !x.traite).length ? D.sigm.filter(x => !x.traite).length + ' à traiter. ' : ''}Arnaque, insultes ou mauvais produits, signalés depuis une discussion ou une négociation. La personne signalée ne sait pas qui l’a signalée.</p></div>
+        <div class="list">${D.err.sigm ? '<div class="empty"><b>Signalements indisponibles</b>' + esc(D.err.sigm) + '</div>' : D.sigm.length ? D.sigm.map(x => `
+          <div class="row${x.traite ? ' is-hidden' : ''}"><span class="mk ${x.traite ? 'off' : 'd'}" style="background:${x.traite ? '' : '#E2735B'}"></span>
+            <div><b>${esc(MOTIF_BAN[x.motif] || x.motif)} · ${esc(fmtTel(String(x.cible_tel || '').replace(/^225/, '')) || 'compte supprimé')}</b><small>${x.detail ? '« ' + esc(x.detail) + ' »' : 'Sans précision'}</small></div>
+            <div class="c3"><small>${x.source === 'dm' ? 'message direct' : x.source === 'negociation' ? 'négociation' : 'profil'} · par ${esc(fmtTel(String(x.auteur_tel || '').replace(/^225/, '')))}</small><small>${ago(x.created_at)}</small></div>
+            <div class="c4">${x.signale_par > 1 ? `<span class="tag bad">${x.signale_par} personnes</span>` : ''} ${x.cible_banni ? '<span class="tag bad">banni</span>' : x.cible_verifie ? '<span class="tag ok">vérifié</span>' : ''}</div>
+            <div class="acts">${x.source === 'dm' && x.ref_id ? `<button class="btn sm" data-lire="${x.ref_id}">Lire</button>` : ''}${window.MDGMessages ? `<button class="btn sm" data-ecrire="${x.cible_id}">Écrire</button>` : ''}${x.traite ? '' : `<button class="btn sm" data-sigok="${x.id}">Traité</button>`}${x.cible_banni ? '' : `<button class="btn sm bad" data-bannir="${x.cible_id}">Bannir</button>`}</div></div>`).join('') : '<div class="empty"><b>Aucun signalement</b>Les personnes signalées par les membres apparaîtront ici.</div>'}</div></section>
       <section class="sec"><div class="sec-h"><h2>Alertes : sortie de l’application</h2><p>${nv ? nv + ' nouvelle' + (nv > 1 ? 's' : '') + '. ' : ''}Numéro, WhatsApp, autre messagerie ou lien écrit dans un message. Le numéro est masqué pour l’autre personne.</p></div>
         <div class="list">${D.err.alertes ? '<div class="empty"><b>Alertes indisponibles</b>' + esc(D.err.alertes) + '</div>' : D.alertes.length ? D.alertes.map(a => `
           <div class="row${a.vu ? ' is-hidden' : ''}"><span class="mk ${a.vu ? 'off' : 'd'}" style="background:${a.vu ? '' : '#E2735B'}"></span>
@@ -296,6 +316,7 @@
       } catch (e) { b.disabled = false; toast('Action impossible : ' + e.message); }
     });
     $$('[data-bannir]').forEach(b => b.onclick = () => bannir(b.dataset.bannir));
+    $$('[data-sigok]').forEach(b => b.onclick = async () => { b.disabled = true; try { await N.rpc('admin_signalement_membre_traite', { p_id: b.dataset.sigok }); const x = D.sigm.find(y => y.id === b.dataset.sigok); if (x) x.traite = true; paint(); } catch (e) { b.disabled = false; toast('Impossible : ' + e.message); } });
     $$('[data-deban]').forEach(b => b.onclick = () => lever(b.dataset.deban));
     $$('[data-code]').forEach(b => b.onclick = async () => {
       const c = prompt('Nouveau code secret à 6 chiffres pour le ' + fmtTel(String(b.dataset.tel).replace(/^225/, '')) + ' :\n(Communiquez-le à la personne par téléphone, de vive voix.)');

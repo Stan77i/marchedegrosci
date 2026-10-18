@@ -2,7 +2,7 @@
    Parcours : la pièce (recto, verso), un selfie tenant un code écrit à la main, le nom comme sur la pièce, puis l'envoi.
    Un administrateur décide (admin.html, onglet Identités). Rien n'est jamais déclaré « vérifié » automatiquement :
    la lecture de la bande MRZ (Tesseract.js, dans le téléphone) pré-remplit le nom et n'est qu'une indication pour l'administrateur.
-   API : MDGIdentite.ouvrir() · inviter('limite'|'banni') · gratuitesRestantes() · statut(force) · estVerifie(uid) · badge(taille, texte?) · lireMRZ(blob, piece) · analyserMRZ(texte)
+   API : MDGIdentite.ouvrir() · inviter('limite'|'banni') · gratuitesRestantes() · signaler(uid, {nom, source, ref, bloquer}) · gardePaiement(uid, nom) · statut(force) · estVerifie(uid) · badge(taille, texte?) · lireMRZ(blob, piece) · analyserMRZ(texte)
    Événement « mdg:identite » quand un statut ou un badge arrive. Aucune donnée de la pièce n'est écrite dans la console. */
 (function () {
   const N = () => window.MDGNuage;
@@ -207,7 +207,7 @@
   const CSS = `.idv-badge{display:inline-flex;align-items:center;gap:5px;color:#2C6CB0;vertical-align:-3px;flex:none}
 .idv-badge svg{display:block}
 .idv-badge.txt{padding:3px 10px 3px 6px;border-radius:999px;background:rgba(106,174,240,.18);font:600 12.5px/1.2 Jost,system-ui,sans-serif;vertical-align:middle}
-.idv-bg{position:fixed;inset:0;z-index:8900;background:rgba(8,7,5,.62);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:idvF .2s both}
+.idv-bg{position:fixed;inset:0;z-index:9400;background:rgba(8,7,5,.62);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:idvF .2s both}
 @media (min-width:760px){.idv-bg{align-items:center;padding:24px}}
 .idv{--bg:#F4EEE3;--card:#FFFDF8;--card2:#EFE7D9;--ink:#171512;--mute:#655C4D;--faint:#857A67;--line2:rgba(23,21,18,.14);--acc:#E07A3F;--acc-t:#A0492A;--ok:#2E7D4F;--bad:#C0442B;--blue:#2C6CB0;
   position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:min(94dvh,860px);background:var(--bg);color:var(--ink);border-radius:28px 28px 0 0;font:400 15px/1.45 Jost,system-ui,sans-serif;overflow:hidden;animation:idvUp .32s cubic-bezier(.22,1,.36,1) both}
@@ -258,10 +258,10 @@
   /* ——— la fenêtre ——— */
   let bg = null, rendre = null, onKey = null;
   function fermer() { if (!bg) return; bg.remove(); bg = null; document.removeEventListener('keydown', onKey); if (rendre) { rendre(); rendre = null; } }
-  function feuille() {
+  function feuille(titre = 'Vérifier mon identité') {
     style(); fermer();
     bg = document.createElement('div'); bg.className = 'idv-bg';
-    bg.innerHTML = `<div class="idv" role="dialog" aria-modal="true" aria-label="Vérifier mon identité"><header class="idv-top"><button type="button" class="idv-ib" data-ret aria-label="Retour" hidden>${IC('retour', 22)}</button><b>Vérifier mon identité</b><button type="button" class="idv-ib" data-x aria-label="Fermer">×</button></header><div class="idv-pas" aria-hidden="true"></div><div class="idv-main" aria-live="polite"></div></div>`;
+    bg.innerHTML = `<div class="idv" role="dialog" aria-modal="true" aria-label="${esc(titre)}"><header class="idv-top"><button type="button" class="idv-ib" data-ret aria-label="Retour" hidden>${IC('retour', 22)}</button><b>${esc(titre)}</b><button type="button" class="idv-ib" data-x aria-label="Fermer">×</button></header><div class="idv-pas" aria-hidden="true"></div><div class="idv-main" aria-live="polite"></div></div>`;
     document.body.appendChild(bg);
     rendre = N() && N().piege ? N().piege(bg) : null;
     bg.querySelector('[data-x]').onclick = fermer;
@@ -281,6 +281,35 @@
     if (s.statut === 'non_verifie' || s.statut === 'brouillon') return parcours(s);
     etat(s);
   }
+
+  // « Signaler cette personne » (discussions, négociations) : l'équipe reçoit le signalement dans le tableau de bord ; la personne n'en sait rien
+  const MOTIFS = [['arnaque', 'Arnaque ou tentative', 'Paiement demandé d’avance, marchandise jamais livrée, faux vendeur'], ['insultes', 'Insultes ou menaces', 'Propos injurieux, harcèlement'], ['mauvais_produits', 'Mauvais produits', 'Marchandise différente de l’annonce, abîmée, trompeuse'], ['autre', 'Autre chose', 'Expliquez en quelques mots']];
+  function signaler(uid, o = {}) {
+    if (!uid) return; if (!me()) { if (N()) N().open(); return; }
+    feuille('Signaler cette personne');
+    const main = bg.querySelector('.idv-main'); let motif = '';
+    main.innerHTML = `<h2>Que s’est-il passé${o.nom ? ' avec ' + esc(o.nom) : ''} ?</h2><p>L’équipe du Marché de Gros lit chaque signalement. ${o.nom ? esc(o.nom) : 'La personne'} ne saura pas que c’est vous. En cas d’arnaque, de mauvais produits à répétition ou d’insultes, le compte est banni à vie.</p>
+      <div class="idv-choix" role="group" aria-label="Motif">${MOTIFS.map(m => `<button type="button" data-m="${m[0]}" aria-pressed="false"><span><b>${m[1]}</b><small>${m[2]}</small></span></button>`).join('')}</div>
+      <div><label class="idv-l" for="idv-sig">Ce qui s’est passé (facultatif)</label><textarea id="idv-sig" class="idv-in" maxlength="500" rows="3" style="height:auto;padding:12px 14px;font-size:15px;resize:vertical" placeholder="Par exemple : il demande de payer avant de voir la marchandise"></textarea></div>
+      <p class="idv-bad" data-err role="alert"></p>
+      <div class="idv-act"><button type="button" class="idv-go" data-go disabled>Envoyer le signalement</button><button type="button" class="idv-alt" data-fin>Annuler</button></div>`;
+    const q = x => main.querySelector(x), go = q('[data-go]');
+    main.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { motif = b.dataset.m; main.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); go.disabled = false; });
+    q('[data-fin]').onclick = fermer;
+    go.onclick = async () => {
+      const t = q('textarea').value.trim(); if (motif === 'autre' && !t) { q('[data-err]').textContent = 'Expliquez en quelques mots ce qui s’est passé.'; return; }
+      go.disabled = true; go.textContent = 'Envoi…'; q('[data-err]').textContent = '';
+      try { await N().rpc('signaler_membre', { p_cible: uid, p_motif: motif, p_detail: t || null, p_source: o.source || 'profil', p_ref: o.ref || null });
+        main.innerHTML = `<div class="idv-etat"><div class="rond ok">${IC('verifie', 34)}</div><h2>Merci, c’est envoyé</h2><p>L’équipe va regarder. Si vous vous sentez en danger ou si on vous demande de payer d’avance, arrêtez l’échange et ne payez rien.</p></div><div class="idv-act">${o.bloquer ? '<button type="button" class="idv-go" data-bl>Bloquer aussi cette personne</button>' : ''}<button type="button" class="idv-alt" data-fin>Fermer</button></div>`;
+        main.querySelector('[data-fin]').onclick = fermer; const bl = main.querySelector('[data-bl]'); if (bl) bl.onclick = () => { fermer(); o.bloquer(); };
+      } catch (e) { go.disabled = false; go.textContent = 'Envoyer le signalement'; q('[data-err]').textContent = /signaler_membre|schema cache|Could not find/i.test(e.message) ? 'Le signalement n’est pas encore disponible. Écrivez au Marché de Gros.' : !navigator.onLine ? 'Pas de connexion internet : réessayez quand le réseau revient.' : String(e.message || 'Impossible pour l’instant.').replace(/^COMPTE_BANNI : /, ''); }
+    };
+  }
+
+  // rappel avant de payer : affiché dans les discussions et avant un accord quand l'autre n'a pas fait vérifier son identité
+  const gardePaiement = (uid, nom) => uid && !estVerifie(uid)
+    ? `${esc(nom || 'Cette personne')} n’a pas fait vérifier son identité. Ne payez jamais d’avance : voyez la marchandise, puis payez à la livraison.`
+    : 'Même avec une personne vérifiée : voyez la marchandise avant de payer.';
 
   // annonces gratuites restantes avant que la vérification soit demandée (null si inconnu ou sans objet)
   function gratuitesRestantes(s) {
@@ -452,5 +481,5 @@
   // vider le cache de statut quand on change de compte
   addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte') { const u = me(), c = J(KS, null); if (!u || (c && c.uid !== u.id)) { try { localStorage.removeItem(KS); } catch (_) {} dire(); } } });
 
-  window.MDGIdentite = { ouvrir, inviter, gratuitesRestantes, statut, statutCache, RESUME, estVerifie, badge, lireMRZ, analyserMRZ, retirer };
+  window.MDGIdentite = { ouvrir, inviter, gratuitesRestantes, signaler, gardePaiement, statut, statutCache, RESUME, estVerifie, badge, lireMRZ, analyserMRZ, retirer };
 })();

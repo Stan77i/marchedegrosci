@@ -458,6 +458,8 @@ label.cp-r{cursor:pointer}
       const M = window.MDGMessages, G = window.MDGNegoce, dmN = M && M.unread ? M.unread() : 0, nl = nonLues(), S = window.MDGSons, sn = S ? S.reglages() : null;
       const reg = (REGIONS().find(r => r[0] === p.region_slug) || [])[1], lieuTxt = p.ville || reg || '', adm = J('mdg-nuage:admin', false);
       const mono = n => `<span class="cp-ico" aria-hidden="true">${IC(n, 22)}</span>`;
+      const ID = window.MDGIdentite, idC = ID && ID.statutCache(), idS = idC ? idC.statut : 'non_verifie';
+      if (ID && navigator.onLine) ID.statut().then(s => { if (s && s.statut !== idS && bg && bg.rafraichir && main.isConnected) bg.rafraichir(); }).catch(() => {});
       // l'activité : ce qui s'est vraiment passé, du plus récent au plus ancien, regroupé par jour
       const montant = t => { const m = /(\d[\d  .]*)\s*F(?:\s*\/\s*([\p{L}]+))?/u.exec(t || ''); return m ? `${m[1].trim()} F${m[2] ? `<em>/ ${esc(m[2])}</em>` : ''}` : ''; };
       const evs = notifs().slice(0, 40).map((n, i) => { const nego = /propos|accord|accept|refus|expir|prix/i.test(n.texte), ok = /accord|accept/i.test(n.texte);
@@ -474,7 +476,7 @@ label.cp-r{cursor:pointer}
       main.innerHTML = `<div class="cp-pg">
         <section class="cp-hero" aria-label="Mon identité">
           <div class="cp-hero-av">${A() ? A().svg(p.avatar, { size: 114, nom: nom || '?', seed: u.id }) : ''}<button type="button" class="cp-hero-cam" data-av aria-label="Changer mon avatar">${IC('photo', 18)}</button></div>
-          <h2>${esc(nom ? 'Bonjour, ' + (p.pseudo || p.prenom || nom) : 'Bienvenue')}</h2>
+          <h2>${esc(nom ? 'Bonjour, ' + (p.pseudo || p.prenom || nom) : 'Bienvenue')}${idS === 'verifie' ? ' ' + ID.badge(22) : ''}</h2>
           <p>${esc(N().fmtTel(u.tel))}</p>
           <div class="cp-hero-tags">${p.role ? `<span>${ROLE_TXT[p.role] || ''}</span>` : ''}${lieuTxt ? `<span>${IC('lieu', 13)}${esc(lieuTxt)}</span>` : ''}${!nom ? '<span class="a">Profil à compléter</span>' : ''}</div>
           <div class="cp-hero-act">
@@ -497,6 +499,7 @@ label.cp-r{cursor:pointer}
             ${ligne({ ico: mono('cloche'), t: 'Notifications', v: '<span data-pst>…</span>', n: nl, attrs: 'data-go="notifs"' })}
             ${S ? ligne({ ico: mono('son'), t: 'Sons', v: sn && sn.on ? 'Activés' : 'Désactivés', attrs: 'data-sons' }) : ''}
             ${ligne({ ico: mono('oeil'), t: 'Confidentialité', v: p.nom_public ? 'Nom visible' : 'Initiale', attrs: 'data-go="prefs"' })}
+            ${ID ? ligne({ ico: mono('verifie'), t: 'Identité', s: (ID.RESUME[idS] || ID.RESUME.non_verifie)[1], v: (ID.RESUME[idS] || ID.RESUME.non_verifie)[0], vf: idS === 'verifie', attrs: 'data-idv' }) : ''}
             ${ligne({ ico: mono('cadenas'), t: 'Sécurité et code secret', attrs: 'data-go="securite"' })}
             ${M && M.ecrireMarche && !adm ? ligne({ ico: mono('service'), t: 'Écrire au Marché de Gros', s: 'Une question, un problème : l’équipe répond', attrs: 'data-marche' }) : ''}
             ${adm ? ligne({ ico: mono('tableau'), t: 'Tableau de bord', s: 'Administration', href: 'admin.html' }) : ''}
@@ -511,6 +514,7 @@ label.cp-r{cursor:pointer}
       q('[data-av]').onclick = () => choisirAvatar(() => ouvrir());
       if (q('[data-sons]')) q('[data-sons]').onclick = () => { fermer(); S.panneau(); };
       if (q('[data-marche]')) q('[data-marche]').onclick = () => { fermer(); M.ecrireMarche(); };
+      if (q('[data-idv]')) q('[data-idv]').onclick = () => { fermer(); ID.ouvrir(); };
       q('[data-out]').onclick = deconnecter;
       main.querySelectorAll('[data-ni]').forEach(b => b.onclick = () => { const all = notifs(), n = all[+b.dataset.ni]; if (!n) return; n.lu = true; W(KN, all); if (n.nego && G) { fermer(); G.thread(n.nego); } else bg.aller('notifs'); });
       remplirRep(q('[data-rep]'), p, u);

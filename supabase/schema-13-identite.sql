@@ -98,7 +98,7 @@ language sql stable security definer set search_path = public as $$
              'soumis_le', v.soumis_le, 'decide_le', v.decide_le,
              'nouvel_essai_le', case when v.statut = 'refuse' then v.decide_le + interval '7 days' end,
              'defi', case when v.statut = 'brouillon' then v.defi end,
-             'dossier', case when v.statut = 'brouillon' then public.identite_dossier(v) end)
+             'dossier', case when v.statut in ('brouillon', 'en_attente', 'verification_manuelle') then public.identite_dossier(v) end)
     from public.verifications v
     where v.user_id = auth.uid() and v.statut not in ('remplace', 'retire')
     order by v.created_at desc limit 1),

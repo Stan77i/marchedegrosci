@@ -10,7 +10,7 @@
   const PROD = Object.fromEntries((window.MDG && MDG.products || []).map(p => [p.slug, p.name]));
   const date = t => t ? new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: new Date(t).getFullYear() === new Date().getFullYear() ? undefined : 'numeric' }) : '—';
   const ago = t => { if (!t) return 'jamais'; const m = (Date.now() - Date.parse(t)) / 60000; return m < 60 ? 'il y a ' + Math.max(1, Math.round(m)) + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : m < 2880 ? 'hier' : date(t); };
-  const D = { offres: [], demandes: [], signalements: [], comptes: [], negos: [], alertes: [], discussions: [], err: {} };
+  const D = { offres: [], demandes: [], signalements: [], comptes: [], negos: [], alertes: [], discussions: [], ident: [], err: {} };
   let view = (location.hash.slice(1) || 'apercu'), filt = { type: 'tout', statut: 'tout', q: '' }, showN = 40;
 
   const ICO = {
@@ -20,9 +20,10 @@
     comptes: '<circle cx="12" cy="8.5" r="3.6"/><path d="M5 20a7 7 0 0 1 14 0" stroke-linecap="round"/>',
     negos: '<path d="M4 7h11M4 7l3-3M4 7l3 3M20 17H9m11 0-3-3m3 3-3 3" stroke-linecap="round" stroke-linejoin="round"/>',
     messages: '<path d="M4 5.5h16v10H9l-5 4z" stroke-linejoin="round"/><path d="M8 9.5h8M8 12.5h5" stroke-linecap="round"/>',
-    site: '<path d="M4 12h16M12 4c3 3 3 13 0 16M12 4c-3 3-3 13 0 16"/><circle cx="12" cy="12" r="8"/>'
+    identites: '<path d="M12 3 4 6v6c0 4.5 3.4 7.8 8 9 4.6-1.2 8-4.5 8-9V6z" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke-linecap="round" stroke-linejoin="round"/>',
+    site: '<path d=""M4 12h16M12 4c3 3 3 13 0 16M12 4c-3 3-3 13 0 16"/><circle cx="12" cy="12" r="8"/>'
   };
-  const LUC = { apercu: 'apercu', traiter: 'traiter', annonces: 'activite', comptes: 'comptes', negos: 'negoce', messages: 'messages', site: 'site' };   // app/icones.js
+  const LUC = { apercu: 'apercu', traiter: 'traiter', annonces: 'activite', comptes: 'comptes', negos: 'negoce', messages: 'messages', identites: 'verifie', site: 'site' };   // app/icones.js
   const ico = k => { const L = window.MDGIco && LUC[k] && window.MDGIco.corps(LUC[k]);
     return L ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${L}</svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">${ICO[k]}</svg>`; };
   let toastT = 0;
@@ -50,7 +51,8 @@
       get('negos', '/rest/v1/negociations?select=*&order=updated_at.desc&limit=1000'),
       N.rpc('admin_comptes').then(r => { D.comptes = r || []; delete D.err.comptes; }).catch(e => { D.err.comptes = e.message; }),
       get('alertes', '/rest/v1/alertes?select=*&order=created_at.desc&limit=500'),
-      N.rpc('admin_discussions').then(r => { D.discussions = r || []; delete D.err.discussions; }).catch(e => { D.err.discussions = e.message; })
+      N.rpc('admin_discussions').then(r => { D.discussions = r || []; delete D.err.discussions; }).catch(e => { D.err.discussions = e.message; }),
+      N.rpc('admin_identite_file').then(r => { D.ident = r || []; delete D.err.identites; }).catch(e => { D.ident = []; if (!/admin_identite_file|schema cache|Could not find/i.test(e.message)) D.err.identites = e.message; else D.identAbsent = true; })
     ]);
     D.byUser = Object.fromEntries(D.comptes.map(c => [c.id, c]));
   }
@@ -75,7 +77,7 @@
     const nav = (k, t, n) => `<a class="nav" href="#${k}" ${view === k ? 'aria-current="page"' : ''}>${ico(k)}<span>${t}</span>${n ? `<em>${n}</em>` : ''}</a>`;
     root.innerHTML = `<div class="app"><nav class="rail" aria-label="Tableau de bord">
       <a class="brand" href="#apercu">${logo.replace('width="56" height="56"', 'width="34" height="34"')}<span><b>Marché de Gros</b><small>Tableau de bord</small></span></a>
-      ${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}${nav('messages', 'Messages', D.alertes.filter(a => !a.vu).length)}
+      ${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}${nav('messages', 'Messages', D.alertes.filter(a => !a.vu).length)}${nav('identites', 'Identités', D.ident.filter(v => v.statut === 'en_attente').length)}
       <span class="sp"></span><a class="nav ext" href="./">${ico('site')}<span>Voir le site</span></a>
       <div class="who">Connecté en administrateur<b>${esc(fmtTel(N.session().user.tel))}</b></div></nav>
       <main id="main">${(VIEWS[view] || VIEWS.apercu)({ T, masq, toDo, conclu })}</main></div>`;
@@ -173,6 +175,57 @@
             <div class="c4">${d.alertes > 0 ? `<span class="tag bad">${d.alertes} alerte(s)</span>` : ''}</div>
             <div class="acts"><button class="btn sm" data-lire="${d.id}">Lire</button></div></div>`).join('') : '<div class="empty"><b>Aucune conversation</b></div>'}</div></section>`;
   };
+  // ——— identités : dossiers à examiner (supabase/schema-13-identite.sql). Personne n'est « vérifié » sans décision ici. ———
+  const PIECE = { cni: 'Carte nationale d’identité', passeport: 'Passeport', carte_consulaire: 'Carte consulaire', permis: 'Permis de conduire' };
+  VIEWS.identites = () => {
+    const att = D.ident.filter(v => v.statut === 'en_attente'), rev = D.ident.filter(v => v.statut === 'verification_manuelle');
+    const carte = v => `<div class="row" data-row="${v.id}"><span class="mk ${v.statut === 'en_attente' ? 'd' : 'off'}"></span>
+        <div><b>${esc(v.nom_saisi || '—')}</b><small>${esc(PIECE[v.piece] || v.piece)} · envoyé ${ago(v.soumis_le)}${v.essais > 1 ? ' · ' + v.essais + 'e envoi' : ''}</small></div>
+        <div class="c3"><small>Compte ${esc(fmtTel(String(v.tel || '').replace(/^225/, '')))} · inscrit le ${date(v.membre_depuis)}</small><small>Profil : ${esc(v.profil_pseudo || v.profil_nom || '—')}</small></div>
+        <div class="c4">${v.statut === 'en_attente' ? (v.mrz_ok ? '<span class="tag ok">bande MRZ lisible</span>' : v.nom_lu ? '<span class="tag acc">MRZ douteuse</span>' : '<span class="tag">MRZ non lue</span>') : '<span class="tag acc">photos demandées</span>'}</div>
+        <div class="acts">${v.statut === 'en_attente' ? `<button class="btn sm pri" data-idv="${v.id}">Examiner</button>` : `<button class="btn sm bad" data-iddec="refuse" data-id="${v.id}">Refuser</button>`}</div></div>`;
+    return top('Identités', 'Comparez la pièce, le selfie et le code écrit à la main, puis décidez. Les photos sont effacées après chaque décision.') + (D.identAbsent ? `<div class="list"><div class="empty"><b>Pas encore installé</b>Lancez supabase/schema-13-identite.sql dans l’éditeur SQL de Supabase.</div></div>` : `
+      <section class="sec"><div class="sec-h"><h2>À examiner</h2><p>${att.length} dossier${att.length > 1 ? 's' : ''}, le plus ancien en premier.</p></div>
+        <div class="list">${att.length ? att.map(carte).join('') : '<div class="empty"><b>Rien à examiner</b>Les dossiers envoyés apparaîtront ici.</div>'}</div></section>
+      ${rev.length ? `<section class="sec"><div class="sec-h"><h2>En attente de nouvelles photos</h2><p>Vous avez demandé de refaire des photos ; le membre peut renvoyer son dossier.</p></div><div class="list">${rev.map(carte).join('')}</div></section>` : ''}
+      <p style="color:var(--faint);font-size:13px;max-width:70ch">La lecture de la bande MRZ est faite dans le téléphone du membre : c’est une indication, pas une preuve. Vérifiez vous-même que la photo de la pièce et le selfie montrent la même personne, que le code écrit est bien <b>le code affiché</b> et que le nom correspond.</p>`);
+  };
+  async function examiner(id, row) {
+    const next = row.nextElementSibling; if (next && next.classList.contains('fil')) { next.remove(); return; }
+    const v = D.ident.find(x => x.id === id); if (!v) return;
+    const el = document.createElement('div'); el.className = 'fil idx'; el.innerHTML = '<div>Chargement des photos…</div>'; row.after(el);
+    const noms = v.piece === 'passeport' ? ['recto', 'selfie'] : ['recto', 'verso', 'selfie'];
+    const L = await Promise.all(noms.map(n => N.lienSigne('identite', v.dossier + '/' + n + '.jpg', 120).catch(() => null)));
+    if (!el.isConnected) return;
+    const lab = { recto: 'Pièce, recto', verso: 'Pièce, verso', selfie: 'Selfie avec le code' };
+    el.innerHTML = `<div class="idx-ph">${noms.map((n, i) => `<figure><figcaption>${lab[n]}</figcaption>${L[i] ? `<a href="${esc(L[i])}" target="_blank" rel="noopener noreferrer"><img src="${esc(L[i])}" alt="${lab[n]}" referrerpolicy="no-referrer"></a>` : '<p>Photo introuvable</p>'}</figure>`).join('')}</div>
+      <div class="idx-info"><p>Code que le membre devait écrire : <b class="idx-code">${esc(v.defi)}</b></p>
+        <p>Nom saisi : <b>${esc(v.nom_saisi || '—')}</b>${v.nom_lu ? ` · lu sur la bande MRZ : <b>${esc(v.nom_lu)}</b> ${v.mrz_ok ? '(chiffres de contrôle justes)' : '(lecture douteuse)'}` : ' · bande MRZ non lue'}</p>
+        <label>Nom retenu (si vous le corrigez) <input class="search" data-idnom value="${esc(v.nom_saisi || '')}" maxlength="120" style="width:100%;margin-top:6px"></label>
+        <div class="acts" style="justify-content:flex-start"><button class="btn pri" data-iddec="verifie" data-id="${v.id}">Identité vérifiée</button><button class="btn" data-iddec="verification_manuelle" data-id="${v.id}">Photos à refaire</button><button class="btn bad" data-iddec="refuse" data-id="${v.id}">Refuser</button></div>
+        <p style="color:var(--faint);font-size:12.5px">Les liens des photos expirent après deux minutes. Rien n’est téléchargé sur cet ordinateur.</p></div>`;
+    bindIdent(el);
+  }
+  async function decider(b) {
+    const v = D.ident.find(x => x.id === b.dataset.id), st = b.dataset.iddec; if (!v) return;
+    let motif = null;
+    if (st === 'verifie') { if (!confirm('Confirmer : la pièce, le selfie et le code concordent, et l’identité de ' + (v.nom_saisi || 'ce membre') + ' est vérifiée ?')) return; }
+    else { motif = prompt(st === 'refuse' ? 'Motif du refus (le membre le lira) :' : 'Qu’est-ce que le membre doit refaire ? (il le lira)'); if (motif == null) return; if (!motif.trim()) return toast('Indiquez le motif.'); }
+    const box = b.closest('.fil'), nomIn = box && box.querySelector('[data-idnom]');
+    b.disabled = true;
+    try {
+      await N.rpc('admin_identite_decider', { p_id: v.id, p_statut: st, p_motif: motif, p_nom: nomIn ? nomIn.value.trim() || null : null });
+      // les photos ne servent plus : on les efface tout de suite (conservation minimale)
+      let efface = false;
+      try { await N.effacerPrive('identite', ['recto', 'verso', 'selfie'].map(n => v.dossier + '/' + n + '.jpg')); await N.rpc('admin_identite_photos_effacees', { p_id: v.id }); efface = true; } catch (_) {}
+      await load(); paint();
+      toast((st === 'verifie' ? 'Identité vérifiée : le badge apparaît.' : st === 'refuse' ? 'Dossier refusé.' : 'Le membre est prévenu qu’il doit refaire des photos.') + (efface ? ' Photos effacées.' : ' Attention : les photos n’ont pas pu être effacées.'));
+    } catch (e) { b.disabled = false; toast('Décision impossible : ' + e.message); }
+  }
+  function bindIdent(r) {
+    r.querySelectorAll('[data-idv]').forEach(b => b.onclick = () => examiner(b.dataset.idv, b.closest('.row')));
+    r.querySelectorAll('[data-iddec]').forEach(b => b.onclick = () => decider(b));
+  }
   function listeAnnonces(A) {
     if (!A.length) return `<div class="list"><div class="empty"><b>Aucune annonce</b>${filt.q || filt.type !== 'tout' || filt.statut !== 'tout' ? 'Aucune annonce ne correspond à ces filtres.' : 'Les annonces publiées apparaîtront ici.'}</div></div>`;
     const S = Object.fromEntries(signalesParCible().map(s => [s.cible + ':' + s.id, s]));
@@ -192,6 +245,7 @@
   function bind() {
     const $$ = q => root.querySelectorAll(q);
     $$('[data-ecrire]').forEach(b => b.onclick = () => MDGMessages.ecrire(b.dataset.ecrire, { nom: 'Membre' }));
+    bindIdent(root);
     $$('[data-vu]').forEach(b => b.onclick = async () => { b.disabled = true; try { await N.api('/rest/v1/alertes?id=eq.' + b.dataset.vu, { method: 'PATCH', auth: true, body: { vu: true }, prefer: 'return=minimal' }); const a = D.alertes.find(x => x.id === b.dataset.vu); if (a) a.vu = true; paint(); } catch (e) { b.disabled = false; toast('Impossible : ' + e.message); } });
     const dg = root.querySelector('[data-difgo]'); if (dg) dg.onclick = async () => { const ta = root.querySelector('[data-dif]'), t = ta.value.trim(); if (!t) return toast('Écrivez d’abord le message.'); if (!confirm('Envoyer ce message à tous les membres ?')) return; dg.disabled = true;
       try { const n = await N.rpc('admin_diffuser', { p_texte: t }); ta.value = ''; toast('Message envoyé à ' + n + ' membre(s).'); await load(); paint(); } catch (e) { dg.disabled = false; toast('Envoi impossible : ' + e.message); } };

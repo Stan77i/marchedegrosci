@@ -474,6 +474,7 @@ label.cp-r{cursor:pointer}
         if (idC.banni) return T('ko', IC('fermer', 26), 'Ce compte est banni', 'Il ne peut plus publier, négocier ni écrire sur le Marché de Gros.', 'En savoir plus');
         if (idS === 'en_attente') return T('bleu', IC('horloge', 26), 'Vérification en cours', 'L’équipe examine votre dossier. Le badge apparaîtra ici dès qu’elle aura validé.', '');
         if (idS === 'verification_manuelle') return T('', IC('photo', 26), 'Des photos sont à refaire', 'L’équipe n’a pas pu terminer la vérification de votre identité.', 'Renvoyer mes photos');
+        if (idS === 'expire') return T('ko', IC('horloge', 26), 'Votre pièce d’identité a expiré', 'Le badge « Identité vérifiée » est retiré. Refaites la vérification avec une pièce en cours de validité.', 'Refaire la vérification');
         if (idS === 'refuse') return T('ko', IC('fermer', 26), 'Vérification refusée', 'Lisez le motif donné par l’équipe, puis refaites une demande.', 'Voir le motif');
         const n = idC.gratuites || 3, r = ID.gratuitesRestantes(idC), u = Math.min(n, idC.annonces || 0);
         const jauge = `<div class="cp-idv-j" role="img" aria-label="${u} annonce${u > 1 ? 's' : ''} gratuite${u > 1 ? 's' : ''} utilisée${u > 1 ? 's' : ''} sur ${n}">${Array.from({ length: n }, (_, i) => `<i${i < u ? ' class="on"' : ''}></i>`).join('')}</div>`;

@@ -14,7 +14,8 @@
   const dire = () => { dispatchEvent(new CustomEvent('mdg:identite')); dispatchEvent(new CustomEvent('mdg:change', { detail: { from: 'nuage' } })); };
   const PIECES = [['cni', 'Carte nationale d’identité', 'La CNI ivoirienne, recto et verso'], ['passeport', 'Passeport', 'La page avec votre photo'], ['carte_consulaire', 'Carte consulaire', 'Recto et verso'], ['permis', 'Permis de conduire', 'Recto et verso']];
   const PIECE_TXT = Object.fromEntries(PIECES.map(p => [p[0], p[1]]));
-  const dateFr = t => t ? new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+  const dateFr = t => t ? new Date(/^\d{4}-\d\d-\d\d$/.test(t) ? t + 'T12:00:00' : t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+  const auj = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };   // date du jour, heure locale
 
   /* ——— le badge ——— */
   const badge = (t = 16, texte) => `<span class="idv-badge${texte ? ' txt' : ''}" title="Identité vérifiée par le Marché de Gros" role="img" aria-label="Identité vérifiée"><svg width="${t}" height="${t}" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.6l2.6 1.9 3.2-.2 1 3 2.6 1.9-1 3.1 1 3.1-2.6 1.9-1 3-3.2-.2L12 22.4l-2.6-1.9-3.2.2-1-3-2.6-1.9 1-3.1-1-3.1 2.6-1.9 1-3 3.2.2z"/><path d="m8 12.2 2.7 2.7L16.2 9.4" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>${texte ? '<b>' + esc(texte === true ? 'Identité vérifiée' : texte) + '</b>' : ''}</span>`;
@@ -49,7 +50,7 @@
     catch (e) { if (c && c.uid === u.id) return c.s; throw e; }
   }
   const statutCache = () => { const u = me(), c = J(KS, null); return u && c && c.uid === u.id ? c.s : null; };
-  const RESUME = { non_verifie: ['Non vérifiée', 'Faire vérifier mon identité'], brouillon: ['À terminer', 'Reprendre l’envoi des photos'], en_attente: ['En cours d’examen', 'Dossier envoyé'], verification_manuelle: ['À revoir', 'Des photos sont à refaire'], verifie: ['Vérifiée', 'Badge visible sur votre profil'], refuse: ['Refusée', 'Voir le motif'] };
+  const RESUME = { non_verifie: ['Non vérifiée', 'Faire vérifier mon identité'], brouillon: ['À terminer', 'Reprendre l’envoi des photos'], en_attente: ['En cours d’examen', 'Dossier envoyé'], verification_manuelle: ['À revoir', 'Des photos sont à refaire'], expire: ['Pièce expirée', 'Refaire la vérification avec une pièce valide'], verifie: ['Vérifiée', 'Badge visible sur votre profil'], refuse: ['Refusée', 'Voir le motif'] };
 
   /* ——— photos : réduites dans le téléphone (≈ 300 Ko, JPEG) ——— */
   async function reduire(fichier, cote = 1600) {
@@ -72,6 +73,18 @@
   const NORM = l => String(l || '').toUpperCase().replace(/[\s«»]/g, '').replace(/[^A-Z0-9<]/g, '<');
   const nomDe = l => { const [nom, prenoms] = l.replace(/<+$/, '').split('<<'); const net = s => (s || '').replace(/</g, ' ').replace(/\s+/g, ' ').trim(); return { nom: net(nom), prenoms: net(prenoms) }; };
   const cale = (l, n) => (l + '<'.repeat(n)).slice(0, n);
+  // AAMMJJ → « AAAA-MM-JJ » (date d'expiration : toujours après 2000) ; null si la date est impossible
+  const dateMRZ = s => { const m = /^(\d\d)(\d\d)(\d\d)$/.exec(s); if (!m) return null; const d = new Date(Date.UTC(2000 + +m[1], +m[2] - 1, +m[3]));
+    return d.getUTCMonth() === +m[2] - 1 && d.getUTCDate() === +m[3] ? d.toISOString().slice(0, 10) : null; };
+  // date d'expiration et numéro de la pièce, gardés seulement si leur chiffre de contrôle est juste
+  function champsTD1(l1, l2) {
+    const exp = chiffre(l2.slice(8, 14)); let num = null;
+    if (l1[14] === '<') { const suite = (l1.slice(15).match(/^[A-Z0-9]+/) || [''])[0]; if (suite.length >= 2 && ok1(l1.slice(5, 14) + suite.slice(0, -1), suite.slice(-1))) num = l1.slice(5, 14) + suite.slice(0, -1); }
+    else if (ok1(l1.slice(5, 14), l1[14])) num = l1.slice(5, 14).replace(/<+$/, '');
+    return { expire: ok1(exp, l2[14]) ? dateMRZ(exp) : null, numero: num };
+  }
+  function champsTD3(l2) { const exp = chiffre(l2.slice(21, 27)), doc = l2.slice(0, 9);
+    return { expire: ok1(exp, l2[27]) ? dateMRZ(exp) : null, numero: ok1(doc, l2[9]) ? doc.replace(/<+$/, '') : null }; }
   // les quatre contrôles d'une carte (TD1) ; le numéro long (CNI ivoirienne : CI002829027) met « < » dans la case de contrôle,
   // la suite du numéro et sa clé au début du champ facultatif
   function notesTD1(l1, l2) {
@@ -121,7 +134,7 @@
       let mieux = null;
       for (const b of lect[1]) { const r = corriger([cale(b, 44)], notesTD3, [[[0, 9], [28, 43]]]); if (!mieux || r.note > mieux.note) mieux = r; }
       const n = choisirNom(lect[0].filter(l => l[0] === 'P').map(l => cale(l, 44).slice(5)));
-      return n.nom ? { format: 'TD3', nom: n.nom, prenoms: n.prenoms, valide: mieux.note === 4 } : null;
+      return n.nom ? Object.assign({ format: 'TD3', nom: n.nom, prenoms: n.prenoms, valide: mieux.note === 4 }, champsTD3(mieux.lignes[0])) : null;
     }
     const L3 = lect.slice(-3);   // carte (TD1) : 3 lignes de 30
     if (L3.length < 3) return null;
@@ -134,7 +147,7 @@
     let mieux = null;
     for (const a of L3[0]) for (const b of L3[1]) { const r = corriger([cale(a, 30), cale(b, 30)], notesTD1, [[[5, 30]], [[18, 29]]]); if (!mieux || r.note > mieux.note) mieux = r; if (r.note === 4) break; }
     const n = choisirNom(L3[2].map(l => l.replace(/[^A-Z<]/g, '<')));
-    return n.nom ? { format: 'TD1', nom: n.nom, prenoms: n.prenoms, valide: mieux.note === 4 } : null;
+    return n.nom ? Object.assign({ format: 'TD1', nom: n.nom, prenoms: n.prenoms, valide: mieux.note === 4 }, champsTD1(mieux.lignes[0], mieux.lignes[1])) : null;
   }
   // texte OCR brut (une lecture par ligne) → même résultat
   function analyserMRZ(texte) {
@@ -343,13 +356,15 @@
     const V = {
       en_attente: ['att', IC('horloge', 34), 'Votre dossier est en cours d’examen', `Envoyé le ${dateFr(s.soumis_le)} (${esc(PIECE_TXT[s.piece] || 'pièce')}). Une personne de l’équipe compare votre pièce et votre selfie. Vous serez prévenu ici.`],
       verification_manuelle: ['att', IC('photo', 34), 'Quelques photos sont à refaire', 'L’équipe n’a pas pu terminer l’examen. Voici ce qu’elle demande :'],
-      verifie: ['ok', badge(40), 'Identité vérifiée', `Vérifiée le ${dateFr(s.decide_le)}. Le badge apparaît sur votre profil et à côté de votre nom sur vos annonces.`],
+      verifie: ['ok', badge(40), 'Identité vérifiée', `Vérifiée le ${dateFr(s.decide_le)}. Le badge apparaît sur votre profil et à côté de votre nom sur vos annonces.${s.expire_le ? ` Il reste valable jusqu’à l’expiration de votre pièce, le ${dateFr(s.expire_le)}.` : ''}`],
       refuse: ['ko', IC('fermer', 34), 'Vérification refusée', 'Motif donné par l’équipe :'],
+      expire: ['ko', IC('horloge', 34), 'Votre pièce a expiré', `Votre pièce n’est plus valide depuis le ${dateFr(s.expire_le)}. Le badge « Identité vérifiée » est retiré. Refaites la vérification avec une pièce en cours de validité.`],
       banni: ['ko', IC('fermer', 34), 'Ce compte est banni', 'L’équipe du Marché de Gros a banni ce compte à vie, à la suite d’abus (arnaque, mauvais produits répétés ou insultes). Ses annonces ne sont plus visibles et il ne peut plus publier, négocier ni écrire. Si vous pensez qu’il s’agit d’une erreur, contactez l’équipe du Marché de Gros.']
     }[s.statut] || ['', '', 'Statut inconnu', ''];
     main.innerHTML = `<div class="idv-etat"><div class="rond ${V[0]}">${V[1]}</div><h2>${V[2]}</h2><p>${V[3]}</p>${s.motif && s.statut !== 'banni' ? `<div class="idv-motif">${esc(s.motif)}</div>` : ''}
       ${s.statut === 'refuse' && s.nouvel_essai_le ? `<p>Vous pourrez refaire une demande à partir du ${dateFr(s.nouvel_essai_le)}.</p>` : ''}</div>
       <div class="idv-act">${s.statut === 'verification_manuelle' ? '<button type="button" class="idv-go" data-refaire>Renvoyer mes photos</button>' : ''}
+      ${s.statut === 'expire' ? '<button type="button" class="idv-go" data-refaire>Refaire la vérification</button>' : ''}
       ${s.statut === 'refuse' && (!s.nouvel_essai_le || Date.parse(s.nouvel_essai_le) <= Date.now()) ? '<button type="button" class="idv-go" data-refaire>Refaire une demande</button>' : ''}
       ${['en_attente', 'verification_manuelle'].includes(s.statut) ? '<button type="button" class="idv-alt" data-retirer>Retirer mon dossier</button>' : ''}
       <button type="button" class="idv-alt" data-fin>Fermer</button></div>`;
@@ -357,9 +372,9 @@
     q('[data-fin]').onclick = fermer;
     if (q('[data-refaire]')) q('[data-refaire]').onclick = () => parcours({ statut: 'non_verifie' });
     if (q('[data-retirer]')) q('[data-retirer]').onclick = async e => {
-      if (!confirm('Retirer votre dossier ? Vos photos seront effacées et l’examen s’arrête.')) return;
+      if (!confirm('Retirer votre dossier ? L’examen s’arrête. Comme tout dossier envoyé, il reste conservé à l’abri pendant 5 ans (en cas de fraude ou de plainte).')) return;
       e.target.disabled = true;
-      try { await retirer(s); N().toast('Dossier retiré, photos effacées.'); fermer(); }
+      try { await retirer(s); N().toast('Dossier retiré.'); fermer(); }
       catch (x) { e.target.disabled = false; N().toast('Impossible pour l’instant : ' + x.message); }
     };
   }
@@ -371,7 +386,7 @@
   // le parcours en étapes
   function parcours(s0) {
     const main = bg.querySelector('.idv-main'), ret = bg.querySelector('[data-ret]');
-    const st = { piece: s0.piece || '', dossier: null, id: null, defi: s0.defi || '', recto: null, verso: null, selfie: null, mrz: null, mrzEtat: '', nom: '' };
+    const st = { piece: s0.piece || '', dossier: null, id: null, defi: s0.defi || '', recto: null, verso: null, selfie: null, mrz: null, mrzEtat: '', nom: '', expire: '' };
     const ETAPES = ['intro', 'piece', 'recto', 'verso', 'selfie', 'nom', 'envoi'];
     const liste = () => ETAPES.filter(e => !(e === 'verso' && st.piece === 'passeport'));
     let i = 0;
@@ -399,7 +414,7 @@
     // la lecture de la bande MRZ tourne pendant que la personne prend le selfie
     function lireEnFond(blob) {
       st.mrz = null; st.mrzEtat = 'lecture';
-      lireMRZ(blob).then(m => { st.mrz = m; st.mrzEtat = m ? 'ok' : 'vide'; if (m && !st.nom) st.nom = [m.prenoms, m.nom].filter(Boolean).join(' '); if (liste()[i] === 'nom') dessiner(); })
+      lireMRZ(blob).then(m => { st.mrz = m; st.mrzEtat = m ? 'ok' : 'vide'; if (m && !st.nom) st.nom = [m.prenoms, m.nom].filter(Boolean).join(' '); if (m && m.expire && !st.expire) st.expire = m.expire; if (liste()[i] === 'nom') dessiner(); })
         .catch(() => { st.mrzEtat = 'vide'; if (liste()[i] === 'nom') dessiner(); });
     }
     function dessiner() {
@@ -409,16 +424,16 @@
           <div class="idv-card">
             <div class="idv-li">${IC('photo')}<span><b>Trois photos</b> : votre pièce (recto et verso) et un selfie en tenant un code écrit sur un papier.</span></div>
             <div class="idv-li">${IC('comptes')}<span><b>Examinées par une personne</b> de l’équipe du Marché de Gros, jamais par une machine seule. Comptez quelques jours.</span></div>
-            <div class="idv-li">${IC('cadenas')}<span><b>Gardées à l’abri</b> : personne d’autre ne les voit, et elles sont effacées dès que l’équipe a décidé. Nous ne gardons pas le numéro de votre pièce.</span></div>
+            <div class="idv-li">${IC('cadenas')}<span><b>Gardées à l’abri, 5 ans</b> : vos photos, votre nom, le numéro et la date d’expiration de votre pièce sont conservés dans un coffre privé. Seule l’équipe peut les ouvrir, et chaque ouverture est notée. Ils ne servent qu’en cas de fraude ou de plainte, pour être remis aux autorités sur leur demande. Ils sont effacés 5 ans après la suppression de votre compte (ou 5 ans après un refus).</span></div>
             <div class="idv-li">${IC('verifie')}<span><b>Ce que dit le badge</b> : l’équipe a comparé votre pièce et votre selfie. Il ne remplace pas une vérification officielle.</span></div>
           </div>
-          <label class="idv-chk"><input type="checkbox" data-ok> <span>J’accepte d’envoyer ces photos au Marché de Gros pour vérifier mon identité.</span></label>
+          <label class="idv-chk"><input type="checkbox" data-ok> <span>J’accepte d’envoyer ces photos au Marché de Gros pour vérifier mon identité, et qu’elles soient conservées 5 ans comme expliqué ci-dessus.</span></label>
           ${actions(false, 'Commencer')}`;
         const ok = main.querySelector('[data-ok]'), go = main.querySelector('[data-go]');
         ok.onchange = () => { go.disabled = !ok.checked; };
         go.onclick = () => aller(1);
       } else if (e === 'piece') {
-        main.innerHTML = `<h2>Quelle pièce avez-vous&nbsp;?</h2><p>Une pièce en cours de validité, à votre nom.</p>
+        main.innerHTML = `<h2>Quelle pièce avez-vous&nbsp;?</h2><p>Une pièce en cours de validité, à votre nom. Une pièce expirée est refusée.</p>
           <div class="idv-choix" role="group" aria-label="Type de pièce">${PIECES.map(p => `<button type="button" data-p="${p[0]}" aria-pressed="${st.piece === p[0]}">${IC('etiquette', 22)}<span><b>${p[1]}</b><small>${p[2]}</small></span></button>`).join('')}</div>
           <p class="idv-bad" data-err></p>${actions(!!st.piece, 'Continuer')}`;
         main.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { st.piece = b.dataset.p; main.querySelectorAll('[data-p]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); main.querySelector('[data-go]').disabled = false; });
@@ -439,11 +454,18 @@
           : st.mrz && st.mrz.valide ? `<div class="idv-lu">${IC('verifie', 18)}<span>Lu sur la pièce : <b>${esc(lu)}</b>. Vérifiez surtout vos prénoms : la lecture en coupe parfois la fin. Ajoutez les accents si besoin.</span></div>`
           : st.mrz ? `<div class="idv-lu doute">${IC('info', 18)}<span>Lu sur la pièce, peut-être mal : <b>${esc(lu)}</b>. Vérifiez.</span></div>`
           : st.mrzEtat === 'vide' ? `<div class="idv-lu doute">${IC('info', 18)}<span>Votre pièce n’a pas pu être lue automatiquement. Ce n’est pas grave : écrivez votre nom.</span></div>` : '';
-        main.innerHTML = `<h2>Votre nom, comme sur la pièce</h2><p>Prénoms et nom, tels qu’ils sont écrits.</p>${info}
+        main.innerHTML = `<h2>Votre nom, comme sur la pièce</h2><p>Prénoms et nom, tels qu’ils sont écrits, puis la date d’expiration de la pièce.</p>${info}
           <div><label class="idv-l" for="idv-nom">Nom complet</label><input id="idv-nom" class="idv-in" maxlength="120" autocomplete="name" value="${esc(st.nom)}"></div>
-          <p class="idv-bad" data-err></p>${actions(st.nom.trim().length >= 3, 'Envoyer mon dossier')}`;
-        const inp = main.querySelector('#idv-nom'), go = main.querySelector('[data-go]');
-        inp.oninput = () => { st.nom = inp.value; go.disabled = inp.value.trim().length < 3; };
+          <div><label class="idv-l" for="idv-exp">Date d’expiration de la pièce</label><input id="idv-exp" class="idv-in" type="date" value="${esc(st.expire)}">
+            ${st.mrz && st.mrz.expire ? `<small class="idv-l" style="display:block;margin-top:6px">Lue sur la bande : ${dateFr(st.mrz.expire)}.</small>` : ''}</div>
+          <p class="idv-bad" data-err role="alert"></p>${actions(false, 'Envoyer mon dossier')}`;
+        const inp = main.querySelector('#idv-nom'), dt = main.querySelector('#idv-exp'), go = main.querySelector('[data-go]'), err = main.querySelector('[data-err]');
+        // une pièce expirée (date saisie ou lue sur la bande) bloque l'envoi
+        const verif = () => { st.nom = inp.value; st.expire = dt.value;
+          const lue = st.mrz && st.mrz.expire, exp = (st.expire && st.expire < auj()) ? st.expire : (lue && lue < auj()) ? lue : '';
+          err.textContent = exp ? `Cette pièce a expiré le ${dateFr(exp)}. Utilisez une pièce encore valide.` : '';
+          go.disabled = inp.value.trim().length < 3 || !st.expire || !!exp; };
+        inp.oninput = verif; dt.oninput = dt.onchange = verif; verif();
         go.onclick = () => aller(i + 1);
       } else if (e === 'envoi') envoyer();
     }
@@ -461,11 +483,12 @@
           barre.style.width = Math.round(++k / (fichiers.length + 1) * 100) + '%';
         }
         m.textContent = 'Enregistrement du dossier';
-        await N().rpc('identite_soumettre', { p_id: st.id, p_nom: st.nom.trim(), p_nom_lu: st.mrz ? [st.mrz.prenoms, st.mrz.nom].filter(Boolean).join(' ') : null, p_mrz_ok: st.mrz ? !!st.mrz.valide : null });
+        await N().rpc('identite_soumettre', { p_id: st.id, p_nom: st.nom.trim(), p_nom_lu: st.mrz ? [st.mrz.prenoms, st.mrz.nom].filter(Boolean).join(' ') : null, p_mrz_ok: st.mrz ? !!st.mrz.valide : null,
+          p_expire: st.expire, p_expire_lu: st.mrz && st.mrz.expire || null, p_numero_lu: st.mrz && st.mrz.numero || null });
         barre.style.width = '100%';
         await statut(true).catch(() => {});
         delete bg.dataset.lock;
-        main.innerHTML = `<div class="idv-etat"><div class="rond att">${IC('horloge', 34)}</div><h2>Dossier envoyé</h2><p>Une personne de l’équipe va comparer votre pièce et votre selfie. Vous verrez le résultat dans Mon compte. Vos photos seront effacées après la décision.</p></div><div class="idv-act"><button type="button" class="idv-go" data-fin>Terminer</button></div>`;
+        main.innerHTML = `<div class="idv-etat"><div class="rond att">${IC('horloge', 34)}</div><h2>Dossier envoyé</h2><p>Une personne de l’équipe va comparer votre pièce et votre selfie. Vous verrez le résultat dans Mon compte. Votre dossier est gardé à l’abri, comme expliqué au début.</p></div><div class="idv-act"><button type="button" class="idv-go" data-fin>Terminer</button></div>`;
         main.querySelector('[data-fin]').onclick = fermer;
       } catch (x) {
         delete bg.dataset.lock;

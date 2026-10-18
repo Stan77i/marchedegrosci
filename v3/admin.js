@@ -53,12 +53,15 @@
       get('alertes', '/rest/v1/alertes?select=*&order=created_at.desc&limit=500'),
       N.rpc('admin_discussions').then(r => { D.discussions = r || []; delete D.err.discussions; }).catch(e => { D.err.discussions = e.message; }),
       N.rpc('admin_signalements_membres').then(r => { D.sigm = r || []; delete D.err.sigm; }).catch(e => { D.sigm = []; if (!/admin_signalements_membres|schema cache|Could not find/i.test(e.message)) D.err.sigm = e.message; }),
-      N.rpc('admin_identite_file').then(r => { D.ident = r || []; delete D.err.identites; }).catch(e => { D.ident = []; if (!/admin_identite_file|schema cache|Could not find/i.test(e.message)) D.err.identites = e.message; else D.identAbsent = true; })
+      // admin_identite_dossiers (schéma 16 : dates d'expiration, numéro) ; sinon l'ancienne liste
+      N.rpc('admin_identite_dossiers').catch(e => { if (/admin_identite_dossiers|schema cache|Could not find/i.test(e.message)) return N.rpc('admin_identite_file'); throw e; })
+        .then(r => { D.ident = r || []; delete D.err.identites; }).catch(e => { D.ident = []; if (!/admin_identite_file|schema cache|Could not find/i.test(e.message)) D.err.identites = e.message; else D.identAbsent = true; })
     ]);
     D.byUser = Object.fromEntries(D.comptes.map(c => [c.id, c]));
     purger();
   }
-  // dossiers d'identité abandonnés (30 jours) ou dont l'effacement avait échoué : photos effacées à chaque ouverture (schema-15)
+  // brouillons abandonnés (30 jours) et dossiers dont les 5 ans de conservation sont passés : effacés à chaque ouverture (schémas 15 et 16).
+  // Le serveur seul décide ce qui peut l'être : un dossier encore conservé ne peut pas être effacé, même par l'administrateur.
   let purgeFaite = false;
   async function purger() {
     if (purgeFaite) return; purgeFaite = true;
@@ -67,7 +70,7 @@
     for (const v of L || []) {
       try { await N.effacerPrive('identite', ['recto', 'verso', 'selfie'].map(x => v.dossier + '/' + x + '.jpg')); await N.rpc('admin_identite_purger', { p_id: v.id }); n++; } catch (_) {}
     }
-    if (n) toast(n > 1 ? n + ' dossiers d’identité anciens ont été effacés.' : 'Un dossier d’identité ancien a été effacé.');
+    if (n) toast(n > 1 ? n + ' dossiers d’identité arrivés au bout de leur conservation ont été effacés.' : 'Un dossier d’identité arrivé au bout de sa conservation a été effacé.');
   }
 
   /* ——— modèle ——— */
@@ -197,33 +200,46 @@
   };
   // ——— identités : dossiers à examiner (supabase/schema-13-identite.sql). Personne n'est « vérifié » sans décision ici. ———
   const PIECE = { cni: 'Carte nationale d’identité', passeport: 'Passeport', carte_consulaire: 'Carte consulaire', permis: 'Permis de conduire' };
+  const auj = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  const jour = j => j ? new Date(j + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+  const expTag = v => { const e = v.expire_le || v.expire_lu; if (!e) return v.expire_le === undefined ? '' : '<span class="tag">expiration ?</span> ';
+    return e < auj() ? `<span class="tag bad">pièce expirée (${jour(e)})</span> ` : `<span class="tag">expire le ${jour(e)}</span> `; };
   VIEWS.identites = () => {
     const att = D.ident.filter(v => v.statut === 'en_attente'), rev = D.ident.filter(v => v.statut === 'verification_manuelle');
     const carte = v => `<div class="row" data-row="${v.id}"><span class="mk ${v.statut === 'en_attente' ? 'd' : 'off'}"></span>
         <div><b>${esc(v.nom_saisi || '—')}</b><small>${esc(PIECE[v.piece] || v.piece)} · envoyé ${ago(v.soumis_le)}${v.essais > 1 ? ' · ' + v.essais + 'e envoi' : ''}</small></div>
         <div class="c3"><small>Compte ${esc(fmtTel(String(v.tel || '').replace(/^225/, '')))} · inscrit le ${date(v.membre_depuis)}</small><small>Profil : ${esc(v.profil_pseudo || v.profil_nom || '—')}</small></div>
-        <div class="c4">${v.statut === 'en_attente' ? (v.mrz_ok ? '<span class="tag ok">bande MRZ lisible</span>' : v.nom_lu ? '<span class="tag acc">MRZ douteuse</span>' : '<span class="tag">MRZ non lue</span>') : '<span class="tag acc">photos demandées</span>'}${v.nom_banni ? ' <span class="tag bad" title="Une personne bannie a été vérifiée sous ce nom">nom déjà banni</span>' : ''}</div>
+        <div class="c4">${expTag(v)}${v.statut === 'en_attente' ? (v.mrz_ok ? '<span class="tag ok">bande MRZ lisible</span>' : v.nom_lu ? '<span class="tag acc">MRZ douteuse</span>' : '<span class="tag">MRZ non lue</span>') : '<span class="tag acc">photos demandées</span>'}${v.nom_banni ? ' <span class="tag bad" title="Une personne bannie a été vérifiée sous ce nom">nom déjà banni</span>' : ''}</div>
         <div class="acts">${v.statut === 'en_attente' ? `<button class="btn sm pri" data-idv="${v.id}">Examiner</button>` : `<button class="btn sm bad" data-iddec="refuse" data-id="${v.id}">Refuser</button>`}</div></div>`;
-    return top('Identités', 'Comparez la pièce, le selfie et le code écrit à la main, puis décidez. Les photos sont effacées après chaque décision.') + (D.identAbsent ? `<div class="list"><div class="empty"><b>Pas encore installé</b>Lancez supabase/schema-13-identite.sql dans l’éditeur SQL de Supabase.</div></div>` : `
+    return top('Identités', 'Comparez la pièce, le selfie et le code écrit à la main, puis décidez. Une pièce expirée ne peut pas être vérifiée. Tout dossier envoyé est conservé 5 ans (fraude, plainte, réquisition) ; chaque ouverture des photos est notée.') + (D.identAbsent ? `<div class="list"><div class="empty"><b>Pas encore installé</b>Lancez supabase/schema-13-identite.sql dans l’éditeur SQL de Supabase.</div></div>` : `
       <section class="sec"><div class="sec-h"><h2>À examiner</h2><p>${att.length} dossier${att.length > 1 ? 's' : ''}, le plus ancien en premier.</p></div>
         <div class="list">${att.length ? att.map(carte).join('') : '<div class="empty"><b>Rien à examiner</b>Les dossiers envoyés apparaîtront ici.</div>'}</div></section>
       ${rev.length ? `<section class="sec"><div class="sec-h"><h2>En attente de nouvelles photos</h2><p>Vous avez demandé de refaire des photos ; le membre peut renvoyer son dossier.</p></div><div class="list">${rev.map(carte).join('')}</div></section>` : ''}
+      <section class="sec"><div class="sec-h"><h2>Registre des identités</h2><p>Retrouver un dossier conservé (vérifié, refusé, retiré, compte supprimé) : téléphone, nom ou numéro de pièce. Chaque ouverture demande un motif et reste notée.</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px"><input class="search" data-reg-q placeholder="07 00 00 00 00, KOUASSI, CI00…" maxlength="60" style="flex:1;min-width:220px"><button class="btn" data-reg-go>Rechercher</button></div>
+        <div class="list" data-reg-res></div></section>
       <p style="color:var(--faint);font-size:13px;max-width:70ch">La lecture de la bande MRZ est faite dans le téléphone du membre : c’est une indication, pas une preuve. Vérifiez vous-même que la photo de la pièce et le selfie montrent la même personne, que le code écrit est bien <b>le code affiché</b> et que le nom correspond.</p>`);
   };
   async function examiner(id, row) {
     const next = row.nextElementSibling; if (next && next.classList.contains('fil')) { next.remove(); return; }
     const v = D.ident.find(x => x.id === id); if (!v) return;
     const el = document.createElement('div'); el.className = 'fil idx'; el.innerHTML = '<div>Chargement des photos…</div>'; row.after(el);
+    try { await N.rpc('admin_identite_ouvrir', { p_id: v.id, p_motif: 'Examen du dossier' }); } catch (e) { if (!/admin_identite_ouvrir|schema cache|Could not find/i.test(e.message)) { el.innerHTML = '<div>Impossible d’ouvrir : ' + esc(e.message) + '</div>'; return; } }
     const noms = v.piece === 'passeport' ? ['recto', 'selfie'] : ['recto', 'verso', 'selfie'];
     const L = await Promise.all(noms.map(n => N.lienSigne('identite', v.dossier + '/' + n + '.jpg', 120).catch(() => null)));
     if (!el.isConnected) return;
+    const expire = v.expire_le || v.expire_lu || '';
     const lab = { recto: 'Pièce, recto', verso: 'Pièce, verso', selfie: 'Selfie avec le code' };
     el.innerHTML = `<div class="idx-ph">${noms.map((n, i) => `<figure><figcaption>${lab[n]}</figcaption>${L[i] ? `<a href="${esc(L[i])}" target="_blank" rel="noopener noreferrer"><img src="${esc(L[i])}" alt="${lab[n]}" referrerpolicy="no-referrer"></a>` : '<p>Photo introuvable</p>'}</figure>`).join('')}</div>
       <div class="idx-info"><p>Code que le membre devait écrire : <b class="idx-code">${esc(v.defi)}</b></p>
         <p>Nom saisi : <b>${esc(v.nom_saisi || '—')}</b>${v.nom_lu ? ` · lu sur la bande MRZ : <b>${esc(v.nom_lu)}</b> ${v.mrz_ok ? '(chiffres de contrôle justes)' : '(lecture douteuse)'}` : ' · bande MRZ non lue'}</p>
         <label>Nom retenu (si vous le corrigez) <input class="search" data-idnom value="${esc(v.nom_saisi || '')}" maxlength="120" style="width:100%;margin-top:6px"></label>
+        <p>Date d’expiration donnée par le membre : <b>${jour(v.expire_le)}</b>${v.expire_lu ? ` · lue sur la bande : <b>${jour(v.expire_lu)}</b>` : ''}. <b>Comparez avec la photo de la pièce.</b></p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap"><label style="flex:1;min-width:180px">Date d’expiration lue sur la photo <input class="search" type="date" data-idexp value="${esc(expire)}" style="width:100%;margin-top:6px"></label>
+          <label style="flex:1;min-width:180px">Numéro de la pièce <input class="search" data-idnum value="${esc(v.numero_lu || '')}" maxlength="40" style="width:100%;margin-top:6px;text-transform:uppercase" placeholder="lu sur la photo"></label></div>
+        ${expire && expire < auj() ? '<p class="tag bad" style="display:inline-block">Pièce expirée : refusez avec le motif « pièce expirée ».</p>' : ''}
         <div class="acts" style="justify-content:flex-start"><button class="btn pri" data-iddec="verifie" data-id="${v.id}">Identité vérifiée</button><button class="btn" data-iddec="verification_manuelle" data-id="${v.id}">Photos à refaire</button><button class="btn bad" data-iddec="refuse" data-id="${v.id}">Refuser</button></div>
-        <p style="color:var(--faint);font-size:12.5px">Les liens des photos expirent après deux minutes. Rien n’est téléchargé sur cet ordinateur.</p></div>`;
+        <p style="color:var(--faint);font-size:12.5px">Les liens des photos expirent après deux minutes. Rien n’est téléchargé sur cet ordinateur. Cette ouverture est notée dans le registre.</p></div>`;
     bindIdent(el);
   }
   // ——— bannissement à vie (supabase/schema-14-confiance.sql) ———
@@ -245,20 +261,53 @@
   async function decider(b) {
     const v = D.ident.find(x => x.id === b.dataset.id), st = b.dataset.iddec; if (!v) return;
     let motif = null;
+    const bx = b.closest('.fil'), expIn = bx && bx.querySelector('[data-idexp]'), numIn = bx && bx.querySelector('[data-idnum]');
+    const exp = expIn ? expIn.value || null : (v.expire_le || null);
+    if (st === 'verifie' && !exp) return toast('Indiquez la date d’expiration lue sur la photo de la pièce.');
+    if (st === 'verifie' && exp < auj()) return toast('Pièce expirée : elle ne peut pas être vérifiée. Refusez avec le motif « pièce expirée ».');
     if (st === 'verifie') { if (!confirm('Confirmer : la pièce, le selfie et le code concordent, et l’identité de ' + (v.nom_saisi || 'ce membre') + ' est vérifiée ?')) return; }
     else { motif = prompt(st === 'refuse' ? 'Motif du refus (le membre le lira) :' : 'Qu’est-ce que le membre doit refaire ? (il le lira)'); if (motif == null) return; if (!motif.trim()) return toast('Indiquez le motif.'); }
     const box = b.closest('.fil'), nomIn = box && box.querySelector('[data-idnom]');
     b.disabled = true;
     try {
-      await N.rpc('admin_identite_decider', { p_id: v.id, p_statut: st, p_motif: motif, p_nom: nomIn ? nomIn.value.trim() || null : null });
-      // les photos ne servent plus : on les efface tout de suite (conservation minimale)
-      let efface = false;
-      try { await N.effacerPrive('identite', ['recto', 'verso', 'selfie'].map(n => v.dossier + '/' + n + '.jpg')); await N.rpc('admin_identite_photos_effacees', { p_id: v.id }); efface = true; } catch (_) {}
+      // le dossier est conservé 5 ans (schéma 16) : plus aucun effacement ici
+      await N.rpc('admin_identite_decider', { p_id: v.id, p_statut: st, p_motif: motif, p_nom: nomIn ? nomIn.value.trim() || null : null, p_expire: exp, p_numero: numIn ? numIn.value.trim() || null : null });
       await load(); paint();
-      toast((st === 'verifie' ? 'Identité vérifiée : le badge apparaît.' : st === 'refuse' ? 'Dossier refusé.' : 'Le membre est prévenu qu’il doit refaire des photos.') + (efface ? ' Photos effacées.' : ' Attention : les photos n’ont pas pu être effacées.'));
+      toast(st === 'verifie' ? 'Identité vérifiée : le badge apparaît jusqu’à l’expiration de la pièce.' : st === 'refuse' ? 'Dossier refusé (conservé 5 ans).' : 'Le membre est prévenu qu’il doit refaire des photos.');
     } catch (e) { b.disabled = false; toast('Décision impossible : ' + e.message); }
   }
+  // ——— registre : retrouver un dossier conservé, l'ouvrir avec un motif (noté) ———
+  const ST_REG = { en_attente: 'en examen', verification_manuelle: 'photos à refaire', verifie: 'vérifiée', refuse: 'refusée', remplace: 'remplacée', retire: 'retirée' };
+  async function chercherRegistre(box) {
+    const q = box.querySelector('[data-reg-q]').value.trim(), res = box.querySelector('[data-reg-res]');
+    if (q.length < 3) return toast('Tapez au moins 3 caractères.');
+    res.innerHTML = '<div class="empty">Recherche…</div>';
+    let L; try { L = await N.rpc('admin_identite_registre', { p_q: q }); } catch (e) { res.innerHTML = `<div class="empty"><b>Impossible</b>${esc(/admin_identite_registre|schema cache|Could not find/i.test(e.message) ? 'Lancez supabase/schema-16-identite-conservation.sql.' : e.message)}</div>`; return; }
+    res.innerHTML = (L || []).length ? L.map(r => `<div class="row" data-reg="${r.id}"><span class="mk ${r.statut === 'verifie' ? 'o' : r.statut === 'refuse' ? 'd off' : 'off'}"></span>
+        <div><b>${esc(r.nom || '—')}</b><small>${esc(PIECE[r.piece] || r.piece)} n° ${esc(r.numero || '?')} · expire le ${jour(r.expire_le)}</small></div>
+        <div class="c3"><small>Tél. ${esc(fmtTel(String(r.tel || '').replace(/^225/, '')))}${r.compte_supprime ? ' · <b>compte supprimé</b>' : ''}</small><small>Envoyé le ${date(r.soumis_le)} · ${ST_REG[r.statut] || r.statut}</small></div>
+        <div class="c4"><span class="tag">gardé ${r.garder_jusquau ? 'jusqu’au ' + date(r.garder_jusquau) : 'tant que le compte existe'}</span>${r.acces ? ` <span class="tag">${r.acces} ouverture${r.acces > 1 ? 's' : ''}</span>` : ''}</div>
+        <div class="acts">${r.photos ? `<button class="btn sm" data-reg-open="${r.id}">Ouvrir</button>` : '<small>photos effacées</small>'}</div></div>`).join('')
+      : '<div class="empty"><b>Aucun dossier</b>Rien ne correspond. Seuls les dossiers envoyés sont conservés.</div>';
+    res.querySelectorAll('[data-reg-open]').forEach(b => b.onclick = () => ouvrirRegistre(b.dataset.regOpen, b.closest('.row'), L.find(x => x.id === b.dataset.regOpen)));
+  }
+  async function ouvrirRegistre(id, row, r) {
+    const next = row.nextElementSibling; if (next && next.classList.contains('fil')) { next.remove(); return; }
+    const motif = prompt('Pourquoi ouvrez-vous ce dossier ? (noté dans le registre)\nExemple : réquisition de la police n°…, plainte de …'); if (motif == null) return;
+    if (motif.trim().length < 3) return toast('Indiquez le motif.');
+    let o; try { o = await N.rpc('admin_identite_ouvrir', { p_id: id, p_motif: motif.trim() }); } catch (e) { return toast('Impossible : ' + e.message); }
+    const noms = o.piece === 'passeport' ? ['recto', 'selfie'] : ['recto', 'verso', 'selfie'], lab = { recto: 'Pièce, recto', verso: 'Pièce, verso', selfie: 'Selfie avec le code' };
+    const [L, H] = await Promise.all([Promise.all(noms.map(n => N.lienSigne('identite', o.dossier + '/' + n + '.jpg', 120).catch(() => null))), N.rpc('admin_identite_acces', { p_id: id }).catch(() => [])]);
+    const el = document.createElement('div'); el.className = 'fil idx'; row.after(el);
+    el.innerHTML = `<div class="idx-ph">${noms.map((n, i) => `<figure><figcaption>${lab[n]}</figcaption>${L[i] ? `<a href="${esc(L[i])}" target="_blank" rel="noopener noreferrer"><img src="${esc(L[i])}" alt="${lab[n]}" referrerpolicy="no-referrer"></a>` : '<p>Photo introuvable</p>'}</figure>`).join('')}</div>
+      <div class="idx-info"><p>Nom : <b>${esc(r && r.nom || '—')}</b> · ${esc(PIECE[r && r.piece] || '')} n° <b>${esc(r && r.numero || '?')}</b> · expire le <b>${jour(r && r.expire_le)}</b> · tél. <b>${esc(fmtTel(String(r && r.tel || '').replace(/^225/, '')))}</b></p>
+        <p style="color:var(--faint);font-size:12.5px">Ouvertures de ce dossier : ${(H || []).map(a => `${date(a.quand)} (${esc(fmtTel(String(a.admin_tel || '').replace(/^225/, '')))}) — ${esc(a.motif)}`).join(' · ') || '—'}</p>
+        <p style="color:var(--faint);font-size:12.5px">À remettre aux autorités seulement sur réquisition écrite. Les liens expirent après deux minutes.</p></div>`;
+  }
   function bindIdent(r) {
+    const rq = r.querySelector('[data-reg-q]'), rg = r.querySelector('[data-reg-go]'), box = rq && rq.closest('.sec');
+    if (rg) rg.onclick = () => chercherRegistre(box);
+    if (rq) rq.onkeydown = e => { if (e.key === 'Enter') chercherRegistre(box); };
     r.querySelectorAll('[data-idv]').forEach(b => b.onclick = () => examiner(b.dataset.idv, b.closest('.row')));
     r.querySelectorAll('[data-iddec]').forEach(b => b.onclick = () => decider(b));
   }

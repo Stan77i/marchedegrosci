@@ -1,3 +1,36 @@
+# Mise à jour — 18 octobre 2026 (pièces expirées refusées, dossiers d'identité conservés 5 ans, activité du réseau)
+
+Service worker : `mgci-v75`. Base de données : `supabase/schema-16-identite-conservation.sql`, **déjà appliqué** sur le projet.
+
+## Le réseau
+- Dans le menu, « Le réseau » affiche le nombre d'annonces en cours, avec le détail : « 1 offre · 2 demandes ». Sans annonce : « Aucune activité pour l'instant ».
+
+## Pièces expirées
+- La **date d'expiration** de la pièce est maintenant demandée à l'envoi. Elle est pré-remplie quand la bande MRZ est lue.
+- **Une pièce expirée est refusée**, dans l'application et sur le serveur (date saisie ou date lue sur la bande).
+- L'administrateur voit les deux dates et confirme celle de la photo. Le serveur **refuse « Identité vérifiée » pour une pièce expirée**.
+- **Le badge disparaît le jour où la pièce expire.** La personne voit « Votre pièce a expiré » et peut refaire la vérification.
+
+## Conservation pour la police (fraude, plainte)
+Avant, rien n'était gardé : photos effacées après la décision, numéro jamais enregistré. Désormais :
+- **Tout dossier envoyé est conservé** : vérifié, refusé, remplacé ou retiré après envoi. On garde les photos, le nom, le numéro de la pièce, la date d'expiration et le téléphone du compte.
+- **Durée** :
+  - tant que le compte existe, puis **5 ans après sa suppression** ;
+  - un dossier refusé, remplacé ou retiré est gardé **5 ans après cette date**.
+  
+  Ensuite, les photos et les données personnelles sont effacées toutes seules (à l'ouverture du tableau de bord).
+- **Supprimer son compte n'efface plus le dossier.** Sinon un fraudeur effacerait sa pièce.
+- **Personne ne peut effacer plus tôt**, ni le membre ni l'administrateur : c'est le serveur qui décide. Seul un brouillon jamais envoyé est effacé (au bout de 30 jours, ou quand la personne le retire).
+- **Tableau de bord → Identités → Registre des identités** :
+  - recherche par téléphone, nom ou numéro de pièce ;
+  - « Ouvrir » demande un motif (par exemple : réquisition de la police n°…) ;
+  - chaque ouverture est notée : qui, quand, pourquoi. Les examens sont notés aussi.
+- Les textes d'accord de la vérification disent clairement que le dossier est gardé 5 ans et pourquoi.
+
+## À faire par le propriétaire
+- **Déclarer ce traitement à l'ARTCI** (autorité ivoirienne de protection des données personnelles, loi n° 2013-450). Garder des copies de pièces d'identité pendant 5 ans est un traitement de données sensibles. Il doit être déclaré, ou autorisé selon le cas. Un juriste peut confirmer la formalité exacte.
+- Ne remettre un dossier aux autorités que **sur réquisition écrite**, et noter son numéro comme motif d'ouverture.
+
 # Mise à jour — 18 octobre 2026 (signaler une personne, filtre « Vérifiés », rappel avant de payer, dossiers abandonnés)
 
 Service worker : `mgci-v74`.

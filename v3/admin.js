@@ -62,6 +62,8 @@
       N.rpc('admin_identite_dossiers').catch(e => { if (/admin_identite_dossiers|schema cache|Could not find/i.test(e.message)) return N.rpc('admin_identite_file'); throw e; })
         .then(r => { D.ident = r || []; delete D.err.identites; }).catch(e => { D.ident = []; if (!/admin_identite_file|schema cache|Could not find/i.test(e.message)) D.err.identites = e.message; else D.identAbsent = true; })
     ]);
+    // permis sans date de fin (schéma 21) : le badge vaut 5 ans, l'administrateur vérifie sur la photo qu'aucune date n'est écrite
+    try { const sf = new Set(((await N.rpc('admin_identite_sans_fin')) || []).map(x => typeof x === 'string' ? x : x.admin_identite_sans_fin)); D.ident.forEach(v => { v.sans_fin = sf.has(v.id); }); } catch (_) {}
     D.byUser = Object.fromEntries(D.comptes.map(c => [c.id, c]));
     // le compteur du menu de l'application (application.dc.html, v3/compte.js) suit ce qui reste à examiner
     if (!D.err.identites && !D.identAbsent) try { localStorage.setItem('mdg-admin:identites', JSON.stringify({ n: D.ident.filter(v => v.statut === 'en_attente').length, t: Date.now() })); } catch (_) {}
@@ -244,7 +246,7 @@
   const PIECE = { cni: 'Carte nationale d’identité', passeport: 'Passeport', carte_consulaire: 'Carte consulaire', permis: 'Permis de conduire' };
   const auj = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
   const jour = j => j ? new Date(j + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
-  const expTag = v => { const e = v.expire_le || v.expire_lu; if (!e) return v.expire_le === undefined ? '' : '<span class="tag">expiration ?</span> ';
+  const expTag = v => { if (v.sans_fin) return '<span class="tag acc">permis sans date de fin</span> '; const e = v.expire_le || v.expire_lu; if (!e) return v.expire_le === undefined ? '' : '<span class="tag">expiration ?</span> ';
     return e < auj() ? `<span class="tag bad">pièce expirée (${jour(e)})</span> ` : `<span class="tag">expire le ${jour(e)}</span> `; };
   VIEWS.identites = () => {
     const att = D.ident.filter(v => v.statut === 'en_attente'), rev = D.ident.filter(v => v.statut === 'verification_manuelle');
@@ -277,7 +279,7 @@
       <div class="idx-info"><p>Code que le membre devait écrire : <b class="idx-code">${esc(v.defi)}</b></p>
         <p>Nom saisi : <b>${esc(v.nom_saisi || '—')}</b>${v.nom_lu ? ` · lu sur la bande MRZ : <b>${esc(v.nom_lu)}</b> ${v.mrz_ok ? '(chiffres de contrôle justes)' : '(lecture douteuse)'}` : ' · bande MRZ non lue'}</p>
         <label>Nom retenu (si vous le corrigez) <input class="search" data-idnom value="${esc(v.nom_saisi || '')}" maxlength="120" style="width:100%;margin-top:6px"></label>
-        <p>Date d’expiration donnée par le membre : <b>${jour(v.expire_le)}</b>${v.expire_lu ? ` · lue sur la bande : <b>${jour(v.expire_lu)}</b>` : ''}. <b>Comparez avec la photo de la pièce.</b></p>
+        ${v.sans_fin ? `<p>Le membre indique que <b>son permis n’a pas de date de fin</b> (permis A ou B sans limite). <b>Vérifiez sur la photo qu’aucune date de fin n’est écrite</b> ; s’il y en a une, écrivez-la ci-dessous. Sinon, le badge vaudra jusqu’au <b>${jour(v.expire_le)}</b> (5 ans).</p>` : `<p>Date d’expiration donnée par le membre : <b>${jour(v.expire_le)}</b>${v.expire_lu ? ` · lue sur la bande : <b>${jour(v.expire_lu)}</b>` : ''}. <b>Comparez avec la photo de la pièce.</b></p>`}
         <div style="display:flex;gap:12px;flex-wrap:wrap"><label style="flex:1;min-width:180px">Date d’expiration lue sur la photo <input class="search" type="date" data-idexp value="${esc(expire)}" style="width:100%;margin-top:6px"></label>
           <label style="flex:1;min-width:180px">Numéro de la pièce <input class="search" data-idnum value="${esc(v.numero_lu || '')}" maxlength="40" style="width:100%;margin-top:6px;text-transform:uppercase" placeholder="lu sur la photo"></label></div>
         ${expire && expire < auj() ? '<p class="tag bad" style="display:inline-block">Pièce expirée : refusez avec le motif « pièce expirée ».</p>' : ''}

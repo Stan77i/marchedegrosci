@@ -249,6 +249,8 @@
 .idv-code i{font-style:normal;display:grid;place-items:center;width:58px;height:70px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line2)}
 .idv-l{display:block;margin:0 0 6px;font-size:13px;font-weight:500;color:var(--mute)}
 .idv-in{width:100%;box-sizing:border-box;height:52px;padding:0 14px;border:1px solid var(--line2);border-radius:13px;background:#fff;color:var(--ink);font:500 17px Jost,sans-serif}
+.idv-sf{display:flex;gap:12px;align-items:flex-start;margin-top:12px;padding:12px 14px;border-radius:14px;background:rgba(140,140,140,.1);cursor:pointer}.idv-sf input{flex:none;width:22px;height:22px;margin:1px 0 0;accent-color:#10392B}.idv-sf b{display:block;font-weight:600}.idv-sf small{display:block;margin-top:3px;opacity:.75;font-size:13px;line-height:1.4}
+.idv-in:disabled{opacity:.45}
 .idv-lu{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:rgba(106,174,240,.14);color:#234f80;font-size:13.5px;line-height:1.4}
 .idv-lu.doute{background:rgba(242,201,76,.22);color:#6b4e00}
 .idv-act{display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:6px}
@@ -421,7 +423,7 @@
     const V = {
       en_attente: ['att', IC('horloge', 34), 'Votre dossier est en cours d’examen', `Envoyé le ${dateFr(s.soumis_le)} (${esc(PIECE_TXT[s.piece] || 'pièce')}). Une personne de l’équipe compare votre pièce et votre selfie. Vous serez prévenu ici.`],
       verification_manuelle: ['att', IC('photo', 34), 'Quelques photos sont à refaire', 'L’équipe n’a pas pu terminer l’examen. Voici ce qu’elle demande :'],
-      verifie: ['ok', badge(40), 'Identité vérifiée', `Vérifiée le ${dateFr(s.decide_le)}. Le badge apparaît sur votre profil et à côté de votre nom sur vos annonces.${s.expire_le ? ` Il reste valable jusqu’à l’expiration de votre pièce, le ${dateFr(s.expire_le)}.` : ''}`],
+      verifie: ['ok', badge(40), 'Identité vérifiée', `Vérifiée le ${dateFr(s.decide_le)}. Le badge apparaît sur votre profil et à côté de votre nom sur vos annonces.${s.expire_le ? (s.sans_fin ? ` Votre permis n’a pas de date de fin : le badge reste valable jusqu’au ${dateFr(s.expire_le)}, puis une nouvelle vérification sera demandée.` : ` Il reste valable jusqu’à l’expiration de votre pièce, le ${dateFr(s.expire_le)}.`) : ''}`],
       refuse: ['ko', IC('fermer', 34), 'Vérification refusée', 'Motif donné par l’équipe :'],
       expire: ['ko', IC('horloge', 34), 'Votre pièce a expiré', `Votre pièce n’est plus valide depuis le ${dateFr(s.expire_le)}. Le badge « Identité vérifiée » est retiré. Refaites la vérification avec une pièce en cours de validité.`],
       banni: ['ko', IC('fermer', 34), 'Ce compte est banni', 'L’équipe du Marché de Gros a banni ce compte à vie, à la suite d’abus (arnaque, mauvais produits répétés ou insultes). Ses annonces ne sont plus visibles et il ne peut plus publier, négocier ni écrire. Si vous pensez qu’il s’agit d’une erreur, contactez l’équipe du Marché de Gros.']
@@ -451,7 +453,7 @@
   // le parcours en étapes
   function parcours(s0) {
     const main = bg.querySelector('.idv-main'), ret = bg.querySelector('[data-ret]');
-    const st = { piece: s0.piece || '', dossier: null, id: null, defi: s0.defi || '', recto: null, verso: null, selfie: null, mrz: null, mrzEtat: '', nom: '', expire: '' };
+    const st = { piece: s0.piece || '', dossier: null, id: null, defi: s0.defi || '', recto: null, verso: null, selfie: null, mrz: null, mrzEtat: '', nom: '', expire: '', sansFin: false };
     const ETAPES = ['intro', 'piece', 'recto', 'verso', 'selfie', 'nom', 'envoi'];
     const liste = () => ETAPES.filter(e => !(e === 'verso' && st.piece === 'passeport'));
     let i = 0;
@@ -521,16 +523,18 @@
           : st.mrzEtat === 'vide' ? `<div class="idv-lu doute">${IC('info', 18)}<span>Votre pièce n’a pas pu être lue automatiquement. Ce n’est pas grave : écrivez votre nom.</span></div>` : '';
         main.innerHTML = `<h2>Votre nom, comme sur la pièce</h2><p>Prénoms et nom, tels qu’ils sont écrits, puis la date d’expiration de la pièce.</p>${info}
           <div><label class="idv-l" for="idv-nom">Nom complet</label><input id="idv-nom" class="idv-in" maxlength="120" autocomplete="name" value="${esc(st.nom)}"></div>
-          <div><label class="idv-l" for="idv-exp">Date d’expiration de la pièce</label><input id="idv-exp" class="idv-in" type="date" value="${esc(st.expire)}">
-            ${st.mrz && st.mrz.expire ? `<small class="idv-l" style="display:block;margin-top:6px">Lue sur la bande : ${dateFr(st.mrz.expire)}.</small>` : ''}</div>
+          <div><label class="idv-l" for="idv-exp">Date d’expiration de la pièce</label><input id="idv-exp" class="idv-in" type="date" value="${esc(st.expire)}"${st.sansFin ? ' disabled' : ''}>
+            ${st.mrz && st.mrz.expire ? `<small class="idv-l" style="display:block;margin-top:6px">Lue sur la bande : ${dateFr(st.mrz.expire)}.</small>` : ''}
+            ${st.piece === 'permis' ? `<label class="idv-sf"><input type="checkbox" id="idv-sf"${st.sansFin ? ' checked' : ''}><span><b>Mon permis n’a pas de date de fin</b><small>En Côte d’Ivoire, les permis A et B sont souvent sans limite. Le badge sera alors valable 5 ans, puis on vous redemandera une vérification.</small></span></label>` : ''}</div>
           <p class="idv-bad" data-err role="alert"></p>${actions(false, 'Envoyer mon dossier')}`;
         const inp = main.querySelector('#idv-nom'), dt = main.querySelector('#idv-exp'), go = main.querySelector('[data-go]'), err = main.querySelector('[data-err]');
         // une pièce expirée (date saisie ou lue sur la bande) bloque l'envoi
-        const verif = () => { st.nom = inp.value; st.expire = dt.value;
+        const sf = main.querySelector('#idv-sf');
+        const verif = () => { st.nom = inp.value; st.sansFin = !!(sf && sf.checked); dt.disabled = st.sansFin; st.expire = st.sansFin ? '' : dt.value;
           const lue = st.mrz && st.mrz.expire, exp = (st.expire && st.expire < auj()) ? st.expire : (lue && lue < auj()) ? lue : '';
           err.textContent = exp ? `Cette pièce a expiré le ${dateFr(exp)}. Utilisez une pièce encore valide.` : '';
-          go.disabled = inp.value.trim().length < 3 || !st.expire || !!exp; };
-        inp.oninput = verif; dt.oninput = dt.onchange = verif; verif();
+          go.disabled = inp.value.trim().length < 3 || !(st.expire || st.sansFin) || !!exp; };
+        inp.oninput = verif; dt.oninput = dt.onchange = verif; if (sf) sf.onchange = verif; verif();
         go.onclick = () => aller(i + 1);
       } else if (e === 'envoi') envoyer();
     }
@@ -549,7 +553,7 @@
         }
         m.textContent = 'Enregistrement du dossier';
         await N().rpc('identite_soumettre', { p_id: st.id, p_nom: st.nom.trim(), p_nom_lu: st.mrz ? [st.mrz.prenoms, st.mrz.nom].filter(Boolean).join(' ') : null, p_mrz_ok: st.mrz ? !!st.mrz.valide : null,
-          p_expire: st.expire, p_expire_lu: st.mrz && st.mrz.expire || null, p_numero_lu: st.mrz && st.mrz.numero || null });
+          p_expire: st.sansFin ? null : st.expire, p_expire_lu: st.mrz && st.mrz.expire || null, p_numero_lu: st.mrz && st.mrz.numero || null, p_sans_fin: !!(st.sansFin && st.piece === 'permis') });
         barre.style.width = '100%';
         await statut(true).catch(() => {});
         delete bg.dataset.lock;

@@ -43,7 +43,8 @@ NOUVEAUX = [
     ('melon.webp', 'melon', 'Melon', 'legumes-et-fruits', ['melons']),
     ('fruit-de-la-passion.webp', 'fruit-de-la-passion', 'Fruit de la passion', 'legumes-et-fruits', ['maracuja', 'grenadille']),
     ('pomme-de-cajou.webp', 'pomme-de-cajou', 'Pomme de cajou', 'legumes-et-fruits', ['pomme cajou']),
-    ('kplala.webp', 'kplala', 'Kplala', 'legumes-et-fruits', ['feuilles de kplala']),
+    # kplala : le fichier reçu (kplala.webp) était la photo des corossols ; pas d'image tant qu'une vraie photo de feuilles
+    # de corète (kplala) n'est pas fournie. Le produit reste au catalogue (v2/data.js) avec l'illustration dessinée.
     ('gnangnan.webp', 'gnangnan', 'Gnangnan (aubergine amère)', 'legumes-et-fruits', ['gnagnan', 'aubergine amère']),
     ('feuilles-de-baobab-1.webp', 'feuilles-de-baobab', 'Feuilles de baobab', 'legumes-et-fruits', ['lalo', 'baobab']),
     ('cannelle.webp', 'cannelle', 'Cannelle', 'assaisonnements-epices-condiments', ['bâton de cannelle']),

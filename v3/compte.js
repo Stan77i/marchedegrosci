@@ -487,7 +487,7 @@ label.cp-r{cursor:pointer}
       if (ID && navigator.onLine) ID.statut().then(s => { if (s && JSON.stringify(s) !== JSON.stringify(idC) && bg && bg.rafraichir && main.isConnected) bg.rafraichir(); }).catch(() => {});
       // la vérification d'identité, bien en vue tant qu'elle n'est pas faite : 3 annonces gratuites, puis elle est demandée pour publier
       const idBandeau = (() => {
-        if (!ID || !idC || idC.exempt || idS === 'verifie') return '';
+        if (!ID || !idC || idC.exempt || off0 || idS === 'verifie') return '';
         const T = (cls, ico, t, txt, btn, extra) => `<section class="cp-idv ${cls}" aria-label="Vérification d’identité"><div class="cp-idv-t"><span aria-hidden="true">${ico}</span><div><b>${t}</b><p>${txt}</p></div></div>${extra || ''}${btn ? `<button type="button" data-idv>${btn}</button>` : ''}</section>`;
         if (idC.banni) return T('ko', IC('fermer', 26), 'Ce compte est banni', 'Il ne peut plus publier, négocier ni écrire sur le Marché de Gros.', 'En savoir plus');
         if (idS === 'en_attente') return T('bleu', IC('horloge', 26), 'Vérification en cours', 'L’équipe examine votre dossier. Le badge apparaîtra ici dès qu’elle aura validé.', '');
@@ -543,29 +543,29 @@ label.cp-r{cursor:pointer}
             <button type="button" class="cp-st" data-go="activite" aria-label="${dem.length} demande${dem.length > 1 ? 's' : ''} : voir mon activité"><i class="d"></i><b>${dem.length}</b><small>demande${dem.length > 1 ? 's' : ''}</small></button>
             <button type="button" class="cp-st" data-go="activite" aria-label="${ng.env.length + ng.rec.length} négociation${ng.env.length + ng.rec.length > 1 ? 's' : ''} en cours : voir mon activité"><i class="n"></i><b>${ng.env.length + ng.rec.length}</b><small>en négociation</small></button>
           </div>
-          ${repBtn}
+          ${off0 ? '' : repBtn}
           ${stBloc}
           <div class="cp-sh"><h3>Votre activité</h3><button type="button" data-go="activite">Tout afficher</button></div>
           ${fil || '<div class="cp-feed"><p class="cp-vide"><b>Rien pour l’instant</b>Vos annonces, propositions et accords s’afficheront ici, jour par jour.</p></div>'}
           <div class="cp-sh"><h3>Votre compte</h3><small>${esc(N().fmtTel(u.tel))}</small></div>
           <div class="cp-grp">
-            ${ligne({ ico: mono('compte'), t: 'Profil et avatar', s: nom ? '' : 'Prénom, rôle, lieu', attrs: 'data-go="profil"' })}
+            ${off0 ? '' : ligne({ ico: mono('compte'), t: 'Profil et avatar', s: nom ? '' : 'Prénom, rôle, lieu', attrs: 'data-go="profil"' })}
             ${ligne({ ico: mono('cloche'), t: 'Notifications', v: '<span data-pst>…</span>', n: nl, attrs: 'data-go="notifs"' })}
             ${S ? ligne({ ico: mono('son'), t: 'Sons', v: sn && sn.on ? 'Activés' : 'Désactivés', attrs: 'data-sons' }) : ''}
-            ${ligne({ ico: mono('oeil'), t: 'Confidentialité', v: p.nom_public ? 'Nom visible' : 'Initiale', attrs: 'data-go="prefs"' })}
-            ${ID ? ligne({ ico: mono('verifie'), t: 'Identité', s: (ID.RESUME[idS] || ID.RESUME.non_verifie)[1], v: (ID.RESUME[idS] || ID.RESUME.non_verifie)[0], vf: idS === 'verifie', attrs: 'data-idv' }) : ''}
+            ${off0 ? '' : ligne({ ico: mono('oeil'), t: 'Confidentialité', v: p.nom_public ? 'Nom visible' : 'Initiale', attrs: 'data-go="prefs"' })}
+            ${ID && !off0 ? ligne({ ico: mono('verifie'), t: 'Identité', s: (ID.RESUME[idS] || ID.RESUME.non_verifie)[1], v: (ID.RESUME[idS] || ID.RESUME.non_verifie)[0], vf: idS === 'verifie', attrs: 'data-idv' }) : ''}
             ${ligne({ ico: mono('cadenas'), t: 'Sécurité et code secret', attrs: 'data-go="securite"' })}
             ${M && M.ecrireMarche && !adm ? ligne({ ico: mono('service'), t: 'Écrire au Marché de Gros', s: 'Une question, un problème : l’équipe répond', attrs: 'data-marche' }) : ''}
             ${adm ? (() => { const nI = +(J('mdg-admin:identites', {}).n) || 0; return ligne({ ico: mono('tableau'), t: 'Tableau de bord', s: nI ? nI + (nI > 1 ? ' dossiers' : ' dossier') + ' à examiner' : 'Administration', n: nI, href: nI ? 'admin.html#identites' : 'admin.html' }); })() : ''}
           </div>
           <div class="cp-grp">${ligne({ ico: mono('sortir'), t: 'Déconnexion', cls: 'bad', chev: false, attrs: 'data-out' })}</div>
-          <p class="cp-note">Votre numéro n’est pas vérifié par SMS. Rien n’est compté ici qui n’ait eu lieu.</p>
+          <p class="cp-note">${off0 ? 'Compte officiel : pas de vérification d’identité, pas de note, pas d’étoiles. Tout ce que vous publiez ou écrivez apparaît au nom du « Marché de Gros ».' : 'Votre numéro n’est pas vérifié par SMS. Rien n’est compté ici qui n’ait eu lieu.'}</p>
         </div></div>`;
       main.querySelectorAll('[data-go]').forEach(b => b.onclick = () => bg.aller(b.dataset.go));
       const q = s => main.querySelector(s);
       if (q('[data-dm]')) q('[data-dm]').onclick = () => { fermer(); M.boite(); };
       q('[data-nego]').onclick = () => { if (G && G.inbox) { fermer(); G.inbox(); } else bg.aller('activite'); };
-      q('[data-av]').onclick = () => choisirAvatar(() => ouvrir());
+      if (q('[data-av]')) q('[data-av]').onclick = () => choisirAvatar(() => ouvrir());
       if (q('[data-idv2]')) q('[data-idv2]').onclick = () => { fermer(); ID.ouvrir(); };
       if (q('[data-sons]')) q('[data-sons]').onclick = () => { fermer(); S.panneau(); };
       if (q('[data-marche]')) q('[data-marche]').onclick = () => { fermer(); M.ecrireMarche(); };

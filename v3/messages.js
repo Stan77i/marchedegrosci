@@ -45,7 +45,10 @@
     try {
       const avant = new Map(liste.map(c => [c.id, c.updated_at])), r = await N().rpc('dm_liste2').catch(e => /dm_liste2|schema cache|Could not find|404/i.test(e.message + e.status) ? N().rpc('dm_liste') : Promise.reject(e)) || [];
       if (!premier) r.filter(c => c.non_lu && c.id !== ouverte && avant.get(c.id) !== c.updated_at).forEach(c => {
-        N().toast(c.autre_nom + ' vous a écrit : « ' + String(c.dernier_texte || '').slice(0, 60) + (String(c.dernier_texte || '').length > 60 ? '…' : '') + ' »');
+        // l'îlot (app/toast.js) : qui écrit, ce qu'il dit, et « Répondre » ; plusieurs messages d'affilée se regroupent
+        const apercu = String(c.dernier_texte || ''), av = c.officiel ? null : (window.MDGCompte && MDGCompte.avatar ? MDGCompte.avatar(c.autre_id, { size: 76, nom: c.autre_nom }).uri : null);
+        N().toast(c.autre_nom, { type: 'info', sous: '« ' + apercu.slice(0, 70) + (apercu.length > 70 ? '…' : '') + ' »', img: av || undefined, rond: true, groupe: 'dm', muet: true,
+          pluriel: () => 'nouveaux messages', action: { t: 'Répondre', fn: () => conversation(c.id, false, c) } });
         window.MDGSons && MDGSons.signal('proposition');
       });
       premier = false; liste = r; W(KL, r);

@@ -156,10 +156,12 @@
     const [liste, pp] = await Promise.all([N().rpc('avis_de', { p_cible: uid }, auth).catch(() => []), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null)]);
     if (!bg.isConnected) return;
     const nb = (liste || []).length, moy = nb ? liste.reduce((s, a) => s + a.note, 0) / nb : 0, rep = [5, 4, 3, 2, 1].map(k => liste.filter(a => a.note === k).length);
-    bg.querySelector('[data-sc]').innerHTML = nb ? etoiles(moy, nb, 14) + ' ' + moy.toFixed(1).replace('.', ',') + ' · ' + nb + ' avis' : 'Pas encore noté';
+    // compte officiel (l'administrateur) : « Marché de Gros », sans étoiles ni avis (supabase/schema-20)
+    const off = !!((pp && pp.officiel) || (window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(uid)));
+    bg.querySelector('[data-sc]').innerHTML = off ? 'Compte officiel du Marché de Gros' : nb ? etoiles(moy, nb, 14) + ' ' + moy.toFixed(1).replace('.', ',') + ' · ' + nb + ' avis' : 'Pas encore noté';
     let haut = '';
     if (pp) {
-      const nomH = () => esc(pp.affichage || o.nom || 'Membre') + (pp.officiel ? '<span class="rp-off">Officiel</span>' : '') + (window.MDGIdentite && MDGIdentite.estVerifie(uid) ? ' ' + MDGIdentite.badge(18, true) : '');
+      const nomH = () => esc(pp.affichage || o.nom || 'Membre') + (off ? ' ' + (window.MDGStatut ? MDGStatut.puces(uid, { max: 1 }) : '<span class="rp-off">Officiel</span>') : '') + (!off && window.MDGIdentite && MDGIdentite.estVerifie(uid) ? ' ' + MDGIdentite.badge(18, true) : '');
       bg.querySelector('[data-nom]').innerHTML = nomH();
       if (window.MDGIdentite) { const maj = () => { if (!bg.isConnected) return removeEventListener('mdg:identite', maj); bg.querySelector('[data-nom]').innerHTML = nomH(); }; addEventListener('mdg:identite', maj); }
       bg.querySelector('[data-dep]').textContent = [pp.membre_depuis ? 'Membre depuis ' + mois(pp.membre_depuis) : '', actif(pp.vu_le)].filter(Boolean).join(' · ');
@@ -176,14 +178,14 @@
       if (pp.lieux && pp.lieux.length) haut += `<div class="rp-sec"><h3>Où il a publié</h3><div class="rp-tags">${pp.lieux.slice(0, 14).map(l => `<span>${esc(REGN(l))}</span>`).join('')}</div></div>`;
       if (pp.historique && pp.historique.length) haut += `<div class="rp-sec"><h3>Ventes et achats conclus</h3><div class="rp-li">${pp.historique.map(h => `<div><i class="${h.sens === 'vente' ? 'o' : 'v'}"></i><span>${h.sens === 'vente' ? 'Vendu' : 'Acheté'} : ${esc(h.produit || 'produit')}${h.quantite ? ' · ' + fq(h.quantite) + ' ' + esc(h.unite || '') : ''}${h.prix ? ' à ' + fq(h.prix) + ' F' : ''}${h.ville ? ' · ' + esc(h.ville) : ''}</span><small>${quand(h.quand)}</small></div>`).join('')}</div></div>`;
       else if (!moi) haut += `<div class="rp-sec"><h3>Ventes et achats conclus</h3><div class="rp-vide">Aucune vente conclue dans l’application pour l’instant.</div></div>`;
-      haut += `<div class="rp-sec"><h3>Avis</h3></div>`;
+      if (!off) haut += `<div class="rp-sec"><h3>Avis</h3></div>`;
     }
     bg.querySelector('[data-pp]').innerHTML = haut;
     if (window.MDGStatut && bg.querySelector('[data-st]')) { const majSt = () => { const z = bg.querySelector('[data-st]'); if (!bg.isConnected || !z) return removeEventListener('mdg:rep', majSt); z.innerHTML = MDGStatut.detail(uid) || '<div class="rp-vide">Pas encore de statut : ce membre commence sur le Marché de Gros.</div>'; }; addEventListener('mdg:rep', majSt); }
-    bg.querySelector('[data-corps]').innerHTML = (nb ? `<div class="rp-score"><strong>${moy.toFixed(1).replace('.', ',')}</strong><span>${etoiles(moy, nb, 15)}${nb} avis</span><div class="rp-barres">${rep.map((c, i) => `<div><em style="font-style:normal">${5 - i}</em><i><b style="width:${nb ? c / nb * 100 : 0}%"></b></i></div>`).join('')}</div></div>
+    bg.querySelector('[data-corps]').innerHTML = off ? (moi ? '' : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire au Marché de Gros</button>` : ''}</div>`) : ((nb ? `<div class="rp-score"><strong>${moy.toFixed(1).replace('.', ',')}</strong><span>${etoiles(moy, nb, 15)}${nb} avis</span><div class="rp-barres">${rep.map((c, i) => `<div><em style="font-style:normal">${5 - i}</em><i><b style="width:${nb ? c / nb * 100 : 0}%"></b></i></div>`).join('')}</div></div>
       <div class="rp-av">${liste.map(a => `<article><header>${avatar(a.auteur, a.avatar, a.auteur, 26)}<b>${esc(a.auteur)}</b>${etoiles(a.note, 1, 11)}<small>${quand(a.quand)}</small></header>${a.texte ? `<p>${esc(a.texte)}</p>` : ''}</article>`).join('')}</div>`
       : `<div class="rp-vide">${moi ? 'Vous n’avez pas encore d’avis. Ils arrivent quand vos partenaires vous notent après une négociation.' : 'Pas encore d’avis. Négociez avec ce membre pour pouvoir le noter.'}</div>`)
-      + (moi ? `<button type="button" class="rp-go" data-modif>Modifier mon profil public</button>` : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire</button>` : ''}<button type="button" class="rp-go" data-noter>Noter ${esc(o.nom || 'ce membre')}</button></div>`);
+      + (moi ? `<button type="button" class="rp-go" data-modif>Modifier mon profil public</button>` : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire</button>` : ''}<button type="button" class="rp-go" data-noter>Noter ${esc(o.nom || 'ce membre')}</button></div>`));
     const b = bg.querySelector('[data-noter]'); if (b) b.onclick = () => { bg.fermer(); noter(uid, o.nom, () => profil(uid, o)); };
     const e = bg.querySelector('[data-ecrire]'); if (e) e.onclick = () => { bg.fermer(); MDGMessages.ecrire(uid, { nom: o.nom, avatar: o.avatar }); };
     const m = bg.querySelector('[data-modif]'); if (m) m.onclick = () => { bg.fermer(); modifier(pp || {}, () => profil(uid, o)); };

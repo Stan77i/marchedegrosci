@@ -399,10 +399,10 @@
           <small><span class="nx-tag ${e.c}">${esc(e.t)}</span> avec ${leLa(lui)}${av.nom ? ' ' + esc(av.nom) : ''}${window.MDGStatut ? ' ' + MDGStatut.puces(autreId(n), { max: 0, t: 13 }) : ''}${n.ville ? ' · ' + esc(n.ville) : ''} · ${ago(n.updated_at)}</small></button>`; };
       const grp = (t, L) => L.length ? `<section class="nx-grp"><h3>${t}</h3>${L.map(row).join('')}</section>` : '';
       bg.querySelector('.nx-b').innerHTML = liste.length ? grp('À vous de répondre', g.moi) + grp('En attente de réponse', g.eux) + grp('Accords conclus', g.ok) + grp('Sans proposition en cours', g.sans) + grp('Terminées', g.fin)
-        : `<div class="nx-empty">${window.MDGIco ? '<span class="nx-empty-ico">' + window.MDGIco.svg('negoce', 30, 1.8) + '</span>' : ''}<b>Aucune négociation pour l’instant</b>Sur une offre ou une demande, touchez « Proposer un prix ». Les réponses arrivent ici.</div>`;
+        : `<div class="nx-empty">${window.MDGSac ? MDGSac.svg('vide', { t: 70 }) : window.MDGIco ? '<span class="nx-empty-ico">' + window.MDGIco.svg('negoce', 30, 1.8) + '</span>' : ''}<b>Aucune négociation pour l’instant</b>Sur une offre ou une demande, touchez « Proposer un prix ». Les réponses arrivent ici.</div>`;
       bg.querySelectorAll('.nx-row').forEach(b => { b.onclick = () => thread(b.dataset.id); glisser(b, () => masquer(b.dataset.id)); });
     };
-    sheet(head('Mes négociations', 'Propositions, réponses et accords') + `<div class="nx-b"><div class="nx-empty">Chargement…</div></div>`, 'Mes négociations');
+    sheet(head('Mes négociations', 'Propositions, réponses et accords') + `<div class="nx-b">${window.MDGSac ? MDGSac.charge('Vos négociations arrivent…') : '<div class="nx-empty">Chargement…</div>'}</div>`, 'Mes négociations');
     redessiner = () => draw();
     bindSnd();
     if (liste.length) draw();
@@ -510,7 +510,7 @@
     async function load(anim) {
       try {
         const [nn, mm] = await Promise.all([one(id), messages(id)]);
-        if (!bg) return; if (!nn) { $('.nx-b').innerHTML = '<div class="nx-empty"><b>Négociation introuvable</b>Elle a peut-être été retirée.</div>'; $('.nx-f').innerHTML = ''; return; }
+        if (!bg) return; if (!nn) { $('.nx-b').innerHTML = '<div class="nx-empty">' + (window.MDGSac ? MDGSac.svg('triste', { t: 60 }) : '') + '<b>Négociation introuvable</b>Elle a peut-être été retirée.</div>'; $('.nx-f').innerHTML = ''; return; }
         const changed = !msgs || mm.length !== msgs.length || nn.updated_at !== n.updated_at || mm.some((m, i) => msgs[i] && m.issue !== msgs[i].issue);
         const i = liste.findIndex(x => x.id === id), avant = i >= 0 ? [liste[i]] : [];
         n = nn; msgs = mm; if (i >= 0) liste[i] = nn; else liste.unshift(nn);

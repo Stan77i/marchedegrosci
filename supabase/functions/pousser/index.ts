@@ -8,7 +8,9 @@
 //  4. par la base (déclencheur public.push_alerte) quand quelqu'un essaie de sortir de l'application, avec { alerte_id } :
 //     tous les administrateurs sont prévenus (schema-10) ;
 //  5. par la base (déclencheur public.push_annonce) à chaque nouvelle annonce, avec { annonce: 'offres' | 'demandes', id } :
-//     ceux qui suivent ce produit (table alertes_produits) sont prévenus (schema-12).
+//     ceux qui suivent ce produit (table alertes_produits) sont prévenus (schema-12) ;
+//  6. par la base (déclencheur public.push_identite) quand un dossier d'identité est envoyé, avec { identite_id },
+//     et chaque matin (pg_cron) avec { resume_identites: true } : les administrateurs sont prévenus (schema-19).
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
 import webpush from "npm:web-push@3.6.7";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -100,6 +102,22 @@ Deno.serve(async (req) => {
       const res = [];
       for (const ad of ads || []) res.push(await envoyer(ad.user_id, { title: `Alerte : ${qui} veut sortir de l'application`, body: `${a.motif} dans ${a.source === "dm" ? "un message" : "une négociation"} — « ${coupe(String(a.extrait || ""), 90)} »`, tag: "alerte-" + a.id, url: "admin.html#messages" }));
       return json({ admins: res.length, res });
+    }
+
+    // 6. un dossier d'identité vient d'être envoyé ({ identite_id }, déclencheur public.push_identite), ou le résumé du matin
+    //    ({ resume_identites: true }, tâche pg_cron « mdg-identites-matin ») : tous les administrateurs, sans aucune donnée personnelle.
+    //    Même étiquette « identite » : une nouvelle notification remplace la précédente (regroupement quand beaucoup arrivent d'un coup).
+    if (corps.identite_id || corps.resume_identites) {
+      const { count } = await sb.from("verifications").select("id", { count: "exact", head: true }).eq("statut", "en_attente");
+      const n = count || 0;
+      if (!n) return json({ rien: true });
+      const { data: ads } = await sb.from("admins").select("user_id");
+      const res = [];
+      for (const ad of ads || []) res.push(await envoyer(ad.user_id, {
+        title: corps.resume_identites ? "Dossiers d'identité en attente" : "Nouveau dossier d'identité",
+        body: n + (n > 1 ? " dossiers" : " dossier") + " à examiner" + (corps.resume_identites ? " ce matin" : ""),
+        tag: "identite", url: "admin.html#identites" }));
+      return json({ admins: res.length, dossiers: n, res });
     }
 
     // 5. une nouvelle annonce : ceux qui suivent ce produit sont prévenus

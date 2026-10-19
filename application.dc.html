@@ -22,7 +22,7 @@
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261019a','v3/porte.js','v3/sons.js?v=20261019c','v3/negoce.js?v=20261019b','v3/compte.js?v=20261019a','v3/souffle.js?v=20261019a','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261019a','v3/statuts.js?v=20261018a','v3/messages.js?v=20261019m','v3/alertes.js?v=20261018u','app/carte-app.js?v=20261018u','app/carte-gl.js?v=20261018s','v3/identite.js?v=20261019a'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261019a','v3/porte.js','v3/sons.js?v=20261019c','v3/negoce.js?v=20261019b','v3/compte.js?v=20261019w','v3/souffle.js?v=20261019a','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261019a','v3/statuts.js?v=20261018a','v3/messages.js?v=20261019m','v3/alertes.js?v=20261018u','app/carte-app.js?v=20261018u','app/carte-gl.js?v=20261018s','v3/identite.js?v=20261019a'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -702,6 +702,15 @@ const T_OFF = 'translate3d(calc(100% + 60px),0,0)', T_IN = 'translate3d(0,0,0)',
 const SHAPE = { offre: ['50%', '#6CC58C'], demande: ['2px', '#F2C94C'] };
 const W_OFF = [['maintenant', 'Maintenant'], ['semaine', 'Cette semaine'], ['mois', 'Ce mois-ci']], W_DEM = [['vite', 'Dès que possible'], ['semaine', 'Cette semaine'], ['mois', 'Ce mois-ci']];
 const ls = (k, v) => { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || 'null'); localStorage.setItem(k, JSON.stringify(v)); } catch (_) { return null; } };
+// administrateur : nombre de dossiers d'identité à examiner (supabase/schema-19), lu à l'ouverture du menu, gardé 60 s (même cache que v3/compte.js)
+const identAdm = () => { const N = window.MDGNuage; return !!(N && N.session() && ls('mdg-nuage:admin') === true); };
+const identN = () => identAdm() ? (+((ls('mdg-admin:identites') || {}).n) || 0) : 0;
+function compterIdent(fait) {
+  const N = window.MDGNuage, c = ls('mdg-admin:identites') || {};
+  if (!identAdm() || !N.rpc || !navigator.onLine || Date.now() - (c.t || 0) < 60e3) return;
+  ls('mdg-admin:identites', { n: c.n || 0, t: Date.now() });
+  N.rpc('admin_identite_compte').then(n => { n = +n || 0; ls('mdg-admin:identites', { n, t: Date.now() }); if (n !== (c.n || 0) && fait) fait(n); }).catch(() => {});
+}
 const chip = on => ({ bd: on ? '#171512' : 'rgba(23,21,18,.18)', bg: on ? '#171512' : 'transparent', color: on ? '#F5F0E6' : '#171512' });
 
 class Component extends DCLogic {
@@ -1336,7 +1345,7 @@ class Component extends DCLogic {
     return Object.assign(base, {
       tf, vis, zi, on, regions, halo: act.tint, sbColor: light && !anyS ? '#171512' : '#F5F0E6',
       back: () => this.back(), edgeDown: e => this.edgeDown(e), edgeUp: e => this.edgeUp(e), stop: e => e.stopPropagation(),
-      goAcheter: () => this.push('acheter'), goVendre: () => this.push('vendre'), openMenu: () => { this.ouvertures = (this.ouvertures || 0) + 1; this.setState({ menu: true, sheetDy: 0, drDx: 0 }); setTimeout(() => { const l = document.querySelector('[role=dialog][aria-label="Menu"] [style*="overflow-y"]'); if (l) l.scrollTop = 0; }, 0); },
+      goAcheter: () => this.push('acheter'), goVendre: () => this.push('vendre'), openMenu: () => { this.ouvertures = (this.ouvertures || 0) + 1; this.setState({ menu: true, sheetDy: 0, drDx: 0 }); compterIdent(n => this.setState({ identN: n })); setTimeout(() => { const l = document.querySelector('[role=dialog][aria-label="Menu"] [style*="overflow-y"]'); if (l) l.scrollTop = 0; }, 0); },
       porteTxt: moiS ? 'Se déconnecter' : 'Se connecter', porteEl: moiS ? tuile('sortir', 'marche') : tuile('compte', 'vous'),
       goPorte: () => { const N = window.MDGNuage; this.setState({ menu: false }); if (!N) return; if (!N.session()) { setTimeout(() => N.open(), 250); return; }
         const fin = () => N.toast('Vous êtes sorti du marché. Vos annonces restent publiées.');
@@ -1451,6 +1460,9 @@ class Component extends DCLogic {
         // écrire au Marché de Gros (ou, pour l'administrateur, à tous les membres)
         if (M && M.ecrireMarche) { const adm = !!(window.MDGNuage && ls('mdg-nuage:admin') === true);
           compte.push(ln({ ico: logoIco(38), t: adm ? 'Message à tous les membres' : 'Écrire au Marché de Gros', s: adm ? 'Au nom du Marché de Gros, avec le logo' : 'Une question, un problème : l\u2019équipe répond', go: () => { this.setState({ menu: false }); setTimeout(() => adm ? M.diffuser() : M.ecrireMarche(), 250); } })); }
+        // l'administrateur : le tableau de bord, avec les dossiers d'identité qui attendent une décision
+        if (identAdm()) { const nI = identN(); compte.push(ln({ ico: tuile('tableau', 'lien'), t: 'Tableau de bord', s: nI ? nI + (nI > 1 ? ' dossiers' : ' dossier') + ' à examiner' : 'Administration',
+            n: nI || '', nBg: '#E2735B', nFg: '#171512', go: () => { this.setState({ menu: false }); setTimeout(() => { location.href = nI ? 'admin.html#identites' : 'admin.html'; }, 250); } })); }
         compte.push(pg('pubs', 'Mes publications', 'pubs', { n: mine.length || '', s: stockSum.length ? 'Et mon stock' : '' }));
         if (ss && window.MDGRep) compte.push(ln({ ico: tuile('profil', 'vous'),
             t: 'Mon profil public', s: 'Ce que les autres voient de vous', go: () => { this.setState({ menu: false }); setTimeout(() => window.MDGRep.profil(ss.user.id, { nom: nomP || 'Moi' }), 250); } }));

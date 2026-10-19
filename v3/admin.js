@@ -60,6 +60,8 @@
         .then(r => { D.ident = r || []; delete D.err.identites; }).catch(e => { D.ident = []; if (!/admin_identite_file|schema cache|Could not find/i.test(e.message)) D.err.identites = e.message; else D.identAbsent = true; })
     ]);
     D.byUser = Object.fromEntries(D.comptes.map(c => [c.id, c]));
+    // le compteur du menu de l'application (application.dc.html, v3/compte.js) suit ce qui reste à examiner
+    if (!D.err.identites && !D.identAbsent) try { localStorage.setItem('mdg-admin:identites', JSON.stringify({ n: D.ident.filter(v => v.statut === 'en_attente').length, t: Date.now() })); } catch (_) {}
     purger();
   }
   // brouillons abandonnés (30 jours) et dossiers dont les 5 ans de conservation sont passés : effacés à chaque ouverture (schémas 15 et 16).
@@ -242,6 +244,7 @@
         <div class="acts">${v.statut === 'en_attente' ? `<button class="btn sm pri" data-idv="${v.id}">Examiner</button>` : `<button class="btn sm bad" data-iddec="refuse" data-id="${v.id}">Refuser</button>`}</div></div>`;
     return top('Identités', 'Comparez la pièce, le selfie et le code écrit à la main, puis décidez. Une pièce expirée ne peut pas être vérifiée. Tout dossier envoyé est conservé 5 ans (fraude, plainte, réquisition) ; chaque ouverture des photos est notée.') + (D.identAbsent ? `<div class="list"><div class="empty"><b>Pas encore installé</b>Lancez supabase/schema-13-identite.sql dans l’éditeur SQL de Supabase.</div></div>` : `
       <section class="sec"><div class="sec-h"><h2>À examiner</h2><p>${att.length} dossier${att.length > 1 ? 's' : ''}, le plus ancien en premier.</p></div>
+        ${att.length ? `<div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:0 0 12px"><button class="btn pri" data-rapide>Examiner en mode rapide (${att.length})</button><small style="color:var(--mute)">Plein écran, un dossier à la fois, les plus nets d’abord. Touches V, P, R et flèches.</small></div>` : ''}
         <div class="list">${att.length ? att.map(carte).join('') : '<div class="empty"><b>Rien à examiner</b>Les dossiers envoyés apparaîtront ici.</div>'}</div></section>
       ${rev.length ? `<section class="sec"><div class="sec-h"><h2>En attente de nouvelles photos</h2><p>Vous avez demandé de refaire des photos ; le membre peut renvoyer son dossier.</p></div><div class="list">${rev.map(carte).join('')}</div></section>` : ''}
       <section class="sec"><div class="sec-h"><h2>Registre des identités</h2><p>Retrouver un dossier conservé (vérifié, refusé, retiré, compte supprimé) : téléphone, nom ou numéro de pièce. Chaque ouverture demande un motif et reste notée.</p></div>
@@ -339,6 +342,208 @@
     if (rq) rq.onkeydown = e => { if (e.key === 'Enter') chercherRegistre(box); };
     r.querySelectorAll('[data-idv]').forEach(b => b.onclick = () => examiner(b.dataset.idv, b.closest('.row')));
     r.querySelectorAll('[data-iddec]').forEach(b => b.onclick = () => decider(b));
+    r.querySelectorAll('[data-rapide]').forEach(b => b.onclick = async () => { b.disabled = true; try { await modeRapide(); } finally { b.disabled = false; } });
+  }
+  // ——— mode rapide : un dossier à la fois, en plein écran, les « propres » d'abord (supabase/schema-19-admin-identites.sql) ———
+  // Le tri (propre · à regarder · suspect) n'est qu'une aide : chaque dossier est regardé et décidé par l'administrateur.
+  // Raccourcis : V valider (deux fois pour confirmer) · P photos à refaire · R refuser · ← → précédent / suivant · Échap fermer.
+  const MR_REFUS = ['Pièce expirée', 'Photo floue', 'Code absent ou faux', 'Visage différent', 'Pièce d’une autre personne'];
+  const MR_REFAIRE = ['Photo floue', 'Code absent ou faux', 'Pièce coupée ou avec un reflet', 'Visage mal visible sur le selfie'];
+  const MR_PILE = { propre: ['ok', 'Propre'], regarder: ['moy', 'À regarder'], suspect: ['bad', 'Suspect'] };
+  const MR_CSS = `.mr{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;background:var(--bg);overscroll-behavior:contain}
+.mr-h{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:12px clamp(14px,3vw,28px);border-bottom:1px solid var(--line);background:#14120f}
+.mr-h h2{margin:0;font:500 24px/1 'Cormorant Garamond',serif}.mr-n{font-weight:700;font-size:17px}.mr-n small{font-weight:500;color:var(--mute);font-size:13.5px;margin-left:6px}
+.mr-h .sp{flex:1}.mr-k{color:var(--faint);font-size:12.5px}.mr-k kbd{display:inline-block;min-width:20px;padding:0 5px;border:1px solid var(--line);border-radius:6px;font:600 11.5px/18px Jost,sans-serif;text-align:center;color:var(--mute)}
+.mr-b{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr);align-items:start;gap:20px;padding:18px clamp(14px,3vw,28px) 24px}
+.mr-ph{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-content:start}
+.mr-ph figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}.mr-ph figure.selfie{grid-column:1 / -1}
+.mr-ph figcaption{color:var(--mute);font-size:12.5px}
+.mr-ph button{display:block;width:100%;padding:0;border:0;border-radius:14px;background:#0f0d0a;cursor:zoom-in;overflow:hidden}
+.mr-ph img{display:block;width:100%;height:clamp(200px,34vh,380px);object-fit:contain}
+.mr-ph .vide{display:grid;place-items:center;height:200px;border-radius:14px;background:#0f0d0a;color:var(--faint);font-size:13px}
+.mr-i{display:flex;flex-direction:column;gap:14px;min-width:0}
+.mr-code{padding:14px 16px;border:1px solid var(--line);border-radius:18px;background:var(--panel);text-align:center}
+.mr-code small{display:block;color:var(--mute);font-size:12.5px}.mr-code b{display:block;font:700 clamp(46px,7vw,72px)/1.05 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.14em;color:var(--a)}
+.mr-who b{display:block;font-size:19px;font-weight:600}.mr-who small{display:block;color:var(--mute);font-size:13px}
+.mr-pile{display:inline-block;padding:3px 11px;border-radius:999px;font-weight:700;font-size:12.5px}
+.mr-pile.ok,.mr-c.ok i{background:rgba(108,197,140,.18);color:#8FDCA8}.mr-pile.moy,.mr-c.moy i{background:rgba(242,201,76,.18);color:#F2C94C}.mr-pile.bad,.mr-c.bad i{background:rgba(226,115,91,.2);color:#F3A08C}
+.mr-cs{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.mr-c{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.35}.mr-c i{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;font:700 13px/1 Jost,sans-serif;font-style:normal}
+.mr-c.bad span{color:#F3A08C}
+.mr-f{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mr-f label{display:flex;flex-direction:column;gap:5px;color:var(--mute);font-size:12.5px;min-width:0}.mr-f label.l{grid-column:1 / -1}
+.mr-f input{width:100%;height:42px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:#14120f;color:var(--ink)}
+.mr-a{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px}.mr-a .btn{min-height:50px;font-size:15px;white-space:normal;line-height:1.15}.mr-a .btn kbd{font:600 11px Jost,sans-serif;opacity:.7;border:1px solid currentColor;border-radius:5px;padding:0 4px}
+.mr-a .btn.arm{background:var(--v);border-color:var(--v)}
+.mr-m{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
+.mr-m b{font-weight:600}.mr-ms{display:flex;flex-wrap:wrap;gap:6px}.mr-ms button{min-height:38px;padding:0 13px;border:1px solid var(--line);border-radius:999px;background:#14120f;cursor:pointer;font-size:13.5px}
+.mr-ms button[aria-pressed=true]{background:var(--ink);color:#171512;border-color:var(--ink)}.mr-ms button small{opacity:.6;margin-right:5px}
+.mr-m input{height:42px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:#14120f}
+.mr-fait{padding:10px 14px;border-radius:14px;background:rgba(245,240,230,.07);font-weight:600}
+.mr-nav{display:flex;gap:8px}.mr-nav .btn{flex:1}
+.mr-z{position:fixed;inset:0;z-index:45;display:grid;place-items:center;background:rgba(0,0,0,.92);cursor:zoom-out;padding:10px}
+.mr-z img{max-width:100%;max-height:100%;object-fit:contain}
+@media (max-width:480px){.mr-h{flex-wrap:nowrap;gap:10px}.mr-h h2{display:none}.mr-h .mr-n{white-space:nowrap}}
+.mr-fin{margin:auto;max-width:460px;text-align:center;padding:40px 20px}.mr-fin h3{margin:0 0 8px;font:500 34px/1.1 'Cormorant Garamond',serif}.mr-fin p{color:var(--mute)}
+@media (max-width:900px){.mr-b{display:flex;flex-direction:column;align-items:stretch;padding-bottom:110px}.mr-i{display:contents}.mr-code{order:-2;padding:10px 14px}.mr-code b{font-size:52px}.mr-ph{order:-1}.mr-k{display:none}.mr-h h2{font-size:20px}.mr-ph img{height:clamp(160px,30vh,300px)}
+  .mr-a{position:fixed;left:0;right:0;bottom:0;z-index:41;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#14120f;border-top:1px solid var(--line)}.mr-a .btn kbd{display:none}.mr-a .btn{padding:0 8px;font-size:14px}}`;
+  const MR = { L: [], i: 0, liens: {}, ouverts: new Set(), arme: false, mode: null };
+  const mrPhotos = v => v.piece === 'passeport' ? ['recto', 'selfie'] : ['recto', 'verso', 'selfie'];
+  // liens signés valables 2 minutes ; gardés 100 s pour en avoir toujours un valable
+  function mrLiens(v) {
+    const c = MR.liens[v.id]; if (c && Date.now() - c.t < 100e3) return c.p;
+    const p = Promise.all(mrPhotos(v).map(n => N.lienSigne('identite', v.dossier + '/' + n + '.jpg', 120).catch(() => null)));
+    MR.liens[v.id] = { t: Date.now(), p }; return p;
+  }
+  // sans la fonction du schéma 19 : les mêmes contrôles, calculés ici à partir de la liste
+  const MR_ORDRE = { propre: 0, regarder: 1, suspect: 2 };
+  function mrDepuisListe() {
+    return D.ident.filter(v => v.statut === 'en_attente').map(v => {
+      const exp = v.expire_le || null, eOk = !!exp && exp >= auj(), coh = !v.expire_lu || !v.expire_le || v.expire_lu === v.expire_le;
+      const pile = v.nom_banni || !eOk || !coh ? 'suspect' : v.mrz_ok && (v.essais || 1) <= 2 ? 'propre' : 'regarder';
+      return Object.assign({}, v, { expire_ok: eOk, expire_coherent: coh, nom_ok: null, doublon: null, pile });
+    }).sort((a, b) => MR_ORDRE[a.pile] - MR_ORDRE[b.pile] || String(a.soumis_le).localeCompare(String(b.soumis_le)));
+  }
+  async function modeRapide() {
+    if (!document.getElementById('mrCss')) { const s = document.createElement('style'); s.id = 'mrCss'; s.textContent = MR_CSS; document.head.appendChild(s); }
+    let L; try { L = await N.rpc('admin_identite_examen'); } catch (e) { if (!/admin_identite_examen|schema cache|Could not find/i.test(e.message)) return toast('Impossible : ' + e.message); L = mrDepuisListe(); }
+    if (!(L || []).length) return toast('Rien à examiner pour l’instant.');
+    Object.assign(MR, { L, i: 0, liens: {}, ouverts: new Set(), arme: false, mode: null });
+    const el = document.createElement('div'); el.className = 'mr'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', 'Mode rapide : dossiers d’identité');
+    document.body.appendChild(el); MR.el = el; document.documentElement.style.overflow = 'hidden';
+    addEventListener('keydown', mrTouche, true);
+    mrMontrer();
+  }
+  function mrFermer() {
+    removeEventListener('keydown', mrTouche, true);
+    if (MR.el) MR.el.remove(); MR.el = null; document.documentElement.style.overflow = '';
+    const z = document.querySelector('.mr-z'); if (z) z.remove();
+    if (MR.L.some(v => v.fait)) load().then(paint);
+  }
+  const mrReste = () => MR.L.filter(v => !v.fait).length;
+  function mrControles(v) {
+    const C = [], ok = t => C.push(['ok', '✓', t]), moy = t => C.push(['moy', '!', t]), bad = t => C.push(['bad', '×', t]);
+    if (v.doublon) bad('Numéro de pièce déjà utilisé par un autre compte'); else if (!v.numero_lu) moy('Numéro de pièce non lu : recopiez-le depuis la photo'); else if (v.doublon === false) ok('Numéro de pièce jamais vu sur un autre compte');
+    if (v.nom_banni) bad('Nom identique à celui d’une personne bannie'); else ok('Aucune personne bannie sous ce nom');
+    const exp = v.expire_le || v.expire_lu;
+    if (v.expire_ok === false) bad(exp ? 'Pièce expirée le ' + jour(exp) : 'Aucune date d’expiration'); else ok('Pièce valide jusqu’au ' + jour(exp));
+    if (v.expire_coherent === false) bad('Date lue sur la bande (' + jour(v.expire_lu) + ') différente de la date saisie (' + jour(v.expire_le) + ')');
+    if (v.mrz_ok) ok('Bande de la pièce lue, chiffres de contrôle justes'); else if (v.mrz_ok === false) moy('Bande lue, mais chiffres de contrôle faux'); else moy('Bande de la pièce non lue');
+    if (v.nom_ok) ok('Nom saisi identique au nom lu sur la bande'); else if (v.nom_ok === false) moy('Nom saisi différent du nom lu sur la bande'); else if (v.nom_lu) moy('Nom lu sur la bande : à comparer');
+    if ((v.essais || 1) > 2) moy(v.essais + 'e envoi de ce membre'); else ok((v.essais || 1) > 1 ? '2e envoi' : 'Premier envoi');
+    return C;
+  }
+  async function mrMontrer() {
+    const el = MR.el; if (!el) return;
+    MR.arme = false; MR.mode = null;
+    if (!mrReste()) {
+      const n = k => MR.L.filter(v => v.fait === k).length;
+      el.innerHTML = `<div class="mr-h"><h2>Mode rapide</h2><span class="sp"></span><button class="btn sm" data-mr-x>Fermer</button></div>
+        <div class="mr-fin"><h3>Tout est examiné</h3><p>${n('verifie')} vérifié${n('verifie') > 1 ? 's' : ''} · ${n('verification_manuelle')} photos à refaire · ${n('refuse')} refusé${n('refuse') > 1 ? 's' : ''}.</p><button class="btn pri" data-mr-x>Revenir au tableau de bord</button></div>`;
+      el.querySelectorAll('[data-mr-x]').forEach(b => b.onclick = mrFermer); return;
+    }
+    const v = MR.L[MR.i], noms = mrPhotos(v), lab = { recto: 'Pièce, recto', verso: 'Pièce, verso', selfie: 'Selfie avec le code' };
+    const [cls, plab] = MR_PILE[v.pile] || MR_PILE.regarder, C = mrControles(v), exp = v.expire_le || v.expire_lu || '';
+    const FAIT = { verifie: 'Identité vérifiée', verification_manuelle: 'Photos à refaire demandées', refuse: 'Dossier refusé' };
+    el.innerHTML = `<div class="mr-h"><h2>Mode rapide</h2><span class="mr-n" data-mr-n>${MR.i + 1} / ${MR.L.length}<small>${mrReste()} restant${mrReste() > 1 ? 's' : ''}</small></span><span class="mr-pile ${cls}">${plab}</span>
+        <span class="sp"></span><span class="mr-k"><kbd>V</kbd> valider · <kbd>P</kbd> photos à refaire · <kbd>R</kbd> refuser · <kbd>←</kbd><kbd>→</kbd> dossiers · <kbd>Échap</kbd> fermer</span><button class="btn sm" data-mr-x aria-label="Fermer le mode rapide">Fermer</button></div>
+      <div class="mr-b"><div class="mr-ph" data-mr-ph>${noms.map(n => `<figure class="${n}"><figcaption>${lab[n]}</figcaption><div class="vide">Chargement…</div></figure>`).join('')}</div>
+        <div class="mr-i">
+          <div class="mr-code"><small>Code que le membre devait écrire à la main</small><b>${esc(v.defi || '—')}</b></div>
+          <div class="mr-who"><b>${esc(v.nom_saisi || '—')}</b><small>${esc(PIECE[v.piece] || v.piece || '')}${v.nom_lu ? ' · lu sur la bande : ' + esc(v.nom_lu) : ''}</small>
+            <small>Compte ${esc(fmtTel(String(v.tel || '').replace(/^225/, '')))} · inscrit le ${date(v.membre_depuis)} · envoyé ${ago(v.soumis_le)}</small></div>
+          <ul class="mr-cs">${C.map(([k, s, t]) => `<li class="mr-c ${k}"><i aria-hidden="true">${s}</i><span>${esc(t)}</span></li>`).join('')}</ul>
+          ${v.fait ? `<div class="mr-fait">${FAIT[v.fait]}</div>` : `<div class="mr-f">
+            <label class="l">Nom retenu (corrigez-le si besoin)<input data-mr-nom value="${esc(v.nom_saisi || '')}" maxlength="120"></label>
+            <label>Expire le (lu sur la photo)<input type="date" data-mr-exp value="${esc(exp)}"></label>
+            <label>Numéro de la pièce<input data-mr-num value="${esc(v.numero_lu || '')}" maxlength="40" style="text-transform:uppercase" placeholder="lu sur la photo"></label></div>
+          <div data-mr-m></div>
+          <div class="mr-a"><button class="btn pri" data-mr-d="verifie">Valider <kbd>V</kbd></button><button class="btn" data-mr-d="verification_manuelle">Photos à refaire <kbd>P</kbd></button><button class="btn bad" data-mr-d="refuse">Refuser <kbd>R</kbd></button></div>`}
+          <div class="mr-nav"><button class="btn sm" data-mr-p ${MR.i ? '' : 'disabled'}>← Précédent</button><button class="btn sm" data-mr-s ${MR.i < MR.L.length - 1 ? '' : 'disabled'}>Suivant →</button></div>
+          <p style="margin:0;color:var(--faint);font-size:12px">Le tri est une aide, pas une décision : regardez les photos. Les liens expirent après deux minutes ; chaque ouverture est notée dans le registre.</p>
+        </div></div>`;
+    el.querySelectorAll('[data-mr-x]').forEach(b => b.onclick = mrFermer);
+    el.querySelector('[data-mr-p]').onclick = () => mrAller(-1);
+    el.querySelector('[data-mr-s]').onclick = () => mrAller(1);
+    el.querySelectorAll('[data-mr-d]').forEach(b => b.onclick = () => mrAction(b.dataset.mrD));
+    el.querySelector('.mr-b').scrollTop = 0;
+    // l'ouverture est notée une fois par dossier (registre des accès, schéma 16)
+    if (!MR.ouverts.has(v.id)) { MR.ouverts.add(v.id); N.rpc('admin_identite_ouvrir', { p_id: v.id, p_motif: 'Examen du dossier' }).catch(() => {}); }
+    const L = await mrLiens(v);
+    if (MR.el !== el || MR.L[MR.i] !== v) return;
+    const ph = el.querySelector('[data-mr-ph]');
+    ph.innerHTML = noms.map((n, i) => `<figure class="${n}"><figcaption>${lab[n]}</figcaption>${L[i] ? `<button type="button" data-mr-z="${i}" aria-label="Agrandir : ${lab[n]}"><img src="${esc(L[i])}" alt="${lab[n]}" referrerpolicy="no-referrer"></button>` : '<div class="vide">Photo introuvable</div>'}</figure>`).join('');
+    ph.querySelectorAll('[data-mr-z]').forEach(b => b.onclick = () => mrZoom(L[+b.dataset.mrZ]));
+    // le dossier suivant : liens préparés et photos déjà téléchargées
+    const s = MR.L.slice(MR.i + 1).find(x => !x.fait);
+    if (s) mrLiens(s).then(T => T.forEach(u => { if (u) { const im = new Image(); im.referrerPolicy = 'no-referrer'; im.src = u; } }));
+  }
+  function mrZoom(u) {
+    const z = document.createElement('div'); z.className = 'mr-z'; z.innerHTML = `<img src="${esc(u)}" alt="Photo agrandie" referrerpolicy="no-referrer">`;
+    z.onclick = () => z.remove(); document.body.appendChild(z);
+  }
+  function mrAller(d) { const j = MR.i + d; if (j < 0 || j >= MR.L.length) return; MR.i = j; mrMontrer(); }
+  function mrSuivant() {
+    const n = MR.L.length, k = [...Array(n).keys()].map(x => (MR.i + 1 + x) % n).find(x => !MR.L[x].fait);
+    if (k != null) MR.i = k; mrMontrer();
+  }
+  function mrAction(st) {
+    const v = MR.L[MR.i], el = MR.el; if (!v || v.fait || !el || MR.envoi) return;
+    if (st === 'verifie') {
+      const exp = el.querySelector('[data-mr-exp]').value || null;
+      if (!exp) return toast('Indiquez la date d’expiration lue sur la photo de la pièce.');
+      if (exp < auj()) return toast('Pièce expirée : elle ne peut pas être vérifiée. Refusez avec le motif « Pièce expirée ».');
+      const b = el.querySelector('[data-mr-d="verifie"]');
+      if (!MR.arme) { MR.arme = true; b.classList.add('arm'); b.innerHTML = 'Confirmer <kbd>V</kbd>'; b.title = 'La pièce, le selfie et le code concordent'; return; }
+      return mrDecider('verifie', null);
+    }
+    MR.arme = false; const bv = el.querySelector('[data-mr-d="verifie"]'); if (bv) { bv.classList.remove('arm'); bv.innerHTML = 'Valider <kbd>V</kbd>'; }
+    MR.mode = st;
+    const M = st === 'refuse' ? MR_REFUS : MR_REFAIRE, box = el.querySelector('[data-mr-m]');
+    box.innerHTML = `<div class="mr-m"><b>${st === 'refuse' ? 'Motif du refus' : 'Ce que le membre doit refaire'}</b><small style="color:var(--mute)">Le membre lira ce motif. Touches 1 à ${M.length} pour choisir, Entrée pour confirmer, Échap pour annuler.</small>
+      <div class="mr-ms">${M.map((m, i) => `<button type="button" data-mr-mo="${esc(m)}" aria-pressed="false"><small>${i + 1}</small>${esc(m)}</button>`).join('')}</div>
+      <input data-mr-libre maxlength="200" placeholder="Autre motif, ou une précision">
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ${st === 'refuse' ? 'bad' : 'pri'}" data-mr-ok>${st === 'refuse' ? 'Refuser le dossier' : 'Demander de nouvelles photos'}</button><button class="btn" data-mr-annule>Annuler</button></div></div>`;
+    box.querySelectorAll('[data-mr-mo]').forEach(b => b.onclick = () => b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true'));
+    box.querySelector('[data-mr-ok]').onclick = mrValiderMotif;
+    box.querySelector('[data-mr-annule]').onclick = () => { MR.mode = null; box.innerHTML = ''; };
+    box.querySelector('[data-mr-libre]').onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); mrValiderMotif(); } };
+    box.scrollIntoView({ block: 'nearest' });
+  }
+  function mrValiderMotif() {
+    const box = MR.el && MR.el.querySelector('[data-mr-m]'); if (!box || !MR.mode) return;
+    const m = [...box.querySelectorAll('[data-mr-mo][aria-pressed="true"]')].map(b => b.dataset.mrMo), libre = box.querySelector('[data-mr-libre]').value.trim();
+    if (libre) m.push(libre);
+    if (!m.length) return toast('Choisissez ou écrivez le motif.');
+    mrDecider(MR.mode, m.join(' · '));
+  }
+  async function mrDecider(st, motif) {
+    const v = MR.L[MR.i], el = MR.el; if (!v || !el || MR.envoi) return;
+    const val = q => { const x = el.querySelector(q); return x ? x.value.trim() || null : null; };
+    MR.envoi = true; el.querySelectorAll('.mr-a .btn, [data-mr-ok]').forEach(b => b.disabled = true);
+    try {
+      await N.rpc('admin_identite_decider', { p_id: v.id, p_statut: st, p_motif: motif, p_nom: val('[data-mr-nom]'), p_expire: val('[data-mr-exp]'), p_numero: val('[data-mr-num]') });
+      v.fait = st; const d = D.ident.find(x => x.id === v.id); if (d) d.statut = st;
+      MR.envoi = false;
+      toast(st === 'verifie' ? 'Identité vérifiée.' : st === 'refuse' ? 'Dossier refusé.' : 'Nouvelles photos demandées.');
+      mrSuivant();
+    } catch (e) { MR.envoi = false; toast('Décision impossible : ' + e.message); el.querySelectorAll('.mr-a .btn, [data-mr-ok]').forEach(b => b.disabled = false); }
+  }
+  function mrTouche(e) {
+    if (!MR.el || e.ctrlKey || e.metaKey || e.altKey) return;
+    const z = document.querySelector('.mr-z');
+    if (e.key === 'Escape') { e.preventDefault(); if (z) return z.remove(); if (MR.mode) { MR.mode = null; const b = MR.el.querySelector('[data-mr-m]'); if (b) b.innerHTML = ''; return; } return mrFermer(); }
+    if (z) return;
+    const t = e.target, champ = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable);
+    if (champ) return;
+    const k = e.key.toLowerCase();
+    if (MR.mode && /^[1-9]$/.test(k)) { const b = MR.el.querySelectorAll('[data-mr-mo]')[+k - 1]; if (b) { e.preventDefault(); b.click(); } return; }
+    if (MR.mode && e.key === 'Enter') { e.preventDefault(); return mrValiderMotif(); }
+    if (MR.arme && e.key === 'Enter') { e.preventDefault(); return mrAction('verifie'); }
+    if (k === 'v') { e.preventDefault(); mrAction('verifie'); }
+    else if (k === 'r') { e.preventDefault(); mrAction('refuse'); }
+    else if (k === 'p') { e.preventDefault(); mrAction('verification_manuelle'); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); mrAller(1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); mrAller(-1); }
   }
   function listeAnnonces(A) {
     if (!A.length) return `<div class="list"><div class="empty"><b>Aucune annonce</b>${filt.q || filt.type !== 'tout' || filt.statut !== 'tout' ? 'Aucune annonce ne correspond à ces filtres.' : 'Les annonces publiées apparaîtront ici.'}</div></div>`;

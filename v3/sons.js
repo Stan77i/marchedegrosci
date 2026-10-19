@@ -19,7 +19,7 @@
     proposition: { nom: 'Propositions et contre-propositions reçues', p: 3 },
     refus: { nom: 'Refus, retraits et expirations', p: 2 },
     annonce: { nom: 'Nouvelles annonces sur vos produits', p: 1 },
-    confirmation: { nom: 'Confirmations à l’écran (connecté, annonce en ligne…)', p: 0 }
+    confirmation: { nom: 'Confirmations à l’écran', p: 0 }
   };
   const J = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } };
   // sons activés par défaut, discrets ; chacun se coupe dans Mon compte → Sons

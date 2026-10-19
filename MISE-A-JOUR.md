@@ -1,3 +1,12 @@
+# Mise à jour — 19 octobre 2026 (bouton « Publier » illisible sur la feuille J'ai / Je cherche)
+
+Service worker : `mgci-v84`.
+
+- **Bug** : sur la feuille claire « J'ai / Je cherche », le bouton « Publier mon offre » était crème sur crème, donc illisible. Ce n'était pas une page claire déclarée, donc le bouton prenait les couleurs prévues pour un fond sombre.
+- **Correction à la source** : toute zone claire (feuille ou carte crème) prend maintenant d'elle-même les couleurs des pages claires, où qu'elle soit (bouton vert, texte crème).
+- **Vérification** : un outil a mesuré le contraste de chaque bouton sur 20 écrans (accueil, fiche, vendre, demander, prix, catégories, année, carte, feuilles J'ai et Je cherche, menu, Mon compte, messages, négociations, proposer un prix, sons, guide, signaler, identité). Il ne reste aucun bouton illisible. Les seules alertes étaient de fausses alarmes : des fonds verts en dégradé et des emojis.
+- Sons : le libellé « Confirmations à l'écran » est raccourci (il répétait sa ligne d'explication).
+
 # Mise à jour — 19 octobre 2026 (un seul logo partout : plus de « dG »)
 
 Service worker : `mgci-v83`.

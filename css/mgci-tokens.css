@@ -115,3 +115,10 @@
   --action-t: var(--logo-creme);
   --terre: var(--logo-vert);
 }
+
+/* toute zone claire (feuille, carte crème), même hors des pages ci-dessus : bouton vert, texte crème (jamais crème sur crème) */
+[style*="background:var(--papier)"], [style*="background: var(--papier)"], [style*="background:var(--carte)"], [style*="background: var(--carte)"] {
+  --action: var(--logo-vert);
+  --action-t: var(--logo-creme);
+  --terre: var(--logo-vert);
+}

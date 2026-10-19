@@ -452,7 +452,19 @@
         if (m0 === 'up') { try { await api('/rest/v1/profils', { method: 'POST', auth: true, body: Object.assign({ user_id: r.user.id }, ident), prefer: 'return=minimal' }).catch(e => { if (e.status === 409) return api('/rest/v1/profils?user_id=eq.' + r.user.id, { method: 'PATCH', auth: true, body: ident, prefer: 'return=minimal' }); throw e; }); say('compte'); } catch (e) { console.warn('[nuage] profil non enregistré', e.message); } }
         // réussite confirmée par le serveur : seulement maintenant
         go.classList.add('is-ok'); go.removeAttribute('aria-busy'); go.querySelector('span').textContent = m0 === 'up' ? 'Compte créé. Préparation de votre espace…' : 'Connexion réussie. Préparation de votre espace…'; P && P.etat('ok');
-        const fin = () => toast(m0 === 'up' ? 'Compte créé. Vos annonces partent maintenant.' : m0 === 'sos' ? 'Nouveau code enregistré. Vous êtes connecté.' : 'Connecté. Vos annonces partent maintenant.');
+        // l'accueil après la connexion : par son prénom, puis ce qui l'attend (messages, propositions), avec le geste pour y aller
+        const fin = () => {
+          const pf = window.MDGCompte && MDGCompte.profil ? (MDGCompte.profil() || {}) : {}, prenom = (m0 === 'up' ? ident.pseudo || ident.prenom : pf.pseudo || pf.prenom) || '';
+          const qui = prenom ? ', *' + prenom.replace(/\*/g, '') + '*' : '';
+          toast(m0 === 'up' ? 'Bienvenue' + (qui || ' sur le *marché*') : m0 === 'sos' ? 'Nouveau code enregistré' : 'Bon retour' + (qui || ' au *marché*'),
+            { type: 'ok', sous: m0 === 'sos' ? 'Vous êtes connecté. Gardez ce code pour vous.' : 'Vos annonces partent sur le marché.' });
+          if (m0 !== 'up') setTimeout(() => {
+            const dm = window.MDGMessages && MDGMessages.unread ? MDGMessages.unread() : 0, ng = window.MDGNegoce && MDGNegoce.unread ? MDGNegoce.unread() : 0;
+            if (!dm && !ng) return;
+            const parts = [dm ? dm + ' message' + (dm > 1 ? 's' : '') : '', ng ? ng + ' proposition' + (ng > 1 ? 's' : '') : ''].filter(Boolean);
+            toast(parts.join(' et ') + (dm + ng > 1 ? ' vous attendent' : ' vous attend'), { type: 'info', action: { t: 'Voir', fn: () => { if (ng && window.MDGNegoce) MDGNegoce.inbox(); else if (window.MDGMessages) MDGMessages.boite(); } } });
+          }, 3200);
+        };
         const bienvenue = () => { fin(); if (m0 === 'up' && window.MDGCompte) setTimeout(() => MDGCompte.bienvenue({ identite: true }), 300); };
         // application : on « entre dans le marché » (la porte s'ouvre, on la traverse) avant la suite (code de secours, bienvenue)
         const suite = () => { if (r && r.secours) showSecours(r.secours, bienvenue); else bienvenue(); };

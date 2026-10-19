@@ -100,7 +100,7 @@
 .cp-main{flex:1;min-height:0;overflow:auto;padding:4px 16px calc(36px + env(safe-area-inset-bottom));overscroll-behavior:contain;scroll-padding-top:72px}
 @media (min-width:760px){.cp-main{padding:4px 28px 40px}}
 .cp.sur-hero .cp-main{padding-top:0}
-.cp-main>h2,.cp-pg>h2,.cp-w>h2{margin:2px 4px 4px;font:500 32px/1.08 'Cormorant Garamond',Georgia,serif;letter-spacing:-.005em}
+.cp-main>h2,.cp-pg>h2,.cp-w>h2{margin:2px 4px 4px;font:600 26px/1.08 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em;letter-spacing:-.005em}
 .cp-main>h2+p,.cp-pg>h2+p,.cp-w>h2+p{margin:0 4px 18px;color:var(--mute);font-size:14px;line-height:1.5}
 .cp-pg{animation:cpFade var(--ux-d2,200ms) ease both}
 /* l'en-tête de l'accueil : un champ de terre chaude, l'avatar au centre */
@@ -113,7 +113,8 @@
 .cp-hero-av>svg,.cp-hero-av>img{display:block;width:114px;height:114px;border-radius:50%}
 .cp-hero-cam{position:absolute;right:-4px;bottom:2px;width:40px;height:40px;display:grid;place-items:center;border:3px solid #10392B;border-radius:50%;background:#FFFDF8;color:#10392B;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25)}
 .cp-hero-cam svg{width:18px;height:18px}
-.cp-hero h2{margin:16px 0 0;font:500 34px/1.05 'Cormorant Garamond',Georgia,serif;letter-spacing:-.005em;overflow-wrap:anywhere}
+.cp-hero h2 em{font:900 italic 1.04em 'Archivo','Helvetica Neue',Arial,sans-serif;color:#F2C230;letter-spacing:-.02em}
+.cp-hero h2{margin:16px 0 0;font:600 28px/1.05 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em;letter-spacing:-.005em;overflow-wrap:anywhere}
 .cp-hero p{margin:6px 0 0;color:rgba(255,255,255,.82);font-size:14px}
 .cp-hero-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:10px}
 .cp-hero-tags span{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:13px;background:rgba(255,255,255,.16);color:#fff;font:600 12.5px/1 Jost,sans-serif}
@@ -283,7 +284,7 @@ label.cp-r{cursor:pointer}
 .avx-big{width:148px;height:148px;border-radius:50%;box-shadow:0 0 0 6px rgba(23,21,18,.05),0 18px 40px rgba(0,0,0,.35)}
 .avx-big svg,.avx-big img,.avx-mini svg,.avx-mini img{display:block;border-radius:50%}
 .avx-big>*{animation:avxIn var(--ux-d2,200ms) cubic-bezier(.22,1,.36,1)}
-.avx-nom{font:500 22px/1.15 'Cormorant Garamond',Georgia,serif;text-align:center;overflow-wrap:anywhere}
+.avx-nom{font:600 18px/1.15 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em;text-align:center;overflow-wrap:anywhere}
 .avx-mini{display:flex;gap:18px;padding-top:10px;border-top:1px solid var(--line);width:100%;justify-content:center}
 .avx-mini span{display:grid;justify-items:center;gap:6px;align-content:end}.avx-mini small{color:var(--faint);font-size:11.5px}
 .avx-mode{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;margin:0 0 20px;border-radius:999px;background:rgba(23,21,18,.06)}
@@ -301,7 +302,7 @@ label.cp-r{cursor:pointer}
 .avx-txt{margin:0 0 12px;color:var(--mute);font-size:14.5px}
 .avx-drop{display:grid;justify-items:center;gap:6px;padding:40px 18px;border:1.5px dashed rgba(23,21,18,.24);border-radius:24px;text-align:center;cursor:pointer;transition:border-color var(--ux-d2,200ms),background var(--ux-d2,200ms)}
 .avx-drop:hover,.avx-drop.is-over{border-color:var(--ink);background:rgba(23,21,18,.04)}
-.avx-drop b{font:500 22px/1.2 'Cormorant Garamond',Georgia,serif}.avx-drop span{color:var(--mute);font-size:13.5px}
+.avx-drop b{font:600 18px/1.2 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em}.avx-drop span{color:var(--mute);font-size:13.5px}
 .avx-drop:focus-within{outline:2px solid var(--acc);outline-offset:2px}
 .avx-stage{position:relative;width:240px;height:240px;margin:0 auto 6px;border-radius:24px;overflow:hidden;cursor:grab;touch-action:none;background:#14120f}
 .avx-stage.is-drag{cursor:grabbing}.avx-stage canvas{display:block;width:100%;height:100%}
@@ -528,9 +529,9 @@ label.cp-r{cursor:pointer}
       main.innerHTML = `<div class="cp-pg">
         <section class="cp-hero" aria-label="Mon identité">
           <div class="cp-hero-av">${off0 && window.MDGMarque ? MDGMarque.dg(114, { fond: 'vert', rond: true }) : (A() ? A().svg(p.avatar, { size: 114, nom: nom || '?', seed: u.id }) : '') + `<button type="button" class="cp-hero-cam" data-av aria-label="Changer mon avatar">${IC('photo', 18)}</button>`}</div>
-          ${off0 ? `<h2>Marché de Gros</h2>
+          ${off0 ? `<h2>marché <em>de Gros</em></h2>
           <p class="cp-off-p">${esc(N().fmtTel(u.tel))} · visible par vous seul. Les membres voient « Marché de Gros », jamais votre nom ni votre numéro.</p>
-          <div class="cp-hero-tags"><span class="cp-adm">${window.MDGMarque ? MDGMarque.dg(16, { fond: 'vert', rond: true }) : ''}Administrateur · Officiel</span></div>` : `<h2>${esc(nom ? 'Bonjour, ' + (p.pseudo || p.prenom || nom) : 'Bienvenue')}${idS === 'verifie' ? ' ' + ID.badge(22) : ''}</h2>
+          <div class="cp-hero-tags"><span class="cp-adm">${window.MDGMarque ? MDGMarque.dg(16, { fond: 'vert', rond: true }) : ''}Administrateur · Officiel</span></div>` : `<h2>${nom ? 'Bonjour, <em>' + esc(p.pseudo || p.prenom || nom) + '</em>' : '<em>Bienvenue</em>'}${idS === 'verifie' ? ' ' + ID.badge(22) : ''}</h2>
           <p>${esc(N().fmtTel(u.tel))}</p>
           <div class="cp-hero-tags">${p.role ? `<span>${ROLE_TXT[p.role] || ''}</span>` : ''}${lieuTxt ? `<span>${IC('lieu', 13)}${esc(lieuTxt)}</span>` : ''}${!nom ? '<span class="a">Profil à compléter</span>' : ''}${ID && idC && !idC.exempt ? (idS === 'verifie' ? `<span class="idok">${ID.badge(14)}Identité vérifiée</span>` : idC.banni ? '<span class="a">Compte banni</span>' : '<span class="a">Identité non vérifiée</span>') : ''}</div>`}
           <div class="cp-hero-act">

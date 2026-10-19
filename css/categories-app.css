@@ -8,7 +8,7 @@
 .ct-tete { position: relative; margin: 14px 14px 0; padding: 22px 20px 18px; border-radius: 26px; background: #10392B; color: #F3EFE4; overflow: hidden; }
 .ct-tete::after { content: ""; position: absolute; right: -60px; top: -70px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(242, 194, 48, .22), transparent 68%); pointer-events: none; }
 .ct-k { margin: 0 0 8px; font: 600 11px/1 Jost, system-ui, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: rgba(243, 239, 228, .62); }
-.ct-h { margin: 0; font: 500 38px/1 'Cormorant Garamond', Georgia, serif; letter-spacing: -.01em; }
+.ct-h { margin: 0; font:600 31px/1 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em; letter-spacing: -.01em; }
 .ct-h em { font-style: italic; font-weight: 600; color: #F2C230; }
 .ct-chiffres { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 20px; }
 .ct-chiffres div { min-width: 0; padding: 11px 10px 10px; border-radius: 16px; background: rgba(243, 239, 228, .08); box-shadow: inset 0 0 0 1px rgba(243, 239, 228, .1); }
@@ -42,7 +42,7 @@
 .ct-t { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 3px; padding: 12px 12px 12px 13px; }
 .ct-t b { font: 600 16px/1.15 Jost, system-ui, sans-serif; letter-spacing: -.005em; text-shadow: 0 1px 8px rgba(0, 0, 0, .35); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .ct-tuile.grand .ct-t { padding: 16px 16px 15px; }
-.ct-tuile.grand .ct-t b { font: 500 30px/1 'Cormorant Garamond', Georgia, serif; }
+.ct-tuile.grand .ct-t b { font:600 25px/1 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em; }
 .ct-t small { font: 400 12.5px/1.2 Jost, system-ui, sans-serif; color: rgba(255, 255, 255, .82); }
 .ct-pas { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
 .ct-pas > span { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 8px; border-radius: 999px; background: rgba(255, 255, 255, .16); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); font: 600 11.5px/1 Jost, system-ui, sans-serif; color: #fff; }
@@ -56,7 +56,7 @@
 .ct-banniere img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
 .ct-banniere::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(8, 26, 19, .88), rgba(8, 26, 19, .35) 70%, rgba(8, 26, 19, .1)); }
 .ct-banniere div { position: absolute; left: 16px; right: 16px; bottom: 14px; }
-.ct-banniere h2 { margin: 0; font: 500 30px/1 'Cormorant Garamond', Georgia, serif; }
+.ct-banniere h2 { margin: 0; font:600 25px/1 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em; }
 .ct-banniere p { margin: 6px 0 0; font: 400 13px/1.3 Jost, system-ui, sans-serif; color: rgba(255, 255, 255, .84); }
 .ct-res { margin: 2px 2px 12px; font: 500 14px Jost, system-ui, sans-serif; color: var(--mute, #6F6553); }
 .ct-grille { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }

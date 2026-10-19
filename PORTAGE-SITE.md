@@ -127,6 +127,19 @@ Les bannières (`app/toast.js`, partagé) et les modules partagés (messages, n�
 
 **Vérifier** : à 1280 px, le sac se remplit puis laisse place à l'accueil ; aucun écran blanc.
 
+### 2.5 bis La voix du logo : typographie Archivo (priorité haute)
+**Pourquoi** : l'app écrit maintenant comme le logo. Les titres sont en **Archivo 600** droit, et le **mot qui compte** en **Archivo 900 italique** : maïs sur fond sombre, vert surligné de maïs sur fond clair, comme « marché **de Gros** ». Le site utilise encore Cormorant Garamond (`--font-heading` dans `css/styles.css` et `css/typo.css`). Certaines fenêtres partagées (Mon compte, Négociations) passent déjà en Archivo, d'autres non : le site est donc mélangé tant que ce point n'est pas fait.
+**Modèle** :
+- `css/mgci-tokens.css` : `--f-titre`, `--voix-accent`, `--voix-surligne`, et les classes `.voix` (+ `em`), `.voix-plein` et `.chiffre` ;
+- polices : `fonts/archivo-latin-{600-normal,800-normal,900-italic}.woff2`, déclarées dans `css/fonts.css`.
+
+**Étapes**
+1. Remplacer `--font-heading` par `'Archivo','Helvetica Neue',Arial,sans-serif`, avec une graisse de titre à 600. Réduire les tailles d'environ 18 % : Archivo est plus large que Cormorant.
+2. Dans chaque titre, mettre le mot qui compte dans un `<em>`, stylé en 900 italique (accent maïs ou vert surligné de maïs selon le fond). Un seul accent par titre.
+3. Noms de produits en vedette : 900 italique entier, comme « Tomate » dans l'app. Prix et compteurs : Archivo 800, chiffres alignés.
+
+**Vérifier** : aucun titre en police à empattements ; les contrastes passent (maïs sur vert 8:1, vert sur maïs 7:1).
+
 ### 2.6 Couleurs du logo partout (priorité moyenne)
 **Pourquoi** : l'app est passée aux couleurs du logo (boutons verts, crème, maïs ; plus de terracotta). Le site garde des restes de l'ancienne palette.
 **Modèle** : `css/mgci-tokens.css` : `--logo-vert #10392B`, `--logo-mais #F2C230`, `--logo-creme #F3EFE4`, `--action` / `--action-t`. Bouton sur fond sombre : crème + texte vert ; bouton sur fond clair : vert + texte crème.

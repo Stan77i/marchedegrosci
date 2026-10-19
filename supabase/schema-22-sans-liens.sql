@@ -5,6 +5,7 @@
 --   • un lien ou une adresse de site : http://, https://, www., « nom.com », « nom.ci », « nom point com », wa.me, bit.ly…
 --     (même le site du Marché de Gros : on échange uniquement dans l'application)
 --   • une adresse e-mail
+--   • un réseau social, même abrégé (fb, insta, tiktok, wtsp, « sur wa », @pseudo…) : autant de façons de sortir de l'application
 --   • un numéro de téléphone (07 01 02 03 04, +225…) : les numéros restent cachés, on échange dans l'application
 --   • une demande de code secret, de mot de passe ou de code de retrait (le Marché de Gros ne les demande jamais)
 --   • un code de transfert d'argent à taper (*144*…#, #150#…), une ruse classique pour faire envoyer de l'argent
@@ -21,6 +22,8 @@ language sql immutable set search_path = public as $f$
       or t ~* '\m[a-z0-9-]*[a-z][a-z0-9-]*(\s?\.|\s?(\(\.\)|\[\.\]|\(dot\)|\[dot\])\s?)(com|net|org|ci|fr|info|biz|io|me|ly|app|xyz|site|online|shop|store|link|click|top|africa|gl|gd|to|cc|tv|page|dev|live|club|vip|pro|be|ch|ca|us|uk|gg|ws|im|sn|cm|bf|ml|tg|bj|gh|ng)\M'
       or t ~* '\m(point|dot)\s+(com|net|org|info)\M'
       then 'Pas de lien ici : pour votre sécurité, les adresses de sites (www, .com, .ci…) sont interdites sur le Marché de Gros, même la nôtre. Échangez uniquement dans l’application.'
+    when t ~* '(\m(face\s*-?\s*book|fb|fbk|f\s*\.\s*b|insta|instagram|instagr\w*|tik\s*-?\s*tok|tiktok|snap|snapchat|whats?\s*-?\s*app?|wh?ats?\s*app+|wh?atsap+|whatsap+|wasap+|watsap+|wtsp|whtsp|wsp|t[eé]l[eé]gram+|messenger|youtube|you\s*tube|linked\s*in|linkedin|twitter|threads)\M|\m(sur|mon|ma|via|par|en)\s+(wa|signal|ig|x)\M|(^|[\s(:])@[a-z0-9_.]{3,})'
+      then 'Pas de réseaux sociaux ici (Facebook, WhatsApp, Instagram, TikTok…) : pour votre sécurité, échangez uniquement dans l’application.'
     when t ~* '(\*\s*\d{2,4}\s*(\*\s*\d*\s*)*#|#\s*\d{3}\s*#)'
       then 'Pas de code de transfert à taper (*144*…#) : c’est une ruse fréquente pour faire envoyer de l’argent. Ne payez qu’à la livraison, après avoir vu la marchandise.'
     when t ~* '((\+|00)\s*225([\s.\-]*\d){8,10}|\m(0[157]|2[157])([\s.\-]*\d){8}\M)'

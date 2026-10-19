@@ -30,7 +30,10 @@
     if (prefer) h.Prefer = prefer;
     const r = await fetch(URL0 + path, { method, headers: h, body: body ? JSON.stringify(body) : undefined });
     const t = await r.text(); let j = null; try { j = t ? JSON.parse(t) : null; } catch (_) {}
-    if (!r.ok) throw Object.assign(new Error((j && (j.msg || j.message || j.error_description || j.error)) || ('Erreur ' + r.status)), { status: r.status, body: j });
+    if (!r.ok) { const m = (j && (j.msg || j.message || j.error_description || j.error)) || ('Erreur ' + r.status);
+      // texte refusé par la base (schéma 22 : liens, e-mails, codes) : seulement la phrase pour le membre
+      if (/^TEXTE_REFUSE : /.test(m)) throw Object.assign(new Error(m.replace(/^TEXTE_REFUSE : /, '')), { status: r.status, body: j, code: 'texte' });
+      throw Object.assign(new Error(m), { status: r.status, body: j }); }
     return j;
   }
 
@@ -201,6 +204,7 @@
               // stock à zéro sur le téléphone : l'annonce sort du marché ; stock remis : elle revient (jamais une annonce masquée par l'administration)
               if (k === 'offres') await api('/rest/v1/offres?id=eq.' + r[0].id + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: x.epuise || !(+x.quantity > 0) ? 'retiree' : 'active' }, prefer: 'return=minimal' }).catch(() => {}); } }
           catch (e) { if (e.code === 'auth') throw e; console.warn('[nuage] envoi refusé', e.message); if (/Limite atteinte/.test(e.message)) toast(e.message);
+            else if (e.code === 'texte') { const kt = 'mdg-nuage:texte:' + key; try { if (!sessionStorage.getItem(kt)) { sessionStorage.setItem(kt, '1'); toast('Annonce non publiée. ' + e.message + ' Modifiez-la dans Mon compte → Mon activité.'); } } catch (_) {} }
             else if (/COMPTE_BANNI/.test(e.message)) refus = 'banni'; else if (/VERIFICATION_REQUISE/.test(e.message) && refus !== 'banni') refus = 'limite'; }
         }
         for (const key of Object.keys(p)) {
@@ -555,5 +559,22 @@ html.kb .cp,html.kb .nx{height:calc(var(--vvh,100dvh) - 8px)!important}}`;
     vv.addEventListener('resize', plan); vv.addEventListener('scroll', plan); maj();
   })();
 
-  window.MDGNuage = { URL: URL0, televerser, deposerPrive, effacerPrive, lienSigne, list, zones, zoneAjouter, zoneRetirer, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
+  /* ——— pas de liens ni d'hameçonnage (mêmes règles que supabase/schema-22-sans-liens.sql, vérifiées aussi par la base) ——— */
+  const TLD = 'com|net|org|ci|fr|info|biz|io|me|ly|app|xyz|site|online|shop|store|link|click|top|africa|gl|gd|to|cc|tv|page|dev|live|club|vip|pro|be|ch|ca|us|uk|gg|ws|im|sn|cm|bf|ml|tg|bj|gh|ng';
+  const RX = {
+    mail: /[a-z0-9._%+-]+\s?(@|\(at\)|\[at\])\s?[a-z0-9-]+\s?\.\s?[a-z]{2,}/i,
+    lien: [/(h\s*t\s*t\s*p\s*s?\s*:\s*\/\s*\/|\bwww\s*\.|\bwww\b)/i, new RegExp('\\b[a-z0-9-]*[a-z][a-z0-9-]*(\\s?\\.|\\s?(\\(\\.\\)|\\[\\.\\]|\\(dot\\)|\\[dot\\])\\s?)(' + TLD + ')\\b', 'i'), /\b(point|dot)\s+(com|net|org|info)\b/i],
+    ussd: /(\*\s*\d{2,4}\s*(\*\s*\d*\s*)*#|#\s*\d{3}\s*#)/,
+    code: /(mot\s+de\s+passe|code\s+(secret|confidentiel|pin|otp|sms|de\s+(confirmation|validation|v[ée]rification|retrait|s[ée]curit[ée]|connexion|secours)))/i
+  };
+  function texteRefus(t) {
+    t = String(t || ''); if (!t.trim() || J(K.a, false) === true) return '';   // l'administrateur peut écrire des liens
+    if (RX.mail.test(t)) return 'Pas d’adresse e-mail ici : pour votre sécurité, échangez uniquement dans l’application.';
+    if (RX.lien.some(r => r.test(t))) return 'Pas de lien ici : pour votre sécurité, les adresses de sites (www, .com, .ci…) sont interdites sur le Marché de Gros, même la nôtre. Échangez uniquement dans l’application.';
+    if (RX.ussd.test(t)) return 'Pas de code de transfert à taper (*144*…#) : c’est une ruse fréquente pour faire envoyer de l’argent. Ne payez qu’à la livraison, après avoir vu la marchandise.';
+    if (RX.code.test(t)) return 'Pour votre sécurité, on ne parle pas de code secret ni de mot de passe ici. Le Marché de Gros ne vous les demandera jamais : ne les donnez à personne.';
+    return '';
+  }
+
+  window.MDGNuage = { texteRefus, URL: URL0, televerser, deposerPrive, effacerPrive, lienSigne, list, zones, zoneAjouter, zoneRetirer, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
 })();

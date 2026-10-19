@@ -356,7 +356,9 @@
     box.querySelectorAll('.nx-chip[data-t]').forEach(c => { c.setAttribute('aria-pressed', 'false'); c.onclick = () => { const t = $('#nxT'), on = c.getAttribute('aria-pressed') !== 'true', s = c.dataset.t; let v = t.value.split(/\.\s*/).map(x => x.trim()).filter(Boolean).filter(x => x !== s); if (on) v.push(s); t.value = v.join('. '); c.setAttribute('aria-pressed', String(on)); }; });
     go.onclick = async () => {
       if (!navigator.onLine) { $('.nx-err').textContent = 'Pas de connexion internet. Réessayez quand le réseau revient.'; return; }
-      const v = vals(); go.disabled = true; go.setAttribute('aria-busy', 'true'); $('.nx-err').textContent = ''; go.textContent = 'Envoi';
+      const v = vals(), refus = v.t && N().texteRefus ? N().texteRefus(v.t) : '';   // pas de lien ni de code (schéma 22)
+      if (refus) { $('.nx-err').textContent = refus; return; }
+      go.disabled = true; go.setAttribute('aria-busy', 'true'); $('.nx-err').textContent = ''; go.textContent = 'Envoi';
       try { await onSend(v); } catch (x) { $('.nx-err').textContent = err(x); go.disabled = false; upd(); }
     };
     upd(); setTimeout(() => (fixe ? iq : ip).focus(), 60);

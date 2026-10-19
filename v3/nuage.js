@@ -568,6 +568,7 @@ html.kb .cp,html.kb .nx{height:calc(var(--vvh,100dvh) - 8px)!important}}`;
   const RX = {
     mail: /[a-z0-9._%+-]+\s?(@|\(at\)|\[at\])\s?[a-z0-9-]+\s?\.\s?[a-z]{2,}/i,
     lien: [/(h\s*t\s*t\s*p\s*s?\s*:\s*\/\s*\/|\bwww\s*\.|\bwww\b)/i, new RegExp('\\b[a-z0-9-]*[a-z][a-z0-9-]*(\\s?\\.|\\s?(\\(\\.\\)|\\[\\.\\]|\\(dot\\)|\\[dot\\])\\s?)(' + TLD + ')\\b', 'i'), /\b(point|dot)\s+(com|net|org|info)\b/i],
+    reseau: /(\b(face\s*-?\s*book|fb|fbk|f\s*\.\s*b|insta|instagram|instagr\w*|tik\s*-?\s*tok|tiktok|snap|snapchat|whats?\s*-?\s*app?|wh?ats?\s*app+|wh?atsap+|whatsap+|wasap+|watsap+|wtsp|whtsp|wsp|t[eé]l[eé]gram+|messenger|youtube|you\s*tube|linked\s*in|linkedin|twitter|threads)(?![\wÀ-ÿ])|\b(sur|mon|ma|via|par|en)\s+(wa|signal|ig|x)(?![\wÀ-ÿ])|(^|[\s(:])@[a-z0-9_.]{3,})/i,
     ussd: /(\*\s*\d{2,4}\s*(\*\s*\d*\s*)*#|#\s*\d{3}\s*#)/,
     tel: /((\+|00)\s*225([\s.\-]*\d){8,10}|\b(0[157]|2[157])([\s.\-]*\d){8}\b)/,
     code: /(mot\s+de\s+passe|code\s+(secret|confidentiel|pin|otp|sms|de\s+(confirmation|validation|v[ée]rification|retrait|s[ée]curit[ée]|connexion|secours)))/i
@@ -576,6 +577,7 @@ html.kb .cp,html.kb .nx{height:calc(var(--vvh,100dvh) - 8px)!important}}`;
     t = String(t || ''); if (!t.trim() || J(K.a, false) === true) return '';   // l'administrateur peut écrire des liens
     if (RX.mail.test(t)) return 'Pas d’adresse e-mail ici : pour votre sécurité, échangez uniquement dans l’application.';
     if (RX.lien.some(r => r.test(t))) return 'Pas de lien ici : pour votre sécurité, les adresses de sites (www, .com, .ci…) sont interdites sur le Marché de Gros, même la nôtre. Échangez uniquement dans l’application.';
+    if (RX.reseau.test(t)) return 'Pas de réseaux sociaux ici (Facebook, WhatsApp, Instagram, TikTok…) : pour votre sécurité, échangez uniquement dans l’application.';
     if (RX.ussd.test(t)) return 'Pas de code de transfert à taper (*144*…#) : c’est une ruse fréquente pour faire envoyer de l’argent. Ne payez qu’à la livraison, après avoir vu la marchandise.';
     if (RX.tel.test(t)) return 'Pas de numéro de téléphone ici : pour votre sécurité, les numéros restent cachés sur le Marché de Gros. Échangez avec le bouton « Écrire ».';
     if (RX.code.test(t)) return 'Pour votre sécurité, on ne parle pas de code secret ni de mot de passe ici. Le Marché de Gros ne vous les demandera jamais : ne les donnez à personne.';

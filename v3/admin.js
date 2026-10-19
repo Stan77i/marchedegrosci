@@ -373,7 +373,7 @@
 .mr-f{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mr-f label{display:flex;flex-direction:column;gap:5px;color:var(--mute);font-size:12.5px;min-width:0}.mr-f label.l{grid-column:1 / -1}
 .mr-f input{width:100%;height:42px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:#14120f;color:var(--ink)}
 .mr-a{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px}.mr-a .btn{min-height:50px;font-size:15px;white-space:normal;line-height:1.15}.mr-a .btn kbd{font:600 11px Jost,sans-serif;opacity:.7;border:1px solid currentColor;border-radius:5px;padding:0 4px}
-.mr-a .btn.arm{background:var(--v);border-color:var(--v)}
+.mr-a .btn.pri{background:#3FA66A;border-color:#3FA66A;color:#0d2a1c}.mr-a .btn.arm{background:var(--v);border-color:var(--v)}
 .mr-m{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
 .mr-m b{font-weight:600}.mr-ms{display:flex;flex-wrap:wrap;gap:6px}.mr-ms button{min-height:38px;padding:0 13px;border:1px solid var(--line);border-radius:999px;background:#14120f;cursor:pointer;font-size:13.5px}
 .mr-ms button[aria-pressed=true]{background:var(--ink);color:#171512;border-color:var(--ink)}.mr-ms button small{opacity:.6;margin-right:5px}

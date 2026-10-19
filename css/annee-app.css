@@ -1,7 +1,7 @@
 /* ═════════ L'année du marché (application) — cadran des récoltes, mois, cultures et leur année ═════════
    Couleurs du logo Étal vert : fond vert profond, accents maïs, texte crème. Sens gardés : vert = récolte (offre), maïs = se termine.
    Gabarit : application.dc.html (data-pg="annee"), logique : anDial() et le bloc « année » de renderVals. */
-.an2 { --an-bg: #0D2E23; --an-bg2: #0A231B; --an-ink: #F3EFE4; --an-mute: rgba(243, 239, 228, .66); --an-faint: rgba(243, 239, 228, .42);
+.an2 { --an-bg: #0D2E23; --an-bg2: #0A231B; --an-ink: #F3EFE4; --an-mute: rgba(243, 239, 228, .66); --an-faint: rgba(243, 239, 228, .64);
   --an-card: rgba(243, 239, 228, .055); --an-line: rgba(243, 239, 228, .1); --an-mais: #F2C230;
   background: radial-gradient(120% 60% at 50% 0%, #144235 0%, var(--an-bg) 46%, var(--an-bg2) 100%); color: var(--an-ink); }
 .an2-ib { width: 44px; height: 44px; border: 0; background: transparent; color: var(--an-ink); display: flex; align-items: center; justify-content: center; border-radius: 22px; }
@@ -32,7 +32,7 @@
 .an2-mk { margin-top: 5px; font: 600 11px/1 var(--f-texte, Jost), sans-serif; letter-spacing: .22em; color: var(--an-mais); }
 
 /* les 12 mois en barres : hauteur = nombre de cultures en récolte, partie pleine = pleine récolte */
-.an2-strip { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px; padding: 10px 8px 8px; border-radius: 18px; background: var(--an-card); border: 1px solid var(--an-line); }
+.an2-strip { display: grid; grid-template-columns: repeat(12, minmax(24px, 1fr)); gap: 2px; padding: 10px 6px 8px; border-radius: 18px; background: var(--an-card); border: 1px solid var(--an-line); }
 .an2-sm { min-width: 0; height: 66px; padding: 0; border: 0; background: transparent; color: var(--an-faint); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; border-radius: 10px; }
 .an2-bar { position: relative; width: min(16px, 70%); border-radius: 4px; background: rgba(181, 222, 193, .3); overflow: hidden; transition: background .3s; }
 .an2-bar i { position: absolute; left: 0; right: 0; bottom: 0; background: #6CC58C; }
@@ -90,3 +90,6 @@
   .an2-chev, .an2-bar { transition: none; }
   .an2-svg path { animation: none !important; stroke-dashoffset: 0 !important; }
 }
+
+/* écrans étroits : les 12 mois sur deux rangées de 6, pour garder des cases d'au moins 24 px (WCAG 2.5.8) */
+@media (max-width: 344px) { .an2-strip { grid-template-columns: repeat(6, minmax(24px, 1fr)); row-gap: 8px; } .an2-sm { height: 56px; } }

@@ -170,10 +170,10 @@
 .px-chiffres .o b{color:var(--offre-texte,#2F7D4F)}.px-chiffres .d b{color:#9A6B00}
 .px-filtres{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;flex:none;max-width:100%}
 .px-filtres::-webkit-scrollbar{display:none}
-.px-filtres button{flex:none;display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:999px;border:1px solid rgba(23,21,18,.14);background:transparent;color:var(--encre);font:500 var(--t-md) Jost,system-ui,sans-serif}
-.px-filtres button span{font-size:var(--t-xs);opacity:.6;font-variant-numeric:tabular-nums}
+.px-filtres button{flex:none;display:inline-flex;align-items:center;gap:7px;height:44px;padding:0 14px;border-radius:999px;border:1px solid rgba(23,21,18,.14);background:transparent;color:var(--encre);font:500 var(--t-md) Jost,system-ui,sans-serif}
+.px-filtres button>span:not(.sc-interp){font-size:var(--t-xs);opacity:.78;font-variant-numeric:tabular-nums}
 .px-filtres button[aria-pressed="true"]{background:#10392B;border-color:#10392B;color:#F3EFE4}
-.px-filtres button[aria-pressed="true"] span{opacity:.75}
+.px-filtres button[aria-pressed="true"]>span:not(.sc-interp){opacity:.85}
 .px-c{background:var(--carte);border-radius:20px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(23,21,18,.05),0 8px 22px rgba(23,21,18,.05);animation:mkFade .35s both}
 .px-c-t{display:flex;align-items:center;gap:12px;border:0;background:none;padding:0;text-align:left;color:inherit;min-height:48px}
 .px-c-t img{width:48px;height:48px;border-radius:14px;flex:none;background:#efe6d6}
@@ -219,3 +219,10 @@
 .px-lire dt{font-weight:600;font-size:var(--t-md);margin-top:6px}.px-lire dt.o{color:#2F7D4F}.px-lire dt.d{color:#8A6100}
 .px-lire dd{margin:0;font-size:var(--t-md);line-height:1.45;color:var(--texte-3)}
 @media (prefers-reduced-motion:reduce){.px-c{animation:none}}
+
+/* ——— audit XIAS (19 oct. 2026) ———
+   Focus visible au clavier sur tous les champs, même ceux qui ont « outline:none » écrit en ligne (WCAG 2.4.7 / 2.4.11). */
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #2E8B62 !important; outline-offset: 2px; }
+[data-pg="home"] input:focus-visible, [data-pg="carte"] select:focus-visible { outline-color: #F2C230 !important; }
+/* noms de produits autour de l'arc (accueil) : la zone de toucher dépasse le texte de 10 px, sans le déplacer (WCAG 2.5.8) */
+.arc-l::after { content: ''; position: absolute; inset: -10px -6px; }

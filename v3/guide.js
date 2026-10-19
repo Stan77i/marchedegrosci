@@ -99,11 +99,11 @@
 .gd-nav{margin:12px 0 0;display:flex;gap:10px}
 .gd-nav button{flex:1;min-height:48px;border-radius:24px;border:1px solid rgba(23,21,18,.16);background:none;color:#171512;font:500 16px Jost,sans-serif;padding:0 12px}
 .gd-pied{margin:28px 0 0;text-align:center;color:#7a7064;font-size:15px}
-.gd-pastille{position:fixed;left:50%;top:calc(76px + env(safe-area-inset-top));z-index:8500;transform:translate(-50%,-10px);opacity:0;transition:opacity .35s,transform .35s;
+.gd-pastille{position:fixed;left:50%;bottom:calc(98px + env(safe-area-inset-bottom));z-index:8500;transform:translate(-50%,10px);opacity:0;transition:opacity .35s,transform .35s;
   display:flex;align-items:center;gap:8px;min-height:44px;padding:0 6px 0 16px;border-radius:22px;background:#10392B;color:#F3EFE4;box-shadow:0 10px 26px rgba(0,0,0,.35);font:500 15px Jost,sans-serif;white-space:nowrap}
 .gd-pastille.on{opacity:1;transform:translate(-50%,0)}
 .gd-pastille button{border:0;background:none;color:inherit;font:inherit;min-height:44px;padding:0;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
-.gd-pastille .x{width:36px;height:36px;border-radius:18px;display:grid;place-items:center;color:rgba(243,239,228,.7)}
+.gd-pastille .x{width:44px;height:44px;border-radius:22px;display:grid;place-items:center;color:rgba(243,239,228,.7)}
 @media (prefers-reduced-motion:reduce){.gd,.gd-pastille{transition:none}}`;
 
   let el = null, pile = [];
@@ -157,6 +157,8 @@
   function vu() { try { localStorage.setItem(CLE, '1'); } catch (_) {} const p = document.querySelector('.gd-pastille'); if (p) p.remove(); }
   function proposer() {
     try { if (localStorage.getItem(CLE)) return; } catch (_) { return; }
+    // seulement sur l'accueil : sur une autre page, elle couvrait le titre ; on la propose au retour à l'accueil
+    if (location.hash && location.hash !== '#/') { addEventListener('hashchange', function f() { if (!location.hash || location.hash === '#/') { removeEventListener('hashchange', f); setTimeout(proposer, 600); } }); return; }
     if (document.getElementById('mdg-icone')) return;   // la carte « Nouveau logo » passe d'abord
     style();
     const p = document.createElement('div'); p.className = 'gd-pastille'; p.setAttribute('role', 'status');

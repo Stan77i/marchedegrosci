@@ -15,12 +15,12 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>/* ordinateur ou tablette : ouvre le site (même adresse, mêmes données). ?app=1 force l'application */(function(){try{var q=location.search;if(/[?&]app=1/.test(q)){sessionStorage.setItem("mdg-app","1");sessionStorage.removeItem("mdg-ordi")}var app=sessionStorage.getItem("mdg-app")==="1",tel=matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<768;if(!tel&&!app)location.replace("index-v3.html"+(location.hash||"#/"))}catch(e){}})();</script>
 <script>/* service worker : vérifie les mises à jour à chaque retour sur l'application ; quand une nouvelle version prend la main, la page se recharge (tout de suite si elle vient de s'ouvrir, sinon au prochain retour, jamais pendant une saisie) */if('serviceWorker' in navigator){(function(){var sw=navigator.serviceWorker,avant=!!sw.controller,t0=Date.now(),attente=false;sw.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(attente)location.reload();else r.update().catch(function(){})}})}).catch(function(){});sw.addEventListener('controllerchange',function(){if(!avant||attente)return;if(Date.now()-t0<6000)location.reload();else attente=true})})()}</script>
-<script src="v3/nuage.js?v=20261020a"></script>
+<script src="v3/nuage.js?v=20261020c"></script>
 <script src="v3/avatar.js?v=20261017c"></script>
 <script src="app/icones.js"></script>
 <script src="app/marque.js?v=20261019m"></script>
 <script src="app/sac.js?v=20261019b"></script>
-<script src="app/toast.js?v=20261019e"></script>
+<script src="app/toast.js?v=20261020b"></script>
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */

@@ -360,7 +360,13 @@ label.cp-r{cursor:pointer}
     aller(page);
     bg.rafraichir = () => { const y = main.scrollTop; aller(page); main.scrollTop = y; };
     if (navigator.onLine) charger().then(() => bg && bg.rafraichir && bg.rafraichir());
-    const adm0 = J('mdg-nuage:admin', false); if (N().isAdmin) N().isAdmin().then(a => { if (a !== adm0 && bg && bg.rafraichir) bg.rafraichir(); });
+    const adm0 = J('mdg-nuage:admin', false); if (N().isAdmin) N().isAdmin().then(a => { if (a !== adm0 && bg && bg.rafraichir) bg.rafraichir(); if (a) compterIdent(); });
+    // l'administrateur : dossiers d'identité à examiner (supabase/schema-19), gardés 60 s (même cache que le menu de l'application)
+    function compterIdent() {
+      const c = J('mdg-admin:identites', {}); if (!navigator.onLine || Date.now() - (c.t || 0) < 60e3) return;
+      try { localStorage.setItem('mdg-admin:identites', JSON.stringify({ n: c.n || 0, t: Date.now() })); } catch (_) {}
+      N().rpc('admin_identite_compte').then(n => { n = +n || 0; try { localStorage.setItem('mdg-admin:identites', JSON.stringify({ n, t: Date.now() })); } catch (_) {} if (n !== (c.n || 0) && bg && bg.rafraichir && page === 'accueil') bg.rafraichir(); }).catch(() => {});
+    }
   }
 
   // un champ texte avec message d'erreur près de lui
@@ -539,7 +545,7 @@ label.cp-r{cursor:pointer}
             ${ID ? ligne({ ico: mono('verifie'), t: 'Identité', s: (ID.RESUME[idS] || ID.RESUME.non_verifie)[1], v: (ID.RESUME[idS] || ID.RESUME.non_verifie)[0], vf: idS === 'verifie', attrs: 'data-idv' }) : ''}
             ${ligne({ ico: mono('cadenas'), t: 'Sécurité et code secret', attrs: 'data-go="securite"' })}
             ${M && M.ecrireMarche && !adm ? ligne({ ico: mono('service'), t: 'Écrire au Marché de Gros', s: 'Une question, un problème : l’équipe répond', attrs: 'data-marche' }) : ''}
-            ${adm ? ligne({ ico: mono('tableau'), t: 'Tableau de bord', s: 'Administration', href: 'admin.html' }) : ''}
+            ${adm ? (() => { const nI = +(J('mdg-admin:identites', {}).n) || 0; return ligne({ ico: mono('tableau'), t: 'Tableau de bord', s: nI ? nI + (nI > 1 ? ' dossiers' : ' dossier') + ' à examiner' : 'Administration', n: nI, href: nI ? 'admin.html#identites' : 'admin.html' }); })() : ''}
           </div>
           <div class="cp-grp">${ligne({ ico: mono('sortir'), t: 'Déconnexion', cls: 'bad', chev: false, attrs: 'data-out' })}</div>
           <p class="cp-note">Votre numéro n’est pas vérifié par SMS. Rien n’est compté ici qui n’ait eu lieu.</p>

@@ -23,6 +23,8 @@
   const LOGO = t => window.MDGMarque ? MDGMarque.dg(t, { rond: true }) : `<span aria-hidden="true" style="flex:none;width:${t}px;height:${t}px;border-radius:50%;background:#10392B"></span>`;
   const OFF = '<span class="dm-off">Officiel</span>';
   const admin = () => { try { return JSON.parse(localStorage.getItem('mdg-nuage:admin')) === true; } catch (_) { return false; } };
+  // seul le Marché de Gros officiel peut écrire des liens (supabase/schema-22) : dans ses messages, ils deviennent cliquables
+  const lienOff = t => esc(t).replace(/\b(https?:\/\/[^\s<]+|www\.[^\s<]+)/gi, u => { const h = /^https?:/i.test(u) ? u : 'https://' + u; return /^https?:\/\/[^\s"'<>]+$/i.test(h) ? `<a href="${h}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline">${u}</a>` : u; });
   const av = (uid, code, nom, t, officiel) => { if (officiel) return LOGO(t); const u = !code && uid && window.MDGCompte ? MDGCompte.avatar(uid, { size: t, nom: nom || '?' }).uri : A() ? A().uri(code, { size: t, nom: nom || '?', seed: uid }) : '';
     return u ? `<img src="${u}" width="${t}" height="${t}" alt="">` : ''; };
   const heure = t => new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
@@ -240,7 +242,7 @@
         const jj = jour(m.created_at); if (jj !== j) { j = jj; h += `<div class="dm-jour">${esc(jj)}</div>`; prec = null; }
         const moi = m.auteur_id === u, suite = prec && prec.auteur_id === m.auteur_id && Date.parse(m.created_at) - Date.parse(prec.created_at) < 3e5;
         const etat = m._etat === 'envoi' ? 'Envoi…' : m._etat === 'rate' ? 'Non envoyé · toucher pour réessayer' : heure(m.created_at);
-        h += `<div class="dm-m${moi ? ' me' : ''}${suite ? ' suite' : ''}${m._etat ? ' ' + m._etat : ''}${neufs && neufs.has(m.id) ? ' neuf' : ''}" data-m="${m.id}"${m._etat === 'rate' ? ' role="button" tabindex="0"' : ''}><p>${esc(m.texte)}<time title="S’efface dans ${reste(m.created_at)}">${etat}</time></p></div>`;
+        h += `<div class="dm-m${moi ? ' me' : ''}${suite ? ' suite' : ''}${m._etat ? ' ' + m._etat : ''}${neufs && neufs.has(m.id) ? ' neuf' : ''}" data-m="${m.id}"${m._etat === 'rate' ? ' role="button" tabindex="0"' : ''}><p>${(c.officiel && !moi) || (moi && admin()) ? lienOff(m.texte) : esc(m.texte)}<time title="S’efface dans ${reste(m.created_at)}">${etat}</time></p></div>`;
         prec = m;
       });
       zone.innerHTML = h || `<div class="dm-vide" style="padding:30px 10px">${I.bulle}<b>Dites bonjour</b>Présentez-vous et dites ce que vous cherchez ou proposez.</div>`;
@@ -279,7 +281,10 @@
       pied.innerHTML = `<textarea rows="1" maxlength="2000" placeholder="Écrire un message" aria-label="Votre message à ${esc(c.autre_nom)}" enterkeyhint="send"></textarea><button type="button" class="dm-env" aria-label="Envoyer" disabled>${I.envoyer}</button>`;
       const ta = pied.querySelector('textarea'), go = pied.querySelector('.dm-env');
       const grandir = () => { ta.style.height = 'auto'; ta.style.height = Math.min(132, ta.scrollHeight + 2) + 'px'; go.disabled = !ta.value.trim(); };
-      const envoyer = () => { const t = ta.value.trim(); if (!t) return; ta.value = ''; grandir(); const m = { id: 'tmp-' + Date.now(), created_at: new Date().toISOString(), auteur_id: u, texte: t }; attente.push(m); partir(m); ta.focus(); };
+      const envoyer = () => { const t = ta.value.trim(); if (!t) return;
+        // pas de lien, d'e-mail ni de code (supabase/schema-22) : on le dit avant l'envoi, le texte reste dans la case pour être corrigé
+        const refus = N().texteRefus ? N().texteRefus(t) : ''; if (refus) { N().toast(refus); ta.focus(); return; }
+        ta.value = ''; grandir(); const m = { id: 'tmp-' + Date.now(), created_at: new Date().toISOString(), auteur_id: u, texte: t }; attente.push(m); partir(m); ta.focus(); };
       ta.addEventListener('input', grandir);
       // ordinateur : Entrée envoie, Maj+Entrée va à la ligne ; téléphone : le bouton envoie (Entrée va à la ligne)
       ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && matchMedia('(hover:hover) and (pointer:fine)').matches) { e.preventDefault(); envoyer(); } });

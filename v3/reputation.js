@@ -136,9 +136,10 @@
     bg.querySelectorAll('.rp-big button').forEach(b => b.onclick = () => { n = +b.dataset.n; montrer(n); b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); go.disabled = false; });
     if (deja && deja.note) { n = deja.note; montrer(n); go.disabled = false; go.textContent = 'Mettre à jour ma note'; }
     go.onclick = async () => {
+      const rf = N().texteRefus ? N().texteRefus(bg.querySelector('textarea').value) : ''; if (rf) { bg.querySelector('.rp-msg').textContent = rf; return; }
       go.disabled = true; go.textContent = 'Publication…';
       try { await N().rpc('noter', { p_cible: uid, p_note: n, p_texte: bg.querySelector('textarea').value.trim() || null }); delete notes[uid]; charger([uid]); bg.fermer(); N().toast('Merci, votre note est publiée.'); apres && apres(); }
-      catch (x) { go.disabled = false; go.textContent = 'Publier ma note'; bg.querySelector('.rp-msg').textContent = /PAS_DE_NEGOCIATION/.test(x.message) ? 'Vous pourrez noter ce membre après avoir négocié ensemble.' : 'La publication n’a pas abouti. Réessayez.'; }
+      catch (x) { go.disabled = false; go.textContent = 'Publier ma note'; bg.querySelector('.rp-msg').textContent = /PAS_DE_NEGOCIATION/.test(x.message) ? 'Vous pourrez noter ce membre après avoir négocié ensemble.' : x.code === 'texte' ? x.message : 'La publication n’a pas abouti. Réessayez.'; }
     };
   }
 
@@ -213,6 +214,8 @@
     grille();
     bg.querySelector('[data-ok]').onclick = async ev => { ev.target.disabled = true; msg('');
       const corps = { bio: bg.querySelector('#rpBio').value.trim() || null, activites: bg.querySelector('#rpAct').value.trim() || null, photos };
+      const refus = N().texteRefus ? N().texteRefus([corps.bio, corps.activites].join(' · ')) : '';   // pas de lien ni de code (schéma 22)
+      if (refus) { ev.target.disabled = false; return msg(refus); }
       try { const r = await N().api('/rest/v1/profils?user_id=eq.' + s.user.id, { method: 'PATCH', auth: true, body: corps, prefer: 'return=representation' });
         if (!r || !r.length) await N().api('/rest/v1/profils', { method: 'POST', auth: true, body: Object.assign({ user_id: s.user.id }, corps), prefer: 'return=minimal' });
         bg.fermer(); N().toast('Profil enregistré.'); dispatchEvent(new CustomEvent('mdg:profil')); apres && apres(); }

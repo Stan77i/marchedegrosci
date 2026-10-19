@@ -29,6 +29,8 @@
   const cacheMe = () => { const u = me(); if (!u || !profil) return; const c = J(KC, {}); c[u.id] = { a: nomAffiche(profil), av: profil.avatar || '', r: profil.role || '', t: Date.now() }; W(KC, c); };
   async function enregistrer(champs) {
     const u = me(); if (!u) throw new Error('Connectez-vous d’abord.');
+    const refus = N().texteRefus ? N().texteRefus(['prenom', 'nom', 'pseudo', 'bio', 'activites'].map(k => champs[k] || '').join(' · ')) : '';   // pas de lien ni de code (schéma 22)
+    if (refus) throw new Error(refus);
     const row = Object.assign({ user_id: u.id }, champs);
     // modifier la ligne existante (sans toucher à user_id) ; la créer seulement si elle n'existe pas encore.
     // (l'ancien « créer ou remplacer » réécrivait user_id et exigeait un droit de modification sur cette colonne : « permission denied »)

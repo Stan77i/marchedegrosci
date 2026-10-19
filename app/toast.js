@@ -26,7 +26,7 @@
   transition:transform .5s cubic-bezier(.2,1.25,.35,1),opacity .25s,width .42s cubic-bezier(.22,1,.36,1)}
 .il.on{transform:translate(-50%,0) scale(1);opacity:1}
 .il.part{transform:translate(-50%,-26px) scale(.8);opacity:0;transition:transform .35s cubic-bezier(.55,0,.75,.2),opacity .3s}
-.il-in{display:flex;align-items:center;gap:12px;padding:8px 8px 8px 8px;min-height:52px;white-space:nowrap}
+.il-in{display:flex;align-items:center;gap:12px;padding:9px 9px 9px 9px;min-height:54px}
 .il-in.sans-a{padding-right:18px}
 .il-in.chg{animation:ilChg .38s cubic-bezier(.22,1,.36,1)}
 @keyframes ilChg{from{opacity:0;transform:translateY(8px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
@@ -36,14 +36,16 @@
 .il-g.rond{border-radius:50%}
 .il-g svg{display:block}
 .il-g.seul{width:12px;height:12px;margin-left:8px}.il-g.seul .il-pt{position:static;display:block;box-shadow:none}
-.il-pt{position:absolute;right:-2px;top:-2px;width:11px;height:11px;border-radius:50%;background:#3FB872;box-shadow:0 0 0 2.5px rgba(9,32,24,.94)}
-.il[data-t="alerte"] .il-pt{background:#F2C230}.il[data-t="erreur"] .il-pt{background:#EF6F5A}.il[data-t="info"] .il-pt{background:#9CC9F2}
+.il-pt{position:absolute;right:-2px;top:-2px;width:11px;height:11px;border-radius:50%;background:#6CC58C;box-shadow:0 0 0 2.5px rgba(9,32,24,.94)}
+.il[data-t="alerte"] .il-pt{background:#F2C230}.il[data-t="erreur"] .il-pt{background:#EF6F5A}.il[data-t="info"] .il-pt{background:#F3EFE4}
 .il[data-t="attente"] .il-pt{background:#F2C230;animation:ilPouls 1.1s ease-in-out infinite}
 @keyframes ilPouls{50%{transform:scale(.6);opacity:.5}}
 .il-x{min-width:0;flex:1;display:flex;flex-direction:column;gap:1px}
-.il-x b{font-weight:600;letter-spacing:.005em;overflow:hidden;text-overflow:ellipsis}
-.il-x small{font-size:13.5px;color:rgba(243,239,228,.68);overflow:hidden;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;width:max-content;max-width:min(300px,calc(100vw - 170px))}
-.il-in:not(.sans-a) .il-x small{max-width:min(250px,calc(100vw - 240px))}
+.il-x b,.il-x small{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;width:max-content;max-width:min(310px,calc(100vw - 110px));overflow-wrap:anywhere}
+.il-x b{font:600 15.5px/1.28 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.01em;-webkit-line-clamp:3}
+.il-x b em{font-weight:900;font-style:italic;color:#F2C230}
+.il-x small{font-size:13.5px;line-height:1.35;color:rgba(243,239,228,.74);-webkit-line-clamp:4;margin-top:2px}
+.il-in:not(.sans-a) .il-x b,.il-in:not(.sans-a) .il-x small{max-width:min(240px,calc(100vw - 196px))}
 .il-n{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-right:6px;border-radius:10px;background:#F2C230;color:#10392B;font:700 12px/1 Jost,sans-serif;vertical-align:1px}
 .il-a{flex:none;height:36px;padding:0 15px;border:0;border-radius:18px;background:#F2C230;color:#10392B;font:600 14px/1 Jost,system-ui,sans-serif;cursor:pointer}
 .il-a:active{transform:scale(.96)}
@@ -76,7 +78,7 @@
     const el = preparer(), w0 = el.classList.contains('on') ? el.getBoundingClientRect().width : 0;
     el.dataset.t = m.type;
     el.setAttribute('aria-live', m.type === 'erreur' ? 'assertive' : 'polite'); el.setAttribute('role', m.type === 'erreur' ? 'alert' : 'status');
-    el.innerHTML = `<div class="il-in${m.action ? '' : ' sans-a'}${change ? ' chg' : ''}">${glyphe(m)}<span class="il-x"><b>${m.n > 1 ? `<span class="il-n">${m.n}</span>` : ''}${esc(m.texte)}</b>${m.sous ? `<small>${esc(m.sous)}</small>` : ''}</span>${m.action ? `<button type="button" class="il-a">${esc(m.action.t)}</button>` : ''}</div>`;
+    el.innerHTML = `<div class="il-in${m.action ? '' : ' sans-a'}${change ? ' chg' : ''}">${glyphe(m)}<span class="il-x"><b>${m.n > 1 ? `<span class="il-n">${m.n}</span>` : ''}${esc(m.texte).replace(/\*([^*]+)\*/g, '<em>$1</em>')}</b>${m.sous ? `<small>${esc(m.sous)}</small>` : ''}</span>${m.action ? `<button type="button" class="il-a">${esc(m.action.t)}</button>` : ''}</div>`;
     const a = el.querySelector('.il-a'); if (a) a.onclick = e => { e.stopPropagation(); lancer(m.action); };
     // la pastille change de largeur en douceur (de l'ancienne à la nouvelle)
     if (w0) { el.style.width = 'auto'; const w1 = el.getBoundingClientRect().width; el.style.width = w0 + 'px'; void el.offsetWidth; el.style.width = w1 + 'px'; clearTimeout(el._w); el._w = setTimeout(() => { el.style.width = ''; }, 460); }
@@ -110,6 +112,9 @@
     if (texte === dernier.t && Date.now() - dernier.at < 1500 && !o.groupe) return;   // le même message deux fois de suite : une seule fois
     dernier = { t: texte, at: Date.now() };
     if (!document.body) return addEventListener('DOMContentLoaded', () => dire(texte, o), { once: true });
+    // phrase longue sans précision : on la coupe en un titre court et une explication (« Pas de lien ici » / « pour votre sécurité… »)
+    if (!o.sous && texte.length > 52) { const i = (k => k > 8 && k < 90 ? k : -1)(texte.search(/ : |\. (?=[A-ZÀ-Ý])/));
+      if (i > 0) { const sep = texte.slice(i, i + 3) === ' : ' ? 3 : 2, reste = texte.slice(i + sep).trim(); o = Object.assign({}, o, { sous: reste.charAt(0).toUpperCase() + reste.slice(1) }); texte = texte.slice(0, i).replace(/[.:]$/, ''); } }
     const m = { texte, sous: o.sous || '', type: o.type || deviner(texte + ' ' + (o.sous || '')), duree: o.duree, img: o.img, rond: o.rond, action: o.action, toucher: o.toucher, groupe: o.groupe, pluriel: o.pluriel, n: 1, muet: o.muet };
     // même famille que ce qui est affiché : on regroupe (« 3 nouvelles annonces »)
     if (m.groupe && cur && cur.groupe === m.groupe) {

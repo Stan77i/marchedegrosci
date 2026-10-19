@@ -452,7 +452,19 @@
         if (m0 === 'up') { try { await api('/rest/v1/profils', { method: 'POST', auth: true, body: Object.assign({ user_id: r.user.id }, ident), prefer: 'return=minimal' }).catch(e => { if (e.status === 409) return api('/rest/v1/profils?user_id=eq.' + r.user.id, { method: 'PATCH', auth: true, body: ident, prefer: 'return=minimal' }); throw e; }); say('compte'); } catch (e) { console.warn('[nuage] profil non enregistré', e.message); } }
         // réussite confirmée par le serveur : seulement maintenant
         go.classList.add('is-ok'); go.removeAttribute('aria-busy'); go.querySelector('span').textContent = m0 === 'up' ? 'Compte créé. Préparation de votre espace…' : 'Connexion réussie. Préparation de votre espace…'; P && P.etat('ok');
-        const fin = () => toast(m0 === 'up' ? 'Compte créé. Vos annonces partent maintenant.' : m0 === 'sos' ? 'Nouveau code enregistré. Vous êtes connecté.' : 'Connecté. Vos annonces partent maintenant.');
+        // l'accueil après la connexion : par son prénom, puis ce qui l'attend (messages, propositions), avec le geste pour y aller
+        const fin = () => {
+          const pf = window.MDGCompte && MDGCompte.profil ? (MDGCompte.profil() || {}) : {}, prenom = (m0 === 'up' ? ident.pseudo || ident.prenom : pf.pseudo || pf.prenom) || '';
+          const qui = prenom ? ', *' + prenom.replace(/\*/g, '') + '*' : '';
+          toast(m0 === 'up' ? 'Bienvenue' + (qui || ' sur le *marché*') : m0 === 'sos' ? 'Nouveau code enregistré' : 'Bon retour' + (qui || ' au *marché*'),
+            { type: 'ok', sous: m0 === 'sos' ? 'Vous êtes connecté. Gardez ce code pour vous.' : 'Vos annonces partent sur le marché.' });
+          if (m0 !== 'up') setTimeout(() => {
+            const dm = window.MDGMessages && MDGMessages.unread ? MDGMessages.unread() : 0, ng = window.MDGNegoce && MDGNegoce.unread ? MDGNegoce.unread() : 0;
+            if (!dm && !ng) return;
+            const parts = [dm ? dm + ' message' + (dm > 1 ? 's' : '') : '', ng ? ng + ' proposition' + (ng > 1 ? 's' : '') : ''].filter(Boolean);
+            toast(parts.join(' et ') + (dm + ng > 1 ? ' vous attendent' : ' vous attend'), { type: 'info', action: { t: 'Voir', fn: () => { if (ng && window.MDGNegoce) MDGNegoce.inbox(); else if (window.MDGMessages) MDGMessages.boite(); } } });
+          }, 3200);
+        };
         const bienvenue = () => { fin(); if (m0 === 'up' && window.MDGCompte) setTimeout(() => MDGCompte.bienvenue({ identite: true }), 300); };
         // application : on « entre dans le marché » (la porte s'ouvre, on la traverse) avant la suite (code de secours, bienvenue)
         const suite = () => { if (r && r.secours) showSecours(r.secours, bienvenue); else bienvenue(); };
@@ -568,6 +580,7 @@ html.kb .cp,html.kb .nx{height:calc(var(--vvh,100dvh) - 8px)!important}}`;
   const RX = {
     mail: /[a-z0-9._%+-]+\s?(@|\(at\)|\[at\])\s?[a-z0-9-]+\s?\.\s?[a-z]{2,}/i,
     lien: [/(h\s*t\s*t\s*p\s*s?\s*:\s*\/\s*\/|\bwww\s*\.|\bwww\b)/i, new RegExp('\\b[a-z0-9-]*[a-z][a-z0-9-]*(\\s?\\.|\\s?(\\(\\.\\)|\\[\\.\\]|\\(dot\\)|\\[dot\\])\\s?)(' + TLD + ')\\b', 'i'), /\b(point|dot)\s+(com|net|org|info)\b/i],
+    reseau: /(\b(face\s*-?\s*book|fb|fbk|f\s*\.\s*b|insta|instagram|instagr\w*|tik\s*-?\s*tok|tiktok|snap|snapchat|whats?\s*-?\s*app?|wh?ats?\s*app+|wh?atsap+|whatsap+|wasap+|watsap+|wtsp|whtsp|wsp|t[eé]l[eé]gram+|messenger|youtube|you\s*tube|linked\s*in|linkedin|twitter|threads)(?![\wÀ-ÿ])|\b(sur|mon|ma|via|par|en)\s+(wa|signal|ig|x)(?![\wÀ-ÿ])|(^|[\s(:])@[a-z0-9_.]{3,})/i,
     ussd: /(\*\s*\d{2,4}\s*(\*\s*\d*\s*)*#|#\s*\d{3}\s*#)/,
     tel: /((\+|00)\s*225([\s.\-]*\d){8,10}|\b(0[157]|2[157])([\s.\-]*\d){8}\b)/,
     code: /(mot\s+de\s+passe|code\s+(secret|confidentiel|pin|otp|sms|de\s+(confirmation|validation|v[ée]rification|retrait|s[ée]curit[ée]|connexion|secours)))/i
@@ -576,6 +589,7 @@ html.kb .cp,html.kb .nx{height:calc(var(--vvh,100dvh) - 8px)!important}}`;
     t = String(t || ''); if (!t.trim() || J(K.a, false) === true) return '';   // l'administrateur peut écrire des liens
     if (RX.mail.test(t)) return 'Pas d’adresse e-mail ici : pour votre sécurité, échangez uniquement dans l’application.';
     if (RX.lien.some(r => r.test(t))) return 'Pas de lien ici : pour votre sécurité, les adresses de sites (www, .com, .ci…) sont interdites sur le Marché de Gros, même la nôtre. Échangez uniquement dans l’application.';
+    if (RX.reseau.test(t)) return 'Pas de réseaux sociaux ici (Facebook, WhatsApp, Instagram, TikTok…) : pour votre sécurité, échangez uniquement dans l’application.';
     if (RX.ussd.test(t)) return 'Pas de code de transfert à taper (*144*…#) : c’est une ruse fréquente pour faire envoyer de l’argent. Ne payez qu’à la livraison, après avoir vu la marchandise.';
     if (RX.tel.test(t)) return 'Pas de numéro de téléphone ici : pour votre sécurité, les numéros restent cachés sur le Marché de Gros. Échangez avec le bouton « Écrire ».';
     if (RX.code.test(t)) return 'Pour votre sécurité, on ne parle pas de code secret ni de mot de passe ici. Le Marché de Gros ne vous les demandera jamais : ne les donnez à personne.';

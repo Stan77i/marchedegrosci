@@ -26,6 +26,9 @@
   const LUC = { apercu: 'apercu', traiter: 'traiter', annonces: 'activite', comptes: 'comptes', negos: 'negoce', messages: 'messages', identites: 'verifie', site: 'site' };   // app/icones.js
   const ico = k => { const L = window.MDGIco && LUC[k] && window.MDGIco.corps(LUC[k]);
     return L ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${L}</svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">${ICO[k]}</svg>`; };
+  // badge du compte officiel (même sceau partout dans le tableau de bord)
+  const BADGE = '<span class="badge-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 7.8 8 9 4.6-1.2 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Administrateur · Officiel</span>';
+  const RELIRE = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>';
   let toastT = 0;
   function toast(m) { let el = document.querySelector('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); } el.textContent = m; el.style.opacity = '1'; clearTimeout(toastT); toastT = setTimeout(() => { el.style.opacity = '0'; }, 4000); }
 
@@ -96,15 +99,20 @@
     const conclu = D.negos.filter(n => n.statut === 'conclue').length;
     const nav = (k, t, n) => `<a class="nav" href="#${k}" ${view === k ? 'aria-current="page"' : ''}>${ico(k)}<span>${t}</span>${n ? `<em>${n}</em>` : ''}</a>`;
     root.innerHTML = `<div class="app"><nav class="rail" aria-label="Tableau de bord">
-      <a class="brand" href="#apercu" aria-label="Marché de Gros, tableau de bord" style="flex-direction:column;align-items:flex-start;gap:6px">${window.MDGMarque ? MDGMarque.ligne({ fond: 'vert', h: 22 }) : '<b>Marché de Gros</b>'}<small>Tableau de bord</small></a>
-      ${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}${nav('messages', 'Messages', D.alertes.filter(a => !a.vu).length + D.sigm.filter(x => !x.traite).length)}${nav('identites', 'Identités', D.ident.filter(v => v.statut === 'en_attente').length)}
-      <span class="sp"></span><a class="nav ext" href="./">${ico('site')}<span>Voir le site</span></a>
-      <div class="who">Connecté en administrateur<b>${esc(fmtTel(N.session().user.tel))}</b></div></nav>
+      <a class="brand" href="#apercu" aria-label="Marché de Gros, tableau de bord administrateur">${window.MDGMarque ? MDGMarque.ligne({ fond: 'vert', h: 22 }) : '<b>Marché de Gros</b>'}${BADGE}</a>
+      <div class="navs">${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}${nav('messages', 'Messages', D.alertes.filter(a => !a.vu).length + D.sigm.filter(x => !x.traite).length)}${nav('identites', 'Identités', D.ident.filter(v => v.statut === 'en_attente').length)}</div>
+      <span class="sp"></span><a class="nav ext" href="./">${ico('site')}<span>Voir l’application</span></a>
+      <div class="who">Compte officiel, affiché « Marché de Gros » aux membres<b>${esc(fmtTel(N.session().user.tel))}</b></div></nav>
       <main id="main">${(VIEWS[view] || VIEWS.apercu)({ T, masq, toDo, conclu })}</main></div>`;
     bind();
   }
-  const errBox = () => { const e = Object.entries(D.err); return e.length ? `<p class="tag bad" style="display:block;padding:10px 14px;border-radius:14px;margin:0 0 18px">Lecture incomplète : ${e.map(([k, m]) => esc(k + ' — ' + m)).join(' ; ')}${D.err.comptes ? '. La liste des comptes demande le fichier supabase/a-lancer-dans-sql-editor.sql.' : ''}</p>` : ''; };
-  const top = (t, p, extra) => `<div class="top"><div><h1>${t}</h1>${p ? `<p>${p}</p>` : ''}</div><div style="display:flex;gap:8px">${extra || ''}<button class="btn" data-reload>Actualiser</button></div></div>${errBox()}`;
+  // une partie des données n'a pas pu être lue : une ligne discrète, le détail se déplie
+  const ERR_NOM = { offres: 'offres', demandes: 'demandes', signalements: 'signalements d’annonces', negos: 'négociations', comptes: 'comptes', alertes: 'alertes', discussions: 'conversations', sigm: 'personnes signalées', identites: 'identités' };
+  const errBox = () => { const e = Object.entries(D.err); if (!e.length) return '';
+    return `<div class="err" role="status"><details><summary>Certaines données n’ont pas pu être lues : ${esc(e.map(([k]) => ERR_NOM[k] || k).join(', '))} <u>détails</u></summary>
+      <ul>${e.map(([k, m]) => `<li>${esc((ERR_NOM[k] || k) + ' — ' + m)}</li>`).join('')}${D.err.comptes ? '<li>La liste des comptes demande le fichier supabase/a-lancer-dans-sql-editor.sql.</li>' : ''}</ul></details>
+      <button class="btn sm" data-reload>Réessayer</button></div>`; };
+  const top = (t, p, extra) => `<div class="top"><div><h1>${t}</h1>${p ? `<p>${p}</p>` : ''}</div><div class="outils">${extra || ''}<button class="btn sm ghost" data-reload title="Relire les données">${RELIRE}Actualiser</button></div></div>${errBox()}`;
 
   function pouls() {
     const A = annonces(), j0 = new Date(); j0.setHours(0, 0, 0, 0); const days = [];
@@ -125,16 +133,19 @@
   const VIEWS = {
     apercu: ({ toDo, conclu }) => {
       const A = annonces(), act = A.filter(a => a.status === 'active'), r = remise(), auj = D.comptes.filter(c => Date.now() - Date.parse(c.created_at) < 7 * 864e5).length;
+      const idn = D.ident.filter(v => v.statut === 'en_attente').length;
+      const tuile = (h, n, t, alerte) => `<a class="tuile${alerte ? ' alert' : ''}" href="#${h}"><b>${n}</b><span>${t}</span></a>`;
       return top('Aperçu', 'Ce qui se passe sur le Marché de Gros, compté sur les données réelles.') + `
-      <section class="pouls"><div><h2>Le pouls du marché</h2><p class="sub">Annonces publiées ces 14 derniers jours.</p>${pouls()}</div>
-        <div class="chiffres">
-          <div class="ch"><b>${fmt(act.filter(a => a.kind === 'offre').length)}</b><span>offres en ligne</span></div>
-          <div class="ch"><b>${fmt(act.filter(a => a.kind === 'demande').length)}</b><span>demandes en ligne</span></div>
-          <div class="ch"><b>${D.err.comptes ? '—' : fmt(D.comptes.length)}</b><span>comptes${auj ? ' · ' + auj + ' cette semaine' : ''}</span></div>
-          <div class="ch${toDo ? ' alert' : ''}"><b>${fmt(toDo)}</b><span>à traiter</span></div>
-          <div class="ch"><b>${fmt(D.negos.filter(n => n.statut === 'ouverte').length)}</b><span>négociations en cours</span></div>
-          <div class="ch"><b>${fmt(conclu)}</b><span>accords${r ? ' · écart moyen ' + r : ''}</span></div>
-        </div></section>
+      <div class="tuiles">
+        ${tuile('traiter', fmt(toDo), 'annonce' + (toDo > 1 ? 's' : '') + ' à traiter', toDo)}
+        ${idn ? tuile('identites', fmt(idn), 'identité' + (idn > 1 ? 's' : '') + ' à examiner', true) : ''}
+        ${tuile('annonces', fmt(act.filter(a => a.kind === 'offre').length), 'offres en ligne')}
+        ${tuile('annonces', fmt(act.filter(a => a.kind === 'demande').length), 'demandes en ligne')}
+        ${tuile('comptes', D.err.comptes ? '—' : fmt(D.comptes.length), 'comptes' + (auj ? ' · ' + auj + ' cette semaine' : ''))}
+        ${tuile('negos', fmt(D.negos.filter(n => n.statut === 'ouverte').length), 'négociations en cours')}
+        ${tuile('negos', fmt(conclu), 'accords conclus' + (r ? ' · écart moyen ' + r : ''))}
+      </div>
+      <section class="pouls"><h2>Le pouls du marché</h2><p class="sub">Annonces publiées ces 14 derniers jours.</p>${pouls()}</section>
       <section class="sec"><div class="sec-h"><h2>Dernières annonces</h2><a class="btn sm" href="#annonces">Toutes les annonces</a></div>${listeAnnonces(A.slice(0, 6))}</section>`;
     },
     traiter: ({ T }) => {
@@ -178,18 +189,18 @@
     const nomU = uid => { const c = D.byUser && D.byUser[uid]; return c ? fmtTel(String(c.tel).replace(/^225/, '')) : 'compte supprimé'; };
     return top('Messages', 'Écrivez à tous les membres au nom du Marché de Gros, suivez les tentatives de sortir de l’application et lisez les conversations.') + `
       <section class="sec"><div class="sec-h"><h2>Message à tous les membres</h2><p>Chacun le reçoit dans ses messages, avec le logo du Marché de Gros, et une notification.</p></div>
-        <div class="list" style="padding:16px 18px;display:flex;flex-direction:column;gap:12px"><textarea data-dif maxlength="2000" rows="4" placeholder="Bonjour, …" aria-label="Message à tous les membres" style="width:100%;box-sizing:border-box;padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:#14120f;color:var(--ink);font:400 15px/1.45 Jost,sans-serif;resize:vertical"></textarea>
+        <div class="list carte"><textarea data-dif maxlength="2000" rows="4" placeholder="Bonjour, …" aria-label="Message à tous les membres"></textarea>
         <div style="display:flex;justify-content:flex-end"><button class="btn pri" data-difgo>Envoyer à tous</button></div></div></section>
       <section class="sec"><div class="sec-h"><h2>Personnes signalées</h2><p>${D.sigc ? (D.sigc.filter(x => x.priorite).length ? D.sigc.filter(x => x.priorite).length + ' à examiner en priorité. ' : '') : D.sigm.filter(x => !x.traite).length ? D.sigm.filter(x => !x.traite).length + ' à traiter. ' : ''}Priorité : une preuve (photo ou conversation jointe), ou au moins 3 personnes différentes en 30 jours. La personne signalée ne sait pas qui l’a signalée. Rien n’est automatique : c’est vous qui décidez.</p></div>
         <div class="list">${D.sigc ? sigComptes() : D.err.sigm ? '<div class="empty"><b>Signalements indisponibles</b>' + esc(D.err.sigm) + '</div>' : D.sigm.length ? D.sigm.map(x => `
-          <div class="row${x.traite ? ' is-hidden' : ''}"><span class="mk ${x.traite ? 'off' : 'd'}" style="background:${x.traite ? '' : '#E2735B'}"></span>
+          <div class="row${x.traite ? ' is-hidden' : ''}"><span class="mk ${x.traite ? 'off' : 'd'}" style="background:${x.traite ? '' : 'var(--bad)'}"></span>
             <div><b>${esc(MOTIF_BAN[x.motif] || x.motif)} · ${esc(fmtTel(String(x.cible_tel || '').replace(/^225/, '')) || 'compte supprimé')}</b><small>${x.detail ? '« ' + esc(x.detail) + ' »' : 'Sans précision'}</small></div>
             <div class="c3"><small>${x.source === 'dm' ? 'message direct' : x.source === 'negociation' ? 'négociation' : 'profil'} · par ${esc(fmtTel(String(x.auteur_tel || '').replace(/^225/, '')))}</small><small>${ago(x.created_at)}</small></div>
             <div class="c4">${x.signale_par > 1 ? `<span class="tag bad">${x.signale_par} personnes</span>` : ''} ${x.cible_banni ? '<span class="tag bad">banni</span>' : x.cible_verifie ? '<span class="tag ok">vérifié</span>' : ''}</div>
             <div class="acts">${x.source === 'dm' && x.ref_id ? `<button class="btn sm" data-lire="${x.ref_id}">Lire</button>` : ''}${window.MDGMessages ? `<button class="btn sm" data-ecrire="${x.cible_id}">Écrire</button>` : ''}${x.traite ? '' : `<button class="btn sm" data-sigok="${x.id}">Traité</button>`}${x.cible_banni ? '' : `<button class="btn sm bad" data-bannir="${x.cible_id}">Bannir</button>`}</div></div>`).join('') : '<div class="empty"><b>Aucun signalement</b>Les personnes signalées par les membres apparaîtront ici.</div>'}</div></section>
       <section class="sec"><div class="sec-h"><h2>Alertes : sortie de l’application</h2><p>${nv ? nv + ' nouvelle' + (nv > 1 ? 's' : '') + '. ' : ''}Numéro, WhatsApp, autre messagerie ou lien écrit dans un message. Le numéro est masqué pour l’autre personne.</p></div>
         <div class="list">${D.err.alertes ? '<div class="empty"><b>Alertes indisponibles</b>' + esc(D.err.alertes) + '</div>' : D.alertes.length ? D.alertes.map(a => `
-          <div class="row${a.vu ? ' is-hidden' : ''}"><span class="mk ${a.vu ? 'off' : 'd'}" style="background:${a.vu ? '' : '#E2735B'}"></span>
+          <div class="row${a.vu ? ' is-hidden' : ''}"><span class="mk ${a.vu ? 'off' : 'd'}" style="background:${a.vu ? '' : 'var(--bad)'}"></span>
             <div><b>${esc(a.motif)} · ${esc(nomU(a.user_id))}</b><small>« ${esc(a.extrait || '')} »</small></div>
             <div class="c3"><small>${a.source === 'dm' ? 'message direct' : 'négociation'}</small><small>${ago(a.created_at)}</small></div>
             <div class="c4">${a.vu ? '<span class="tag">vue</span>' : '<span class="tag bad">nouvelle</span>'}</div>
@@ -208,7 +219,7 @@
     if (!D.sigc.length) return '<div class="empty"><b>Aucun signalement</b>Les personnes signalées par les membres apparaîtront ici.</div>';
     const tel = t => esc(fmtTel(String(t || '').replace(/^225/, '')) || 'compte supprimé');
     return D.sigc.map(g => { const L = g.signalements || [], nPh = L.reduce((t, x) => t + ((x.preuves || []).length), 0);
-      return `<div class="row${g.a_traiter ? '' : ' is-hidden'}" data-sigc="${g.cible_id}"><span class="mk ${g.a_traiter ? 'd' : 'off'}" style="background:${g.priorite ? '#E2735B' : g.a_traiter ? '#E2B33C' : ''}"></span>
+      return `<div class="row${g.a_traiter ? '' : ' is-hidden'}" data-sigc="${g.cible_id}"><span class="mk ${g.a_traiter ? 'd' : 'off'}" style="background:${g.priorite ? 'var(--bad)' : g.a_traiter ? 'var(--acc)' : ''}"></span>
         <div><b>${tel(g.cible_tel)}</b><small>${L.length} signalement${L.length > 1 ? 's' : ''} · dernier ${ago(g.dernier)}</small></div>
         <div class="c3"><small>${g.personnes_30j} personne${g.personnes_30j > 1 ? 's' : ''} différente${g.personnes_30j > 1 ? 's' : ''} en 30 jours</small><small>${g.avec_preuve ? 'avec preuve' : 'sans preuve'}${nPh ? ' · ' + nPh + ' photo' + (nPh > 1 ? 's' : '') : ''}</small></div>
         <div class="c4">${g.priorite ? '<span class="tag bad">à examiner en priorité</span> ' : ''}${g.cible_banni ? '<span class="tag bad">banni</span>' : g.cible_verifie ? '<span class="tag ok">vérifié</span>' : ''}</div>
@@ -351,41 +362,41 @@
   const MR_REFAIRE = ['Photo floue', 'Code absent ou faux', 'Pièce coupée ou avec un reflet', 'Visage mal visible sur le selfie'];
   const MR_PILE = { propre: ['ok', 'Propre'], regarder: ['moy', 'À regarder'], suspect: ['bad', 'Suspect'] };
   const MR_CSS = `.mr{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;background:var(--bg);overscroll-behavior:contain}
-.mr-h{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:12px clamp(14px,3vw,28px);border-bottom:1px solid var(--line);background:#14120f}
-.mr-h h2{margin:0;font:500 24px/1 'Cormorant Garamond',serif}.mr-n{font-weight:700;font-size:17px}.mr-n small{font-weight:500;color:var(--mute);font-size:13.5px;margin-left:6px}
+.mr-h{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;padding:12px clamp(14px,3vw,28px);border-bottom:1px solid var(--line);background:var(--champ)}
+.mr-h h2{margin:0;font:600 20px/1.1 Jost,sans-serif}.mr-n{font-weight:700;font-size:17px}.mr-n small{font-weight:500;color:var(--mute);font-size:13.5px;margin-left:6px}
 .mr-h .sp{flex:1}.mr-k{color:var(--faint);font-size:12.5px}.mr-k kbd{display:inline-block;min-width:20px;padding:0 5px;border:1px solid var(--line);border-radius:6px;font:600 11.5px/18px Jost,sans-serif;text-align:center;color:var(--mute)}
 .mr-b{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(320px,1fr);align-items:start;gap:20px;padding:18px clamp(14px,3vw,28px) 24px}
 .mr-ph{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-content:start}
 .mr-ph figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}.mr-ph figure.selfie{grid-column:1 / -1}
 .mr-ph figcaption{color:var(--mute);font-size:12.5px}
-.mr-ph button{display:block;width:100%;padding:0;border:0;border-radius:14px;background:#0f0d0a;cursor:zoom-in;overflow:hidden}
+.mr-ph button{display:block;width:100%;padding:0;border:0;border-radius:14px;background:var(--photo);cursor:zoom-in;overflow:hidden}
 .mr-ph img{display:block;width:100%;height:clamp(200px,34vh,380px);object-fit:contain}
-.mr-ph .vide{display:grid;place-items:center;height:200px;border-radius:14px;background:#0f0d0a;color:var(--faint);font-size:13px}
+.mr-ph .vide{display:grid;place-items:center;height:200px;border-radius:14px;background:var(--photo);color:var(--faint);font-size:13px}
 .mr-i{display:flex;flex-direction:column;gap:14px;min-width:0}
 .mr-code{padding:14px 16px;border:1px solid var(--line);border-radius:18px;background:var(--panel);text-align:center}
 .mr-code small{display:block;color:var(--mute);font-size:12.5px}.mr-code b{display:block;font:700 clamp(46px,7vw,72px)/1.05 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.14em;color:var(--a)}
 .mr-who b{display:block;font-size:19px;font-weight:600}.mr-who small{display:block;color:var(--mute);font-size:13px}
 .mr-pile{display:inline-block;padding:3px 11px;border-radius:999px;font-weight:700;font-size:12.5px}
-.mr-pile.ok,.mr-c.ok i{background:rgba(108,197,140,.18);color:#8FDCA8}.mr-pile.moy,.mr-c.moy i{background:rgba(242,201,76,.18);color:#F2C94C}.mr-pile.bad,.mr-c.bad i{background:rgba(226,115,91,.2);color:#F3A08C}
+.mr-pile.ok,.mr-c.ok i{background:rgba(108,197,140,.18);color:#8FDCA8}.mr-pile.moy,.mr-c.moy i{background:rgba(242,194,48,.18);color:var(--acc)}.mr-pile.bad,.mr-c.bad i{background:rgba(229,96,79,.2);color:var(--bad-t)}
 .mr-cs{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
 .mr-c{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.35}.mr-c i{flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;font:700 13px/1 Jost,sans-serif;font-style:normal}
-.mr-c.bad span{color:#F3A08C}
+.mr-c.bad span{color:var(--bad-t)}
 .mr-f{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mr-f label{display:flex;flex-direction:column;gap:5px;color:var(--mute);font-size:12.5px;min-width:0}.mr-f label.l{grid-column:1 / -1}
-.mr-f input{width:100%;height:42px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:#14120f;color:var(--ink)}
+.mr-f input{width:100%;height:42px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--champ);color:var(--ink)}
 .mr-a{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:8px}.mr-a .btn{min-height:50px;font-size:15px;white-space:normal;line-height:1.15}.mr-a .btn kbd{font:600 11px Jost,sans-serif;opacity:.7;border:1px solid currentColor;border-radius:5px;padding:0 4px}
 .mr-a .btn.pri{background:#3FA66A;border-color:#3FA66A;color:#0d2a1c}.mr-a .btn.arm{background:var(--v);border-color:var(--v)}
 .mr-m{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:16px;background:var(--panel)}
-.mr-m b{font-weight:600}.mr-ms{display:flex;flex-wrap:wrap;gap:6px}.mr-ms button{min-height:38px;padding:0 13px;border:1px solid var(--line);border-radius:999px;background:#14120f;cursor:pointer;font-size:13.5px}
-.mr-ms button[aria-pressed=true]{background:var(--ink);color:#171512;border-color:var(--ink)}.mr-ms button small{opacity:.6;margin-right:5px}
-.mr-m input{height:42px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:#14120f}
+.mr-m b{font-weight:600}.mr-ms{display:flex;flex-wrap:wrap;gap:6px}.mr-ms button{min-height:38px;padding:0 13px;border:1px solid var(--line);border-radius:999px;background:var(--champ);cursor:pointer;font-size:13.5px}
+.mr-ms button[aria-pressed=true]{background:var(--ink);color:var(--sur);border-color:var(--ink)}.mr-ms button small{opacity:.6;margin-right:5px}
+.mr-m input{height:42px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--champ)}
 .mr-fait{padding:10px 14px;border-radius:14px;background:rgba(245,240,230,.07);font-weight:600}
 .mr-nav{display:flex;gap:8px}.mr-nav .btn{flex:1}
 .mr-z{position:fixed;inset:0;z-index:45;display:grid;place-items:center;background:rgba(0,0,0,.92);cursor:zoom-out;padding:10px}
 .mr-z img{max-width:100%;max-height:100%;object-fit:contain}
 @media (max-width:480px){.mr-h{flex-wrap:nowrap;gap:10px}.mr-h h2{display:none}.mr-h .mr-n{white-space:nowrap}}
-.mr-fin{margin:auto;max-width:460px;text-align:center;padding:40px 20px}.mr-fin h3{margin:0 0 8px;font:500 34px/1.1 'Cormorant Garamond',serif}.mr-fin p{color:var(--mute)}
+.mr-fin{margin:auto;max-width:460px;text-align:center;padding:40px 20px}.mr-fin h3{margin:0 0 8px;font:600 26px/1.15 Jost,sans-serif}.mr-fin p{color:var(--mute)}
 @media (max-width:900px){.mr-b{display:flex;flex-direction:column;align-items:stretch;padding-bottom:110px}.mr-i{display:contents}.mr-code{order:-2;padding:10px 14px}.mr-code b{font-size:52px}.mr-ph{order:-1}.mr-k{display:none}.mr-h h2{font-size:20px}.mr-ph img{height:clamp(160px,30vh,300px)}
-  .mr-a{position:fixed;left:0;right:0;bottom:0;z-index:41;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:#14120f;border-top:1px solid var(--line)}.mr-a .btn kbd{display:none}.mr-a .btn{padding:0 8px;font-size:14px}}`;
+  .mr-a{position:fixed;left:0;right:0;bottom:0;z-index:41;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:var(--champ);border-top:1px solid var(--line)}.mr-a .btn kbd{display:none}.mr-a .btn{padding:0 8px;font-size:14px}}`;
   const MR = { L: [], i: 0, liens: {}, ouverts: new Set(), arme: false, mode: null };
   const mrPhotos = v => v.piece === 'passeport' ? ['recto', 'selfie'] : ['recto', 'verso', 'selfie'];
   // liens signés valables 2 minutes ; gardés 100 s pour en avoir toujours un valable

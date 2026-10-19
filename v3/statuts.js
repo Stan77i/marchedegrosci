@@ -9,7 +9,9 @@
      Nouveau membre       — inscrit depuis moins de 30 jours                                     (neutre)
    Serveur : supabase/schema-17-statuts.sql → statuts_publics(ids), lisible sans compte, chiffres seulement.
    API : MDGStatut.charger(uids) · get(uid) · liste(uid) · puces(uid, { max, sans }) · detail(uid) · progres(uid)
-   Événement « mdg:rep » quand de nouveaux chiffres arrivent (l'application et les fenêtres se redessinent déjà sur cet événement). */
+   Événement « mdg:rep » quand de nouveaux chiffres arrivent (l'application et les fenêtres se redessinent déjà sur cet événement).
+   Compte officiel (l'administrateur, schéma 20 → officiels()) : un seul statut, « Officiel · Marché de Gros », à la place de tous les autres
+   (pas d'étoiles, pas de sceau d'identité : c'est le Marché de Gros lui-même qui parle). MDGStatut.estOfficiel(uid). */
 (function () {
   'use strict';
   const N = () => window.MDGNuage;
@@ -32,6 +34,18 @@
       } catch (_) {}
     }, 80);
   }
+  // les comptes officiels : une petite liste, relue toutes les 6 h
+  const KO = 'mdg-officiels'; let off = null;
+  try { const c = JSON.parse(localStorage.getItem(KO) || 'null'); if (c && c.t && Date.now() - c.t < 6 * 3600e3) off = new Set(c.ids || []); } catch (_) {}
+  let offEnCours = false;
+  function chargerOfficiels() {
+    if (off || offEnCours || !N()) return; offEnCours = true;
+    N().rpc('officiels', {}, false).then(r => { const ids = (r || []).map(x => typeof x === 'string' ? x : x.officiels).filter(Boolean); off = new Set(ids);
+      try { localStorage.setItem(KO, JSON.stringify({ t: Date.now(), ids })); } catch (_) {} dispatchEvent(new CustomEvent('mdg:rep')); })
+      .catch(() => {}).finally(() => { offEnCours = false; });
+  }
+  const estOfficiel = uid => { if (!uid) return false; if (!off) chargerOfficiels(); return !!(off && off.has(uid)); };
+  const OFFICIEL = { k: 'officiel', t: 'Officiel', s: 'Compte officiel du Marché de Gros : c’est l’équipe qui publie et qui répond.', ico: 'verifie' };
   const get = uid => { if (!uid) return null; if (!(uid in data)) charger([uid]); return data[uid] || null; };
 
   // les règles (une seule source : l'affichage, le détail et la progression en dépendent)
@@ -54,16 +68,18 @@
   const titre = (r, s) => typeof r.t === 'function' ? r.t(s) : r.t;
 
   // statuts gagnés, du plus fort au plus léger (le sceau « vérifié » est à part : MDGIdentite.badge)
-  function liste(uid) { const s = get(uid); if (!s) return []; return REGLES.filter(r => r.ok(s)).map(r => ({ k: r.k, t: titre(r, s), s: r.s(s), ico: r.ico })); }
-  const estVerifie = uid => { const s = get(uid); return s ? s.v : !!(window.MDGIdentite && MDGIdentite.estVerifie(uid)); };
+  function liste(uid) { if (estOfficiel(uid)) return [OFFICIEL]; const s = get(uid); if (!s) return []; return REGLES.filter(r => r.ok(s)).map(r => ({ k: r.k, t: titre(r, s), s: r.s(s), ico: r.ico })); }
+  const estVerifie = uid => { if (estOfficiel(uid)) return false; const s = get(uid); return s ? s.v : !!(window.MDGIdentite && MDGIdentite.estVerifie(uid)); };
 
-  const puce = x => `<span class="st-p st-${x.k}" title="${x.s.replace(/"/g, '&quot;')}">${x.k === 'actif' ? '<i></i>' : IC(x.ico, 12)}${x.t}</span>`;
+  const sceauOff = t => window.MDGMarque && MDGMarque.dg ? MDGMarque.dg(t, { fond: 'vert', rond: true }) : '';
+  const puce = x => x.k === 'officiel' ? `<span class="st-p st-officiel" title="${x.s}">${sceauOff(14)}Officiel · Marché de Gros</span>` : `<span class="st-p st-${x.k}" title="${x.s.replace(/"/g, '&quot;')}">${x.k === 'actif' ? '<i></i>' : IC(x.ico, 12)}${x.t}</span>`;
   // sur une carte d'annonce : le sceau (si vérifié) + le statut le plus fort ; max = combien de statuts
   function puces(uid, o) { o = o || {}; const L = liste(uid).filter(x => !(o.sans || []).includes(x.k)).slice(0, o.max == null ? 1 : o.max);
     return (o.sceau !== false && estVerifie(uid) && window.MDGIdentite ? MDGIdentite.badge(o.t || 15) : '') + L.map(puce).join(''); }
 
   // dans la fiche profil : chaque statut avec ce qu'il prouve
   function detail(uid) {
+    if (estOfficiel(uid)) return `<div class="st-detail"><div class="st-l st-l-officiel"><span class="st-i">${sceauOff(30)}</span><div><b>Compte officiel du Marché de Gros</b><small>C’est l’équipe du Marché de Gros qui publie ces annonces et qui vous répond. Elle ne vous demandera jamais de payer d’avance ni votre code secret.</small></div></div></div>`;
     const s = get(uid), L = liste(uid), v = estVerifie(uid);
     if (!s && !v) return '';
     const ligne = (ico, t, d, k) => `<div class="st-l st-l-${k}"><span class="st-i">${ico}</span><div><b>${t}</b><small>${d}</small></div></div>`;
@@ -73,7 +89,7 @@
   }
 
   // pour Mon compte : ce qui reste à faire pour chaque statut pas encore gagné
-  function progres(uid) { const s = get(uid); if (!s) return []; return REGLES.filter(r => r.but && !r.ok(s)).map(r => r.but(s)).filter(Boolean); }
+  function progres(uid) { if (estOfficiel(uid)) return []; const s = get(uid); if (!s) return []; return REGLES.filter(r => r.but && !r.ok(s)).map(r => r.but(s)).filter(Boolean); }
 
   const CSS = `.st-p{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 8px;border-radius:999px;font:600 11.5px/1 Jost,system-ui,sans-serif;white-space:nowrap;vertical-align:middle;letter-spacing:.01em}
 .st-p svg{flex:none}
@@ -81,6 +97,8 @@
 .st-serieux{background:#6CC58C;color:#0d2a1c}
 .st-rapide{background:#9CC9F2;color:#0c2740}
 .st-actif{background:rgba(108,197,140,.16);color:inherit}.st-actif i,.st-pt{width:7px;height:7px;border-radius:50%;background:#3FB872;box-shadow:0 0 0 3px rgba(63,184,114,.22);display:inline-block}
+.st-officiel{background:#10392B;color:#F2C230;padding-left:3px;box-shadow:0 0 0 1px rgba(242,194,48,.45) inset}.st-officiel svg{border-radius:50%}
+.st-l-officiel .st-i{background:#10392B}
 .st-nouveau{background:rgba(140,140,140,.18);color:inherit}
 .st-detail{display:flex;flex-direction:column;gap:10px}
 .st-l{display:flex;gap:12px;align-items:flex-start}.st-l b{display:block;font-weight:600}.st-l small{display:block;opacity:.75;font-size:13px;line-height:1.35;margin-top:2px}
@@ -92,5 +110,6 @@
 .st-jauge{height:6px;border-radius:3px;background:rgba(140,140,140,.2);overflow:hidden}.st-jauge i{display:block;height:100%;border-radius:3px;background:#F2C230}`;
   if (!document.getElementById('stCss')) { const st = document.createElement('style'); st.id = 'stCss'; st.textContent = CSS; (document.head || document.documentElement).appendChild(st); }
 
-  window.MDGStatut = { charger, get, liste, puces, detail, progres, estVerifie, REGLES };
+  window.MDGStatut = { charger, get, liste, puces, detail, progres, estVerifie, estOfficiel, REGLES };
+  chargerOfficiels();
 })();

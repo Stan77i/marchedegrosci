@@ -45,6 +45,11 @@
   /* ——— profils des autres (annonces, négociations) : cache de 10 min ——— */
   let attente = new Set(), timer = 0;
   function avatar(uid, opt = {}) {
+    // compte officiel : toujours le logo du Marché de Gros, jamais la photo de la personne qui est derrière
+    if (uid && window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(uid) && window.MDGMarque) {
+      const svg = MDGMarque.dg(opt.size || 32, { fond: 'vert', rond: true });
+      return { nom: 'Marché de Gros', svg, uri: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.indexOf('xmlns') < 0 ? svg.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"') : svg), officiel: true };
+    }
     const c = J(KC, {})[uid];
     if ((!c || Date.now() - c.t > 6e5) && uid) { attente.add(uid); clearTimeout(timer); timer = setTimeout(lot, 120); }
     return { nom: (c && c.a) || opt.nom || '', svg: A() ? A().svg(c && c.av, { size: opt.size || 32, nom: (c && c.a) || opt.nom || '?', seed: uid }) : '', uri: A() ? A().uri(c && c.av, { size: opt.size || 32, nom: (c && c.a) || opt.nom || '?', seed: uid }) : '' };
@@ -111,6 +116,8 @@
 .cp-hero-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:10px}
 .cp-hero-tags span{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:13px;background:rgba(255,255,255,.16);color:#fff;font:600 12.5px/1 Jost,sans-serif}
 .cp-hero-tags span.a{background:#FFE7A8;color:#5B3D00}
+.cp-hero-tags span.cp-adm{background:#F2C230;color:#10392B;height:30px;padding:0 12px 0 4px;border-radius:15px;font-size:13px}.cp-adm svg{border-radius:50%;box-shadow:0 0 0 1.5px #10392B}
+.cp-off-p{max-width:300px;margin-left:auto;margin-right:auto;line-height:1.4}
 .cp-hero-tags span.idok{background:#fff;color:var(--blue)}
 .cp-idv{display:flex;flex-direction:column;gap:10px;margin:0 0 14px;padding:16px;border-radius:20px;background:var(--warn-bg);box-shadow:inset 0 0 0 1.5px rgba(138,100,0,.28);color:var(--ink)}
 .cp-idv.bleu{background:var(--blue-bg);box-shadow:inset 0 0 0 1.5px rgba(44,108,176,.28)}.cp-idv.ko{background:var(--bad-bg);box-shadow:inset 0 0 0 1.5px rgba(192,68,43,.3)}
@@ -475,6 +482,8 @@ label.cp-r{cursor:pointer}
       const reg = (REGIONS().find(r => r[0] === p.region_slug) || [])[1], lieuTxt = p.ville || reg || '', adm = J('mdg-nuage:admin', false);
       const mono = n => `<span class="cp-ico" aria-hidden="true">${IC(n, 22)}</span>`;
       const ID = window.MDGIdentite, idC = ID && ID.statutCache(), idS = idC ? idC.statut : 'non_verifie';
+      // l'administrateur parle au nom du Marché de Gros (supabase/schema-20) : pas de vérification, pas de nom, pas de numéro visible
+      const off0 = !!((idC && (idC.officiel || idC.exempt)) || adm);
       if (ID && navigator.onLine) ID.statut().then(s => { if (s && JSON.stringify(s) !== JSON.stringify(idC) && bg && bg.rafraichir && main.isConnected) bg.rafraichir(); }).catch(() => {});
       // la vérification d'identité, bien en vue tant qu'elle n'est pas faite : 3 annonces gratuites, puis elle est demandée pour publier
       const idBandeau = (() => {
@@ -509,17 +518,19 @@ label.cp-r{cursor:pointer}
       // vos statuts (v3/statuts.js) : ceux gagnés, et ce qui reste à faire pour les suivants
       const SG = window.MDGStatut;
       if (SG && !SG.get(u.id)) addEventListener('mdg:rep', function f() { removeEventListener('mdg:rep', f); if (bg && bg.rafraichir && main.isConnected) bg.rafraichir(); });
-      const stBloc = !SG ? '' : (() => { const gag = SG.liste(u.id), but = SG.progres(u.id), v = idS === 'verifie';
+      const stBloc = !SG || off0 ? '' : (() => { const gag = SG.liste(u.id), but = SG.progres(u.id), v = idS === 'verifie';
         return `<div class="cp-sh"><h3>Vos statuts</h3><small>Ils se gagnent, ils ne s’achètent pas</small></div>
           <div class="cp-grp cp-statuts">${gag.length || v ? `<div class="cp-st-l">${SG.puces(u.id, { max: 9, t: 18 })}</div>` : '<p class="cp-vide">Pas encore de statut. Votre identité vérifiée, vos ventes conclues et vos réponses rapides en font gagner, et les autres membres les voient partout : annonces, carte, messages.</p>'}
           ${!v && ID && !(idC && idC.exempt) ? '<button type="button" class="cp-st-go" data-idv2>' + (ID.badge ? ID.badge(16) : '') + 'Faire vérifier mon identité</button>' : ''}
           ${but.map(x => `<div class="st-but"><b>${x.t}</b><small>${x.fait} sur ${x.total} ${x.txt}</small><div class="st-jauge" role="img" aria-label="${x.fait} sur ${x.total}"><i style="width:${Math.min(100, x.fait / x.total * 100)}%"></i></div></div>`).join('')}</div>`; })();
       main.innerHTML = `<div class="cp-pg">
         <section class="cp-hero" aria-label="Mon identité">
-          <div class="cp-hero-av">${A() ? A().svg(p.avatar, { size: 114, nom: nom || '?', seed: u.id }) : ''}<button type="button" class="cp-hero-cam" data-av aria-label="Changer mon avatar">${IC('photo', 18)}</button></div>
-          <h2>${esc(nom ? 'Bonjour, ' + (p.pseudo || p.prenom || nom) : 'Bienvenue')}${idS === 'verifie' ? ' ' + ID.badge(22) : ''}</h2>
+          <div class="cp-hero-av">${off0 && window.MDGMarque ? MDGMarque.dg(114, { fond: 'vert', rond: true }) : (A() ? A().svg(p.avatar, { size: 114, nom: nom || '?', seed: u.id }) : '') + `<button type="button" class="cp-hero-cam" data-av aria-label="Changer mon avatar">${IC('photo', 18)}</button>`}</div>
+          ${off0 ? `<h2>Marché de Gros</h2>
+          <p class="cp-off-p">${esc(N().fmtTel(u.tel))} · visible par vous seul. Les membres voient « Marché de Gros », jamais votre nom ni votre numéro.</p>
+          <div class="cp-hero-tags"><span class="cp-adm">${window.MDGMarque ? MDGMarque.dg(16, { fond: 'vert', rond: true }) : ''}Administrateur · Officiel</span></div>` : `<h2>${esc(nom ? 'Bonjour, ' + (p.pseudo || p.prenom || nom) : 'Bienvenue')}${idS === 'verifie' ? ' ' + ID.badge(22) : ''}</h2>
           <p>${esc(N().fmtTel(u.tel))}</p>
-          <div class="cp-hero-tags">${p.role ? `<span>${ROLE_TXT[p.role] || ''}</span>` : ''}${lieuTxt ? `<span>${IC('lieu', 13)}${esc(lieuTxt)}</span>` : ''}${!nom ? '<span class="a">Profil à compléter</span>' : ''}${ID && idC && !idC.exempt ? (idS === 'verifie' ? `<span class="idok">${ID.badge(14)}Identité vérifiée</span>` : idC.banni ? '<span class="a">Compte banni</span>' : '<span class="a">Identité non vérifiée</span>') : ''}</div>
+          <div class="cp-hero-tags">${p.role ? `<span>${ROLE_TXT[p.role] || ''}</span>` : ''}${lieuTxt ? `<span>${IC('lieu', 13)}${esc(lieuTxt)}</span>` : ''}${!nom ? '<span class="a">Profil à compléter</span>' : ''}${ID && idC && !idC.exempt ? (idS === 'verifie' ? `<span class="idok">${ID.badge(14)}Identité vérifiée</span>` : idC.banni ? '<span class="a">Compte banni</span>' : '<span class="a">Identité non vérifiée</span>') : ''}</div>`}
           <div class="cp-hero-act">
             ${M ? `<button type="button" data-dm>${IC('messages', 20)}Messages${dmN ? `<em aria-label="${dmN} non lus">${dmN}</em>` : ''}</button>` : ''}
             <button type="button" data-nego>${IC('negoce', 20)}Négociations${ng.rec.length ? `<em aria-label="${ng.rec.length} à vous de répondre">${ng.rec.length}</em>` : ''}</button>

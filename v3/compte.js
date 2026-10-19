@@ -29,7 +29,7 @@
   const cacheMe = () => { const u = me(); if (!u || !profil) return; const c = J(KC, {}); c[u.id] = { a: nomAffiche(profil), av: profil.avatar || '', r: profil.role || '', t: Date.now() }; W(KC, c); };
   async function enregistrer(champs) {
     const u = me(); if (!u) throw new Error('Connectez-vous d’abord.');
-    const refus = N().texteRefus ? N().texteRefus(['prenom', 'nom', 'pseudo', 'bio', 'activites'].map(k => champs[k] || '').join(' · ')) : '';   // pas de lien ni de code (schéma 22)
+    const refus = N().texteRefus ? N().texteRefus(['prenom', 'nom', 'pseudo', 'bio', 'activites', 'structure_nom'].map(k => champs[k] || '').join(' · ')) : '';   // pas de lien ni de code (schéma 22)
     if (refus) throw new Error(refus);
     const row = Object.assign({ user_id: u.id }, champs);
     // modifier la ligne existante (sans toucher à user_id) ; la créer seulement si elle n'existe pas encore.
@@ -59,12 +59,23 @@
   async function lot() {
     const ids = [...attente].slice(0, 200); attente = new Set(); if (!ids.length || !N() || !navigator.onLine) return;
     try {
-      const r = await N().rpc('profils_publics', { ids }, false), c = J(KC, {}), now = Date.now();
+      const r = await N().rpc('profils_publics2', { ids }, false).catch(e => /profils_publics2|schema cache|Could not find|404/i.test(e.message + e.status) ? N().rpc('profils_publics', { ids }, false) : Promise.reject(e)), c = J(KC, {}), now = Date.now();
       ids.forEach(id => { c[id] = { a: '', av: '', r: '', t: now }; });
-      (r || []).forEach(p => { c[p.user_id] = { a: p.affichage || '', av: p.avatar || '', r: p.role || '', t: now }; });
+      (r || []).forEach(p => { c[p.user_id] = { a: p.affichage || '', av: p.avatar || '', r: p.role || '', st: p.structure_nom ? p.structure_type || '' : '', sn: p.structure_nom || '', sl: p.structure_logo || '', t: now }; });
       W(KC, c); dispatchEvent(new CustomEvent('mdg:profils')); dispatchEvent(new CustomEvent('mdg:change', { detail: { from: 'nuage' } }));
     } catch (_) {}
   }
+  // la structure d'un membre (coopérative, groupement, entreprise), d'après le même cache : null si elle agit seule ou si on ne sait pas encore
+  function structure(uid) {
+    if (!uid || (window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(uid))) return null;
+    const c = J(KC, {})[uid]; if (!c || Date.now() - c.t > 6e5) avatar(uid);
+    return c && c.sn ? { type: c.st, nom: c.sn, logo: c.sl, libelle: (STRUCT[c.st] || ['Structure'])[0] } : null;
+  }
+  // la puce discrète des annonces et des messages : « Coopérative · Akwaba »
+  const puceStructure = (uid, o = {}) => { const s = structure(uid); if (!s) return '';
+    const sansAccent = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(), dit = sansAccent(s.nom).includes(sansAccent(s.libelle).slice(0, 6));
+    const txt = dit ? s.nom : s.libelle + ' · ' + s.nom;
+    return `<span class="st-org" title="${esc(s.libelle + ' · ' + s.nom)}">${s.logo && o.logo !== false ? `<img src="${esc(imgStruct(s.logo))}" alt="">` : IC(STRUCT_ICO[s.type] || 'compte', 12)}<span>${esc(txt)}</span></span>`; };
   // remplit les emplacements [data-av-uid] (site) avec l'avatar de la personne
   function hydrate(root) {
     (root || document).querySelectorAll('[data-av-uid]').forEach(el => { const a = avatar(el.dataset.avUid, { size: +el.dataset.avSize || 28, nom: el.dataset.avNom || '' }); el.innerHTML = a.svg; });
@@ -141,6 +152,22 @@
 .cp-sh h3{margin:0;font:600 18px/1.2 Jost,sans-serif;letter-spacing:-.01em}
 .cp-sh small{color:var(--mute);font-size:14px}
 .cp-sh button,.cp-sh a{border:0;background:none;padding:8px 0;color:var(--acc-t);font:600 14.5px Jost,sans-serif;cursor:pointer;text-decoration:none}
+.cp-sto{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.cp-sto button{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;align-items:center;min-height:64px;padding:10px 12px;border:1.5px solid var(--line2,rgba(23,21,18,.14));border-radius:16px;background:#fff;color:var(--ink,#171512);text-align:left;cursor:pointer;font:inherit}
+.cp-sto button .i{grid-row:span 2;display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:rgba(16,57,43,.08);color:#10392B}
+.cp-sto button b{font:600 14.5px/1.15 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.01em}.cp-sto button small{font-size:12px;line-height:1.3;color:var(--mute,#5E574B)}
+.cp-sto button[aria-checked=true]{border-color:#10392B;box-shadow:0 0 0 1px #10392B inset;background:rgba(16,57,43,.04)}.cp-sto button[aria-checked=true] .i{background:#10392B;color:#F2C230}
+.cp-st-d{display:grid;gap:14px;margin-top:14px}
+.cp-st-row{display:flex;align-items:center;gap:12px}
+.cp-st-logo,.cp-st-add{position:relative;flex:none;display:grid;place-items:center;align-content:center;gap:2px;width:76px;height:76px;border:1.5px dashed rgba(16,57,43,.35);border-radius:18px;background:rgba(16,57,43,.03);color:#10392B;font:600 12px/1 Jost,sans-serif;cursor:pointer;overflow:hidden}
+.cp-st-logo.plein{border-style:solid;background:#fff}.cp-st-logo img{width:100%;height:100%;object-fit:contain}
+.cp-st-logo input,.cp-st-add input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.cp-st-logo:focus-within,.cp-st-add:focus-within{outline:2px solid #10392B;outline-offset:2px}
+.cp-st-pv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.cp-st-pv>div,.cp-st-pv .cp-st-add{position:relative;width:auto;height:auto;aspect-ratio:1;border-radius:14px;overflow:hidden}
+.cp-st-pv img{width:100%;height:100%;object-fit:cover;display:block}
+.cp-st-x{position:absolute;top:4px;right:4px;width:28px;height:28px;border:0;border-radius:50%;background:rgba(23,21,18,.72);color:#fff;font:600 16px/1 Jost,sans-serif;cursor:pointer}.cp-st-x::before{content:"";position:absolute;inset:-8px}
+.cp-st-aide{margin:8px 0 0;font-size:12.5px;line-height:1.45;color:var(--mute,#5E574B)}
+.cp-voix{font:600 26px/1.08 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em}.cp-voix em{font:900 italic 1em 'Archivo','Helvetica Neue',Arial,sans-serif;color:#10392B;letter-spacing:-.02em;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .cp-lab{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:24px 16px 8px;font:600 12px/1.2 Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
 .cp-lab em{font-style:normal;letter-spacing:0;color:var(--mute)}
 .cp-lab button{border:0;background:none;padding:6px 0;color:var(--acc-t);font:600 13px Jost,sans-serif;letter-spacing:0;text-transform:none;cursor:pointer}
@@ -446,6 +473,51 @@ label.cp-r{cursor:pointer}
   const roleVal = root => { const b = root.querySelector('[data-role][aria-pressed=true]'); return b ? b.dataset.role : null; };
   const ROLE_TXT = { acheteur: 'Acheteur', vendeur: 'Vendeur', les_deux: 'Acheteur et vendeur' };
 
+  /* ——— la structure que le membre représente (supabase/schema-23) : coopérative, groupement, entreprise ———
+     Elle rassure : le profil public la montre en tête (logo, nom, preuves), les annonces et les messages portent « Coopérative · Nom ». */
+  const STRUCT = { particulier: ['À mon compte', 'Je vends ou j’achète pour moi'], cooperative: ['Coopérative', 'Des producteurs regroupés'], groupement: ['Groupement', 'Association, GIE, groupe de femmes…'], entreprise: ['Entreprise', 'Industrie, négoce, transformation'] };
+  const STRUCT_ICO = { particulier: 'compte', cooperative: 'confiance', groupement: 'service', entreprise: 'tableau' };
+  const imgStruct = c => c ? (/^(https?:|data:|blob:)/.test(c) ? c : N().URL + '/storage/v1/object/public/activites/' + c) : '';
+  const reduireImg = (file, cote = 1000) => new Promise((ok, ko) => { const u = URL.createObjectURL(file), im = new Image(); im.onerror = () => { URL.revokeObjectURL(u); ko(new Error('Image illisible. Essayez une autre photo.')); };
+    im.onload = () => { URL.revokeObjectURL(u); const k = Math.min(1, cote / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height); c.toBlob(b => b ? ok(b) : ko(new Error('Image illisible.')), 'image/jpeg', .8); }; im.src = u; });
+  // le formulaire : 4 choix ; pour une structure, son nom, son logo et jusqu'à 4 preuves (facultatifs). Renvoie { val, verifier }.
+  function formStructure(root, p) {
+    let type = p.structure_type || '', logo = p.structure_logo || null, preuves = (p.structure_preuves || []).slice(0, 4), nom = p.structure_nom || '';
+    const envoyer = async (fichier, quoi) => { const u = me(); const blob = await reduireImg(fichier, quoi === 'logo' ? 600 : 1200), chemin = u.id + '/' + quoi + '-' + Date.now() + '.jpg'; await N().televerser('activites/' + chemin, blob); return chemin; };
+    function dessiner() {
+      const st = type && type !== 'particulier';
+      root.innerHTML = `<div class="cp-sto" role="radiogroup" aria-label="Vous représentez">${Object.keys(STRUCT).map(k => `<button type="button" role="radio" aria-checked="${type === k}" data-st="${k}"><span class="i" aria-hidden="true">${IC(STRUCT_ICO[k], 20)}</span><b>${STRUCT[k][0]}</b><small>${STRUCT[k][1]}</small></button>`).join('')}</div>
+        ${st ? `<div class="cp-st-d">
+          <div><label class="cp-l" for="cp-stnom">Nom de la ${type === 'entreprise' ? 'société' : STRUCT[type][0].toLowerCase()}</label><input class="cp-in" id="cp-stnom" maxlength="80" autocomplete="organization" value="${esc(nom)}" placeholder="${type === 'cooperative' ? 'ex. Coopérative Akwaba de Bouaké' : type === 'groupement' ? 'ex. Groupement des femmes de Daloa' : 'ex. Ivoire Agro Négoce'}"><p class="cp-err" id="cp-stnom-e" role="alert"></p></div>
+          <div class="cp-st-up"><span class="cp-l">Logo <i>· facultatif</i></span><div class="cp-st-row">
+            <label class="cp-st-logo${logo ? ' plein' : ''}">${logo ? `<img src="${esc(imgStruct(logo))}" alt="Logo">` : `${IC('photo', 22)}<span>Ajouter</span>`}<input type="file" accept="image/*" data-logo aria-label="${logo ? 'Changer le logo' : 'Ajouter le logo'}"></label>
+            ${logo ? '<button type="button" class="cp-alt" data-logo-x>Retirer le logo</button>' : ''}</div></div>
+          <div class="cp-st-up"><span class="cp-l">Preuves que la structure existe <i>· facultatif, 4 au plus</i></span>
+            <div class="cp-st-pv">${preuves.map((c, i) => `<div><img src="${esc(imgStruct(c))}" alt="Preuve ${i + 1}"><button type="button" class="cp-st-x" data-pv-x="${i}" aria-label="Retirer la preuve ${i + 1}">×</button></div>`).join('')}${preuves.length < 4 ? `<label class="cp-st-add">${IC('photo', 20)}<span>Ajouter</span><input type="file" accept="image/*" data-pv aria-label="Ajouter une preuve"></label>` : ''}</div>
+            <p class="cp-st-aide">Une enseigne, un entrepôt, un agrément, une parcelle : ce qui montre que votre structure existe vraiment. Les membres les voient sur votre profil.</p></div>
+          <p class="cp-msg" data-st-msg role="status"></p></div>` : ''}`;
+      root.querySelectorAll('[data-st]').forEach(b => b.onclick = () => { const n = root.querySelector('#cp-stnom'); if (n) nom = n.value; type = b.dataset.st; dessiner(); const z = root.querySelector('#cp-stnom'); if (z && !nom) z.focus(); });
+      const n = root.querySelector('#cp-stnom'); if (n) n.oninput = () => { nom = n.value; };
+      const msg = t => { const m = root.querySelector('[data-st-msg]'); if (m) m.textContent = t || ''; };
+      const charge = async (inp, quoi) => { const f = inp.files && inp.files[0]; if (!f) return; if (!navigator.onLine) return msg('Pas de connexion internet : réessayez quand le réseau revient.');
+        msg('Envoi de l’image…'); try { const c = await envoyer(f, quoi); const nn = root.querySelector('#cp-stnom'); if (nn) nom = nn.value; if (quoi === 'logo') logo = c; else preuves.push(c); msg(''); dessiner(); }
+        catch (x) { msg(/Bucket not found|not found|403|row-level/i.test(String(x.message)) ? 'Les images ne sont pas encore activées sur le serveur.' : 'Envoi impossible : ' + x.message); } };
+      const il = root.querySelector('[data-logo]'); if (il) il.onchange = () => charge(il, 'logo');
+      const ip = root.querySelector('[data-pv]'); if (ip) ip.onchange = () => charge(ip, 'preuve');
+      const lx = root.querySelector('[data-logo-x]'); if (lx) lx.onclick = () => { const nn = root.querySelector('#cp-stnom'); if (nn) nom = nn.value; logo = null; dessiner(); };
+      root.querySelectorAll('[data-pv-x]').forEach(b => b.onclick = () => { const nn = root.querySelector('#cp-stnom'); if (nn) nom = nn.value; preuves.splice(+b.dataset.pvX, 1); dessiner(); });
+    }
+    dessiner();
+    const val = () => { const n = root.querySelector('#cp-stnom'); if (n) nom = n.value; const st = type && type !== 'particulier';
+      return { structure_type: type || null, structure_nom: st ? nom.trim() || null : null, structure_logo: st ? logo : null, structure_preuves: st ? preuves : [] }; };
+    // le nom est obligatoire pour une structure ; pas de lien (schéma 22)
+    const verifier = () => { const v = val(), e = root.querySelector('#cp-stnom-e'), n = root.querySelector('#cp-stnom'); if (!n) return true;
+      const t = v.structure_nom || '', r = t.length < 2 ? 'Écrivez le nom de votre structure.' : (N().texteRefus ? N().texteRefus(t) : '');
+      if (e) e.textContent = r; n.setAttribute('aria-invalid', String(!!r)); if (r) n.focus(); return !r; };
+    return { val, verifier };
+  }
+
   /* ——— Notifications sur ce téléphone (v3/pousse.js) : l'état réel et l'action qui convient ——— */
   const POUSSE_COURT = { actif: 'Activées', inactif: 'Désactivées', refuse: 'Bloquées', installer: 'À installer', impossible: 'Indisponibles' };
   async function cartePousse(el) {
@@ -591,10 +663,18 @@ label.cp-r{cursor:pointer}
           <h3 class="cp-lab">Ce que vous faites, et où</h3>
           <div class="cp-fg">${roleSeg(p)}${lieu(p)}</div>
           <button type="submit" class="cp-go plein">Enregistrer</button><span class="cp-msg" role="status"></span></form>
+        <h3 class="cp-lab">Votre structure</h3>
+        <form class="cp-f" data-stform novalidate><div class="cp-fg"><div data-stf></div></div><button type="submit" class="cp-go plein">Enregistrer la structure</button><span class="cp-msg" role="status" data-stok></span></form>
         <h3 class="cp-lab">Téléphone</h3>
         <div class="cp-grp">${ligne({ ico: ti('telephone', 'aide'), t: esc(N().fmtTel(u.tel)), s: 'Numéro du compte', cls: 'info', chev: false })}</div>
         <p class="cp-note">Le nom affiché sur chaque annonce (nom de vendeur ou d’exploitation) reste celui de l’annonce.</p></div>`;
       lierRole(main); lierLieu(main, p);
+      // la structure (schéma 23)
+      const sf = main.querySelector('[data-stform]'), S = formStructure(sf.querySelector('[data-stf]'), p), sok = sf.querySelector('[data-stok]'), sgo = sf.querySelector('.cp-go');
+      sf.onsubmit = async e => { e.preventDefault(); sok.textContent = ''; if (!S.verifier()) return; if (!navigator.onLine) { sok.textContent = 'Pas de connexion internet : réessayez quand le réseau revient.'; return; }
+        sgo.disabled = true; sgo.setAttribute('aria-busy', 'true');
+        try { await enregistrer(S.val()); N().toast('Structure enregistrée.', { sous: 'Elle apparaît sur votre profil et vos annonces.' }); }
+        catch (x) { sok.textContent = x.message; } finally { sgo.disabled = false; sgo.removeAttribute('aria-busy'); } };
       main.querySelector('[data-av]').onclick = () => choisirAvatar(() => ouvrir('profil'));
       const z = main.querySelector('[data-av0]'); if (z) z.onclick = async () => { try { await enregistrer({ avatar: null }); bg.rafraichir(); N().toast('Avatar : vos initiales.'); } catch (e) { N().toast(e.message); } };
       const f = main.querySelector('form'), msg = main.querySelector('.cp-msg'), go = main.querySelector('.cp-go');
@@ -811,7 +891,7 @@ label.cp-r{cursor:pointer}
     // prénom, nom et pseudonyme déjà saisis à l'inscription : on commence par l'avatar
     let etape = opt.identite ? 2 : 1, getAv = null;
     const p = () => profil || {};
-    cadre(`<div class="cp-main" style="grid-column:1 / -1"><div class="cp-steps" aria-hidden="true"><i></i><i></i><i></i></div><div class="cp-w"></div></div>`, 'Bienvenue');
+    cadre(`<div class="cp-main" style="grid-column:1 / -1"><div class="cp-steps" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="cp-w"></div></div>`, 'Bienvenue');
     bg.dataset.lock = '1'; bg.querySelector('.cp-x').hidden = true;
     const w = bg.querySelector('.cp-w');
     const pas = () => bg.querySelectorAll('.cp-steps i').forEach((x, i) => x.classList.toggle('on', i < etape));
@@ -827,10 +907,16 @@ label.cp-r{cursor:pointer}
         getAv = choisirAvatar(null, w.querySelector('.cp-avw'));
         const okb = w.querySelector('[data-ok]'); okb.onclick = async () => { okb.disabled = true; okb.setAttribute('aria-busy', 'true'); let m = ''; try { m = await suite({ avatar: await getAv() }); } catch (x) { m = x.message; } if (m && okb.isConnected) { okb.disabled = false; okb.removeAttribute('aria-busy'); let er = w.querySelector('.cp-msg'); if (!er) { er = document.createElement('span'); er.className = 'cp-msg'; er.setAttribute('role', 'status'); okb.parentNode.appendChild(er); } er.textContent = m; } };
         w.querySelector('[data-ini]').onclick = () => suite(null);
-      } else {
-        w.innerHTML = `<h2>Ce que vous faites, et où</h2><p>Pour vous montrer d’abord ce qui vous concerne. Vous pouvez passer cette étape.</p><form class="cp-f cp-panel" novalidate>${roleSeg(p())}${lieu(p())}<div class="cp-row"><button class="cp-go">Terminer</button><button type="button" class="cp-alt" data-skip>Plus tard</button></div></form>`;
+      } else if (etape === 3) {
+        w.innerHTML = `<h2>Ce que vous faites, et où</h2><p>Pour vous montrer d’abord ce qui vous concerne. Vous pouvez passer cette étape.</p><form class="cp-f cp-panel" novalidate>${roleSeg(p())}${lieu(p())}<div class="cp-row"><button class="cp-go">Continuer</button><button type="button" class="cp-alt" data-skip>Plus tard</button></div></form>`;
         const f = w.querySelector('form'); lierRole(f); lierLieu(f, p());
-        f.onsubmit = e => { e.preventDefault(); suite(Object.assign({ role: roleVal(f) }, lieuVal(f)), true); };
+        f.onsubmit = e => { e.preventDefault(); suite(Object.assign({ role: roleVal(f) }, lieuVal(f))); };
+        w.querySelector('[data-skip]').onclick = () => suite(null);
+      } else {
+        // la structure : coopérative, groupement, entreprise… (schéma 23) — elle rassure ceux qui vous écrivent
+        w.innerHTML = `<h2 class="cp-voix">Vous représentez <em>qui ?</em></h2><p>Une coopérative, un groupement ou une entreprise inspire confiance : son nom et son logo apparaissent sur vos annonces et votre profil.</p><form class="cp-f cp-panel" novalidate><div data-stf></div><div class="cp-row"><button class="cp-go">Terminer</button><button type="button" class="cp-alt" data-skip>Plus tard</button></div></form>`;
+        const f = w.querySelector('form'), S = formStructure(f.querySelector('[data-stf]'), p());
+        f.onsubmit = async e => { e.preventDefault(); if (!S.verifier()) return; const v = S.val(); const m = await suite(v.structure_type ? v : null, true); if (m) { const x = f.querySelector('.cp-row'); x.insertAdjacentHTML('beforebegin', `<p class="cp-msg" role="alert">${esc(m)}</p>`); } };
         w.querySelector('[data-skip]').onclick = () => suite(null, true);
       }
     }
@@ -841,5 +927,5 @@ label.cp-r{cursor:pointer}
   addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte') { if (me()) charger(); else { profil = null; localStorage.removeItem(KP); dispatchEvent(new CustomEvent('mdg:profil')); } } });
   if (me()) setTimeout(charger, 900);
 
-  window.MDGCompte = { ouvrir, bienvenue, profil: () => profil, nomAffiche, avatar, hydrate, prefs, notifs, nonLues, choisirAvatar };
+  window.MDGCompte = { ouvrir, bienvenue, profil: () => profil, nomAffiche, avatar, hydrate, prefs, notifs, nonLues, choisirAvatar, structure, puceStructure, STRUCT, imgStruct };
 })();

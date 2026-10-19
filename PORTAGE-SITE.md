@@ -89,15 +89,32 @@ Ces fonctions vivent dans des modules partagés ou sur le serveur. Elles marchen
 
 **Vérifier** : catalogue du site → « Viandes et abats » a sa tuile et ses images ; plantain, igname, corossol… ont leur photo.
 
-### 2.4 Le sac, personnage (priorité moyenne)
-**Pourquoi** : sur l'app, le sac de jute est la mascotte, avec trois humeurs : **plein et content** (annonce publiée), **vide et patient** (rien à afficher), **endormi** (pas de réseau, bulle en bas de l'écran).
-**Modèle** : `app/sac.js` (autonome, sans dépendance) : `MDGSac.svg('plein'|'vide'|'ferme', { t: taille })` et `MDGSac.vide(titre, texte)`. La bulle hors connexion se met en place toute seule dès que le fichier est chargé.
-**Étapes**
-1. Charger `<script src="app/sac.js?v=…">` dans `index-v3.html`, après `app/marque.js`.
-2. États vides du site (catalogue sans résultat, recherche vide, « rien de publié ») : insérer `MDGSac.vide('…', '…')`.
-3. Confirmation de publication (`v3/vendre.js`, écran de succès) : `MDGSac.svg('plein', { t: 118 })`.
+### 2.4 Le sac, personnage, partout (priorité haute : demandé par le propriétaire)
+**Pourquoi** : dans l'app, le sac de jute est la mascotte de **tous** les moments d'attente et de toutes les notifications. Son humeur suit la situation :
+| Situation | Humeur (`MDGSac.svg(…)`) | Dans l'app |
+|---|---|---|
+| Attente | `'charge'` : se remplit en boucle | carte du réseau, messages, négociations, profil, identité |
+| Réussi | `'plein'` : content, petit saut | bannières de réussite, écran « annonce publiée » |
+| Échec | `'triste'` : se tasse | bannières d'erreur, « Impossible de charger » |
+| Rien encore, ou info | `'vide'` : patient, cligne des yeux | listes vides, bannières d'info |
+| Pas de réseau | `'ferme'` : ficelé, dort | bulle en bas de l'écran (automatique) |
 
-**Vérifier** : couper le réseau (DevTools → Offline) : la bulle « Pas de réseau » apparaît avec le sac qui dort, puis « De retour » quand le réseau revient.
+**Modèle** : `app/sac.js` (autonome, sans dépendance) :
+- `MDGSac.svg(humeur, { t })` : le dessin ;
+- `MDGSac.vide(titre, texte)` : un état vide ;
+- `MDGSac.charge(texte)` : une attente ;
+- `MDGSac.attente(conteneur, texte)` : un voile posé sur un conteneur, qui renvoie la fonction pour l'enlever (utilisé pour la carte dans `monterCarte`).
+
+Les bannières (`app/toast.js`, partagé) et les modules partagés (messages, négociations, profil, identité) **utilisent déjà le sac dès que `app/sac.js` est chargé**. Sur le site, il suffit donc presque de le charger.
+
+**Étapes**
+1. Charger `<script src="app/sac.js?v=…">` dans `index-v3.html`, après `app/marque.js`. Rien qu'avec ça, les bannières, les attentes et les listes vides des fenêtres partagées et la bulle hors connexion passent au sac.
+2. Carte du site (`v2/map.js`) : `const fin = MDGSac.attente(conteneurDeLaCarte, 'La carte du réseau se prépare…')`, puis `fin()` quand la carte est dessinée.
+3. États vides propres au site (catalogue sans résultat, recherche vide, « rien de publié ») : `MDGSac.vide('…', '…')`.
+4. Confirmation de publication (`v3/vendre.js`) : `MDGSac.svg('plein', { t: 118 })`.
+5. Attention aux règles CSS génériques du type `.x svg { fill: none; stroke: … }` : elles abîment le dessin. Ajoutez `.x svg.ms { fill: initial; stroke: none; width: auto; height: auto }` (voir `.dm-vide svg.ms` dans `v3/messages.js`).
+
+**Vérifier** : couper le réseau (DevTools → Offline) pour voir la bulle du sac qui dort ; publier une annonce pour voir la bannière avec le sac content ; ouvrir la carte pour voir le sac qui se remplit pendant la préparation.
 
 ### 2.5 Écran de chargement « le sac qui se remplit » (priorité moyenne, demandé par le propriétaire)
 **Modèle** : `application.dc.html` → `splashMark()` (dessin SVG) + `css/mgci-app.css` (`.spl-*`, `.sac-*`, animations `sacMonte`, `sacTombe`).

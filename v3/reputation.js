@@ -43,7 +43,7 @@
 @media (min-width:720px){.rp-bg{align-items:center;padding:24px}}
 .rp{position:relative;width:100%;max-width:520px;max-height:min(90dvh,820px);overflow:auto;background:#F4EEE3;color:#171512;border-radius:28px 28px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));font:400 15px/1.5 Jost,system-ui,sans-serif;box-shadow:0 -10px 50px rgba(0,0,0,.5);animation:rpUp .36s cubic-bezier(.22,1,.36,1) both;overscroll-behavior:contain}
 @media (min-width:720px){.rp{border-radius:28px}}
-.rp h2{margin:0 44px 4px 0;font:500 28px/1.1 'Cormorant Garamond',Georgia,serif}.rp>p{margin:0 0 16px;color:#655C4D;font-size:14px}
+.rp h2{margin:0 44px 4px 0;font:600 23px/1.1 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em}.rp>p{margin:0 0 16px;color:#655C4D;font-size:14px}
 .rp-x{position:absolute;right:14px;top:14px;width:42px;height:42px;border:0;border-radius:50%;background:rgba(23,21,18,.08);color:#171512;font-size:0;cursor:pointer}
 .rp-x::before,.rp-x::after{content:"";position:absolute;left:50%;top:50%;width:15px;height:2px;border-radius:2px;background:currentColor;transform:translate(-50%,-50%) rotate(45deg)}.rp-x::after{transform:translate(-50%,-50%) rotate(-45deg)}
 .rp-go{width:100%;min-height:54px;margin-top:16px;border:0;border-radius:999px;background:#10392B;color:#F3EFE4;font:700 16px Jost,sans-serif;cursor:pointer}.rp-go:disabled{opacity:.45;cursor:default}
@@ -56,9 +56,9 @@
 .rp textarea:focus{outline:none;border-color:#10392B;box-shadow:0 0 0 3px rgba(16,57,43,.2)}
 .rp-msg{min-height:20px;margin:8px 2px 0;color:#C0442B;font-size:13.5px}
 .rp-tete{display:flex;align-items:center;gap:16px;margin:0 0 18px;padding-right:44px}.rp-tete img{border-radius:50%;box-shadow:0 0 0 3px rgba(23,21,18,.08)}
-.rp-tete b{display:block;font:500 28px/1.05 'Cormorant Garamond',Georgia,serif}.rp-tete small{display:flex;align-items:center;gap:8px;margin-top:6px;color:#655C4D;font-size:13.5px}
+.rp-tete b{display:block;font:600 23px/1.05 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em}.rp-tete small{display:flex;align-items:center;gap:8px;margin-top:6px;color:#655C4D;font-size:13.5px}
 .rp-score{display:flex;align-items:center;gap:16px;padding:16px;border-radius:20px;background:rgba(23,21,18,.04);box-shadow:inset 0 0 0 1px rgba(23,21,18,.08)}
-.rp-score strong{font:500 46px/1 'Cormorant Garamond',Georgia,serif}.rp-score span{display:flex;flex-direction:column;gap:6px;color:#655C4D;font-size:13px}
+.rp-score strong{font:800 37px/1 'Archivo','Helvetica Neue',Arial,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}.rp-score span{display:flex;flex-direction:column;gap:6px;color:#655C4D;font-size:13px}
 .rp-barres{flex:1;display:grid;gap:3px}.rp-barres div{display:grid;grid-template-columns:12px 1fr;gap:6px;align-items:center;font-size:11px;color:#857A67}.rp-barres i{height:5px;border-radius:3px;background:rgba(23,21,18,.08);overflow:hidden}.rp-barres i b{display:block;height:100%;background:#F2C94C;border-radius:3px}
 .rp-av{display:grid;gap:10px;margin-top:16px}.rp-av article{padding:14px;border-radius:18px;background:rgba(23,21,18,.03);box-shadow:inset 0 0 0 1px rgba(23,21,18,.07)}
 .rp-av header{display:flex;align-items:center;gap:10px;margin-bottom:6px}.rp-av header img{border-radius:50%}.rp-av header b{font-size:14px}.rp-av header small{margin-left:auto;color:#857A67;font-size:12px}
@@ -67,7 +67,7 @@
 .rp-big{display:flex;justify-content:center;gap:6px;margin:6px 0 4px}.rp-big button{width:52px;height:52px;border:0;background:none;padding:4px;cursor:pointer;transition:transform .18s cubic-bezier(.22,1,.36,1)}
 .rp-big button:active{transform:scale(.9)}.rp-big svg{width:100%;height:100%}.rp-big path{fill:rgba(23,21,18,.14);transition:fill .2s}.rp-big button.on path{fill:#F2C94C}.rp-big button.pop{animation:rpPop .35s cubic-bezier(.22,1,.36,1)}
 .rp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 16px}.rp-stats div{padding:12px 10px;border-radius:16px;background:rgba(23,21,18,.04);box-shadow:inset 0 0 0 1px rgba(23,21,18,.08);text-align:center}
-.rp-stats b{display:block;font:500 28px/1 'Cormorant Garamond',serif}.rp-stats small{display:block;margin-top:4px;color:#655C4D;font-size:12px;line-height:1.25}
+.rp-stats b{display:block;font:800 22px/1 'Archivo','Helvetica Neue',Arial,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}.rp-stats small{display:block;margin-top:4px;color:#655C4D;font-size:12px;line-height:1.25}
 .rp-sec{margin:18px 0 0}.rp-sec h3{margin:0 0 8px;font:600 11px Jost,sans-serif;letter-spacing:.16em;color:#655C4D;text-transform:uppercase}
 .rp-bio{margin:0;color:#2A251E;font-size:15px;line-height:1.55;white-space:pre-wrap}
 .rp-tags{display:flex;flex-wrap:wrap;gap:6px}.rp-tags span{padding:5px 11px;border-radius:999px;background:rgba(23,21,18,.07);color:#2A251E;font-size:13px}
@@ -85,7 +85,7 @@
 .rp-ed .ajout input{position:absolute;inset:0;opacity:0;height:auto}
 .rp-lib{text-align:center;color:#F2C94C;font-weight:600;min-height:22px}
 .rp-cl{display:grid;gap:8px}.rp-cl button{display:grid;grid-template-columns:26px 44px 1fr auto;align-items:center;gap:12px;width:100%;padding:10px 12px;border:0;border-radius:18px;background:rgba(23,21,18,.03);box-shadow:inset 0 0 0 1px rgba(23,21,18,.07);color:#171512;text-align:left;cursor:pointer;font:inherit}
-.rp-cl em{font-style:normal;font:500 20px/1 'Cormorant Garamond',serif;color:#857A67;text-align:center}.rp-cl button:nth-child(-n+3) em{color:#F2C94C}
+.rp-cl em{font-style:normal;font:800 16px/1 'Archivo','Helvetica Neue',Arial,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em;color:#857A67;text-align:center}.rp-cl button:nth-child(-n+3) em{color:#F2C94C}
 .rp-cl img{border-radius:50%}.rp-cl b{display:block;font-size:15px}.rp-cl small{display:flex;align-items:center;gap:6px;color:#655C4D;font-size:12.5px;margin-top:2px}.rp-cl i{font-style:normal;color:#857A67;font-size:12px;text-align:right}
 @keyframes rpIn{from{opacity:0}}@keyframes rpUp{from{transform:translateY(40px);opacity:0}}@keyframes rpPop{50%{transform:scale(1.25)}}
 @media (prefers-reduced-motion:reduce){.rp-bg,.rp,.rp-big button.pop{animation:none}}`;

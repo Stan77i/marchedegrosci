@@ -10,7 +10,7 @@
 /* en-tête et cadran */
 .an2-hero { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
 .an2-k { margin: 0; font: 600 11px/1 var(--f-texte, Jost), sans-serif; letter-spacing: .24em; color: var(--an-mais); }
-.an2-h { margin: 4px 0 0; font: 500 30px/1.05 'Cormorant Garamond', Georgia, serif; letter-spacing: -.005em; }
+.an2-h { margin: 4px 0 0; font:600 25px/1.05 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em; letter-spacing: -.005em; }
 .an2-h em { color: var(--an-mais); font-style: italic; }
 .an2-dial { width: min(100%, 340px); margin: 4px auto 0; touch-action: pan-y; }
 .an2-svg { display: block; width: 100%; height: auto; overflow: visible; }
@@ -18,7 +18,7 @@
 .an2-mois.auj { fill: var(--an-ink); text-decoration: underline; text-decoration-color: rgba(242, 194, 48, .7); }
 .an2-mois.sel { fill: var(--an-mais); font-weight: 700; }
 .an2-zone { cursor: pointer; }
-.an2-c1 { font: 500 23px 'Cormorant Garamond', Georgia, serif; fill: var(--an-ink); }
+.an2-c1 { font:600 19px 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em; fill: var(--an-ink); }
 .an2-c2 { font: 600 7.6px var(--f-texte, Jost), sans-serif; letter-spacing: .18em; fill: var(--an-mais); }
 .an2-leg { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; font-size: 12.5px; color: var(--an-mute); }
 .an2-leg span { display: inline-flex; align-items: center; gap: 6px; }
@@ -28,7 +28,7 @@
 .an2-nav { display: flex; align-items: center; gap: 10px; }
 .an2-rd { width: 44px; height: 44px; flex: none; border-radius: 22px; border: 1px solid var(--an-line); background: rgba(243, 239, 228, .04); color: var(--an-ink); display: flex; align-items: center; justify-content: center; }
 .an2-mo { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; }
-.an2-mn { font: 500 40px/1 'Cormorant Garamond', Georgia, serif; }
+.an2-mn { font:800 32px/1 'Archivo','Helvetica Neue',Arial,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em; }
 .an2-mk { margin-top: 5px; font: 600 11px/1 var(--f-texte, Jost), sans-serif; letter-spacing: .22em; color: var(--an-mais); }
 
 /* les 12 mois en barres : hauteur = nombre de cultures en récolte, partie pleine = pleine récolte */

@@ -74,7 +74,7 @@
 .gd-h button{width:48px;height:48px;border:0;background:none;border-radius:24px;display:grid;place-items:center;color:#171512}
 .gd-h b{flex:1;text-align:center;font-weight:600;font-size:17px}
 .gd-b{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:20px 18px calc(36px + env(safe-area-inset-bottom))}
-.gd-t{margin:0;font:500 38px/1.02 'Cormorant Garamond',serif}.gd-t em{color:#10392B}
+.gd-t{margin:0;font:600 31px/1.02 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em}.gd-t em{color:#10392B}
 .gd-lead{margin:10px 0 0;color:#5b5348;font-size:17px}
 .gd-3{margin:20px 0 0;background:#10392B;color:#F3EFE4;border-radius:24px;padding:18px 16px;display:flex;flex-direction:column;gap:14px}
 .gd-3 h2{margin:0;font:600 13px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#F2C230}
@@ -87,7 +87,7 @@
 .gd-tu button span{width:44px;height:44px;border-radius:14px;display:grid;place-items:center}
 .gd-tu button b{font-size:16.5px;font-weight:600;line-height:1.25}
 .gd-tu .large{grid-column:1/-1;min-height:0;flex-direction:row;align-items:center}
-.gd-f h2{margin:16px 0 0;font:500 34px/1.05 'Cormorant Garamond',serif}
+.gd-f h2{margin:16px 0 0;font:600 28px/1.05 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em}
 .gd-f .gd-ico{width:64px;height:64px;border-radius:20px;display:grid;place-items:center}
 .gd-sert{margin:10px 0 0;font-size:18px;color:#3d372f}
 .gd-et{list-style:none;margin:22px 0 0;padding:0;display:flex;flex-direction:column;gap:14px;counter-reset:e}

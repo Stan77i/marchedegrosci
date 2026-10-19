@@ -3,7 +3,7 @@
    installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
    Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v92';
+const CACHE = 'mgci-v93';
 // tuiles de la carte en relief déjà vues (relief Terrarium, rues OpenFreeMap) : gardées d'une version à l'autre, 1 500 au plus
 const TUILES = 'tuiles-mgci', TUILES_MAX = 1500, HOTES_TUILES = ['s3.amazonaws.com', 'tiles.openfreemap.org'];
 
@@ -55,6 +55,9 @@ const CORE = [
   "fonts/jost-latin-500-normal.woff2",
   "fonts/jost-latin-600-normal.woff2",
   "fonts/jost-latin-700-normal.woff2",
+  "fonts/archivo-latin-600-normal.woff2",
+  "fonts/archivo-latin-800-normal.woff2",
+  "fonts/archivo-latin-900-italic.woff2",
   "index-v3.html",
   "css/styles.css",
   "css/typo.css",

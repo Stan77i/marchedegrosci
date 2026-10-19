@@ -298,7 +298,7 @@
     if (!me()) { if (N()) N().open(); return; }
     feuille();
     const main = bg.querySelector('.idv-main');
-    main.innerHTML = '<p>Chargement…</p>';
+    main.innerHTML = window.MDGSac ? MDGSac.charge('Un instant…') : '<p>Chargement…</p>';
     let s; try { s = await statut(true); } catch (e) { main.innerHTML = `<div class="idv-etat"><p class="idv-bad">${!navigator.onLine ? 'Pas de connexion internet : réessayez quand le réseau revient.' : 'La vérification n’est pas encore disponible. Réessayez plus tard.'}</p></div>`; return; }
     if (!bg) return;
     if (s.banni) return etat(Object.assign({}, s, { statut: 'banni' }));

@@ -24,6 +24,7 @@
 .mt[data-t="info"] .mt-i{background:rgba(243,239,228,.16);color:#F3EFE4}
 .mt[data-t="alerte"] .mt-i{background:#F2C230;color:#10392B}
 .mt[data-t="erreur"] .mt-i{background:#E2735B;color:#2a0d07}
+.mt-i.sac{width:38px;height:38px;border-radius:13px;align-items:end;padding-bottom:2px;overflow:hidden}.mt-i.sac svg{display:block}
 .mt-x{flex:1;min-width:0;padding-top:4px}.mt-x b{display:block;font-weight:600}.mt-x small{display:block;margin-top:2px;font-size:13.5px;color:rgba(243,239,228,.78)}
 .mt-j{position:absolute;left:0;bottom:0;height:3px;width:100%;background:#F2C230;transform-origin:left;opacity:.85}
 .mt[data-t="erreur"] .mt-j{background:#E2735B}.mt[data-t="ok"] .mt-j{background:#3FB872}
@@ -47,7 +48,9 @@
     const duree = o.duree || Math.min(6500, 2600 + texte.length * 35);
     while (p.children.length >= 2) p.lastChild.remove();   // le plus récent en haut, deux au plus
     const el = document.createElement('div'); el.className = 'mt'; el.dataset.t = type;
-    el.innerHTML = `<span class="mt-i" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${ICO[type] || ICO.info}</svg></span>
+    // le sac, notre personnage (app/sac.js), dit l'humeur du message : content (réussi), attentif (à savoir, attention), triste (échec)
+    const sac = window.MDGSac ? window.MDGSac.svg(type === 'ok' ? 'plein' : type === 'erreur' ? 'triste' : 'vide', { t: 26 }) : '';
+    el.innerHTML = `<span class="mt-i${sac ? ' sac' : ''}" aria-hidden="true">${sac || `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${ICO[type] || ICO.info}</svg>`}</span>
       <span class="mt-x"><b>${esc(texte)}</b>${o.sous ? `<small>${esc(o.sous)}</small>` : ''}</span><i class="mt-j" aria-hidden="true"></i>`;
     p.prepend(el);
     const j = el.querySelector('.mt-j');

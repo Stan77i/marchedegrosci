@@ -18,12 +18,12 @@
 <script src="v3/avatar.js?v=20261017c"></script>
 <script src="app/icones.js"></script>
 <script src="app/marque.js?v=20261019m"></script>
-<script src="app/sac.js?v=20261019a"></script>
-<script src="app/toast.js?v=20261019a"></script>
+<script src="app/sac.js?v=20261019b"></script>
+<script src="app/toast.js?v=20261019b"></script>
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261019a','v3/porte.js','v3/sons.js?v=20261019c','v3/negoce.js?v=20261019d','v3/compte.js?v=20261019z','v3/souffle.js?v=20261019a','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261019c','v3/statuts.js?v=20261019a','v3/messages.js?v=20261019n','v3/alertes.js?v=20261018u','app/carte-app.js?v=20261018u','app/carte-gl.js?v=20261018s','v3/identite.js?v=20261019b'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261019a','v3/porte.js','v3/sons.js?v=20261019c','v3/negoce.js?v=20261019e','v3/compte.js?v=20261019z','v3/souffle.js?v=20261019a','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261019d','v3/statuts.js?v=20261019a','v3/messages.js?v=20261019o','v3/alertes.js?v=20261018u','app/carte-app.js?v=20261018u','app/carte-gl.js?v=20261018s','v3/identite.js?v=20261019c'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -793,8 +793,11 @@ class Component extends DCLogic {
      qu'elle se prépare) ; sinon, ou si elle échoue, la carte simple (app/carte-app.js). Avant : la carte simple apparaissait puis
      disparaissait en fondu sous la nouvelle, ce qui se voyait. On attend que les modules différés soient tous là (MDGPlus.pret). */
   monterCarte(el) {
+    // pendant que la carte se prépare : le sac qui se remplit (app/sac.js), au lieu d'un fond vide
+    if (window.MDGSac && this._voileEl !== el) { this._voileEl = el; this._voile = window.MDGSac.attente(el, 'La carte du réseau se prépare…'); }
+    const finVoile = () => { if (this._voile) { this._voile(); this._voile = null; } };
     if (this._carteEnCours || (window.MDGPlus && !window.MDGPlus.pret())) return;
-    const G = window.MDGCarteGL, simple = () => { if (this.mapRef.current === el && !this.map && window.MDGCarte) { this.map = window.MDGCarte.mount(el, { onSelect: s => this.setState({ csel: s, cOpen: !!s }), insets: () => this.carteIns() }); this._mk = ''; this.forceUpdate(); } };
+    const G = window.MDGCarteGL, simple = () => { if (this.mapRef.current === el && !this.map && window.MDGCarte) { this.map = window.MDGCarte.mount(el, { onSelect: s => this.setState({ csel: s, cOpen: !!s }), insets: () => this.carteIns() }); this._mk = ''; this.forceUpdate(); } finVoile(); };
     if (!G || !G.capable()) return simple();
     this._carteEnCours = true;
     // toucher un district : la carte zoome, le panneau reste replié ; toucher une bulle : la carte d'annonce s'ouvre en bas
@@ -805,7 +808,7 @@ class Component extends DCLogic {
       if (!api) return simple();
       if (this.mapRef.current !== el || this.map) { api.destroy(); return; }
       this.map = api; this.glOn = true; if (this.mapData) { api.set(this.mapData); this._mk = JSON.stringify(this.mapData); }
-      this.forceUpdate();
+      this.forceUpdate(); setTimeout(finVoile, 350);
     }).catch(() => { this._carteEnCours = false; simple(); });
   }
   /* une annonce vient d'arriver (v3/nuage.js « mdg:nouvelles ») : notification en haut, avec sa famille, son produit, sa quantité, son lieu.

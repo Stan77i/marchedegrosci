@@ -106,6 +106,7 @@
 .dm-dif .go{min-height:52px;border:0;border-radius:999px;background:var(--acc);color:#F3EFE4;font:700 15.5px Jost,sans-serif;cursor:pointer}.dm-dif .go:disabled{opacity:.5}
 .dm-dif p{margin:0;color:var(--mute);font-size:13.5px;line-height:1.5}
 .dm-vide{padding:56px 18px;text-align:center;color:var(--mute);line-height:1.55}.dm-vide svg{width:54px;height:54px;margin:0 auto 14px;display:block;fill:none;stroke:#6AAEF0;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.dm-vide svg.ms{width:auto;height:auto;fill:initial;stroke:none;margin:0 auto 12px}
 .dm-vide b{display:block;margin:0 0 6px;font:500 25px/1.2 'Cormorant Garamond',serif;color:var(--ink)}
 .dm-vide button{margin-top:16px;min-height:46px;padding:0 18px;border:0;border-radius:999px;background:#EFE7D9;color:var(--ink);font:600 14.5px Jost,sans-serif;cursor:pointer}
 @keyframes dmIn{from{opacity:0}}@keyframes dmUp{from{transform:translateY(30px);opacity:0}}@keyframes dmPop{from{transform:scale(.94);opacity:0}}
@@ -162,7 +163,7 @@
     const dessiner = () => {
       const box = b.querySelector('[data-l]'); if (!box) return; const u = me();
       if (!liste.length) {
-        box.innerHTML = `<div class="dm-vide">${I.bulle}<b>Aucune conversation</b>Touchez la photo d’un vendeur ou d’un acheteur, puis « Écrire ». Vous pouvez parler de tout, même sans acheter.${window.MDGRep ? '<br><button type="button" data-top>Voir les mieux notés</button>' : ''}</div>`;
+        box.innerHTML = `<div class="dm-vide">${window.MDGSac ? MDGSac.svg('vide', { t: 70 }) : I.bulle}<b>Aucune conversation</b>Touchez la photo d’un vendeur ou d’un acheteur, puis « Écrire ». Vous pouvez parler de tout, même sans acheter.${window.MDGRep ? '<br><button type="button" data-top>Voir les mieux notés</button>' : ''}</div>`;
         const t = box.querySelector('[data-top]'); if (t) t.onclick = () => { fermer(); MDGRep.classement(); };
         return;
       }
@@ -245,12 +246,12 @@
         h += `<div class="dm-m${moi ? ' me' : ''}${suite ? ' suite' : ''}${m._etat ? ' ' + m._etat : ''}${neufs && neufs.has(m.id) ? ' neuf' : ''}" data-m="${m.id}"${m._etat === 'rate' ? ' role="button" tabindex="0"' : ''}><p>${(c.officiel && !moi) || (moi && admin()) ? lienOff(m.texte) : esc(m.texte)}<time title="S’efface dans ${reste(m.created_at)}">${etat}</time></p></div>`;
         prec = m;
       });
-      zone.innerHTML = h || `<div class="dm-vide" style="padding:30px 10px">${I.bulle}<b>Dites bonjour</b>Présentez-vous et dites ce que vous cherchez ou proposez.</div>`;
+      zone.innerHTML = h || `<div class="dm-vide" style="padding:30px 10px">${window.MDGSac ? MDGSac.svg('vide', { t: 60 }) : I.bulle}<b>Dites bonjour</b>Présentez-vous et dites ce que vous cherchez ou proposez.</div>`;
       zone.querySelectorAll('.dm-m.rate').forEach(el => el.onclick = () => { const m = attente.find(x => x.id === el.dataset.m); if (m) partir(m); });
     }
     async function charger(premiere) {
       const apres = msgs.length ? msgs[msgs.length - 1].created_at : null;
-      let r; try { r = await N().rpc('dm_messages', { p_discussion: id, p_apres: apres }) || []; } catch (x) { if (premiere) zone.innerHTML = `<div class="dm-vide" style="padding:30px 10px"><b>Impossible de charger</b>${esc(err(x))}</div>`; return; }
+      let r; try { r = await N().rpc('dm_messages', { p_discussion: id, p_apres: apres }) || []; } catch (x) { if (premiere) zone.innerHTML = `<div class="dm-vide" style="padding:30px 10px">${window.MDGSac ? MDGSac.svg('triste', { t: 60 }) : ''}<b>Impossible de charger</b>${esc(err(x))}</div>`; return; }
       if (bg !== b) return;
       const deja = new Set(msgs.map(m => m.id)), neufs = r.filter(m => !deja.has(m.id));
       if (!neufs.length && !premiere) return;
@@ -309,7 +310,7 @@
         else if (a.dataset.a === 'signaler') MDGIdentite.signaler(c.autre_id, { nom: c.autre_nom, source: 'dm', ref: id, bloquer: c.je_bloque ? null : () => bloquer(true) });
         else if (a.dataset.a === 'bloquer') { if (c.je_bloque) bloquer(false); else if (confirm('Bloquer ' + c.autre_nom + ' ? Vous ne pourrez plus vous écrire, ni l’un ni l’autre, tant que vous ne le débloquez pas.')) bloquer(true); } };
     };
-    piedDe(); dessiner(); zone.innerHTML = '<div class="dm-vide" style="padding:30px 10px">Chargement…</div>';
+    piedDe(); dessiner(); zone.innerHTML = window.MDGSac ? MDGSac.charge('Vos messages arrivent…') : '<div class="dm-vide" style="padding:30px 10px">Chargement…</div>';
     await charger(true);
     clearInterval(minuteur); minuteur = setInterval(() => { if (!document.hidden && navigator.onLine && bg === b) charger(false); }, 4000);
     const ta = pied.querySelector('textarea'); if (ta && matchMedia('(hover:hover) and (pointer:fine)').matches) ta.focus();

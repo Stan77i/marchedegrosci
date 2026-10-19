@@ -152,7 +152,7 @@
   async function profil(uid, o = {}) {
     if (!uid) return;
     const moi = N() && N().session() && N().session().user.id === uid;
-    const bg = feuille(`<div class="rp-tete">${avatar(uid, o.avatar, o.nom, 72, o.uri)}<span><b data-nom>${esc(o.nom || 'Membre')}</b><small data-sc>…</small><small data-dep></small></span></div><div data-pp></div><div data-corps><div class="rp-vide">Chargement du profil…</div></div>`, 'Profil de ' + (o.nom || 'membre'));
+    const bg = feuille(`<div class="rp-tete">${avatar(uid, o.avatar, o.nom, 72, o.uri)}<span><b data-nom>${esc(o.nom || 'Membre')}</b><small data-sc>…</small><small data-dep></small></span></div><div data-pp></div><div data-corps>${window.MDGSac ? MDGSac.charge('Le profil arrive…') : '<div class="rp-vide">Chargement du profil…</div>'}</div>`, 'Profil de ' + (o.nom || 'membre'));
     const auth = !!N().session();
     const [liste, pp] = await Promise.all([N().rpc('avis_de', { p_cible: uid }, auth).catch(() => []), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null)]);
     if (!bg.isConnected) return;
@@ -169,7 +169,7 @@
       const enLigne = (pp.offres_actives || 0) + (pp.demandes_actives || 0);
       haut += `<div class="rp-stats"><div><b>${fq(pp.ventes || 0)}</b><small>vente${pp.ventes > 1 ? 's' : ''} conclue${pp.ventes > 1 ? 's' : ''}</small></div><div><b>${fq(pp.achats || 0)}</b><small>achat${pp.achats > 1 ? 's' : ''}</small></div><div><b>${fq(enLigne)}</b><small>annonce${enLigne > 1 ? 's' : ''} en ligne · ${fq(pp.annonces_total || 0)} en tout</small></div></div>`;
       // statuts gagnés (v3/statuts.js) : ce que chacun prouve
-      if (window.MDGStatut) haut += `<div class="rp-sec"><h3>Ses statuts</h3><div data-st>${MDGStatut.detail(uid) || '<div class="rp-vide">Chargement…</div>'}</div></div>`;
+      if (window.MDGStatut) haut += `<div class="rp-sec"><h3>Ses statuts</h3><div data-st>${MDGStatut.detail(uid) || (window.MDGSac ? MDGSac.charge('', { t: 44 }) : '<div class="rp-vide">Chargement…</div>')}</div></div>`;
       if (pp.bio) haut += `<div class="rp-sec"><h3>${pp.role === 'acheteur' ? 'Acheteur' : pp.role === 'vendeur' ? 'Vendeur' : pp.role === 'les_deux' ? 'Vendeur et acheteur' : 'Présentation'}${pp.ville || pp.region_slug ? ' · ' + esc(pp.ville || REGN(pp.region_slug)) : ''}</h3><p class="rp-bio">${esc(pp.bio)}</p></div>`;
       if (pp.activites) haut += `<div class="rp-sec"><h3>Ses activités</h3><div class="rp-tags">${pp.activites.split(/[,;·\n]/).map(x => x.trim()).filter(Boolean).slice(0, 12).map(x => `<span>${esc(x)}</span>`).join('')}</div></div>`;
       if (pp.photos && pp.photos.length) haut += `<div class="rp-sec"><h3>En images</h3><div class="rp-ph">${pp.photos.map(p => `<img src="${esc(photoUrl(p))}" alt="" loading="lazy">`).join('')}</div></div>`;

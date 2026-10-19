@@ -3,7 +3,7 @@
    installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
    Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v90';
+const CACHE = 'mgci-v91';
 // tuiles de la carte en relief déjà vues (relief Terrarium, rues OpenFreeMap) : gardées d'une version à l'autre, 1 500 au plus
 const TUILES = 'tuiles-mgci', TUILES_MAX = 1500, HOTES_TUILES = ['s3.amazonaws.com', 'tiles.openfreemap.org'];
 
@@ -232,7 +232,9 @@ self.addEventListener('push', e => {
   e.waitUntil((async () => {
     await self.registration.showNotification(d.title || 'Marché de Gros', {
       body: d.body || '', tag: d.tag || 'mdg', renotify: true, icon: 'icons/v2/icon-192.png', badge: 'icons/v2/badge-96.png',
-      vibrate: [70, 40, 70], timestamp: Date.now(), data: { url: d.url || 'application.dc.html#/', nego: d.nego || null, dm: d.dm || null }
+      vibrate: [70, 40, 70], timestamp: Date.now(), data: { url: d.url || 'application.dc.html#/', nego: d.nego || null, dm: d.dm || null },
+      actions: d.dm ? [{ action: 'repondre', title: 'Répondre' }] : d.nego ? [{ action: 'voir', title: 'Voir la proposition' }] : [],
+      image: d.image || undefined
     });
     try { if (self.navigator.setAppBadge) { if (d.badge) await self.navigator.setAppBadge(d.badge); else if (d.badge === 0) await self.navigator.clearAppBadge(); } } catch (_) {}
   })());

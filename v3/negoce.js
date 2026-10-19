@@ -75,7 +75,11 @@
     dispatchEvent(new CustomEvent('mdg:notifs'));
     ev.forEach(([c]) => window.MDGSons && MDGSons.signal(c));
     const pf = window.MDGCompte ? MDGCompte.prefs() : { toasts: true };
-    if (!bg && pf.toasts) N().toast(ev.length > 1 ? ev.length + ' nouveautés dans « Mes négociations ».' : ev[0][1]);
+    if (!bg && pf.toasts) {
+      const ok = ev.some(([c]) => /accord|accept/.test(c)), ko = ev.every(([c]) => c === 'refus');
+      N().toast(ev.length > 1 ? 'Du nouveau dans vos négociations (' + ev.length + ')' : ev[0][1], { type: ok ? 'ok' : ko ? 'alerte' : 'info', groupe: 'nego', muet: true,
+        pluriel: () => 'nouveautés dans vos négociations', action: ev.length > 1 ? { t: 'Ouvrir', fn: () => inbox() } : { t: 'Voir', fn: () => thread(ev[0][2]) } });
+    }
   }
   // masquée pour moi (nego_masquer) : tant que l'autre n'a rien écrit depuis
   const masquee = n => { const c = me() === n.auteur_id ? n.cache_auteur : n.cache_proprio; return !!c && Date.parse(c) >= Date.parse(n.updated_at); };
@@ -359,7 +363,7 @@
       const v = vals(), refus = v.t && N().texteRefus ? N().texteRefus(v.t) : '';   // pas de lien ni de code (schéma 22)
       if (refus) { $('.nx-err').textContent = refus; return; }
       go.disabled = true; go.setAttribute('aria-busy', 'true'); $('.nx-err').textContent = ''; go.textContent = 'Envoi';
-      try { await onSend(v); } catch (x) { $('.nx-err').textContent = err(x); go.disabled = false; upd(); }
+      try { const envoi = onSend(v); if (window.MDGToast && MDGToast.suivre) MDGToast.suivre(envoi, { attente: 'Envoi de votre proposition…', erreur: x => err(x) }).catch(() => {}); await envoi; } catch (x) { $('.nx-err').textContent = err(x); go.disabled = false; upd(); }
     };
     upd(); setTimeout(() => (fixe ? iq : ip).focus(), 60);
   }

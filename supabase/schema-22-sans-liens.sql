@@ -33,19 +33,25 @@ grant execute on function public.texte_refus(text) to anon, authenticated;
 
 create or replace function public.garde_textes() returns trigger
 language plpgsql set search_path = public as $f$
-declare r text;
+declare r text; t text;
 begin
-  -- l'administrateur (le « Marché de Gros » officiel) peut écrire des liens ; personne d'autre
+  -- l'administrateur (le « Marché de Gros » officiel) peut écrire des liens ; personne d'autre.
+  -- Chaque table a sa propre branche : PL/pgSQL ne lit les champs de NEW que dans la branche exécutée.
+  -- (Corrigé le 20 octobre 2026 : une seule expression qui citait new.user_id plantait sur dm, messages et avis,
+  --  qui n'ont pas ce champ — « record "new" has no field "user_id" » : plus aucun message ne partait.)
   if public.est_admin() then return new; end if;
-  if tg_table_name in ('offres', 'demandes') and public.est_admin_id(new.user_id) then return new; end if;
-  r := public.texte_refus(case tg_table_name
-    when 'dm' then new.texte
-    when 'messages' then new.texte
-    when 'avis' then new.texte
-    when 'profils' then concat_ws(' · ', new.prenom, new.nom, new.pseudo, new.bio, new.activites)
-    when 'offres' then concat_ws(' · ', new.seller_name, new.city, new.agent, new.product_label)
-    when 'demandes' then concat_ws(' · ', new.buyer_name, new.city, new.product_label)
-  end);
+  if tg_table_name in ('dm', 'messages', 'avis') then
+    t := new.texte;
+  elsif tg_table_name = 'profils' then
+    t := concat_ws(' · ', new.prenom, new.nom, new.pseudo, new.bio, new.activites);
+  elsif tg_table_name = 'offres' then
+    if public.est_admin_id(new.user_id) then return new; end if;
+    t := concat_ws(' · ', new.seller_name, new.city, new.agent, new.product_label);
+  elsif tg_table_name = 'demandes' then
+    if public.est_admin_id(new.user_id) then return new; end if;
+    t := concat_ws(' · ', new.buyer_name, new.city, new.product_label);
+  end if;
+  r := public.texte_refus(t);
   if r is not null then raise exception 'TEXTE_REFUSE : %', r using errcode = 'P0001'; end if;
   return new;
 end $f$;

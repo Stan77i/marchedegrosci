@@ -33,6 +33,10 @@
     if (!r.ok) { const m = (j && (j.msg || j.message || j.error_description || j.error)) || ('Erreur ' + r.status);
       // texte refusé par la base (schéma 22 : liens, e-mails, codes) : seulement la phrase pour le membre
       if (/^TEXTE_REFUSE : /.test(m)) throw Object.assign(new Error(m.replace(/^TEXTE_REFUSE : /, '')), { status: r.status, body: j, code: 'texte' });
+      // erreur technique de la base (champ, colonne, fonction…) : une phrase simple pour le membre, le détail reste dans la console
+      if (/record "new"|has no field|column .* does not exist|relation .* does not exist|function .* does not exist|syntax error/i.test(m) && !/^[A-Z_]+ : /.test(m)) {
+        console.warn('[nuage] erreur technique', m);
+        throw Object.assign(new Error('Un problème technique a empêché l’envoi. Réessayez dans un instant ; si cela continue, écrivez au Marché de Gros.'), { status: r.status, body: j, code: 'technique', detail: m }); }
       throw Object.assign(new Error(m), { status: r.status, body: j }); }
     return j;
   }

@@ -5,6 +5,7 @@
 --   • un lien ou une adresse de site : http://, https://, www., « nom.com », « nom.ci », « nom point com », wa.me, bit.ly…
 --     (même le site du Marché de Gros : on échange uniquement dans l'application)
 --   • une adresse e-mail
+--   • un numéro de téléphone (07 01 02 03 04, +225…) : les numéros restent cachés, on échange dans l'application
 --   • une demande de code secret, de mot de passe ou de code de retrait (le Marché de Gros ne les demande jamais)
 --   • un code de transfert d'argent à taper (*144*…#, #150#…), une ruse classique pour faire envoyer de l'argent
 -- La règle est dans la base : aucune version de l'application, ancienne ou modifiée, ne peut la contourner.
@@ -22,6 +23,8 @@ language sql immutable set search_path = public as $f$
       then 'Pas de lien ici : pour votre sécurité, les adresses de sites (www, .com, .ci…) sont interdites sur le Marché de Gros, même la nôtre. Échangez uniquement dans l’application.'
     when t ~* '(\*\s*\d{2,4}\s*(\*\s*\d*\s*)*#|#\s*\d{3}\s*#)'
       then 'Pas de code de transfert à taper (*144*…#) : c’est une ruse fréquente pour faire envoyer de l’argent. Ne payez qu’à la livraison, après avoir vu la marchandise.'
+    when t ~* '((\+|00)\s*225([\s.\-]*\d){8,10}|\m(0[157]|2[157])([\s.\-]*\d){8}\M)'
+      then 'Pas de numéro de téléphone ici : pour votre sécurité, les numéros restent cachés sur le Marché de Gros. Échangez avec le bouton « Écrire ».'
     when t ~* '(mot\s+de\s+passe|code\s+(secret|confidentiel|pin|otp|sms|de\s+(confirmation|validation|v[ée]rification|retrait|s[ée]curit[ée]|connexion|secours)))'
       then 'Pour votre sécurité, on ne parle pas de code secret ni de mot de passe ici. Le Marché de Gros ne vous les demandera jamais : ne les donnez à personne.'
   end;

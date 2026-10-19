@@ -35,7 +35,7 @@
   /* ——— porte d'entrée ——— */
   const logo = window.MDGMarque ? MDGMarque.empile({ fond: 'vert', h: 64 }).replace('style="', 'style="margin:0 auto 6px;') : '';
   function gate(t, p, btn) {
-    root.innerHTML = `<div class="gate"><div class="card">${logo}<h1>${t}</h1><p>${p}</p>${btn || ''}<p style="margin-top:22px"><a href="./" style="color:var(--mute)">Retour au Marché de Gros</a></p></div></div>`;
+    root.innerHTML = `<div class="gate"><div class="card">${logo}<h1>${t}</h1><p>${p}</p>${btn || ''}<p style="margin-top:22px"><a href="application.dc.html" style="color:var(--mute)">Retour à l’application</a></p></div></div>`;
     const b = root.querySelector('[data-login]'); if (b) b.onclick = () => N.open();
   }
   async function start() {
@@ -100,8 +100,8 @@
     const nav = (k, t, n) => `<a class="nav" href="#${k}" ${view === k ? 'aria-current="page"' : ''}>${ico(k)}<span>${t}</span>${n ? `<em>${n}</em>` : ''}</a>`;
     root.innerHTML = `<div class="app"><nav class="rail" aria-label="Tableau de bord">
       <a class="brand" href="#apercu" aria-label="Marché de Gros, tableau de bord administrateur">${window.MDGMarque ? MDGMarque.ligne({ fond: 'vert', h: 22 }) : '<b>Marché de Gros</b>'}${BADGE}</a>
-      <div class="navs">${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}${nav('messages', 'Messages', D.alertes.filter(a => !a.vu).length + D.sigm.filter(x => !x.traite).length)}${nav('identites', 'Identités', D.ident.filter(v => v.statut === 'en_attente').length)}</div>
-      <span class="sp"></span><a class="nav ext" href="./">${ico('site')}<span>Voir l’application</span></a>
+      <div class="navs"><a class="nav retour" href="application.dc.html" aria-label="Retour à l’application"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span>Application</span></a>${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}${nav('messages', 'Messages', D.alertes.filter(a => !a.vu).length + D.sigm.filter(x => !x.traite).length)}${nav('identites', 'Identités', D.ident.filter(v => v.statut === 'en_attente').length)}</div>
+      <span class="sp"></span><a class="nav ext" href="application.dc.html">${ico('site')}<span>Voir l’application</span></a>
       <div class="who">Compte officiel, affiché « Marché de Gros » aux membres<b>${esc(fmtTel(N.session().user.tel))}</b></div></nav>
       <main id="main">${(VIEWS[view] || VIEWS.apercu)({ T, masq, toDo, conclu })}</main></div>`;
     bind();

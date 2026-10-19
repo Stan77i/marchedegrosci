@@ -55,6 +55,20 @@
 .rp textarea{width:100%;min-height:84px;margin-top:14px;padding:12px 14px;border:1px solid rgba(23,21,18,.16);border-radius:16px;background:#FFFFFF;color:#171512;font:400 15px/1.45 Jost,sans-serif;resize:vertical;box-sizing:border-box}
 .rp textarea:focus{outline:none;border-color:#10392B;box-shadow:0 0 0 3px rgba(16,57,43,.2)}
 .rp-msg{min-height:20px;margin:8px 2px 0;color:#C0442B;font-size:13.5px}
+.rp-org{margin:0 0 18px;padding:14px;border-radius:20px;background:#fff;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.05)}
+.rp-org-t{display:flex;align-items:center;gap:14px}.rp-org-t>div{min-width:0}
+.rp-org-logo{flex:none;width:56px;height:56px;border-radius:16px;object-fit:contain;background:#fff;box-shadow:0 0 0 1px rgba(23,21,18,.1)}
+.rp-org-logo.vide{display:grid;place-items:center;background:#10392B;color:#F2C230;font:900 italic 26px/1 'Archivo','Helvetica Neue',Arial,sans-serif;box-shadow:none}
+.rp-org-t small{display:block;font:600 11px/1.2 Jost,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#4A6A53}
+.rp-org-t b{display:block;margin-top:3px;font:600 19px/1.15 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em;color:#171512;overflow-wrap:anywhere}
+.rp-org-st{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.rp-org-pv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.rp-org-pv button{padding:0;border:0;border-radius:12px;overflow:hidden;aspect-ratio:1;background:#EFE9DC;cursor:zoom-in}.rp-org-pv img{width:100%;height:100%;object-fit:cover;display:block}
+.rp-org-pv button:focus-visible{outline:2px solid #10392B;outline-offset:2px}
+.rp-org-n{margin:10px 0 0;font-size:12.5px;line-height:1.45;color:#5E574B}
+.rp-loupe{position:fixed;inset:0;z-index:9700;display:grid;place-items:center;padding:56px 12px 90px;background:rgba(10,9,7,.9)}.rp-loupe img{max-width:100%;max-height:100%;border-radius:12px;object-fit:contain}
+.rp-loupe-b{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:center;gap:14px;color:#F3EFE4;font:600 14px Jost,sans-serif}
+.rp-loupe-b button{width:48px;height:48px;border:0;border-radius:50%;background:rgba(243,239,228,.14);color:#F3EFE4;font:500 26px/1 Jost,sans-serif;cursor:pointer}.rp-loupe-b button:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
 .rp-tete{display:flex;align-items:center;gap:16px;margin:0 0 18px;padding-right:44px}.rp-tete img{border-radius:50%;box-shadow:0 0 0 3px rgba(23,21,18,.08)}
 .rp-tete b{display:block;font:600 23px/1.05 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em}.rp-tete small{display:flex;align-items:center;gap:8px;margin-top:6px;color:#655C4D;font-size:13.5px}
 .rp-score{display:flex;align-items:center;gap:16px;padding:16px;border-radius:20px;background:rgba(23,21,18,.04);box-shadow:inset 0 0 0 1px rgba(23,21,18,.08)}
@@ -149,11 +163,39 @@
   const actif = t => { if (!t) return ''; const m = (Date.now() - Date.parse(t)) / 6e4; return m < 10 ? 'actif à l’instant' : m < 60 ? 'actif il y a ' + Math.round(m) + ' min' : m < 1440 ? 'actif il y a ' + Math.round(m / 60) + ' h' : m < 2880 ? 'actif hier' : 'actif il y a ' + Math.round(m / 1440) + ' j'; };
   const fq = n => n == null ? '' : Number(n).toLocaleString('fr-FR').replace(/ | /g, ' ');
   const photoUrl = p => /^https?:/.test(p) ? p : (N() && N().URL ? N().URL + '/storage/v1/object/public/activites/' + p : '');
+  // ——— la structure en tête du profil : logo, type, nom, réputation, preuves (agrandissables) ———
+  const TYPE_ORG = { cooperative: 'Coopérative', groupement: 'Groupement', entreprise: 'Entreprise' };
+  function carteStructure(st, uid) {
+    const pv = (st.preuves || []).slice(0, 4), puces = window.MDGStatut ? MDGStatut.puces(uid, { max: 2 }) : '';
+    return `<section class="rp-org" aria-label="Structure représentée">
+      <div class="rp-org-t">${st.logo ? `<img class="rp-org-logo" src="${esc(photoUrl(st.logo))}" alt="Logo de ${esc(st.nom)}">` : `<span class="rp-org-logo vide" aria-hidden="true">${esc((st.nom || '?').trim().charAt(0).toUpperCase())}</span>`}
+        <div><small>${esc(TYPE_ORG[st.type] || 'Structure')}</small><b>${esc(st.nom)}</b>${puces ? `<span class="rp-org-st">${puces}</span>` : ''}</div></div>
+      ${pv.length ? `<div class="rp-org-pv">${pv.map((c, i) => `<button type="button" data-pv="${i}" aria-label="Agrandir la preuve ${i + 1}"><img src="${esc(photoUrl(c))}" alt="" loading="lazy"></button>`).join('')}</div>
+        <p class="rp-org-n">Preuves fournies par le membre (enseigne, entrepôt, agrément…). Le Marché de Gros ne les a pas vérifiées : voyez la marchandise avant de payer.</p>` : ''}
+    </section>`;
+  }
+  // une preuve en grand, avec précédente / suivante ; Échap ou toucher le fond pour fermer
+  function lierPreuves(z, pv) {
+    z.querySelectorAll('[data-pv]').forEach(b => b.onclick = () => {
+      let i = +b.dataset.pv; const v = document.createElement('div'); v.className = 'rp-loupe'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-label', 'Preuve en grand');
+      const peindre = () => { v.innerHTML = `<img src="${esc(photoUrl(pv[i]))}" alt="Preuve ${i + 1} sur ${pv.length}"><div class="rp-loupe-b">${pv.length > 1 ? '<button type="button" data-p aria-label="Preuve précédente">‹</button>' : ''}<span>${i + 1} / ${pv.length}</span>${pv.length > 1 ? '<button type="button" data-n aria-label="Preuve suivante">›</button>' : ''}<button type="button" data-x aria-label="Fermer">×</button></div>`;
+        const g = (sel, f) => { const e = v.querySelector(sel); if (e) e.onclick = ev => { ev.stopPropagation(); f(); }; };
+        g('[data-p]', () => { i = (i + pv.length - 1) % pv.length; peindre(); }); g('[data-n]', () => { i = (i + 1) % pv.length; peindre(); }); g('[data-x]', fin); const x = v.querySelector('[data-x]'); if (x) x.focus(); };
+      const cle = e => { if (e.key === 'Escape') fin(); else if (e.key === 'ArrowRight' && pv.length > 1) { i = (i + 1) % pv.length; peindre(); } else if (e.key === 'ArrowLeft' && pv.length > 1) { i = (i + pv.length - 1) % pv.length; peindre(); } };
+      function fin() { removeEventListener('keydown', cle); v.remove(); b.focus(); }
+      v.onclick = e => { if (e.target === v) fin(); }; addEventListener('keydown', cle); document.body.appendChild(v); peindre();
+    });
+  }
   async function profil(uid, o = {}) {
     if (!uid) return;
     const moi = N() && N().session() && N().session().user.id === uid;
-    const bg = feuille(`<div class="rp-tete">${avatar(uid, o.avatar, o.nom, 72, o.uri)}<span><b data-nom>${esc(o.nom || 'Membre')}</b><small data-sc>…</small><small data-dep></small></span></div><div data-pp></div><div data-corps>${window.MDGSac ? MDGSac.charge('Le profil arrive…') : '<div class="rp-vide">Chargement du profil…</div>'}</div>`, 'Profil de ' + (o.nom || 'membre'));
+    const bg = feuille(`<div class="rp-tete">${avatar(uid, o.avatar, o.nom, 72, o.uri)}<span><b data-nom>${esc(o.nom || 'Membre')}</b><small data-sc>…</small><small data-dep></small></span></div><div data-org></div><div data-pp></div><div data-corps>${window.MDGSac ? MDGSac.charge('Le profil arrive…') : '<div class="rp-vide">Chargement du profil…</div>'}</div>`, 'Profil de ' + (o.nom || 'membre'));
     const auth = !!N().session();
+    // la structure qu'il représente (supabase/schema-23) : en tête du profil, avec ses preuves ; jamais pour le compte officiel
+    if (!(window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(uid))) N().rpc('structure_publique', { p_uid: uid }, false).then(st => {
+      const z = bg.querySelector('[data-org]'); if (!z || !st || !st.nom) return;
+      z.innerHTML = carteStructure(st, uid); lierPreuves(z, st.preuves || []);
+    }).catch(() => {});
     const [liste, pp] = await Promise.all([N().rpc('avis_de', { p_cible: uid }, auth).catch(() => []), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null)]);
     if (!bg.isConnected) return;
     const nb = (liste || []).length, moy = nb ? liste.reduce((s, a) => s + a.note, 0) / nb : 0, rep = [5, 4, 3, 2, 1].map(k => liste.filter(a => a.note === k).length);

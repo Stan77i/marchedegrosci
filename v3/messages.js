@@ -108,6 +108,7 @@
 .dm-dif textarea:focus{outline:none;border-color:var(--acc)}
 .dm-dif .go{min-height:52px;border:0;border-radius:999px;background:var(--acc);color:#F3EFE4;font:700 15.5px Jost,sans-serif;cursor:pointer}.dm-dif .go:disabled{opacity:.5}
 .dm-dif p{margin:0;color:var(--mute);font-size:13.5px;line-height:1.5}
+.dm-org{display:flex;margin:3px 0 1px;min-width:0}.dm-org:empty{display:none}.dm-org-l{font-style:normal;font-weight:600;color:#10392B}
 .dm-vide{padding:56px 18px;text-align:center;color:var(--mute);line-height:1.55}.dm-vide svg{width:54px;height:54px;margin:0 auto 14px;display:block;fill:none;stroke:#6AAEF0;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .dm-vide svg.ms{width:auto;height:auto;fill:initial;stroke:none;margin:0 auto 12px}
 .dm-vide b{display:block;margin:0 0 6px;font:600 20px/1.2 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em;color:var(--ink)}
@@ -170,7 +171,7 @@
         const t = box.querySelector('[data-top]'); if (t) t.onclick = () => { fermer(); MDGRep.classement(); };
         return;
       }
-      box.innerHTML = liste.map(c => `<button type="button" class="dm-c${c.non_lu ? ' neuf' : ''}" data-id="${c.id}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 46, c.officiel)}<b>${esc(c.autre_nom)}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 14 }) : ''}</b><time>${quand(c.updated_at)}</time><small>${c.dernier_par === u ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small>${c.non_lu ? '<i aria-label="Non lu"></i>' : ''}</button>`).join('');
+      box.innerHTML = liste.map(c => `<button type="button" class="dm-c${c.non_lu ? ' neuf' : ''}" data-id="${c.id}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 46, c.officiel)}<b>${esc(c.autre_nom)}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 14 }) : ''}</b><time>${quand(c.updated_at)}</time><small>${(() => { const st = !c.officiel && window.MDGCompte && MDGCompte.structure ? MDGCompte.structure(c.autre_id) : null; return st ? `<em class="dm-org-l">${esc(st.nom)} · </em>` : ''; })()}${c.dernier_par === u ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small>${c.non_lu ? '<i aria-label="Non lu"></i>' : ''}</button>`).join('');
       box.querySelectorAll('[data-id]').forEach(el => {
         el.onclick = () => conversation(el.dataset.id, true);
         if (window.MDGNegoce && MDGNegoce.glisser) MDGNegoce.glisser(el, async () => { await N().rpc('dm_masquer', { p_discussion: el.dataset.id }); liste = liste.filter(c => c.id !== el.dataset.id); W(KL, liste); annoncer(); N().toast('Conversation retirée de votre liste. Elle reviendra si la personne vous écrit.'); });
@@ -226,7 +227,7 @@
     if (!c.autre_id) { await refresh(); c = liste.find(x => x.id === id) || c; }
     const u = me(); ouverte = id;
     const b = feuille(`<div class="dm-h">${depuisBoite ? `<button type="button" class="dm-ib" data-back aria-label="Retour aux messages">${I.retour}</button>` : ''}
-      <button type="button" class="dm-qui" data-profil aria-label="${c.officiel ? 'Marché de Gros' : 'Voir le profil de ' + esc(c.autre_nom)}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 40, c.officiel)}<span><b>${esc(c.autre_nom || 'Membre')}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 15 }) : ''}</b><small data-rep>${c.officiel ? 'L’équipe du Marché de Gros' : window.MDGStatut && MDGStatut.liste(c.autre_id).length ? MDGStatut.puces(c.autre_id, { max: 2, sceau: false }) : 'Voir son profil'}</small></span></button>
+      <button type="button" class="dm-qui" data-profil aria-label="${c.officiel ? 'Marché de Gros' : 'Voir le profil de ' + esc(c.autre_nom)}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 40, c.officiel)}<span><b>${esc(c.autre_nom || 'Membre')}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 15 }) : ''}</b>${!c.officiel && window.MDGCompte && MDGCompte.puceStructure ? `<span class="dm-org">${MDGCompte.puceStructure(c.autre_id)}</span>` : ''}<small data-rep>${c.officiel ? 'L’équipe du Marché de Gros' : window.MDGStatut && MDGStatut.liste(c.autre_id).length ? MDGStatut.puces(c.autre_id, { max: 2, sceau: false }) : 'Voir son profil'}</small></span></button>
       <button type="button" class="dm-ib" data-plus aria-label="Plus d’options" aria-haspopup="menu">${I.plus}</button><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div>
       <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les messages s’effacent ${JOURS} jours après leur envoi. Restez ici : les numéros sont masqués et le Marché de Gros peut vérifier en cas de problème.</div>${!c.officiel && window.MDGIdentite && MDGIdentite.gardePaiement ? `<div class="dm-garde" data-garde>${MDGIdentite.gardePaiement(c.autre_id, c.autre_nom)}</div>` : ''}<div data-msgs></div></div>
       <div class="dm-f" data-f></div>`, 'Conversation avec ' + (c.autre_nom || 'un membre'));

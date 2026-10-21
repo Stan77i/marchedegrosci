@@ -250,6 +250,20 @@
 - La version « clair » du logo (`tools/logo/marque.py` → `app/marque.js`) n'a plus de trait maïs sous « de Gros », puisque le mot est déjà maïs.
 - Site : `.mq-site .mq-g` est forcé en maïs (`index-v3.html`).
 
+**Carte : forte demande et filtres** (demandé le 21/10)
+- Forte demande : la grosse pastille 🔥 posée sur le nom de la ville est supprimée.
+  - Un halo corail est maintenant dessiné sur le sol, sous les noms de villes (calque `zone-halo`, source `zones` dans `app/carte-gl.js`).
+  - Une petite flamme de 22 px est posée au-dessus du point. Elle ne capte pas les touchers. De près, elle affiche le produit (« Igname 🔥 »).
+  - Une bulle d'annonce au même endroit passe devant elle.
+  - La puce « Forte demande » ouvre la liste des zones.
+- « Vous » (triangle) est retirée : elle ne faisait rien. Votre position, c'est le bouton ⌖ et le point violet.
+- « Compatibles » devient un vrai filtre (`cK = 'compat'`) :
+  - il montre les annonces des autres qui répondent aux vôtres (même produit, sens inverse) ;
+  - vos annonces sont reliées à elles par la ligne bleue (`mapData.lier` → arcs) ;
+  - le nombre affiché sur la puce compte ces annonces ;
+  - à 0, un message explique quoi faire.
+- Plus tard : tenir compte aussi des exigences (schémas 38/40) et du minimum du vendeur dans « compatible ».
+
 ## 5. En attente d'une décision du propriétaire
 
 

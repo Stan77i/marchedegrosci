@@ -26,7 +26,7 @@
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261023f','v3/porte.js','v3/sons.js?v=20261023f','v3/negoce.js?v=20261023f','v3/compte.js?v=20261023u','v3/souffle.js?v=20261023t','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261023f','v3/statuts.js?v=20261023a','v3/messages.js?v=20261023h','v3/alertes.js?v=20261023f','v3/releve.js?v=20261023f','v3/commandes.js?v=20261023f','v3/chauffeur.js?v=20261023f','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261023f','v3/appro.js?v=20261023f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261023f','v3/identite.js?v=20261023f'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261023f','v3/porte.js','v3/sons.js?v=20261023f','v3/negoce.js?v=20261023f','v3/compte.js?v=20261023u','v3/souffle.js?v=20261023t','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261023f','v3/statuts.js?v=20261023a','v3/messages.js?v=20261023h','v3/alertes.js?v=20261023f','v3/releve.js?v=20261023f','v3/commandes.js?v=20261023f','v3/chauffeur.js?v=20261023f','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261023f','v3/appro.js?v=20261023f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261024a','v3/identite.js?v=20261023f'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -1304,8 +1304,12 @@ class Component extends DCLogic {
     const cO = O.filter(o => !S.cprod || o.slug === S.cprod), cD = D.filter(d => !S.cprod || d.slug === S.cprod), cK = S.cK || 'tout';
     const NZ = window.MDGNuage, isAdm = !!(NZ && NZ.session() && ls('mdg-nuage:admin') === true);
     const cZ = (NZ && NZ.zones ? NZ.zones() : []).filter(z => A.REG[z.region_slug] && (!S.cprod || !z.product_slug || z.product_slug === S.cprod));
-    const cOf = cK === 'demande' ? [] : cO, cDf = cK === 'offre' ? [] : cD;
-    let cItems = [...cOf, ...cDf].sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0)), cListT = cK === 'offre' ? 'LES OFFRES' : cK === 'demande' ? 'LES DEMANDES' : 'TOUTES LES PUBLICATIONS';
+    // compatibles : les annonces des AUTRES qui répondent aux miennes (même produit, sens inverse : mon offre ↔ leur demande, ma demande ↔ leur offre)
+    const mesA = [...cO, ...cD].filter(x => this.isMine(x)), vaAvec = (a, b) => a.slug === b.slug && a.kind !== b.kind;
+    const cCompat = [...cO, ...cD].filter(x => !this.isMine(x) && mesA.some(m => vaAvec(m, x))), mesLies = mesA.filter(m => cCompat.some(x => vaAvec(m, x)));
+    const cCx = cK === 'compat' ? [...cCompat, ...mesLies] : null;
+    const cOf = cCx ? cCx.filter(x => x.kind === 'offre') : cK === 'demande' ? [] : cO, cDf = cCx ? cCx.filter(x => x.kind !== 'offre') : cK === 'offre' ? [] : cD;
+    let cItems = (cCx ? cCompat : [...cOf, ...cDf]).sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0)), cListT = cK === 'offre' ? 'LES OFFRES' : cK === 'demande' ? 'LES DEMANDES' : cCx ? 'COMPATIBLES AVEC VOS ANNONCES' : 'TOUTES LES PUBLICATIONS';
     if (S.csel) { cItems = cItems.filter(x => x.region === S.csel); cListT = 'À ' + ((A.REG[S.csel] || [])[2] || '').toUpperCase(); }
     else if (S.cme) { const tr = x => { const d = A.km(A.REG[S.cme], A.REG[x.region] || A.REG[S.cme]); return d < 60 ? 0 : d < 180 ? 1 : d < 350 ? 2 : 3; };
       cItems = cItems.slice().sort((a, b) => tr(a) - tr(b) || (b.qty || 0) - (a.qty || 0)); cListT = 'PRÈS DE VOUS D\u2019ABORD'; }
@@ -1315,7 +1319,7 @@ class Component extends DCLogic {
       cOf.forEach(o => cDf.forEach(d => { if (o.slug === d.slug && A.REG[o.region] && A.REG[d.region] && o.region !== d.region && !meme(o, d)) pr[o.region + '>' + d.region] = 1; }));
       const zones = cZ.map(z => ({ region: z.region_slug, city: z.city || '', label: z.product_label || '' }));
       const items = [...cOf, ...cDf].map(x => ({ id: x.id, kind: x.kind, slug: x.slug, product: this.prod(x.slug).name, qty: x.qty, unit: x.unit, price: x.price, budget: x.budget, region: x.region, city: x.city, uid: x.uid }));
-      this.mapData = top === 'carte' || S.leaving === 'carte' ? { pts, pairs: Object.keys(pr).map(k => k.split('>')), me: S.cme || '', sel: S.csel || '', zones, items } : this.mapData; }
+      this.mapData = top === 'carte' || S.leaving === 'carte' ? { pts, pairs: Object.keys(pr).map(k => k.split('>')), me: S.cme || '', sel: S.csel || '', zones, items, lier: cCx ? mesLies.map(x => x.id) : [] } : this.mapData; }
     // annonces touchées sur la carte en relief : la même carte d'annonce que dans Acheter, posée en bas
     const cPicked = S.cPick ? [...O, ...D].filter(x => S.cPick.includes(x.id)).map(x => this.card(x)) : [];
     const dKm = S.cme && S.csel && S.cme !== S.csel ? A.km(A.REG[S.cme], A.REG[S.csel]) : 0;
@@ -1323,9 +1327,12 @@ class Component extends DCLogic {
     const cList = cItems.slice(0, 40).map(x => { const c = this.card(x), d = S.cme && A.REG[x.region] ? A.km(A.REG[S.cme], A.REG[x.region]) : null, off = x.kind === 'offre';
       return Object.assign(c, { pin: () => this.setState({ csel: x.region, cOpen: false }), pinL: 'Voir ' + c.product + ' sur la carte', title: c.product + ' · ' + c.who, km: d == null ? '' : (d < 15 ? 'sur place' : '≈ ' + d + ' km'), emo: off ? '🧺' : '🛒', shapeRad: off ? '50%' : '9px', shapeBg: off ? 'rgba(108,197,140,.9)' : 'rgba(242,201,76,.92)' }); });
     const legB = (k, e, l, n, col) => { const onK = cK === k || cK === 'tout'; return { e, l, n, hasN: n != null, nbg: col, on: cK === k ? 'true' : 'false', op: onK ? 1 : .45, bd: cK === k ? col : 'rgba(245,240,230,.18)', bg: cK === k ? 'rgba(23,21,18,.92)' : 'rgba(23,21,18,.7)', go: () => this.setState(s => ({ cK: (s.cK || 'tout') === k ? 'tout' : k, csel: '', cPick: null })) }; };
-    const fixe = (e, l, n, col) => ({ e, l, n, hasN: n != null, nbg: col, on: 'false', op: 1, bd: 'rgba(245,240,230,.18)', bg: 'rgba(23,21,18,.7)', go: () => {} });
-    const cLeg = [legB('offre', '🧺', 'Offres', cO.length, '#6CC58C'), legB('demande', '🛒', 'Demandes', cD.length, '#F2C94C')]
-      .concat(cZ.length ? [fixe('🔥', 'Forte demande', cZ.length, '#E2735B')] : [], [fixe('▲', 'Vous', null, ''), fixe('〰', 'Compatibles', null, '')]);
+    // « Compatibles » : un vrai filtre (vos annonces + celles qui leur répondent, reliées par une ligne bleue) ;
+    // « Forte demande » : ouvre la liste des zones. (L'ancien « Vous » ne faisait rien : votre position, c'est le bouton ⌖ et le point violet.)
+    const cmp = legB('compat', '〰', 'Compatibles', cCompat.length, '#6AAEF0');
+    if (!cCompat.length) cmp.go = () => this.say(mesA.length ? 'Aucune annonce ne répond encore aux vôtres pour l\u2019instant.' : 'Publiez une offre ou une demande : les annonces qui lui répondent s\u2019afficheront ici.');
+    const feu = { e: '🔥', l: 'Forte demande', n: cZ.length, hasN: true, nbg: '#E2735B', on: 'false', op: 1, bd: 'rgba(245,240,230,.18)', bg: 'rgba(23,21,18,.7)', go: () => this.setState({ cOpen: true, csel: '', cPick: null }) };
+    const cLeg = [legB('offre', '🧺', 'Offres', cO.length, '#6CC58C'), legB('demande', '🛒', 'Demandes', cD.length, '#F2C94C'), cmp].concat(cZ.length ? [feu] : []);
     const cZones = cZ.map(z => ({ t: 'Forte demande' + (z.product_label ? ' : ' + z.product_label : ''), x: (z.city || (A.REG[z.region_slug] || [])[2] || '') + (z.note ? ' · ' + z.note : '') + ' · jusqu\u2019au ' + new Date(z.expire_le).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }), canDel: isAdm, del: () => { if (confirm('Retirer cette zone de la carte ?')) NZ.zoneRetirer(z.id).then(() => this.say('Zone retirée')).catch(e => this.say('Impossible : ' + e.message)); } }));
     const cTopPx = (framed ? 50 : Math.max(12, this.safeT || 0)) + 52 + 46 + 54, cBotPx = 62 + (framed ? 34 : Math.max(18, this.safeB || 0)); this.cIns = { t: cTopPx, b: cBotPx };
     const cOpen = !!S.cOpen, nTot = cItems.length + (S.csel ? 0 : cZ.length);

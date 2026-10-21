@@ -342,3 +342,8 @@ Lui proposer de coller ceci :
   - sinon, le premier mot qui dit ce qui s'est passé (publiée, envoyé, connecté, impossible, retirée…) ;
   - sinon, le premier mot du métier (annonce, offre, négociation, commande, prix…) ;
   - sinon, rien.
+
+**Tampons : plus de débordement** (signalé le 21/10 sur la liste de la carte)
+- `.qd` : le texte passe à la ligne, équilibré (`text-wrap: balance`). Un mot trop long se coupe plutôt que de sortir du tampon.
+- Dans la liste de la carte, très étroite, le tampon est un peu plus serré (10,5 px).
+- Vérifié à 320, 360 et 414 px, de jour et de nuit, sur la carte, le catalogue et la fiche : aucun débordement.

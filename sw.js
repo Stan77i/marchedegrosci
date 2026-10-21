@@ -3,7 +3,7 @@
    installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
    Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v94';
+const CACHE = 'mgci-v95';
 // tuiles de la carte en relief déjà vues (relief Terrarium, rues OpenFreeMap) : gardées d'une version à l'autre, 1 500 au plus
 const TUILES = 'tuiles-mgci', TUILES_MAX = 1500, HOTES_TUILES = ['s3.amazonaws.com', 'tiles.openfreemap.org'];
 
@@ -128,7 +128,7 @@ self.addEventListener('install', e => {
     await c.addAll(CORE.map(u => new Request(u, { cache: 'reload' })));
     await Promise.all(IMAGES.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})));
     await Promise.all(CARTE.map(u => c.add(new Request(encodeURI(u), { cache: 'reload' })).catch(() => {})));
-    await Promise.all(['v3/releve.js', 'app/garanties.js'].map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})));   // nouveaux modules : au mieux   // sans bloquer l'installation si l'un manque
+    await Promise.all(['v3/releve.js', 'app/garanties.js', 'v3/commandes.js'].map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})));   // nouveaux modules : au mieux   // sans bloquer l'installation si l'un manque
     await self.skipWaiting();
   })());
 });
@@ -236,7 +236,7 @@ self.addEventListener('push', e => {
   e.waitUntil((async () => {
     await self.registration.showNotification(d.title || 'Marché de Gros', {
       body: d.body || '', tag: d.tag || 'mdg', renotify: true, icon: 'icons/v2/icon-192.png', badge: 'icons/v2/badge-96.png',
-      vibrate: [70, 40, 70], timestamp: Date.now(), data: { url: d.url || 'application.dc.html#/', nego: d.nego || null, dm: d.dm || null },
+      vibrate: [70, 40, 70], timestamp: Date.now(), data: { url: d.url || 'application.dc.html#/', nego: d.nego || null, dm: d.dm || null, commande: d.commande || ((/[?&]commande=([0-9a-f-]{36})/.exec(d.url || '') || [])[1]) || null },
       actions: d.dm ? [{ action: 'repondre', title: 'Répondre' }] : d.nego ? [{ action: 'voir', title: 'Voir la proposition' }] : [],
       image: d.image || undefined
     });
@@ -249,7 +249,7 @@ self.addEventListener('notificationclick', e => {
   e.waitUntil((async () => {
     const fen = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
     const app = fen.find(c => /application\.dc\.html/.test(c.url)) || fen[0];
-    if (app) { await app.focus(); if (data.nego) app.postMessage({ type: 'mdg-nego', nego: data.nego }); if (data.dm) app.postMessage({ type: 'mdg-dm', dm: data.dm }); return; }
+    if (app) { await app.focus(); if (data.nego) app.postMessage({ type: 'mdg-nego', nego: data.nego }); if (data.dm) app.postMessage({ type: 'mdg-dm', dm: data.dm }); if (data.commande) app.postMessage({ type: 'mdg-commande', commande: data.commande }); return; }
     await self.clients.openWindow(url);
   })());
 });

@@ -440,6 +440,7 @@
       <b>${q ? fq(q) + ' ' + esc(u) + ' × ' : ''}${fmt(n.prix_final)} F / ${esc(u)}</b>${q ? `<div class="nx-dtot">Total convenu : ${fmt(n.prix_final * q)} F</div>` : ''}
       ${n.conditions_finales ? `<p class="nx-cond"><span>Conditions</span>${esc(n.conditions_finales)}</p>` : ''}
       <p>Ces conditions sont figées. Convenez maintenant de la livraison et du paiement : rien n’est encore payé ni livré.</p>${window.MDGIdentite && MDGIdentite.gardePaiement ? `<p class="nx-warn">${MDGIdentite.gardePaiement(autreId(n), avDe(n, 40).nom || '')}</p>` : '<p>Voyez la marchandise avant de payer.</p>'}
+      ${window.MDGCommandes ? `<button type="button" class="nx-go" data-deal-cmd style="width:100%;margin:10px 0 4px">Suivre la commande</button>` : ''}
       ${window.MDGMessages ? `<a href="#" data-deal-dm>Continuer dans les messages</a><p class="nx-cond"><span>Restez dans l’application</span>Gardez vos échanges ici : en cas de litige ou de vol, le Marché de Gros peut vérifier. Hors de l’application, personne ne peut vous aider.</p>` : ''}</div>`; };
     const paint = anim => {
       if (!bg || !n) return;
@@ -459,6 +460,7 @@
       const bS = $('[data-signaler]'); if (bS) bS.onclick = () => MDGIdentite.signaler(idLui, { nom: av.nom || '', source: 'negociation', ref: n.id });
       const bN = $('[data-noter]'), bP = $('[data-profil]'), bC = $('[data-cacher]'), bE = $('[data-ecrire]');
       if (bE) bE.onclick = () => { close(); MDGMessages.ecrire(idLui, { nom: av.nom || 'Membre' }); };
+      const bCmd = $('[data-deal-cmd]'); if (bCmd) bCmd.onclick = () => { const nn = n; close(); MDGCommandes.depuisAccord(nn); };
       const bD = $('[data-deal-dm]'); if (bD) bD.onclick = e => { e.preventDefault(); close(); MDGMessages.ecrire(idLui, { nom: av.nom || 'Membre' }); };
       if (bN) bN.onclick = () => R.noter(idLui, av.nom || '');
       if (bP) bP.onclick = () => R.profil(idLui, { nom: av.nom || 'Membre', uri: avDe(n, 72).uri || '' });

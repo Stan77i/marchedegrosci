@@ -10,7 +10,9 @@
 //  5. par la base (déclencheur public.push_annonce) à chaque nouvelle annonce, avec { annonce: 'offres' | 'demandes', id } :
 //     ceux qui suivent ce produit (table alertes_produits) sont prévenus (schema-12) ;
 //  6. par la base (déclencheur public.push_identite) quand un dossier d'identité est envoyé, avec { identite_id },
-//     et chaque matin (pg_cron) avec { resume_identites: true } : les administrateurs sont prévenus (schema-19).
+//     et chaque matin (pg_cron) avec { resume_identites: true } : les administrateurs sont prévenus (schema-19) ;
+//  7. par la base (déclencheur public.push_commande) à chaque étape d'une commande, avec { commande_etape_id } :
+//     l'autre partie est prévenue (schema-26).
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
 import webpush from "npm:web-push@3.6.7";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -118,6 +120,34 @@ Deno.serve(async (req) => {
         body: n + (n > 1 ? " dossiers" : " dossier") + " à examiner" + (corps.resume_identites ? " ce matin" : ""),
         tag: "identite", url: "admin.html#identites" }));
       return json({ admins: res.length, dossiers: n, res });
+    }
+
+    // 7. une étape de commande ({ commande_etape_id }, déclencheur public.push_commande, schema-26) : l'autre partie est prévenue
+    if (corps.commande_etape_id) {
+      const { data: e } = await sb.from("commande_etapes").select("id, commande_id, evenement, par, lieu").eq("id", String(corps.commande_etape_id)).maybeSingle();
+      if (!e) return json({ erreur: "étape introuvable" }, 404);
+      const { data: k } = await sb.from("commandes").select("id, numero, vendeur_id, acheteur_id, produit").eq("id", e.commande_id).maybeSingle();
+      if (!k) return json({ erreur: "commande introuvable" }, 404);
+      const dests = [k.vendeur_id, k.acheteur_id].filter((u: string) => u && u !== e.par);
+      const qui = e.par ? await nomDe(e.par) : "Marché de Gros", produit = k.produit || "votre commande";
+      const T: Record<string, [string, string]> = {
+        creee: [`${qui} vous propose une commande`, `${produit} — touchez pour confirmer`],
+        confirmee: ["Commande confirmée", `${produit} · ${qui} a confirmé`],
+        refusee: ["Commande refusée", `${produit} · ${qui} a refusé`],
+        preparation: ["Marchandise en préparation", produit],
+        chargement: ["Chargement confirmé, transport en cours", produit],
+        transbordement: ["Transbordement", `${produit}${e.lieu ? " · " + e.lieu : ""}`],
+        arrivee: ["Le chauffeur est arrivé", produit],
+        reception: ["Réception confirmée, commande terminée", produit],
+        annulation_demandee: [`${qui} demande l'annulation`, `${produit} — touchez pour répondre`],
+        annulation_refusee: ["Annulation refusée", produit],
+        annulee: ["Commande annulée", produit],
+        litige: [`${qui} a ouvert un litige`, `${produit} — l'équipe va examiner`],
+      };
+      const [title, body] = T[e.evenement] || ["Votre commande avance", produit];
+      const res = [];
+      for (const d of dests) res.push(await envoyer(d, { title, body, tag: "cmd-" + k.id, url: "application.dc.html#/?commande=" + k.id }));
+      return json({ res });
     }
 
     // 5. une nouvelle annonce : ceux qui suivent ce produit sont prévenus

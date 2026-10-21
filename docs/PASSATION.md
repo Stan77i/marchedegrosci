@@ -41,7 +41,7 @@
   - `v3/sons.js`, `app/marque.js` (logo), `app/toast.js` (notifications).
 - **Propres à l'app** : `app/sac.js` (le sac personnage), `app/garanties.js` (arguments de confiance), `v3/releve.js` (ventes et relevés), `v3/guide.js`, `v3/alertes.js`, `app/carte-gl.js`, `css/mgci-tokens.css` (couleurs et voix du logo), `css/mgci-app.css`.
 - `admin.html` + `v3/admin.js` : tableau de bord administrateur.
-- `supabase/schema-*.sql` : chaque changement de base, commenté. Tout jusqu'au **schéma 24** est **déjà appliqué**.
+- `supabase/schema-*.sql` : chaque changement de base, commenté. Tout jusqu'au **schéma 25** est **déjà appliqué**.
 - Documents :
   - `PORTAGE-SITE.md` : porter l'app vers le site ;
   - `docs/SEQUESTRE.md` : futur paiement ;

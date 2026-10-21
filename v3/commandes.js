@@ -111,6 +111,11 @@
 .cm-err{color:#8A2414;font-size:13.5px;margin:8px 0 0;min-height:1em}
 .cm-note{margin:12px 2px 0;font-size:12.5px;color:#5E5546}
 .cm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.cm-av{background:#FFFDF8;border-radius:18px;padding:14px 16px;margin:12px 0}.cm-av h3{margin:0 0 4px;font:600 17px/1.2 Archivo,'Helvetica Neue',Arial,sans-serif}.cm-av p{margin:0 0 8px;color:#4A4336;font-size:14px}.cm-av small{color:#5E5546;font-size:12.5px}
+.cm-av-e{display:flex;gap:4px;margin:6px 0 2px}.cm-av-e button{width:48px;height:48px;border:0;background:transparent;padding:6px;cursor:pointer}.cm-av-e button svg{width:100%;height:100%;fill:transparent;stroke:#7D7462;stroke-width:1.4;stroke-linejoin:round}.cm-av-e button.on svg{fill:#F2C230;stroke:#7A5A00}.cm-av-e button:focus-visible{outline:3px solid #10392B;outline-offset:1px;border-radius:10px}
+.cm-av-l{min-height:20px;font-weight:600;color:#10392B!important}.cm-av-t{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E5546}.cm-av-t textarea{min-height:70px;padding:10px 12px;border:1px solid #D9D1BE;border-radius:12px;background:#FFF;font:400 15px/1.4 Jost,system-ui,sans-serif;color:#171512;resize:vertical}
+.cm-av-f{display:inline-flex;gap:1px;vertical-align:-3px}.cm-av-f i{width:16px;height:16px}.cm-av-f svg{width:100%;height:100%;fill:transparent;stroke:#7D7462;stroke-width:1.4;stroke-linejoin:round}.cm-av-f i.on svg{fill:#F2C230;stroke:#7A5A00}
+.cm-av-recu,.cm-av-fid{margin:10px 0 0!important;padding-top:10px;border-top:1px solid #ECE6D6}.cm-av-fid{color:#10392B!important;font-weight:600}
 @media (prefers-reduced-motion:reduce){.cm-bg,.cm,.cm-camion,.cm-pb i,.cm-scene *{animation:none!important;transition:none!important}}`;
   function css() { if (document.getElementById('cmCss')) return; const s = document.createElement('style'); s.id = 'cmCss'; s.textContent = CSS; document.head.appendChild(s); }
 
@@ -154,6 +159,7 @@
     const [j, t, p] = await Promise.all([N().rpc('commande_journal', { p_id: id }).catch(() => null), N().rpc('commande_transport', { p_id: id }).catch(() => null),
       suivre ? N().rpc('commande_position', { p_cmd: id }).catch(() => null) : null]);
     if (j) journal[id] = j; if (t) transport[id] = t; if (p) pos[id] = p;
+    if (c && c.etat === 'terminee') { const a = await N().rpc('avis_commande_moi', { p_cmd: id }).catch(() => null); if (a) avis[id] = a; }
   }
   async function rafraichir() {
     if (!bg || document.hidden) return;
@@ -262,6 +268,8 @@
       <div class="cm-prog" role="progressbar" aria-label="Avancement de la commande" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(p * 100)}"><div class="cm-pb"><i style="--p:${p.toFixed(3)}"></i></div></div>
       <div class="cm-st" role="status" aria-live="polite"><b>${titre}</b>${sous ? `<small>${esc(sous)}</small>` : ''}<small>Dernière actualisation : ${ilya(der)}</small></div>
       ${actions(c)}
+      ${c.etat === 'terminee' && c.role === 'acheteur' && window.MDGRacheter ? `<div class="cm-act"><button type="button" class="p" data-racheter>Racheter · prix du jour</button></div>` : ''}
+      ${blocAvis(c)}
       ${c.validation === 'declaration' && ['a_confirmer', 'en_cours'].includes(c.etat) ? `<p class="cm-info"><b>Validation sans code.</b> Le vendeur déclare le chargement, l’acheteur l’arrivée et la réception. Je recommande que le chauffeur crée un compte gratuit sur le Marché de Gros : avec les codes, personne ne peut déclarer une livraison à votre place.</p>` : ''}
       ${blocCode(c)}
       ${blocTransport(c)}
@@ -281,7 +289,8 @@
     box.querySelector('[data-x]').onclick = fermer;
     box.querySelector('[data-retour]').onclick = () => { oublierCarte(); sel = null; vue = 'liste'; peindre(); };
     box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => geste(c, b.dataset.g));
-    lierTransport(c, box); lierCode(c, box); placerCarte(c, box);
+    const rb = box.querySelector('[data-racheter]'); if (rb) rb.onclick = () => { fermer(); MDGRacheter.ouvrir(c.id); };
+    lierTransport(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box);
     if (arrive) { if (navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {} toast('Le chauffeur est arrivé', { type: 'ok', sous: c.role === 'acheteur' ? 'Vérifiez la marchandise avant de confirmer.' : esc(c.produit || '') }); }
   }
   let dernierEcran = '';
@@ -297,6 +306,45 @@
       if (carte !== k) { api.detruire(); return; }
       k.api = api; api.etape(c.etape); api.maj(pos[c.id]);
     });
+  }
+
+  // ——— l'avis : seulement après une commande terminée (schéma 32), un par commande, corrigeable 24 h puis figé ———
+  const avis = {}, avisNote = {};
+  const ETOILE = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8L10 14.9 4.8 17.6l1-5.8L1.6 7.7l5.8-.8z"/></svg>';
+  const LIBA = ['', 'Mauvaise expérience', 'Décevant', 'Correct', 'Bon partenaire', 'Excellent partenaire'];
+  const etoilesFixes = n => `<span class="cm-av-f" aria-label="${n} sur 5">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= n ? 'on' : ''}">${ETOILE}</i>`).join('')}</span>`;
+  function blocAvis(c) {
+    if (c.etat !== 'terminee') return '';
+    const a = avis[c.id]; if (!a) return '';
+    const qui = c.role === 'vendeur' ? 'l’acheteur' : 'le vendeur', ens = +a.ensemble || 0;
+    const fid = ens >= 2 ? `<p class="cm-av-fid">${ens}<sup>e</sup> commande terminée ensemble avec ${esc(String(c.partenaire_nom || '').replace(/\.$/, ''))}.</p>` : '';
+    const recu = a.recu ? `<p class="cm-av-recu">${esc(c.partenaire_nom)} vous a donné ${etoilesFixes(a.recu.note)}${a.recu.texte ? ' · « ' + esc(a.recu.texte) + ' »' : ''}</p>` : '';
+    if (!a.peut) return a.note ? `<section class="cm-av"><h3>Votre avis sur ${esc(c.partenaire_nom)}</h3><p>${etoilesFixes(a.note)} ${esc(LIBA[a.note])}${a.texte ? '<br>« ' + esc(a.texte) + ' »' : ''}</p><small>Figé : un avis ne se modifie plus après 24 heures.</small>${recu}${fid}</section>`
+      : (recu || fid ? `<section class="cm-av">${recu}${fid}</section>` : '');
+    const n = avisNote[c.id] || a.note || 0;
+    return `<section class="cm-av"><h3>${a.note ? 'Votre avis sur' : 'Notez'} ${esc(c.partenaire_nom)}</h3>
+      <p>Votre note compte pour sa réputation de ${c.role === 'vendeur' ? 'acheteur' : 'vendeur'}. ${a.note ? 'Vous pouvez la corriger jusqu’à ' + heure(a.modifiable_jusqua) + ' (' + jour(a.modifiable_jusqua) + ').' : 'Corrigeable pendant 24 heures, puis figée.'}</p>
+      <div class="cm-av-e" role="radiogroup" aria-label="Note de ${qui}">${[1, 2, 3, 4, 5].map(i => `<button type="button" role="radio" aria-checked="${i === n}" aria-label="${i} étoile${i > 1 ? 's' : ''}" data-av="${i}" class="${i <= n ? 'on' : ''}">${ETOILE}</button>`).join('')}</div>
+      <p class="cm-av-l" aria-live="polite">${esc(LIBA[n] || '')}</p>
+      <label class="cm-av-t"><span>Un mot (facultatif)</span><textarea maxlength="300" data-av-t placeholder="Qualité, quantité, ponctualité, respect du prix…">${esc(a.texte || '')}</textarea></label>
+      <p class="cm-err" data-av-err role="alert"></p>
+      <div class="cm-act"><button type="button" class="p" data-av-ok ${n ? '' : 'disabled'}>${a.note ? 'Corriger mon avis' : 'Publier mon avis'}</button></div>${recu}${fid}</section>`;
+  }
+  function lierAvis(c, box) {
+    box.querySelectorAll('[data-av]').forEach(b => b.onclick = () => {
+      const n = +b.dataset.av; avisNote[c.id] = n;
+      box.querySelectorAll('[data-av]').forEach(x => { x.classList.toggle('on', +x.dataset.av <= n); x.setAttribute('aria-checked', String(+x.dataset.av === n)); });
+      const l = box.querySelector('.cm-av-l'); if (l) l.textContent = LIBA[n]; const ok = box.querySelector('[data-av-ok]'); if (ok) ok.disabled = false;
+    });
+    const ok = box.querySelector('[data-av-ok]'); if (!ok) return;
+    ok.onclick = async () => {
+      const n = avisNote[c.id] || (avis[c.id] && avis[c.id].note), t = box.querySelector('[data-av-t]').value.trim(), err = box.querySelector('[data-av-err]');
+      const rf = t && N().texteRefus ? N().texteRefus(t) : ''; if (rf) { err.textContent = rf; return; }
+      ok.disabled = true; err.textContent = '';
+      try { await N().rpc('avis_commande_donner', { p_cmd: c.id, p_note: n, p_texte: t || null }); delete avisNote[c.id];
+        avis[c.id] = await N().rpc('avis_commande_moi', { p_cmd: c.id }).catch(() => avis[c.id]); toast('Merci, votre avis est publié', { type: 'ok', sous: 'Il aide les autres à choisir avec qui échanger.' }); peindre(); }
+      catch (x) { ok.disabled = false; err.textContent = x.code === 'texte' ? x.message : erreurTxt(x); }
+    };
   }
 
   // ——— les codes : le vendeur voit le code de prise en charge, l'acheteur le code de réception ; le chauffeur les tape ———

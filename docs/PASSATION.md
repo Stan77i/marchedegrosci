@@ -110,7 +110,22 @@
 - Fonction de lecture `prix_zones(produit)` (lisible sans connexion) : par district et par unité, prix demandés (90 j, hors annonces masquées), quantité en vente, budgets acheteurs, ventes terminées (prix montré seulement à partir de 3 ventes de 2 vendeurs), tendance 30 j contre 30 j (3 prix de 2 vendeurs par période, ±5 %), médiane par mois.
 - Bouton « Par zone et tendance » sur chaque produit de « Prix du marché ». Sans données : on le dit.
 
+**Réputation sur les commandes** (schéma 32)
+- Table fermée `avis_commandes` : un avis par personne et par commande **terminée**, dans les 30 jours, corrigeable 24 h puis figé ; rangé selon le rôle de la personne notée (vendeur / acheteur).
+- `noter()` (avis après simple négociation) refuse désormais ; la table `avis` (vide au 21/10/2026) reste lue pour l'historique.
+- `reputation_publique(uid)` : par rôle, note, commandes honorées, annulations demandées, litiges ouverts par l'autre partie, délai médian confirmation → réception, badge « Fiable » (critères publics). « Vérifié » ≠ « fiable ».
+- Fidélité : « 2e commande terminée ensemble » dans la commande et le profil.
+- Pas de « retard » compté : aucune date de livraison promise n'existe encore dans une commande.
+
+**Racheter et rappels** (schéma 33, `v3/racheter.js`)
+- `recommande_preparer(commande)` : même annonce, autres annonces du même vendeur, 5 autres vendeurs ; prix du jour, stock, écart avec le dernier prix. `mes_achats_habituels()`.
+- L'acheteur coche plusieurs produits, ajuste, **confirme une fois** : une proposition par produit (`nego_ouvrir`, qui revérifie tout). Le vendeur doit accepter. Rien n'est acheté tout seul.
+- Rappels quotidiens / hebdomadaires (table `rappels_achat`, 10 max, heure d'Abidjan = UTC), tâche pg_cron `mdg-rappels-achat` (*/15), notification « Racheter … ? » (pousser, cas 10) qui ouvre l'écran de préparation.
+- Entrées : « Racheter » dans Mon compte, bouton dans une commande terminée (acheteur).
+
 ## 5. En attente d'une décision du propriétaire
+
+0. **Racheter sur la même annonce** : la contrainte `negociations_cible_cible_id_auteur_id_key` limite un acheteur à UNE négociation par annonce pour toujours. Proposition : la remplacer par un index unique partiel (une seule négociation *ouverte* par acheteur et par annonce). Demande un `drop constraint` : attend l'accord du propriétaire.
 
 1. **Zoom** : autoriser le zoom à deux doigts partout sauf sur la carte ? (seule alerte d'accessibilité critique restante, WCAG 1.4.4)
 2. **« Je cherche » coupé sur les très petits écrans (280 px)** : raccourcir en « Cherche » sur ces écrans seulement ?

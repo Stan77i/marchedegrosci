@@ -15,6 +15,7 @@
 //     l'autre partie est prévenue (schema-26) ;
 //  8. par la base (déclencheur public.push_mission) pour une mission de transport, avec { mission_id } (schema-27) ;
 //  9. par la base (déclencheur public.push_transporteur) quand l'équipe décide d'un profil de transporteur, avec { transporteur_id }.
+// 10. par la base (pg_cron, public.rappels_envoyer) pour un rappel d'achat, avec { rappel_id } (schema-33) : rien n'est acheté.
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
 import webpush from "npm:web-push@3.6.7";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -184,6 +185,15 @@ Deno.serve(async (req) => {
       };
       const [title, body] = T[t.statut] || ["Votre profil de transporteur a changé", "Touchez pour voir."];
       return json(await envoyer(t.user_id, { title, body, tag: "transporteur", url: "application.dc.html#/?chauffeur=1" }));
+    }
+
+    // 10. un rappel d'achat ({ rappel_id }, pg_cron public.rappels_envoyer, schema-33) : il ouvre l'écran « Racheter », rien n'est envoyé au vendeur
+    if (corps.rappel_id) {
+      const { data: r } = await sb.from("rappels_achat").select("id, user_id, commande_id, produit, actif").eq("id", String(corps.rappel_id)).maybeSingle();
+      if (!r || !r.actif) return json({ rien: true });
+      return json(await envoyer(r.user_id, { title: `Racheter ${coupe(r.produit || "votre produit", 40)} ?`,
+        body: "Touchez pour voir le prix et le stock du jour. Rien n'est commandé sans votre accord.", tag: "rappel-" + r.id,
+        url: "application.dc.html#/?racheter=" + r.commande_id }));
     }
 
     // 5. une nouvelle annonce : ceux qui suivent ce produit sont prévenus

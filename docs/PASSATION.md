@@ -276,6 +276,23 @@
   - disponible : vert.
 - Si le téléphone demande moins d'animations, rien ne bouge.
 
+**Mode nuit partout** (demandé le 21/10 : « ça doit s'appliquer à tout le site »)
+- Pages de l'app : `css/sombre.css` retourne les jetons (`--papier`, `--carte`, `--encre`, `--ivoire`…) dans les pages « papier » (`[data-pg=…]` et tout bloc `background:var(--papier)`, comme le choix du produit ou la recherche).
+  - Fonds clairs → sombres ; texte encre → crème ; ce qui était sombre sur le papier (boutons) → clair, texte foncé.
+  - Les panneaux `--nuit-2` et `.fam-tile` restent sombres.
+  - Liens et mots en valeur → maïs.
+  - Les classes à couleurs en dur (`.an-*`, `.px-*`, `.ct-*`) ont leurs règles en bas du fichier.
+- Couleurs en dur dans le code de la page (puces d'unités, onglets Offres / Demandes, Je vends, flèches retour, choix du lieu…) remplacées par les jetons. Rien ne change en mode clair : mêmes valeurs.
+- Fenêtres des modules (compte, messages, négociations, guide, commandes, relevé, alertes, groupes, appro, chauffeur…) : `app/nuit.js` traduit leurs couleurs à l'affichage. Il ne touche qu'à ce qui est hors de `#dc-root`.
+  - fond neutre clair → sombre ; pastel → même teinte en sombre ; voile noir léger → voile clair ;
+  - texte neutre foncé → clair ; texte coloré foncé → même teinte éclaircie ;
+  - mot surligné de maïs → maïs ;
+  - les couleurs vives et le texte posé dessus ne bougent pas.
+  - En repassant en clair, les couleurs d'origine reviennent. Les fenêtres créées plus tard sont couvertes d'office.
+- Contrôle : un robot ouvre 12 pages et 20 fenêtres en mode nuit et liste les surfaces claires et les textes à contraste < 3.
+  - Avant : 145 points. Après : 0, hors éléments voulus (tampons, boutons maïs, puce sélectionnée claire).
+  - Script : voir la PR.
+
 ## 5. En attente d'une décision du propriétaire
 
 

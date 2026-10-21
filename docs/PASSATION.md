@@ -194,6 +194,21 @@
 - Le bouton « Se connecter » ne devient plus bleu et n'affiche plus « Connexion réussie. Préparation de votre espace… » : il reste en attente, et la notification de bienvenue suffit (`nuage.js`).
 - Les notifications (`app/toast.js`) ne sont plus vertes : fond sombre translucide `rgba(23,21,18,.62)` avec flou du fond, lisible sur fond sombre comme sur fond crème.
 
+**Accueil clair** (demande du propriétaire, 21/10/2026, à partir d'une page de référence)
+- La page de référence est un modèle payant : on n'en reprend que la **disposition** des écrans. Aucun code, aucune image ni aucun fichier n'en est copié. Tout est écrit ici, aux couleurs du Marché de Gros, en Jost.
+- Icônes : Lucide (licence ISC), comme le reste de l'app. Ajoutées dans `tools/icones/build.py` : `boite` (package), `panier` (shopping-cart), `camion`, `sablier`, `tendance`.
+- Disposition :
+  - en-tête (logo rond = menu, recherche, « + » Publier, compte), qui n'est **pas flottant**, à la demande du propriétaire ;
+  - onglets **Marché / Activité / Alertes** ;
+  - salutation (« Bonjour, Prénom » ou « Bienvenue au marché ») avec les vrais nombres d'offres et de demandes ;
+  - **le sélecteur orbital, inchangé, dans une carte sombre** ;
+  - cartes de chiffres (offres, demandes, mes annonces ou prix du marché) ;
+  - liste des dernières annonces ;
+  - alertes réelles : propositions et messages non lus, stocks épuisés.
+- Retirés à la demande du propriétaire : le nom écrit à côté du logo, et la date et l'heure.
+- J'ai / Je cherche restent en bas, comme avant. Le propriétaire a demandé une proposition à valider avant d'y toucher.
+- Code : `accueil()` dans `application.dc.html` (état `accTab`), styles `.acc-*` dans `css/mgci-app.css`. La roue ne dépend plus que de la largeur (la page défile).
+
 ## 5. En attente d'une décision du propriétaire
 
 

@@ -17,7 +17,7 @@
 <script>/* service worker : vérifie les mises à jour à chaque retour sur l'application ; quand une nouvelle version prend la main, la page se recharge (tout de suite si elle vient de s'ouvrir, sinon au prochain retour, jamais pendant une saisie) */if('serviceWorker' in navigator){(function(){var sw=navigator.serviceWorker,avant=!!sw.controller,t0=Date.now(),attente=false;sw.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(attente)location.reload();else r.update().catch(function(){})}})}).catch(function(){});sw.addEventListener('controllerchange',function(){if(!avant||attente)return;if(Date.now()-t0<6000)location.reload();else attente=true})})()}</script>
 <script src="v3/nuage.js?v=20261023g"></script>
 <script src="v3/avatar.js?v=20261023f"></script>
-<script src="app/icones.js"></script>
+<script src="app/icones.js?v=20261023m"></script>
 <script src="app/marque.js?v=20261023f"></script>
 <script src="app/sac.js?v=20261019b"></script>
 <script src="app/garanties.js?v=20261023f"></script>
@@ -43,7 +43,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261023f">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261023n">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261023f">
 <link rel="stylesheet" href="v3/ux.css?v=20261023f">
@@ -70,18 +70,30 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 
 <div style="position:absolute;inset:0;isolation:isolate;z-index:0">
 <!-- ═══ ACCUEIL ═══ -->
-<div data-pg="home" data-screen-label="Accueil" style="position:absolute;inset:0;background:var(--encre);color:var(--ivoire);display:flex;flex-direction:column;overflow:hidden;isolation:isolate;transform:{{ tf.home }};visibility:{{ vis.home }};z-index:{{ zi.home }};backface-visibility:hidden;-webkit-backface-visibility:hidden">
-  <div style="position:absolute;left:50%;top:330px;width:640px;height:640px;margin:-320px 0 0 -320px;border-radius:50%;background:radial-gradient(circle,{{ halo }} 0%,transparent 60%);opacity:.5;pointer-events:none;transition:background .6s"></div>
-  <mdg-marche></mdg-marche>
-  <div style="height:{{ topPad }};flex:none"></div>
-  <!-- barre du haut, à la manière de Gmail : menu à gauche, recherche au milieu (le nom s'écrit, puis des phrases passent), compte à droite -->
-  <div style="padding:4px 12px 0;height:58px;box-sizing:border-box;position:relative;z-index:2">
-    <div style="display:flex;align-items:center;height:54px;border-radius:27px;background:rgba(245,240,230,.075);box-shadow:inset 0 0 0 1px rgba(245,240,230,.06);padding:0 5px">
-      <button onClick="{{ openMenu }}" aria-label="Menu" style="width:44px;height:44px;flex:none;border:0;background:transparent;color:var(--ivoire);display:flex;align-items:center;justify-content:center;border-radius:22px;position:relative"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg><sc-if value="{{ hasPubs }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:9px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--offre);box-shadow:0 0 0 2px var(--nuit-3)"></span></sc-if></button>
-      <button onClick="{{ goAcheter }}" aria-label="Chercher un produit" style="flex:1;min-width:0;height:44px;border:0;background:transparent;padding:0 6px 0 2px;display:flex;align-items:center;gap:8px;color:var(--sable)"><svg width="19" height="19" stroke="currentColor" stroke-width="1.9" aria-hidden="true" style="flex:none" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="chercher"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><mdg-souffle data-go="{{ sfGo }}"></mdg-souffle></button>
-      <button onClick="{{ goMoi }}" aria-label="{{ moiLabel }}" style="width:44px;height:44px;flex:none;border:0;background:transparent;display:flex;align-items:center;justify-content:center;border-radius:22px;padding:0;position:relative">{{ moiEl }}<sc-if value="{{ moiDot }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:5px;right:4px;width:9px;height:9px;border-radius:50%;background:var(--terre);box-shadow:0 0 0 2px var(--nuit-3)"></span></sc-if></button>
+<div data-pg="home" data-screen-label="Accueil" class="acc" style="position:absolute;inset:0;background:#F3EFE4;color:#171512;display:flex;flex-direction:column;overflow:hidden;isolation:isolate;transform:{{ tf.home }};visibility:{{ vis.home }};z-index:{{ zi.home }};backface-visibility:hidden;-webkit-backface-visibility:hidden">
+  <!-- accueil clair : en-tête flottant (marque, recherche, publier, compte) + onglets ; dessous, le contenu de l'onglet ; J'ai / Je cherche restent en bas -->
+  <div class="acc-sc" style="padding-top:{{ topPad }};padding-bottom:calc({{ botPad }} + 96px)">
+  <div class="acc-tete">
+    <div class="acc-l1">
+      <button class="acc-mq" onClick="{{ openMenu }}" aria-label="Menu">{{ accLogo }}<sc-if value="{{ hasPubs }}" hint-placeholder-val="{{ false }}"><span class="acc-pt"></span></sc-if></button>
+      <span class="acc-nom" aria-hidden="true"></span>
+      <button class="acc-r" onClick="{{ goAcheter }}" aria-label="Chercher un produit">{{ accIco.chercher }}</button>
+      <button class="acc-r plein" onClick="{{ goVendre }}" aria-label="Publier une offre">{{ accIco.plus }}</button>
+      <button class="acc-r av" onClick="{{ goMoi }}" aria-label="{{ moiLabel }}">{{ accMoi }}<sc-if value="{{ moiDot }}" hint-placeholder-val="{{ false }}"><span class="acc-pt"></span></sc-if></button>
+    </div>
+    <div class="acc-ong" role="tablist" aria-label="Accueil">
+      <sc-for list="{{ accOngs }}" as="o" hint-placeholder-count="3"><button role="tab" aria-selected="{{ o.sel }}" class="{{ o.cls }}" onClick="{{ o.go }}">{{ o.t }}<sc-if value="{{ o.hasN }}" hint-placeholder-val="{{ false }}"><span class="acc-n">{{ o.n }}</span></sc-if></button></sc-for>
     </div>
   </div>
+
+  <div style="display:{{ accM }}">
+    <div class="acc-salut">
+      {{ accTitre }}
+      <p>{{ accSous }}</p>
+    </div>
+    <div class="acc-orb">
+  <div style="position:absolute;left:50%;top:250px;width:640px;height:640px;margin:-320px 0 0 -320px;border-radius:50%;background:radial-gradient(circle,{{ halo }} 0%,transparent 60%);opacity:.5;pointer-events:none;transition:background .6s"></div>
+      <mdg-marche></mdg-marche>
   <!-- nos garanties, une à la fois (app/garanties.js) : toucher → « Pourquoi le Marché de Gros » -->
   <div style="position:relative;z-index:2;flex:none;height:32px;margin-top:2px"><mdg-garanties></mdg-garanties></div>
   <div style="display:flex;flex-direction:column;align-items:center;gap:0;padding:0;margin-top:-4px;position:relative">
@@ -136,7 +148,27 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
     </div>
     <button onClick="{{ openFicheAct }}" style="margin-top:8px;border:0;background:transparent;color:var(--ivoire);font-size:var(--t-md);font-weight:500;padding:10px 14px;display:inline-flex;align-items:center;gap:6px;border-radius:20px">{{ act.cta }}<svg width="14" height="14" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="fleche"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button>
   </div>
-  <div style="margin-top:auto;flex:none;padding:0 18px {{ botPad }};display:flex;gap:10px;position:relative">
+    </div>
+    <div class="acc-stats">
+      <sc-for list="{{ accStats }}" as="c" hint-placeholder-count="3"><button class="{{ c.cls }}" onClick="{{ c.go }}"><span class="acc-k-t">{{ c.t }}</span><span class="acc-i {{ c.tint }}">{{ c.ico }}</span><b>{{ c.v }}</b><small>{{ c.s }}</small></button></sc-for>
+    </div>
+  </div>
+
+  <div style="display:{{ accA }}">
+    <section class="acc-carte"><h2>Dernières annonces</h2><p class="acc-sub">Ce qui vient d’arriver sur le marché.</p>
+      <sc-for list="{{ accActs }}" as="a" hint-placeholder-count="0"><button class="acc-ligne" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span><span class="acc-h">{{ a.h }}</span></button></sc-for>
+      <sc-if value="{{ accActVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">Aucune annonce pour l’instant.</p></sc-if>
+    </section>
+  </div>
+
+  <div style="display:{{ accL }}">
+    <section class="acc-carte"><h2>Alertes</h2><p class="acc-sub">Ce qui demande votre attention.</p>
+      <sc-for list="{{ accAlertes }}" as="a" hint-placeholder-count="0"><button class="acc-al {{ a.tint }}" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span>{{ accIco.suite }}</button></sc-for>
+      <sc-if value="{{ accAlVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">Rien à signaler. Tout est en ordre.</p></sc-if>
+    </section>
+  </div>
+  </div>
+  <div class="acc-bas" style="padding:0 18px {{ botPad }}">
     <div class="duo2" role="group" aria-label="Publier">
       <button class="jai" onClick="{{ openJai }}" aria-label="{{ duoH.jaiL }}"><span class="emo" aria-hidden="true">🧺</span><span class="tx"><b>J'ai</b><small>à vendre</small></span></button>
       <button class="ch" onClick="{{ openCherche }}" aria-label="{{ duoH.chL }}"><span class="emo" aria-hidden="true">🛒</span><span class="tx"><b>Je cherche</b><small>à acheter</small></span></button>
@@ -737,7 +769,7 @@ class Component extends DCLogic {
       vf: Object.assign({ step: 1, mode: 'moi', slug: '', photo: '', qty: '', qmin: '', unit: 'kg', price: '', neg: true, region: me.region || '', city: me.city || '', avail: 'maintenant', date: '', agent: '', name: me.name || '' }, draft, { step: 1 }), vErr: {},
       df: { slug: '', qty: '', unit: 'kg', region: me.region || '', city: me.city || '', deadline: 'semaine', budget: '', name: me.name || '' }, dErr: {},
       cprod: '', cme: me.region || '', csel: '', month: new Date().getMonth() + 1,
-      toast: '', toastOn: false, splash: this.props.splash === false ? 'off' : 'on', splashLine: false, vw: window.innerWidth, vh: window.innerHeight, clock: '', tick: 0 };
+      toast: '', toastOn: false, splash: this.props.splash === false ? 'off' : 'on', splashLine: false, vw: window.innerWidth, vh: window.innerHeight, clock: '', tick: 0, accTab: 'marche' };
     this.aRef = React.createRef(); this.pRef = React.createRef(); this.mapRef = React.createRef(); this.hist = 0;
   }
   blankM(slug) { const m = this.me || {}; return { slug, qty: '', unit: 'kg', region: m.region || '', city: m.city || '', price: '', when: '', name: m.name || '' }; }
@@ -1061,6 +1093,45 @@ class Component extends DCLogic {
   }
   openVendeur(vid) { this.push('vendeur', { vid }); }
   openSheet(mode, slug) { this.setState(st => ({ sheet: 'match', mode, menu: false, done: null, mErr: {}, sheetDy: 0, mf: Object.assign(this.blankM(slug || st.mf.slug), { unit: st.mf.unit }) })); }
+  // ——— accueil clair : onglets Marché / Activité / Alertes, salutation, chiffres réels du marché, dernières annonces, alertes ———
+  accueil({ h, mine, moiS, moiP, moiC, moiN }) {
+    const S = this.state, A = window.MDGApp, I = window.MDGIco, tab = S.accTab || 'marche';
+    const ico = (n, t) => h('span', { style: { display: 'flex' }, dangerouslySetInnerHTML: { __html: I ? I.svg(n, t || 20, 1.9) : '' } });
+    const off = this.offersAll().filter(o => o.qty > 0 && !o.epuise), dem = this.demands();
+    const nP = l => new Set(l.map(x => x.slug)).size, pl = (n, m) => n + ' ' + m + (n > 1 ? 's' : '');
+    // les alertes : seulement ce qui existe vraiment (rien d'inventé)
+    const al = [];
+    if (!moiS) al.push({ tint: 'n', ico: ico('compte'), t: 'Connectez-vous', s: 'Pour voir vos propositions, messages et stocks.', go: () => moiN && moiN.open() });
+    else {
+      const ng = window.MDGNegoce && MDGNegoce.unread ? MDGNegoce.unread() : 0, dm = window.MDGMessages && MDGMessages.unread ? MDGMessages.unread() : 0;
+      if (ng) al.push({ tint: 'j', ico: ico('negoce'), t: 'Propositions de prix', s: pl(ng, 'réponse') + ' en attente', go: () => window.MDGNegoce.inbox() });
+      if (dm) al.push({ tint: 'v', ico: ico('messages'), t: 'Messages', s: pl(dm, 'message') + ' non lu' + (dm > 1 ? 's' : ''), go: () => window.MDGMessages.boite() });
+      mine.filter(x => x.kind === 'offre' && (x.epuise || !(x.qty > 0))).slice(0, 4).forEach(x => al.push({ tint: 'r', ico: ico('boite'), t: 'Stock épuisé', s: this.prod(x.slug).name + ' : l’offre n’est plus proposée', go: () => this.push('pubs') }));
+    }
+    const nAl = moiS ? al.length : 0;
+    const ongs = [['marche', 'Marché'], ['activite', 'Activité'], ['alertes', 'Alertes']].map(([k, t]) => ({ t, sel: String(tab === k), cls: tab === k ? 'on' : '', hasN: k === 'alertes' && nAl > 0, n: nAl,
+      go: () => { this.setState({ accTab: k }); const sc = document.querySelector('[data-pg="home"] .acc-sc'); if (sc) sc.scrollTop = 0; } }));
+    // la salutation : par son prénom quand on le connaît
+    const prenom = moiS && moiP ? (moiP.pseudo || moiP.prenom || '') : '';
+    const titre = h('h1', { className: 'acc-h1' }, prenom ? 'Bonjour, ' : 'Bienvenue au ', h('em', null, prenom || 'marché'), prenom ? ' !' : '');
+    const sous = off.length || dem.length ? ['Aujourd’hui sur le marché : ', h('b', { key: 1 }, pl(off.length, 'offre')), ' et ', h('b', { key: 2 }, pl(dem.length, 'demande')), '.'] : 'Les premières offres arrivent : publiez la vôtre.';
+    const nO = mine.filter(x => x.kind === 'offre').length, nD = mine.length - nO;
+    const stats = [
+      { cls: 'acc-k', t: 'Offres en ligne', tint: 'v', ico: ico('boite'), v: A.fmt(off.length), s: 'sur ' + pl(nP(off), 'produit'), go: () => this.push('acheter') },
+      { cls: 'acc-k', t: 'Demandes', tint: 'j', ico: ico('panier'), v: A.fmt(dem.length), s: 'sur ' + pl(nP(dem), 'produit'), go: () => this.push('carte', { cprod: '', csel: '' }) },
+      mine.length ? { cls: 'acc-k large', t: 'Mes annonces', tint: 't', ico: ico('vendre'), v: A.fmt(mine.length), s: pl(nO, 'offre') + ' · ' + pl(nD, 'demande'), go: () => this.push('pubs') }
+        : { cls: 'acc-k large', t: 'Prix du marché', tint: 't', ico: ico('tendance'), v: 'Par zone', s: 'Les prix relevés, produit par produit', go: () => this.push('prix') } ];
+    const acts = [...this.offersAll(), ...dem].filter(x => x.at).sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 12).map(x => {
+      const o = x.kind === 'offre', P = this.prod(x.slug);
+      return { tint: o ? 'v' : 'j', ico: ico(o ? 'boite' : 'panier'), t: P.name + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + x.unit : ''), s: (o ? 'Offre' : 'Demande') + ' · ' + this.place(x) + (x.name ? ' · ' + x.name : ''), h: A.ago(x.at), go: () => this.openFiche(x.slug) }; });
+    return {
+      accLogo: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.dg(44, { rond: true }) } }) : null,
+      accIco: { chercher: ico('chercher'), plus: ico('plus', 22), suite: ico('suite', 18) },
+      accMoi: moiS && window.MDGAvatar ? h('img', { src: window.MDGAvatar.uri(moiP && moiP.avatar, { size: 38, nom: (moiP && moiC && moiC.nomAffiche(moiP)) || String(moiS.user.tel || ''), seed: moiS.user.id }), alt: '', width: 38, height: 38, style: { borderRadius: '50%', display: 'block' } }) : ico('compte', 22),
+      accOngs: ongs, accM: tab === 'marche' ? 'block' : 'none', accA: tab === 'activite' ? 'block' : 'none', accL: tab === 'alertes' ? 'block' : 'none',
+      accTitre: titre, accSous: sous, accStats: stats,
+      accActs: acts, accActVide: !acts.length, accAlertes: al, accAlVide: !!moiS && !al.length };
+  }
   isDark() { return this.state.logoDark != null ? this.state.logoDark : ls('mdg-app:logo-noir') === true; }
   setIcons(d) { const n = d ? '-noir' : ''; document.querySelectorAll('link[rel="apple-touch-icon"]').forEach(l => l.href = 'icons/v2/apple-touch-icon' + n + '.png'); document.querySelectorAll('link[rel="icon"]').forEach(l => l.href = l.type === 'image/svg+xml' ? 'icons/v2/favicon' + n + '.svg' : 'icons/v2/favicon' + n + '-32.png'); }
   toggleLogo() { const d = !this.isDark(); ls('mdg-app:logo-noir', d); this.setIcons(d); this.setState({ logoDark: d }); }
@@ -1149,7 +1220,7 @@ class Component extends DCLogic {
     const F = this.FAMS[S.fam], n = F.prods.length, act = this.prod(F.prods[Math.max(0, Math.min(n - 1, Math.round(S.rot)))].slug), tr = S.dragging ? 'none' : 'transform .55s cubic-bezier(.22,1,.36,1),opacity .4s,color .3s';
     /* arc : chaque nom occupe un angle proportionnel à sa largeur mesurée (police réelle) + un écart fixe → jamais deux noms qui se touchent */
     const Hpx = framed ? 844 : (S.vh || 800), sT = framed ? 50 : Math.max(12, this.safeT || 0), sB = framed ? 34 : Math.max(18, this.safeB || 0), aW = framed ? 390 : S.vw;
-    const wheelSc = Math.max(.5, Math.min(1, (Hpx - sT - 54 - 60 - 156 - 66 - sB - 14 - 64) / 378, aW / 390));   // 28 : la bande des garanties   // 66 : les boutons J'ai / Je cherche
+    const wheelSc = Math.max(.5, Math.min(1, (aW - 24) / 390));   // la roue dans la carte sombre de l'accueil (marges de 12 px)
     const RAD = 352, GAPPX = 26, DEG = 180 / Math.PI, ws = F.prods.map(p => this.tw(p.name.toUpperCase(), '600 13px Jost, sans-serif', 13 * .16) + 8);
     const ang = [0]; for (let i = 1; i < n; i++) ang[i] = ang[i - 1] + ((ws[i - 1] + ws[i]) / 2 + GAPPX) / RAD * DEG;
     const angAt = r => n < 2 ? 0 : r <= 0 ? r * ang[1] : r >= n - 1 ? ang[n - 1] + (r - n + 1) * (ang[n - 1] - ang[n - 2]) : ang[Math.floor(r)] + (ang[Math.floor(r) + 1] - ang[Math.floor(r)]) * (r - Math.floor(r));
@@ -1385,6 +1456,7 @@ class Component extends DCLogic {
       wDown: e => this.wDown(e), wMove: e => this.wMove(e), wUp: () => this.wUp(), labels, ticks, sacks,
       jute: { op: act.sack ? 0 : 1, tf: act.sack ? 'scale(.86)' : 'none', mound: act.tint, l1: act.name.toUpperCase(), fs: act.name.length > 14 ? '14px' : act.name.length > 9 ? '17px' : '21px' },
       prev: () => this.snap(Math.round(S.rot) - 1), next: () => this.snap(Math.round(S.rot) + 1),
+      ...this.accueil({ h, mine, moiS, moiP, moiC, moiN }),
       markEl: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.ligne({ fond: 'vert', h: 24 }) } }) : 'Marché de Gros',
       act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, oAnim: ao ? 'mkLuciole 3.2s ease-in-out infinite' : 'none', dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
       openFicheAct: () => this.openFiche(act.slug),

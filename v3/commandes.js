@@ -279,7 +279,8 @@
         <dt>Prix convenu</dt><dd>${c.prix_unitaire != null ? F(c.prix_unitaire) + ' / ' + esc(c.unite || 'unité') : '—'}</dd>
         <dt>Total</dt><dd>${c.montant != null ? F(c.montant) : '—'}</dd>
         ${c.role === 'vendeur' && c.commission_montant != null ? `<dt>${c.etat === 'annulee' ? 'Commission (3,5 %) annulée' : c.etat === 'litige' ? 'Commission (3,5 %) suspendue' : c.etat === 'terminee' ? 'Commission due (3,5 %)' : 'Commission prévue (3,5 %)'}</dt><dd>${c.etat === 'annulee' ? '0 F' : F(c.commission_montant)}<br><small style="font-weight:400;color:#5E5546">${c.etat === 'annulee' ? 'commande annulée : rien n’est dû' : 'rien n’est prélevé : pas de paiement dans l’application'}</small></dd>` : ''}
-        <dt>Transport</dt><dd>${esc(MODES[c.mode_transport] || '—')}</dd>
+        <dt>Transport</dt><dd>${esc(MODES[c.mode_transport] || '—')}${transport[c.id] && transport[c.id].prix_transport != null ? '<br>' + F(transport[c.id].prix_transport) + ' <small style="font-weight:400;color:#5E5546">(prix du chauffeur)</small>' : ''}</dd>
+        ${transport[c.id] && transport[c.id].total_livraison != null && c.etat !== 'annulee' ? `<dt>À payer à la livraison</dt><dd><b>${F(transport[c.id].total_livraison)}</b><br><small style="font-weight:400;color:#5E5546">marchandise ${F(c.montant)} + transport ${F(transport[c.id].prix_transport)}, payés à la réception, hors application</small></dd>` : ''}
         <dt>Départ</dt><dd>${esc(c.ville_depart || '—')}</dd>
         <dt>Livraison</dt><dd>${esc(c.lieu_livraison || 'À convenir')}</dd>
         <dt>Paiement</dt><dd>À la réception, hors application</dd>
@@ -385,7 +386,8 @@
     return `<h3 class="cm-h3">Transport</h3><div class="cm-dl" style="grid-template-columns:1fr;gap:6px">
       ${m ? `<b style="font-weight:600">${esc(m.nom)} · ${esc(m.vehicule)}${m.immatriculation ? ' · ' + esc(m.immatriculation) : ''}</b>
         <span><span class="cm-tag ${m.verifie ? '' : 'mais'}">${m.verifie ? 'Vérifié par l’équipe' : 'Pas encore vérifié par l’équipe'}</span></span>
-        <small style="color:${m.statut === 'refusee' ? '#8A2414' : '#5E5546'}">${esc(etat)}</small>` : `<small style="color:#5E5546">${esc(vide)}</small>`}
+        <small style="color:${m.statut === 'refusee' ? '#8A2414' : '#5E5546'}">${esc(etat)}</small>
+        ${m.statut === 'acceptee' ? (T.prix_transport != null ? `<span><b style="font-weight:600">Prix du transport : ${F(T.prix_transport)}</b> <small style="color:#5E5546">fixé par le chauffeur</small></span>` : '<small style="color:#5E5546">Le chauffeur n’a pas encore indiqué son prix.</small>') : ''}` : `<small style="color:#5E5546">${esc(vide)}</small>`}
       ${T.peut_choisir ? `<form class="cm-f" data-trf style="display:flex;gap:8px;margin-top:6px"><input type="text" data-code maxlength="8" placeholder="T-4K7P" aria-label="Code du transporteur" autocapitalize="characters" autocomplete="off" style="flex:1;min-width:0;text-transform:uppercase"><button type="submit" style="min-height:48px;padding:0 18px;border-radius:24px;border:0;background:#10392B;color:#F3EFE4;font:600 15px Jost,sans-serif;cursor:pointer">${m ? 'Changer' : 'Choisir'}</button></form>
         ${m && m.statut !== 'refusee' ? '<button type="button" data-trx style="all:unset;cursor:pointer;color:#10392B;text-decoration:underline;min-height:44px;display:inline-flex;align-items:center">Retirer ce transporteur</button>' : ''}<p class="cm-err" data-tre role="alert" style="margin:0"></p>` : ''}
     </div>`;

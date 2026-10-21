@@ -104,7 +104,7 @@
 - Calcul par le déclencheur `commission_sync` sur `commandes` : base = montant final, 3,5 %, arrondi au franc.
 - Statuts : prevue → due (terminée) · suspendue (litige) · annulee. `encaissement` = 'aucun' seulement : **rien n'est encaissé**.
 - Compte officiel exclu. Lecture : `mes_commissions()` (vendeur), `admin_commissions()` (vue admin « Commissions »).
-- Commission transport 6,9 % : pas encore traitée.
+- Commission transport 6,9 % : activée le 21/10 à la demande du propriétaire (schéma 42, registre seulement, rien n'est prélevé).
 
 **Prix par zone** (schéma 31, `v3/prixzone.js`)
 - Fonction de lecture `prix_zones(produit)` (lisible sans connexion) : par district et par unité, prix demandés (90 j, hors annonces masquées), quantité en vente, budgets acheteurs, ventes terminées (prix montré seulement à partir de 3 ventes de 2 vendeurs), tendance 30 j contre 30 j (3 prix de 2 vendeurs par période, ±5 %), médiane par mois.
@@ -361,3 +361,25 @@ Lui proposer de coller ceci :
 - Constat sur les données (pas un défaut) :
   - 1 seul compte a activé les notifications sur son téléphone (2 appareils) ;
   - 0 alerte produit : tant que personne ne suit de produit, les nouvelles annonces ne préviennent personne.
+
+**Commission transport 6,9 %** (schéma 42, demandée et tranchée par le propriétaire le 21/10)
+- Choix du propriétaire :
+  - **le chauffeur fixe le prix du transport** en acceptant la mission ;
+  - la commission est **due par le chauffeur**, qui l'inclut dans son prix ;
+  - l'acheteur paie à la livraison **marchandise + transport** (ex. 50 000 + 10 000 = 60 000 F).
+- `transport_missions.prix` (nouvelle colonne). `chauffeur_repondre2(mission, oui, prix)` accepte avec le prix. `chauffeur_prix` le corrige jusqu'au chargement. `admin_mission_prix` sert pour un chauffeur sans application (l'équipe saisit le prix donné au téléphone).
+- Registre `commissions_transport` + journal figé, calqué sur le schéma 30 :
+  - 6,9 % du prix arrondi ;
+  - statut prévue → due (commande terminée) · suspendue (litige) · annulée (commande annulée, mission refusée ou retirée) ;
+  - encaissement = 'aucun' (seule valeur permise).
+- Lecture : `mes_commissions_transport()` (chauffeur), `admin_commissions_transport()`. `commande_transport` renvoie `prix_transport` et `total_livraison`. `chauffeur_missions` renvoie prix, commission et net. `admin_commandes` renvoie la mission (id, prix, avec ou sans application) ; « À traiter » liste les prix manquants des chauffeurs sans application.
+- Écrans :
+  - Espace chauffeur : « Accepter et fixer mon prix », calcul en direct (commission, ce qu'il garde), « Changer mon prix » ;
+  - commande : prix du transport et « À payer à la livraison » ;
+  - admin : saisie du prix pour un chauffeur sans application, section « Transport · 6,9 % » dans Commissions.
+- Tests SQL (annulés à la fin) :
+  - acceptation à 10 000 F → 690 F prévue, le chauffeur garde 9 310 F ;
+  - prix 12 000 F → 828 F ; commande terminée → due ; total acheteur 62 000 F ;
+  - prix 0 refusé ; changer le prix après le chargement refusé ;
+  - litige → suspendue, annulation → annulée, mission retirée → annulée.
+- Reste à faire : les **marges de négociation des transporteurs (< 8–10 %)**, évoquées par le propriétaire, ne sont pas construites. Aujourd'hui le chauffeur fixe son prix seul.

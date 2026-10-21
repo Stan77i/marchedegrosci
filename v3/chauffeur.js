@@ -32,6 +32,10 @@
   const unites = (q, u) => { u = String(u || ''); return q > 1 && u && !/[sx]$|^(kg|t|l|L)$/.test(u) ? u + 's' : u; };
 
   let bg = null, moi = null, missions = [], transferts = [], vue = 'accueil', minuteur = null;
+  // prix du transport (schéma 42) : le chauffeur le fixe en acceptant, et peut le corriger jusqu'au chargement.
+  // La commission du Marché de Gros (6,9 %) est due par le chauffeur : il l'inclut dans son prix. Rien n'est prélevé dans l'application.
+  const TAUX_TR = 0.069, comTr = p => Math.round(Math.round(p) * TAUX_TR);
+  let prixOuvert = null;   // mission dont le formulaire de prix est ouvert
   function fermer() { if (!bg) return; bg.remove(); bg = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); if (retourFocus && retourFocus.focus) try { retourFocus.focus({ preventScroll: true }); } catch (_) {} retourFocus = null; }
   const clavier = e => { if (e.key === 'Escape') fermer(); };
   function memoriser() { W(K(), { inscrit: !!moi, statut: moi && moi.statut, propositions: missions.filter(m => m.mission === 'proposee').length, moi, missions }); }
@@ -90,7 +94,9 @@
   function carteMission(m) {
     const q = m.quantite != null ? ' · ' + nf(m.quantite, 2) + ' ' + esc(unites(m.quantite, m.unite)) : '';
     const B = [];
-    if (m.mission === 'proposee') B.push(`<button type="button" class="p" data-acc="${m.mission_id}">Accepter la mission</button>`, `<button type="button" data-ref="${m.mission_id}">Refuser</button>`);
+    const avantChargement = ['confirmee', 'preparation', null, undefined].includes(m.etape) && ['a_confirmer', 'en_cours'].includes(m.etat);
+    if (m.mission === 'proposee' && prixOuvert !== m.mission_id) B.push(`<button type="button" class="p" data-acc="${m.mission_id}">Accepter et fixer mon prix</button>`, `<button type="button" data-ref="${m.mission_id}">Refuser</button>`);
+    if (m.mission === 'acceptee' && avantChargement && prixOuvert !== m.mission_id) B.push(`<button type="button" data-chpx="${m.mission_id}">${m.prix != null ? 'Changer mon prix' : 'Indiquer mon prix'}</button>`);
     const K = m.validation === 'code', go = m.mission === 'acceptee' && m.etat === 'en_cours';
     if (go && K && ['confirmee', 'preparation'].includes(m.etape)) B.push(`<button type="button" class="p" data-tap="${m.commande_id}" data-quoi="prise">Taper le code de prise en charge</button>`);
     if (go && ['transport', 'transbordement', 'arrivee'].includes(m.etape))
@@ -107,7 +113,39 @@
       <small>${esc(m.ville_depart || 'Départ à préciser')} → ${esc(m.lieu_livraison || 'livraison à préciser')}</small>
       <small>Vendeur : ${esc(m.vendeur)} · Acheteur : ${esc(m.acheteur)}</small>
       <small style="margin-top:6px"><span class="cm-tag ${st[1]}">${esc(st[0])}</span> ${m.propose_role === 'admin' ? '· confiée par l’équipe' : m.propose_role === 'acheteur' ? '· choisi par l’acheteur' : m.propose_role === 'vendeur' ? '· choisi par le vendeur' : ''}</small>
+      ${m.mission === 'acceptee' && m.prix != null ? `<small style="margin-top:6px;color:inherit"><b>Votre prix : ${nf(m.prix)} F</b> · commission Marché de Gros (6,9 %) : ${nf(m.commission)} F · vous gardez ${nf(m.net)} F</small>` : ''}
+      ${m.mission === 'acceptee' && m.prix == null && avantChargement ? '<small style="margin-top:6px;color:#8A6400"><b>Prix du transport à indiquer</b> : l’acheteur le verra dans sa commande.</small>' : ''}
+      ${prixOuvert === m.mission_id ? formPrix(m) : ''}
       ${B.length ? `<div class="cm-act" style="margin:10px 0 0">${B.join('')}</div>` : ''}</span></div>`;
+  }
+  function formPrix(m) {
+    const acc = m.mission === 'proposee';
+    return `<form class="cm-f" data-pxf="${m.mission_id}" data-acc2="${acc ? 1 : ''}" style="margin:10px 0 0">
+      <label>Votre prix pour ce transport (F CFA)<input type="number" inputmode="numeric" min="1" step="1" data-pxv value="${m.prix != null ? Math.round(m.prix) : ''}" placeholder="ex. 10000" required></label>
+      <small data-pxi style="display:block;margin:6px 0 0;color:#5E5546;line-height:1.4">La commission du Marché de Gros est de 6,9 % de votre prix : comptez-la dedans. L’acheteur paie votre prix à la livraison, avec la marchandise. Rien n’est prélevé dans l’application pour l’instant.</small>
+      <p class="cm-err" data-pxe role="alert" style="margin:4px 0 0"></p>
+      <div class="cm-act" style="margin:8px 0 0"><button type="submit" class="p">${acc ? 'Accepter la mission' : 'Enregistrer le prix'}</button><button type="button" data-pxx>Annuler</button></div></form>`;
+  }
+  function lierPrix(box) {
+    const f = box.querySelector('[data-pxf]'); if (!f) return;
+    const v = f.querySelector('[data-pxv]'), info = f.querySelector('[data-pxi]'), err = f.querySelector('[data-pxe]'), go = f.querySelector('[type=submit]'), acc = !!f.dataset.acc2;
+    const maj = () => { const p = Math.round(+v.value || 0);
+      info.textContent = p > 0 ? `Commission Marché de Gros (6,9 %) : ${nf(comTr(p))} F · vous gardez ${nf(p - comTr(p))} F. L’acheteur paie ${nf(p)} F de transport à la livraison, avec la marchandise. Rien n’est prélevé dans l’application pour l’instant.`
+        : 'La commission du Marché de Gros est de 6,9 % de votre prix : comptez-la dedans. L’acheteur paie votre prix à la livraison, avec la marchandise.';
+      go.textContent = p > 0 ? (acc ? `Accepter à ${nf(p)} F` : `Enregistrer ${nf(p)} F`) : (acc ? 'Accepter la mission' : 'Enregistrer le prix'); };
+    v.oninput = maj; maj(); setTimeout(() => { try { v.focus(); } catch (_) {} }, 50);
+    f.querySelector('[data-pxx]').onclick = () => { prixOuvert = null; peindre(); };
+    f.onsubmit = async e => {
+      e.preventDefault(); const p = Math.round(+v.value || 0);
+      if (!(p > 0)) { err.textContent = 'Indiquez votre prix, en francs.'; return; }
+      go.disabled = true; err.textContent = '';
+      try {
+        if (acc) await N().rpc('chauffeur_repondre2', { p_mission: f.dataset.pxf, p_oui: true, p_prix: p });
+        else await N().rpc('chauffeur_prix', { p_mission: f.dataset.pxf, p_prix: p });
+        toast(acc ? 'Mission *acceptée*' : 'Prix *enregistré*', { type: 'ok', sous: acc ? 'L’acheteur et le vendeur sont prévenus. Transport : ' + nf(p) + ' F.' : 'L’acheteur voit le nouveau prix : ' + nf(p) + ' F.' });
+        prixOuvert = null; await lire(); peindre();
+      } catch (x) { go.disabled = false; err.textContent = erreurTxt(x); }
+    };
   }
   function accueil() {
     const box = bg.querySelector('.cm');
@@ -134,7 +172,9 @@
     box.querySelector('[data-prof]').onclick = () => { vue = 'profil'; peindre(); };
     const d = box.querySelector('[data-dispo]');
     if (d) d.onchange = async () => { d.disabled = true; try { await N().rpc('transporteur_disponible', { p_oui: d.checked }); moi.disponible = d.checked; memoriser(); toast(d.checked ? 'Vous êtes disponible' : 'Vous n’êtes plus disponible', { type: 'ok' }); } catch (x) { d.checked = !d.checked; toast(erreurTxt(x), { type: 'erreur' }); } d.disabled = false; };
-    box.querySelectorAll('[data-acc]').forEach(b => b.onclick = () => repondre(b.dataset.acc, true, b));
+    box.querySelectorAll('[data-acc]').forEach(b => b.onclick = () => { prixOuvert = b.dataset.acc; peindre(); });
+    box.querySelectorAll('[data-chpx]').forEach(b => b.onclick = () => { prixOuvert = b.dataset.chpx; peindre(); });
+    lierPrix(box);
     box.querySelectorAll('[data-ref]').forEach(b => b.onclick = () => repondre(b.dataset.ref, false, b));
     box.querySelectorAll('[data-arr]').forEach(b => b.onclick = () => etape(b.dataset.arr, 'arrivee'));
     box.querySelectorAll('[data-trb]').forEach(b => b.onclick = () => etape(b.dataset.trb, 'transbordement'));

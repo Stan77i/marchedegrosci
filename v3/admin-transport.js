@@ -101,10 +101,11 @@
             <small>${e(c.vendeur)} → ${e(c.acheteur)} · ${e(c.ville_depart || 'départ à préciser')} → ${e(c.lieu_livraison || 'livraison à convenir')}</small>
             <small>${c.montant != null ? H.fmt(c.montant) + ' F' : '—'}${c.commission_montant != null ? ' · commission prévue ' + H.fmt(c.commission_montant) + ' F (non prélevée)' : ''}</small></div>
           <div>${tag(ETAT[c.etat] || c.etat, c.etat === 'litige' ? 'r' : c.etat === 'en_cours' ? 'v' : '')} ${c.etape && c.etat === 'en_cours' ? tag(ETAPE[c.etape] || c.etape) : ''}
-            <small>${e(MODE[c.mode_transport] || '')}${c.mission ? ' · ' + e(c.mission.nom) + ' (' + e(MST[c.mission.statut] || c.mission.statut) + ')' : ''} · ${H.ago(c.maj)}</small>
+            <small>${e(MODE[c.mode_transport] || '')}${c.mission ? ' · ' + e(c.mission.nom) + ' (' + e(MST[c.mission.statut] || c.mission.statut) + ')' : ''}${c.mission && c.mission.prix != null ? ' · transport ' + H.fmt(c.mission.prix) + ' F (commission 6,9 % : ' + H.fmt(Math.round(Math.round(c.mission.prix) * 0.069)) + ' F, non prélevée)' : ''} · ${H.ago(c.maj)}</small>
             ${c.etat === 'litige' ? `<small style="color:var(--bad-t)">Litige : « ${e(c.litige_motif || '')} »</small>` : ''}</div>
           <div class="at-a">
             ${sansTr ? (dispo.length ? `<select class="at-sel" data-trsel="${c.id}" aria-label="Transporteur">${dispo.map(t => `<option value="${t.id}">${e(t.nom)} · ${e(VEH[t.vehicule] || '')}${t.disponible ? ' · disponible' : ''}${t.avec_application ? '' : ' · sans appli'}</option>`).join('')}</select><button class="btn sm pri" data-aff="${c.id}">Affecter</button>` : '<small>Aucun transporteur vérifié</small>') : ''}
+            ${c.mission && c.mission.id && c.mission.statut === 'acceptee' && !c.mission.avec_application && ['a_confirmer', 'en_cours'].includes(c.etat) && ['confirmee', 'preparation', null, undefined].includes(c.etape) ? `<input class="at-sel" type="number" inputmode="numeric" min="1" step="1" data-mpx="${c.mission.id}" value="${c.mission.prix != null ? Math.round(c.mission.prix) : ''}" placeholder="Prix du transport (F)" aria-label="Prix du transport, donné par le chauffeur au téléphone" style="max-width:170px"><button class="btn sm pri" data-mpxb="${c.mission.id}">${c.mission.prix != null ? 'Changer le prix' : 'Saisir le prix'}</button>` : ''}
             ${c.etat === 'litige' ? `<button class="btn sm pri" data-lit="${c.id}" data-iss="terminee">Clore : livrée</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee">Clore : annulée</button>` : ''}
             <button class="btn sm ghost" data-hist="${c.id}">Historique</button></div>
           ${D.ouverts[c.id] ? `<ul class="at-j">${D.ouverts[c.id].map(j => `<li><b>${e(EV[j.evenement] || j.evenement)}</b> · ${e(j.role)} · ${new Date(j.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${j.lieu ? ' · ' + e(j.lieu) : ''}${j.lat != null ? ' · position jointe' : ''}${j.note ? ' · « ' + e(j.note) + ' »' : ''}</li>`).join('') || '<li>Aucune étape.</li>'}</ul>` : ''}</div>`;
@@ -123,6 +124,14 @@
         try { const r = await H.rpc('admin_affecter', { p_cmd: b.dataset.aff, p_transporteur: sel.value }); H.toast(r === 'acceptee' ? 'Transporteur affecté.' : 'Mission proposée : le chauffeur doit l’accepter.'); await H.relire(); }
         catch (e) { b.disabled = false; H.toast('Impossible : ' + e.message); }
       });
+      // chauffeur sans application : l'équipe saisit le prix qu'il a donné au téléphone (schéma 42)
+      root.querySelectorAll('[data-mpxb]').forEach(b => b.onclick = async () => {
+        const i = root.querySelector(`[data-mpx="${b.dataset.mpxb}"]`), p = Math.round(+(i && i.value) || 0);
+        if (!(p > 0)) return H.toast('Indiquez le prix du transport, en francs.');
+        b.disabled = true;
+        try { await H.rpc('admin_mission_prix', { p_mission: b.dataset.mpxb, p_prix: p }); H.toast('Prix du transport enregistré : ' + H.fmt(p) + ' F.'); await H.relire(); }
+        catch (e) { b.disabled = false; H.toast('Impossible : ' + e.message); }
+      });
       root.querySelectorAll('[data-lit]').forEach(b => b.onclick = async () => {
         const iss = b.dataset.iss, note = prompt(iss === 'terminee' ? 'Décision : commande considérée comme livrée. Expliquez (les deux parties le verront) :' : 'Décision : commande annulée. Expliquez (les deux parties le verront) :');
         if (!note || !note.trim()) return; b.disabled = true;
@@ -139,10 +148,22 @@
 
   // ——— Commissions (schéma 30) : registre calculé par le serveur. Rien n'est encaissé. ———
   const KST = { prevue: ['Prévue', 'a'], due: ['Due', 'v'], suspendue: ['Suspendue (litige)', 'r'], annulee: ['Annulée', ''] };
+  // commission transport (schéma 42) : 6,9 % du prix fixé par le chauffeur, due par lui. Rien n'est encaissé.
+  function commTransport(H) {
+    const e = H.esc, c = D.comTr; if (!c) return '';
+    const t = k => (c.totaux && c.totaux[k]) || { n: 0, transports: 0, commission: 0 };
+    const tuile = k => { const x = t(k); return `<div class="at-k"><small>${KST[k][0]}</small><b>${H.fmt(x.commission || 0)} F</b><small>${x.n || 0} transport${x.n > 1 ? 's' : ''} · ${H.fmt(x.transports || 0)} F</small></div>`; };
+    const ligne = k => `<div class="at-r"><div><b>${e(k.produit || 'Commande')} · ${e(k.numero)}</b><small>${e(k.transporteur || 'Chauffeur')} · ${new Date(k.updated_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</small></div>
+        <div><b>${H.fmt(k.commission)} F</b><small>6,9 % de ${H.fmt(k.prix_transport)} F</small></div>
+        <div class="at-a"><span class="at-t ${KST[k.statut][1]}">${KST[k.statut][0]}</span></div></div>`;
+    return `<section class="sec"><h2 style="margin:6px 0 4px">Transport · 6,9 %</h2><p style="margin:0 0 10px;color:var(--mute,#655C4D)">Calculée sur le prix fixé par le chauffeur, due par lui (il l’inclut dans son prix). L’acheteur paie le transport à la livraison. Rien n’est encaissé.</p>
+      <div class="at-ks">${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div>
+      <div class="at-l" style="margin-top:10px">${(c.lignes || []).length ? c.lignes.map(ligne).join('') : '<div class="at-vide"><b>Aucune commission transport</b>Elle s’inscrit quand un chauffeur accepte une mission avec son prix.</div>'}</div></section>`;
+  }
   D.com = null; D.comOuv = {};
   EXT.commissions = {
     titre: 'Commissions', ico: 'prix',
-    charger: async H => { D.com = await H.rpc('admin_commissions'); },
+    charger: async H => { const [a, t] = await Promise.all([H.rpc('admin_commissions'), H.rpc('admin_commissions_transport').catch(() => null)]); D.com = a; D.comTr = t; },
     vue(H) {
       const e = H.esc, c = D.com || { totaux: {}, lignes: [] }, t = k => (c.totaux && c.totaux[k]) || { n: 0, ventes: 0, commission: 0 };
       const tuile = (k) => { const x = t(k); return `<div class="at-k"><small>${KST[k][0]}</small><b>${H.fmt(x.commission || 0)} F</b><small>${x.n || 0} commande${x.n > 1 ? 's' : ''} · ventes ${H.fmt(x.ventes || 0)} F</small></div>`; };
@@ -152,7 +173,8 @@
           ${D.comOuv[k.id] ? `<ul class="at-j">${(k.journal || []).map(j => `<li><b>${e(KST[j.statut] ? KST[j.statut][0] : j.statut)}</b> · ${H.fmt(j.commission)} F · ${e(j.motif)} · ${new Date(j.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</li>`).join('')}</ul>` : ''}</div>`;
       return H.top('Commissions', 'Registre de la commission de 3,5 % sur les ventes de marchandises, calculée par le serveur. Aucun paiement n’existe encore : « due » veut dire « à percevoir plus tard », rien n’a été encaissé.', '') + `
         <section class="sec"><div class="at-ks">${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div></section>
-        <section class="sec"><div class="at-l">${(c.lignes || []).length ? c.lignes.map(ligne).join('') : '<div class="at-vide"><b>Aucune commission</b>Elles s’inscrivent seules à chaque commande.</div>'}</div></section>`;
+        <section class="sec"><div class="at-l">${(c.lignes || []).length ? c.lignes.map(ligne).join('') : '<div class="at-vide"><b>Aucune commission</b>Elles s’inscrivent seules à chaque commande.</div>'}</div></section>
+        ${commTransport(H)}`;
     },
     lier(root, H) {
       root.querySelectorAll('[data-kj]').forEach(b => b.onclick = () => { const id = b.dataset.kj; if (D.comOuv[id]) delete D.comOuv[id]; else D.comOuv[id] = 1; H.repeindre(); });

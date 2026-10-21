@@ -148,6 +148,12 @@
 - Le bouton « Noter » de la conversation est retiré (l'avis se donne depuis la commande terminée).
 - Retour arrière possible tant qu'aucun acheteur n'a deux négociations sur la même annonce (commande dans `supabase/schema-36-rachat-meme-annonce.sql`).
 
+**Minimum de vente du vendeur** (schéma 37, demandé le 21/10/2026)
+- Colonne `offres.qte_min` (vide = pas de minimum). Champ « Vendu à partir de » à l'étape 1 de Vendre ; puce maïs « À partir de 50 kg » sur la carte d'offre.
+- `nego_agir` refuse une proposition d'acheteur sous le minimum. Si le stock restant est plus petit, le minimum devient le stock restant (le dernier lot se vend). Le vendeur peut proposer moins dans une contre-proposition.
+- `nuage.js` n'envoie `qte_min` que pour les annonces qui le connaissent : les anciennes annonces ne sont pas renvoyées.
+- Achats groupés inchangés (le vendeur fixe ou valide l'objectif).
+
 ## 5. En attente d'une décision du propriétaire
 
 

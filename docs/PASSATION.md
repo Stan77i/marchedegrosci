@@ -264,6 +264,18 @@
   - à 0, un message explique quoi faire.
 - Plus tard : tenir compte aussi des exigences (schémas 38/40) et du minimum du vendeur dans « compatible ».
 
+**Barre jaune tracée et urgences en tampon** (demandé le 21/10)
+- `app/effets.js` (2e bloc, `MDGTrace`) surveille la page.
+  - Tout mot souligné de maïs (fond en dégradé rgb 242 194 48, partout) se dessine de gauche à droite chaque fois qu'il revient à l'écran : page, feuille, accueil, défilement.
+  - Les étiquettes `.qd[data-u]` se posent comme un coup de tampon, à chaque fois aussi.
+  - Les animations passent par `element.animate()`. On n'écrit ni classe ni attribut sur l'élément, car le moteur d'affichage de l'app les réécrit à chaque rendu (vérifié).
+- Les urgences sont devenues des tampons (`css/mgci-app.css`, `.qd`) : rectangle plein légèrement penché, liseré blanc, texte en capitales.
+  - dès que possible : tomate `#E8552F`, point qui clignote et petit frisson toutes les 3 s ;
+  - cette semaine : maïs, avec un sablier ;
+  - ce mois-ci / à une date : sable, avec un calendrier ;
+  - disponible : vert.
+- Si le téléphone demande moins d'animations, rien ne bouge.
+
 ## 5. En attente d'une décision du propriétaire
 
 

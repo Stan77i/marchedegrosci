@@ -52,6 +52,7 @@
 .cm h2{margin:0 52px 4px 0;font:600 24px/1.15 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.01em}
 .cm h2 em{font:900 italic 1em 'Archivo','Helvetica Neue',Arial,sans-serif;color:#10392B;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%)}
 .cm-sous{margin:0 0 14px;color:#5E5546;font-size:14px}
+.cm h2[tabindex="-1"]:focus{outline:none}
 .cm-x{position:absolute;right:12px;top:12px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(23,21,18,.08);color:#171512;display:grid;place-items:center;cursor:pointer}
 .cm-seg{display:flex;padding:3px;border-radius:14px;background:rgba(23,21,18,.07);margin:0 0 12px}
 .cm-seg button{flex:1;min-height:44px;border:0;border-radius:11px;background:none;color:#4B4436;font:500 14px Jost,sans-serif;cursor:pointer}
@@ -78,9 +79,9 @@
 .cm-prog{margin:0 0 4px}
 .cm-pb{height:8px;border-radius:4px;background:rgba(16,57,43,.12);overflow:hidden}.cm-pb i{display:block;height:100%;width:100%;border-radius:4px;background:linear-gradient(90deg,#10392B,#2F6B4F);transform-origin:left;transform:scaleX(var(--p,0));transition:transform .8s cubic-bezier(.3,.8,.3,1)}
 .cm-et{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column}
-.cm-et li{position:relative;display:grid;grid-template-columns:28px 1fr;gap:10px;padding:0 0 14px;color:#8A8170}
+.cm-et li{position:relative;display:grid;grid-template-columns:28px 1fr;gap:10px;padding:0 0 14px;color:#675F50}
 .cm-et li::before{content:'';position:absolute;left:13px;top:24px;bottom:0;width:2px;background:rgba(16,57,43,.14)}.cm-et li:last-child::before{display:none}
-.cm-et .pt{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#E7E0CF;color:#8A8170;font:700 12px 'Archivo',sans-serif;position:relative;z-index:1}
+.cm-et .pt{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#E7E0CF;color:#675F50;font:700 12px 'Archivo',sans-serif;position:relative;z-index:1}
 .cm-et li.fait{color:#171512}.cm-et li.fait .pt{background:#10392B;color:#F3EFE4}.cm-et li.fait::before{background:#10392B}
 .cm-et li.ici .pt{background:#F2C230;color:#10392B;box-shadow:0 0 0 5px rgba(242,194,48,.28)}
 .cm-et b{display:block;font-weight:600;line-height:28px}.cm-et small{display:block;font-size:12.5px;color:#5E5546;margin-top:-4px}
@@ -133,9 +134,11 @@
   const trouve = id => liste.find(x => x.id === id);
   const enRoute = c => c.etat === 'en_cours' && ['chargement', 'transport', 'transbordement', 'arrivee'].includes(c.etape);
   function oublierCarte() { if (carte && carte.api) carte.api.detruire(); carte = null; }
-  function fermer() { oublierCarte(); if (!bg) return; bg.remove(); bg = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); }
+  let retourFocus = null;
+  function fermer() { oublierCarte(); if (!bg) return; bg.remove(); bg = null; if (retourFocus && retourFocus.focus) try { retourFocus.focus({ preventScroll: true }); } catch (_) {} retourFocus = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); }
   const clavier = e => { if (e.key === 'Escape') fermer(); };
-  const erreurTxt = e => { const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : m || 'Réessayez dans un instant.'; };
+  const horsLigne = e => navigator.onLine === false || /Failed to fetch|NetworkError|Load failed|network|ERR_INTERNET/i.test(String((e && e.message) || e || ''));
+  const erreurTxt = e => { if (horsLigne(e)) return 'Pas de connexion : rien n’a été enregistré. Réessayez quand le réseau revient.'; const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : m || 'Réessayez dans un instant.'; };
 
   async function lireListe() {
     if (!N() || !N().session()) return;
@@ -279,20 +282,20 @@
     box.querySelector('[data-retour]').onclick = () => { oublierCarte(); sel = null; vue = 'liste'; peindre(); };
     box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => geste(c, b.dataset.g));
     lierTransport(c, box); lierCode(c, box); placerCarte(c, box);
-    if (arrive && navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {}
+    if (arrive) { if (navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {} toast('Le chauffeur est arrivé', { type: 'ok', sous: c.role === 'acheteur' ? 'Vérifiez la marchandise avant de confirmer.' : esc(c.produit || '') }); }
   }
   let dernierEcran = '';
   // ——— la carte : créée une fois par commande, puis déplacée d'un rendu à l'autre (jamais recréée toutes les 20 s) ———
   function placerCarte(c, box) {
     const ph = box.querySelector('[data-carte]');
     if (!ph) { if (carte && carte.cmd === c.id) oublierCarte(); return; }
-    if (carte && carte.cmd === c.id) { ph.replaceWith(carte.el); if (carte.api) { carte.api.redim(); carte.api.maj(pos[c.id]); } return; }
+    if (carte && carte.cmd === c.id) { ph.replaceWith(carte.el); if (carte.api) { carte.api.redim(); carte.api.etape(c.etape); carte.api.maj(pos[c.id]); } return; }
     oublierCarte();
     const el = document.createElement('div'); ph.replaceWith(el);
     const k = carte = { cmd: c.id, el, api: null };
     MDGSuivi.monter(el, c).then(api => {
       if (carte !== k) { api.detruire(); return; }
-      k.api = api; api.maj(pos[c.id]);
+      k.api = api; api.etape(c.etape); api.maj(pos[c.id]);
     });
   }
 
@@ -361,8 +364,14 @@
     if (!bg) return;
     const ecran = vue + ':' + (sel || ''), box = bg.querySelector('.cm'), y = box.scrollTop;
     if (vue === 'detail' && sel) peindreDetail(change); else peindreListe();
-    box.scrollTop = ecran === dernierEcran ? y : 0; dernierEcran = ecran;
+    const nouveau = ecran !== dernierEcran;
+    box.scrollTop = nouveau ? 0 : y; dernierEcran = ecran;
+    // le titre reçoit le focus une fois par écran, dès qu'il existe (le premier rendu peut être un « chargement… »)
+    if (nouveau) titreFait = false;
+    if (!titreFait && box.querySelector('h2')) { focusTitre(box); titreFait = true; }
   }
+  let titreFait = false;
+  function focusTitre(box) { const h = box.querySelector('h2'); if (h) { h.tabIndex = -1; try { h.focus({ preventScroll: true }); } catch (_) {} } }
 
   // ——— les gestes : une petite feuille de confirmation, puis l'appel au serveur ———
   async function position(oui) {
@@ -481,6 +490,7 @@
 
   function monter() {
     css(); if (bg) return;
+    retourFocus = document.activeElement;
     bg = document.createElement('div'); bg.className = 'cm-bg'; bg.setAttribute('role', 'dialog'); bg.setAttribute('aria-modal', 'true'); bg.setAttribute('aria-label', 'Mes commandes');
     bg.innerHTML = '<div class="cm"></div>'; document.body.appendChild(bg);
     bg.addEventListener('click', e => { if (e.target === bg) fermer(); });

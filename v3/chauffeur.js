@@ -19,7 +19,8 @@
   const nf = (v, d) => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: d == null ? 0 : d }).format(v || 0);
   const toast = (t, o) => window.MDGToast ? MDGToast.dire(t, o) : null;
   const sac = (h, t) => window.MDGSac ? MDGSac.svg(h, { t }) : '';
-  const erreurTxt = e => { const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : m || 'Réessayez dans un instant.'; };
+  const horsLigne = e => navigator.onLine === false || /Failed to fetch|NetworkError|Load failed|network|ERR_INTERNET/i.test(String((e && e.message) || e || ''));
+  const erreurTxt = e => { if (horsLigne(e)) return 'Pas de connexion : rien n’a été enregistré. Réessayez quand le réseau revient.'; const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : m || 'Réessayez dans un instant.'; };
   const REGIONS = () => (window.MDG && MDG.regions) || [];
   const VEH = [['moto', 'Moto'], ['tricycle', 'Tricycle'], ['camionnette', 'Camionnette'], ['camion', 'Camion'], ['semi', 'Semi-remorque'], ['autre', 'Autre']];
   const VLIB = Object.fromEntries(VEH);
@@ -31,7 +32,7 @@
   const unites = (q, u) => { u = String(u || ''); return q > 1 && u && !/[sx]$|^(kg|t|l|L)$/.test(u) ? u + 's' : u; };
 
   let bg = null, moi = null, missions = [], transferts = [], vue = 'accueil', minuteur = null;
-  function fermer() { if (!bg) return; bg.remove(); bg = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); }
+  function fermer() { if (!bg) return; bg.remove(); bg = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); if (retourFocus && retourFocus.focus) try { retourFocus.focus({ preventScroll: true }); } catch (_) {} retourFocus = null; }
   const clavier = e => { if (e.key === 'Escape') fermer(); };
   function memoriser() { W(K(), { inscrit: !!moi, statut: moi && moi.statut, propositions: missions.filter(m => m.mission === 'proposee').length, moi, missions }); }
 
@@ -307,17 +308,19 @@
     };
   }
 
+  let retourFocus = null;
   function peindre() { if (!bg) return; const box = bg.querySelector('.cm'); if (vue === 'profil') formulaire(); else { const y = box.scrollTop; accueil(); box.scrollTop = y; } }
+  function focusTitre() { const h = bg && bg.querySelector('.cm h2'); if (h) { h.tabIndex = -1; try { h.focus({ preventScroll: true }); } catch (_) {} } }
   async function ouvrir() {
     if (!N() || !N().session()) { if (N()) N().open(); return; }
     if (window.MDGCommandes && MDGCommandes.css) MDGCommandes.css();
-    fermer();
+    fermer(); retourFocus = document.activeElement;
     bg = document.createElement('div'); bg.className = 'cm-bg'; bg.setAttribute('role', 'dialog'); bg.setAttribute('aria-modal', 'true'); bg.setAttribute('aria-label', 'Espace chauffeur');
     bg.innerHTML = `<div class="cm">${window.MDGSac ? MDGSac.charge('Un instant…') : ''}</div>`; document.body.appendChild(bg);
     bg.addEventListener('click', e => { if (e.target === bg) fermer(); });
     document.addEventListener('keydown', clavier);
     vue = 'accueil';
-    await lire(); peindre();
+    await lire(); peindre(); focusTitre();
     minuteur = setInterval(async () => { if (!bg || document.hidden || vue !== 'accueil') return; await lire(); peindre(); }, 30000);
   }
 

@@ -69,9 +69,14 @@
 .sv-arrivee{display:flex;flex-direction:column;align-items:center;transform:translateY(-4px)}
 .sv-arrivee span{padding:4px 10px;border-radius:12px;background:#F2C230;color:#10392B;font:700 12px Jost,sans-serif;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 .sv-arrivee i{width:3px;height:10px;background:#10392B}.sv-arrivee em{width:12px;height:12px;border-radius:50%;background:#10392B;border:3px solid #FFFDF8;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.sv.arrive .sv-arrivee em{animation:svOnde 1.6s ease-out infinite}
+@keyframes svOnde{0%{box-shadow:0 0 0 0 rgba(242,194,48,.75)}100%{box-shadow:0 0 0 18px rgba(242,194,48,0)}}
+.sv-bas .sac{width:44px;height:44px;flex:none}.sv-bas .sac svg{width:44px;height:44px}
+.sv.arrive .sv-bas .sac{animation:svSaut 1.1s ease-in-out 2}
+@keyframes svSaut{30%{transform:translateY(-10px) rotate(-6deg)}60%{transform:translateY(0)}75%{transform:translateY(-4px)}}
 .sv-depart{width:12px;height:12px;border-radius:50%;background:#FFFDF8;border:3px solid #9AA59F}
 .sv-voile{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:16px;color:#5E5546;font-size:13.5px}
-@media (prefers-reduced-motion:reduce){.sv-puce.frais i{animation:none}}`;
+@media (prefers-reduced-motion:reduce){.sv-puce.frais i,.sv.arrive .sv-arrivee em,.sv.arrive .sv-bas .sac{animation:none}}`;
   function css() { if (document.getElementById('svCss')) return; const s = document.createElement('style'); s.id = 'svCss'; s.textContent = CSS; document.head.appendChild(s); }
 
   // le camion vu du dessus, cabine vers le haut (le marqueur tourne avec la route) ; le sac de jute posé sur la remorque
@@ -104,7 +109,7 @@
       <div class="sv-voile">${window.MDGSac ? MDGSac.charge('La carte se prépare…', { t: 54 }) : 'La carte se prépare…'}</div>
       <div class="sv-haut" hidden><span class="sv-puce"><i></i><span data-sv-puce></span></span></div>
       <div class="sv-bas" hidden><div><b data-sv-km></b><small data-sv-km2></small></div><div class="eta"><b data-sv-eta></b><small data-sv-eta2></small></div></div>`;
-    const voile = el.querySelector('.sv-voile'), vide = { el, maj() {}, redim() {}, detruire() {} };
+    const voile = el.querySelector('.sv-voile'), vide = { el, maj() {}, etape() {}, redim() {}, detruire() {} };
     if (navigator.onLine === false) { voile.textContent = 'Hors connexion : la carte reviendra avec le réseau.'; return vide; }
     let gl; try { gl = await lib(); } catch (_) { voile.textContent = 'La carte ne peut pas s’afficher sur ce téléphone. Le suivi par étapes reste disponible.'; return vide; }
     const map = new gl.Map({ container: el.querySelector('.sv-carte'), style: STYLE, center: [-5.55, 7.54], zoom: 5.3, attributionControl: false,
@@ -112,8 +117,8 @@
     map.touchZoomRotate.disableRotation();
     // crédits des données : obligatoires, mais repliés derrière le « i »
     map.addControl(new gl.AttributionControl({ compact: true }), 'bottom-right');
-    let camion = null, dernier = null, L = null, approx = false, it = null, pret = false, total = null, touche = false, ici0 = null;
-    const api = { el, maj, redim: () => { try { map.resize(); } catch (_) {} if (!touche) cadrer(ici0); }, detruire: () => { try { map.remove(); } catch (_) {} } };
+    let camion = null, dernier = null, L = null, approx = false, it = null, pret = false, total = null, touche = false, ici0 = null, etapeC = null;
+    const api = { el, maj, etape: e => { const avant = etapeC; etapeC = e; el.classList.toggle('arrive', e === 'arrivee'); if (avant !== e && pret) maj(dernier); }, redim: () => { try { map.resize(); } catch (_) {} if (!touche) cadrer(ici0); }, detruire: () => { try { map.remove(); } catch (_) {} } };
     // dès que la personne déplace ou zoome la carte, on ne recadre plus à sa place
     ['dragstart', 'zoomstart'].forEach(ev => map.on(ev, e => { if (e.originalEvent) touche = true; }));
     const ligne = coords => ({ type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: coords.length > 1 ? coords : [] } });
@@ -156,7 +161,11 @@
       }
       // en bas : distance restante et arrivée estimée (seulement avec une position récente et proche du tracé)
       const bas = el.querySelector('.sv-bas');
-      if (L && it) {
+      if (etapeC === 'arrivee') {
+        bas.innerHTML = `<span class="sac" aria-hidden="true">${window.MDGSac ? MDGSac.svg('plein', { t: 44 }) : ''}</span><div><b>Le chauffeur est arrivé</b><small>Vérifiez la marchandise avant de confirmer la réception.</small></div>`;
+        bas.hidden = false;
+      } else if (L && it) {
+        if (!bas.querySelector('[data-sv-km]')) bas.innerHTML = '<div><b data-sv-km></b><small data-sv-km2></small></div><div class="eta"><b data-sv-eta></b><small data-sv-eta2></small></div>';
         const reste = coupe ? metres(coupe.q, L[coupe.i + 1]) + longueur(L.slice(coupe.i + 1)) : total;
         el.querySelector('[data-sv-km]').textContent = kmTxt(reste);
         el.querySelector('[data-sv-km2]').textContent = coupe ? 'restants jusqu’à la livraison' : 'de trajet' + (approx ? ' (à vol d’oiseau)' : '');

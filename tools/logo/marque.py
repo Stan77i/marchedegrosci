@@ -18,10 +18,8 @@ WL = round(XG + WG * 1.091 + 1.4)
 
 def empile_g(fond, k=1.0):
     """Le nom sur deux lignes, dans une boîte 320 x 132 (unités), à l'échelle k."""
-    c1, c2 = (CREME, MAIS) if fond != 'clair' else (VERT, VERT)
+    c1, c2 = (CREME, MAIS) if fond != 'clair' else (VERT, MAIS)   # « de Gros » toujours maïs : c'est l'identité (décision du propriétaire)
     t = ''
-    if fond == 'clair':
-        t += f'<rect x="0" y="104" width="{WE - 2}" height="27" fill="{MAIS}"/>'
     t += f'<path fill="{c1}" transform="translate(-2.5 51) scale(.7)" d="{M["marche"]["d"]}"/>'
     t += f'<path fill="{c2}" transform="translate(-1 121.5) scale(.82)" d="{M["degros"]["d"]}"/>'
     return t
@@ -60,23 +58,21 @@ js = r"""/* Marque « Étal vert » : le nom « marché de Gros » dessiné en t
    MDGMarque.empile({fond, h, cls})  : le nom sur deux lignes (accueil, ouverture)
    MDGMarque.ligne({fond, h, cls})   : le nom sur une ligne (en-têtes)
    MDGMarque.dg(t, {fond, rond})     : la petite icône, le nom sur deux lignes (messages officiels, cartes, onglet)
-   fond : 'vert' (crème + maïs, sur fond foncé) · 'noir' (pareil) · 'clair' (vert, trait maïs) */
+   fond : 'vert' (crème + maïs, sur fond foncé) · 'noir' (pareil) · 'clair' (vert + maïs, sur fond clair) — « de Gros » est toujours maïs */
 (function () {
   var D = __D__;
   var C = { vert: '#10392B', creme: '#F3EFE4', mais: '#F2C230', noir: '#141414' };
-  function cols(f) { return f === 'clair' ? [C.vert, C.vert] : [C.creme, C.mais]; }
+  function cols(f) { return f === 'clair' ? [C.vert, C.mais] : [C.creme, C.mais]; }
   function svg(vb, w, h, cls, inner) {
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + vb + '"' + (w ? ' width="' + w + '"' : '') + (h ? ' height="' + h + '"' : '') +
       ' role="img" aria-label="Marché de Gros"' + (cls ? ' class="' + cls + '"' : '') + ' style="display:block;overflow:visible">' + inner + '</svg>';
   }
   function empile(o) { o = o || {}; var c = cols(o.fond), h = o.h || 0, w = h ? Math.round(h * __WE__ / 132) : 0;
     return svg('0 0 __WE__ 132', w, h, o.cls,
-      (o.fond === 'clair' && o.trait !== false ? '<rect class="mq-b" x="0" y="104" width="__WE2__" height="27" fill="' + C.mais + '"/>' : '') +
       '<g transform="translate(-2.5 51) scale(.7)"><path class="mq-m" fill="' + c[0] + '" d="' + D.m + '"/></g>' +
       '<g transform="translate(-1 121.5) scale(.82)"><path class="mq-g" fill="' + c[1] + '" d="' + D.g + '"/></g>'); }
   function ligne(o) { o = o || {}; var c = cols(o.fond), h = o.h || 0, w = h ? Math.round(h * __WL__ / 96) : 0;
     return svg('0 -80 __WL__ 96', w, h, o.cls,
-      (o.fond === 'clair' && o.trait ? '<rect class="mq-b" x="__XR__" y="-23" width="__WR__" height="36" fill="' + C.mais + '"/>' : '') +
       '<g transform="translate(-6.5 0)"><path class="mq-m" fill="' + c[0] + '" d="' + D.m + '"/></g>' +
       '<g transform="translate(__XG__ 0) scale(1.091)"><path class="mq-g" fill="' + c[1] + '" d="' + D.g + '"/></g>'); }
   // la petite icône (messages officiels, cartes, onglet) : le même dessin que l'icône de l'écran d'accueil,

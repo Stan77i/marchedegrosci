@@ -627,6 +627,7 @@ label.cp-r{cursor:pointer}
             ${off0 ? '' : ligne({ ico: mono('compte'), t: 'Profil et avatar', s: nom ? '' : 'Prénom, rôle, lieu', attrs: 'data-go="profil"' })}
             ${window.MDGReleve ? ligne({ ico: mono('barres'), t: 'Mes ventes et achats', s: 'Relevés, bons de transaction, volumes', attrs: 'data-releve' }) : ''}
             ${window.MDGCommandes && !off0 ? (() => { const nC = MDGCommandes.aAgir(); return ligne({ ico: mono('negoce'), t: 'Mes commandes', s: nC ? nC + (nC > 1 ? ' commandes attendent' : ' commande attend') + ' votre action' : 'Suivi du chargement à la réception', n: nC, attrs: 'data-cmds' }); })() : ''}
+            ${window.MDGAppro && !off0 ? ligne({ ico: mono('tableau'), t: 'Approvisionnement pro', s: 'Besoins réguliers, propositions, comparaison', attrs: 'data-appro' }) : ''}
             ${window.MDGRacheter && !off0 ? ligne({ ico: mono('echanger'), t: 'Racheter', s: 'Mes achats habituels, prix du jour, rappels', attrs: 'data-racheter' }) : ''}
             ${window.MDGChauffeur && !off0 ? (() => { const e = MDGChauffeur.etat(); return ligne({ ico: mono('distance'), t: 'Espace chauffeur', s: !e.inscrit ? 'Transporteur ? Inscrivez-vous, c’est gratuit' : e.propositions ? e.propositions + (e.propositions > 1 ? ' missions à accepter' : ' mission à accepter') : e.statut === 'verifie' ? 'Profil vérifié · vos missions' : e.statut === 'en_attente' ? 'Vérification en cours · vos missions' : 'Vos missions', n: e.propositions, attrs: 'data-chauffeur' }); })() : ''}
             ${ligne({ ico: mono('cloche'), t: 'Notifications', v: '<span data-pst>…</span>', n: nl, attrs: 'data-go="notifs"' })}
@@ -650,6 +651,7 @@ label.cp-r{cursor:pointer}
       if (q('[data-marche]')) q('[data-marche]').onclick = () => { fermer(); M.ecrireMarche(); };
       if (q('[data-releve]')) q('[data-releve]').onclick = () => { fermer(); window.MDGReleve.ouvrir(); };
       if (q('[data-cmds]')) q('[data-cmds]').onclick = () => { fermer(); window.MDGCommandes.ouvrir(); };
+      if (q('[data-appro]')) q('[data-appro]').onclick = () => { fermer(); window.MDGAppro.ouvrir(); };
       if (q('[data-racheter]')) q('[data-racheter]').onclick = () => { fermer(); window.MDGRacheter.habituels(); };
       if (q('[data-chauffeur]')) q('[data-chauffeur]').onclick = () => { fermer(); window.MDGChauffeur.ouvrir(); };
       main.querySelectorAll('[data-idv]').forEach(b => b.onclick = () => { fermer(); ID.ouvrir(); });

@@ -123,6 +123,13 @@
 - Rappels quotidiens / hebdomadaires (table `rappels_achat`, 10 max, heure d'Abidjan = UTC), tâche pg_cron `mdg-rappels-achat` (*/15), notification « Racheter … ? » (pousser, cas 10) qui ouvre l'écran de préparation.
 - Entrées : « Racheter » dans Mon compte, bouton dans une commande terminée (acheteur).
 
+**Approvisionnement pro** (schéma 34, `v3/appro.js`)
+- Table fermée `besoins` (établissement, type, fréquence, période, zone, exigences, statut ouvert/pourvu/clos) ; chaque produit devient une vraie `demande` (`demandes.besoin_id`, colonne ajoutée) → alertes, carte, négociation existantes.
+- Vendeur : `besoin_repondre` (prix, quantité, stock ≥ quantité, délai) → `nego_ouvrir` + `proposition_details`.
+- Acheteur : `besoin_comparer` (tri par prix, « le moins cher », « le plus rapide », réputation vendeur, écart au prix cible) ; il choisit en ouvrant la négociation. Pourvu/clos retire les produits en ligne.
+- Une demande ou une proposition n'est pas une vente : aucune commission (vérifié).
+- Entrée : « Approvisionnement pro » dans Mon compte ; lien `#/?besoin=…`.
+
 ## 5. En attente d'une décision du propriétaire
 
 0. **Racheter sur la même annonce** : la contrainte `negociations_cible_cible_id_auteur_id_key` limite un acheteur à UNE négociation par annonce pour toujours. Proposition : la remplacer par un index unique partiel (une seule négociation *ouverte* par acheteur et par annonce). Demande un `drop constraint` : attend l'accord du propriétaire.

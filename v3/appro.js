@@ -17,6 +17,10 @@
   const toast = (t, o) => window.MDGToast ? MDGToast.dire(t, o) : (N() && N().toast && N().toast(t));
   const TYPES = { restaurant: 'Restaurant', hotel: 'Hôtel', cantine: 'Cantine', revendeur: 'Revendeur', autre: 'Autre professionnel' };
   const FREQ = { ponctuelle: 'Ponctuelle', hebdomadaire: 'Chaque semaine', mensuelle: 'Chaque mois' };
+  // exigences à cocher (liste fermée, la même que le serveur : schéma 38)
+  const CRIT = [['calibre', 'Calibre régulier'], ['frais', 'Récolte fraîche'], ['sec', 'Bien sec'], ['trie', 'Trié, sans cailloux'], ['emballage', 'Emballage propre'], ['sac_50', 'Sacs de 50 kg'],
+    ['echantillon', 'Échantillon avant commande'], ['pesee', 'Pesée devant moi'], ['livraison', 'Livraison sur place'], ['tot', 'Livraison avant 7 h'], ['regulier', 'Livraisons régulières'], ['recu', 'Reçu ou facture']];
+  const COCHE = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   const UNITES = ['kg', 'sac', 'tonne', 'caisse', 'cagette', 'régime', 'botte', 'tas', 'litre', 'unité'];
   const prods = () => (window.MDG && MDG.products) || [];
   const regs = () => (window.MDG && MDG.regions) || [];
@@ -59,6 +63,13 @@
 .ap-pied{position:sticky;bottom:calc(-24px - env(safe-area-inset-bottom));margin:12px -16px calc(-24px - env(safe-area-inset-bottom));padding:12px 16px calc(14px + env(safe-area-inset-bottom));background:#F3EFE4;box-shadow:0 -8px 16px rgba(243,239,228,.9)}
 .ap-duo{display:flex;gap:8px}.ap-duo .ap-b{flex:1}
 @media (max-width:340px){.ap-2,.ap-l .ap-2{grid-template-columns:1fr}}
+.ap-cr{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.ap-cr button{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 14px 0 10px;border:1px solid #D9D1BE;border-radius:22px;background:#FFF;color:#171512;font:500 14px Jost,system-ui,sans-serif;cursor:pointer}
+.ap-cr i{flex:none;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:10px;border:1.5px solid #B9AF98;color:transparent}
+.ap-cr button[aria-pressed=true]{background:#DCEFE3;border-color:#1F7A45;color:#10392B;font-weight:600}.ap-cr button[aria-pressed=true] i{background:#1F7A45;border-color:#1F7A45;color:#FFF}
+.ap-ok{list-style:none;margin:8px 0 2px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.ap-ok li{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 10px 0 4px;border-radius:14px;background:#DCEFE3;color:#10392B;font-size:13px;font-weight:600}
+.ap-ok i{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:10px;background:#1F7A45;color:#FFF}
 .ap form{background:none;box-shadow:none;border:0;padding:0;margin:0;border-radius:0}
 @media (prefers-reduced-motion:reduce){.ap-bg,.ap{animation:none!important}}`;
   function css() { if (document.getElementById('apCss')) return; const s = document.createElement('style'); s.id = 'apCss'; s.textContent = CSS; document.head.appendChild(s); }
@@ -111,6 +122,7 @@
   function formulaire() {
     const box = boite(), auj = new Date(), dans = n => iso(new Date(auj.getTime() + n * 864e5));
     let lignes = [{ produit: '', quantite: '', unite: 'kg', prix: '' }], freq = 'hebdomadaire';
+    const crit = new Set();
     const etat = {};
     const sauver = () => { box.querySelectorAll('[data-k]').forEach(i => { etat[i.dataset.k] = i.value; });
       lignes = lignes.map((l, i) => ({ produit: (box.querySelector(`[data-lp="${i}"]`) || {}).value ?? l.produit, quantite: (box.querySelector(`[data-lq="${i}"]`) || {}).value ?? l.quantite,
@@ -135,9 +147,11 @@
               <label style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E5546">Unité<select data-lu="${i}">${UNITES.map(u => `<option ${l.unite === u ? 'selected' : ''}>${u}</option>`).join('')}</select></label></div>
             <label style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E5546">Prix cible par unité (facultatif)<input type="number" inputmode="numeric" min="0" step="1" data-lx="${i}" value="${esc(l.prix)}" placeholder="F CFA"></label></div>`).join('')}
           ${lignes.length < 10 ? '<button type="button" class="ap-b s" data-plus>+ Ajouter un produit</button>' : ''}
-          <label>Exigences (facultatif)<textarea data-k="exigences" maxlength="400" placeholder="Qualité, calibre, conditionnement, horaires de livraison…">${v('exigences', '')}</textarea></label>
+          <div><span style="font-size:13px;color:#5E5546">Vos exigences (cochez ce qui compte)</span><div class="ap-cr" role="group" aria-label="Vos exigences">${CRIT.map(([k, l]) => `<button type="button" data-cr="${k}" aria-pressed="${crit.has(k)}"><i>${COCHE}</i>${l}</button>`).join('')}</div></div>
+          <label>Autres exigences (facultatif)<textarea data-k="exigences" maxlength="400" placeholder="Variété, maturité, horaires précis…">${v('exigences', '')}</textarea></label>
           <p class="ap-err" data-err role="alert"></p>
           <div class="ap-pied"><button class="ap-b" type="submit">Publier le besoin</button></div></form>`;
+      box.querySelectorAll('[data-cr]').forEach(b => b.onclick = () => { const k = b.dataset.cr, on = !crit.has(k); on ? crit.add(k) : crit.delete(k); b.setAttribute('aria-pressed', String(on)); });
       box.querySelectorAll('[data-fq]').forEach(b => b.onclick = () => { sauver(); freq = b.dataset.fq; if (freq === 'ponctuelle') etat.fin = ''; peindre(); });
       box.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { sauver(); lignes.splice(+b.dataset.rm, 1); peindre(); });
       const pl = box.querySelector('[data-plus]'); if (pl) pl.onclick = () => { sauver(); lignes.push({ produit: '', quantite: '', unite: 'kg', prix: '' }); peindre(); const k = box.querySelector(`[data-lp="${lignes.length - 1}"]`); if (k) k.focus(); };
@@ -157,8 +171,8 @@
         const rf = N().texteRefus ? N().texteRefus([etat.titre, etat.ville, etat.exigences].join(' · ')) : ''; if (rf) { er.textContent = rf; return; }
         const bt = box.querySelector('[type=submit]'); bt.disabled = true;
         try {
-          const id = await N().rpc('besoin_creer', { p_titre: etat.titre, p_type: etat.type, p_frequence: freq, p_debut: etat.debut, p_fin: etat.fin || null,
-            p_region: etat.region, p_ville: etat.ville || null, p_exigences: etat.exigences || null, p_lignes: L });
+          const id = await N().rpc('besoin_creer2', { p_titre: etat.titre, p_type: etat.type, p_frequence: freq, p_debut: etat.debut, p_fin: etat.fin || null,
+            p_region: etat.region, p_ville: etat.ville || null, p_exigences: etat.exigences || null, p_lignes: L, p_criteres: CRIT.map(c => c[0]).filter(k => crit.has(k)) });
           toast('Besoin publié', { type: 'ok', sous: 'Les vendeurs concernés peuvent vous répondre.' }); try { N().refresh && N().refresh(); } catch (_) {}
           besoin(id);
         } catch (x) { bt.disabled = false; er.textContent = errTxt(x); }
@@ -177,7 +191,7 @@
     catch (e) { if (!bg) return; box.innerHTML = tete('Besoin') + `<p class="ap-err" role="alert">${esc(errTxt(e))}</p><button class="ap-b s" data-re>Réessayer</button>`; box.querySelector('[data-re]').onclick = () => besoin(id); return; }
     if (!bg) return;
     if (!b) { box.innerHTML = tete('Besoin', '', 'ouverts') + '<div class="ap-vide"><b>Besoin introuvable</b>Il a peut-être été retiré.</div>'; lierRetour(box); return; }
-    const info = `<div class="ap-info"><b>${esc(TYPES[b.type] || '')}</b> · ${esc(b.acheteur)}${b.verifie ? ' · identité vérifiée' : ''}<br>${esc(periode(b))}<br>Livraison : ${esc(regNom(b.region))}${b.ville ? ', ' + esc(b.ville) : ''}${b.exigences ? '<br>Exigences : ' + esc(b.exigences) : ''}</div>`;
+    const info = `<div class="ap-info"><b>${esc(TYPES[b.type] || '')}</b> · ${esc(b.acheteur)}${b.verifie ? ' · identité vérifiée' : ''}<br>${esc(periode(b))}<br>Livraison : ${esc(regNom(b.region))}${b.ville ? ', ' + esc(b.ville) : ''}${(b.criteres || []).length ? `<ul class="ap-ok" aria-label="Exigences de l’acheteur">${CRIT.filter(c => b.criteres.includes(c[0])).map(c => `<li><i>${COCHE}</i>${c[1]}</li>`).join('')}</ul>` : ''}${b.exigences ? (b.criteres && b.criteres.length ? 'Autres exigences : ' : '<br>Exigences : ') + esc(b.exigences) : ''}</div>`;
     if (b.moi) return comparer(box, b, cmp || [], info);
     repondre(box, b, info);
   }

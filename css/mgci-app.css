@@ -116,27 +116,27 @@
 @keyframes carteSouffle{0%{box-shadow:0 0 0 0 rgba(242,194,48,.5)}75%{box-shadow:0 0 0 12px rgba(242,194,48,0)}100%{box-shadow:0 0 0 0 rgba(242,194,48,0)}}@keyframes carteApparait{from{opacity:0}}
 @media (prefers-reduced-motion:reduce){.carte-hote::before{animation:none}}
 
-/* « quand » : il le faut dès que possible, disponible maintenant, cette semaine…
-   Une étiquette à part, jamais coupée, dont la couleur et le signe disent l'urgence :
-   vite = terre + point qui bat ; semaine = ocre + sablier ; mois / date = neutre + calendrier ; dispo = vert + point allumé. */
-.qd[data-u] { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; flex: none; width: max-content; max-width: 100%; box-sizing: border-box; min-height: 24px; margin-top: 3px; padding: 0 10px 0 8px; border-radius: var(--r-rond); border: 1px solid var(--qd-bd); background: var(--qd-bg); color: var(--qd-fg); font-family: var(--f-texte); font-size: var(--t-sm); font-weight: 600; line-height: 1.1; letter-spacing: .01em; white-space: nowrap; }
-.an-infos .qd[data-u] { margin-top: 0; min-height: 26px; }
+/* « quand » : un TAMPON (demandé le 21/10) — rectangle plein, un peu penché, liseré blanc, lettres capitales.
+   La couleur dit l'urgence : vite = tomate (il faut agir) ; semaine = maïs ; mois / date = sable (pas pressé) ; dispo = vert (prêt).
+   Il se « tamponne » à chaque fois qu'il revient à l'écran (app/effets.js) ; celui de « dès que possible » frissonne un peu. */
+.qd[data-u] { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; flex: none; width: max-content; max-width: calc(100% - 6px); box-sizing: border-box; min-height: 26px; margin: 6px 0 3px 3px; padding: 0 10px 0 8px; border: 0; border-radius: 3px; background: var(--qd-bg); color: var(--qd-fg); font-family: var(--f-texte); font-size: 11.5px; font-weight: 700; line-height: 1.1; letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; transform: rotate(var(--qd-r)); box-shadow: 0 0 0 2px var(--qd-lis, #FFFDF8), 0 0 0 3.2px var(--qd-bd), 0 4px 10px rgba(23, 21, 18, .16); }
+.an-infos .qd[data-u] { margin-top: 4px; min-height: 26px; }
 .qd[data-u]::before { content: ""; flex: none; width: 12px; height: 12px; background: currentColor; -webkit-mask: var(--qd-ico) center / contain no-repeat; mask: var(--qd-ico) center / contain no-repeat; }
-.qd[data-u="vite"] { --qd-bg: #FBE6D8; --qd-fg: var(--rouille); --qd-bd: rgba(242, 194, 48, .38); }
-.qd[data-u="semaine"] { --qd-bg: rgba(242, 201, 76, .2); --qd-fg: var(--demande-texte); --qd-bd: rgba(242, 201, 76, .55); --qd-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2h12M6 22h12M7 2v4l5 6-5 6v4M17 2v4l-5 6 5 6v4'/%3E%3C/svg%3E"); }
-.qd[data-u="mois"], .qd[data-u="date"] { --qd-bg: rgba(23, 21, 18, .04); --qd-fg: var(--texte-2); --qd-bd: rgba(23, 21, 18, .14); --qd-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='3'/%3E%3Cpath d='M3 10h18M8 3v4M16 3v4'/%3E%3C/svg%3E"); }
-.qd[data-u="dispo"] { --qd-bg: rgba(108, 197, 140, .16); --qd-fg: var(--offre-texte); --qd-bd: rgba(108, 197, 140, .5); }
-/* les points : plein, avec un halo ; celui de « dès que possible » bat */
-.qd[data-u="vite"]::before, .qd[data-u="dispo"]::before { width: 8px; height: 8px; margin: 0 2px; border-radius: 50%; -webkit-mask: none; mask: none; }
-.qd[data-u="vite"]::before { background: var(--terre); box-shadow: 0 0 0 0 rgba(242, 194, 48, .55); animation: qdBat 1.6s ease-out infinite; }
-.qd[data-u="dispo"]::before { background: var(--offre); box-shadow: 0 0 0 3px rgba(108, 197, 140, .25); }
-@keyframes qdBat { 0% { box-shadow: 0 0 0 0 rgba(242, 194, 48, .55); } 70% { box-shadow: 0 0 0 6px rgba(242, 194, 48, 0); } 100% { box-shadow: 0 0 0 0 rgba(242, 194, 48, 0); } }
-@media (prefers-reduced-motion: reduce) { .qd[data-u="vite"]::before { animation: none; box-shadow: 0 0 0 3px rgba(242, 194, 48, .25); } }
-/* sur fond nuit (carte du réseau) */
-.qd[data-u].nuit { --qd-bg: rgba(245, 240, 230, .05); --qd-bd: rgba(245, 240, 230, .16); --qd-fg: var(--sable); }
-.qd[data-u="vite"].nuit { --qd-bg: rgba(242, 194, 48, .14); --qd-bd: rgba(242, 194, 48, .45); --qd-fg: var(--terre-clair); }
-.qd[data-u="semaine"].nuit { --qd-bg: rgba(242, 201, 76, .12); --qd-bd: rgba(242, 201, 76, .4); --qd-fg: var(--demande); }
-.qd[data-u="dispo"].nuit { --qd-bg: rgba(108, 197, 140, .12); --qd-bd: rgba(108, 197, 140, .4); --qd-fg: var(--offre); }
+.qd[data-u="vite"] { --qd-bg: #E8552F; --qd-fg: #171512; --qd-bd: rgba(232, 85, 47, .45); --qd-r: -3deg; }
+.qd[data-u="semaine"] { --qd-bg: #F2C230; --qd-fg: #171512; --qd-bd: rgba(201, 152, 18, .5); --qd-r: -2deg; --qd-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 2h12M6 22h12M7 2v4l5 6-5 6v4M17 2v4l-5 6 5 6v4'/%3E%3C/svg%3E"); }
+.qd[data-u="mois"], .qd[data-u="date"] { --qd-bg: #E6DCC8; --qd-fg: #3B342A; --qd-bd: rgba(23, 21, 18, .18); --qd-r: -1deg; --qd-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='5' width='18' height='16' rx='2'/%3E%3Cpath d='M3 10h18M8 3v4M16 3v4'/%3E%3C/svg%3E"); }
+.qd[data-u="dispo"] { --qd-bg: #6CC58C; --qd-fg: #0E3323; --qd-bd: rgba(47, 140, 85, .5); --qd-r: -1.5deg; }
+/* les points : « dès que possible » clignote, « disponible » est plein */
+.qd[data-u="vite"]::before, .qd[data-u="dispo"]::before { width: 7px; height: 7px; margin: 0 2px; border-radius: 50%; -webkit-mask: none; mask: none; }
+.qd[data-u="vite"]::before { animation: qdBat 1.1s steps(2, jump-none) infinite; }
+@keyframes qdBat { 50% { opacity: .15; } }
+/* le coup de tampon est joué par app/effets.js ; ici, le petit frisson de « dès que possible », toutes les 3 s */
+.qd[data-u="vite"] { animation: qdFrisson 3.2s 1.4s ease-in-out infinite; }
+@keyframes qdFrisson { 0%, 86%, 100% { transform: rotate(var(--qd-r)); } 90% { transform: rotate(0deg) scale(1.04); } 94% { transform: rotate(-4.5deg); } }
+@media (prefers-reduced-motion: reduce) { .qd[data-u], .qd[data-u]::before { animation: none !important; } }
+/* sur fond nuit (carte du réseau) : même tampon, liseré sombre */
+.qd[data-u].nuit { --qd-lis: #171512; }
+html[data-theme=sombre] .acc-sc .qd[data-u] { --qd-lis: #171512; }
 
 /* écran d'ouverture « le sac qui se remplit » (logo Étal vert) : trois produits tombent dans le sac, le sac se remplit,
    puis « marché » monte et « de Gros » s'écrit. Les produits continuent de tomber tant que l'application se prépare. */

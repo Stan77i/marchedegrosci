@@ -44,7 +44,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261023r">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261023s">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261023f">
 <link rel="stylesheet" href="v3/ux.css?v=20261023f">
@@ -618,22 +618,22 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <div onClick="{{ closeAll }}" style="position:absolute;inset:0;background:{{ scrimBg }};-webkit-backdrop-filter:{{ scrimFlou }};backdrop-filter:{{ scrimFlou }};opacity:{{ scrimOp }};pointer-events:{{ scrimPe }};transition:opacity .35s"></div>
 
 <!-- ═══ MENU : tiroir à gauche, comme Gmail — le nom en haut, le compte d'abord, puis tout le reste ; glisser vers la gauche pour fermer ═══ -->
-<div role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="{{ menuHid }}" onPointerDown="{{ dDown }}" onPointerMove="{{ dMove }}" onPointerUp="{{ dUp }}" onPointerCancel="{{ dUp }}" style="position:absolute;left:0;top:0;bottom:0;width:min(86%,340px);display:flex;flex-direction:column;background:#211D17;color:var(--ivoire);border-radius:0 26px 26px 0;transform:{{ menuTf }};transition:{{ drTr }};box-shadow:14px 0 44px rgba(0,0,0,.5);touch-action:pan-y;visibility:{{ menuVis }}">
+<div role="dialog" aria-modal="true" aria-label="Menu" aria-hidden="{{ menuHid }}" class="dr-clair" onPointerDown="{{ dDown }}" onPointerMove="{{ dMove }}" onPointerUp="{{ dUp }}" onPointerCancel="{{ dUp }}" style="position:absolute;left:0;top:0;bottom:0;width:min(86%,340px);display:flex;flex-direction:column;background:#FFFDF8;color:#171512;border-radius:0 28px 28px 0;transform:{{ menuTf }};transition:{{ drTr }};box-shadow:14px 0 44px rgba(16,57,43,.22);touch-action:pan-y;visibility:{{ menuVis }}">
   <div style="height:{{ topPad }};flex:none"></div>
-  <div style="display:flex;align-items:center;gap:12px;padding:16px 20px 18px;flex:none;border-bottom:1px solid rgba(245,240,230,.09)"><span class="mq-menu">{{ markEl }}</span></div>
+  <div style="display:flex;align-items:center;gap:12px;padding:16px 20px 18px;flex:none;border-bottom:1px solid rgba(23,21,18,.07)"><span class="mq-menu">{{ markEl }}</span></div>
   <div style="flex:1;min-height:0;overflow-y:auto;padding:6px 12px 10px 0;overscroll-behavior:contain">
     <sc-for list="{{ menu }}" as="g" hint-placeholder-count="4">
-      <sc-if value="{{ g.sep }}" hint-placeholder-val="{{ true }}"><div style="height:1px;background:rgba(245,240,230,.09);margin:8px 0 8px 70px"></div></sc-if>
+      <sc-if value="{{ g.sep }}" hint-placeholder-val="{{ true }}"><div style="height:1px;background:rgba(23,21,18,.07);margin:8px 0 8px 70px"></div></sc-if>
       <sc-for list="{{ g.items }}" as="i" hint-placeholder-count="3">
-        <button onClick="{{ i.go }}" aria-current="{{ i.cur }}" style="width:100%;border:0;background:{{ i.bg }};color:{{ i.fg }};display:flex;align-items:center;gap:14px;padding:6px 16px 6px 16px;border-radius:0 26px 26px 0;text-align:left;min-height:56px;font-family:Jost,system-ui,sans-serif" style-active="background:rgba(245,240,230,.08)">
+        <button onClick="{{ i.go }}" aria-current="{{ i.cur }}" style="width:100%;border:0;background:{{ i.bg }};color:{{ i.fg }};display:flex;align-items:center;gap:14px;padding:6px 16px 6px 16px;border-radius:0 26px 26px 0;text-align:left;min-height:56px;font-family:Jost,system-ui,sans-serif" style-active="background:rgba(16,57,43,.06)">
           <span class="dr-ico" style="width:40px;height:40px;flex:none;display:flex;align-items:center;justify-content:center">{{ i.ico }}</span>
-          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:var(--t-lg);font-weight:500;line-height:1.2">{{ i.t }}</span><sc-if value="{{ i.hasS }}" hint-placeholder-val="{{ false }}"><span style="font-size:var(--t-sm);color:var(--sable);line-height:1.3">{{ i.s }}</span></sc-if></span>
+          <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:var(--t-lg);font-weight:500;line-height:1.2">{{ i.t }}</span><sc-if value="{{ i.hasS }}" hint-placeholder-val="{{ false }}"><span style="font-size:var(--t-sm);color:#655C4D;line-height:1.3">{{ i.s }}</span></sc-if></span>
           <sc-if value="{{ i.hasN }}" hint-placeholder-val="{{ false }}"><span style="flex:none;min-width:24px;height:22px;padding:0 8px;border-radius:11px;background:{{ i.nBg }};color:{{ i.nFg }};font-size:var(--t-sm);font-weight:600;line-height:22px;text-align:center">{{ i.n }}</span></sc-if>
         </button>
       </sc-for>
     </sc-for>
   </div>
-  <div style="flex:none;padding:6px 12px {{ botPad }} 0;border-top:1px solid rgba(245,240,230,.09)"><button onClick="{{ goPorte }}" style="width:100%;border:0;background:transparent;color:var(--terre-clair);display:flex;align-items:center;gap:14px;padding:6px 16px 6px 16px;border-radius:0 26px 26px 0;text-align:left;min-height:56px;font-family:Jost,system-ui,sans-serif;font-size:var(--t-lg);font-weight:500" style-active="background:rgba(242,194,48,.12)"><span aria-hidden="true" style="width:40px;height:40px;flex:none;display:flex;align-items:center;justify-content:center">{{ porteEl }}</span>{{ porteTxt }}</button></div>
+  <div style="flex:none;padding:6px 12px {{ botPad }} 0;border-top:1px solid rgba(23,21,18,.07)"><button onClick="{{ goPorte }}" style="width:100%;border:0;background:transparent;color:#A4472C;display:flex;align-items:center;gap:14px;padding:6px 16px 6px 16px;border-radius:0 26px 26px 0;text-align:left;min-height:56px;font-family:Jost,system-ui,sans-serif;font-size:var(--t-lg);font-weight:500" style-active="background:rgba(242,194,48,.12)"><span aria-hidden="true" style="width:40px;height:40px;flex:none;display:flex;align-items:center;justify-content:center">{{ porteEl }}</span>{{ porteTxt }}</button></div>
 </div>
 
 <!-- ═══ FAMILLES ═══ -->
@@ -1463,7 +1463,7 @@ class Component extends DCLogic {
       jute: { op: act.sack ? 0 : 1, tf: act.sack ? 'scale(.86)' : 'none', mound: act.tint, l1: act.name.toUpperCase(), fs: act.name.length > 14 ? '14px' : act.name.length > 9 ? '17px' : '21px' },
       prev: () => this.snap(Math.round(S.rot) - 1), next: () => this.snap(Math.round(S.rot) + 1),
       ...this.accueil({ h, mine, moiS, moiP, moiC, moiN }),
-      markEl: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.ligne({ fond: 'vert', h: 24 }) } }) : 'Marché de Gros',
+      markEl: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.ligne({ fond: 'clair', h: 24 }) } }) : 'Marché de Gros',
       act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, oAnim: ao ? 'mkLuciole 3.2s ease-in-out infinite' : 'none', dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
       openFicheAct: () => this.openFiche(act.slug),
       duoH: { jaiL: 'J\u2019ai ' + act.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + act.name.toLowerCase() + ' à acheter : publier une demande' }, duoF: { jaiL: 'J\u2019ai ' + FP.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + FP.name.toLowerCase() + ' à acheter : publier une demande' },
@@ -1553,7 +1553,7 @@ class Component extends DCLogic {
       dDown: e => { this.dx0 = e.clientX; this.dy0 = e.clientY; this.dd = false; }, dMove: e => { if (this.dx0 == null) return; const dx = e.clientX - this.dx0, dyy = e.clientY - this.dy0; if (!this.dd && dx < -10 && Math.abs(dx) > Math.abs(dyy) * 1.3) this.dd = true; if (this.dd) this.setState({ drDx: Math.min(0, dx) }); }, dUp: () => { if (this.dd) { const fermer = (this.state.drDx || 0) < -70; this.dd = false; this.setState(fermer ? { menu: false, drDx: 0 } : { drDx: 0 }); } this.dx0 = null; }, famTf: S.sheet === 'fam' ? 'translateY(' + dy + 'px)' : 'translateY(105%)', matchTf: sheetOn ? 'translateY(' + dy + 'px)' : 'translateY(105%)',
       menu: (() => {
         // une ligne du tiroir : icône, nom, (sous-titre), (compteur) ; la page ouverte est surlignée comme dans Gmail
-        const ln = (o) => Object.assign({ hasS: !!o.s, s: o.s || '', hasN: !!o.n, n: o.n || '', nBg: o.nBg || 'rgba(245,240,230,.1)', nFg: o.nFg || '#F5F0E6', cur: o.page && o.page === top ? 'page' : 'false', bg: o.page && o.page === top ? 'rgba(242,194,48,.16)' : 'transparent', fg: o.page && o.page === top ? '#F2C230' : '#F5F0E6' }, o);
+        const ln = (o) => Object.assign({ hasS: !!o.s, s: o.s || '', hasN: !!o.n, n: o.n || '', nBg: o.nBg || 'rgba(23,21,18,.07)', nFg: o.nFg || '#171512', cur: o.page && o.page === top ? 'page' : 'false', bg: o.page && o.page === top ? 'rgba(16,57,43,.08)' : 'transparent', fg: o.page && o.page === top ? '#10392B' : '#171512' }, o);
         const pg = (k, t, page, extra) => ln(Object.assign({ ico: ico(k), t, page, go: () => this.push(page, extra && extra.args) }, extra || {}));
         const N = window.MDGNuage, ss = N && N.session(), tl = ss && ss.user && ss.user.tel ? String(ss.user.tel).replace(/(\d{2})(?=\d)/g, '$1 ') : '';
         const C = window.MDGCompte, P = ss && C ? C.profil() : null, nomP = P ? C.nomAffiche(P) : '';

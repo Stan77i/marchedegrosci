@@ -181,6 +181,11 @@
   - 8 garanties à cocher (sans moisissure, contenant scellé, reprise du non-conforme…).
 - `appro.js` : 5 groupes repliables + 8 cases rapides (les 4 cases du schéma 38 qui font doublon ne sont plus proposées, mais restent affichées sur les anciens besoins). Affichage en phrases avec coche verte.
 - « litre » ajouté aux unités de l'app (Vendre, Je cherche, J'ai) : `A.UNITS` dans `app/marche-app.js`.
+- « Autre » partout, à la demande du propriétaire :
+  - chaque liste a « Autre (préciser) » (`<clé>_autre`, 80 caractères) ;
+  - l'unité de capacité a « autre… » (`ua`, ex. régimes) ;
+  - chaque groupe a un champ « Autre exigence » (`autre_vol/qual/cond/liv/pay`, 120 caractères).
+  - Ces textes passent par `texte_refus` dans `besoin_creer3`. Un « Autre » sans précision est refusé.
 - Pour ajouter une valeur : la mettre dans `_besoin_detail` (serveur) et dans `DET`/`PLUS` (appro.js).
 
 ## 5. En attente d'une décision du propriétaire

@@ -18,6 +18,9 @@
 --   paiement   délai de paiement souhaité (information entre les parties, aucun paiement dans l'application) :
 --              livraison, 7j, 15j, 30j
 --   plus       sans_moisissure, sans_insectes, scelle, date_prod, tracabilite, controle, dechargement, reprise
+--   « Autre » (demandé par le propriétaire) : chaque liste accepte « autre », précisé dans <clé>_autre (2–80 caractères) ;
+--   la capacité accepte l'unité « autre » précisée dans ua (ex. régimes, bottes) ; autre_vol, autre_qual, autre_cond, autre_liv, autre_pay = « autre exigence » libre par groupe (120 caractères).
+--   Ces textes passent par texte_refus (pas de lien ni de numéro), comme le reste du besoin.
 
 alter table public.besoins add column if not exists detail jsonb not null default '{}'::jsonb;
 do $$ begin
@@ -28,9 +31,9 @@ create or replace function public._besoin_detail(p jsonb) returns jsonb
 language plpgsql immutable set search_path = public as $$
 declare d jsonb := coalesce(p, '{}'::jsonb); r jsonb := '{}'::jsonb; k text; v jsonb; x numeric; a text[];
   enums constant jsonb := '{
-    "cond": ["sac_25","sac_50","sac_100","cageot","carton","bidon_5","bidon_20","fut_200","vrac","palette"],
-    "choix": ["premier","deuxieme","industriel"], "calibre": ["petit","moyen","gros","homogene"], "maturite": ["vert","tournant","mur"],
-    "heure": ["avant_6","avant_7","avant_9","matin","apres_midi"], "paiement": ["livraison","7j","15j","30j"] }'::jsonb;
+    "cond": ["sac_25","sac_50","sac_100","cageot","carton","bidon_5","bidon_20","fut_200","vrac","palette","autre"],
+    "choix": ["premier","deuxieme","industriel","autre"], "calibre": ["petit","moyen","gros","homogene","autre"], "maturite": ["vert","tournant","mur","autre"],
+    "heure": ["avant_6","avant_7","avant_9","matin","apres_midi","autre"], "paiement": ["livraison","7j","15j","30j","autre"] }'::jsonb;
   listes constant jsonb := '{
     "jours": ["lun","mar","mer","jeu","ven","sam","dim"],
     "plus": ["sans_moisissure","sans_insectes","scelle","date_prod","tracabilite","controle","dechargement","reprise"] }'::jsonb;
@@ -52,6 +55,10 @@ begin
         raise exception '%', case k when 'tolerance' then 'Écart de quantité : entre 1 et 20 %.' when 'humidite' then 'Humidité : entre 5 et 30 %.' else 'Récolte : entre 1 et 60 jours.' end;
       end if;
       r := r || jsonb_build_object(k, case when k = 'humidite' then round(x, 1) else round(x) end);
+    elsif k like '%\_autre' or k in ('autre_vol', 'autre_qual', 'autre_cond', 'autre_liv', 'autre_pay') then
+      if not enums ? left(k, -6) and k not in ('autre_vol', 'autre_qual', 'autre_cond', 'autre_liv', 'autre_pay') then raise exception 'Exigence inconnue : %.', k; end if;
+      if jsonb_typeof(v) <> 'string' or char_length(btrim(v #>> '{}')) > greatest(80, (k like 'autre\_%')::int * 120) then raise exception 'Texte trop long : %.', k; end if;
+      if char_length(btrim(v #>> '{}')) >= 2 then r := r || jsonb_build_object(k, btrim(v #>> '{}')); end if;
     elsif k = 'origine' then
       if jsonb_typeof(v) <> 'string' or (v #>> '{}') !~ '^[a-z0-9-]{2,60}$' then raise exception 'Exigence invalide : origine.'; end if;
       r := r || jsonb_build_object(k, v);
@@ -59,13 +66,19 @@ begin
       if jsonb_typeof(v) <> 'object' then raise exception 'Exigence invalide : capacité.'; end if;
       begin x := (v ->> 'q')::numeric; exception when others then raise exception 'Capacité : indiquez une quantité.'; end;
       if x is null or x <= 0 or x >= 1e7 then raise exception 'Capacité : indiquez une quantité.'; end if;
-      if coalesce(v ->> 'u', '') not in ('kg', 'tonne', 'litre', 'sac') or coalesce(v ->> 'p', '') not in ('semaine', 'mois') then
+      if coalesce(v ->> 'u', '') not in ('kg', 'tonne', 'litre', 'sac', 'autre') or coalesce(v ->> 'p', '') not in ('semaine', 'mois') then
         raise exception 'Exigence invalide : capacité.';
       end if;
-      r := r || jsonb_build_object(k, jsonb_build_object('q', x, 'u', v ->> 'u', 'p', v ->> 'p'));
+      if v ->> 'u' = 'autre' and coalesce(btrim(v ->> 'ua'), '') !~ '^[[:alpha:] ''’-]{2,20}$' then raise exception 'Capacité : précisez l''unité en lettres (ex. régimes).'; end if;
+      r := r || jsonb_build_object(k, jsonb_build_object('q', x, 'u', v ->> 'u', 'p', v ->> 'p') || case when v ->> 'u' = 'autre' then jsonb_build_object('ua', btrim(v ->> 'ua')) else '{}'::jsonb end);
     else
       raise exception 'Exigence inconnue : %.', k;
     end if;
+  end loop;
+  -- « autre » doit être précisé ; une précision sans « autre » est ignorée
+  for k in select jsonb_object_keys(enums) loop
+    if r ->> k = 'autre' and not r ? (k || '_autre') then raise exception 'Précisez « Autre » : %.', k; end if;
+    if r ? (k || '_autre') and coalesce(r ->> k, '') <> 'autre' then r := r - (k || '_autre'); end if;
   end loop;
   return r;
 end $$;
@@ -75,8 +88,12 @@ revoke execute on function public._besoin_detail(jsonb) from public, anon, authe
 create or replace function public.besoin_creer3(p_titre text, p_type text, p_frequence text, p_debut date, p_fin date,
   p_region text, p_ville text, p_exigences text, p_lignes jsonb, p_criteres text[], p_detail jsonb) returns uuid
 language plpgsql security definer set search_path = public as $$
-declare v_id uuid; dt jsonb := public._besoin_detail(p_detail);
+declare v_id uuid; dt jsonb := public._besoin_detail(p_detail); t text; rf text;
 begin
+  -- les textes « Autre » : pas de lien ni de numéro (même règle que le reste du besoin)
+  select string_agg(value #>> '{}', ' · ') into t from jsonb_each(dt) where key like '%autre%';
+  t := concat_ws(' · ', t, dt -> 'capacite' ->> 'ua');
+  if t <> '' and not public.est_admin() then rf := public.texte_refus(t); if rf is not null then raise exception 'TEXTE_REFUSE : %', rf using errcode = 'P0001'; end if; end if;
   v_id := public.besoin_creer2(p_titre, p_type, p_frequence, p_debut, p_fin, p_region, p_ville, p_exigences, p_lignes, p_criteres);
   update public.besoins set detail = dt where besoins.id = v_id and besoins.user_id = auth.uid();
   return v_id;

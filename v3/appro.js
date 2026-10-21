@@ -39,17 +39,21 @@
   // le détail en phrases courtes (affichage avec coche verte)
   function phrasesDetail(d) {
     d = d || {}; const L = [];
-    if (d.capacite) L.push('Au moins ' + nb(d.capacite.q) + ' ' + (d.capacite.q > 1 ? UCAP[d.capacite.u] : d.capacite.u) + ' par ' + d.capacite.p);
+    if (d.capacite) L.push('Au moins ' + nb(d.capacite.q) + ' ' + (d.capacite.u === 'autre' ? d.capacite.ua || '' : d.capacite.q > 1 ? UCAP[d.capacite.u] : d.capacite.u) + ' par ' + d.capacite.p);
     if (d.tolerance) L.push('Écart de quantité accepté : ±' + d.tolerance + ' %');
-    ['choix', 'calibre', 'maturite', 'cond'].forEach(k => { if (d[k] && DET[k][1][d[k]]) L.push(DET[k][1][d[k]]); });
+    const val = k => d[k] === 'autre' ? (d[k + '_autre'] ? DET[k][0] + ' : ' + d[k + '_autre'] : '') : DET[k][1][d[k]] || '';
+    ['choix', 'calibre', 'maturite', 'cond'].forEach(k => { if (d[k] && val(k)) L.push(val(k)); });
+    if (d.autre_vol) L.push(d.autre_vol); if (d.autre_qual) L.push(d.autre_qual); if (d.autre_cond) L.push(d.autre_cond);
     if (d.humidite) L.push('Humidité ' + nb(d.humidite) + ' % au plus');
     if (d.recolte) L.push('Récolté il y a moins de ' + d.recolte + ' jour' + (d.recolte > 1 ? 's' : ''));
     if (d.origine) L.push('Origine : ' + regNom(d.origine));
     if ((d.jours || []).length) { const j = Object.keys(JOURS).filter(x => d.jours.includes(x)).map(x => JOURS_L[x]); L.push('Livraison le ' + (j.length > 1 ? j.slice(0, -1).join(', ') + ' et ' + j[j.length - 1] : j[0])); }
-    if (d.heure) L.push('Livraison ' + DET.heure[1][d.heure].toLowerCase());
+    if (d.heure) L.push(d.heure === 'autre' ? val('heure') : 'Livraison ' + DET.heure[1][d.heure].toLowerCase());
+    if (d.autre_liv) L.push(d.autre_liv);
     (d.plus || []).forEach(k => { if (PLUS[k]) L.push(PLUS[k]); });
-    if (d.paiement) L.push('Paiement ' + DET.paiement[1][d.paiement].toLowerCase());
-    return L;
+    if (d.paiement) L.push(d.paiement === 'autre' ? val('paiement') : 'Paiement ' + DET.paiement[1][d.paiement].toLowerCase());
+    if (d.autre_pay) L.push(d.autre_pay);
+    return L.filter(Boolean);
   }
   const COCHE = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   const UNITES = ['kg', 'sac', 'tonne', 'caisse', 'cagette', 'régime', 'botte', 'tas', 'litre', 'unité'];
@@ -189,29 +193,33 @@
           ${lignes.length < 10 ? '<button type="button" class="ap-b s" data-plus>+ Ajouter un produit</button>' : ''}
           <h3 class="ap-sec">Vos exigences</h3>
           <div><span style="font-size:13px;color:#5E5546">En un geste (cochez ce qui compte)</span><div class="ap-cr" role="group" aria-label="Exigences rapides">${CRIT.filter(c => CRIT_FORM.includes(c[0])).map(([k, l]) => `<button type="button" data-cr="${k}" aria-pressed="${crit.has(k)}"><i>${COCHE}</i>${l}</button>`).join('')}</div></div>
-          ${(() => { const dv = k => esc(det[k] || ''), sel = (k, lab) => `<label>${lab || DET[k][0]}<select data-dk="${k}"><option value="">Peu importe</option>${Object.entries(DET[k][1]).map(([v, l]) => `<option value="${v}" ${det[k] === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>`;
+          ${(() => { const dv = k => esc(det[k] || ''), sel = (k, lab) => `<div style="display:grid;gap:6px"><label>${lab || DET[k][0]}<select data-dk="${k}" data-autre="${k}_autre"><option value="">Peu importe</option>${Object.entries(DET[k][1]).map(([v, l]) => `<option value="${v}" ${det[k] === v ? 'selected' : ''}>${l}</option>`).join('')}<option value="autre" ${det[k] === 'autre' ? 'selected' : ''}>Autre (préciser)</option></select></label>
+              <input data-dk="${k}_autre" maxlength="80" placeholder="Précisez : ${(lab || DET[k][0]).toLowerCase()}" aria-label="Précisez : ${lab || DET[k][0]}" value="${dv(k + '_autre')}" ${det[k] === 'autre' ? '' : 'hidden'}></div>`;
+            const autre = (g, ph) => `<label>Autre exigence (facultatif)<input data-dk="autre_${g}" maxlength="120" placeholder="${ph}" value="${dv('autre_' + g)}"></label>`;
             const puces = ks => `<div class="ap-cr" role="group">${ks.map(k => `<button type="button" data-pl="${k}" aria-pressed="${det.plus.has(k)}"><i>${COCHE}</i>${PLUS[k]}</button>`).join('')}</div>`;
             const grp = (g, titre, corps, n) => `<details class="ap-dt" data-g="${g}" ${ouverts.has(g) ? 'open' : ''}><summary>${titre}${n ? `<small>${n} choisi${n > 1 ? 's' : ''}</small>` : ''}</summary><div>${corps}</div></details>`;
             const n = ks => ks.filter(k => det[k]).length;
             return `<div style="display:grid;gap:8px">
             ${grp('vol', 'Volume et régularité', `<div><span style="font-size:13px;color:#5E5546">Le vendeur doit pouvoir fournir au moins</span><div class="ap-cap" style="margin-top:4px">
                 <input type="number" inputmode="decimal" min="0" step="any" data-dk="capq" value="${dv('capq')}" placeholder="ex. 2" aria-label="Quantité minimale fournie">
-                <select data-dk="capu" aria-label="Unité">${Object.entries(UCAP).map(([u, l]) => `<option value="${u}" ${(det.capu || 'tonne') === u ? 'selected' : ''}>${l}</option>`).join('')}</select>
-                <select data-dk="capp" aria-label="Par">${['semaine', 'mois'].map(x => `<option value="${x}" ${(det.capp || 'semaine') === x ? 'selected' : ''}>par ${x}</option>`).join('')}</select></div></div>
-              <label>Écart de quantité accepté<select data-dk="tolerance"><option value="">Aucun écart</option>${[2, 5, 10, 15].map(x => `<option value="${x}" ${+det.tolerance === x ? 'selected' : ''}>± ${x} %</option>`).join('')}</select></label>`, n(['capq', 'tolerance']))}
+                <select data-dk="capu" data-autre="capua" aria-label="Unité">${Object.entries(UCAP).map(([u, l]) => `<option value="${u}" ${(det.capu || 'tonne') === u ? 'selected' : ''}>${l}</option>`).join('')}<option value="autre" ${det.capu === 'autre' ? 'selected' : ''}>autre…</option></select>
+                <select data-dk="capp" aria-label="Par">${['semaine', 'mois'].map(x => `<option value="${x}" ${(det.capp || 'semaine') === x ? 'selected' : ''}>par ${x}</option>`).join('')}</select></div>
+                <input data-dk="capua" maxlength="20" placeholder="Quelle unité ? (ex. régimes, bottes)" aria-label="Quelle unité ?" value="${dv('capua')}" style="margin-top:6px" ${det.capu === 'autre' ? '' : 'hidden'}></div>
+              <label>Écart de quantité accepté<select data-dk="tolerance"><option value="">Aucun écart</option>${[2, 5, 10, 15].map(x => `<option value="${x}" ${+det.tolerance === x ? 'selected' : ''}>± ${x} %</option>`).join('')}</select></label>${autre('vol', 'ex. stock de réserve')}`, n(['capq', 'tolerance', 'autre_vol']))}
             ${grp('qual', 'Qualité', `${sel('choix')}<div class="ap-2">${sel('calibre')}${sel('maturite')}</div>
               <div class="ap-2"><label>Humidité au plus (%)<input type="number" inputmode="decimal" min="5" max="30" step="0.5" data-dk="humidite" value="${dv('humidite')}" placeholder="ex. 14"></label>
                 <label>Récolté depuis moins de (jours)<input type="number" inputmode="numeric" min="1" max="60" step="1" data-dk="recolte" value="${dv('recolte')}" placeholder="ex. 3"></label></div>
               <label>Région d’origine<select data-dk="origine"><option value="">Peu importe</option>${regs().map(r => `<option value="${esc(r.slug)}" ${det.origine === r.slug ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}</select></label>
-              ${puces(['sans_moisissure', 'sans_insectes', 'tracabilite', 'date_prod', 'controle'])}`, n(['choix', 'calibre', 'maturite', 'humidite', 'recolte', 'origine']) + ['sans_moisissure', 'sans_insectes', 'tracabilite', 'date_prod', 'controle'].filter(k => det.plus.has(k)).length)}
-            ${grp('cond', 'Conditionnement', `${sel('cond')}${puces(['scelle'])}`, n(['cond']) + (det.plus.has('scelle') ? 1 : 0))}
+              ${puces(['sans_moisissure', 'sans_insectes', 'tracabilite', 'date_prod', 'controle'])}${autre('qual', 'ex. variété précise, couleur, goût')}`, n(['choix', 'calibre', 'maturite', 'humidite', 'recolte', 'origine', 'autre_qual']) + ['sans_moisissure', 'sans_insectes', 'tracabilite', 'date_prod', 'controle'].filter(k => det.plus.has(k)).length)}
+            ${grp('cond', 'Conditionnement', `${sel('cond')}${puces(['scelle'])}${autre('cond', 'ex. sacs marqués au poids')}`, n(['cond', 'autre_cond']) + (det.plus.has('scelle') ? 1 : 0))}
             ${grp('liv', 'Livraison', `<div><span style="font-size:13px;color:#5E5546">Jours de livraison</span><div class="ap-j" role="group" aria-label="Jours de livraison" style="margin-top:4px">${Object.entries(JOURS).map(([j, l]) => `<button type="button" data-jr="${j}" aria-pressed="${det.jours.has(j)}">${l}</button>`).join('')}</div></div>
-              ${sel('heure')}${puces(['dechargement', 'reprise'])}`, (det.jours.size ? 1 : 0) + n(['heure']) + ['dechargement', 'reprise'].filter(k => det.plus.has(k)).length)}
-            ${grp('pay', 'Paiement', `${sel('paiement')}<p class="ap-note" style="margin:0">Une information pour le vendeur : l’application ne gère aucun paiement.</p>`, n(['paiement']))}
+              ${sel('heure')}${puces(['dechargement', 'reprise'])}${autre('liv', 'ex. livrer à l’entrée de service')}`, (det.jours.size ? 1 : 0) + n(['heure', 'autre_liv']) + ['dechargement', 'reprise'].filter(k => det.plus.has(k)).length)}
+            ${grp('pay', 'Paiement', `${sel('paiement')}${autre('pay', 'ex. paiement en deux fois')}<p class="ap-note" style="margin:0">Une information pour le vendeur : l’application ne gère aucun paiement.</p>`, n(['paiement', 'autre_pay']))}
             </div>`; })()}
-          <label>Autres exigences (facultatif)<textarea data-k="exigences" maxlength="400" placeholder="Variété, maturité, horaires précis…">${v('exigences', '')}</textarea></label>
+          <label>Autre chose à dire au vendeur (facultatif)<textarea data-k="exigences" maxlength="400" placeholder="Variété, maturité, horaires précis…">${v('exigences', '')}</textarea></label>
           <p class="ap-err" data-err role="alert"></p>
           <div class="ap-pied"><button class="ap-b" type="submit">Publier le besoin</button></div></form>`;
+      box.querySelectorAll('select[data-autre]').forEach(sl => sl.onchange = () => { const i = box.querySelector(`[data-dk="${sl.dataset.autre}"]`); if (!i) return; i.hidden = sl.value !== 'autre'; if (!i.hidden) i.focus(); });
       box.querySelectorAll('[data-pl]').forEach(b => b.onclick = () => { const k = b.dataset.pl, on = !det.plus.has(k); on ? det.plus.add(k) : det.plus.delete(k); b.setAttribute('aria-pressed', String(on)); });
       box.querySelectorAll('[data-jr]').forEach(b => b.onclick = () => { const k = b.dataset.jr, on = !det.jours.has(k); on ? det.jours.add(k) : det.jours.delete(k); b.setAttribute('aria-pressed', String(on)); });
       box.querySelectorAll('[data-cr]').forEach(b => b.onclick = () => { const k = b.dataset.cr, on = !crit.has(k); on ? crit.add(k) : crit.delete(k); b.setAttribute('aria-pressed', String(on)); });
@@ -236,9 +244,16 @@
         if (hu != null && !(hu >= 5 && hu <= 30)) { er.textContent = 'Humidité : indiquez une valeur entre 5 et 30 %.'; return; }
         if (rc != null && !(rc >= 1 && rc <= 60)) { er.textContent = 'Récolte : indiquez entre 1 et 60 jours.'; return; }
         if (cq != null && !(cq > 0)) { er.textContent = 'Volume : indiquez une quantité supérieure à zéro.'; return; }
-        const detail = { capacite: cq ? { q: cq, u: det.capu || 'tonne', p: det.capp || 'semaine' } : null, tolerance: det.tolerance ? +det.tolerance : null, humidite: hu, recolte: rc,
+        const tx = k => String(det[k] || '').trim();
+        for (const k of Object.keys(DET)) if (det[k] === 'autre' && tx(k + '_autre').length < 2) { er.textContent = 'Précisez « Autre » pour : ' + DET[k][0].toLowerCase() + '.'; return; }
+        if (cq && det.capu === 'autre' && !/^[a-zà-ÿ' ’-]{2,20}$/i.test(tx('capua'))) { er.textContent = 'Volume : précisez l’unité en lettres (ex. régimes).'; return; }
+        const libres = Object.keys(DET).filter(k => det[k] === 'autre').map(k => tx(k + '_autre')).concat(['vol', 'qual', 'cond', 'liv', 'pay'].map(g => tx('autre_' + g)), det.capu === 'autre' ? [tx('capua')] : []).filter(Boolean);
+        { const rf2 = libres.length && N().texteRefus ? N().texteRefus(libres.join(' · ')) : ''; if (rf2) { er.textContent = rf2; return; } }
+        const detail = { capacite: cq ? Object.assign({ q: cq, u: det.capu || 'tonne', p: det.capp || 'semaine' }, det.capu === 'autre' ? { ua: tx('capua') } : {}) : null, tolerance: det.tolerance ? +det.tolerance : null, humidite: hu, recolte: rc,
           choix: det.choix || null, calibre: det.calibre || null, maturite: det.maturite || null, cond: det.cond || null, origine: det.origine || null, heure: det.heure || null, paiement: det.paiement || null,
           jours: [...det.jours], plus: [...det.plus] };
+        Object.keys(DET).forEach(k => { if (det[k] === 'autre') detail[k + '_autre'] = tx(k + '_autre'); });
+        ['vol', 'qual', 'cond', 'liv', 'pay'].forEach(g => { if (tx('autre_' + g).length >= 2) detail['autre_' + g] = tx('autre_' + g); });
         Object.keys(detail).forEach(k => { const v = detail[k]; if (v == null || (Array.isArray(v) && !v.length)) delete detail[k]; });
         const bt = box.querySelector('[type=submit]'); bt.disabled = true;
         try {

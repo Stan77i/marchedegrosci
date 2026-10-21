@@ -332,3 +332,13 @@ Lui proposer de coller ceci :
   - On peut ajouter crabe, langouste, sole, kpanman… si le propriétaire le veut.
 - Restent sans photo : poisson / poulet / crevettes surgelés, pigeon, poule pondeuse réformée, œufs de poule fermière.
 
+
+**Notifications : l'écriture du site** (demandé le 21/10)
+- La pastille (`app/toast.js`, partagée par l'app et le site) écrit comme la bande « Parcours *sécurisé* : tout se passe ici ».
+  - Le texte est en Jost 500 (avant : tout en gras 600).
+  - Un seul mot est en gras italique : maïs de nuit, vert surligné de maïs de jour.
+- Choix du mot (fonction `accent`) :
+  - le message peut le marquer lui-même : `*mot*` ;
+  - sinon, le premier mot qui dit ce qui s'est passé (publiée, envoyé, connecté, impossible, retirée…) ;
+  - sinon, le premier mot du métier (annonce, offre, négociation, commande, prix…) ;
+  - sinon, rien.

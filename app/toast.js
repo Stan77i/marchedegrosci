@@ -17,6 +17,17 @@
   const deviner = t => /impossible|erreur|échou|refus|pas de connexion|sans réseau|introuvable|invalide|incorrect|banni|trop lourd|mémoire pleine|n’a pas pu|n'a pas pu|pas de lien|pas de numéro|pas d’adresse|non publiée/i.test(t) ? 'erreur'
     : /attention|vérifiez|limite|bientôt|n’est pas encore|n'est pas encore|indiquez|choisissez|complétez/i.test(t) ? 'alerte'
     : /connecté|en ligne|publié|envoyé|enregistr|vérifié|copié|merci|ajouté|créé|signalé|retiré|supprimé|à jour|accept|conclu|c’est fait|c'est fait/i.test(t) ? 'ok' : 'info';
+  // l'écriture du site : une phrase simple, UN mot en valeur (gras italique : maïs sur fond sombre, vert surligné sur fond clair).
+  // Le message peut le marquer lui-même (*mot*) ; sinon on prend le premier mot qui dit ce qui s'est passé, puis le premier mot du métier.
+  const ETATS = 'publiée?s?|envoyée?s?|enregistrée?s?|connectée?|déconnectée?|vérifiée?s?|copiée?|retirée?s?|supprimée?s?|acceptée?s?|refusée?s?|conclue?s?|signalée?s?|ajoutée?s?|créée?s?|annulée?s?|confirmée?s?|livrée?s?|reçue?s?|impossible|erreur|échec|bienvenue|merci|à jour|en ligne|hors connexion|sans réseau|cachée?|sécurisée?|gratuite?s?';
+  const METIER = 'offres?|demandes?|annonces?|négociations?|propositions?|messages?|commandes?|prix|stock|groupes?|alertes?|compte|profil|identité|connexion|réseau|zones?|produits?|photos?|vendeurs?|acheteurs?|transporteurs?|livraison|numéro|code|avis|statut|publications?';
+  const BORD = "(^|[\\s'’(«\\-;])", FIN = '(?=$|[\\s.,:;!?»)…])';
+  const R_ETAT = new RegExp(BORD + '(' + ETATS + ')' + FIN, 'i'), R_METIER = new RegExp(BORD + '(' + METIER + ')' + FIN, 'i');
+  function accent(html) {
+    if (/\*[^*]+\*/.test(html)) return html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+    const r = R_ETAT.test(html) ? R_ETAT : R_METIER.test(html) ? R_METIER : null;
+    return r ? html.replace(r, (_, a, m) => a + '<em>' + m + '</em>') : html;
+  }
   const VIBRE = { ok: 12, erreur: [30, 60, 30], alerte: [18, 40, 18] };
   const CSS = `.il{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:9600;transform:translate(-50%,-18px) scale(.72);opacity:0;
   max-width:min(calc(100vw - 20px),460px);min-width:0;border-radius:26px;background:rgba(255,253,248,.96);color:#171512;
@@ -42,15 +53,15 @@
 @keyframes ilPouls{50%{transform:scale(.6);opacity:.5}}
 .il-x{min-width:0;flex:1;display:flex;flex-direction:column;gap:1px}
 .il-x b,.il-x small{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;width:max-content;max-width:min(310px,calc(100vw - 110px));overflow-wrap:anywhere}
-.il-x b{font:600 15.5px/1.28 Jost,sans-serif;letter-spacing:-.01em;-webkit-line-clamp:3}
-.il-x b em{font-weight:900;font-style:italic;color:#10392B;padding:0 .06em 0 .02em;background:linear-gradient(transparent 62%,rgba(242,194,48,.65) 62%,rgba(242,194,48,.65) 94%,transparent 94%)}
+.il-x b{font:500 15.5px/1.3 Jost,sans-serif;letter-spacing:-.005em;-webkit-line-clamp:3}
+.il-x b em{font-weight:900;font-style:italic;letter-spacing:-.015em;color:#10392B;padding:0 .06em 0 .02em;background:linear-gradient(transparent 62%,rgba(242,194,48,.65) 62%,rgba(242,194,48,.65) 94%,transparent 94%)}
 .il-x small{font-size:13.5px;line-height:1.35;color:#5E5546;-webkit-line-clamp:4;margin-top:2px}
 .il-in:not(.sans-a) .il-x b,.il-in:not(.sans-a) .il-x small{max-width:min(240px,calc(100vw - 196px))}
 .il-n{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-right:6px;border-radius:10px;background:#F2C230;color:#10392B;font:700 12px/1 Jost,sans-serif;vertical-align:1px}
 .il-a{flex:none;height:36px;padding:0 15px;border:0;border-radius:18px;background:#F2C230;color:#10392B;font:600 14px/1 Jost,system-ui,sans-serif;cursor:pointer}
 .il-a:active{transform:scale(.96)}
 .il-a:focus-visible,.il:focus-visible{outline:2px solid #10392B;outline-offset:2px}
-html[data-theme=sombre] .il{background:rgba(30,27,22,.95);color:#F3EFE4;box-shadow:0 14px 36px rgba(0,0,0,.45),0 0 0 1px rgba(243,239,228,.08) inset}
+html[data-theme=sombre] .il{background:rgba(30,27,22,.95);color:rgba(243,239,228,.9);box-shadow:0 14px 36px rgba(0,0,0,.45),0 0 0 1px rgba(243,239,228,.08) inset}
 html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme=sombre] .il-x small{color:#B9AD98}html[data-theme=sombre] .il-pt{box-shadow:0 0 0 2.5px #1E1B16}
 @media (prefers-reduced-motion:reduce){.il,.il.part{transition:opacity .2s;transform:translate(-50%,0)}.il-in.chg{animation:none}.il-pt{animation:none!important}}`;
   let il = null, cur = null, minuterie = 0, reste = 0, depuis = 0, file = [], affiche = 0, enPause = false;
@@ -80,7 +91,7 @@ html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme
     const el = preparer(), w0 = el.classList.contains('on') ? el.getBoundingClientRect().width : 0;
     el.dataset.t = m.type;
     el.setAttribute('aria-live', m.type === 'erreur' ? 'assertive' : 'polite'); el.setAttribute('role', m.type === 'erreur' ? 'alert' : 'status');
-    el.innerHTML = `<div class="il-in${m.action ? '' : ' sans-a'}${change ? ' chg' : ''}">${glyphe(m)}<span class="il-x"><b>${m.n > 1 ? `<span class="il-n">${m.n}</span>` : ''}${esc(m.texte).replace(/\*([^*]+)\*/g, '<em>$1</em>')}</b>${m.sous ? `<small>${esc(m.sous)}</small>` : ''}</span>${m.action ? `<button type="button" class="il-a">${esc(m.action.t)}</button>` : ''}</div>`;
+    el.innerHTML = `<div class="il-in${m.action ? '' : ' sans-a'}${change ? ' chg' : ''}">${glyphe(m)}<span class="il-x"><b>${m.n > 1 ? `<span class="il-n">${m.n}</span>` : ''}${accent(esc(m.texte))}</b>${m.sous ? `<small>${esc(m.sous)}</small>` : ''}</span>${m.action ? `<button type="button" class="il-a">${esc(m.action.t)}</button>` : ''}</div>`;
     const a = el.querySelector('.il-a'); if (a) a.onclick = e => { e.stopPropagation(); lancer(m.action); };
     // la pastille change de largeur en douceur (de l'ancienne à la nouvelle)
     if (w0) { el.style.width = 'auto'; const w1 = el.getBoundingClientRect().width; el.style.width = w0 + 'px'; void el.offsetWidth; el.style.width = w1 + 'px'; clearTimeout(el._w); el._w = setTimeout(() => { el.style.width = ''; }, 460); }

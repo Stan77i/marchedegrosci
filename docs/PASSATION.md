@@ -106,6 +106,10 @@
 - Compte officiel exclu. Lecture : `mes_commissions()` (vendeur), `admin_commissions()` (vue admin « Commissions »).
 - Commission transport 6,9 % : pas encore traitée.
 
+**Prix par zone** (schéma 31, `v3/prixzone.js`)
+- Fonction de lecture `prix_zones(produit)` (lisible sans connexion) : par district et par unité, prix demandés (90 j, hors annonces masquées), quantité en vente, budgets acheteurs, ventes terminées (prix montré seulement à partir de 3 ventes de 2 vendeurs), tendance 30 j contre 30 j (3 prix de 2 vendeurs par période, ±5 %), médiane par mois.
+- Bouton « Par zone et tendance » sur chaque produit de « Prix du marché ». Sans données : on le dit.
+
 ## 5. En attente d'une décision du propriétaire
 
 1. **Zoom** : autoriser le zoom à deux doigts partout sauf sur la carte ? (seule alerte d'accessibilité critique restante, WCAG 1.4.4)

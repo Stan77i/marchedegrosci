@@ -25,7 +25,7 @@
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261019c','v3/porte.js','v3/sons.js?v=20261019c','v3/negoce.js?v=20261021a','v3/compte.js?v=20261021b','v3/souffle.js?v=20261019a','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261020s','v3/statuts.js?v=20261020s','v3/messages.js?v=20261020s','v3/alertes.js?v=20261019a','v3/releve.js?v=20261020a','v3/commandes.js?v=20261022a','v3/chauffeur.js?v=20261021f','v3/suivi.js?v=20261021g','app/carte-app.js?v=20261018u','app/carte-gl.js?v=20261018s','v3/identite.js?v=20261019d'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261019c','v3/porte.js','v3/sons.js?v=20261019c','v3/negoce.js?v=20261021a','v3/compte.js?v=20261021b','v3/souffle.js?v=20261019a','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261020s','v3/statuts.js?v=20261020s','v3/messages.js?v=20261020s','v3/alertes.js?v=20261019a','v3/releve.js?v=20261020a','v3/commandes.js?v=20261022a','v3/chauffeur.js?v=20261021f','v3/suivi.js?v=20261021g','v3/prixzone.js?v=20261022a','app/carte-app.js?v=20261018u','app/carte-gl.js?v=20261018s','v3/identite.js?v=20261019d'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -43,7 +43,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/archivo-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/mgci-tokens.css">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261020s">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261022a">
 <link rel="stylesheet" href="css/annee-app.css?v=20261019b">
 <link rel="stylesheet" href="css/categories-app.css?v=20261019a">
 <link rel="stylesheet" href="v3/ux.css?v=20261018u">
@@ -459,6 +459,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
           <sc-if value="{{ r.obsNon }}" hint-placeholder-val="{{ true }}"><span class="px-obs-j"><span><b>Prix observé</b> {{ r.obsRest }}</span><span class="px-jauge"><i style="width:{{ r.obsPct }}"></i></span></span></sc-if>
           <small>{{ r.frais }}</small>
         </div>
+        <button class="px-zbtn" onClick="{{ r.zones }}" aria-label="{{ r.zAria }}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11Z"/><circle cx="12" cy="10" r="2.2"/></svg>Par zone et tendance</button>
       </article>
     </sc-for>
     <sc-if value="{{ px.vide }}" hint-placeholder-val="{{ true }}"><div class="px-vide"><b>{{ px.videT }}</b><span>{{ px.videS }}</span>
@@ -1339,7 +1340,8 @@ class Component extends DCLogic {
           verK, verdict, obsOk: m.ok, obsNon: !m.ok, obs: m.range,
           obsRest: m.obs >= 5 ? 'encore ' + (3 - m.vend) + ' vendeur' + (3 - m.vend > 1 ? 's' : '') + ' différent' + (3 - m.vend > 1 ? 's' : '') : 'encore ' + (5 - m.obs) + ' prix vendeur' + (5 - m.obs > 1 ? 's' : ''),
           obsPct: Math.round(Math.min(1, m.obs / 5) * 50 + Math.min(1, m.vend / 3) * 50) + '%',
-          frais: dern ? 'dernier prix ' + A.ago(new Date(dern).toISOString()).toLowerCase() : '', go: () => this.openFiche(slug) } };
+          frais: dern ? 'dernier prix ' + A.ago(new Date(dern).toISOString()).toLowerCase() : '', go: () => this.openFiche(slug),
+          zAria: P.name + ' : prix par zone et tendance', zones: () => { const o = () => window.MDGPrixZone && window.MDGPrixZone.ouvrir(slug, P.name); if (window.MDGPrixZone) o(); else if (window.MDGPlus) { MDGPlus.quand(o); MDGPlus.charger(); } } } };
       }).sort((a, b) => b.n - a.n || b.dern - a.dern);
       const garde = { tout: () => true, vendeurs: l => l.op.length, acheteurs: l => l.dp.length, saison: l => !!l.sk, region: l => l.enReg };
       const vis = lignes.filter(garde[F] || garde.tout);

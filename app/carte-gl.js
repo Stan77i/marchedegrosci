@@ -52,7 +52,7 @@
   function style(base, P) {
     return {
       version: 8, glyphs: abs('vendor/glyphs/') + '{fontstack}/{range}.pbf',
-      sources: { base: { type: 'geojson', data: base, attribution: 'Natural Earth · GeoNames' }, heat: { type: 'geojson', data: vide() }, arcs: { type: 'geojson', data: vide() }, trajet: { type: 'geojson', data: vide() }, moi: { type: 'geojson', data: vide() } },
+      sources: { base: { type: 'geojson', data: base, attribution: 'Natural Earth · GeoNames' }, heat: { type: 'geojson', data: vide() }, arcs: { type: 'geojson', data: vide() }, zones: { type: 'geojson', data: vide() }, trajet: { type: 'geojson', data: vide() }, moi: { type: 'geojson', data: vide() } },
       layers: [
         { id: 'fond', type: 'background', paint: { 'background-color': P.voisin } },
         { id: 'mer', type: 'fill', source: 'base', filter: ['==', ['get', 'k'], 'mer'], paint: { 'fill-color': P.mer } },
@@ -73,6 +73,8 @@
           'heatmap-weight': ['interpolate', ['linear'], ['get', 'w'], 0, 0, 1, 1], 'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 5, 1.6, 10, 2.6],
           'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 5, 60, 9, 110, 13, 170], 'heatmap-opacity': .85,
           'heatmap-color': ['interpolate', ['linear'], ['heatmap-density'], 0, 'rgba(242,201,76,0)', .25, 'rgba(242,201,76,.35)', .55, 'rgba(224,122,63,.6)', .85, 'rgba(226,115,91,.85)', 1, 'rgba(184,60,40,.95)'] } },
+        // zones de forte demande : un halo posé SUR LE SOL, sous les noms des villes (il ne cache rien)
+        { id: 'zone-halo', type: 'circle', source: 'zones', paint: { 'circle-radius': ['interpolate', ['exponential', 1.6], ['zoom'], 5, 22, 8, 46, 11, 110], 'circle-color': 'rgba(226,115,91,.16)', 'circle-blur': .35, 'circle-stroke-color': 'rgba(226,115,91,.55)', 'circle-stroke-width': 1.2, 'circle-pitch-alignment': 'map' } },
         { id: 'trajet-bord', type: 'line', source: 'trajet', layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': P.casing, 'line-opacity': .6, 'line-width': 7 } },
         { id: 'trajet', type: 'line', source: 'trajet', filter: ['==', ['get', 'route'], 1], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint: { 'line-color': '#B095F0', 'line-width': 3.5 } },
         { id: 'trajet-vol', type: 'line', source: 'trajet', filter: ['==', ['get', 'route'], 0], layout: { 'line-cap': 'round' }, paint: { 'line-color': '#B095F0', 'line-width': 2.5, 'line-dasharray': [1.5, 1.5] } },
@@ -107,9 +109,10 @@
 .cgl-amas{display:flex;align-items:center;gap:8px;height:28px;padding:0 9px;border:0;border-radius:14px;background:rgba(23,21,18,.9);color:#F5F0E6;font:600 12.5px Jost,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.4),0 0 0 1px rgba(245,240,230,.16);cursor:pointer;transition:transform .18s cubic-bezier(.22,1,.36,1)}
 .cgl-amas span{display:inline-flex;align-items:center;gap:3px;font-size:13px}.cgl-amas b{font-weight:700}.cgl-amas:hover,.cgl-amas:focus-visible{transform:scale(1.08);outline:none}
 .cgl.jour .cgl-amas{background:rgba(255,253,248,.96);color:#171512;box-shadow:0 4px 14px rgba(80,60,30,.25),0 0 0 1px rgba(23,21,18,.08)}
-.cgl-feu{display:flex;align-items:center;gap:6px;padding:5px 10px 5px 6px;border-radius:16px;background:#E2735B;color:#171512;font:700 12px Jost,sans-serif;box-shadow:0 0 0 6px rgba(226,115,91,.25),0 6px 16px rgba(0,0,0,.35);animation:cglFeu 2.4s ease-in-out infinite}
-.cgl-feu span{font-size:15px}
-@keyframes cglFeu{50%{box-shadow:0 0 0 14px rgba(226,115,91,.08),0 6px 16px rgba(0,0,0,.35)}}
+.cgl-feu{display:flex;align-items:center;gap:4px;height:22px;min-width:22px;padding:0 3px;border-radius:11px;background:rgba(23,21,18,.82);color:#F3A08C;font:600 11px Jost,sans-serif;white-space:nowrap;pointer-events:none;box-shadow:0 0 0 1.5px rgba(226,115,91,.75),0 3px 8px rgba(0,0,0,.35)}
+.cgl-feu b{font-weight:600;padding-left:5px}.cgl-feu span{font-size:12px;line-height:1;display:inline-block;animation:cglFeu 2.4s ease-in-out infinite;transform-origin:50% 90%}
+.cgl.jour .cgl-feu{background:rgba(255,253,248,.95);color:#B4472F}
+@keyframes cglFeu{50%{transform:scale(1.18)}}
 .cgl-moi{width:18px;height:18px;border-radius:50%;background:#B095F0;box-shadow:0 0 0 4px rgba(255,255,255,.9),0 4px 12px rgba(0,0,0,.4)}
 .cgl-moi::after{content:"";position:absolute;inset:-12px;border-radius:50%;border:2px solid rgba(176,149,240,.6);animation:cglOnde 2.4s ease-out infinite}
 @keyframes cglOnde{from{transform:scale(.4);opacity:1}to{transform:scale(1.6);opacity:0}}
@@ -294,13 +297,18 @@
             el.setAttribute('aria-label', g.items.map(y => (y.kind === 'offre' ? 'Offre ' : 'Demande ') + y.product + ', ' + fmt(y.qty) + ' ' + y.unit).join(' ; ') + ' — ' + (g.ville || '') + (g.approx ? ' (position approchée : chef-lieu)' : '') + (nV ? (seul ? ' — identité vérifiée' : ' — dont ' + nV + ' vérifié' + (nV > 1 ? 's' : '')) : ''));
             el.addEventListener('click', e => { e.stopPropagation(); choisir(ids, g.xy); });
           }
-          const m = new ml.Marker({ element: enveloppe(el), anchor: 'bottom', offset: z < Z_VILLE ? [0, -6] : [0, -6] }).setLngLat(g.xy).addTo(map); if (g.items.some(y => picked.includes(y.id))) m.getElement().style.zIndex = 5; markers.push(m);
+          const m = new ml.Marker({ element: enveloppe(el), anchor: 'bottom', offset: z < Z_VILLE ? [0, -6] : [0, -6] }).setLngLat(g.xy).addTo(map); m.getElement().style.zIndex = g.items.some(y => picked.includes(y.id)) ? 5 : 1; markers.push(m);
         });
-        // zones de forte demande (administration)
+        // zones de forte demande (administration) : le halo est sur la carte (calque « zone-halo ») ;
+        // ici, une petite pastille 🔥 posée AU-DESSUS du point : le nom de la ville, écrit dessous, reste lisible ;
+        // une bulle d'annonce au même endroit passe devant
+        const zf = [];
         (data.zones || []).forEach(zn => { const v = zn.city && villes[cle(zn.city)], xy = v ? v.xy : regXY(zn.region); if (!xy) return;
+          zf.push({ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: xy } });
           const el = document.createElement('div'); el.className = 'cgl-feu'; const txt = zn.label ? 'Forte demande : ' + zn.label : 'Forte demande';
-          el.innerHTML = '<span>🔥</span>' + (z >= Z_VILLE ? esc(txt) : ''); el.setAttribute('role', 'img'); el.setAttribute('aria-label', txt);
-          markers.push(new ml.Marker({ element: enveloppe(el), anchor: 'top', offset: [0, 8] }).setLngLat(xy).addTo(map)); });
+          el.innerHTML = (z >= Z_VILLE + 1.4 ? '<b>' + esc(zn.label || 'Forte demande') + '</b>' : '') + '<span>🔥</span>'; el.setAttribute('role', 'img'); el.setAttribute('aria-label', txt);
+          const m = new ml.Marker({ element: enveloppe(el), anchor: 'bottom', offset: [0, -3] }).setLngLat(xy).addTo(map); m.getElement().style.zIndex = 0; markers.push(m); });
+        map.getSource('zones').setData({ type: 'FeatureCollection', features: zf });
       }
       function choisir(ids, xy) {
         picked = ids; dessinerAnnonces(); calques(); opt.onPick && opt.onPick(ids);
@@ -348,7 +356,7 @@
       function calques() {
         const D = (data.items || []).filter(x => x.kind !== 'offre'), mx = Math.max(1, ...D.map(x => x.qty || 1));
         map.getSource('heat').setData({ type: 'FeatureCollection', features: D.map(x => { const o = ou(x); return o && { type: 'Feature', properties: { w: .25 + .75 * Math.log(1 + (x.qty || 1)) / Math.log(1 + mx) }, geometry: { type: 'Point', coordinates: o.xy } }; }).filter(Boolean) });
-        const O = (data.items || []).filter(x => x.kind === 'offre'), arcs = [], vu = {}, pk = new Set(picked);
+        const O = (data.items || []).filter(x => x.kind === 'offre'), arcs = [], vu = {}, pk = new Set(picked.concat(data.lier || []));
         O.forEach(o => D.forEach(d => { if (o.slug !== d.slug || (o.uid && o.uid === d.uid) || !(pk.has(o.id) || pk.has(d.id))) return; const a = ou(o), b = ou(d); if (!a || !b) return;
           const k = a.xy.join() + '>' + b.xy.join(); if (vu[k] || km(a.xy, b.xy) < 5) return; vu[k] = 1;
           const pts = [], dx = b.xy[0] - a.xy[0], dy = b.xy[1] - a.xy[1], L = Math.hypot(dx, dy), c = [(a.xy[0] + b.xy[0]) / 2 - dy * .22, (a.xy[1] + b.xy[1]) / 2 + dx * .22];

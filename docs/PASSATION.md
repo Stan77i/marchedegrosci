@@ -222,6 +222,15 @@
 - Appui : les cartes et les boutons s'enfoncent légèrement. Décor de fins cercles concentriques dans le coin des cartes, et icônes avec un léger dégradé.
 - Rien ne bouge si le téléphone demande moins d'animations.
 
+**En-tête, bas de l'accueil et notifications** (demandes du propriétaire)
+- J'ai / Je cherche restent en bas (réponse A). La brume blanche derrière eux est retirée.
+- Le rond de gauche montre le sac (`MDGSac.svg('plein')`) et ouvre toujours le menu.
+- Entre le rond et la loupe, `<mdg-souffle>` en version claire :
+  - « marché de Gros » s'écrit sur deux lignes ;
+  - puis passent 9 phrases très courtes et concrètes : Vendez en direct, Achetez en gros, Négociez le prix, Payez à la livraison, Votre numéro reste caché, Identités vérifiées, Coopératives vérifiées, Partout en Côte d'Ivoire, Du champ au marché.
+- Notifications (connexion, déconnexion et toutes les autres) : style clair. Fond crème, texte foncé, mot mis en avant en vert souligné de maïs, ombre douce.
+- ⚠️ La cloche des notifications avait été poussée après la fusion de la PR #106 et manquait sur `main`. Elle est rapatriée dans cette PR.
+
 ## 5. En attente d'une décision du propriétaire
 
 

@@ -8,28 +8,28 @@
   'use strict';
   if (!window.customElements || customElements.get('mdg-souffle')) return;
   // courtes, au présent, qui donnent envie : ce qu'on trouve ici, et qui on y rencontre
+  // très courtes et concrètes (demande du propriétaire) : ce que l'app fait vraiment, rien d'autre
   const PHRASES = [
-    'Chercher un produit, une ville…',
-    'Tous les marchés de gros, ici.',
-    'Tomate, oignon, plantain…',
-    'Les grossistes du pays, en direct.',
-    'Qui vend près de chez vous ?',
-    'Les vrais acheteurs sont là.',
-    'Le bon produit, au bon prix.',
-    'Les coopératives, à un geste.',
-    'Du champ au marché, sans détour.',
-    'Dites ce qu’il vous faut.'
+    'Vendez en direct.',
+    'Achetez en gros.',
+    'Négociez le prix.',
+    'Payez à la livraison.',
+    'Votre numéro reste caché.',
+    'Identités vérifiées.',
+    'Coopératives vérifiées.',
+    'Partout en Côte d’Ivoire.',
+    'Du champ au marché.'
   ];
   const CSS = `mdg-souffle{position:relative;display:block;flex:1;min-width:0;height:100%;overflow:hidden;pointer-events:none}
 .sf-l{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;white-space:nowrap}
-.sf-nom{font:600 20px/1 Jost,system-ui,sans-serif;color:#F3EFE4}
+.sf-nom{font:600 20px/1 Jost,system-ui,sans-serif;color:#10392B;justify-content:flex-start}
 .sf-nom>span{display:block;max-width:100%;padding:0 4px;box-sizing:border-box}
-.sf-nom svg{display:block;height:auto;max-height:21px;width:170px;max-width:100%;margin:0 auto}
+.sf-nom svg{display:block;height:36px;width:auto;max-width:100%;margin:0}
 .sf-mq.sf-in span{animation:none;opacity:1;filter:none}
 .sf-mq.sf-in .mq-m{animation:sfIn .62s cubic-bezier(.22,1,.36,1) both}
 .sf-mq.sf-in .mq-g{animation:sfEcrit .7s .25s cubic-bezier(.65,0,.35,1) both}
 @keyframes sfEcrit{from{clip-path:inset(-20% 100% -20% 0)}to{clip-path:inset(-20% -5% -20% 0)}}
-.sf-ph{font:400 15.5px/1 Jost,system-ui,sans-serif;color:#B9AD98;justify-content:flex-start;padding-left:2px}
+.sf-ph{font:500 15px/1 Jost,system-ui,sans-serif;color:#3E382C;justify-content:flex-start;padding-left:2px}
 .sf-ph.sf-2{flex-wrap:wrap;align-content:center;white-space:normal;font-size:13.5px;line-height:1.22}
 .sf-ph.sf-3{font-size:12.5px}
 .sf-l span{display:inline-block;white-space:pre;opacity:0;will-change:transform,opacity,filter}
@@ -52,7 +52,7 @@
       this._i = -1; this._t = 0;
       // le nom (logo Étal vert, app/marque.js) : « marché » monte, « de Gros » s'écrit ; sans la marque, le nom s'écrit lettre par lettre
       if (window.MDGMarque) { const l = document.createElement('span'); l.className = 'sf-l sf-nom sf-mq sf-in';
-        const s = document.createElement('span'); s.style.setProperty('--i', 0); s.innerHTML = MDGMarque.ligne({ fond: 'vert' }); l.appendChild(s); this.appendChild(l); }
+        const s = document.createElement('span'); s.style.setProperty('--i', 0); s.innerHTML = MDGMarque.empile({ fond: 'clair', trait: false }); /* sur deux lignes : la place est comptée entre le rond et la loupe */ l.appendChild(s); this.appendChild(l); }
       else this._ligne('Marché de Gros', 'sf-nom', true);
       this._suite(3600);
       this._vis = () => { if (document.hidden) clearTimeout(this._t); else this._suite(2400); };

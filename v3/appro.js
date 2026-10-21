@@ -20,6 +20,37 @@
   // exigences à cocher (liste fermée, la même que le serveur : schéma 38)
   const CRIT = [['calibre', 'Calibre régulier'], ['frais', 'Récolte fraîche'], ['sec', 'Bien sec'], ['trie', 'Trié, sans cailloux'], ['emballage', 'Emballage propre'], ['sac_50', 'Sacs de 50 kg'],
     ['echantillon', 'Échantillon avant commande'], ['pesee', 'Pesée devant moi'], ['livraison', 'Livraison sur place'], ['tot', 'Livraison avant 7 h'], ['regulier', 'Livraisons régulières'], ['recu', 'Reçu ou facture']];
+  // cases rapides proposées dans le formulaire (les autres codes restent lisibles pour les anciens besoins)
+  const CRIT_FORM = ['sec', 'trie', 'emballage', 'echantillon', 'pesee', 'livraison', 'regulier', 'recu'];
+  // exigences détaillées, avec valeurs (schéma 40) : mêmes listes que le serveur (_besoin_detail)
+  const DET = {
+    choix: ['Qualité', { premier: 'Premier choix', deuxieme: 'Deuxième choix', industriel: 'Qualité industrielle (transformation)' }],
+    calibre: ['Calibre', { petit: 'Petit calibre', moyen: 'Calibre moyen', gros: 'Gros calibre', homogene: 'Calibre homogène' }],
+    maturite: ['Maturité', { vert: 'Vert, à mûrir', tournant: 'Tournant', mur: 'Mûr, prêt à consommer' }],
+    cond: ['Conditionnement', { sac_25: 'Sac de 25 kg', sac_50: 'Sac de 50 kg', sac_100: 'Sac de 100 kg', cageot: 'Cageot', carton: 'Carton', bidon_5: 'Bidon de 5 L', bidon_20: 'Bidon de 20 L', fut_200: 'Fût de 200 L', vrac: 'En vrac', palette: 'Sur palette' }],
+    heure: ['Heure de livraison', { avant_6: 'Avant 6 h', avant_7: 'Avant 7 h', avant_9: 'Avant 9 h', matin: 'Dans la matinée', apres_midi: 'L’après-midi' }],
+    paiement: ['Délai de paiement souhaité', { livraison: 'À la livraison', '7j': 'Sous 7 jours', '15j': 'Sous 15 jours', '30j': 'Sous 30 jours' }] };
+  const JOURS = { lun: 'Lun', mar: 'Mar', mer: 'Mer', jeu: 'Jeu', ven: 'Ven', sam: 'Sam', dim: 'Dim' };
+  const PLUS = { sans_moisissure: 'Sans moisissure', sans_insectes: 'Sans insectes ni charançons', tracabilite: 'Origine du lot indiquée', date_prod: 'Date de production indiquée',
+    controle: 'Contrôle qualité à la réception', scelle: 'Contenant propre et scellé', dechargement: 'Déchargement par le livreur', reprise: 'Reprise de la marchandise non conforme' };
+  const JOURS_L = { lun: 'lundi', mar: 'mardi', mer: 'mercredi', jeu: 'jeudi', ven: 'vendredi', sam: 'samedi', dim: 'dimanche' };
+  const UCAP = { kg: 'kg', tonne: 'tonnes', litre: 'litres', sac: 'sacs' };
+  const nb = x => String(x).replace('.', ',');
+  // le détail en phrases courtes (affichage avec coche verte)
+  function phrasesDetail(d) {
+    d = d || {}; const L = [];
+    if (d.capacite) L.push('Au moins ' + nb(d.capacite.q) + ' ' + (d.capacite.q > 1 ? UCAP[d.capacite.u] : d.capacite.u) + ' par ' + d.capacite.p);
+    if (d.tolerance) L.push('Écart de quantité accepté : ±' + d.tolerance + ' %');
+    ['choix', 'calibre', 'maturite', 'cond'].forEach(k => { if (d[k] && DET[k][1][d[k]]) L.push(DET[k][1][d[k]]); });
+    if (d.humidite) L.push('Humidité ' + nb(d.humidite) + ' % au plus');
+    if (d.recolte) L.push('Récolté il y a moins de ' + d.recolte + ' jour' + (d.recolte > 1 ? 's' : ''));
+    if (d.origine) L.push('Origine : ' + regNom(d.origine));
+    if ((d.jours || []).length) { const j = Object.keys(JOURS).filter(x => d.jours.includes(x)).map(x => JOURS_L[x]); L.push('Livraison le ' + (j.length > 1 ? j.slice(0, -1).join(', ') + ' et ' + j[j.length - 1] : j[0])); }
+    if (d.heure) L.push('Livraison ' + DET.heure[1][d.heure].toLowerCase());
+    (d.plus || []).forEach(k => { if (PLUS[k]) L.push(PLUS[k]); });
+    if (d.paiement) L.push('Paiement ' + DET.paiement[1][d.paiement].toLowerCase());
+    return L;
+  }
   const COCHE = '<svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   const UNITES = ['kg', 'sac', 'tonne', 'caisse', 'cagette', 'régime', 'botte', 'tas', 'litre', 'unité'];
   const prods = () => (window.MDG && MDG.products) || [];
@@ -64,12 +95,21 @@
 .ap-duo{display:flex;gap:8px}.ap-duo .ap-b{flex:1}
 @media (max-width:340px){.ap-2,.ap-l .ap-2{grid-template-columns:1fr}}
 .ap-cr{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.ap-cr button{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 14px 0 10px;border:1px solid #D9D1BE;border-radius:22px;background:#FFF;color:#171512;font:500 14px Jost,system-ui,sans-serif;cursor:pointer}
+.ap-cr button{display:inline-flex;align-items:center;gap:7px;text-align:left;min-height:44px;padding:0 14px 0 10px;border:1px solid #D9D1BE;border-radius:22px;background:#FFF;color:#171512;font:500 14px Jost,system-ui,sans-serif;cursor:pointer}
 .ap-cr i{flex:none;display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:10px;border:1.5px solid #B9AF98;color:transparent}
 .ap-cr button[aria-pressed=true]{background:#DCEFE3;border-color:#1F7A45;color:#10392B;font-weight:600}.ap-cr button[aria-pressed=true] i{background:#1F7A45;border-color:#1F7A45;color:#FFF}
 .ap-ok{list-style:none;margin:8px 0 2px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
 .ap-ok li{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:0 10px 0 4px;border-radius:14px;background:#DCEFE3;color:#10392B;font-size:13px;font-weight:600}
 .ap-ok i{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:10px;background:#1F7A45;color:#FFF}
+.ap-dt{background:#FFFDF8;border-radius:18px;padding:0 14px;margin:0}
+.ap-dt summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px;cursor:pointer;font:600 15px Jost,system-ui,sans-serif;color:#171512;list-style:none}
+.ap-dt summary::-webkit-details-marker{display:none}.ap-dt summary::after{content:'+';font:500 22px/1 Jost,sans-serif;color:#10392B}.ap-dt[open] summary::after{content:'−'}
+.ap-dt summary small{margin-left:auto;font:600 12px Jost,sans-serif;color:#1F7A45}
+.ap-dt>div{display:grid;gap:10px;padding:0 0 14px}
+.ap-cap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) minmax(0,1.1fr);gap:8px}
+.ap-j{display:flex;gap:4px}.ap-j button{flex:1;min-width:0;min-height:44px;padding:0;border:1px solid #D9D1BE;border-radius:12px;background:#FFF;color:#171512;font:600 13px Jost,system-ui,sans-serif;cursor:pointer}
+.ap-j button[aria-pressed=true]{background:#10392B;border-color:#10392B;color:#FFFDF8}
+.ap-ok li.n{background:#ECE6D6;color:#3E382C}
 .ap form{background:none;box-shadow:none;border:0;padding:0;margin:0;border-radius:0}
 @media (prefers-reduced-motion:reduce){.ap-bg,.ap{animation:none!important}}`;
   function css() { if (document.getElementById('apCss')) return; const s = document.createElement('style'); s.id = 'apCss'; s.textContent = CSS; document.head.appendChild(s); }
@@ -122,9 +162,9 @@
   function formulaire() {
     const box = boite(), auj = new Date(), dans = n => iso(new Date(auj.getTime() + n * 864e5));
     let lignes = [{ produit: '', quantite: '', unite: 'kg', prix: '' }], freq = 'hebdomadaire';
-    const crit = new Set();
+    const crit = new Set(), det = { plus: new Set(), jours: new Set() }, ouverts = new Set();
     const etat = {};
-    const sauver = () => { box.querySelectorAll('[data-k]').forEach(i => { etat[i.dataset.k] = i.value; });
+    const sauver = () => { box.querySelectorAll('[data-k]').forEach(i => { etat[i.dataset.k] = i.value; }); box.querySelectorAll('[data-dk]').forEach(i => { det[i.dataset.dk] = i.value; }); box.querySelectorAll('details[data-g]').forEach(d => d.open ? ouverts.add(d.dataset.g) : ouverts.delete(d.dataset.g));
       lignes = lignes.map((l, i) => ({ produit: (box.querySelector(`[data-lp="${i}"]`) || {}).value ?? l.produit, quantite: (box.querySelector(`[data-lq="${i}"]`) || {}).value ?? l.quantite,
         unite: (box.querySelector(`[data-lu="${i}"]`) || {}).value ?? l.unite, prix: (box.querySelector(`[data-lx="${i}"]`) || {}).value ?? l.prix })); };
     const v = (k, d) => esc(etat[k] != null ? etat[k] : d);
@@ -143,14 +183,37 @@
           <h3 class="ap-sec">Produits (10 au plus)</h3>
           ${lignes.map((l, i) => `<div class="ap-l"><div class="t"><b>Produit ${i + 1}</b>${lignes.length > 1 ? `<button type="button" data-rm="${i}" aria-label="Retirer le produit ${i + 1}">Retirer</button>` : ''}</div>
             <label style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E5546">Produit<input list="apProds" data-lp="${i}" value="${esc(l.produit)}" placeholder="ex. Tomate" autocomplete="off"></label>
-            <div class="ap-2"><label style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E5546">Quantité<input type="number" inputmode="decimal" min="0" step="any" data-lq="${i}" value="${esc(l.quantite)}"></label>
+            <div class="ap-2"><label style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E5546">${freq === 'ponctuelle' ? 'Quantité' : 'Quantité par livraison'}<input type="number" inputmode="decimal" min="0" step="any" data-lq="${i}" value="${esc(l.quantite)}"></label>
               <label style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E5546">Unité<select data-lu="${i}">${UNITES.map(u => `<option ${l.unite === u ? 'selected' : ''}>${u}</option>`).join('')}</select></label></div>
             <label style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E5546">Prix cible par unité (facultatif)<input type="number" inputmode="numeric" min="0" step="1" data-lx="${i}" value="${esc(l.prix)}" placeholder="F CFA"></label></div>`).join('')}
           ${lignes.length < 10 ? '<button type="button" class="ap-b s" data-plus>+ Ajouter un produit</button>' : ''}
-          <div><span style="font-size:13px;color:#5E5546">Vos exigences (cochez ce qui compte)</span><div class="ap-cr" role="group" aria-label="Vos exigences">${CRIT.map(([k, l]) => `<button type="button" data-cr="${k}" aria-pressed="${crit.has(k)}"><i>${COCHE}</i>${l}</button>`).join('')}</div></div>
+          <h3 class="ap-sec">Vos exigences</h3>
+          <div><span style="font-size:13px;color:#5E5546">En un geste (cochez ce qui compte)</span><div class="ap-cr" role="group" aria-label="Exigences rapides">${CRIT.filter(c => CRIT_FORM.includes(c[0])).map(([k, l]) => `<button type="button" data-cr="${k}" aria-pressed="${crit.has(k)}"><i>${COCHE}</i>${l}</button>`).join('')}</div></div>
+          ${(() => { const dv = k => esc(det[k] || ''), sel = (k, lab) => `<label>${lab || DET[k][0]}<select data-dk="${k}"><option value="">Peu importe</option>${Object.entries(DET[k][1]).map(([v, l]) => `<option value="${v}" ${det[k] === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>`;
+            const puces = ks => `<div class="ap-cr" role="group">${ks.map(k => `<button type="button" data-pl="${k}" aria-pressed="${det.plus.has(k)}"><i>${COCHE}</i>${PLUS[k]}</button>`).join('')}</div>`;
+            const grp = (g, titre, corps, n) => `<details class="ap-dt" data-g="${g}" ${ouverts.has(g) ? 'open' : ''}><summary>${titre}${n ? `<small>${n} choisi${n > 1 ? 's' : ''}</small>` : ''}</summary><div>${corps}</div></details>`;
+            const n = ks => ks.filter(k => det[k]).length;
+            return `<div style="display:grid;gap:8px">
+            ${grp('vol', 'Volume et régularité', `<div><span style="font-size:13px;color:#5E5546">Le vendeur doit pouvoir fournir au moins</span><div class="ap-cap" style="margin-top:4px">
+                <input type="number" inputmode="decimal" min="0" step="any" data-dk="capq" value="${dv('capq')}" placeholder="ex. 2" aria-label="Quantité minimale fournie">
+                <select data-dk="capu" aria-label="Unité">${Object.entries(UCAP).map(([u, l]) => `<option value="${u}" ${(det.capu || 'tonne') === u ? 'selected' : ''}>${l}</option>`).join('')}</select>
+                <select data-dk="capp" aria-label="Par">${['semaine', 'mois'].map(x => `<option value="${x}" ${(det.capp || 'semaine') === x ? 'selected' : ''}>par ${x}</option>`).join('')}</select></div></div>
+              <label>Écart de quantité accepté<select data-dk="tolerance"><option value="">Aucun écart</option>${[2, 5, 10, 15].map(x => `<option value="${x}" ${+det.tolerance === x ? 'selected' : ''}>± ${x} %</option>`).join('')}</select></label>`, n(['capq', 'tolerance']))}
+            ${grp('qual', 'Qualité', `${sel('choix')}<div class="ap-2">${sel('calibre')}${sel('maturite')}</div>
+              <div class="ap-2"><label>Humidité au plus (%)<input type="number" inputmode="decimal" min="5" max="30" step="0.5" data-dk="humidite" value="${dv('humidite')}" placeholder="ex. 14"></label>
+                <label>Récolté depuis moins de (jours)<input type="number" inputmode="numeric" min="1" max="60" step="1" data-dk="recolte" value="${dv('recolte')}" placeholder="ex. 3"></label></div>
+              <label>Région d’origine<select data-dk="origine"><option value="">Peu importe</option>${regs().map(r => `<option value="${esc(r.slug)}" ${det.origine === r.slug ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}</select></label>
+              ${puces(['sans_moisissure', 'sans_insectes', 'tracabilite', 'date_prod', 'controle'])}`, n(['choix', 'calibre', 'maturite', 'humidite', 'recolte', 'origine']) + ['sans_moisissure', 'sans_insectes', 'tracabilite', 'date_prod', 'controle'].filter(k => det.plus.has(k)).length)}
+            ${grp('cond', 'Conditionnement', `${sel('cond')}${puces(['scelle'])}`, n(['cond']) + (det.plus.has('scelle') ? 1 : 0))}
+            ${grp('liv', 'Livraison', `<div><span style="font-size:13px;color:#5E5546">Jours de livraison</span><div class="ap-j" role="group" aria-label="Jours de livraison" style="margin-top:4px">${Object.entries(JOURS).map(([j, l]) => `<button type="button" data-jr="${j}" aria-pressed="${det.jours.has(j)}">${l}</button>`).join('')}</div></div>
+              ${sel('heure')}${puces(['dechargement', 'reprise'])}`, (det.jours.size ? 1 : 0) + n(['heure']) + ['dechargement', 'reprise'].filter(k => det.plus.has(k)).length)}
+            ${grp('pay', 'Paiement', `${sel('paiement')}<p class="ap-note" style="margin:0">Une information pour le vendeur : l’application ne gère aucun paiement.</p>`, n(['paiement']))}
+            </div>`; })()}
           <label>Autres exigences (facultatif)<textarea data-k="exigences" maxlength="400" placeholder="Variété, maturité, horaires précis…">${v('exigences', '')}</textarea></label>
           <p class="ap-err" data-err role="alert"></p>
           <div class="ap-pied"><button class="ap-b" type="submit">Publier le besoin</button></div></form>`;
+      box.querySelectorAll('[data-pl]').forEach(b => b.onclick = () => { const k = b.dataset.pl, on = !det.plus.has(k); on ? det.plus.add(k) : det.plus.delete(k); b.setAttribute('aria-pressed', String(on)); });
+      box.querySelectorAll('[data-jr]').forEach(b => b.onclick = () => { const k = b.dataset.jr, on = !det.jours.has(k); on ? det.jours.add(k) : det.jours.delete(k); b.setAttribute('aria-pressed', String(on)); });
       box.querySelectorAll('[data-cr]').forEach(b => b.onclick = () => { const k = b.dataset.cr, on = !crit.has(k); on ? crit.add(k) : crit.delete(k); b.setAttribute('aria-pressed', String(on)); });
       box.querySelectorAll('[data-fq]').forEach(b => b.onclick = () => { sauver(); freq = b.dataset.fq; if (freq === 'ponctuelle') etat.fin = ''; peindre(); });
       box.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { sauver(); lignes.splice(+b.dataset.rm, 1); peindre(); });
@@ -169,10 +232,18 @@
         }
         if (!String(etat.titre || '').trim() || String(etat.titre).trim().length < 3) { er.textContent = 'Indiquez le nom de votre établissement.'; return; }
         const rf = N().texteRefus ? N().texteRefus([etat.titre, etat.ville, etat.exigences].join(' · ')) : ''; if (rf) { er.textContent = rf; return; }
+        const hu = det.humidite ? +String(det.humidite).replace(',', '.') : null, rc = det.recolte ? +det.recolte : null, cq = det.capq ? +String(det.capq).replace(',', '.') : null;
+        if (hu != null && !(hu >= 5 && hu <= 30)) { er.textContent = 'Humidité : indiquez une valeur entre 5 et 30 %.'; return; }
+        if (rc != null && !(rc >= 1 && rc <= 60)) { er.textContent = 'Récolte : indiquez entre 1 et 60 jours.'; return; }
+        if (cq != null && !(cq > 0)) { er.textContent = 'Volume : indiquez une quantité supérieure à zéro.'; return; }
+        const detail = { capacite: cq ? { q: cq, u: det.capu || 'tonne', p: det.capp || 'semaine' } : null, tolerance: det.tolerance ? +det.tolerance : null, humidite: hu, recolte: rc,
+          choix: det.choix || null, calibre: det.calibre || null, maturite: det.maturite || null, cond: det.cond || null, origine: det.origine || null, heure: det.heure || null, paiement: det.paiement || null,
+          jours: [...det.jours], plus: [...det.plus] };
+        Object.keys(detail).forEach(k => { const v = detail[k]; if (v == null || (Array.isArray(v) && !v.length)) delete detail[k]; });
         const bt = box.querySelector('[type=submit]'); bt.disabled = true;
         try {
-          const id = await N().rpc('besoin_creer2', { p_titre: etat.titre, p_type: etat.type, p_frequence: freq, p_debut: etat.debut, p_fin: etat.fin || null,
-            p_region: etat.region, p_ville: etat.ville || null, p_exigences: etat.exigences || null, p_lignes: L, p_criteres: CRIT.map(c => c[0]).filter(k => crit.has(k)) });
+          const id = await N().rpc('besoin_creer3', { p_titre: etat.titre, p_type: etat.type, p_frequence: freq, p_debut: etat.debut, p_fin: etat.fin || null,
+            p_region: etat.region, p_ville: etat.ville || null, p_exigences: etat.exigences || null, p_lignes: L, p_criteres: CRIT.map(c => c[0]).filter(k => crit.has(k)), p_detail: detail });
           toast('Besoin publié', { type: 'ok', sous: 'Les vendeurs concernés peuvent vous répondre.' }); try { N().refresh && N().refresh(); } catch (_) {}
           besoin(id);
         } catch (x) { bt.disabled = false; er.textContent = errTxt(x); }
@@ -191,7 +262,7 @@
     catch (e) { if (!bg) return; box.innerHTML = tete('Besoin') + `<p class="ap-err" role="alert">${esc(errTxt(e))}</p><button class="ap-b s" data-re>Réessayer</button>`; box.querySelector('[data-re]').onclick = () => besoin(id); return; }
     if (!bg) return;
     if (!b) { box.innerHTML = tete('Besoin', '', 'ouverts') + '<div class="ap-vide"><b>Besoin introuvable</b>Il a peut-être été retiré.</div>'; lierRetour(box); return; }
-    const info = `<div class="ap-info"><b>${esc(TYPES[b.type] || '')}</b> · ${esc(b.acheteur)}${b.verifie ? ' · identité vérifiée' : ''}<br>${esc(periode(b))}<br>Livraison : ${esc(regNom(b.region))}${b.ville ? ', ' + esc(b.ville) : ''}${(b.criteres || []).length ? `<ul class="ap-ok" aria-label="Exigences de l’acheteur">${CRIT.filter(c => b.criteres.includes(c[0])).map(c => `<li><i>${COCHE}</i>${c[1]}</li>`).join('')}</ul>` : ''}${b.exigences ? (b.criteres && b.criteres.length ? 'Autres exigences : ' : '<br>Exigences : ') + esc(b.exigences) : ''}</div>`;
+    const info = `<div class="ap-info"><b>${esc(TYPES[b.type] || '')}</b> · ${esc(b.acheteur)}${b.verifie ? ' · identité vérifiée' : ''}<br>${esc(periode(b))}<br>Livraison : ${esc(regNom(b.region))}${b.ville ? ', ' + esc(b.ville) : ''}${(() => { const L = CRIT.filter(c => (b.criteres || []).includes(c[0])).map(c => c[1]).concat(phrasesDetail(b.detail)); return L.length ? `<ul class="ap-ok" aria-label="Exigences de l’acheteur">${L.map(t => `<li><i>${COCHE}</i>${esc(t)}</li>`).join('')}</ul>` : ''; })()}${b.exigences ? ((b.criteres || []).length || phrasesDetail(b.detail).length ? 'Autres exigences : ' : '<br>Exigences : ') + esc(b.exigences) : ''}</div>`;
     if (b.moi) return comparer(box, b, cmp || [], info);
     repondre(box, b, info);
   }

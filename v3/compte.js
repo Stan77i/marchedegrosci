@@ -59,9 +59,10 @@
   async function lot() {
     const ids = [...attente].slice(0, 200); attente = new Set(); if (!ids.length || !N() || !navigator.onLine) return;
     try {
-      const r = await N().rpc('profils_publics2', { ids }, false).catch(e => /profils_publics2|schema cache|Could not find|404/i.test(e.message + e.status) ? N().rpc('profils_publics', { ids }, false) : Promise.reject(e)), c = J(KC, {}), now = Date.now();
+      const repli = e => /profils_publics|schema cache|Could not find|404/i.test(e.message + e.status);
+      const r = await N().rpc('profils_publics3', { ids }, false).catch(e => repli(e) ? N().rpc('profils_publics2', { ids }, false) : Promise.reject(e)).catch(e => repli(e) ? N().rpc('profils_publics', { ids }, false) : Promise.reject(e)), c = J(KC, {}), now = Date.now();
       ids.forEach(id => { c[id] = { a: '', av: '', r: '', t: now }; });
-      (r || []).forEach(p => { c[p.user_id] = { a: p.affichage || '', av: p.avatar || '', r: p.role || '', st: p.structure_nom ? p.structure_type || '' : '', sn: p.structure_nom || '', sl: p.structure_logo || '', t: now }; });
+      (r || []).forEach(p => { c[p.user_id] = { a: p.affichage || '', av: p.avatar || '', r: p.role || '', st: p.structure_nom ? p.structure_type || '' : '', sn: p.structure_nom || '', sl: p.structure_logo || '', sv: !!p.structure_verifiee, t: now }; });
       W(KC, c); dispatchEvent(new CustomEvent('mdg:profils')); dispatchEvent(new CustomEvent('mdg:change', { detail: { from: 'nuage' } }));
     } catch (_) {}
   }
@@ -69,13 +70,14 @@
   function structure(uid) {
     if (!uid || (window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(uid))) return null;
     const c = J(KC, {})[uid]; if (!c || Date.now() - c.t > 6e5) avatar(uid);
-    return c && c.sn ? { type: c.st, nom: c.sn, logo: c.sl, libelle: (STRUCT[c.st] || ['Structure'])[0] } : null;
+    return c && c.sn ? { type: c.st, nom: c.sn, logo: c.sl, verifiee: !!c.sv, libelle: (STRUCT[c.st] || ['Structure'])[0] } : null;
   }
   // la puce discrète des annonces et des messages : « Coopérative · Akwaba »
   const puceStructure = (uid, o = {}) => { const s = structure(uid); if (!s) return '';
     const sansAccent = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(), dit = sansAccent(s.nom).includes(sansAccent(s.libelle).slice(0, 6));
     const txt = dit ? s.nom : s.libelle + ' · ' + s.nom;
-    return `<span class="st-org" title="${esc(s.libelle + ' · ' + s.nom)}">${s.logo && o.logo !== false ? `<img src="${esc(imgStruct(s.logo))}" alt="">` : IC(STRUCT_ICO[s.type] || 'compte', 12)}<span>${esc(txt)}</span></span>`; };
+    // vérifiée par l'équipe (schéma 39) : coche verte et « vérifiée » lu par les lecteurs d'écran
+    return `<span class="st-org${s.verifiee ? ' ok' : ''}" title="${esc(s.libelle + (s.verifiee ? (s.type === 'marche' ? ' vérifié' : ' vérifiée') : '') + ' · ' + s.nom)}">${s.logo && o.logo !== false ? `<img src="${esc(imgStruct(s.logo))}" alt="">` : IC(STRUCT_ICO[s.type] || 'compte', 12)}<span>${esc(txt)}</span>${s.verifiee ? `<b class="st-ok" aria-label="vérifiée">${IC('verifie', 12)}</b>` : ''}</span>`; };
   // remplit les emplacements [data-av-uid] (site) avec l'avatar de la personne
   function hydrate(root) {
     (root || document).querySelectorAll('[data-av-uid]').forEach(el => { const a = avatar(el.dataset.avUid, { size: +el.dataset.avSize || 28, nom: el.dataset.avNom || '' }); el.innerHTML = a.svg; });
@@ -166,6 +168,11 @@
 .cp-st-pv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.cp-st-pv>div,.cp-st-pv .cp-st-add{position:relative;width:auto;height:auto;aspect-ratio:1;border-radius:14px;overflow:hidden}
 .cp-st-pv img{width:100%;height:100%;object-fit:cover;display:block}
 .cp-st-x{position:absolute;top:4px;right:4px;width:28px;height:28px;border:0;border-radius:50%;background:rgba(23,21,18,.72);color:#fff;font:600 16px/1 Jost,sans-serif;cursor:pointer}.cp-st-x::before{content:"";position:absolute;inset:-8px}
+.cp-bdg{margin:0 0 4px;padding:14px 16px;border-radius:20px;background:var(--card,#FFFDF8);display:grid;gap:10px;font-size:14px;line-height:1.45;color:var(--mute,#5E574B)}
+.cp-bdg p{margin:0}.cp-bdg p b{display:flex;align-items:center;gap:6px;color:var(--ink,#171512);font-weight:600;margin-bottom:2px}
+.cp-bdg.ok{background:#DCEFE3;color:#10392B}.cp-bdg.ok p b{color:#10392B}.cp-bdg.att{background:#FFF4CF}
+.cp-bdg-r{padding:10px 12px;border-radius:14px;background:rgba(229,96,79,.1);color:#8E2A1C}.cp-bdg-r b{color:#8E2A1C!important}
+.cp-bdg-f{display:grid;gap:12px}.cp-bdg-f .cp-st-pv{grid-template-columns:repeat(3,minmax(0,1fr))}
 .cp-st-aide{margin:8px 0 0;font-size:12.5px;line-height:1.45;color:var(--mute,#5E574B)}
 .cp-voix{font:600 26px/1.08 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em}.cp-voix em{font:900 italic 1em 'Archivo','Helvetica Neue',Arial,sans-serif;color:#10392B;letter-spacing:-.02em;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .cp-lab{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:24px 16px 8px;font:600 12px/1.2 Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
@@ -475,8 +482,8 @@ label.cp-r{cursor:pointer}
 
   /* ——— la structure que le membre représente (supabase/schema-23) : coopérative, groupement, entreprise ———
      Elle rassure : le profil public la montre en tête (logo, nom, preuves), les annonces et les messages portent « Coopérative · Nom ». */
-  const STRUCT = { particulier: ['À mon compte', 'Je vends ou j’achète pour moi'], cooperative: ['Coopérative', 'Des producteurs regroupés'], groupement: ['Groupement', 'Association, GIE, groupe de femmes…'], entreprise: ['Entreprise', 'Industrie, négoce, transformation'] };
-  const STRUCT_ICO = { particulier: 'compte', cooperative: 'confiance', groupement: 'service', entreprise: 'tableau' };
+  const STRUCT = { particulier: ['À mon compte', 'Je vends ou j’achète pour moi'], cooperative: ['Coopérative', 'Des producteurs regroupés'], groupement: ['Groupement', 'Association, GIE, groupe de femmes…'], entreprise: ['Entreprise', 'Industrie, négoce, transformation'], marche: ['Marché', 'Un marché et ses commerçants'] };
+  const STRUCT_ICO = { particulier: 'compte', cooperative: 'confiance', groupement: 'service', entreprise: 'tableau', marche: 'vendre' };
   const imgStruct = c => c ? (/^(https?:|data:|blob:)/.test(c) ? c : N().URL + '/storage/v1/object/public/activites/' + c) : '';
   const reduireImg = (file, cote = 1000) => new Promise((ok, ko) => { const u = URL.createObjectURL(file), im = new Image(); im.onerror = () => { URL.revokeObjectURL(u); ko(new Error('Image illisible. Essayez une autre photo.')); };
     im.onload = () => { URL.revokeObjectURL(u); const k = Math.min(1, cote / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
@@ -516,6 +523,51 @@ label.cp-r{cursor:pointer}
       const t = v.structure_nom || '', r = t.length < 2 ? 'Écrivez le nom de votre structure.' : (N().texteRefus ? N().texteRefus(t) : '');
       if (e) e.textContent = r; n.setAttribute('aria-invalid', String(!!r)); if (r) n.focus(); return !r; };
     return { val, verifier };
+  }
+
+  /* ——— Badge « Coopérative / Marché vérifié » (schéma 39) : un document officiel + l'identité vérifiée du responsable, examinés par l'équipe ——— */
+  const BADGE_TYPES = { cooperative: 'Coopérative', marche: 'Marché' };
+  async function badgeStructure(el) {
+    if (!el || !N() || !me()) return;
+    let d; try { d = await N().rpc('structure_dossier_moi'); } catch (_) { el.innerHTML = ''; return; }
+    if (!el.isConnected || !d) return;
+    const lib = BADGE_TYPES[d.type], dern = d.dernier, date = t => new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+    if (!lib || !d.nom) { el.innerHTML = d.type && d.type !== 'particulier' ? '<p class="cp-st-aide" style="margin:10px 16px 0">Le badge vérifié existe pour les coopératives et les marchés.</p>' : ''; return; }
+    const boite = (corps, cls) => `<h3 class="cp-lab">Badge ${lib.toLowerCase()} vérifié</h3><div class="cp-bdg ${cls || ''}">${corps}</div>`;
+    if (d.verifiee) { el.innerHTML = boite(`<p><b>${IC('verifie', 18)} ${lib} ${d.type === 'marche' ? 'vérifié' : 'vérifiée'}</b>« ${esc(d.nom)} » porte le badge sur votre profil et vos annonces. Si vous changez le nom ou le type de la structure, il faudra la faire vérifier à nouveau.</p>`, 'ok'); return; }
+    if (dern && dern.statut === 'en_attente') {
+      el.innerHTML = boite(`<p><b>Dossier en cours d’examen</b>Envoyé le ${date(dern.envoye_le)} pour « ${esc(dern.nom)} ». L’équipe vérifie le document et votre identité ; vous verrez la réponse ici.</p><button type="button" class="cp-alt" data-bx>Retirer le dossier</button>`, 'att');
+      el.querySelector('[data-bx]').onclick = async () => { if (!confirm('Retirer votre dossier ? Vous pourrez en envoyer un nouveau.')) return; try { await N().rpc('structure_dossier_retirer'); badgeStructure(el); } catch (x) { N().toast(x.message); } };
+      return;
+    }
+    const refus = dern && dern.statut === 'refusee' ? `<p class="cp-bdg-r"><b>Dossier précédent refusé</b>${esc(dern.motif || '')}</p>` : '';
+    if (!d.identite) {
+      el.innerHTML = boite(`${refus}<p><b>D’abord, votre identité</b>Le badge confirme qu’un responsable connu se porte garant de « ${esc(d.nom)} ». Faites vérifier votre identité (pièce et selfie), puis revenez ici.</p>${window.MDGIdentite ? '<button type="button" class="cp-go plein" data-bi>Vérifier mon identité</button>' : ''}`);
+      const bi = el.querySelector('[data-bi]'); if (bi) bi.onclick = () => window.MDGIdentite.ouvrir();
+      return;
+    }
+    const docs = [];   // { chemin, apercu } : stockage privé, seul l'administrateur peut les ouvrir
+    const peindre = (msg) => {
+      el.innerHTML = boite(`${refus}<p><b>Faire vérifier « ${esc(d.nom)} »</b>Envoyez la photo d’un document officiel : ${d.type === 'cooperative' ? 'agrément de la coopérative (OHADA), récépissé ou extrait du registre' : 'autorisation de la mairie, carte de délégué ou de gestionnaire du marché, registre du commerce'}. Seule l’équipe le verra.</p>
+        <form class="cp-bdg-f" novalidate>
+          <div><label class="cp-l" for="cp-fn">Votre fonction</label><input class="cp-in" id="cp-fn" list="cp-fns" maxlength="60" autocomplete="organization-title" placeholder="ex. ${d.type === 'cooperative' ? 'Président' : 'Délégué du marché'}"><datalist id="cp-fns">${(d.type === 'cooperative' ? ['Président', 'Présidente', 'Secrétaire général', 'Trésorier', 'Gérant'] : ['Délégué du marché', 'Présidente des commerçantes', 'Gestionnaire du marché', 'Chef de marché']).map(x => `<option value="${x}">`).join('')}</datalist></div>
+          <div><span class="cp-l">Document officiel <i>· 1 à 3 photos</i></span><div class="cp-st-pv">${docs.map((x, i) => `<div><img src="${x.apercu}" alt="Page ${i + 1}"><button type="button" class="cp-st-x" data-dx="${i}" aria-label="Retirer la page ${i + 1}">×</button></div>`).join('')}${docs.length < 3 ? `<label class="cp-st-add">${IC('photo', 20)}<span>Ajouter</span><input type="file" accept="image/*" data-dd aria-label="Ajouter une photo du document"></label>` : ''}</div></div>
+          <button type="submit" class="cp-go plein">Envoyer pour vérification</button><p class="cp-msg" role="status" data-bm>${esc(msg || '')}</p></form>`);
+      const f = el.querySelector('form'), fn = el.querySelector('#cp-fn'), m = t => { el.querySelector('[data-bm]').textContent = t || ''; };
+      fn.value = el.dataset.fn || ''; fn.oninput = () => { el.dataset.fn = fn.value; };
+      el.querySelectorAll('[data-dx]').forEach(b => b.onclick = () => { docs.splice(+b.dataset.dx, 1); peindre(); });
+      const dd = el.querySelector('[data-dd]'); if (dd) dd.onchange = async () => { const fi = dd.files && dd.files[0]; if (!fi) return; if (!navigator.onLine) return m('Pas de connexion internet.');
+        m('Envoi de la photo…'); try { const blob = await reduireImg(fi, 1200), chemin = me().id + '/structure-' + Date.now() + '-' + docs.length + '.jpg';
+          await N().deposerPrive('preuves', chemin, blob); docs.push({ chemin, apercu: URL.createObjectURL(blob) }); peindre(); }
+        catch (x) { m('Envoi impossible : ' + x.message); } };
+      f.onsubmit = async e => { e.preventDefault(); const fv = fn.value.trim();
+        if (fv.length < 2) { m('Indiquez votre fonction.'); fn.focus(); return; }
+        if (!docs.length) { m('Ajoutez au moins une photo du document.'); return; }
+        const go = f.querySelector('.cp-go'); go.disabled = true; go.setAttribute('aria-busy', 'true');
+        try { await N().rpc('structure_dossier_envoyer', { p_fonction: fv, p_documents: docs.map(x => x.chemin) }); N().toast('Dossier envoyé.', { sous: 'L’équipe l’examine ; la réponse apparaîtra dans votre profil.' }); badgeStructure(el); }
+        catch (x) { go.disabled = false; go.removeAttribute('aria-busy'); m(String(x.message).replace(/^IDENTITE_REQUISE : /, '')); } };
+    };
+    peindre();
   }
 
   /* ——— Notifications sur ce téléphone (v3/pousse.js) : l'état réel et l'action qui convient ——— */
@@ -675,15 +727,16 @@ label.cp-r{cursor:pointer}
           <button type="submit" class="cp-go plein">Enregistrer</button><span class="cp-msg" role="status"></span></form>
         <h3 class="cp-lab">Votre structure</h3>
         <form class="cp-f" data-stform novalidate><div class="cp-fg"><div data-stf></div></div><button type="submit" class="cp-go plein">Enregistrer la structure</button><span class="cp-msg" role="status" data-stok></span></form>
+        <div data-stv></div>
         <h3 class="cp-lab">Téléphone</h3>
         <div class="cp-grp">${ligne({ ico: ti('telephone', 'aide'), t: esc(N().fmtTel(u.tel)), s: 'Numéro du compte', cls: 'info', chev: false })}</div>
         <p class="cp-note">Le nom affiché sur chaque annonce (nom de vendeur ou d’exploitation) reste celui de l’annonce.</p></div>`;
-      lierRole(main); lierLieu(main, p);
+      lierRole(main); lierLieu(main, p); badgeStructure(main.querySelector('[data-stv]'));
       // la structure (schéma 23)
       const sf = main.querySelector('[data-stform]'), S = formStructure(sf.querySelector('[data-stf]'), p), sok = sf.querySelector('[data-stok]'), sgo = sf.querySelector('.cp-go');
       sf.onsubmit = async e => { e.preventDefault(); sok.textContent = ''; if (!S.verifier()) return; if (!navigator.onLine) { sok.textContent = 'Pas de connexion internet : réessayez quand le réseau revient.'; return; }
         sgo.disabled = true; sgo.setAttribute('aria-busy', 'true');
-        try { await enregistrer(S.val()); N().toast('Structure enregistrée.', { sous: 'Elle apparaît sur votre profil et vos annonces.' }); }
+        try { await enregistrer(S.val()); N().toast('Structure enregistrée.', { sous: 'Elle apparaît sur votre profil et vos annonces.' }); badgeStructure(main.querySelector('[data-stv]')); }
         catch (x) { sok.textContent = x.message; } finally { sgo.disabled = false; sgo.removeAttribute('aria-busy'); } };
       main.querySelector('[data-av]').onclick = () => choisirAvatar(() => ouvrir('profil'));
       const z = main.querySelector('[data-av0]'); if (z) z.onclick = async () => { try { await enregistrer({ avatar: null }); bg.rafraichir(); N().toast('Avatar : vos initiales.'); } catch (e) { N().toast(e.message); } };

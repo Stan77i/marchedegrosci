@@ -102,6 +102,7 @@
 .st-nouveau{background:rgba(140,140,140,.18);color:inherit}
 /* la structure représentée (v3/compte.js puceStructure, schéma 23) : « Coopérative · Akwaba » */
 .st-org{display:inline-flex;align-items:center;gap:5px;max-width:100%;height:22px;padding:0 8px 0 4px;border-radius:999px;background:rgba(16,57,43,.08);color:#10392B;font:600 11.5px/1 Jost,sans-serif;vertical-align:middle;white-space:nowrap;overflow:hidden}
+.st-org.ok{background:#DCEFE3;color:#10392B}.st-org .st-ok{display:inline-flex;flex:none;width:16px;height:16px;border-radius:50%;background:#1F7A45;color:#fff;align-items:center;justify-content:center}.st-org .st-ok svg{width:11px;height:11px}
 .st-org img{width:16px;height:16px;border-radius:50%;object-fit:cover;background:#fff;flex:none}.st-org svg{flex:none}.st-org span{overflow:hidden;text-overflow:ellipsis}
 .st-detail{display:flex;flex-direction:column;gap:10px}
 .st-l{display:flex;gap:12px;align-items:flex-start}.st-l b{display:block;font-weight:600}.st-l small{display:block;opacity:.75;font-size:13px;line-height:1.35;margin-top:2px}

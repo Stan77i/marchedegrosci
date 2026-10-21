@@ -66,6 +66,7 @@
 .rp-org-pv button{padding:0;border:0;border-radius:12px;overflow:hidden;aspect-ratio:1;background:#EFE9DC;cursor:zoom-in}.rp-org-pv img{width:100%;height:100%;object-fit:cover;display:block}
 .rp-org-pv button:focus-visible{outline:2px solid #10392B;outline-offset:2px}
 .rp-org-n{margin:10px 0 0;font-size:12.5px;line-height:1.45;color:#5E574B}
+.rp-org-ok{display:inline-flex;align-items:center;padding:1px 8px;border-radius:10px;background:#DCEFE3;color:#10392B;font-weight:600}.rp-org-v{padding:10px 12px;border-radius:14px;background:#DCEFE3;color:#10392B}
 .rp-loupe{position:fixed;inset:0;z-index:9700;display:grid;place-items:center;padding:56px 12px 90px;background:rgba(10,9,7,.9)}.rp-loupe img{max-width:100%;max-height:100%;border-radius:12px;object-fit:contain}
 .rp-loupe-b{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:center;gap:14px;color:#F3EFE4;font:600 14px Jost,sans-serif}
 .rp-loupe-b button{width:48px;height:48px;border:0;border-radius:50%;background:rgba(243,239,228,.14);color:#F3EFE4;font:500 26px/1 Jost,sans-serif;cursor:pointer}.rp-loupe-b button:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
@@ -170,14 +171,15 @@
   const fq = n => n == null ? '' : Number(n).toLocaleString('fr-FR').replace(/ | /g, ' ');
   const photoUrl = p => /^https?:/.test(p) ? p : (N() && N().URL ? N().URL + '/storage/v1/object/public/activites/' + p : '');
   // ——— la structure en tête du profil : logo, type, nom, réputation, preuves (agrandissables) ———
-  const TYPE_ORG = { cooperative: 'Coopérative', groupement: 'Groupement', entreprise: 'Entreprise' };
+  const TYPE_ORG = { cooperative: 'Coopérative', groupement: 'Groupement', entreprise: 'Entreprise', marche: 'Marché' };
   function carteStructure(st, uid) {
     const pv = (st.preuves || []).slice(0, 4), puces = window.MDGStatut ? MDGStatut.puces(uid, { max: 2 }) : '';
     return `<section class="rp-org" aria-label="Structure représentée">
       <div class="rp-org-t">${st.logo ? `<img class="rp-org-logo" src="${esc(photoUrl(st.logo))}" alt="Logo de ${esc(st.nom)}">` : `<span class="rp-org-logo vide" aria-hidden="true">${esc((st.nom || '?').trim().charAt(0).toUpperCase())}</span>`}
-        <div><small>${esc(TYPE_ORG[st.type] || 'Structure')}</small><b>${esc(st.nom)}</b>${puces ? `<span class="rp-org-st">${puces}</span>` : ''}</div></div>
+        <div><small>${esc(TYPE_ORG[st.type] || 'Structure')}${st.verifiee ? ' · <span class="rp-org-ok">vérifiée par l’équipe</span>' : ''}</small><b>${esc(st.nom)}</b>${puces ? `<span class="rp-org-st">${puces}</span>` : ''}</div></div>
       ${pv.length ? `<div class="rp-org-pv">${pv.map((c, i) => `<button type="button" data-pv="${i}" aria-label="Agrandir la preuve ${i + 1}"><img src="${esc(photoUrl(c))}" alt="" loading="lazy"></button>`).join('')}</div>
-        <p class="rp-org-n">Preuves fournies par le membre (enseigne, entrepôt, agrément…). Le Marché de Gros ne les a pas vérifiées : voyez la marchandise avant de payer.</p>` : ''}
+        <p class="rp-org-n">Photos publiées par le membre (enseigne, entrepôt, agrément…)${st.verifiee ? '.' : ' : le Marché de Gros ne les a pas vérifiées. Voyez la marchandise avant de payer.'}</p>` : ''}
+      ${st.verifiee ? `<p class="rp-org-n rp-org-v">L’équipe du Marché de Gros a vu un document officiel de la structure et vérifié l’identité de son responsable${st.fonction ? ' (' + esc(st.fonction.toLowerCase()) + ')' : ''}. Vérifiée ne veut pas dire fiable : regardez aussi la réputation.</p>` : ''}
     </section>`;
   }
   // une preuve en grand, avec précédente / suivante ; Échap ou toucher le fond pour fermer

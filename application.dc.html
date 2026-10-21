@@ -18,6 +18,7 @@
 <script src="v3/nuage.js?v=20261023g"></script>
 <script src="v3/avatar.js?v=20261023f"></script>
 <script src="app/icones.js?v=20261023m"></script>
+<script src="app/effets.js?v=20261023r"></script>
 <script src="app/marque.js?v=20261023f"></script>
 <script src="app/sac.js?v=20261019b"></script>
 <script src="app/garanties.js?v=20261023f"></script>
@@ -81,7 +82,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
       <button class="acc-r plein" onClick="{{ goVendre }}" aria-label="Publier une offre">{{ accIco.plus }}</button>
       <button class="acc-r av" onClick="{{ goMoi }}" aria-label="{{ moiLabel }}">{{ accMoi }}<sc-if value="{{ moiDot }}" hint-placeholder-val="{{ false }}"><span class="acc-pt"></span></sc-if></button>
     </div>
-    <div class="acc-ong" role="tablist" aria-label="Accueil">
+    <div class="acc-ong" role="tablist" aria-label="Accueil" style="--i:{{ accOngI }}"><span class="acc-ong-ind" aria-hidden="true"></span>
       <sc-for list="{{ accOngs }}" as="o" hint-placeholder-count="3"><button role="tab" aria-selected="{{ o.sel }}" class="{{ o.cls }}" onClick="{{ o.go }}">{{ o.t }}<sc-if value="{{ o.hasN }}" hint-placeholder-val="{{ false }}"><span class="acc-n">{{ o.n }}</span></sc-if></button></sc-for>
     </div>
   </div>
@@ -150,7 +151,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   </div>
     </div>
     <div class="acc-stats">
-      <sc-for list="{{ accStats }}" as="c" hint-placeholder-count="3"><button class="{{ c.cls }}" onClick="{{ c.go }}"><span class="acc-k-t">{{ c.t }}</span><span class="acc-i {{ c.tint }}">{{ c.ico }}</span><b>{{ c.v }}</b><small>{{ c.s }}</small></button></sc-for>
+      <sc-for list="{{ accStats }}" as="c" hint-placeholder-count="3"><button class="{{ c.cls }}" onClick="{{ c.go }}"><span class="acc-k-t">{{ c.t }}</span><span class="acc-i {{ c.tint }}">{{ c.ico }}</span><b><mdg-nb data-v="{{ c.v }}"></mdg-nb></b><small>{{ c.s }}</small></button></sc-for>
     </div>
   </div>
 
@@ -1117,9 +1118,9 @@ class Component extends DCLogic {
     const sous = off.length || dem.length ? ['Aujourd’hui sur le marché : ', h('b', { key: 1 }, pl(off.length, 'offre')), ' et ', h('b', { key: 2 }, pl(dem.length, 'demande')), '.'] : 'Les premières offres arrivent : publiez la vôtre.';
     const nO = mine.filter(x => x.kind === 'offre').length, nD = mine.length - nO;
     const stats = [
-      { cls: 'acc-k', t: 'Offres en ligne', tint: 'v', ico: ico('boite'), v: A.fmt(off.length), s: 'sur ' + pl(nP(off), 'produit'), go: () => this.push('acheter') },
-      { cls: 'acc-k', t: 'Demandes', tint: 'j', ico: ico('panier'), v: A.fmt(dem.length), s: 'sur ' + pl(nP(dem), 'produit'), go: () => this.push('carte', { cprod: '', csel: '' }) },
-      mine.length ? { cls: 'acc-k large', t: 'Mes annonces', tint: 't', ico: ico('vendre'), v: A.fmt(mine.length), s: pl(nO, 'offre') + ' · ' + pl(nD, 'demande'), go: () => this.push('pubs') }
+      { cls: 'acc-k', t: 'Offres en ligne', tint: 'v', ico: ico('boite'), v: String(off.length), s: 'sur ' + pl(nP(off), 'produit'), go: () => this.push('acheter') },
+      { cls: 'acc-k', t: 'Demandes', tint: 'j', ico: ico('panier'), v: String(dem.length), s: 'sur ' + pl(nP(dem), 'produit'), go: () => this.push('carte', { cprod: '', csel: '' }) },
+      mine.length ? { cls: 'acc-k large', t: 'Mes annonces', tint: 't', ico: ico('vendre'), v: String(mine.length), s: pl(nO, 'offre') + ' · ' + pl(nD, 'demande'), go: () => this.push('pubs') }
         : { cls: 'acc-k large', t: 'Prix du marché', tint: 't', ico: ico('tendance'), v: 'Par zone', s: 'Les prix relevés, produit par produit', go: () => this.push('prix') } ];
     const acts = [...this.offersAll(), ...dem].filter(x => x.at).sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 12).map(x => {
       const o = x.kind === 'offre', P = this.prod(x.slug);
@@ -1128,7 +1129,7 @@ class Component extends DCLogic {
       accLogo: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.dg(44, { rond: true }) } }) : null,
       accIco: { chercher: ico('chercher'), plus: ico('plus', 22), suite: ico('suite', 18) },
       accMoi: moiS && window.MDGAvatar ? h('img', { src: window.MDGAvatar.uri(moiP && moiP.avatar, { size: 38, nom: (moiP && moiC && moiC.nomAffiche(moiP)) || String(moiS.user.tel || ''), seed: moiS.user.id }), alt: '', width: 38, height: 38, style: { borderRadius: '50%', display: 'block' } }) : ico('compte', 22),
-      accOngs: ongs, accM: tab === 'marche' ? 'block' : 'none', accA: tab === 'activite' ? 'block' : 'none', accL: tab === 'alertes' ? 'block' : 'none',
+      accOngs: ongs, accOngI: String(['marche', 'activite', 'alertes'].indexOf(tab)), accM: tab === 'marche' ? 'block' : 'none', accA: tab === 'activite' ? 'block' : 'none', accL: tab === 'alertes' ? 'block' : 'none',
       accTitre: titre, accSous: sous, accStats: stats,
       accActs: acts, accActVide: !acts.length, accAlertes: al, accAlVide: !!moiS && !al.length };
   }

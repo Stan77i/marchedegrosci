@@ -626,6 +626,7 @@ label.cp-r{cursor:pointer}
           <div class="cp-grp">
             ${off0 ? '' : ligne({ ico: mono('compte'), t: 'Profil et avatar', s: nom ? '' : 'Prénom, rôle, lieu', attrs: 'data-go="profil"' })}
             ${window.MDGReleve ? ligne({ ico: mono('barres'), t: 'Mes ventes et achats', s: 'Relevés, bons de transaction, volumes', attrs: 'data-releve' }) : ''}
+            ${window.MDGCommandes && !off0 ? (() => { const nC = MDGCommandes.aAgir(); return ligne({ ico: mono('negoce'), t: 'Mes commandes', s: nC ? nC + (nC > 1 ? ' commandes attendent' : ' commande attend') + ' votre action' : 'Suivi du chargement à la réception', n: nC, attrs: 'data-cmds' }); })() : ''}
             ${ligne({ ico: mono('cloche'), t: 'Notifications', v: '<span data-pst>…</span>', n: nl, attrs: 'data-go="notifs"' })}
             ${S ? ligne({ ico: mono('son'), t: 'Sons', v: sn && sn.on ? 'Activés' : 'Désactivés', attrs: 'data-sons' }) : ''}
             ${off0 ? '' : ligne({ ico: mono('oeil'), t: 'Confidentialité', v: p.nom_public ? 'Nom visible' : 'Initiale', attrs: 'data-go="prefs"' })}
@@ -646,6 +647,7 @@ label.cp-r{cursor:pointer}
       if (q('[data-sons]')) q('[data-sons]').onclick = () => { fermer(); S.panneau(); };
       if (q('[data-marche]')) q('[data-marche]').onclick = () => { fermer(); M.ecrireMarche(); };
       if (q('[data-releve]')) q('[data-releve]').onclick = () => { fermer(); window.MDGReleve.ouvrir(); };
+      if (q('[data-cmds]')) q('[data-cmds]').onclick = () => { fermer(); window.MDGCommandes.ouvrir(); };
       main.querySelectorAll('[data-idv]').forEach(b => b.onclick = () => { fermer(); ID.ouvrir(); });
       q('[data-out]').onclick = deconnecter;
       main.querySelectorAll('[data-ni]').forEach(b => b.onclick = () => { const all = notifs(), n = all[+b.dataset.ni]; if (!n) return; n.lu = true; W(KN, all); if (n.nego && G) { fermer(); G.thread(n.nego); } else bg.aller('notifs'); });

@@ -41,7 +41,8 @@
   - `v3/sons.js`, `app/marque.js` (logo), `app/toast.js` (notifications).
 - **Propres à l'app** : `app/sac.js` (le sac personnage), `app/garanties.js` (arguments de confiance), `v3/releve.js` (ventes et relevés), `v3/guide.js`, `v3/alertes.js`, `app/carte-gl.js`, `css/mgci-tokens.css` (couleurs et voix du logo), `css/mgci-app.css`.
 - `admin.html` + `v3/admin.js` : tableau de bord administrateur.
-- `supabase/schema-*.sql` : chaque changement de base, commenté. Tout jusqu'au **schéma 25** est **déjà appliqué**.
+- `v3/commandes.js` : **Mes commandes** (schéma 26) : une commande par accord, 8 étapes enregistrées par le serveur, validation « sans code » pour l'instant, commission de 3,5 % calculée mais **non prélevée**. Ouverte depuis Mon compte, le bouton « Suivre la commande » d'un accord, ou une notification (`#/?commande=…`).
+- `supabase/schema-*.sql` : chaque changement de base, commenté. Tout jusqu'au **schéma 26** est **déjà appliqué**.
 - Documents :
   - `PORTAGE-SITE.md` : porter l'app vers le site ;
   - `docs/SEQUESTRE.md` : futur paiement ;

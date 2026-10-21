@@ -206,6 +206,11 @@
   - liste des dernières annonces ;
   - alertes réelles : propositions et messages non lus, stocks épuisés.
 - Retirés à la demande du propriétaire : le nom écrit à côté du logo, et la date et l'heure.
+- Cloche des notifications dans l'en-tête :
+  - la pastille compte les notifications non lues de Mon compte et les messages non lus ;
+  - un toucher ouvre Mon compte → Notifications, ou les messages s'il n'y a que des messages ;
+  - quand il y a du nouveau, elle se balance toutes les 4,2 s avec une onde maïs, et la pastille apparaît avec un rebond ;
+  - rien ne bouge si le téléphone demande moins d'animations.
 - J'ai / Je cherche restent en bas, comme avant. Le propriétaire a demandé une proposition à valider avant d'y toucher.
 - Code : `accueil()` dans `application.dc.html` (état `accTab`), styles `.acc-*` dans `css/mgci-app.css`. La roue ne dépend plus que de la largeur (la page défile).
 
@@ -216,6 +221,15 @@
 - Chiffres qui défilent jusqu'à leur valeur : `<mdg-nb data-v>` dans `app/effets.js`. Le défilement démarre seulement quand le chiffre est à l'écran.
 - Appui : les cartes et les boutons s'enfoncent légèrement. Décor de fins cercles concentriques dans le coin des cartes, et icônes avec un léger dégradé.
 - Rien ne bouge si le téléphone demande moins d'animations.
+
+**En-tête, bas de l'accueil et notifications** (demandes du propriétaire)
+- J'ai / Je cherche restent en bas (réponse A). La brume blanche derrière eux est retirée.
+- Le rond de gauche montre le sac (`MDGSac.svg('plein')`) et ouvre toujours le menu.
+- Entre le rond et la loupe, `<mdg-souffle>` en version claire :
+  - « marché de Gros » s'écrit sur deux lignes ;
+  - puis passent 9 phrases très courtes et concrètes : Vendez en direct, Achetez en gros, Négociez le prix, Payez à la livraison, Votre numéro reste caché, Identités vérifiées, Coopératives vérifiées, Partout en Côte d'Ivoire, Du champ au marché.
+- Notifications (connexion, déconnexion et toutes les autres) : style clair. Fond crème, texte foncé, mot mis en avant en vert souligné de maïs, ombre douce.
+- ⚠️ La cloche des notifications avait été poussée après la fusion de la PR #106 et manquait sur `main`. Elle est rapatriée dans cette PR.
 
 ## 5. En attente d'une décision du propriétaire
 

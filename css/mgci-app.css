@@ -242,6 +242,16 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px
 .acc-r{position:relative;flex:none;width:44px;height:44px;padding:0;border:1px solid rgba(23,21,18,.09);border-radius:50%;background:#F6F3EC;color:#171512;display:grid;place-items:center;cursor:pointer}
 .acc-r.plein{border:0;background:#10392B;color:#FFFDF8;box-shadow:0 8px 18px rgba(16,57,43,.3)}
 .acc-r.av{background:#F3E3C0;color:#10392B;overflow:visible}.acc-r.av img{width:38px;height:38px}
+.acc-cl .acc-cl-i{display:flex;transform-origin:50% 12%}
+.acc-cl.neuf{background:#FFF4CF;border-color:rgba(242,194,48,.55)}
+.acc-cl.neuf .acc-cl-i{animation:accCloche 4.2s cubic-bezier(.36,.07,.19,.97) infinite}
+.acc-cl.neuf::after{content:"";position:absolute;inset:-1px;border-radius:50%;box-shadow:0 0 0 0 rgba(242,194,48,.55);animation:accOnde 4.2s ease-out infinite;pointer-events:none}
+.acc-cl:active .acc-cl-i{animation:accCloche .7s cubic-bezier(.36,.07,.19,.97) 1}
+.acc-cl-n{position:absolute;top:-4px;right:-5px;min-width:20px;height:20px;padding:0 5px;box-sizing:border-box;border-radius:10px;background:#E2735B;color:#fff;font:700 11.5px/20px Jost,sans-serif;text-align:center;box-shadow:0 0 0 2.5px #FFFDF8;animation:accPop .55s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes accCloche{0%,62%,100%{transform:rotate(0)}66%{transform:rotate(16deg)}70%{transform:rotate(-14deg)}74%{transform:rotate(10deg)}78%{transform:rotate(-7deg)}82%{transform:rotate(4deg)}86%{transform:rotate(-2deg)}90%{transform:rotate(0)}}
+@keyframes accOnde{0%,62%{box-shadow:0 0 0 0 rgba(242,194,48,.55)}85%,100%{box-shadow:0 0 0 12px rgba(242,194,48,0)}}
+@keyframes accPop{0%{transform:scale(0)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.acc-cl .acc-cl-i,.acc-cl::after,.acc-cl-n{animation:none!important}}
 .acc-pt{position:absolute;top:1px;right:1px;width:11px;height:11px;border-radius:50%;background:#E2735B;box-shadow:0 0 0 2.5px #FFFDF8}
 .acc-ong{display:flex;gap:4px;margin-top:10px;padding:4px;border-radius:26px;box-shadow:0 0 0 1px rgba(23,21,18,.1) inset;background:#FFFDF8}
 .acc-ong button{flex:1;min-width:0;min-height:44px;border:0;border-radius:22px;background:none;color:#4D473D;font:500 15px Jost,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:background .25s,color .25s}

@@ -43,7 +43,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261023n">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261023p">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261023f">
 <link rel="stylesheet" href="v3/ux.css?v=20261023f">
@@ -78,8 +78,9 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
       <button class="acc-mq" onClick="{{ openMenu }}" aria-label="Menu">{{ accLogo }}<sc-if value="{{ hasPubs }}" hint-placeholder-val="{{ false }}"><span class="acc-pt"></span></sc-if></button>
       <span class="acc-nom" aria-hidden="true"></span>
       <button class="acc-r" onClick="{{ goAcheter }}" aria-label="Chercher un produit">{{ accIco.chercher }}</button>
+      <button class="{{ accCl.cls }}" onClick="{{ accCl.go }}" aria-label="{{ accCl.l }}"><span class="acc-cl-i">{{ accIco.cloche }}</span><sc-if value="{{ accCl.on }}" hint-placeholder-val="{{ false }}"><span class="acc-cl-n">{{ accCl.n }}</span></sc-if></button>
       <button class="acc-r plein" onClick="{{ goVendre }}" aria-label="Publier une offre">{{ accIco.plus }}</button>
-      <button class="acc-r av" onClick="{{ goMoi }}" aria-label="{{ moiLabel }}">{{ accMoi }}<sc-if value="{{ moiDot }}" hint-placeholder-val="{{ false }}"><span class="acc-pt"></span></sc-if></button>
+      <button class="acc-r av" onClick="{{ goMoi }}" aria-label="{{ moiLabel }}">{{ accMoi }}</button>
     </div>
     <div class="acc-ong" role="tablist" aria-label="Accueil">
       <sc-for list="{{ accOngs }}" as="o" hint-placeholder-count="3"><button role="tab" aria-selected="{{ o.sel }}" class="{{ o.cls }}" onClick="{{ o.go }}">{{ o.t }}<sc-if value="{{ o.hasN }}" hint-placeholder-val="{{ false }}"><span class="acc-n">{{ o.n }}</span></sc-if></button></sc-for>
@@ -1126,7 +1127,11 @@ class Component extends DCLogic {
       return { tint: o ? 'v' : 'j', ico: ico(o ? 'boite' : 'panier'), t: P.name + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + x.unit : ''), s: (o ? 'Offre' : 'Demande') + ' · ' + this.place(x) + (x.name ? ' · ' + x.name : ''), h: A.ago(x.at), go: () => this.openFiche(x.slug) }; });
     return {
       accLogo: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.dg(44, { rond: true }) } }) : null,
-      accIco: { chercher: ico('chercher'), plus: ico('plus', 22), suite: ico('suite', 18) },
+      accIco: { chercher: ico('chercher'), plus: ico('plus', 22), suite: ico('suite', 18), cloche: ico('cloche', 21) },
+      // la cloche : notifications non lues (Mon compte → Notifications) + messages non lus ; elle se balance quand il y a du nouveau
+      accCl: (() => { const nl = moiS && moiC && moiC.nonLues ? moiC.nonLues() : 0, dm = moiS && window.MDGMessages && MDGMessages.unread ? MDGMessages.unread() : 0, n = nl + dm;
+        return { n: n > 99 ? '99+' : String(n), on: n > 0, cls: 'acc-r acc-cl' + (n > 0 ? ' neuf' : ''), l: n ? 'Notifications : ' + n + ' nouvelle' + (n > 1 ? 's' : '') : 'Notifications',
+          go: () => { if (!moiS) { moiN && moiN.open(); return; } if (!nl && dm && window.MDGMessages) { MDGMessages.boite(); return; } moiC && moiC.ouvrir('notifs'); } }; })(),
       accMoi: moiS && window.MDGAvatar ? h('img', { src: window.MDGAvatar.uri(moiP && moiP.avatar, { size: 38, nom: (moiP && moiC && moiC.nomAffiche(moiP)) || String(moiS.user.tel || ''), seed: moiS.user.id }), alt: '', width: 38, height: 38, style: { borderRadius: '50%', display: 'block' } }) : ico('compte', 22),
       accOngs: ongs, accM: tab === 'marche' ? 'block' : 'none', accA: tab === 'activite' ? 'block' : 'none', accL: tab === 'alertes' ? 'block' : 'none',
       accTitre: titre, accSous: sous, accStats: stats,

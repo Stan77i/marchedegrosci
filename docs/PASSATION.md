@@ -206,6 +206,11 @@
   - liste des dernières annonces ;
   - alertes réelles : propositions et messages non lus, stocks épuisés.
 - Retirés à la demande du propriétaire : le nom écrit à côté du logo, et la date et l'heure.
+- Cloche des notifications dans l'en-tête :
+  - la pastille compte les notifications non lues de Mon compte et les messages non lus ;
+  - un toucher ouvre Mon compte → Notifications, ou les messages s'il n'y a que des messages ;
+  - quand il y a du nouveau, elle se balance toutes les 4,2 s avec une onde maïs, et la pastille apparaît avec un rebond ;
+  - rien ne bouge si le téléphone demande moins d'animations.
 - J'ai / Je cherche restent en bas, comme avant. Le propriétaire a demandé une proposition à valider avant d'y toucher.
 - Code : `accueil()` dans `application.dc.html` (état `accTab`), styles `.acc-*` dans `css/mgci-app.css`. La roue ne dépend plus que de la largeur (la page défile).
 

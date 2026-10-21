@@ -130,6 +130,18 @@
 - Une demande ou une proposition n'est pas une vente : aucune commission (vérifié).
 - Entrée : « Approvisionnement pro » dans Mon compte ; lien `#/?besoin=…`.
 
+**Achats groupés** (schéma 35, `v3/groupes.js`)
+- Tables fermées `groupes_achat`, `groupe_participants` (unique par personne) ; colonne `commandes.groupe_id`.
+- Sur une offre active : le vendeur ouvre (prix, paliers décroissants, frais de transport estimés) ; un acheteur peut proposer (statut `propose`, le vendeur valide).
+- Statuts : propose → ouvert → seuil_atteint → en_attente_confirmation (prix final figé, 48 h) → confirme → termine ; annule / expire.
+- Chacun confirme lui-même ; si le prix monte (départs), les confirmés repassent « à confirmer » + notification. Inscriptions verrouillées (pas de dépassement du stock).
+- Tous confirmés → une commande par participant (validation par déclaration, transport par le vendeur), stock baissé, commission inscrite seule. `_cmd_rendre_stock` rend aussi le stock d'une commande de groupe annulée.
+- pg_cron `mdg-groupes-echeances` (*/15) : expiration, lancement auto si seuil atteint à la date limite, retrait des non-confirmés à 48 h, passage à « terminé ».
+- Expiré : achat individuel possible, seulement sur demande (proposition normale).
+- `pousser` v9 : cas 10 (rappels) et 11 (groupes) déployés et vérifiés (401 sans clé, 200 avec).
+- Bouton « Acheter à plusieurs » sur les cartes d'offres ; « Achats groupés » dans Mon compte ; lien `#/?groupe=…`.
+- Piège : l'identifiant de style `grCss` est déjà pris par `app/garanties.js` (d'où `grpCss`).
+
 ## 5. En attente d'une décision du propriétaire
 
 0. **Racheter sur la même annonce** : la contrainte `negociations_cible_cible_id_auteur_id_key` limite un acheteur à UNE négociation par annonce pour toujours. Proposition : la remplacer par un index unique partiel (une seule négociation *ouverte* par acheteur et par annonce). Demande un `drop constraint` : attend l'accord du propriétaire.

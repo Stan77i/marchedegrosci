@@ -59,6 +59,7 @@
 .ap-pied{position:sticky;bottom:calc(-24px - env(safe-area-inset-bottom));margin:12px -16px calc(-24px - env(safe-area-inset-bottom));padding:12px 16px calc(14px + env(safe-area-inset-bottom));background:#F3EFE4;box-shadow:0 -8px 16px rgba(243,239,228,.9)}
 .ap-duo{display:flex;gap:8px}.ap-duo .ap-b{flex:1}
 @media (max-width:340px){.ap-2,.ap-l .ap-2{grid-template-columns:1fr}}
+.ap form{background:none;box-shadow:none;border:0;padding:0;margin:0;border-radius:0}
 @media (prefers-reduced-motion:reduce){.ap-bg,.ap{animation:none!important}}`;
   function css() { if (document.getElementById('apCss')) return; const s = document.createElement('style'); s.id = 'apCss'; s.textContent = CSS; document.head.appendChild(s); }
 

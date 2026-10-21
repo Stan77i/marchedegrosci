@@ -56,6 +56,7 @@
 .rc-pied{position:sticky;bottom:calc(-24px - env(safe-area-inset-bottom));margin:12px -16px calc(-24px - env(safe-area-inset-bottom));padding:12px 16px calc(14px + env(safe-area-inset-bottom));background:#F3EFE4;box-shadow:0 -8px 16px rgba(243,239,228,.9)}
 .rc-vide{text-align:center;padding:18px 8px;color:#4A4336}.rc-vide b{display:block;font:600 17px/1.25 Archivo,'Helvetica Neue',Arial,sans-serif;color:#171512;margin:6px 0 4px}
 .rc-res{list-style:none;margin:10px 0 0;padding:0}.rc-res li{padding:8px 0;border-top:1px solid #ECE6D6;font-size:14px}.rc-res li.ko{color:#8E2A1C}
+.rc form{background:none;box-shadow:none;border:0;padding:0;margin:0;border-radius:0}
 @media (prefers-reduced-motion:reduce){.rc-bg,.rc{animation:none!important}}`;
   function css() { if (document.getElementById('rcCss')) return; const s = document.createElement('style'); s.id = 'rcCss'; s.textContent = CSS; document.head.appendChild(s); }
 

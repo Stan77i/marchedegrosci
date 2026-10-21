@@ -30,7 +30,9 @@
 .an-infos span span { display: inline; min-height: 0; padding: 0; border-radius: 0; background: none; color: inherit; }   /* le moteur enveloppe le texte : pas de pastille dans la pastille */
 .an-infos .ok { background: rgba(108, 197, 140, .16); color: var(--offre-texte); }
 .an-infos .attn { background: rgba(226, 115, 91, .12); color: #9A3F2B; }
-.an-actions { display: flex; gap: 8px; align-items: center; }
+.an-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.an-grp { order: 9; flex: 1 0 100%; min-height: var(--cible); display: flex; align-items: center; justify-content: center; gap: 7px; border: 0; border-radius: 22px; background: rgba(16,57,43,.07); color: #10392B; font: 600 var(--t-sm) var(--f-texte); cursor: pointer; }
+.an-grp:focus-visible { outline: 2px solid var(--terre); outline-offset: 2px; }
 .an-act { flex: 1; min-width: 0; min-height: var(--cible); padding: 0 12px; border-radius: 22px; display: flex; align-items: center; justify-content: center; gap: 7px; font: 600 var(--t-base) var(--f-texte); cursor: pointer; white-space: nowrap; transition: transform var(--d-court) var(--courbe), background var(--d-court); }
 .an-act:active { transform: scale(.97); }
 .an-act svg { flex: none; }

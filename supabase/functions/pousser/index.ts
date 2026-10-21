@@ -16,6 +16,7 @@
 //  8. par la base (déclencheur public.push_mission) pour une mission de transport, avec { mission_id } (schema-27) ;
 //  9. par la base (déclencheur public.push_transporteur) quand l'équipe décide d'un profil de transporteur, avec { transporteur_id }.
 // 10. par la base (pg_cron, public.rappels_envoyer) pour un rappel d'achat, avec { rappel_id } (schema-33) : rien n'est acheté.
+// 11. par la base (déclencheur public.push_groupe) pour un achat groupé, avec { groupe_id, statut } ou { groupe_id, reconfirmer } (schema-35).
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
 import webpush from "npm:web-push@3.6.7";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -194,6 +195,28 @@ Deno.serve(async (req) => {
       return json(await envoyer(r.user_id, { title: `Racheter ${coupe(r.produit || "votre produit", 40)} ?`,
         body: "Touchez pour voir le prix et le stock du jour. Rien n'est commandé sans votre accord.", tag: "rappel-" + r.id,
         url: "application.dc.html#/?racheter=" + r.commande_id }));
+    }
+
+    // 11. un achat groupé change de statut, ou un participant doit reconfirmer (le prix a changé)
+    if (corps.groupe_id) {
+      const { data: g } = await sb.from("groupes_achat").select("id, vendeur_id, createur_id, produit, statut, prix_final, confirmer_avant").eq("id", String(corps.groupe_id)).maybeSingle();
+      if (!g) return json({ rien: true });
+      const url = "application.dc.html#/?groupe=" + g.id, tag = "groupe-" + g.id, produit = coupe(g.produit || "Achat groupé", 40);
+      if (corps.reconfirmer) return json(await envoyer(String(corps.reconfirmer), { title: `${produit} : le prix a changé`, body: `Nouveau prix ${F(g.prix_final)} — reconfirmez ou retirez-vous.`, tag, url }));
+      const { data: ps } = await sb.from("groupe_participants").select("user_id").eq("groupe_id", g.id).neq("statut", "retire");
+      const parts = (ps || []).map((p: { user_id: string }) => p.user_id);
+      const T: Record<string, [string[], string, string]> = {
+        propose: [[g.vendeur_id], `Achat groupé proposé : ${produit}`, "Un acheteur propose un groupe sur votre offre. Fixez vos conditions ou refusez."],
+        seuil_atteint: [[g.vendeur_id], `${produit} : seuil atteint`, "Lancez la confirmation : chaque participant confirmera sa quantité."],
+        en_attente_confirmation: [parts, `${produit} : confirmez votre participation`, `Prix final ${F(g.prix_final)}. Rien n'est commandé sans votre confirmation.`],
+        confirme: [[g.vendeur_id, ...parts], `${produit} : achat groupé confirmé`, "Les commandes sont créées. Suivez-les dans Mes commandes."],
+        expire: [[g.vendeur_id, ...parts], `${produit} : achat groupé expiré`, "Le seuil n'a pas été atteint. Vous pouvez acheter seul si vous le souhaitez."],
+        annule: [[g.vendeur_id, ...parts].filter((u) => u !== g.createur_id), `${produit} : achat groupé annulé`, "Aucune commande n'a été créée."],
+      };
+      const t = T[String(corps.statut)]; if (!t) return json({ rien: true });
+      const res = [];
+      for (const d of [...new Set(t[0])]) res.push(await envoyer(d, { title: t[1], body: t[2], tag, url }));
+      return json({ res });
     }
 
     // 5. une nouvelle annonce : ceux qui suivent ce produit sont prévenus

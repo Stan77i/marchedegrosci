@@ -314,3 +314,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px
 .acc-k b mdg-nb{font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.acc-salut,.acc-orb,.acc-k,.acc-carte,.acc-ligne,.acc-al{animation:none}.acc-ong-ind{transition:none}.acc-k:active,.acc-ligne:active,.acc-al:active,.acc-r:active,.acc-mq:active{transform:none}}
 .acc-sac{display:block;line-height:0}.acc-sac svg{display:block}
+
+/* ═══ Menu clair (21 oct. 2026) : icônes Lucide dans des tuiles en léger dégradé, teinte par rubrique (couleurs lisibles sur le blanc) ═══ */
+.dr-clair{--t-offre:#1F7A45;--t-demande:#8A6400;--t-vous:#2F62A8;--t-lien:#6A4FB0;--t-marche:#A4472C;--t-aide:#5E5546}
+.dr-clair .ui-tile{--t:var(--t-aide);width:42px;height:42px;border-radius:14px;color:var(--t);
+  background:linear-gradient(145deg,color-mix(in srgb,var(--t) 20%,#fff),color-mix(in srgb,var(--t) 9%,#fff));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 0 0 1px color-mix(in srgb,var(--t) 16%,transparent),0 4px 10px color-mix(in srgb,var(--t) 14%,transparent)}
+.dr-clair .ui-tile .ico{width:21px;height:21px;stroke-width:1.9}
+.dr-clair .ui-tile[data-ton=offre]{--t:var(--t-offre)}.dr-clair .ui-tile[data-ton=demande]{--t:var(--t-demande)}.dr-clair .ui-tile[data-ton=vous]{--t:var(--t-vous)}
+.dr-clair .ui-tile[data-ton=lien]{--t:var(--t-lien)}.dr-clair .ui-tile[data-ton=marche]{--t:var(--t-marche)}.dr-clair .ui-tile[data-ton=aide]{--t:var(--t-aide)}
+.dr-clair .ui-tile.logo,.dr-clair .ui-tile.photo{background:none;box-shadow:none}
+.dr-clair button{transition:background .2s,transform .15s}.dr-clair button:active{transform:scale(.985)}
+.dr-clair button:focus-visible{outline:3px solid #10392B;outline-offset:-3px}

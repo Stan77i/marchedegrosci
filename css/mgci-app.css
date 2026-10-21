@@ -118,8 +118,9 @@
 
 /* « quand » : un TAMPON (demandé le 21/10) — rectangle plein, un peu penché, liseré blanc, lettres capitales.
    La couleur dit l'urgence : vite = tomate (il faut agir) ; semaine = maïs ; mois / date = sable (pas pressé) ; dispo = vert (prêt).
+   Le texte passe à la ligne quand la place manque (jamais hors du tampon), équilibré sur deux lignes.
    Il se « tamponne » à chaque fois qu'il revient à l'écran (app/effets.js) ; celui de « dès que possible » frissonne un peu. */
-.qd[data-u] { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; flex: none; width: max-content; max-width: calc(100% - 6px); box-sizing: border-box; min-height: 26px; margin: 6px 0 3px 3px; padding: 0 10px 0 8px; border: 0; border-radius: 3px; background: var(--qd-bg); color: var(--qd-fg); font-family: var(--f-texte); font-size: 11.5px; font-weight: 700; line-height: 1.1; letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; transform: rotate(var(--qd-r)); box-shadow: 0 0 0 2px var(--qd-lis, #FFFDF8), 0 0 0 3.2px var(--qd-bd), 0 4px 10px rgba(23, 21, 18, .16); }
+.qd[data-u] { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; flex: none; width: max-content; max-width: calc(100% - 6px); box-sizing: border-box; min-height: 26px; margin: 6px 0 3px 3px; padding: 4px 10px 4px 8px; border: 0; border-radius: 3px; background: var(--qd-bg); color: var(--qd-fg); font-family: var(--f-texte); font-size: 11.5px; font-weight: 700; line-height: 1.15; letter-spacing: .06em; text-transform: uppercase; white-space: normal; text-wrap: balance; overflow-wrap: normal; transform: rotate(var(--qd-r)); box-shadow: 0 0 0 2px var(--qd-lis, #FFFDF8), 0 0 0 3.2px var(--qd-bd), 0 4px 10px rgba(23, 21, 18, .16); }
 .an-infos .qd[data-u] { margin-top: 4px; min-height: 26px; }
 .qd[data-u]::before { content: ""; flex: none; width: 12px; height: 12px; background: currentColor; -webkit-mask: var(--qd-ico) center / contain no-repeat; mask: var(--qd-ico) center / contain no-repeat; }
 .qd[data-u="vite"] { --qd-bg: #E8552F; --qd-fg: #171512; --qd-bd: rgba(232, 85, 47, .45); --qd-r: -3deg; }
@@ -136,6 +137,9 @@
 @media (prefers-reduced-motion: reduce) { .qd[data-u], .qd[data-u]::before { animation: none !important; } }
 /* sur fond nuit (carte du réseau) : même tampon, liseré sombre */
 .qd[data-u].nuit { --qd-lis: #171512; }
+/* la liste de la carte est étroite (distance et bouton à droite) : tampon un peu plus serré ; un mot trop long passe à la ligne plutôt que déborder */
+.qd[data-u].nuit { font-size: 10.5px; letter-spacing: .04em; padding: 4px 8px 4px 7px; gap: 5px; }
+.qd[data-u] { overflow-wrap: anywhere; hyphens: manual; }
 html[data-theme=sombre] .acc-sc .qd[data-u] { --qd-lis: #171512; }
 
 /* écran d'ouverture « le sac qui se remplit » (logo Étal vert) : trois produits tombent dans le sac, le sac se remplit,

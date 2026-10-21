@@ -190,6 +190,10 @@
 - Carte : noms des villes et des rues en Jost (`vendor/glyphs/Jost Regular|Medium|Italic`, générés par `tools/glyphes-carte.js` avec TinySDF). Les glyphes Noto Sans sont retirés.
 - Seule exception : les emojis des marqueurs de carte (police emoji du téléphone).
 
+**Connexion et notifications** (demande du propriétaire, 21/10/2026)
+- Le bouton « Se connecter » ne devient plus bleu et n'affiche plus « Connexion réussie. Préparation de votre espace… » : il reste en attente, et la notification de bienvenue suffit (`nuage.js`).
+- Les notifications (`app/toast.js`) ne sont plus vertes : fond sombre translucide `rgba(23,21,18,.62)` avec flou du fond, lisible sur fond sombre comme sur fond crème.
+
 ## 5. En attente d'une décision du propriétaire
 
 

@@ -19,8 +19,8 @@
     : /connecté|en ligne|publié|envoyé|enregistr|vérifié|copié|merci|ajouté|créé|signalé|retiré|supprimé|à jour|accept|conclu|c’est fait|c'est fait/i.test(t) ? 'ok' : 'info';
   const VIBRE = { ok: 12, erreur: [30, 60, 30], alerte: [18, 40, 18] };
   const CSS = `.il{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:9600;transform:translate(-50%,-18px) scale(.72);opacity:0;
-  max-width:min(calc(100vw - 20px),460px);min-width:0;border-radius:26px;background:rgba(9,32,24,.94);color:#F3EFE4;
-  -webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);
+  max-width:min(calc(100vw - 20px),460px);min-width:0;border-radius:26px;background:rgba(23,21,18,.62);color:#F3EFE4;
+  -webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);
   box-shadow:0 18px 44px rgba(0,0,0,.38),0 0 0 1px rgba(243,239,228,.09) inset,0 1px 0 rgba(243,239,228,.08) inset;
   font:500 15px/1.35 Jost,system-ui,sans-serif;overflow:hidden;cursor:pointer;touch-action:pan-x;
   transition:transform .5s cubic-bezier(.2,1.25,.35,1),opacity .25s,width .42s cubic-bezier(.22,1,.36,1)}
@@ -36,7 +36,7 @@
 .il-g.rond{border-radius:50%}
 .il-g svg{display:block}
 .il-g.seul{width:12px;height:12px;margin-left:8px}.il-g.seul .il-pt{position:static;display:block;box-shadow:none}
-.il-pt{position:absolute;right:-2px;top:-2px;width:11px;height:11px;border-radius:50%;background:#6CC58C;box-shadow:0 0 0 2.5px rgba(9,32,24,.94)}
+.il-pt{position:absolute;right:-2px;top:-2px;width:11px;height:11px;border-radius:50%;background:#6CC58C;box-shadow:0 0 0 2.5px rgba(23,21,18,.8)}
 .il[data-t="alerte"] .il-pt{background:#F2C230}.il[data-t="erreur"] .il-pt{background:#EF6F5A}.il[data-t="info"] .il-pt{background:#F3EFE4}
 .il[data-t="attente"] .il-pt{background:#F2C230;animation:ilPouls 1.1s ease-in-out infinite}
 @keyframes ilPouls{50%{transform:scale(.6);opacity:.5}}

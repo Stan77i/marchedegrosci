@@ -304,8 +304,6 @@
 .ng--porte .ng-go{position:relative;overflow:hidden;min-height:56px;transition:background .32s,color .32s,filter .2s}
 .ng--porte .ng-go:hover:not([disabled]){filter:brightness(1.06)}
 .ng--porte .ng-go[aria-busy=true]{opacity:1}
-.ng--porte .ng-go.is-ok{background:#6AAEF0;opacity:1}
-.ng--porte .ng-go.is-ok span::before{content:"";display:inline-block;width:16px;height:16px;margin:0 8px -2px 0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3.5 8.3 2.8 2.8L12.6 4.8' fill='none' stroke='%23171512' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
 .ng--porte .ng-note{margin-top:18px}
 /* téléphone : l'ordre le plus simple — image, titre, champs, bouton, un seul lien pour basculer ; pas de paragraphe */
 .ng-sw{display:none}
@@ -451,7 +449,8 @@
         const r = await (m0 === 'up' ? signUp(t, c) : m0 === 'sos' ? recover(t, $('#ngCle').value, c) : signIn(t, c));
         if (m0 === 'up') { try { await api('/rest/v1/profils', { method: 'POST', auth: true, body: Object.assign({ user_id: r.user.id }, ident), prefer: 'return=minimal' }).catch(e => { if (e.status === 409) return api('/rest/v1/profils?user_id=eq.' + r.user.id, { method: 'PATCH', auth: true, body: ident, prefer: 'return=minimal' }); throw e; }); say('compte'); } catch (e) { console.warn('[nuage] profil non enregistré', e.message); } }
         // réussite confirmée par le serveur : seulement maintenant
-        go.classList.add('is-ok'); go.removeAttribute('aria-busy'); go.querySelector('span').textContent = m0 === 'up' ? 'Compte créé. Préparation de votre espace…' : 'Connexion réussie. Préparation de votre espace…'; P && P.etat('ok');
+        // pas de message dans le bouton (demande du propriétaire) : il reste en attente, la notification de bienvenue suffit
+        P && P.etat('ok');
         // l'accueil après la connexion : par son prénom, puis ce qui l'attend (messages, propositions), avec le geste pour y aller
         const fin = () => {
           const pf = window.MDGCompte && MDGCompte.profil ? (MDGCompte.profil() || {}) : {}, prenom = (m0 === 'up' ? ident.pseudo || ident.prenom : pf.pseudo || pf.prenom) || '';

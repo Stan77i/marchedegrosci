@@ -43,7 +43,8 @@
 - `admin.html` + `v3/admin.js` : tableau de bord administrateur.
 - `v3/commandes.js` : **Mes commandes** (schéma 26) : une commande par accord, 8 étapes enregistrées par le serveur, validation « sans code » pour l'instant, commission de 3,5 % calculée mais **non prélevée**. Ouverte depuis Mon compte, le bouton « Suivre la commande » d'un accord, ou une notification (`#/?commande=…`).
 - `v3/chauffeur.js` : **Espace chauffeur** (schéma 27) : inscription gratuite, code transporteur `T-XXXX` à donner à l'acheteur ou au vendeur, disponibilité (profil vérifié seulement), missions à accepter, arrivée et transbordement. `v3/admin-transport.js` : vues **Transporteurs** et **Commandes** du tableau de bord (vérifier, inscrire un chauffeur sans application, affecter, trancher un litige), branchées sur `admin.js` par `window.MDGAdminExt`.
-- `supabase/schema-*.sql` : chaque changement de base, commenté. Tout jusqu'au **schéma 27** est **déjà appliqué**.
+- **Codes à usage unique** (schéma 28) : prise en charge (vu par le vendeur), transfert (vu par le chauffeur qui transmet), réception (vu par l'acheteur) ; tapés par le chauffeur. 6 chiffres, gardés chiffrés (bcrypt), expiration 6 h (transfert 2 h), 5 essais puis blocage. `commande_valider_code` ne lève pas d'erreur pour un code faux (sinon le compteur d'essais serait annulé) : il renvoie `{ ok:false, message, reste }`.
+- `supabase/schema-*.sql` : chaque changement de base, commenté. Tout jusqu'au **schéma 28** est **déjà appliqué**.
 - Documents :
   - `PORTAGE-SITE.md` : porter l'app vers le site ;
   - `docs/SEQUESTRE.md` : futur paiement ;

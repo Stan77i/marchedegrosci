@@ -37,7 +37,9 @@
   const LIB = Object.fromEntries(ETAPES);
   const EV = Object.assign({}, LIB, { creee: 'Commande proposée', refusee: 'Commande refusée', annulation_demandee: 'Annulation demandée',
     annulation_refusee: 'Annulation refusée', annulee: 'Commande annulée', litige: 'Litige ouvert',
-    transporteur_proposee: 'Transporteur proposé', transporteur_acceptee: 'Transporteur confirmé', transporteur_refusee: 'Le transporteur a refusé', transporteur_retiree: 'Transporteur retiré' });
+    transporteur_proposee: 'Transporteur proposé', transporteur_acceptee: 'Transporteur confirmé', transporteur_refusee: 'Le transporteur a refusé', transporteur_retiree: 'Transporteur retiré',
+    code_prise_en_charge_cree: 'Code de prise en charge affiché', code_reception_cree: 'Code de réception affiché', code_transfert_cree: 'Code de transfert créé',
+    code_prise_en_charge_bloque: 'Code bloqué (5 essais faux)', code_reception_bloque: 'Code bloqué (5 essais faux)', code_transfert_bloque: 'Code bloqué (5 essais faux)' });
   const MODES = { reseau: 'Transporteur du réseau Marché de Gros', acheteur: 'Transporteur choisi par l’acheteur', vendeur: 'Transporteur choisi par le vendeur' };
   const ROLE = { vendeur: 'Vendeur', acheteur: 'Acheteur', chauffeur: 'Chauffeur', admin: 'Marché de Gros', systeme: 'Automatique' };
   const PREUVE = { declaration: 'déclaré', gps: 'déclaré avec position', code: 'validé par code', auto: 'automatique', admin: 'équipe' };
@@ -192,6 +194,11 @@
     if (c.annulation === 'autre') return [`${lui} demande l’<em>annulation</em>`, 'Acceptez ou refusez.'];
     if (c.annulation === 'moi') return ['Annulation <em>demandée</em>', `En attente de la réponse de ${lui}.`];
     const V = c.role === 'vendeur';
+    if (c.validation === 'code') switch (c.etape) {
+      case 'confirmee': case 'preparation': if (V) return ['Préparez la <em>marchandise</em>', 'Quand elle est dans le camion, donnez au chauffeur le code de prise en charge (ci-dessous).']; break;
+      case 'transport': case 'transbordement': if (!V) return ['Votre marchandise est <em>en route</em>', 'À l’arrivée, vérifiez la marchandise, puis donnez au chauffeur le code de réception (ci-dessous).']; break;
+      case 'arrivee': if (!V) return ['Le chauffeur est <em>arrivé</em>', 'Vérifiez la quantité et la qualité, puis donnez-lui le code de réception.']; break;
+    }
     switch (c.etape) {
       case 'confirmee': return V ? ['Préparez la <em>marchandise</em>', 'Touchez « En préparation », puis « Chargement confirmé » quand le camion est chargé.'] : ['Le vendeur prépare votre <em>marchandise</em>', 'Vous serez prévenu au chargement.'];
       case 'preparation': return V ? ['Marchandise en <em>préparation</em>', 'Confirmez le chargement quand le camion est chargé.'] : ['Marchandise en <em>préparation</em>', 'Prochaine étape : le chargement.'];
@@ -207,10 +214,11 @@
     if (c.etat === 'en_cours') {
       if (c.annulation === 'autre') { b('annul-oui', 'Accepter l’annulation', 'p'); b('annul-non', 'Refuser l’annulation'); }
       else {
-        if (c.role === 'vendeur' && c.etape === 'confirmee') { b('preparation', 'En préparation', 'p'); b('chargement', 'Chargement confirmé'); }
-        if (c.role === 'vendeur' && c.etape === 'preparation') b('chargement', 'Chargement confirmé', 'p');
-        if (c.role === 'acheteur' && ['transport', 'transbordement'].includes(c.etape)) { b('arrivee', 'Le chauffeur est arrivé', 'p'); b('reception', 'Réception confirmée'); }
-        if (c.role === 'acheteur' && c.etape === 'arrivee') b('reception', 'Réception confirmée', 'p');
+        const K = c.validation === 'code';
+        if (c.role === 'vendeur' && c.etape === 'confirmee') { b('preparation', 'En préparation', 'p'); if (!K) b('chargement', 'Chargement confirmé'); }
+        if (c.role === 'vendeur' && c.etape === 'preparation' && !K) b('chargement', 'Chargement confirmé', 'p');
+        if (c.role === 'acheteur' && ['transport', 'transbordement'].includes(c.etape)) { b('arrivee', 'Le chauffeur est arrivé', K ? '' : 'p'); if (!K) b('reception', 'Réception confirmée'); }
+        if (c.role === 'acheteur' && c.etape === 'arrivee' && !K) b('reception', 'Réception confirmée', 'p');
         if (['transport', 'transbordement'].includes(c.etape)) b('transbordement', 'Signaler un transbordement', 'm');
         if (['confirmee', 'preparation'].includes(c.etape) && c.annulation !== 'moi') b('annuler', 'Demander l’annulation', 'm');
       }
@@ -245,7 +253,8 @@
       <div class="cm-prog" role="progressbar" aria-label="Avancement de la commande" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(p * 100)}"><div class="cm-pb"><i style="--p:${p.toFixed(3)}"></i></div></div>
       <div class="cm-st" role="status" aria-live="polite"><b>${titre}</b>${sous ? `<small>${esc(sous)}</small>` : ''}<small>Dernière actualisation : ${ilya(der)}</small></div>
       ${actions(c)}
-      ${c.validation === 'declaration' && ['a_confirmer', 'en_cours'].includes(c.etat) ? `<p class="cm-info"><b>Validation sans code.</b> Le vendeur déclare le chargement, l’acheteur l’arrivée et la réception. Je recommande que le chauffeur crée un compte gratuit sur le Marché de Gros : avec les codes (bientôt), personne ne pourra déclarer une livraison à votre place.</p>` : ''}
+      ${c.validation === 'declaration' && ['a_confirmer', 'en_cours'].includes(c.etat) ? `<p class="cm-info"><b>Validation sans code.</b> Le vendeur déclare le chargement, l’acheteur l’arrivée et la réception. Je recommande que le chauffeur crée un compte gratuit sur le Marché de Gros : avec les codes, personne ne peut déclarer une livraison à votre place.</p>` : ''}
+      ${blocCode(c)}
       ${blocTransport(c)}
       <ol class="cm-et">${etapes}</ol>
       <dl class="cm-dl">
@@ -263,10 +272,39 @@
     box.querySelector('[data-x]').onclick = fermer;
     box.querySelector('[data-retour]').onclick = () => { sel = null; vue = 'liste'; peindre(); };
     box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => geste(c, b.dataset.g));
-    lierTransport(c, box);
+    lierTransport(c, box); lierCode(c, box);
     if (arrive && navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {}
   }
   let dernierEcran = '';
+  // ——— les codes : le vendeur voit le code de prise en charge, l'acheteur le code de réception ; le chauffeur les tape ———
+  // Le code n'est gardé qu'en mémoire, le temps de l'écran : jamais dans le téléphone, jamais dans un message.
+  const codesVus = {};
+  function blocCode(c) {
+    if (c.validation !== 'code' || c.etat !== 'en_cours') return '';
+    const pec = c.role === 'vendeur' && ['confirmee', 'preparation'].includes(c.etape), rec = c.role === 'acheteur' && ['transport', 'transbordement', 'arrivee'].includes(c.etape);
+    if (!pec && !rec) return '';
+    const T = transport[c.id], ok = T && T.mission && T.mission.statut === 'acceptee' && T.mission.avec_application;
+    const k = codesVus[c.id + (pec ? ':p' : ':r')], titre = pec ? 'Code de prise en charge' : 'Code de réception';
+    const regle = pec ? 'Donnez-le au chauffeur seulement quand la marchandise est dans son véhicule.' : 'Donnez-le au chauffeur seulement après avoir vérifié la quantité et la qualité.';
+    return `<div class="cm-st" style="background:#FFFDF8;color:#171512;box-shadow:inset 0 0 0 2px #10392B"><b style="color:#10392B">${titre}</b>
+      ${!ok ? '<small style="color:#5E5546">Le code s’affichera quand le chauffeur (avec l’application) aura accepté la mission.</small>'
+        : k ? `<div aria-live="polite" style="margin:10px 0 4px;font:800 40px/1 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:.18em;color:#10392B;font-variant-numeric:tabular-nums">${esc(k.code.slice(0, 3))} ${esc(k.code.slice(3))}</div>
+            <small style="color:#5E5546">Valable jusqu’à ${heure(k.expire_le)}. Un seul usage. ${regle} Dites-le de vive voix : ne l’envoyez pas par message.</small>
+            <div class="cm-act" style="margin:10px 0 0"><button type="button" class="m" data-code-nv>Nouveau code (l’ancien ne marchera plus)</button></div>`
+        : `<small style="color:#5E5546">${regle}</small><div class="cm-act" style="margin:10px 0 0"><button type="button" class="p" data-code-voir>Afficher le code</button></div>`}
+      <p class="cm-err" data-code-err role="alert" style="margin:4px 0 0"></p></div>`;
+  }
+  function lierCode(c, box) {
+    const go = async b => {
+      const et = c.role === 'vendeur' ? 'prise_en_charge' : 'reception', err = box.querySelector('[data-code-err]');
+      b.disabled = true;
+      try { codesVus[c.id + (et === 'prise_en_charge' ? ':p' : ':r')] = await N().rpc('commande_code_obtenir', { p_cmd: c.id, p_etape: et }); await lireJournal(c.id); peindre(); }
+      catch (x) { b.disabled = false; if (err) err.textContent = erreurTxt(x); }
+    };
+    const v = box.querySelector('[data-code-voir]'); if (v) v.onclick = () => go(v);
+    const n = box.querySelector('[data-code-nv]'); if (n) n.onclick = () => { if (confirm('Créer un nouveau code ? L’ancien ne marchera plus.')) go(n); };
+  }
+
   // ——— le transport : qui conduit, sa réponse ; l'acheteur ou le vendeur qui choisit tape le code du chauffeur ———
   function blocTransport(c) {
     const T = transport[c.id]; if (!T || c.etat === 'annulee') return '';
@@ -385,8 +423,8 @@
         <label class="t">Qui transporte la marchandise ?</label>
         ${Object.entries(MODES).map(([k, l], i) => `<label class="cm-opt"><input type="radio" name="mode" value="${k}"${i === 1 ? ' checked' : ''}><span><b>${l}</b><small>${k === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié.' : k === 'acheteur' ? 'L’acheteur envoie son camion ou son transporteur (il tape son code transporteur).' : 'Le vendeur organise la livraison (il tape le code de son transporteur).'}</small></span></label>`).join('')}
         <label class="t">Comment valider le chargement et la réception ?</label>
-        <label class="cm-opt off"><input type="radio" name="val" value="code" disabled><span><b>Avec codes — le chauffeur a l’application</b><small><span class="cm-tag mais">Recommandé · bientôt</span> Des codes à usage unique prouvent la prise en charge et la réception.</small></span></label>
-        <label class="cm-opt"><input type="radio" name="val" value="declaration" checked><span><b>Sans code — nous validons nous-mêmes</b><small>Le vendeur déclare le chargement, l’acheteur l’arrivée et la réception.</small></span></label>
+        <label class="cm-opt"><input type="radio" name="val" value="code" checked><span><b>Avec codes — le chauffeur a l’application</b><small><span class="cm-tag mais">Recommandé</span> Le chauffeur tape le code du vendeur au chargement, puis celui de l’acheteur à la réception. Personne ne peut valider à votre place.</small></span></label>
+        <label class="cm-opt"><input type="radio" name="val" value="declaration"><span><b>Sans code — nous validons nous-mêmes</b><small>Pour un chauffeur sans l’application : le vendeur déclare le chargement, l’acheteur l’arrivée et la réception.</small></span></label>
         <p class="cm-info">Je recommande que le chauffeur crée un compte gratuit sur le Marché de Gros : avec les codes, personne ne pourra déclarer une livraison à votre place.</p>
         <label class="t" for="cmLv">Lieu de livraison <small style="font-weight:400;color:#5E5546">(facultatif)</small></label>
         <input type="text" id="cmLv" maxlength="120" placeholder="Ville, quartier, marché…" autocomplete="off">
@@ -398,12 +436,12 @@
     const f = box.querySelector('form'), err = f.querySelector('.cm-err');
     f.onsubmit = async e => {
       e.preventDefault();
-      const mode = (f.querySelector('[name=mode]:checked') || {}).value, lieu = f.querySelector('#cmLv').value.trim();
+      const mode = (f.querySelector('[name=mode]:checked') || {}).value, lieu = f.querySelector('#cmLv').value.trim(), val = (f.querySelector('[name=val]:checked') || {}).value || 'declaration';
       if (!mode) { err.textContent = 'Choisissez qui transporte.'; return; }
       if (lieu && N().texteRefus) { const r = N().texteRefus(lieu); if (r) { err.textContent = r; return; } }
       const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = '';
       try {
-        const id = await N().rpc('commande_creer', { p_nego: n.id, p_mode: mode, p_lieu: lieu || null, p_validation: 'declaration' });
+        const id = await N().rpc('commande_creer', { p_nego: n.id, p_mode: mode, p_lieu: lieu || null, p_validation: val });
         toast('Commande envoyée', { type: 'ok', sous: 'Elle démarre dès que l’autre partie la confirme.' });
         await lireListe(); await lireJournal(id); sel = id; vue = 'detail'; peindre();
       } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }

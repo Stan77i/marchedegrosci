@@ -268,6 +268,7 @@
       <div class="cm-prog" role="progressbar" aria-label="Avancement de la commande" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(p * 100)}"><div class="cm-pb"><i style="--p:${p.toFixed(3)}"></i></div></div>
       <div class="cm-st" role="status" aria-live="polite"><b>${titre}</b>${sous ? `<small>${esc(sous)}</small>` : ''}<small>Dernière actualisation : ${ilya(der)}</small></div>
       ${actions(c)}
+      ${c.etat === 'terminee' && c.role === 'acheteur' && window.MDGRacheter ? `<div class="cm-act"><button type="button" class="p" data-racheter>Racheter · prix du jour</button></div>` : ''}
       ${blocAvis(c)}
       ${c.validation === 'declaration' && ['a_confirmer', 'en_cours'].includes(c.etat) ? `<p class="cm-info"><b>Validation sans code.</b> Le vendeur déclare le chargement, l’acheteur l’arrivée et la réception. Je recommande que le chauffeur crée un compte gratuit sur le Marché de Gros : avec les codes, personne ne peut déclarer une livraison à votre place.</p>` : ''}
       ${blocCode(c)}
@@ -288,6 +289,7 @@
     box.querySelector('[data-x]').onclick = fermer;
     box.querySelector('[data-retour]').onclick = () => { oublierCarte(); sel = null; vue = 'liste'; peindre(); };
     box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => geste(c, b.dataset.g));
+    const rb = box.querySelector('[data-racheter]'); if (rb) rb.onclick = () => { fermer(); MDGRacheter.ouvrir(c.id); };
     lierTransport(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box);
     if (arrive) { if (navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {} toast('Le chauffeur est arrivé', { type: 'ok', sous: c.role === 'acheteur' ? 'Vérifiez la marchandise avant de confirmer.' : esc(c.produit || '') }); }
   }

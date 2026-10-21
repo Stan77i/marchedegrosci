@@ -347,3 +347,17 @@ Lui proposer de coller ceci :
 - `.qd` : le texte passe à la ligne, équilibré (`text-wrap: balance`). Un mot trop long se coupe plutôt que de sortir du tampon.
 - Dans la liste de la carte, très étroite, le tampon est un peu plus serré (10,5 px).
 - Vérifié à 320, 360 et 414 px, de jour et de nuit, sur la carte, le catalogue et la fiche : aucun débordement.
+
+**Notifications vérifiées et complétées** (schéma 41, 21/10)
+- Vérifié en direct :
+  - la base joint bien la fonction « pousser » (clé du coffre acceptée, réponse 200) ;
+  - la version en ligne est celle du code.
+- Approvisionnement : chaque produit d'un besoin devient une demande, qui prévient ceux qui suivent le produit (cas 5). Les réponses des vendeurs passent par la négociation (cas 1).
+  - **Ajout (5 bis)** : les vendeurs qui ont une offre active de ce produit sont prévenus aussi (« Un professionnel cherche : … »).
+- Achats groupés, **ajouts** :
+  - « ouvert » : le créateur est prévenu, ainsi que ceux qui suivent le produit (ils peuvent rejoindre). Envoyé seulement à l'ouverture, pas quand on redescend sous le seuil.
+  - « un acheteur a rejoint » : le créateur et le vendeur sont prévenus (une notification qui se remplace).
+- Fonction « pousser » déployée en **version 10**. `push_groupe` réécrite ; le déclencheur des participants couvre aussi l'insertion.
+- Constat sur les données (pas un défaut) :
+  - 1 seul compte a activé les notifications sur son téléphone (2 appareils) ;
+  - 0 alerte produit : tant que personne ne suit de produit, les nouvelles annonces ne préviennent personne.

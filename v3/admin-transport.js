@@ -27,6 +27,7 @@
 .at-f label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute)}
 .at-f input,.at-f select,.at-sel{min-height:42px;padding:0 12px;border:1px solid var(--line2);border-radius:12px;background:var(--champ);color:var(--ink)}
 .at-j{grid-column:1 / -1;margin:6px 0 0;padding:10px 14px;border-radius:14px;background:var(--champ);font-size:13px;list-style:none}
+.at-ks{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}.at-k{padding:14px 16px;border-radius:18px;background:var(--panel)}.at-k b{display:block;font-size:20px;font-weight:800;margin:2px 0}.at-k small{display:block;color:var(--mute);font-size:12.5px}
 .at-j li{padding:4px 0;border-top:1px solid var(--line)}.at-j li:first-child{border-top:0}
 .at-vide{padding:26px 20px;color:var(--mute)}.at-vide b{display:block;color:var(--ink);margin-bottom:4px}
 @media (max-width:760px){.at-r{grid-template-columns:minmax(0,1fr)}.at-a{justify-content:flex-start}}`;
@@ -133,6 +134,28 @@
         if (D.ouverts[id]) { delete D.ouverts[id]; return H.repeindre(); }
         try { D.ouverts[id] = (await H.rpc('commande_journal', { p_id: id })) || []; H.repeindre(); } catch (e) { H.toast('Lecture impossible : ' + e.message); }
       });
+    }
+  };
+
+  // ——— Commissions (schéma 30) : registre calculé par le serveur. Rien n'est encaissé. ———
+  const KST = { prevue: ['Prévue', 'a'], due: ['Due', 'v'], suspendue: ['Suspendue (litige)', 'r'], annulee: ['Annulée', ''] };
+  D.com = null; D.comOuv = {};
+  EXT.commissions = {
+    titre: 'Commissions', ico: 'prix',
+    charger: async H => { D.com = await H.rpc('admin_commissions'); },
+    vue(H) {
+      const e = H.esc, c = D.com || { totaux: {}, lignes: [] }, t = k => (c.totaux && c.totaux[k]) || { n: 0, ventes: 0, commission: 0 };
+      const tuile = (k) => { const x = t(k); return `<div class="at-k"><small>${KST[k][0]}</small><b>${H.fmt(x.commission || 0)} F</b><small>${x.n || 0} commande${x.n > 1 ? 's' : ''} · ventes ${H.fmt(x.ventes || 0)} F</small></div>`; };
+      const ligne = k => `<div class="at-r"><div><b>${e(k.produit || 'Commande')} · ${e(k.numero)}</b><small>${e(k.vendeur || 'Membre')} · ${new Date(k.updated_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</small></div>
+          <div><b>${H.fmt(k.commission)} F</b><small>3,5 % de ${H.fmt(k.montant_vente)} F</small></div>
+          <div class="at-a"><span class="at-t ${KST[k.statut][1]}">${KST[k.statut][0]}</span><button class="btn sm ghost" data-kj="${k.id}" aria-expanded="${!!D.comOuv[k.id]}">Journal</button></div>
+          ${D.comOuv[k.id] ? `<ul class="at-j">${(k.journal || []).map(j => `<li><b>${e(KST[j.statut] ? KST[j.statut][0] : j.statut)}</b> · ${H.fmt(j.commission)} F · ${e(j.motif)} · ${new Date(j.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</li>`).join('')}</ul>` : ''}</div>`;
+      return H.top('Commissions', 'Registre de la commission de 3,5 % sur les ventes de marchandises, calculée par le serveur. Aucun paiement n’existe encore : « due » veut dire « à percevoir plus tard », rien n’a été encaissé.', '') + `
+        <section class="sec"><div class="at-ks">${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div></section>
+        <section class="sec"><div class="at-l">${(c.lignes || []).length ? c.lignes.map(ligne).join('') : '<div class="at-vide"><b>Aucune commission</b>Elles s’inscrivent seules à chaque commande.</div>'}</div></section>`;
+    },
+    lier(root, H) {
+      root.querySelectorAll('[data-kj]').forEach(b => b.onclick = () => { const id = b.dataset.kj; if (D.comOuv[id]) delete D.comOuv[id]; else D.comOuv[id] = 1; H.repeindre(); });
     }
   };
 })();

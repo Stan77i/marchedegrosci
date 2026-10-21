@@ -270,7 +270,7 @@
         <dt>Quantité</dt><dd>${c.quantite != null ? qte(c.quantite, c.unite) : '—'}</dd>
         <dt>Prix convenu</dt><dd>${c.prix_unitaire != null ? F(c.prix_unitaire) + ' / ' + esc(c.unite || 'unité') : '—'}</dd>
         <dt>Total</dt><dd>${c.montant != null ? F(c.montant) : '—'}</dd>
-        ${c.role === 'vendeur' && c.commission_montant != null ? `<dt>Commission prévue (3,5 %)</dt><dd>${F(c.commission_montant)}<br><small style="font-weight:400;color:#5E5546">non prélevée pour l’instant</small></dd>` : ''}
+        ${c.role === 'vendeur' && c.commission_montant != null ? `<dt>${c.etat === 'annulee' ? 'Commission (3,5 %) annulée' : c.etat === 'litige' ? 'Commission (3,5 %) suspendue' : c.etat === 'terminee' ? 'Commission due (3,5 %)' : 'Commission prévue (3,5 %)'}</dt><dd>${c.etat === 'annulee' ? '0 F' : F(c.commission_montant)}<br><small style="font-weight:400;color:#5E5546">${c.etat === 'annulee' ? 'commande annulée : rien n’est dû' : 'rien n’est prélevé : pas de paiement dans l’application'}</small></dd>` : ''}
         <dt>Transport</dt><dd>${esc(MODES[c.mode_transport] || '—')}</dd>
         <dt>Départ</dt><dd>${esc(c.ville_depart || '—')}</dd>
         <dt>Livraison</dt><dd>${esc(c.lieu_livraison || 'À convenir')}</dd>

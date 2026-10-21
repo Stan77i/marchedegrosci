@@ -158,4 +158,37 @@
       root.querySelectorAll('[data-kj]').forEach(b => b.onclick = () => { const id = b.dataset.kj; if (D.comOuv[id]) delete D.comOuv[id]; else D.comOuv[id] = 1; H.repeindre(); });
     }
   };
+
+  // ——— Structures (schéma 39) : badge « Coopérative / Marché vérifié ». Document officiel + identité vérifiée du responsable. ———
+  const SST = { en_attente: ['À examiner', 'a'], verifiee: ['Vérifiée', 'v'], refusee: ['Refusée', 'r'], retiree: ['Retirée par le membre', ''] };
+  const STYPE = { cooperative: 'Coopérative', marche: 'Marché' };
+  D.st = []; D.stImg = {};
+  EXT.structures = {
+    titre: 'Structures', ico: 'verifie',
+    n: () => D.st.filter(x => x.statut === 'en_attente').length,
+    charger: async H => { D.st = (await H.rpc('admin_structures')) || []; },
+    vue(H) {
+      const e = H.esc, att = D.st.filter(x => x.statut === 'en_attente'), autres = D.st.filter(x => x.statut !== 'en_attente');
+      const ligne = x => `<div class="at-r"><div><b>${e(STYPE[x.type] || x.type)} · ${e(x.nom)}</b><small>Responsable : ${e(x.responsable)} · ${e(x.fonction)}</small>
+          <small>Envoyé le ${new Date(x.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}${x.motif ? ' · motif : ' + e(x.motif) : ''}</small></div>
+        <div>${x.identite_ok ? tag('Identité vérifiée', 'v') : tag('Identité plus valide', 'r')} ${x.profil_change ? tag('Profil changé depuis', 'r') : ''}</div>
+        <div class="at-a">${tag(SST[x.statut][0], SST[x.statut][1])}${x.statut === 'en_attente' ? `<button class="btn sm ghost" data-sdoc="${x.id}" aria-expanded="${!!D.stImg[x.id]}">Document (${(x.documents || []).length})</button><button class="btn sm" data-sdec="${x.id}" data-d="verifiee"${x.identite_ok && !x.profil_change ? '' : ' disabled'}>Valider</button><button class="btn sm ghost" data-sdec="${x.id}" data-d="refusee">Refuser</button>` : ''}</div>
+        ${D.stImg[x.id] ? `<div class="at-j" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">${D.stImg[x.id].map((u, i) => u ? `<a href="${e(u)}" target="_blank" rel="noopener"><img src="${e(u)}" alt="Document page ${i + 1}" style="width:100%;border-radius:10px;display:block"></a>` : '<span>Image introuvable</span>').join('')}</div>` : ''}</div>`;
+      return H.top('Structures', 'Badge « Coopérative vérifiée » ou « Marché vérifié ». Comparez le document officiel avec le nom de la structure, et la fonction avec le responsable dont l’identité est déjà vérifiée. Vérifiée ne veut pas dire fiable.', '') + `
+        <section class="sec"><div class="at-l">${att.length ? att.map(ligne).join('') : '<div class="at-vide"><b>Aucun dossier à examiner</b>Les coopératives et les marchés envoient leur dossier depuis leur profil.</div>'}</div></section>
+        ${autres.length ? `<section class="sec"><div class="sec-h"><h2>Décisions des 90 derniers jours</h2></div><div class="at-l">${autres.map(ligne).join('')}</div></section>` : ''}`;
+    },
+    lier(root, H) {
+      root.querySelectorAll('[data-sdoc]').forEach(b => b.onclick = async () => { const id = b.dataset.sdoc;
+        if (D.stImg[id]) { delete D.stImg[id]; H.repeindre(); return; }
+        const x = D.st.find(y => y.id === id); b.disabled = true;
+        D.stImg[id] = await Promise.all((x.documents || []).map(c => window.MDGNuage.lienSigne('preuves', c, 300).catch(() => null))); H.repeindre(); });
+      root.querySelectorAll('[data-sdec]').forEach(b => b.onclick = async () => { const d = b.dataset.d; let motif = null;
+        if (d === 'refusee') { motif = prompt('Motif du refus (le membre le lira) :'); if (!motif || !motif.trim()) return; }
+        else if (!confirm('Valider cette structure ? Le badge apparaîtra sur son profil et ses annonces.')) return;
+        b.disabled = true;
+        try { await H.rpc('admin_structure_decider', { p_id: b.dataset.sdec, p_decision: d, p_motif: motif }); H.toast(d === 'verifiee' ? 'Structure vérifiée.' : 'Dossier refusé.'); await H.relire(); }
+        catch (x) { b.disabled = false; H.toast('Impossible : ' + x.message); } });
+    }
+  };
 })();

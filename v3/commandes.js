@@ -109,6 +109,7 @@
 .cm-ck{display:flex;gap:10px;align-items:center;min-height:44px;margin:10px 0 0;font-size:14px}.cm-ck input{width:20px;height:20px;accent-color:#10392B}
 .cm-err{color:#8A2414;font-size:13.5px;margin:8px 0 0;min-height:1em}
 .cm-note{margin:12px 2px 0;font-size:12.5px;color:#5E5546}
+.cm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.cm-bg,.cm,.cm-camion,.cm-pb i,.cm-scene *{animation:none!important;transition:none!important}}`;
   function css() { if (document.getElementById('cmCss')) return; const s = document.createElement('style'); s.id = 'cmCss'; s.textContent = CSS; document.head.appendChild(s); }
 
@@ -253,10 +254,8 @@
     box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
       <h2>${esc(c.produit || 'Commande')}</h2>
       <p class="cm-sous">${c.role === 'vendeur' ? 'Vente à' : 'Achat chez'} ${esc(c.partenaire_nom)} · n° ${esc(c.numero)}</p>
-      ${scene(c, arrive)}
-      ${enRoute(c) && window.MDGSuivi ? `<h3 class="cm-h3" style="margin-top:4px">Suivi du camion</h3><div data-carte></div>
-        <p class="cm-note" data-suivi-t style="margin-top:0" aria-live="polite">${esc(MDGSuivi.texte(pos[c.id]).t)}</p>
-        <p class="cm-note" data-legende style="margin-top:2px">${esc(carte && carte.cmd === c.id && carte.api ? carte.api.legende : '')}</p>` : ''}
+      ${enRoute(c) && window.MDGSuivi ? `<div data-carte></div>
+        <p class="cm-sr" aria-live="polite">${esc(MDGSuivi.texte(pos[c.id]).t)}</p>` : scene(c, arrive)}
       <div class="cm-prog" role="progressbar" aria-label="Avancement de la commande" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(p * 100)}"><div class="cm-pb"><i style="--p:${p.toFixed(3)}"></i></div></div>
       <div class="cm-st" role="status" aria-live="polite"><b>${titre}</b>${sous ? `<small>${esc(sous)}</small>` : ''}<small>Dernière actualisation : ${ilya(der)}</small></div>
       ${actions(c)}
@@ -294,8 +293,6 @@
     MDGSuivi.monter(el, c).then(api => {
       if (carte !== k) { api.detruire(); return; }
       k.api = api; api.maj(pos[c.id]);
-      api.onLegende = t => { const l = bg && bg.querySelector('[data-legende]'); if (l) l.textContent = t; };
-      if (api.legende) api.onLegende(api.legende);
     });
   }
 

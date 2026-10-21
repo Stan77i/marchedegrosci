@@ -50,6 +50,8 @@
 .il-a{flex:none;height:36px;padding:0 15px;border:0;border-radius:18px;background:#F2C230;color:#10392B;font:600 14px/1 Jost,system-ui,sans-serif;cursor:pointer}
 .il-a:active{transform:scale(.96)}
 .il-a:focus-visible,.il:focus-visible{outline:2px solid #10392B;outline-offset:2px}
+html[data-theme=sombre] .il{background:rgba(30,27,22,.95);color:#F3EFE4;box-shadow:0 14px 36px rgba(0,0,0,.45),0 0 0 1px rgba(243,239,228,.08) inset}
+html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme=sombre] .il-x small{color:#B9AD98}html[data-theme=sombre] .il-pt{box-shadow:0 0 0 2.5px #1E1B16}
 @media (prefers-reduced-motion:reduce){.il,.il.part{transition:opacity .2s;transform:translate(-50%,0)}.il-in.chg{animation:none}.il-pt{animation:none!important}}`;
   let il = null, cur = null, minuterie = 0, reste = 0, depuis = 0, file = [], affiche = 0, enPause = false;
   function preparer() {

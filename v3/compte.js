@@ -576,7 +576,7 @@ label.cp-r{cursor:pointer}
     const P = window.MDGPousse; if (!el) return;
     const st = P ? await P.etat() : 'impossible';
     const T = {
-      actif: ['Activées sur ce téléphone', 'Une réponse à votre prix, un accord, un refus : vous êtes prévenu tout de suite, même application fermée.', '<button type="button" class="cp-alt" data-pe>Envoyer un essai</button><button type="button" class="cp-alt" data-pd>Désactiver</button>', 'offre'],
+      actif: ['Activées sur ce téléphone', 'Une réponse à votre prix, un accord, un refus : vous êtes prévenu tout de suite, même application fermée.', '<button type="button" class="cp-alt" data-pd>Désactiver</button>', 'offre'],
       inactif: ['Être prévenu même application fermée', 'Dès qu’on répond à votre prix, votre téléphone vous le dit, avec le nombre de réponses sur l’icône.', '<button type="button" class="cp-go plein" data-pa>Activer les notifications</button>', 'demande'],
       refuse: ['Bloquées sur ce téléphone', 'Réglages du téléphone → Notifications → Marché de Gros → Autoriser, puis revenez ici.', '', 'bad'],
       installer: ['Sur iPhone : ajoutez d’abord l’application', 'Touchez Partager, puis « Sur l’écran d’accueil ». Ouvrez-la depuis l’icône et activez ici.', '', 'demande'],
@@ -665,15 +665,8 @@ label.cp-r{cursor:pointer}
         </section>
         <div class="cp-body">
           ${idBandeau}
-          <div class="cp-stats">
-            <button type="button" class="cp-st" data-go="activite" aria-label="${off.length} offre${off.length > 1 ? 's' : ''} : voir mon activité"><i></i><b>${off.length}</b><small>offre${off.length > 1 ? 's' : ''} en ligne</small></button>
-            <button type="button" class="cp-st" data-go="activite" aria-label="${dem.length} demande${dem.length > 1 ? 's' : ''} : voir mon activité"><i class="d"></i><b>${dem.length}</b><small>demande${dem.length > 1 ? 's' : ''}</small></button>
-            <button type="button" class="cp-st" data-go="activite" aria-label="${ng.env.length + ng.rec.length} négociation${ng.env.length + ng.rec.length > 1 ? 's' : ''} en cours : voir mon activité"><i class="n"></i><b>${ng.env.length + ng.rec.length}</b><small>en négociation</small></button>
-          </div>
           ${off0 ? '' : repBtn}
           ${stBloc}
-          <div class="cp-sh"><h3>Votre activité</h3><button type="button" data-go="activite">Tout afficher</button></div>
-          ${fil || '<div class="cp-feed"><p class="cp-vide"><b>Rien pour l’instant</b>Vos annonces, propositions et accords s’afficheront ici, jour par jour.</p></div>'}
           <div class="cp-sh"><h3>Votre compte</h3><small>${esc(N().fmtTel(u.tel))}</small></div>
           <div class="cp-grp">
             ${off0 ? '' : ligne({ ico: mono('compte'), t: 'Profil et avatar', s: nom ? '' : 'Prénom, rôle, lieu', attrs: 'data-go="profil"' })}

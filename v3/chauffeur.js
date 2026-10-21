@@ -92,6 +92,9 @@
     if (m.mission === 'proposee') B.push(`<button type="button" class="p" data-acc="${m.mission_id}">Accepter la mission</button>`, `<button type="button" data-ref="${m.mission_id}">Refuser</button>`);
     const K = m.validation === 'code', go = m.mission === 'acceptee' && m.etat === 'en_cours';
     if (go && K && ['confirmee', 'preparation'].includes(m.etape)) B.push(`<button type="button" class="p" data-tap="${m.commande_id}" data-quoi="prise">Taper le code de prise en charge</button>`);
+    if (go && ['transport', 'transbordement', 'arrivee'].includes(m.etape))
+      B.push(partage && partage.cmd === m.commande_id ? `<button type="button" data-gps-stop>${IC('localiser', 18)} Arrêter le partage de position</button>`
+        : `<button type="button" class="p" data-gps="${m.commande_id}">${IC('localiser', 18)} Partager ma position</button>`);
     if (go && ['transport', 'transbordement'].includes(m.etape))
       B.push(`<button type="button" class="${K ? '' : 'p'}" data-arr="${m.commande_id}">Je suis arrivé</button>`);
     if (go && K && ['transport', 'transbordement', 'arrivee'].includes(m.etape)) B.push(`<button type="button" class="p" data-tap="${m.commande_id}" data-quoi="reception">Taper le code de réception</button>`);
@@ -136,6 +139,8 @@
     box.querySelectorAll('[data-trb]').forEach(b => b.onclick = () => etape(b.dataset.trb, 'transbordement'));
     box.querySelectorAll('[data-tap]').forEach(b => b.onclick = () => taper(b.dataset.tap, b.dataset.quoi));
     box.querySelectorAll('[data-pas]').forEach(b => b.onclick = () => passer(b.dataset.pas));
+    box.querySelectorAll('[data-gps]').forEach(b => b.onclick = () => partager(b.dataset.gps));
+    box.querySelectorAll('[data-gps-stop]').forEach(b => b.onclick = () => { arreterPartage('Partage arrêté.'); peindre(); });
   }
   async function repondre(id, oui, b) {
     if (!oui && !confirm('Refuser cette mission ? L’acheteur et le vendeur seront prévenus.')) return;
@@ -143,6 +148,60 @@
     try { await N().rpc('chauffeur_repondre', { p_mission: id, p_oui: oui }); toast(oui ? 'Mission acceptée' : 'Mission refusée', { type: oui ? 'ok' : 'info', sous: oui ? 'L’acheteur et le vendeur sont prévenus.' : '' }); await lire(); peindre(); }
     catch (x) { b.disabled = false; toast(erreurTxt(x), { type: 'erreur' }); }
   }
+  // ——— partager sa position pendant le transport ———
+  // Seulement application ouverte (une page web ne peut pas envoyer sa position écran éteint) : l'écran reste allumé
+  // si le téléphone le permet (Wake Lock). Une position toutes les 30 s, ou plus tôt après 150 m (jamais moins de 15 s).
+  // Le serveur arrête de lui-même quand la marchandise n'est plus en route. Une pastille rappelle que le partage est actif.
+  let partage = null;
+  const dist = (a, b) => { const r = Math.PI / 180, x = Math.sin((b[0] - a[0]) * r / 2) ** 2 + Math.cos(a[0] * r) * Math.cos(b[0] * r) * Math.sin((b[1] - a[1]) * r / 2) ** 2; return 2 * 6371000 * Math.asin(Math.sqrt(x)); };
+  async function eveil() { if (!partage || !('wakeLock' in navigator) || document.hidden) return; try { partage.wake = await navigator.wakeLock.request('screen'); } catch (_) { partage.wake = null; } }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { eveil(); pastille(); } });
+  function pastille() {
+    let el = document.getElementById('chPast');
+    if (!partage) { if (el) el.remove(); return; }
+    if (!el) {
+      el = document.createElement('div'); el.id = 'chPast'; el.setAttribute('role', 'status');
+      el.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:2147482000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);padding:8px 8px 8px 14px;border-radius:24px;background:#10392B;color:#F3EFE4;font:500 13.5px Jost,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3)';
+      document.body.appendChild(el);
+    }
+    const age = partage.envoye ? Math.round((Date.now() - partage.envoye) / 1000) : null;
+    el.innerHTML = `<span aria-hidden="true" style="width:10px;height:10px;border-radius:50%;background:${partage.erreur ? '#E5604F' : '#6CC58C'};flex:none"></span>
+      <span>${partage.erreur ? esc(partage.erreur) : age == null ? 'Partage de position : recherche du GPS…' : 'Position partagée · envoyée il y a ' + (age < 60 ? age + ' s' : Math.round(age / 60) + ' min')}</span>
+      <button type="button" style="min-height:36px;padding:0 12px;border:0;border-radius:18px;background:#F3EFE4;color:#10392B;font:600 13px Jost,sans-serif;cursor:pointer">Arrêter</button>`;
+    el.querySelector('button').onclick = () => { arreterPartage('Partage arrêté.'); if (bg) peindre(); };
+  }
+  function arreterPartage(msg) {
+    if (!partage) return;
+    try { navigator.geolocation.clearWatch(partage.watch); } catch (_) {}
+    try { partage.wake && partage.wake.release(); } catch (_) {}
+    clearInterval(partage.tic); partage = null; pastille();
+    if (msg) toast(msg, { type: 'info' });
+  }
+  function partager(cmd) {
+    if (!navigator.geolocation) return toast('Ce téléphone ne donne pas sa position : le suivi se fera par étapes.', { type: 'alerte' });
+    arreterPartage();
+    partage = { cmd, watch: null, wake: null, envoye: 0, der: null, enCours: false, erreur: '', tic: setInterval(pastille, 5000) };
+    partage.watch = navigator.geolocation.watchPosition(async p => {
+      const k = partage; if (!k || k.enCours) return;
+      const ici = [p.coords.latitude, p.coords.longitude], t = Date.now();
+      if (k.envoye && t - k.envoye < 15000) return;
+      if (k.envoye && t - k.envoye < 30000 && k.der && dist(k.der, ici) < 150) return;
+      k.enCours = true;
+      try {
+        const r = await N().rpc('chauffeur_position', { p_cmd: cmd, p_lat: ici[0], p_lon: ici[1], p_precision: p.coords.accuracy ? Math.round(p.coords.accuracy) : null });
+        if (r && r.arreter) { arreterPartage(r.message || 'Partage arrêté.'); if (bg) { await lire(); peindre(); } return; }
+        if (r && r.ok) { k.envoye = t; k.der = ici; k.erreur = ''; }
+      } catch (e) { k.erreur = navigator.onLine === false ? 'Pas de réseau : la position partira au retour du réseau' : 'Envoi impossible, nouvel essai bientôt'; }
+      k.enCours = false; pastille();
+    }, e => {
+      if (e.code === 1) { arreterPartage(); toast('Position refusée', { type: 'alerte', sous: 'Le suivi se fera par étapes. Vous pouvez l’autoriser dans les réglages du téléphone.' }); if (bg) peindre(); }
+      else if (partage) { partage.erreur = 'GPS indisponible pour l’instant'; pastille(); }
+    }, { enableHighAccuracy: true, maximumAge: 10000, timeout: 30000 });
+    eveil(); pastille();
+    toast('Partage de position activé', { type: 'ok', sous: 'Gardez l’application ouverte et l’écran allumé : téléphone verrouillé, la position ne part plus. La batterie se vide plus vite.' });
+    if (bg) peindre();
+  }
+
   // ——— taper un code (prise en charge, réception, transfert) : le serveur dit s'il est bon et combien d'essais restent ———
   function taper(cmd, quoi) {
     const box = bg.querySelector('.cm');

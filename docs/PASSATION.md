@@ -170,6 +170,19 @@
   - suivi du dossier dans Profil → Votre structure.
 - Pas de notification push à la décision (le membre voit la réponse dans son profil). À ajouter plus tard si utile (cas `pousser`).
 
+**Exigences détaillées d'un besoin pro** (schéma 40, demandé le 21/10/2026 : « plus profond », tonnes ou litres)
+- Colonne `besoins.detail` (jsonb), nettoyée par `_besoin_detail` : clé inconnue ou valeur hors liste → refus. `besoin_creer3` = `besoin_creer2` + détail ; `besoin_public` renvoie `detail`.
+- Contenu (tout facultatif) :
+  - volume : capacité minimale du vendeur (kg, tonnes, litres ou sacs, par semaine ou par mois), écart de quantité ± % ;
+  - qualité : choix, calibre, maturité, humidité maximale, récolte en jours, région d'origine ;
+  - conditionnement : sacs de 25, 50 ou 100 kg, bidons de 5 ou 20 L, fût de 200 L… ;
+  - livraison : jours et heure ;
+  - délai de paiement souhaité (information seulement, aucun paiement dans l'app) ;
+  - 8 garanties à cocher (sans moisissure, contenant scellé, reprise du non-conforme…).
+- `appro.js` : 5 groupes repliables + 8 cases rapides (les 4 cases du schéma 38 qui font doublon ne sont plus proposées, mais restent affichées sur les anciens besoins). Affichage en phrases avec coche verte.
+- « litre » ajouté aux unités de l'app (Vendre, Je cherche, J'ai) : `A.UNITS` dans `app/marche-app.js`.
+- Pour ajouter une valeur : la mettre dans `_besoin_detail` (serveur) et dans `DET`/`PLUS` (appro.js).
+
 ## 5. En attente d'une décision du propriétaire
 
 

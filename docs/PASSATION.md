@@ -319,3 +319,16 @@
 
 Lui proposer de coller ceci :
 > « Lis `docs/PASSATION.md` du dépôt Stan77i/marchedegrosci, puis `PORTAGE-SITE.md` si on touche au site. On travaille sur l'application. Charge le skill xias-design pour tout ce qui est design. »
+
+**Images : poissons, volailles, œufs** (lot reçu le 21/10, 31 photos détourées)
+- `tools/images/poissons-volailles.py` associe chaque photo à un produit existant, d'après l'image elle-même : les noms de fichiers sont en anglais et parfois vagues (« Gray crate filled with fish »).
+- Mise en forme comme `tools/images/produits.py` : carré 800 × 800, image posée en bas, WebP, teinte de vignette dans `A.SACK`.
+- 19 produits ont leur image :
+  - poissons : tilapia, capitaine, silure, poisson fumé, poisson séché, sardine, maquereau, chinchard, thon, bar, crevette ;
+  - volailles : poulet de chair, poulet fermier, pintade, canard, dinde ;
+  - œufs : de poule (alvéole), de pintade, de caille.
+- Chinchard : la photo est intitulée « maquereau ». C'est le poisson le plus proche.
+- 12 photos non utilisées, faute de produit au catalogue ou parce que ce sont des doublons : carpe, crabes, machoiron de mer, 2e capitaine, daurade, sole, langoustes, peau de bœuf (kpanman), tripes, 2 caisses de crevettes, silure fumé.
+  - On peut ajouter crabe, langouste, sole, kpanman… si le propriétaire le veut.
+- Restent sans photo : poisson / poulet / crevettes surgelés, pigeon, poule pondeuse réformée, œufs de poule fermière.
+

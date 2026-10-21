@@ -142,9 +142,14 @@
 - Bouton « Acheter à plusieurs » sur les cartes d'offres ; « Achats groupés » dans Mon compte ; lien `#/?groupe=…`.
 - Piège : l'identifiant de style `grCss` est déjà pris par `app/garanties.js` (d'où `grpCss`).
 
+**Racheter sur la même annonce** (schéma 36, accord du propriétaire le 21/10/2026)
+- La contrainte `negociations_cible_cible_id_auteur_id_key` (une négociation par acheteur et par annonce, pour toujours) est remplacée par l'index unique partiel `negociations_une_ouverte` : **une seule négociation ouverte à la fois**. Après un accord, on peut racheter ; l'historique reste entier.
+- `nego_ouvrir` (avec `#variable_conflict use_column` : ses paramètres portent le nom des colonnes), `recommande_preparer`, `besoin_public` adaptés ; `negoce.js` ne rouvre que la négociation ouverte.
+- Le bouton « Noter » de la conversation est retiré (l'avis se donne depuis la commande terminée).
+- Retour arrière possible tant qu'aucun acheteur n'a deux négociations sur la même annonce (commande dans `supabase/schema-36-rachat-meme-annonce.sql`).
+
 ## 5. En attente d'une décision du propriétaire
 
-0. **Racheter sur la même annonce** : la contrainte `negociations_cible_cible_id_auteur_id_key` limite un acheteur à UNE négociation par annonce pour toujours. Proposition : la remplacer par un index unique partiel (une seule négociation *ouverte* par acheteur et par annonce). Demande un `drop constraint` : attend l'accord du propriétaire.
 
 1. **Zoom** : autoriser le zoom à deux doigts partout sauf sur la carte ? (seule alerte d'accessibilité critique restante, WCAG 1.4.4)
 2. **« Je cherche » coupé sur les très petits écrans (280 px)** : raccourcir en « Cherche » sur ces écrans seulement ?

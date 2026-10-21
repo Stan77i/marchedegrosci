@@ -114,7 +114,7 @@
     const carte = o => {
       const q = qDefaut(c.quantite, o.dispo), titreG = o.genre === 'meme_offre' ? 'Même annonce' : o.genre === 'meme_vendeur' ? 'Même vendeur, autre annonce' : 'Autre vendeur';
       let bas;
-      if (o.bloquee) bas = '<p class="rc-note">Vous avez déjà acheté sur cette annonce : pour un nouvel achat, le vendeur doit publier une nouvelle offre (limite actuelle du système).</p>';
+      if (o.bloquee) bas = '<p class="rc-note">Cette annonce n’accepte pas de nouvelle proposition pour l’instant.</p>';
       else if (o.ouverte_id) bas = `<p class="rc-note">Une négociation est déjà ouverte sur cette annonce.</p><button class="rc-b s" data-nego="${o.ouverte_id}">Ouvrir la négociation</button>`;
       else bas = `<div class="rc-q"><label for="q-${pid(o)}">Quantité (${esc(o.unite)}) · reste ${nf(o.dispo)}</label>${stepper(pid(o), q, o.dispo).replace('data-q=', `id="q-${pid(o)}" data-q=`)}<span class="rc-tot" data-tot="${pid(o)}">${o.prix != null ? F(q * o.prix) : ''}</span></div>
         ${conf === o.id ? `<div class="rc-conf" role="group" aria-label="Confirmer"><b>Envoyer cette proposition à ${esc(o.vendeur)} ?</b><br>${nf(lireQ(box, pid(o)) || q)} ${esc(o.unite)} à ${F(o.prix)} = <b>${F((lireQ(box, pid(o)) || q) * o.prix)}</b>. Rien n’est payé : le vendeur doit accepter, puis vous créez la commande ensemble.

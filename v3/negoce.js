@@ -375,7 +375,7 @@
     if (!N()) return;
     if (!a || !a.id) return N().toast('Cette annonce n’est que sur cet appareil : la négociation n’est pas possible.');
     if (!N().session()) { N().open('negocie'); addEventListener('mdg:connecte', () => setTimeout(() => proposer(a), 400), { once: true }); return; }
-    const cible = a.cible === 'demande' ? 'demande' : 'offre', deja = liste.find(n => n.cible === cible && n.cible_id === a.id && n.auteur_id === me());
+    const cible = a.cible === 'demande' ? 'demande' : 'offre', deja = liste.find(n => n.cible === cible && n.cible_id === a.id && n.auteur_id === me() && n.statut === 'ouverte');   // une seule ouverte à la fois ; après un accord, on peut racheter (schéma 36)
     if (deja) return thread(deja.id);
     const prix = +a.prix || 0, u = a.unite || 'kg', q = +a.quantite || 0, lui = cible === 'offre' ? 'vendeur' : 'acheteur';
     redessiner = null;
@@ -456,13 +456,13 @@
       // en bas du fil : noter la personne (étoiles, v3/reputation.js) et retirer la négociation de sa liste
       const idLui = autreId(n), R = window.MDGRep;
       const offL = !!(window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(idLui));   // le Marché de Gros officiel : ni note ni signalement
-      $('.nx-bottom').insertAdjacentHTML('beforeend', `<div class="nx-plus">${R && !offL ? `<button type="button" class="nx-pl" data-noter><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 16.6l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/></svg>Noter ${esc(av.nom || leLa(lui))}</button><button type="button" class="nx-pl" data-profil>Voir son profil</button>` : ''}${window.MDGMessages ? '<button type="button" class="nx-pl" data-ecrire>Écrire en privé</button>' : ''}<button type="button" class="nx-pl" data-cacher>Retirer de ma liste</button>${!offL && window.MDGIdentite && MDGIdentite.signaler ? '<button type="button" class="nx-pl" data-signaler>Signaler cette personne</button>' : ''}</div>`);
+      $('.nx-bottom').insertAdjacentHTML('beforeend', `<div class="nx-plus">${R && !offL ? `<button type="button" class="nx-pl" data-profil>Voir son profil</button>` : ''}${window.MDGMessages ? '<button type="button" class="nx-pl" data-ecrire>Écrire en privé</button>' : ''}<button type="button" class="nx-pl" data-cacher>Retirer de ma liste</button>${!offL && window.MDGIdentite && MDGIdentite.signaler ? '<button type="button" class="nx-pl" data-signaler>Signaler cette personne</button>' : ''}</div>`);
       const bS = $('[data-signaler]'); if (bS) bS.onclick = () => MDGIdentite.signaler(idLui, { nom: av.nom || '', source: 'negociation', ref: n.id });
       const bN = $('[data-noter]'), bP = $('[data-profil]'), bC = $('[data-cacher]'), bE = $('[data-ecrire]');
       if (bE) bE.onclick = () => { close(); MDGMessages.ecrire(idLui, { nom: av.nom || 'Membre' }); };
       const bCmd = $('[data-deal-cmd]'); if (bCmd) bCmd.onclick = () => { const nn = n; close(); MDGCommandes.depuisAccord(nn); };
       const bD = $('[data-deal-dm]'); if (bD) bD.onclick = e => { e.preventDefault(); close(); MDGMessages.ecrire(idLui, { nom: av.nom || 'Membre' }); };
-      if (bN) bN.onclick = () => R.noter(idLui, av.nom || '');
+      // l'avis se donne après une commande terminée, depuis Mes commandes (schéma 32) : plus de bouton « Noter » ici
       if (bP) bP.onclick = () => R.profil(idLui, { nom: av.nom || 'Membre', uri: avDe(n, 72).uri || '' });
       if (bC) bC.onclick = async () => { try { await masquer(n.id); inbox(); } catch (_) { N().toast('Impossible pour l’instant. Réessayez.'); } };
       pied();

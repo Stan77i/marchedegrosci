@@ -128,9 +128,11 @@
   }
 
   // ——— état ———
-  let lu = false, bg = null, vue = 'liste', filtre = 'cours', liste = [], journal = {}, transport = {}, sel = null, charge = false, minuteur = null;
+  let lu = false, bg = null, vue = 'liste', filtre = 'cours', liste = [], journal = {}, transport = {}, pos = {}, carte = null, sel = null, charge = false, minuteur = null;
   const trouve = id => liste.find(x => x.id === id);
-  function fermer() { if (!bg) return; bg.remove(); bg = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); }
+  const enRoute = c => c.etat === 'en_cours' && ['chargement', 'transport', 'transbordement', 'arrivee'].includes(c.etape);
+  function oublierCarte() { if (carte && carte.api) carte.api.detruire(); carte = null; }
+  function fermer() { oublierCarte(); if (!bg) return; bg.remove(); bg = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); }
   const clavier = e => { if (e.key === 'Escape') fermer(); };
   const erreurTxt = e => { const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : m || 'Réessayez dans un instant.'; };
 
@@ -144,8 +146,10 @@
   }
   async function lireJournal(id) {
     if (navigator.onLine === false) return;
-    const [j, t] = await Promise.all([N().rpc('commande_journal', { p_id: id }).catch(() => null), N().rpc('commande_transport', { p_id: id }).catch(() => null)]);
-    if (j) journal[id] = j; if (t) transport[id] = t;
+    const c = trouve(id), suivre = c && enRoute(c);
+    const [j, t, p] = await Promise.all([N().rpc('commande_journal', { p_id: id }).catch(() => null), N().rpc('commande_transport', { p_id: id }).catch(() => null),
+      suivre ? N().rpc('commande_position', { p_cmd: id }).catch(() => null) : null]);
+    if (j) journal[id] = j; if (t) transport[id] = t; if (p) pos[id] = p;
   }
   async function rafraichir() {
     if (!bg || document.hidden) return;
@@ -250,6 +254,9 @@
       <h2>${esc(c.produit || 'Commande')}</h2>
       <p class="cm-sous">${c.role === 'vendeur' ? 'Vente à' : 'Achat chez'} ${esc(c.partenaire_nom)} · n° ${esc(c.numero)}</p>
       ${scene(c, arrive)}
+      ${enRoute(c) && window.MDGSuivi ? `<h3 class="cm-h3" style="margin-top:4px">Suivi du camion</h3><div data-carte></div>
+        <p class="cm-note" data-suivi-t style="margin-top:0" aria-live="polite">${esc(MDGSuivi.texte(pos[c.id]).t)}</p>
+        <p class="cm-note" data-legende style="margin-top:2px">${esc(carte && carte.cmd === c.id && carte.api ? carte.api.legende : '')}</p>` : ''}
       <div class="cm-prog" role="progressbar" aria-label="Avancement de la commande" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(p * 100)}"><div class="cm-pb"><i style="--p:${p.toFixed(3)}"></i></div></div>
       <div class="cm-st" role="status" aria-live="polite"><b>${titre}</b>${sous ? `<small>${esc(sous)}</small>` : ''}<small>Dernière actualisation : ${ilya(der)}</small></div>
       ${actions(c)}
@@ -270,12 +277,28 @@
       ${Jr.length ? `<h3 class="cm-h3">Historique</h3><ul class="cm-j">${Jr.slice().reverse().map(e => `<li><b>${esc(EV[e.evenement] || e.evenement)}</b> · ${esc(e.par_moi ? 'vous' : ROLE[e.role] || '')}<small>${quand(e.at)} · ${esc(PREUVE[e.preuve] || '')}${e.lieu ? ' · ' + esc(e.lieu) : ''}${e.lat != null ? ' · position jointe' : ''}</small>${e.note ? `<small>« ${esc(e.note)} »</small>` : ''}</li>`).join('')}</ul>` : ''}
       <button type="button" class="cm-act" style="all:unset;display:block;margin:16px auto 0;padding:10px;min-height:44px;box-sizing:border-box;color:#10392B;text-decoration:underline;cursor:pointer" data-retour>Toutes mes commandes</button>`;
     box.querySelector('[data-x]').onclick = fermer;
-    box.querySelector('[data-retour]').onclick = () => { sel = null; vue = 'liste'; peindre(); };
+    box.querySelector('[data-retour]').onclick = () => { oublierCarte(); sel = null; vue = 'liste'; peindre(); };
     box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => geste(c, b.dataset.g));
-    lierTransport(c, box); lierCode(c, box);
+    lierTransport(c, box); lierCode(c, box); placerCarte(c, box);
     if (arrive && navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {}
   }
   let dernierEcran = '';
+  // ——— la carte : créée une fois par commande, puis déplacée d'un rendu à l'autre (jamais recréée toutes les 20 s) ———
+  function placerCarte(c, box) {
+    const ph = box.querySelector('[data-carte]');
+    if (!ph) { if (carte && carte.cmd === c.id) oublierCarte(); return; }
+    if (carte && carte.cmd === c.id) { ph.replaceWith(carte.el); if (carte.api) { carte.api.redim(); carte.api.maj(pos[c.id]); } return; }
+    oublierCarte();
+    const el = document.createElement('div'); ph.replaceWith(el);
+    const k = carte = { cmd: c.id, el, api: null };
+    MDGSuivi.monter(el, c).then(api => {
+      if (carte !== k) { api.detruire(); return; }
+      k.api = api; api.maj(pos[c.id]);
+      api.onLegende = t => { const l = bg && bg.querySelector('[data-legende]'); if (l) l.textContent = t; };
+      if (api.legende) api.onLegende(api.legende);
+    });
+  }
+
   // ——— les codes : le vendeur voit le code de prise en charge, l'acheteur le code de réception ; le chauffeur les tape ———
   // Le code n'est gardé qu'en mémoire, le temps de l'écran : jamais dans le téléphone, jamais dans un message.
   const codesVus = {};

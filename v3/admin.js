@@ -380,7 +380,7 @@
 .mr-ph .vide{display:grid;place-items:center;height:200px;border-radius:14px;background:var(--photo);color:var(--faint);font-size:13px}
 .mr-i{display:flex;flex-direction:column;gap:14px;min-width:0}
 .mr-code{padding:14px 16px;border:1px solid var(--line);border-radius:18px;background:var(--panel);text-align:center}
-.mr-code small{display:block;color:var(--mute);font-size:12.5px}.mr-code b{display:block;font:700 clamp(46px,7vw,72px)/1.05 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.14em;color:var(--a)}
+.mr-code small{display:block;color:var(--mute);font-size:12.5px}.mr-code b{display:block;font:700 clamp(46px,7vw,72px)/1.05 Jost,system-ui,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.14em;color:var(--a)}
 .mr-who b{display:block;font-size:19px;font-weight:600}.mr-who small{display:block;color:var(--mute);font-size:13px}
 .mr-pile{display:inline-block;padding:3px 11px;border-radius:999px;font-weight:700;font-size:12.5px}
 .mr-pile.ok,.mr-c.ok i{background:rgba(108,197,140,.18);color:#8FDCA8}.mr-pile.moy,.mr-c.moy i{background:rgba(242,194,48,.18);color:var(--acc)}.mr-pile.bad,.mr-c.bad i{background:rgba(229,96,79,.2);color:var(--bad-t)}

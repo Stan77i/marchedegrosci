@@ -15,21 +15,21 @@
 <script>try{if(JSON.parse(localStorage.getItem("mdg-app:logo-noir"))===true){document.querySelectorAll('link[rel="icon"]').forEach(function(l){l.href=l.type==="image/svg+xml"?"icons/v2/favicon-noir.svg":"icons/v2/favicon-noir-32.png"});document.querySelector('link[rel="apple-touch-icon"]').href="icons/v2/apple-touch-icon-noir.png"}}catch(e){}</script>
 <script>/* service worker : vérifie les mises à jour à chaque retour sur l'application ; quand une nouvelle version prend la main, la page se recharge (tout de suite si elle vient de s'ouvrir, sinon au prochain retour, jamais pendant une saisie) */if('serviceWorker' in navigator){(function(){var sw=navigator.serviceWorker,avant=!!sw.controller,t0=Date.now(),attente=false;sw.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(attente)location.reload();else r.update().catch(function(){})}})}).catch(function(){});sw.addEventListener('controllerchange',function(){if(!avant||attente)return;if(Date.now()-t0<6000)location.reload();else attente=true})})()}</script>
 <!-- polices hébergées dans le projet (hors connexion) -->
-<link rel="stylesheet" href="css/fonts.css">
-<link rel="stylesheet" href="css/styles.css?v=20261009o">
+<link rel="stylesheet" href="css/fonts.css?v=20261023f">
+<link rel="stylesheet" href="css/styles.css?v=20261023f">
 <link rel="stylesheet" href="v3/acheter.css?v=20261009o">
 <link rel="stylesheet" href="v3/vendre.css?v=20261009o">
-<link rel="stylesheet" href="v3/hero-ivt.css?v=20261017c">
+<link rel="stylesheet" href="v3/hero-ivt.css?v=20261023f">
 <link rel="stylesheet" href="v3/ivt-header.css?v=20261012c">
 <link rel="stylesheet" href="v3/pages.css?v=20261011c">
 <link rel="stylesheet" href="v3/annee.css?v=20261009z">
-<link rel="stylesheet" href="v3/cherche.css?v=20261011m">
+<link rel="stylesheet" href="v3/cherche.css?v=20261023f">
 <link rel="stylesheet" href="v3/flou.css?v=20261009y">
 <link rel="stylesheet" href="v3/marqueurs.css?v=20261010b">
 <link rel="stylesheet" href="v3/etat.css?v=20261010a">
-<link rel="stylesheet" href="v3/constellation.css?v=20261010c">
-<link rel="stylesheet" href="css/typo.css?v=20261009o">
-<link rel="stylesheet" href="v3/ux.css?v=20261018u">
+<link rel="stylesheet" href="v3/constellation.css?v=20261023f">
+<link rel="stylesheet" href="css/typo.css?v=20261023f">
+<link rel="stylesheet" href="v3/ux.css?v=20261023f">
 <script>/* téléphone : ouvre l'application mobile (même adresse, même données). ?ordinateur=1 force le site complet */(function(){try{var q=location.search,f=/[?&]ordinateur=1/.test(q);if(f)sessionStorage.setItem('mdg-ordi','1');var o=sessionStorage.getItem('mdg-ordi')==='1';if(/[?&]app=1/.test(q)){sessionStorage.setItem('mdg-app','1');sessionStorage.removeItem('mdg-ordi');o=false}var tel=sessionStorage.getItem('mdg-app')==='1'||(matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<768);if(tel&&!o)location.replace('application.dc.html'+(location.hash||'#/'));}catch(e){}})();</script>
 <script>/* sans adresse : ouvre l'Accueil */ if (!location.hash) history.replaceState(null, '', '#/');</script>
 <script src="vendor/gsap.min.js" defer></script>
@@ -1189,7 +1189,7 @@ body.tzmode .tz{height:100svh}
 #mdgCharge .v{fill:#6CC58C;animation:mcV 1.8s cubic-bezier(.65,0,.35,1) infinite;transform-box:fill-box;transform-origin:center}
 #mdgCharge .a{fill:#F2C94C;animation:mcA 1.8s cubic-bezier(.65,0,.35,1) infinite;transform-box:fill-box;transform-origin:center}
 #mdgCharge .r{fill:#6AAEF0;opacity:0;animation:mcR 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
-#mdgCharge b{font:500 22px/1 'Cormorant Garamond',Georgia,serif;color:#F5F0E6;letter-spacing:.01em;font-weight:500}
+#mdgCharge b{font:500 22px/1 Jost,system-ui,sans-serif;color:#F5F0E6;letter-spacing:.01em;font-weight:500}
 #mdgCharge small{display:block;margin-top:6px;font:400 12px/1 Jost,system-ui,sans-serif;color:#8f846f;letter-spacing:.02em;text-align:center}
 @keyframes mcIn{to{opacity:1}}
 @keyframes mcL{0%{stroke-dashoffset:1}45%,70%{stroke-dashoffset:0}100%{stroke-dashoffset:-1}}
@@ -1279,20 +1279,20 @@ body.tzmode .tz{height:100svh}
 <script src="v2/data.js"></script>
 <script src="v3/marqueurs.js?v=20261010a"></script>
 <script src="v3/terre.js?v=20261011a"></script>
-<script src="v3/porte.js?v=20261012i"></script>
-<script src="v3/nuage.js?v=20261023a"></script>
-<script src="v3/sons.js?v=20261019c"></script>
-<script src="v3/negoce.js?v=20261023a"></script>
-<script src="v3/avatar.js?v=20261017c"></script>
+<script src="v3/porte.js?v=20261023f"></script>
+<script src="v3/nuage.js?v=20261023f"></script>
+<script src="v3/sons.js?v=20261023f"></script>
+<script src="v3/negoce.js?v=20261023f"></script>
+<script src="v3/avatar.js?v=20261023f"></script>
 <script src="app/icones.js"></script>
-<script src="app/marque.js?v=20261019m"></script>
-<script src="app/toast.js?v=20261020b"></script>
-<script src="v3/compte.js?v=20261023a"></script>
+<script src="app/marque.js?v=20261023f"></script>
+<script src="app/toast.js?v=20261023f"></script>
+<script src="v3/compte.js?v=20261023f"></script>
 <script src="v3/pousse.js?v=20261018u"></script>
-<script src="v3/reputation.js?v=20261023a"></script>
+<script src="v3/reputation.js?v=20261023f"></script>
 <script src="v3/statuts.js?v=20261023a"></script>
-<script src="v3/identite.js?v=20261019d"></script>
-<script src="v3/messages.js?v=20261020s"></script>
+<script src="v3/identite.js?v=20261023f"></script>
+<script src="v3/messages.js?v=20261023f"></script>
 <script src="v3/marche.js?v=20261011c"></script>
 <script src="v2/search.js"></script>
 <script src="v2/map.js"></script>

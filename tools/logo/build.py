@@ -1,8 +1,9 @@
 """Logo « Étal vert » : transforme les mots en tracés SVG (aucune police à charger).
 
-Usage : python3 tools/logo/build.py <dossier des polices Archivo .woff>
-Les polices viennent du paquet npm @fontsource/archivo (licence OFL) :
-archivo-latin-600-normal.woff et archivo-latin-900-italic.woff.
+Usage : python3 tools/logo/build.py <dossier des polices Jost .woff>
+Une seule police sur tout le site (décision du propriétaire, 21 oct. 2026) : Jost.
+Les polices viennent du paquet npm @fontsource/jost (licence OFL) :
+jost-latin-600-normal.woff et jost-latin-900-italic.woff.
 Sortie : tools/logo/mots.json (tracés à la taille 100, ligne de base y=0).
 """
 import json, sys, os
@@ -24,8 +25,8 @@ def mot(fichier, texte, espace_em):
     return {'d': pen.getCommands(), 'w': round(x, 1)}
 
 d = sys.argv[1]
-r = os.path.join(d, 'archivo-latin-600-normal.woff')
-it = os.path.join(d, 'archivo-latin-900-italic.woff')
+r = os.path.join(d, 'jost-latin-600-normal.woff')
+it = os.path.join(d, 'jost-latin-900-italic.woff')
 out = {
     'marche': mot(r, 'marché', -0.035),
     'degros': mot(it, 'de Gros', -0.04),

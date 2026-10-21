@@ -241,7 +241,7 @@
   const CSS = `.ng-bg{position:fixed;inset:0;z-index:9000;background:rgba(10,9,7,.6);display:flex;align-items:flex-end;justify-content:center;padding:16px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:ngIn .25s ease both}
 @media (min-width:640px){.ng-bg{align-items:center}}
 .ng{font-variant-numeric:lining-nums;width:100%;max-width:420px;max-height:calc(100dvh - 32px);overflow:auto;background:#1d1a15;color:#F5F0E6;border-radius:28px;padding:24px 22px 22px;box-shadow:0 30px 80px rgba(0,0,0,.5);font-family:Jost,system-ui,sans-serif;animation:ngUp .35s cubic-bezier(.22,1,.36,1) both}
-.ng h2{margin:0 0 6px;font:600 23px/1.1 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em}.ng p{margin:0 0 16px;color:#B9AD98;font-size:14.5px;line-height:1.5}
+.ng h2{margin:0 0 6px;font:600 23px/1.1 Jost,sans-serif;letter-spacing:-.015em}.ng p{margin:0 0 16px;color:#B9AD98;font-size:14.5px;line-height:1.5}
 .ng-tabs{display:flex;gap:6px;margin:0 0 18px;padding:4px;border-radius:999px;background:rgba(245,240,230,.06)}
 .ng-tabs button{flex:1;min-height:42px;border:0;border-radius:999px;background:none;color:#B9AD98;font:600 14px Jost,sans-serif;cursor:pointer}.ng-tabs button[aria-selected=true]{background:#F5F0E6;color:#171512}
 .ng label{display:block;margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;color:#B9AD98}
@@ -250,7 +250,7 @@
 .ng-go{width:100%;min-height:52px;border:0;border-radius:999px;background:#F3EFE4;color:#10392B;font:700 16px Jost,sans-serif;cursor:pointer}.ng-go[disabled]{opacity:.6}
 .ng-x{float:right;width:40px;height:40px;margin:-6px -6px 0 0;border:0;border-radius:50%;background:rgba(245,240,230,.08);color:#F5F0E6;font-size:20px;cursor:pointer}
 .ng-err:empty{min-height:0;margin:0 0 14px}.ng-err{min-height:20px;margin:-4px 0 12px;color:#F2C230;font-size:14px}.ng-note{margin:16px 0 0;font-size:12.5px;color:#8f846f;line-height:1.5}
-.ng-me{display:flex;flex-direction:column;gap:12px}.ng-me b{font:800 19px/1 'Archivo','Helvetica Neue',Arial,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}.ng-out{min-height:48px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:#F5F0E6;font:600 15px Jost,sans-serif;cursor:pointer}
+.ng-me{display:flex;flex-direction:column;gap:12px}.ng-me b{font:800 19px/1 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}.ng-out{min-height:48px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:#F5F0E6;font:600 15px Jost,sans-serif;cursor:pointer}
 @keyframes ngIn{from{opacity:0}}@keyframes ngUp{from{transform:translateY(24px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.ng-bg,.ng{animation:none}}`;
   let css = false, toastT = 0;
@@ -324,7 +324,7 @@
 .pt-txt.is-out{opacity:0;transform:translateY(6px)}
 .pt-k{display:flex;align-items:center;gap:8px;color:#CFC4B1;font:500 12.5px/1 Jost,sans-serif}.pt-k em{font-style:normal}
 .pt-k i{width:9px;height:9px;flex:none}.pt-i-v{border-radius:50%;background:#6CC58C}.pt-i-a{border-radius:2px;background:#F2C94C}.pt-i-l{height:2px!important;width:14px!important;border-radius:1px;background:#6AAEF0}
-.pt-m{margin:6px 0 0!important;max-width:22ch;color:#F5F0E6!important;font:600 17px/1.15 'Archivo','Helvetica Neue',Arial,sans-serif!important;letter-spacing:-.015em;text-wrap:balance;text-shadow:0 2px 18px rgba(10,9,7,.9)}
+.pt-m{margin:6px 0 0!important;max-width:22ch;color:#F5F0E6!important;font:600 17px/1.15 Jost,sans-serif!important;letter-spacing:-.015em;text-wrap:balance;text-shadow:0 2px 18px rgba(10,9,7,.9)}
 .pt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (min-width:760px){.pt-txt{left:40px;right:40px;bottom:40px}.pt-m{font-size:clamp(34px,3.4vw,46px)!important;line-height:1.05!important;max-width:16ch}.pt-k{font-size:13.5px}}
 @media (prefers-reduced-motion:reduce){.pt-txt,.ng-ck,.ng-glob{transition:none;animation:none}}`;

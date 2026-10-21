@@ -8,20 +8,27 @@ ici = os.path.dirname(os.path.abspath(__file__))
 rac = os.path.dirname(os.path.dirname(ici))
 M = json.load(open(os.path.join(ici, 'mots.json')))
 VERT, CREME, MAIS, NOIR = '#10392B', '#F3EFE4', '#F2C230', '#141414'
+# dimensions calculées sur la largeur des mots (police Jost) :
+#   deux lignes : « marché » à l'échelle .7, « de Gros » à .82, boîte WE x 132
+#   une ligne   : « marché » puis « de Gros » (échelle 1.091) après un espace de 33.5, boîte WL x 96
+WM, WG = M['marche']['w'], M['degros']['w']
+WE = round(max(WM * .7, WG * .82) + 6)
+XG = round(-6.5 + WM + 33.5, 1)
+WL = round(XG + WG * 1.091 + 1.4)
 
 def empile_g(fond, k=1.0):
     """Le nom sur deux lignes, dans une boîte 320 x 132 (unités), à l'échelle k."""
     c1, c2 = (CREME, MAIS) if fond != 'clair' else (VERT, VERT)
     t = ''
     if fond == 'clair':
-        t += f'<rect x="0" y="104" width="318" height="27" fill="{MAIS}"/>'
+        t += f'<rect x="0" y="104" width="{WE - 2}" height="27" fill="{MAIS}"/>'
     t += f'<path fill="{c1}" transform="translate(-2.5 51) scale(.7)" d="{M["marche"]["d"]}"/>'
     t += f'<path fill="{c2}" transform="translate(-1 121.5) scale(.82)" d="{M["degros"]["d"]}"/>'
     return t
 
 def carre(fond, k, rx=0, taille=512):
     """Icône carrée : fond plein, nom centré."""
-    w, h = 320 * k, 128 * k
+    w, h = WE * k, 128 * k
     x, y = (taille - w) / 2, (taille - h) / 2 - 2 * k
     bg = VERT if fond == 'vert' else NOIR
     return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {taille} {taille}">'
@@ -48,7 +55,7 @@ ecr('icon-plein-noir.svg', carre('noir', 1.42))
 ecr('icon-maskable.svg', carre('vert', 1.1))
 ecr('badge.svg', dg('vert', couleur='#FFFFFF', plein=False))
 
-js = r"""/* Marque « Étal vert » : le nom « marché de Gros » dessiné en tracés (Archivo, licence OFL).
+js = r"""/* Marque « Étal vert » : le nom « marché de Gros » dessiné en tracés (Jost, licence OFL : la police unique du site).
    Fabriqué par tools/logo/marque.py — ne pas modifier à la main.
    MDGMarque.empile({fond, h, cls})  : le nom sur deux lignes (accueil, ouverture)
    MDGMarque.ligne({fond, h, cls})   : le nom sur une ligne (en-têtes)
@@ -62,19 +69,19 @@ js = r"""/* Marque « Étal vert » : le nom « marché de Gros » dessiné en t
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + vb + '"' + (w ? ' width="' + w + '"' : '') + (h ? ' height="' + h + '"' : '') +
       ' role="img" aria-label="Marché de Gros"' + (cls ? ' class="' + cls + '"' : '') + ' style="display:block;overflow:visible">' + inner + '</svg>';
   }
-  function empile(o) { o = o || {}; var c = cols(o.fond), h = o.h || 0, w = h ? Math.round(h * 320 / 132) : 0;
-    return svg('0 0 320 132', w, h, o.cls,
-      (o.fond === 'clair' && o.trait !== false ? '<rect class="mq-b" x="0" y="104" width="318" height="27" fill="' + C.mais + '"/>' : '') +
+  function empile(o) { o = o || {}; var c = cols(o.fond), h = o.h || 0, w = h ? Math.round(h * __WE__ / 132) : 0;
+    return svg('0 0 __WE__ 132', w, h, o.cls,
+      (o.fond === 'clair' && o.trait !== false ? '<rect class="mq-b" x="0" y="104" width="__WE2__" height="27" fill="' + C.mais + '"/>' : '') +
       '<g transform="translate(-2.5 51) scale(.7)"><path class="mq-m" fill="' + c[0] + '" d="' + D.m + '"/></g>' +
       '<g transform="translate(-1 121.5) scale(.82)"><path class="mq-g" fill="' + c[1] + '" d="' + D.g + '"/></g>'); }
-  function ligne(o) { o = o || {}; var c = cols(o.fond), h = o.h || 0, w = h ? Math.round(h * 776 / 96) : 0;
-    return svg('0 -80 776 96', w, h, o.cls,
-      (o.fond === 'clair' && o.trait ? '<rect class="mq-b" x="352" y="-23" width="424" height="36" fill="' + C.mais + '"/>' : '') +
+  function ligne(o) { o = o || {}; var c = cols(o.fond), h = o.h || 0, w = h ? Math.round(h * __WL__ / 96) : 0;
+    return svg('0 -80 __WL__ 96', w, h, o.cls,
+      (o.fond === 'clair' && o.trait ? '<rect class="mq-b" x="__XR__" y="-23" width="__WR__" height="36" fill="' + C.mais + '"/>' : '') +
       '<g transform="translate(-6.5 0)"><path class="mq-m" fill="' + c[0] + '" d="' + D.m + '"/></g>' +
-      '<g transform="translate(356.6 0) scale(1.091)"><path class="mq-g" fill="' + c[1] + '" d="' + D.g + '"/></g>'); }
+      '<g transform="translate(__XG__ 0) scale(1.091)"><path class="mq-g" fill="' + c[1] + '" d="' + D.g + '"/></g>'); }
   // la petite icône (messages officiels, cartes, onglet) : le même dessin que l'icône de l'écran d'accueil,
   // « marché de Gros » sur deux lignes sur un carré vert arrondi (ou un rond : le nom est alors un peu plus petit pour tenir)
-  function dg(t, o) { o = o || {}; t = t || 38; var bg = o.fond === 'noir' ? C.noir : C.vert, k = o.rond ? 1.12 : 1.42, w = 320 * k, h = 128 * k;
+  function dg(t, o) { o = o || {}; t = t || 38; var bg = o.fond === 'noir' ? C.noir : C.vert, k = o.rond ? 1.12 : 1.42, w = __WE__ * k, h = 128 * k;
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="' + t + '" height="' + t + '" aria-hidden="true" style="display:block;flex:none">' +
       '<rect width="512" height="512" rx="' + (o.rond ? 256 : 112) + '" fill="' + bg + '"' + (o.fond === 'noir' ? ' stroke="rgba(243,239,228,.3)" stroke-width="10"' : '') + '/>' +
       '<g transform="translate(' + ((512 - w) / 2).toFixed(1) + ' ' + ((512 - h) / 2 - 2 * k).toFixed(1) + ') scale(' + k + ')">' +
@@ -90,5 +97,7 @@ js = r"""/* Marque « Étal vert » : le nom « marché de Gros » dessiné en t
 })();
 """
 D = json.dumps({'m': M['marche']['d'], 'g': M['degros']['d'], 'dg': M['dg']['d']}, separators=(',', ':'))
-open(os.path.join(rac, 'app', 'marque.js'), 'w').write(js.replace('__D__', D))
+for a, b in [('__D__', D), ('__WE2__', str(WE - 2)), ('__WE__', str(WE)), ('__WL__', str(WL)), ('__XG__', str(XG)), ('__XR__', str(round(XG - 4.6, 1))), ('__WR__', str(round(WL - XG + 4.6, 1)))]:
+    js = js.replace(a, b)
+open(os.path.join(rac, 'app', 'marque.js'), 'w').write(js)
 print('ok', os.path.getsize(os.path.join(rac, 'app', 'marque.js')), 'octets')

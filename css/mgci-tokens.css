@@ -1,6 +1,6 @@
 /* ═════════ Marché de Gros CI — variables de design (application, puis site) ═════════
    Une seule source pour les couleurs, le texte, les espaces, les rayons, les ombres et le mouvement.
-   Identité gardée : nuit chaude, ivoire, terracotta ; Archivo pour les titres (la voix du logo : 600 droit + 900 italique pour le mot qui compte), Jost pour le reste.
+   Identité gardée : nuit chaude, ivoire, terracotta ; Jost pour les titres (la voix du logo : 600 droit + 900 italique pour le mot qui compte), Jost pour le reste.
    Contrastes vérifiés (texte courant ≥ 4,5:1) : voir docs/AUDIT-REFONTE.md.
    Les couleurs dessinées dans le Canvas (carte) ou dans des attributs SVG restent écrites dans le code (les variables CSS n'y entrent pas). */
 :root {
@@ -53,8 +53,8 @@
   --vert-texte: #4A6A53;   /* information positive sur fond clair (5,1:1 ; avant #61846B à 3,5:1) */
 
   /* ——— texte : familles et échelle ——— */
-  /* la voix du logo (Archivo, comme le logo) : les mots neutres en 600 droit, le mot qui compte en 900 italique */
-  --f-titre: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  /* la voix du logo (Jost, comme le logo) : les mots neutres en 600 droit, le mot qui compte en 900 italique */
+  --f-titre: Jost, sans-serif;
   --voix-accent: var(--logo-mais);   /* le mot qui compte : maïs sur fond sombre… */
   --voix-surligne: transparent;      /* …et, sur fond clair, vert surligné de maïs, comme le logo sur fond clair */
   --f-texte: Jost, system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -131,13 +131,13 @@
 }
 
 /* ——— la voix du logo ———
-   <h2 class="voix">Le prix du <em>marché</em></h2> : Archivo 600 pour les mots neutres, le mot qui compte en Archivo 900 italique.
+   <h2 class="voix">Le prix du <em>marché</em></h2> : Jost 600 pour les mots neutres, le mot qui compte en Jost 900 italique.
    Un seul mot (ou deux) en accent par titre : c'est lui qu'on lit en premier. Les phrases longues restent en Jost (--f-texte). */
 .voix { font-family: var(--f-titre); font-weight: 600; font-style: normal; letter-spacing: -.015em; line-height: 1.05; font-synthesis: none; }
 .voix em, .voix b, em.voix-mot, b.voix-mot { font-family: var(--f-titre); font-weight: 900; font-style: italic; color: var(--voix-accent); letter-spacing: -.02em; padding: 0 .06em 0 .02em;
   background: linear-gradient(transparent 60%, var(--voix-surligne) 60%, var(--voix-surligne) 94%, transparent 94%); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .voix-plein { font-family: var(--f-titre); font-weight: 900; font-style: italic; letter-spacing: -.025em; line-height: 1; font-synthesis: none; }
-/* chiffres qui comptent (prix, quantités, compteurs) : Archivo 800, chiffres alignés */
+/* chiffres qui comptent (prix, quantités, compteurs) : Jost 800, chiffres alignés */
 /* les titres de page qui ont déjà un mot en accent (<h1>Le juste prix, <em>en direct.</em>) : l'accent prend la voix du logo */
 :is(h1, h2) em { font-family: var(--f-titre); font-weight: 900; font-style: italic; letter-spacing: -.02em; }
 .chiffre { font-family: var(--f-titre); font-weight: 800; font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.01em; }

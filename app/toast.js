@@ -42,7 +42,7 @@
 @keyframes ilPouls{50%{transform:scale(.6);opacity:.5}}
 .il-x{min-width:0;flex:1;display:flex;flex-direction:column;gap:1px}
 .il-x b,.il-x small{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;width:max-content;max-width:min(310px,calc(100vw - 110px));overflow-wrap:anywhere}
-.il-x b{font:600 15.5px/1.28 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.01em;-webkit-line-clamp:3}
+.il-x b{font:600 15.5px/1.28 Jost,sans-serif;letter-spacing:-.01em;-webkit-line-clamp:3}
 .il-x b em{font-weight:900;font-style:italic;color:#F2C230}
 .il-x small{font-size:13.5px;line-height:1.35;color:rgba(243,239,228,.74);-webkit-line-clamp:4;margin-top:2px}
 .il-in:not(.sans-a) .il-x b,.il-in:not(.sans-a) .il-x small{max-width:min(240px,calc(100vw - 196px))}

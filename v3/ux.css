@@ -11,7 +11,7 @@
   --ux-focus:var(--terre,#F2C230)
 }
 
-/* ——— Chiffres : Cormorant dessine « 1 » comme un « I » et « 0 » comme un « O » ; on force des chiffres alignés, lisibles ——— */
+/* ——— Chiffres alignés, lisibles ——— */
 html{font-variant-numeric:lining-nums}
 
 /* ——— Focus clavier : visible partout, jamais à la souris ——— */

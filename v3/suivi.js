@@ -61,7 +61,7 @@
 .sv-puce.frais i{animation:svPouls 2s ease-out infinite}.sv-puce.vieux i{background:#B5AE9F}
 @keyframes svPouls{70%{box-shadow:0 0 0 8px rgba(47,163,107,0)}100%{box-shadow:0 0 0 0 rgba(47,163,107,0)}}
 .sv-bas{position:absolute;left:12px;right:12px;bottom:12px;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:#10392B;color:#F3EFE4;box-shadow:0 6px 18px rgba(16,57,43,.32)}
-.sv-bas b{display:block;font:800 22px/1.05 'Archivo','Helvetica Neue',Arial,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.sv-bas b{display:block;font:800 22px/1.05 Jost,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .sv-bas small{display:block;color:rgba(243,239,228,.78);font-size:12.5px;margin-top:2px}
 .sv-bas .eta{margin-left:auto;text-align:right}.sv-bas .eta b{color:#F2C230}
 .sv-camion{width:30px;height:56px;filter:drop-shadow(0 3px 4px rgba(16,57,43,.4));transition:opacity .3s,filter .3s}

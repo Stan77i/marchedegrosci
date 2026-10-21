@@ -134,7 +134,7 @@
       ctx.strokeStyle = 'rgba(140,170,200,.05)'; ctx.lineWidth = 1;
       for (let lat = 2.4; lat < 5.4; lat += .32) { const a = SL(lat, -11), b = SL(lat, 0); if (a[1] < -10 || a[1] > H + 10) continue; ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
       // pas de pays voisins ni de frontières : seul le territoire, et la mer au sud
-      { const s = SL(3.6, -5.4); ctx.font = 'italic 500 13px "Cormorant Garamond",serif'; ctx.fillStyle = 'rgba(160,190,215,.32)'; ctx.fillText('Golfe de Guinée', s[0], s[1]); }
+      { const s = SL(3.6, -5.4); ctx.font = 'italic 500 13px Jost,system-ui,sans-serif'; ctx.fillStyle = 'rgba(160,190,215,.32)'; ctx.fillText('Golfe de Guinée', s[0], s[1]); }
       // Côte d'Ivoire : socle en relief
       ctx.save(); ctx.translate(0, Math.min(8, 2 + cam.z / 60)); path(civ); ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fill(); ctx.restore();
       path(civ); const gf = ctx.createLinearGradient(0, S(0, bb.y0)[1], 0, S(0, bb.y1)[1]); gf.addColorStop(0, '#2f2920'); gf.addColorStop(1, '#262119'); ctx.fillStyle = gf; ctx.fill();
@@ -217,7 +217,7 @@
       const kpp = kmPerPx(), km = nice(kpp * 90), px = km / kpp, HB = H - ins().b; ctx.textAlign = 'left';
       ctx.strokeStyle = 'rgba(245,240,230,.7)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(12, HB - 14); ctx.lineTo(12, HB - 10); ctx.lineTo(12 + px, HB - 10); ctx.lineTo(12 + px, HB - 14); ctx.stroke();
       ctx.font = '500 10px Jost,sans-serif'; ctx.fillStyle = 'rgba(245,240,230,.75)'; ctx.fillText(km + ' km', 16 + px, HB - 9);
-      ctx.font = '500 15px "Cormorant Garamond",serif'; ctx.fillStyle = '#F5F0E6'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(18,20,23,.8)'; const wh = where(); ctx.strokeText(wh, 12, HB - 22); ctx.fillText(wh, 12, HB - 22);
+      ctx.font = '500 15px Jost,system-ui,sans-serif'; ctx.fillStyle = '#F5F0E6'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(18,20,23,.8)'; const wh = where(); ctx.strokeText(wh, 12, HB - 22); ctx.fillText(wh, 12, HB - 22);
       ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(245,240,230,.32)'; ctx.font = '400 9px Jost,sans-serif'; ctx.fillText(real ? '© Natural Earth' : 'Contour simplifié', W - 10, HB - 9); ctx.fillStyle = 'rgba(245,240,230,.5)'; ctx.fillText('Points au chef-lieu du district', W - 10, HB - 21);
     }
 

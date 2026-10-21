@@ -49,8 +49,8 @@
 @keyframes cmIn{from{opacity:0}}
 .cm{position:relative;width:100%;max-width:560px;max-height:94dvh;overflow:auto;overscroll-behavior:contain;background:#F3EFE4;color:#171512;border-radius:24px 24px 0 0;padding:22px 18px calc(24px + env(safe-area-inset-bottom));font:400 15px/1.45 Jost,system-ui,sans-serif;color-scheme:light;animation:cmUp .28s cubic-bezier(.2,.8,.2,1)}
 @keyframes cmUp{from{transform:translateY(40px)}}
-.cm h2{margin:0 52px 4px 0;font:600 24px/1.15 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.01em}
-.cm h2 em{font:900 italic 1em 'Archivo','Helvetica Neue',Arial,sans-serif;color:#10392B;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%)}
+.cm h2{margin:0 52px 4px 0;font:600 24px/1.15 Jost,sans-serif;letter-spacing:-.01em}
+.cm h2 em{font:900 italic 1em Jost,sans-serif;color:#10392B;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%)}
 .cm-sous{margin:0 0 14px;color:#5E5546;font-size:14px}
 .cm h2[tabindex="-1"]:focus{outline:none}
 .cm-x{position:absolute;right:12px;top:12px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(23,21,18,.08);color:#171512;display:grid;place-items:center;cursor:pointer}
@@ -81,12 +81,12 @@
 .cm-et{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column}
 .cm-et li{position:relative;display:grid;grid-template-columns:28px 1fr;gap:10px;padding:0 0 14px;color:#675F50}
 .cm-et li::before{content:'';position:absolute;left:13px;top:24px;bottom:0;width:2px;background:rgba(16,57,43,.14)}.cm-et li:last-child::before{display:none}
-.cm-et .pt{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#E7E0CF;color:#675F50;font:700 12px 'Archivo',sans-serif;position:relative;z-index:1}
+.cm-et .pt{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#E7E0CF;color:#675F50;font:700 12px Jost,sans-serif;position:relative;z-index:1}
 .cm-et li.fait{color:#171512}.cm-et li.fait .pt{background:#10392B;color:#F3EFE4}.cm-et li.fait::before{background:#10392B}
 .cm-et li.ici .pt{background:#F2C230;color:#10392B;box-shadow:0 0 0 5px rgba(242,194,48,.28)}
 .cm-et b{display:block;font-weight:600;line-height:28px}.cm-et small{display:block;font-size:12.5px;color:#5E5546;margin-top:-4px}
 .cm-st{margin:10px 0 12px;padding:14px;border-radius:18px;background:#10392B;color:#F3EFE4}
-.cm-st b{display:block;font:600 18px/1.25 'Archivo','Helvetica Neue',Arial,sans-serif}.cm-st b em{font-style:italic;font-weight:900;color:#F2C230}
+.cm-st b{display:block;font:600 18px/1.25 Jost,sans-serif}.cm-st b em{font-style:italic;font-weight:900;color:#F2C230}
 .cm-st small{display:block;margin-top:4px;color:rgba(243,239,228,.8);font-size:13px}
 .cm-act{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
 .cm-act button{min-height:50px;border-radius:25px;border:1px solid #10392B;background:none;color:#10392B;font:600 15.5px Jost,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:0 16px}
@@ -96,7 +96,7 @@
 .cm-info b{font-weight:600}
 .cm-dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 12px;padding:14px;border-radius:18px;background:#FFFDF8}
 .cm-dl dt{color:#5E5546;font-size:13.5px}.cm-dl dd{margin:0;text-align:right;font-weight:600}
-.cm-h3{margin:16px 0 8px;font:600 15px 'Archivo',sans-serif}
+.cm-h3{margin:16px 0 8px;font:600 15px Jost,sans-serif}
 .cm-j{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .cm-j li{padding:10px 12px;border-radius:14px;background:#FFFDF8;font-size:13.5px}.cm-j li b{font-weight:600}.cm-j li small{display:block;color:#5E5546;font-size:12.5px}
 /* formulaires */
@@ -111,7 +111,7 @@
 .cm-err{color:#8A2414;font-size:13.5px;margin:8px 0 0;min-height:1em}
 .cm-note{margin:12px 2px 0;font-size:12.5px;color:#5E5546}
 .cm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.cm-av{background:#FFFDF8;border-radius:18px;padding:14px 16px;margin:12px 0}.cm-av h3{margin:0 0 4px;font:600 17px/1.2 Archivo,'Helvetica Neue',Arial,sans-serif}.cm-av p{margin:0 0 8px;color:#4A4336;font-size:14px}.cm-av small{color:#5E5546;font-size:12.5px}
+.cm-av{background:#FFFDF8;border-radius:18px;padding:14px 16px;margin:12px 0}.cm-av h3{margin:0 0 4px;font:600 17px/1.2 Jost,sans-serif}.cm-av p{margin:0 0 8px;color:#4A4336;font-size:14px}.cm-av small{color:#5E5546;font-size:12.5px}
 .cm-av-e{display:flex;gap:4px;margin:6px 0 2px}.cm-av-e button{width:48px;height:48px;border:0;background:transparent;padding:6px;cursor:pointer}.cm-av-e button svg{width:100%;height:100%;fill:transparent;stroke:#7D7462;stroke-width:1.4;stroke-linejoin:round}.cm-av-e button.on svg{fill:#F2C230;stroke:#7A5A00}.cm-av-e button:focus-visible{outline:3px solid #10392B;outline-offset:1px;border-radius:10px}
 .cm-av-l{min-height:20px;font-weight:600;color:#10392B!important}.cm-av-t{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E5546}.cm-av-t textarea{min-height:70px;padding:10px 12px;border:1px solid #D9D1BE;border-radius:12px;background:#FFF;font:400 15px/1.4 Jost,system-ui,sans-serif;color:#171512;resize:vertical}
 .cm-av-f{display:inline-flex;gap:1px;vertical-align:-3px}.cm-av-f i{width:16px;height:16px}.cm-av-f svg{width:100%;height:100%;fill:transparent;stroke:#7D7462;stroke-width:1.4;stroke-linejoin:round}.cm-av-f i.on svg{fill:#F2C230;stroke:#7A5A00}
@@ -359,7 +359,7 @@
     const regle = pec ? 'Donnez-le au chauffeur seulement quand la marchandise est dans son véhicule.' : 'Donnez-le au chauffeur seulement après avoir vérifié la quantité et la qualité.';
     return `<div class="cm-st" style="background:#FFFDF8;color:#171512;box-shadow:inset 0 0 0 2px #10392B"><b style="color:#10392B">${titre}</b>
       ${!ok ? '<small style="color:#5E5546">Le code s’affichera quand le chauffeur (avec l’application) aura accepté la mission.</small>'
-        : k ? `<div aria-live="polite" style="margin:10px 0 4px;font:800 40px/1 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:.18em;color:#10392B;font-variant-numeric:tabular-nums">${esc(k.code.slice(0, 3))} ${esc(k.code.slice(3))}</div>
+        : k ? `<div aria-live="polite" style="margin:10px 0 4px;font:800 40px/1 Jost,sans-serif;letter-spacing:.18em;color:#10392B;font-variant-numeric:tabular-nums">${esc(k.code.slice(0, 3))} ${esc(k.code.slice(3))}</div>
             <small style="color:#5E5546">Valable jusqu’à ${heure(k.expire_le)}. Un seul usage. ${regle} Dites-le de vive voix : ne l’envoyez pas par message.</small>
             <div class="cm-act" style="margin:10px 0 0"><button type="button" class="m" data-code-nv>Nouveau code (l’ancien ne marchera plus)</button></div>`
         : `<small style="color:#5E5546">${regle}</small><div class="cm-act" style="margin:10px 0 0"><button type="button" class="p" data-code-voir>Afficher le code</button></div>`}

@@ -1,5 +1,5 @@
 /* Organic — design-system tokens and component classes. This file is the source of truth for the system's look; retune it here and see readme.md. */
-/* polices chargées dans index-v3.html (Cormorant Garamond + Jost) */
+/* polices chargées dans index-v3.html (Jost,system-ui,sans-serif + Jost) */
 
 :root {
   --color-bg: #f5ead8;
@@ -41,8 +41,8 @@
   --color-accent-2-800: #3d472b;
   --color-accent-2-900: #272e1b;
 
-  --font-heading: "Cormorant Garamond", "Cormorant", Georgia, serif;
-  --font-heading-weight: 500;
+  --font-heading: Jost,system-ui,sans-serif;
+  --font-heading-weight: 600;
   --font-body: "Jost", system-ui, sans-serif;
 
   --space-1: 4.4px;

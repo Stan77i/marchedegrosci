@@ -1,11 +1,11 @@
-/* Typographie du site (8 oct. 2026) : titres en Cormorant Garamond (sérif fin, élégant), texte en Jost (géométrique, lisible).
-   Remplace Caprasimo (gros gras arrondi) et Figtree. Les mots mis en avant dans les titres passent en italique, dans la couleur d'accent. */
-:root{--font-heading:"Cormorant Garamond","Cormorant",Georgia,serif;--font-body:"Jost",system-ui,sans-serif;--font-heading-weight:500}
+/* Typographie du site : UNE seule police, Jost, partout (décision du propriétaire, 21 oct. 2026).
+   Titres en Jost 600 ; les mots mis en avant (comme « de Gros ») en Jost gras italique, dans la couleur d'accent. */
+:root{--font-heading:Jost,system-ui,sans-serif;--font-body:"Jost",system-ui,sans-serif;--font-heading-weight:600}
 body{font-family:var(--font-body)}
-h1,h2,h3,.an-m,.hero__title,.catdlg__title,.odv__title{font-family:var(--font-heading)!important;font-weight:500!important;letter-spacing:-.005em!important}
+h1,h2,h3,.an-m,.hero__title,.catdlg__title,.odv__title{font-family:var(--font-heading)!important;font-weight:600!important;letter-spacing:-.015em!important}
 h1,.an-m{line-height:.95}
-h1 em,h2 em,h3 em,.catdlg__title em{font-style:italic!important;font-weight:500}
-/* le sérif paraît plus petit que Caprasimo : léger agrandissement des très grands titres */
+h1 em,h2 em,h3 em,.catdlg__title em{font-style:italic!important;font-weight:800}
+/* très grands titres */
 .an-m{font-size:clamp(60px,9vw,150px)!important}
 /* texte courant : Jost demande un poids un peu plus léger que Figtree */
 p,li{font-weight:400}

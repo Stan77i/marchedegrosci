@@ -164,7 +164,7 @@
 
 /* ═══ Prix du marché (application) : prix vendeurs ● et budgets acheteurs ■ sur une même échelle, verdict, prix observé ═══ */
 .px-page{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:18px 16px 44px;display:flex;flex-direction:column;gap:16px;color:var(--encre)}
-.px-hero h1{margin:0;font:600 28px/1.02 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em;letter-spacing:-.005em}
+.px-hero h1{margin:0;font:600 28px/1.02 Jost,sans-serif;letter-spacing:-.015em;letter-spacing:-.005em}
 .px-hero h1 em{color:#10392B;font-style:italic;background:linear-gradient(transparent 64%,rgba(242,194,48,.55) 64%,rgba(242,194,48,.55) 92%,transparent 92%)}
 .px-hero p{margin:10px 0 0;font-size:var(--t-base);line-height:1.5;color:var(--texte-3)}
 .px-chiffres{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}

@@ -10,7 +10,7 @@
 .cs-n{position:absolute;left:0;top:0;transform:translate(-50%,-50%) scale(calc(1 + var(--near,0) * .08));display:grid;justify-items:center;gap:6px;
   width:max-content;max-width:150px;padding:6px;border:0;background:none;color:inherit;font:inherit;cursor:pointer;border-radius:12px;z-index:2;transition:transform .5s cubic-bezier(.22,1,.36,1)}
 .cs-n img{width:52px;height:52px;border-radius:50%;object-fit:cover;outline:1px solid color-mix(in srgb,currentColor 18%,transparent);outline-offset:3px;opacity:.82;transition:opacity .4s,outline-color .4s}
-.cs-n b{font-family:var(--font-heading,serif);font-weight:500;font-size:15px;line-height:1.1;max-width:14ch;hyphens:none;overflow-wrap:normal;text-align:center;text-wrap:balance;opacity:calc(.62 + var(--near,0) * .38)}
+.cs-n b{font-family:var(--font-heading,Jost,sans-serif);font-weight:500;font-size:15px;line-height:1.1;max-width:14ch;hyphens:none;overflow-wrap:normal;text-align:center;text-wrap:balance;opacity:calc(.62 + var(--near,0) * .38)}
 .cs-f.live .cs-n img{outline-color:var(--color-accent-300,#e9a86a)}
 .cs-n:hover img,.cs-n:focus-visible img{opacity:1;outline-color:var(--color-accent-300,#e9a86a)}
 .cs-n:hover b{opacity:1}

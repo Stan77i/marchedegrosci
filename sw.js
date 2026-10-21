@@ -3,7 +3,7 @@
    installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
    Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v113';
+const CACHE = 'mgci-v115';
 // tuiles de la carte en relief déjà vues (relief Terrarium, rues OpenFreeMap) : gardées d'une version à l'autre, 1 500 au plus
 const TUILES = 'tuiles-mgci', TUILES_MAX = 1500, HOTES_TUILES = ['s3.amazonaws.com', 'tiles.openfreemap.org'];
 
@@ -47,17 +47,18 @@ const CORE = [
   "vendor/react-dom.production.min.js",
   "vendor/react.production.min.js",
   "vendor/topojson-client.min.js",
-  "fonts/cormorant-garamond-latin-500-italic.woff2",
-  "fonts/cormorant-garamond-latin-500-normal.woff2",
-  "fonts/cormorant-garamond-latin-600-italic.woff2",
-  "fonts/cormorant-garamond-latin-600-normal.woff2",
   "fonts/jost-latin-400-normal.woff2",
   "fonts/jost-latin-500-normal.woff2",
   "fonts/jost-latin-600-normal.woff2",
   "fonts/jost-latin-700-normal.woff2",
-  "fonts/archivo-latin-600-normal.woff2",
-  "fonts/archivo-latin-800-normal.woff2",
-  "fonts/archivo-latin-900-italic.woff2",
+  "fonts/jost-latin-800-normal.woff2",
+  "fonts/jost-latin-900-normal.woff2",
+  "fonts/jost-latin-400-italic.woff2",
+  "fonts/jost-latin-500-italic.woff2",
+  "fonts/jost-latin-600-italic.woff2",
+  "fonts/jost-latin-700-italic.woff2",
+  "fonts/jost-latin-800-italic.woff2",
+  "fonts/jost-latin-900-italic.woff2",
   "index-v3.html",
   "css/styles.css",
   "css/typo.css",
@@ -121,7 +122,7 @@ const IMAGES = ["evenement-camion-depart-paysage.webp", "evenement-camion-depart
 
 // la carte en relief, pour qu'elle s'ouvre vite et sans connexion : son moteur et ses polices (Latin et ponctuation)
 const CARTE = ['vendor/maplibre/maplibre-gl.js', 'vendor/maplibre/maplibre-gl.css',
-  ...['Noto Sans Regular', 'Noto Sans Medium', 'Noto Sans Italic'].flatMap(f => ['0-255', '8192-8447'].map(r => 'vendor/glyphs/' + f + '/' + r + '.pbf'))];
+  ...['Jost Regular', 'Jost Medium', 'Jost Italic'].flatMap(f => ['0-255', '8192-8447'].map(r => 'vendor/glyphs/' + f + '/' + r + '.pbf'))];
 self.addEventListener('install', e => {
   e.waitUntil((async () => {
     const c = await caches.open(CACHE);

@@ -47,7 +47,7 @@
       t1: '#231f19', t2: '#3b342a', t3: '#6f6553', halo: 'rgba(255,253,248,.95)', bat: '#e8dcc6', batBord: '#d2c1a3', solHab: '#f1e8d8', solCom: '#f4e0cf', solInd: '#ebe6dc', solPub: '#e9eadf', parc: '#dde8cf', piste: '#b9a27e', marche: '#B85C38', ombre: 'rgba(80,60,30,.2)',
       ciel: '#cfe6f2', horizon: '#f6ead8', brume: '#efe6d6' }
   };
-  const FONT_R = ['Noto Sans Regular'], FONT_M = ['Noto Sans Medium'], FONT_I = ['Noto Sans Italic'];
+  const FONT_R = ['Jost Regular'], FONT_M = ['Jost Medium'], FONT_I = ['Jost Italic'];   // la police unique du site (vendor/glyphs, tools/glyphes-carte.js)
 
   function style(base, P) {
     return {
@@ -121,7 +121,7 @@
 .cgl-etat{position:absolute;left:10px;z-index:2;display:flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:13px;background:rgba(23,21,18,.72);color:#E6DCCB;font:500 11px Jost,sans-serif;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);pointer-events:none;transition:top .3s}
 .cgl-etat i{width:7px;height:7px;border-radius:50%;background:#6CC58C}.cgl-etat.hors i{background:#B9AD98}
 .cgl.jour .cgl-etat{background:rgba(255,253,248,.9);color:#3b342a;box-shadow:0 2px 8px rgba(80,60,30,.15)}
-.cgl-echelle{position:absolute;left:12px;z-index:2;font:600 17px 'Cormorant Garamond',serif;color:#F5F0E6;text-shadow:0 1px 8px rgba(0,0,0,.8);pointer-events:none;transition:top .3s}
+.cgl-echelle{position:absolute;left:12px;z-index:2;font:600 17px Jost,system-ui,sans-serif;color:#F5F0E6;text-shadow:0 1px 8px rgba(0,0,0,.8);pointer-events:none;transition:top .3s}
 .cgl.jour .cgl-echelle{color:#231f19;text-shadow:0 1px 6px rgba(255,255,255,.9)}
 @media (prefers-reduced-motion:reduce){.cgl,.cgl-pill{transition:none}.cgl-feu,.cgl-moi::after{animation:none}}`;
 

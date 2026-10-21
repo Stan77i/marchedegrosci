@@ -255,7 +255,7 @@
     ov.style.cssText = 'position:fixed;inset:0;z-index:10050;background:radial-gradient(120% 80% at 50% 60%,#2a2219 0%,#120f0b 70%);overflow:hidden;opacity:0';
     ov.innerHTML = `<div class="pt" data-etat="ok" data-mode="in" style="position:absolute;left:-40%;width:180%;top:46%;aspect-ratio:400/132;transform-origin:50% 60.6%;margin-top:calc(-180vw * 132 / 400 * .606)">${scene('me')}</div>
       <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#FFF6DE 0%,#FCE6B8 45%,#F2B872 100%);opacity:0"></div>
-      <p style="position:absolute;left:24px;right:24px;top:50%;margin:-24px 0 0;text-align:center;font:600 26px/1.2 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em;color:#171512;opacity:0">Vous êtes dans le <em style="font:900 italic 1em 'Archivo','Helvetica Neue',Arial,sans-serif;color:#10392B;padding:0 .06em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%)">marché</em>.</p>`;
+      <p style="position:absolute;left:24px;right:24px;top:50%;margin:-24px 0 0;text-align:center;font:600 26px/1.2 Jost,sans-serif;letter-spacing:-.015em;color:#171512;opacity:0">Vous êtes dans le <em style="font:900 italic 1em Jost,sans-serif;color:#10392B;padding:0 .06em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%)">marché</em>.</p>`;
     document.body.appendChild(ov);
     const [sc, flash, txt] = ov.children, E = 'cubic-bezier(.22,1,.36,1)';
     ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, fill: 'forwards' }).onfinish = dessous;  // ce qui était dessous (la fenêtre de connexion) se ferme une fois couvert
@@ -279,7 +279,7 @@
     ov.style.cssText = 'position:fixed;inset:0;z-index:10050;background:radial-gradient(120% 80% at 50% 60%,#2a2219 0%,#120f0b 70%);overflow:hidden;opacity:0';
     ov.innerHTML = `<div class="pt" data-etat="ok" data-mode="in" style="position:absolute;left:-40%;width:180%;top:46%;aspect-ratio:400/132;transform-origin:50% 60.6%;margin-top:calc(-180vw * 132 / 400 * .606);transform:scale(12)">${scene('ms')}</div>
       <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#FFF6DE 0%,#FCE6B8 45%,#F2B872 100%)"></div>
-      <p style="position:absolute;left:24px;right:24px;top:50%;margin:-24px 0 0;text-align:center;font:600 26px/1.2 'Archivo','Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em;color:#171512">À bientôt au <em style="font:900 italic 1em 'Archivo','Helvetica Neue',Arial,sans-serif;color:#10392B;padding:0 .06em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%)">marché</em>.</p>`;
+      <p style="position:absolute;left:24px;right:24px;top:50%;margin:-24px 0 0;text-align:center;font:600 26px/1.2 Jost,sans-serif;letter-spacing:-.015em;color:#171512">À bientôt au <em style="font:900 italic 1em Jost,sans-serif;color:#10392B;padding:0 .06em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%)">marché</em>.</p>`;
     document.body.appendChild(ov);
     const [sc, lumiere, txt] = ov.children;
     ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-out', fill: 'forwards' }).onfinish = dessous;

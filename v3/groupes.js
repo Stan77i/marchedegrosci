@@ -24,7 +24,7 @@
 .gr-bg{position:fixed;inset:0;z-index:2147483000;background:rgba(10,24,18,.5);display:flex;align-items:flex-end;justify-content:center;animation:grIn .2s ease-out}
 @keyframes grIn{from{opacity:0}}@keyframes grUp{from{transform:translateY(40px);opacity:.4}}
 .gr{position:relative;width:100%;max-width:560px;max-height:94dvh;overflow:auto;overscroll-behavior:contain;background:#F3EFE4;color:#171512;border-radius:24px 24px 0 0;padding:20px 16px calc(24px + env(safe-area-inset-bottom));font:400 15px/1.45 Jost,system-ui,sans-serif;color-scheme:light;animation:grUp .28s cubic-bezier(.2,.8,.2,1)}
-.gr-h{display:flex;align-items:flex-start;gap:10px;margin:0 0 6px}.gr-h h2{flex:1;margin:0;font:600 23px/1.15 Archivo,'Helvetica Neue',Arial,sans-serif;letter-spacing:-.015em}.gr-h h2:focus{outline:none}
+.gr-h{display:flex;align-items:flex-start;gap:10px;margin:0 0 6px}.gr-h h2{flex:1;margin:0;font:600 23px/1.15 Jost,sans-serif;letter-spacing:-.015em}.gr-h h2:focus{outline:none}
 .gr-h h2 em{font-weight:900;font-style:italic;background:linear-gradient(transparent 58%,#F2C230 58%);padding:0 2px}
 .gr-x{flex:none;width:44px;height:44px;margin:-8px -6px 0 0;border:0;border-radius:22px;background:transparent;color:#171512;font-size:26px;line-height:1;cursor:pointer}
 .gr button:focus-visible,.gr input:focus-visible,.gr select:focus-visible,.gr-x:focus-visible{outline:3px solid #10392B;outline-offset:2px}
@@ -32,14 +32,14 @@
 .gr-seg{display:flex;gap:6px;margin:6px 0 12px}.gr-seg button{flex:1;min-height:44px;border:1px solid #D9D1BE;border-radius:22px;background:#FFF;color:#171512;font:500 14px Jost,system-ui,sans-serif;cursor:pointer}
 .gr-seg button[aria-pressed=true]{background:#10392B;border-color:#10392B;color:#FFFDF8}
 .gr-c{display:block;width:100%;text-align:left;background:#FFFDF8;border:0;border-radius:20px;padding:14px 16px;margin:0 0 10px;box-shadow:0 1px 0 rgba(16,57,43,.08);font:inherit;color:inherit;cursor:pointer}
-.gr-c b{display:block;font:600 16px/1.25 Archivo,'Helvetica Neue',Arial,sans-serif}.gr-c small{display:block;color:#5E5546;font-size:13px;margin-top:2px}
+.gr-c b{display:block;font:600 16px/1.25 Jost,sans-serif}.gr-c small{display:block;color:#5E5546;font-size:13px;margin-top:2px}
 .gr-t{display:inline-flex;align-items:center;min-height:22px;margin:6px 6px 0 0;padding:0 9px;border-radius:11px;font-size:12px;font-weight:600;background:#ECE6D6;color:#3E382C}
 .gr-t.v{background:#DCEFE3;color:#10392B}.gr-t.j{background:#FFF1C2;color:#5C4500}.gr-t.r{background:#FBE3DE;color:#8E2A1C}.gr-t.g{background:#E9E4D3;color:#5E5546}
 .gr-jauge{position:relative;height:12px;border-radius:6px;background:#E3DCCB;margin:10px 0 4px;overflow:hidden}.gr-jauge i{position:absolute;inset:0 auto 0 0;background:#10392B;border-radius:6px}
 .gr-jauge b{position:absolute;top:-2px;bottom:-2px;width:2px;background:#F2C230}
 .gr-bloc{background:#FFFDF8;border-radius:20px;padding:14px 16px;margin:0 0 10px}
-.gr-bloc h3{margin:0 0 6px;font:600 16px/1.2 Archivo,'Helvetica Neue',Arial,sans-serif}
-.gr-px{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.gr-px strong{font:800 28px/1 Archivo,'Helvetica Neue',Arial,sans-serif;color:#10392B}.gr-px small{color:#5E5546;font-size:13px}
+.gr-bloc h3{margin:0 0 6px;font:600 16px/1.2 Jost,sans-serif}
+.gr-px{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.gr-px strong{font:800 28px/1 Jost,sans-serif;color:#10392B}.gr-px small{color:#5E5546;font-size:13px}
 .gr-pal{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px}.gr-pal li{display:flex;justify-content:space-between;padding:7px 10px;border-radius:10px;background:#F3EFE4;font-size:14px}
 .gr-pal li.on{background:#DCEFE3;color:#10392B;font-weight:600}
 .gr-dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:14px}.gr-dl dt{color:#5E5546}.gr-dl dd{margin:0;text-align:right;font-weight:600}
@@ -51,7 +51,7 @@
 .gr-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .gr-err{margin:8px 0 0;color:#8E2A1C;font-size:13.5px;font-weight:600}.gr-note{margin:6px 0 0;color:#5E5546;font-size:13px}
 .gr-conf{margin:10px 0 0;padding:12px 14px;border-radius:16px;background:#FFF6D6;box-shadow:inset 0 0 0 1.5px #E6C65C;font-size:14px}
-.gr-vide{text-align:center;padding:18px 8px;color:#4A4336}.gr-vide b{display:block;font:600 17px/1.25 Archivo,'Helvetica Neue',Arial,sans-serif;color:#171512;margin:6px 0 4px}
+.gr-vide{text-align:center;padding:18px 8px;color:#4A4336}.gr-vide b{display:block;font:600 17px/1.25 Jost,sans-serif;color:#171512;margin:6px 0 4px}
 @media (max-width:340px){.gr-2{grid-template-columns:1fr}}
 .gr form{background:none;box-shadow:none;border:0;padding:0;margin:0;border-radius:0}
 @media (prefers-reduced-motion:reduce){.gr-bg,.gr{animation:none!important}}`;
@@ -199,7 +199,7 @@
         <div class="gr-2"><label>Objectif (${esc(o.unit)})<input type="number" inputmode="decimal" min="1" max="${esc(o.quantity)}" step="any" name="obj" required></label>
           <label>Participants minimum<input type="number" inputmode="numeric" min="2" max="50" step="1" name="min" value="3"></label></div>
         <label>Date limite d’inscription<input type="datetime-local" name="lim" min="${dans(0.3)}" max="${dans(30)}" value="${dans(5)}"></label>
-        ${vend ? '<h3 style="margin:6px 0 0;font:600 15px Archivo,sans-serif">Réductions selon le volume (facultatif)</h3>' + formPaliers(o) : `<label>Ma quantité (${esc(o.unit)})<input type="number" inputmode="decimal" min="0.01" step="any" name="mq" required></label>`}
+        ${vend ? '<h3 style="margin:6px 0 0;font:600 15px Jost,sans-serif">Réductions selon le volume (facultatif)</h3>' + formPaliers(o) : `<label>Ma quantité (${esc(o.unit)})<input type="number" inputmode="decimal" min="0.01" step="any" name="mq" required></label>`}
         <p class="gr-err" data-err role="alert"></p><button class="gr-b" type="submit">${vend ? 'Ouvrir le groupe' : 'Proposer au vendeur'}</button></form>`;
     lierRetour(box);
     box.querySelector('form').onsubmit = async e => {

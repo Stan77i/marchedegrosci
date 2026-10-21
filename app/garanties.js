@@ -57,7 +57,7 @@
 .gr-l.entre{animation:grIn .5s cubic-bezier(.22,1,.36,1) both}.gr-l.sort{animation:grOut .32s cubic-bezier(.55,0,.75,.2) both}
 @keyframes grIn{from{opacity:0;transform:translateY(9px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
 @keyframes grOut{to{opacity:0;transform:translateY(-9px);filter:blur(3px)}}
-.gr-ligne{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;margin:0;padding:10px 14px;border:1px solid rgba(23,21,18,.1);border-radius:14px;background:rgba(16,57,43,.05);color:#10392B;font:500 14px/1.35 Jost,system-ui,sans-serif;text-align:left;cursor:pointer}
+.gr-ligne{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;margin:0;padding:10px 14px;border:1px solid var(--gr-l-bd,rgba(23,21,18,.1));border-radius:14px;background:var(--gr-l-bg,rgba(16,57,43,.05));color:var(--gr-l-fg,#10392B);font:500 14px/1.35 Jost,system-ui,sans-serif;text-align:left;cursor:pointer}
 .gr-ligne svg{flex:none}.gr-ligne span{flex:1;min-width:0}.gr-ligne b{font-weight:600}
 .gr-ligne:focus-visible{outline:2px solid #10392B;outline-offset:2px}
 .gr-fond{position:fixed;inset:0;z-index:9300;background:rgba(8,7,5,.55);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:grFond .25s ease both}

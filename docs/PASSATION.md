@@ -209,6 +209,14 @@
 - J'ai / Je cherche restent en bas, comme avant. Le propriétaire a demandé une proposition à valider avant d'y toucher.
 - Code : `accueil()` dans `application.dc.html` (état `accTab`), styles `.acc-*` dans `css/mgci-app.css`. La roue ne dépend plus que de la largeur (la page défile).
 
+**Effets de l'accueil** (demande du propriétaire : « tout ce qui est beau, utile et attractif »)
+- Ces effets sont écrits pour l'app : aucun code n'est repris de la page de référence.
+- Onglets : la pastille verte glisse d'un onglet à l'autre (`.acc-ong-ind`, `--i`).
+- Arrivée en cascade (montée en fondu) de la salutation, de la carte orbitale, des cartes et des lignes, à l'ouverture et à chaque changement d'onglet.
+- Chiffres qui défilent jusqu'à leur valeur : `<mdg-nb data-v>` dans `app/effets.js`. Le défilement démarre seulement quand le chiffre est à l'écran.
+- Appui : les cartes et les boutons s'enfoncent légèrement. Décor de fins cercles concentriques dans le coin des cartes, et icônes avec un léger dégradé.
+- Rien ne bouge si le téléphone demande moins d'animations.
+
 ## 5. En attente d'une décision du propriétaire
 
 

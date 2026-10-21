@@ -82,6 +82,12 @@
 .rp-big button:active{transform:scale(.9)}.rp-big svg{width:100%;height:100%}.rp-big path{fill:rgba(23,21,18,.14);transition:fill .2s}.rp-big button.on path{fill:#F2C94C}.rp-big button.pop{animation:rpPop .35s cubic-bezier(.22,1,.36,1)}
 .rp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 16px}.rp-stats div{padding:12px 10px;border-radius:16px;background:rgba(23,21,18,.04);box-shadow:inset 0 0 0 1px rgba(23,21,18,.08);text-align:center}
 .rp-stats b{display:block;font:800 22px/1 'Archivo','Helvetica Neue',Arial,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}.rp-stats small{display:block;margin-top:4px;color:#655C4D;font-size:12px;line-height:1.25}
+.rp-rep{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rp-rep-c{background:#FFFDF8;border-radius:14px;padding:11px 12px;min-width:0}.rp-rep-c h4{margin:0 0 4px;font:600 14px/1.2 Archivo,'Helvetica Neue',Arial,sans-serif;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.rp-rep-c p{margin:0 0 6px;font-size:13px;color:#4A4336}.rp-rep-c ul{list-style:none;margin:0;padding:0;font-size:13px;color:#4A4336}.rp-rep-c li{padding:3px 0;border-top:1px solid #ECE6D6}.rp-rep-c li b{color:#171512}
+.rp-fiable{display:inline-flex;align-items:center;min-height:20px;padding:0 8px;border-radius:10px;background:#10392B;color:#F2C230;font:700 11px/1 Jost,sans-serif;letter-spacing:.04em}
+.rp-rep-n{margin:8px 0 0;font-size:12.5px;color:#5E5546}.rp-rep-ens{color:#10392B;font-weight:600;font-size:13.5px}
+.rp-av-r{display:block;margin:2px 0 0 34px;font-size:12px;color:#5E5546}
+@media (max-width:330px){.rp-rep{grid-template-columns:1fr}}
 .rp-sec{margin:18px 0 0}.rp-sec h3{margin:0 0 8px;font:600 11px Jost,sans-serif;letter-spacing:.16em;color:#655C4D;text-transform:uppercase}
 .rp-bio{margin:0;color:#2A251E;font-size:15px;line-height:1.55;white-space:pre-wrap}
 .rp-tags{display:flex;flex-wrap:wrap;gap:6px}.rp-tags span{padding:5px 11px;border-radius:999px;background:rgba(23,21,18,.07);color:#2A251E;font-size:13px}
@@ -139,7 +145,7 @@
   async function noter(uid, nom, apres) {
     if (!N() || !N().session()) return N() && N().open();
     let deja = null; try { deja = await N().rpc('peut_noter', { p_cible: uid }); } catch (_) {}
-    if (deja && !deja.peut) return N().toast('Vous pourrez noter ' + (nom || 'ce membre') + ' après avoir négocié ensemble.');
+    if (deja && !deja.peut) return N().toast(deja.raison === 'apres_commande' ? 'Les avis se donnent après une commande terminée, depuis Mes commandes.' : 'Vous pourrez noter ' + (nom || 'ce membre') + ' après une commande terminée ensemble.');
     const star = '<svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8L10 14.9 4.8 17.6l1-5.8L1.6 7.7l5.8-.8z"/></svg>';
     const bg = feuille(`<h2>Noter ${esc(nom || 'ce membre')}</h2><p>Votre note aide les autres à choisir avec qui échanger. Vous pourrez la changer plus tard.</p>
       <div class="rp-big" role="radiogroup" aria-label="Note">${[1, 2, 3, 4, 5].map(i => `<button type="button" role="radio" aria-checked="false" aria-label="${i} étoile${i > 1 ? 's' : ''}" data-n="${i}">${star}</button>`).join('')}</div>
@@ -153,7 +159,7 @@
       const rf = N().texteRefus ? N().texteRefus(bg.querySelector('textarea').value) : ''; if (rf) { bg.querySelector('.rp-msg').textContent = rf; return; }
       go.disabled = true; go.textContent = 'Publication…';
       try { await N().rpc('noter', { p_cible: uid, p_note: n, p_texte: bg.querySelector('textarea').value.trim() || null }); delete notes[uid]; charger([uid]); bg.fermer(); N().toast('Merci, votre note est publiée.'); apres && apres(); }
-      catch (x) { go.disabled = false; go.textContent = 'Publier ma note'; bg.querySelector('.rp-msg').textContent = /PAS_DE_NEGOCIATION/.test(x.message) ? 'Vous pourrez noter ce membre après avoir négocié ensemble.' : x.code === 'texte' ? x.message : 'La publication n’a pas abouti. Réessayez.'; }
+      catch (x) { go.disabled = false; go.textContent = 'Publier ma note'; bg.querySelector('.rp-msg').textContent = /PAS_DE_NEGOCIATION|AVIS_APRES_COMMANDE/.test(x.message) ? 'Les avis se donnent après une commande terminée, depuis Mes commandes.' : x.code === 'texte' ? x.message : 'La publication n’a pas abouti. Réessayez.'; }
     };
   }
 
@@ -186,6 +192,19 @@
       v.onclick = e => { if (e.target === v) fin(); }; addEventListener('keydown', cle); document.body.appendChild(v); peindre();
     });
   }
+  // ——— réputation par rôle (schéma 32) : calculée par le serveur, sur les commandes ; « vérifié » n'est pas « fiable » ———
+  function blocReputation(r, moi) {
+    if (!r) return '<div class="rp-vide">Réputation indisponible pour l’instant.</div>';
+    const col = (t, x) => { x = x || {}; const n = x.terminees || 0;
+      return `<div class="rp-rep-c"><h4>${t}${x.fiable ? ' <span class="rp-fiable">Fiable</span>' : ''}</h4>
+        <p>${x.avis ? etoiles(+x.note, x.avis, 13) + ' ' + String(x.note).replace('.', ',') + ' · ' + x.avis + ' avis' : 'Pas encore noté'}</p>
+        <ul><li><b>${n}</b> commande${n > 1 ? 's' : ''} honorée${n > 1 ? 's' : ''}</li><li><b>${x.annulations_demandees || 0}</b> annulation${x.annulations_demandees > 1 ? 's' : ''} demandée${x.annulations_demandees > 1 ? 's' : ''}</li><li><b>${x.litiges_contre || 0}</b> litige${x.litiges_contre > 1 ? 's' : ''} ouvert${x.litiges_contre > 1 ? 's' : ''} par l’autre partie</li></ul></div>`; };
+    const vide = !(r.vendeur && r.vendeur.total) && !(r.acheteur && r.acheteur.total);
+    return `<div class="rp-rep">${col('Comme vendeur', r.vendeur)}${col('Comme acheteur', r.acheteur)}</div>
+      ${r.delai_median_h != null ? `<p class="rp-rep-n">Délai médian entre la confirmation et la réception : <b>${r.delai_median_h < 48 ? r.delai_median_h + ' h' : Math.round(r.delai_median_h / 24) + ' jours'}</b> (${r.delai_n} commandes).</p>` : ''}
+      ${!moi && r.ensemble ? `<p class="rp-rep-n rp-rep-ens">Vous avez terminé ${r.ensemble} commande${r.ensemble > 1 ? 's' : ''} ensemble.</p>` : ''}
+      <p class="rp-rep-n">${vide ? 'Aucune commande suivie dans l’application pour l’instant. ' : ''}« Fiable » : ${esc(r.criteres_fiable || '')}. Une identité vérifiée ne veut pas dire fiable : ce sont deux choses différentes.</p>`;
+  }
   async function profil(uid, o = {}) {
     if (!uid) return;
     const moi = N() && N().session() && N().session().user.id === uid;
@@ -196,7 +215,8 @@
       const z = bg.querySelector('[data-org]'); if (!z || !st || !st.nom) return;
       z.innerHTML = carteStructure(st, uid); lierPreuves(z, st.preuves || []);
     }).catch(() => {});
-    const [liste, pp] = await Promise.all([N().rpc('avis_de', { p_cible: uid }, auth).catch(() => []), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null)]);
+    const repP = N().rpc('reputation_publique', { p_uid: uid }, auth).catch(() => null);
+    const [liste, pp] = await Promise.all([N().rpc('avis_de2', { p_cible: uid }, auth).catch(() => N().rpc('avis_de', { p_cible: uid }, auth)).catch(() => []), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null)]);
     if (!bg.isConnected) return;
     const nb = (liste || []).length, moy = nb ? liste.reduce((s, a) => s + a.note, 0) / nb : 0, rep = [5, 4, 3, 2, 1].map(k => liste.filter(a => a.note === k).length);
     // compte officiel (l'administrateur) : « Marché de Gros », sans étoiles ni avis (supabase/schema-20)
@@ -212,6 +232,7 @@
       haut += `<div class="rp-stats"><div><b>${fq(pp.ventes || 0)}</b><small>vente${pp.ventes > 1 ? 's' : ''} conclue${pp.ventes > 1 ? 's' : ''}</small></div><div><b>${fq(pp.achats || 0)}</b><small>achat${pp.achats > 1 ? 's' : ''}</small></div><div><b>${fq(enLigne)}</b><small>annonce${enLigne > 1 ? 's' : ''} en ligne · ${fq(pp.annonces_total || 0)} en tout</small></div></div>`;
       // statuts gagnés (v3/statuts.js) : ce que chacun prouve
       if (window.MDGStatut) haut += `<div class="rp-sec"><h3>Ses statuts</h3><div data-st>${MDGStatut.detail(uid) || (window.MDGSac ? MDGSac.charge('', { t: 44 }) : '<div class="rp-vide">Chargement…</div>')}</div></div>`;
+      if (!off) haut += `<div class="rp-sec"><h3>Réputation sur les commandes</h3><div data-rep>${window.MDGSac ? MDGSac.charge('', { t: 44 }) : ''}</div></div>`;
       if (pp.bio) haut += `<div class="rp-sec"><h3>${pp.role === 'acheteur' ? 'Acheteur' : pp.role === 'vendeur' ? 'Vendeur' : pp.role === 'les_deux' ? 'Vendeur et acheteur' : 'Présentation'}${pp.ville || pp.region_slug ? ' · ' + esc(pp.ville || REGN(pp.region_slug)) : ''}</h3><p class="rp-bio">${esc(pp.bio)}</p></div>`;
       if (pp.activites) haut += `<div class="rp-sec"><h3>Ses activités</h3><div class="rp-tags">${pp.activites.split(/[,;·\n]/).map(x => x.trim()).filter(Boolean).slice(0, 12).map(x => `<span>${esc(x)}</span>`).join('')}</div></div>`;
       if (pp.photos && pp.photos.length) haut += `<div class="rp-sec"><h3>En images</h3><div class="rp-ph">${pp.photos.map(p => `<img src="${esc(photoUrl(p))}" alt="" loading="lazy">`).join('')}</div></div>`;
@@ -228,11 +249,12 @@
       if (!off) haut += `<div class="rp-sec"><h3>Avis</h3></div>`;
     }
     bg.querySelector('[data-pp]').innerHTML = haut;
+    repP.then(r => { const z = bg.querySelector('[data-rep]'); if (z) z.innerHTML = blocReputation(r, moi); });
     if (window.MDGStatut && bg.querySelector('[data-st]')) { const majSt = () => { const z = bg.querySelector('[data-st]'); if (!bg.isConnected || !z) return removeEventListener('mdg:rep', majSt); z.innerHTML = MDGStatut.detail(uid) || '<div class="rp-vide">Pas encore de statut : ce membre commence sur le Marché de Gros.</div>'; }; addEventListener('mdg:rep', majSt); }
     bg.querySelector('[data-corps]').innerHTML = off ? (moi ? '' : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire au Marché de Gros</button>` : ''}</div>`) : ((nb ? `<div class="rp-score"><strong>${moy.toFixed(1).replace('.', ',')}</strong><span>${etoiles(moy, nb, 15)}${nb} avis</span><div class="rp-barres">${rep.map((c, i) => `<div><em style="font-style:normal">${5 - i}</em><i><b style="width:${nb ? c / nb * 100 : 0}%"></b></i></div>`).join('')}</div></div>
-      <div class="rp-av">${liste.map(a => `<article><header>${avatar(a.auteur, a.avatar, a.auteur, 26)}<b>${esc(a.auteur)}</b>${etoiles(a.note, 1, 11)}<small>${quand(a.quand)}</small></header>${a.texte ? `<p>${esc(a.texte)}</p>` : ''}</article>`).join('')}</div>`
-      : `<div class="rp-vide">${moi ? 'Vous n’avez pas encore d’avis. Ils arrivent quand vos partenaires vous notent après une négociation.' : 'Pas encore d’avis. Négociez avec ce membre pour pouvoir le noter.'}</div>`)
-      + (moi ? `<button type="button" class="rp-go" data-modif>Modifier mon profil public</button>` : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire</button>` : ''}<button type="button" class="rp-go" data-noter>Noter ${esc(o.nom || 'ce membre')}</button></div>`));
+      <div class="rp-av">${liste.map(a => `<article><header>${avatar(a.auteur, a.avatar, a.auteur, 26)}<b>${esc(a.auteur)}</b>${etoiles(a.note, 1, 11)}<small>${quand(a.quand)}</small></header>${a.role ? `<span class="rp-av-r">comme ${a.role === 'vendeur' ? 'vendeur' : 'acheteur'}${a.produit ? ' · ' + esc(a.produit) : ''}</span>` : ''}${a.texte ? `<p>${esc(a.texte)}</p>` : ''}</article>`).join('')}</div>`
+      : `<div class="rp-vide">${moi ? 'Vous n’avez pas encore d’avis. Ils arrivent quand vos partenaires vous notent après une commande terminée.' : 'Pas encore d’avis. Les avis se donnent après une commande terminée, depuis Mes commandes.'}</div>`)
+      + (moi ? `<button type="button" class="rp-go" data-modif>Modifier mon profil public</button>` : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire</button>` : ''}</div>`));
     const b = bg.querySelector('[data-noter]'); if (b) b.onclick = () => { bg.fermer(); noter(uid, o.nom, () => profil(uid, o)); };
     const e = bg.querySelector('[data-ecrire]'); if (e) e.onclick = () => { bg.fermer(); MDGMessages.ecrire(uid, { nom: o.nom, avatar: o.avatar }); };
     const m = bg.querySelector('[data-modif]'); if (m) m.onclick = () => { bg.fermer(); modifier(pp || {}, () => profil(uid, o)); };

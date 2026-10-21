@@ -12,7 +12,9 @@
 //  6. par la base (déclencheur public.push_identite) quand un dossier d'identité est envoyé, avec { identite_id },
 //     et chaque matin (pg_cron) avec { resume_identites: true } : les administrateurs sont prévenus (schema-19) ;
 //  7. par la base (déclencheur public.push_commande) à chaque étape d'une commande, avec { commande_etape_id } :
-//     l'autre partie est prévenue (schema-26).
+//     l'autre partie est prévenue (schema-26) ;
+//  8. par la base (déclencheur public.push_mission) pour une mission de transport, avec { mission_id } (schema-27) ;
+//  9. par la base (déclencheur public.push_transporteur) quand l'équipe décide d'un profil de transporteur, avec { transporteur_id }.
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
 import webpush from "npm:web-push@3.6.7";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -148,6 +150,40 @@ Deno.serve(async (req) => {
       const res = [];
       for (const d of dests) res.push(await envoyer(d, { title, body, tag: "cmd-" + k.id, url: "application.dc.html#/?commande=" + k.id }));
       return json({ res });
+    }
+
+    // 8. une mission de transport ({ mission_id }, déclencheur public.push_mission, schema-27) :
+    //    proposée → le chauffeur est prévenu ; acceptée ou refusée → l'acheteur et le vendeur sont prévenus
+    if (corps.mission_id) {
+      const { data: m } = await sb.from("transport_missions").select("id, commande_id, transporteur_id, statut").eq("id", String(corps.mission_id)).maybeSingle();
+      if (!m) return json({ erreur: "mission introuvable" }, 404);
+      const { data: t } = await sb.from("transporteurs").select("user_id, nom").eq("id", m.transporteur_id).maybeSingle();
+      const { data: k } = await sb.from("commandes").select("id, vendeur_id, acheteur_id, produit, ville_depart, lieu_livraison").eq("id", m.commande_id).maybeSingle();
+      if (!t || !k) return json({ rien: true });
+      const produit = k.produit || "une commande";
+      if (m.statut === "proposee") {
+        if (!t.user_id) return json({ rien: true });
+        return json(await envoyer(t.user_id, { title: "Nouvelle mission de transport", body: `${produit} · ${k.ville_depart || "départ à préciser"} → ${k.lieu_livraison || "livraison à préciser"}`, tag: "mission-" + m.id, url: "application.dc.html#/?chauffeur=1" }));
+      }
+      if (m.statut !== "acceptee" && m.statut !== "refusee") return json({ rien: true });
+      const res = [];
+      for (const d of [k.vendeur_id, k.acheteur_id]) res.push(await envoyer(d, {
+        title: m.statut === "acceptee" ? `${t.nom} transportera votre commande` : `${t.nom} a refusé la mission`,
+        body: m.statut === "acceptee" ? produit : `${produit} — choisissez un autre transporteur`, tag: "cmd-" + k.id, url: "application.dc.html#/?commande=" + k.id }));
+      return json({ res });
+    }
+
+    // 9. décision de l'équipe sur un profil de transporteur ({ transporteur_id }, déclencheur public.push_transporteur, schema-27)
+    if (corps.transporteur_id) {
+      const { data: t } = await sb.from("transporteurs").select("user_id, statut").eq("id", String(corps.transporteur_id)).maybeSingle();
+      if (!t || !t.user_id) return json({ rien: true });
+      const T: Record<string, [string, string]> = {
+        verifie: ["Votre profil de transporteur est vérifié", "Vous pouvez vous dire disponible et recevoir des missions."],
+        refuse: ["Profil de transporteur refusé", "Touchez pour voir le motif."],
+        suspendu: ["Profil de transporteur suspendu", "Touchez pour voir le motif."],
+      };
+      const [title, body] = T[t.statut] || ["Votre profil de transporteur a changé", "Touchez pour voir."];
+      return json(await envoyer(t.user_id, { title, body, tag: "transporteur", url: "application.dc.html#/?chauffeur=1" }));
     }
 
     // 5. une nouvelle annonce : ceux qui suivent ce produit sont prévenus

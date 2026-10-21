@@ -42,7 +42,8 @@
 - **Propres à l'app** : `app/sac.js` (le sac personnage), `app/garanties.js` (arguments de confiance), `v3/releve.js` (ventes et relevés), `v3/guide.js`, `v3/alertes.js`, `app/carte-gl.js`, `css/mgci-tokens.css` (couleurs et voix du logo), `css/mgci-app.css`.
 - `admin.html` + `v3/admin.js` : tableau de bord administrateur.
 - `v3/commandes.js` : **Mes commandes** (schéma 26) : une commande par accord, 8 étapes enregistrées par le serveur, validation « sans code » pour l'instant, commission de 3,5 % calculée mais **non prélevée**. Ouverte depuis Mon compte, le bouton « Suivre la commande » d'un accord, ou une notification (`#/?commande=…`).
-- `supabase/schema-*.sql` : chaque changement de base, commenté. Tout jusqu'au **schéma 26** est **déjà appliqué**.
+- `v3/chauffeur.js` : **Espace chauffeur** (schéma 27) : inscription gratuite, code transporteur `T-XXXX` à donner à l'acheteur ou au vendeur, disponibilité (profil vérifié seulement), missions à accepter, arrivée et transbordement. `v3/admin-transport.js` : vues **Transporteurs** et **Commandes** du tableau de bord (vérifier, inscrire un chauffeur sans application, affecter, trancher un litige), branchées sur `admin.js` par `window.MDGAdminExt`.
+- `supabase/schema-*.sql` : chaque changement de base, commenté. Tout jusqu'au **schéma 27** est **déjà appliqué**.
 - Documents :
   - `PORTAGE-SITE.md` : porter l'app vers le site ;
   - `docs/SEQUESTRE.md` : futur paiement ;

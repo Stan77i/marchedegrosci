@@ -36,7 +36,8 @@
     ['transbordement', 'Transbordement'], ['arrivee', 'Chauffeur arrivé'], ['reception', 'Réception confirmée'], ['terminee', 'Commande terminée']];
   const LIB = Object.fromEntries(ETAPES);
   const EV = Object.assign({}, LIB, { creee: 'Commande proposée', refusee: 'Commande refusée', annulation_demandee: 'Annulation demandée',
-    annulation_refusee: 'Annulation refusée', annulee: 'Commande annulée', litige: 'Litige ouvert' });
+    annulation_refusee: 'Annulation refusée', annulee: 'Commande annulée', litige: 'Litige ouvert',
+    transporteur_proposee: 'Transporteur proposé', transporteur_acceptee: 'Transporteur confirmé', transporteur_refusee: 'Le transporteur a refusé', transporteur_retiree: 'Transporteur retiré' });
   const MODES = { reseau: 'Transporteur du réseau Marché de Gros', acheteur: 'Transporteur choisi par l’acheteur', vendeur: 'Transporteur choisi par le vendeur' };
   const ROLE = { vendeur: 'Vendeur', acheteur: 'Acheteur', chauffeur: 'Chauffeur', admin: 'Marché de Gros', systeme: 'Automatique' };
   const PREUVE = { declaration: 'déclaré', gps: 'déclaré avec position', code: 'validé par code', auto: 'automatique', admin: 'équipe' };
@@ -125,7 +126,7 @@
   }
 
   // ——— état ———
-  let bg = null, vue = 'liste', filtre = 'cours', liste = [], journal = {}, sel = null, charge = false, minuteur = null;
+  let lu = false, bg = null, vue = 'liste', filtre = 'cours', liste = [], journal = {}, transport = {}, sel = null, charge = false, minuteur = null;
   const trouve = id => liste.find(x => x.id === id);
   function fermer() { if (!bg) return; bg.remove(); bg = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); }
   const clavier = e => { if (e.key === 'Escape') fermer(); };
@@ -136,12 +137,13 @@
     liste = J(KC(), liste);
     if (navigator.onLine === false) return;
     charge = true;
-    try { liste = (await N().rpc('mes_commandes')) || []; W(KC(), liste); } catch (e) { if (bg) toast('Commandes indisponibles pour l’instant', { type: 'erreur', sous: erreurTxt(e) }); }
+    try { liste = (await N().rpc('mes_commandes')) || []; W(KC(), liste); lu = true; } catch (e) { if (bg) toast('Commandes indisponibles pour l’instant', { type: 'erreur', sous: erreurTxt(e) }); }
     charge = false;
   }
   async function lireJournal(id) {
     if (navigator.onLine === false) return;
-    try { journal[id] = (await N().rpc('commande_journal', { p_id: id })) || []; } catch (_) {}
+    const [j, t] = await Promise.all([N().rpc('commande_journal', { p_id: id }).catch(() => null), N().rpc('commande_transport', { p_id: id }).catch(() => null)]);
+    if (j) journal[id] = j; if (t) transport[id] = t;
   }
   async function rafraichir() {
     if (!bg || document.hidden) return;
@@ -227,7 +229,8 @@
   }
   function peindreDetail(change) {
     const c = trouve(sel), box = bg.querySelector('.cm');
-    if (!c) { vue = 'liste'; return peindreListe(); }
+    // commande pas encore en mémoire (notification touchée) : on attend la réponse du serveur avant de revenir à la liste
+    if (!c) { if (!lu && navigator.onLine !== false) { box.innerHTML = window.MDGSac ? MDGSac.charge('La commande arrive…') : ''; return; } vue = 'liste'; return peindreListe(); }
     const Jr = journal[c.id] || [], L = ordre(c, Jr), p = avance(c, Jr), [titre, sous] = prochaine(c);
     const der = Jr.length ? Jr[Jr.length - 1].at : c.updated_at;
     const fait = k => Jr.find(e => e.evenement === k);
@@ -243,6 +246,7 @@
       <div class="cm-st" role="status" aria-live="polite"><b>${titre}</b>${sous ? `<small>${esc(sous)}</small>` : ''}<small>Dernière actualisation : ${ilya(der)}</small></div>
       ${actions(c)}
       ${c.validation === 'declaration' && ['a_confirmer', 'en_cours'].includes(c.etat) ? `<p class="cm-info"><b>Validation sans code.</b> Le vendeur déclare le chargement, l’acheteur l’arrivée et la réception. Je recommande que le chauffeur crée un compte gratuit sur le Marché de Gros : avec les codes (bientôt), personne ne pourra déclarer une livraison à votre place.</p>` : ''}
+      ${blocTransport(c)}
       <ol class="cm-et">${etapes}</ol>
       <dl class="cm-dl">
         <dt>Quantité</dt><dd>${c.quantite != null ? qte(c.quantite, c.unite) : '—'}</dd>
@@ -259,9 +263,42 @@
     box.querySelector('[data-x]').onclick = fermer;
     box.querySelector('[data-retour]').onclick = () => { sel = null; vue = 'liste'; peindre(); };
     box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => geste(c, b.dataset.g));
+    lierTransport(c, box);
     if (arrive && navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {}
   }
   let dernierEcran = '';
+  // ——— le transport : qui conduit, sa réponse ; l'acheteur ou le vendeur qui choisit tape le code du chauffeur ———
+  function blocTransport(c) {
+    const T = transport[c.id]; if (!T || c.etat === 'annulee') return '';
+    const m = T.mission && T.mission.statut !== 'retiree' ? T.mission : null, qui = c.mode_transport === 'acheteur' ? 'l’acheteur' : 'le vendeur';
+    const etat = !m ? '' : m.statut === 'proposee' ? 'En attente de la réponse du chauffeur' : m.statut === 'acceptee' ? 'A accepté la mission' + (m.avec_application ? '' : ' (inscrit par l’équipe, sans l’application)') : 'A refusé la mission : choisissez un autre transporteur.';
+    const vide = c.mode_transport === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié.' : T.peut_choisir ? 'Demandez son code au chauffeur (exemple : T-4K7P) et tapez-le ici. Il reçoit la mission dans son Espace chauffeur.' : 'En attente du choix de ' + qui + '.';
+    return `<h3 class="cm-h3">Transport</h3><div class="cm-dl" style="grid-template-columns:1fr;gap:6px">
+      ${m ? `<b style="font-weight:600">${esc(m.nom)} · ${esc(m.vehicule)}${m.immatriculation ? ' · ' + esc(m.immatriculation) : ''}</b>
+        <span><span class="cm-tag ${m.verifie ? '' : 'mais'}">${m.verifie ? 'Vérifié par l’équipe' : 'Pas encore vérifié par l’équipe'}</span></span>
+        <small style="color:${m.statut === 'refusee' ? '#8A2414' : '#5E5546'}">${esc(etat)}</small>` : `<small style="color:#5E5546">${esc(vide)}</small>`}
+      ${T.peut_choisir ? `<form class="cm-f" data-trf style="display:flex;gap:8px;margin-top:6px"><input type="text" data-code maxlength="8" placeholder="T-4K7P" aria-label="Code du transporteur" autocapitalize="characters" autocomplete="off" style="flex:1;min-width:0;text-transform:uppercase"><button type="submit" style="min-height:48px;padding:0 18px;border-radius:24px;border:0;background:#10392B;color:#F3EFE4;font:600 15px Jost,sans-serif;cursor:pointer">${m ? 'Changer' : 'Choisir'}</button></form>
+        ${m && m.statut !== 'refusee' ? '<button type="button" data-trx style="all:unset;cursor:pointer;color:#10392B;text-decoration:underline;min-height:44px;display:inline-flex;align-items:center">Retirer ce transporteur</button>' : ''}<p class="cm-err" data-tre role="alert" style="margin:0"></p>` : ''}
+    </div>`;
+  }
+  function lierTransport(c, box) {
+    const f = box.querySelector('[data-trf]');
+    if (f) f.onsubmit = async e => {
+      e.preventDefault();
+      const v = f.querySelector('[data-code]').value.trim(), err = box.querySelector('[data-tre]'), b = f.querySelector('[type=submit]');
+      if (!/^t-?[a-z0-9]{4}$/i.test(v.replace(/\s/g, ''))) { err.textContent = 'Le code ressemble à T-4K7P.'; return; }
+      b.disabled = true; err.textContent = '';
+      try { const r = await N().rpc('commande_choisir_transporteur', { p_cmd: c.id, p_code: v }); toast('Mission envoyée à ' + r.nom, { type: 'ok', sous: 'Il l’accepte dans son Espace chauffeur.' }); await lireJournal(c.id); peindre(); }
+      catch (x) { err.textContent = erreurTxt(x); b.disabled = false; }
+    };
+    const x = box.querySelector('[data-trx]');
+    if (x) x.onclick = async () => {
+      if (!confirm('Retirer ce transporteur de la commande ?')) return;
+      try { await N().rpc('commande_retirer_transporteur', { p_cmd: c.id }); toast('Transporteur retiré', { type: 'ok' }); await lireJournal(c.id); peindre(); }
+      catch (e) { toast(erreurTxt(e), { type: 'erreur' }); }
+    };
+  }
+
   function peindre(change) {
     if (!bg) return;
     const ecran = vue + ':' + (sel || ''), box = bg.querySelector('.cm'), y = box.scrollTop;
@@ -346,7 +383,7 @@
       <p class="cm-sous">${esc(n.produit || '')}${q ? ' · ' + qte(q, u) : ''}${n.prix_final != null ? ' · ' + F(n.prix_final) + ' / ' + esc(u) : ''}</p>
       <form class="cm-f" novalidate>
         <label class="t">Qui transporte la marchandise ?</label>
-        ${Object.entries(MODES).map(([k, l], i) => `<label class="cm-opt"><input type="radio" name="mode" value="${k}"${i === 1 ? ' checked' : ''}><span><b>${l}</b><small>${k === 'reseau' ? 'L’équipe vous proposera un transporteur vérifié (bientôt). En attendant, vous suivez les étapes vous-mêmes.' : k === 'acheteur' ? 'L’acheteur envoie son camion ou son transporteur.' : 'Le vendeur organise la livraison.'}</small></span></label>`).join('')}
+        ${Object.entries(MODES).map(([k, l], i) => `<label class="cm-opt"><input type="radio" name="mode" value="${k}"${i === 1 ? ' checked' : ''}><span><b>${l}</b><small>${k === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié.' : k === 'acheteur' ? 'L’acheteur envoie son camion ou son transporteur (il tape son code transporteur).' : 'Le vendeur organise la livraison (il tape le code de son transporteur).'}</small></span></label>`).join('')}
         <label class="t">Comment valider le chargement et la réception ?</label>
         <label class="cm-opt off"><input type="radio" name="val" value="code" disabled><span><b>Avec codes — le chauffeur a l’application</b><small><span class="cm-tag mais">Recommandé · bientôt</span> Des codes à usage unique prouvent la prise en charge et la réception.</small></span></label>
         <label class="cm-opt"><input type="radio" name="val" value="declaration" checked><span><b>Sans code — nous validons nous-mêmes</b><small>Le vendeur déclare le chargement, l’acheteur l’arrivée et la réception.</small></span></label>
@@ -412,5 +449,5 @@
   addEventListener('online', rafraichir);
   depuisAdresse();
 
-  window.MDGCommandes = { ouvrir, depuisAccord, creer, aAgir: () => J(KC(), []).filter(aAgir).length };
+  window.MDGCommandes = { ouvrir, depuisAccord, creer, css, aAgir: () => J(KC(), []).filter(aAgir).length };
 })();

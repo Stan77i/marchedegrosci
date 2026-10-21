@@ -24,12 +24,15 @@
     site: '<path d=""M4 12h16M12 4c3 3 3 13 0 16M12 4c-3 3-3 13 0 16"/><circle cx="12" cy="12" r="8"/>'
   };
   const LUC = { apercu: 'apercu', traiter: 'traiter', annonces: 'activite', comptes: 'comptes', negos: 'negoce', messages: 'messages', identites: 'verifie', site: 'site' };   // app/icones.js
-  const ico = k => { const L = window.MDGIco && LUC[k] && window.MDGIco.corps(LUC[k]);
+  // vues ajoutées par d'autres fichiers (v3/admin-transport.js : transporteurs et commandes), sans alourdir celui-ci
+  const EXT = window.MDGAdminExt || {};
+  const ico = k => { const lk = LUC[k] || (EXT[k] && EXT[k].ico), L = window.MDGIco && lk && window.MDGIco.corps(lk);
     return L ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${L}</svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">${ICO[k]}</svg>`; };
   // badge du compte officiel (même sceau partout dans le tableau de bord)
   const BADGE = '<span class="badge-off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 4.5 3.4 7.8 8 9 4.6-1.2 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>Administrateur · Officiel</span>';
   const RELIRE = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 5v6h-6"/></svg>';
   let toastT = 0;
+  const H = { esc, fmt, ago, date, REG, PROD, toast: m => toast(m), rpc: (f, a) => N.rpc(f, a), relire: async () => { await load(); paint(); }, repeindre: () => paint(), top: (t, p, x) => top(t, p, x) };
   function toast(m) { let el = document.querySelector('.toast'); if (!el) { el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); } el.textContent = m; el.style.opacity = '1'; clearTimeout(toastT); toastT = setTimeout(() => { el.style.opacity = '0'; }, 4000); }
 
   /* ——— porte d'entrée ——— */
@@ -60,7 +63,8 @@
       N.rpc('admin_signalements_membres').then(r => { D.sigm = r || []; delete D.err.sigm; }).catch(e => { D.sigm = []; if (!/admin_signalements_membres|schema cache|Could not find/i.test(e.message)) D.err.sigm = e.message; }),
       // admin_identite_dossiers (schéma 16 : dates d'expiration, numéro) ; sinon l'ancienne liste
       N.rpc('admin_identite_dossiers').catch(e => { if (/admin_identite_dossiers|schema cache|Could not find/i.test(e.message)) return N.rpc('admin_identite_file'); throw e; })
-        .then(r => { D.ident = r || []; delete D.err.identites; }).catch(e => { D.ident = []; if (!/admin_identite_file|schema cache|Could not find/i.test(e.message)) D.err.identites = e.message; else D.identAbsent = true; })
+        .then(r => { D.ident = r || []; delete D.err.identites; }).catch(e => { D.ident = []; if (!/admin_identite_file|schema cache|Could not find/i.test(e.message)) D.err.identites = e.message; else D.identAbsent = true; }),
+      ...Object.entries(EXT).map(([k, x]) => x.charger ? x.charger(H).then(() => { delete D.err[k]; }).catch(e => { D.err[k] = e.message; }) : null)
     ]);
     // permis sans date de fin (schéma 21) : le badge vaut 5 ans, l'administrateur vérifie sur la photo qu'aucune date n'est écrite
     try { const sf = new Set(((await N.rpc('admin_identite_sans_fin')) || []).map(x => typeof x === 'string' ? x : x.admin_identite_sans_fin)); D.ident.forEach(v => { v.sans_fin = sf.has(v.id); }); } catch (_) {}
@@ -102,10 +106,10 @@
     const nav = (k, t, n) => `<a class="nav" href="#${k}" ${view === k ? 'aria-current="page"' : ''}>${ico(k)}<span>${t}</span>${n ? `<em>${n}</em>` : ''}</a>`;
     root.innerHTML = `<div class="app"><nav class="rail" aria-label="Tableau de bord">
       <a class="brand" href="#apercu" aria-label="Marché de Gros, tableau de bord administrateur">${window.MDGMarque ? MDGMarque.ligne({ fond: 'vert', h: 22 }) : '<b>Marché de Gros</b>'}${BADGE}</a>
-      <div class="navs"><a class="nav retour" href="application.dc.html" aria-label="Retour à l’application"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span>Application</span></a>${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}${nav('messages', 'Messages', D.alertes.filter(a => !a.vu).length + D.sigm.filter(x => !x.traite).length)}${nav('identites', 'Identités', D.ident.filter(v => v.statut === 'en_attente').length)}</div>
+      <div class="navs"><a class="nav retour" href="application.dc.html" aria-label="Retour à l’application"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg><span>Application</span></a>${nav('apercu', 'Aperçu')}${nav('traiter', 'À traiter', toDo)}${nav('annonces', 'Annonces')}${nav('comptes', 'Comptes')}${nav('negos', 'Négociations')}${nav('messages', 'Messages', D.alertes.filter(a => !a.vu).length + D.sigm.filter(x => !x.traite).length)}${nav('identites', 'Identités', D.ident.filter(v => v.statut === 'en_attente').length)}${Object.entries(EXT).map(([k, x]) => nav(k, x.titre, x.n ? x.n() : 0)).join('')}</div>
       <span class="sp"></span><a class="nav ext" href="application.dc.html">${ico('site')}<span>Voir l’application</span></a>
       <div class="who">Compte officiel, affiché « Marché de Gros » aux membres<b>${esc(fmtTel(N.session().user.tel))}</b></div></nav>
-      <main id="main">${(VIEWS[view] || VIEWS.apercu)({ T, masq, toDo, conclu })}</main></div>`;
+      <main id="main">${VIEWS[view] ? VIEWS[view]({ T, masq, toDo, conclu }) : EXT[view] ? EXT[view].vue(H) : VIEWS.apercu({ T, masq, toDo, conclu })}</main></div>`;
     bind();
   }
   // une partie des données n'a pas pu être lue : une ligne discrète, le détail se déplie
@@ -578,6 +582,7 @@
     const $$ = q => root.querySelectorAll(q);
     $$('[data-ecrire]').forEach(b => b.onclick = () => MDGMessages.ecrire(b.dataset.ecrire, { nom: 'Membre' }));
     bindIdent(root);
+    if (!VIEWS[view] && EXT[view] && EXT[view].lier) EXT[view].lier(root, H);
     $$('[data-vu]').forEach(b => b.onclick = async () => { b.disabled = true; try { await N.api('/rest/v1/alertes?id=eq.' + b.dataset.vu, { method: 'PATCH', auth: true, body: { vu: true }, prefer: 'return=minimal' }); const a = D.alertes.find(x => x.id === b.dataset.vu); if (a) a.vu = true; paint(); } catch (e) { b.disabled = false; toast('Impossible : ' + e.message); } });
     const dg = root.querySelector('[data-difgo]'); if (dg) dg.onclick = async () => { const ta = root.querySelector('[data-dif]'), t = ta.value.trim(); if (!t) return toast('Écrivez d’abord le message.'); if (!confirm('Envoyer ce message à tous les membres ?')) return; dg.disabled = true;
       try { const n = await N.rpc('admin_diffuser', { p_texte: t }); ta.value = ''; toast('Message envoyé à ' + n + ' membre(s).'); await load(); paint(); } catch (e) { dg.disabled = false; toast('Envoi impossible : ' + e.message); } };

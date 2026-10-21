@@ -245,6 +245,11 @@
 - Le mode sombre couvre l'accueil, le menu, les notifications et la page Réglages (`html[data-theme=sombre]` dans `css/mgci-app.css` et `app/toast.js`).
 - **À faire** : les autres pages (fiche produit, Acheter, Vendre, Mon compte…) restent claires pour l'instant. Il faudra les passer une par une.
 
+**Identité du logo : « de Gros » toujours jaune maïs** (règle du propriétaire)
+- Sur fond clair aussi : « marché » est en vert, « de Gros » en maïs `#F2C230`. On ne le passe jamais tout en vert.
+- La version « clair » du logo (`tools/logo/marque.py` → `app/marque.js`) n'a plus de trait maïs sous « de Gros », puisque le mot est déjà maïs.
+- Site : `.mq-site .mq-g` est forcé en maïs (`index-v3.html`).
+
 ## 5. En attente d'une décision du propriétaire
 
 

@@ -179,15 +179,21 @@
     finally { busy &= ~1; }
   }
 
-  /* ——— mon stock : la quantité baisse sur le serveur à chaque vente conclue (schema-12) ; le téléphone la reprend ——— */
+  /* ——— mon stock : la quantité baisse sur le serveur à chaque vente conclue (schema-12) ; le téléphone la reprend ———
+     Offres (J'ai) ET demandes (Je cherche) : 20 t demandées, 10 t convenues → il reste 10 t ; tout convenu → l'annonce sort du marché
+     (offre « épuisée », demande « servie »). Appelé avant tout envoi : le téléphone ne renvoie jamais une ancienne quantité (schéma 52). */
   async function stockDuServeur() {
     const s = session(); if (!s) return;
     try {
-      const rows = await api('/rest/v1/offres?select=client_id,quantity,status&user_id=eq.' + s.user.id + '&limit=500', { auth: true }) || [];
-      const by = new Map(rows.map(r => [r.client_id, r])), em = J(K.e, {}); let bouge = false;
-      const L = J('mdg-v2:offres', []).map(x => { const r = x && by.get(x.id); if (!r || r.status === 'masquee') return x; const q = num(r.quantity), ep = r.status === 'retiree' && !(q > 0);
-        if (q === num(x.quantity) && !!x.epuise === ep) return x; bouge = true; const y = Object.assign({}, x, { quantity: q == null ? x.quantity : q, epuise: ep }); em['offres:' + x.id] = hash(toRow.offres(y)); return y; });
-      if (bouge) { W('mdg-v2:offres', L); W(K.e, em); say('mes'); }
+      const em = J(K.e, {}); let bouge = false;
+      for (const k of ['offres', 'demandes']) {
+        const rows = await api('/rest/v1/' + KIND[k] + '?select=client_id,quantity,status&user_id=eq.' + s.user.id + '&limit=500', { auth: true }) || [];
+        const by = new Map(rows.map(r => [r.client_id, r])), champ = k === 'offres' ? 'epuise' : 'servie'; let b = false;
+        const L = J('mdg-v2:' + k, []).map(x => { const r = x && by.get(x.id); if (!r || r.status === 'masquee') return x; const q = num(r.quantity), ep = r.status === 'retiree' && !(q > 0);
+          if ((q == null || q === num(x.quantity)) && !!x[champ] === ep) return x; b = true; const y = Object.assign({}, x, { quantity: q == null ? x.quantity : q, [champ]: ep }); em[k + ':' + x.id] = hash(toRow[k](y)); return y; });
+        if (b) { W('mdg-v2:' + k, L); bouge = true; }
+      }
+      if (bouge) { W(K.e, em); say('mes'); }
     } catch (_) {}
   }
 
@@ -196,6 +202,7 @@
   async function sync() {
     if (!navigator.onLine || busy & 2 || !session()) return false; busy |= 2; let changed = false, refus = '';
     basculer(session().user.id);
+    await stockDuServeur();   // reprendre d'abord les quantités du serveur (ventes conclues) : jamais renvoyer une ancienne quantité
     try {
       const p = J(K.p, {}), em = J(K.e, {});
       for (const k of ['offres', 'demandes']) {

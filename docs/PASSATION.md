@@ -709,3 +709,26 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Historique : les événements du séquestre (`sequestre_journal`, intouchable) s'ajoutent à `commande_journal` sous le préfixe `sq_`.
 - Notifications (`pousser` v16) : refus → vendeur et chauffeur inscrit prévenus ; clôture → « Commande clôturée ».
 - Testé sur la base (transaction annulée) : dépôt refusé à un membre et à un mauvais montant ; libération 8 000 F → vendeur 5 790 F, transporteur 1 862 F, Marché de Gros 348 F ; refus partiel 4/10 confirmé par le chauffeur → 2 400 F à l'acheteur, commission vendeur 126 F ; refus total avec chauffeur choisi par l'acheteur → attend le vendeur ; clôture automatique après 49 h.
+
+### Règles précisées par le propriétaire (22/10/2026) — schéma 58
+- « Paiement à la livraison » reste écrit (c'est vrai) ; le séquestre est affiché « en construction ». Il protège le vendeur contre ceux qui font venir un camion puis refusent de payer.
+- **Pas de libération automatique** : seul l'acheteur libère, quand il valide. Après 48 h sans réponse, la commande arrive dans la file de l'équipe (« Reçue, l'acheteur n'a ni validé ni refusé ») : bouton « Libérer le paiement » (`admin_liberer`). La tâche `mdg-liberer-echus` est retirée.
+- **L'acheteur ne peut plus annuler** une commande confirmée (le serveur refuse) ; seul le vendeur peut demander l'annulation avant le chargement, l'acheteur l'accepte ou non.
+- **Refus à l'arrivée** (chauffeur arrivé) ou après la réception, tant que rien n'est libéré (`commande_refuser2`). L'ancienne `commande_refuser` demande de mettre l'application à jour.
+- **Mot secret du vendeur** : tiré au hasard à la confirmation (ex. « AVOCAT 70 »), visible seulement par le vendeur (et l'équipe). Il l'écrit sur un papier glissé dans la marchandise. Au refus, l'acheteur le tape (5 essais) et photographie le papier ; ou coche « pas de papier » (l'équipe jugera).
+- **Chauffeur** : sa confirmation ne compte seule que s'il est intégré (inscrit ET vérifié par l'équipe) et que le mot a été retrouvé. Sinon l'équipe juge.
+- **Discussion à trois** (acheteur, vendeur, Marché de Gros) pendant le litige : `litige_messages`, `litige_messages_lire`, `litige_ecrire` (mêmes interdits que les autres messages : pas de numéro, pas de lien). L'équipe répond depuis admin → Commandes → « Discussion ». Notification à chaque message (`pousser` v17). Une partie de la commande écrit toujours sous son rôle, même si son compte est administrateur.
+
+## Le tableau du marché, façon Binance P2P (22/10/2026) — schéma 59, `v3/tableau.js`
+- Nouvel onglet **Prix** sur l'accueil (Marché · Prix · Activité · Alertes). Visible sans compte. J'ai / Je cherche restent sur l'onglet Marché seulement.
+- Vue d'ensemble (`tableau_produits`) : un produit par ligne, « dès X F » (meilleure offre) et « jusqu'à Y F » (meilleur budget), dans l'unité la plus courante ; filtre par zone.
+- Un produit (`tableau_marche`) : onglets **Acheter** (offres, du moins cher au plus cher) et **Vendre** (demandes, du budget le plus haut au plus bas). À prix égal : transport compris d'abord (pour le vendeur : l'acheteur prend le transport), puis fiable, identité vérifiée, commandes honorées, le plus récent. Prix comparés seulement dans la même unité (puces « Prix par régime / par kg »). Badges : Meilleur prix, +X % plus cher, Officiel, ✓ vérifié, ★ fiable, note, commandes honorées.
+- Relu toutes les 30 s (et au retour sur l'onglet) : une annonce qui gagne des places affiche « ↑ monte ».
+- « Acheter » / « Vendre » ouvre la proposition de prix habituelle (`MDGNegoce.proposer`, connexion demandée si besoin). Aucun numéro ni contact : le Marché de Gros est le seul intermédiaire.
+
+## Les échanges ne sont pas secrets : l'équipe lit tout pour juger (22/10/2026) — schéma 60
+- Règle du propriétaire : « Il n'y a pas de conversation secrète. C'est notre plateforme, c'est nous qui mettons en relation. » L'équipe peut et doit lire les échanges pour juger.
+- **Messages directs gardés 1 an** (`dm_duree` = 365 jours ; avant : effacés après 7 jours). Les messages effacés avant ce changement sont perdus. Place : ≈ 0,5 Ko par message, les 500 Mo gratuits tiennent environ un million de messages.
+- **Admin → Commandes → numéro de commande** (ou bouton « Tout voir » sur une commande) : l'accord, la négociation complète (chaque prix proposé, chaque message), les messages directs entre l'acheteur et le vendeur, la discussion à trois, le mot secret, la répartition, l'historique.
+- Les membres sont prévenus : Messages (« Les échanges ne sont pas secrets… gardés 1 an »), Réglages → Confidentialité, écrans de litige. Les textes « l'équipe ne lit pas vos conversations » sont retirés.
+- Le numéro de téléphone reste caché aux autres membres (inchangé).

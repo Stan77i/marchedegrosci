@@ -138,6 +138,21 @@
 .cm-av-l{min-height:20px;font-weight:600;color:#10392B!important}.cm-av-t{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E5546}.cm-av-t textarea{min-height:70px;padding:10px 12px;border:1px solid #D9D1BE;border-radius:12px;background:#FFF;font:400 15px/1.4 Jost,system-ui,sans-serif;color:#171512;resize:vertical}
 .cm-av-f{display:inline-flex;gap:1px;vertical-align:-3px}.cm-av-f i{width:16px;height:16px}.cm-av-f svg{width:100%;height:100%;fill:transparent;stroke:#7D7462;stroke-width:1.4;stroke-linejoin:round}.cm-av-f i.on svg{fill:#F2C230;stroke:#7A5A00}
 .cm-av-recu,.cm-av-fid{margin:10px 0 0!important;padding-top:10px;border-top:1px solid #ECE6D6}.cm-av-fid{color:#10392B!important;font-weight:600}
+/* mot secret du vendeur */
+.cm-mot{display:flex;gap:12px;align-items:flex-start;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:#FFFDF8;box-shadow:inset 0 0 0 1px rgba(16,57,43,.14)}
+.cm-mot>span:first-child{font:normal 22px/1 "Apple Color Emoji","Segoe UI Emoji",sans-serif}.cm-mot small{display:block;font-size:12.5px;color:#5E5546}
+.cm-mot b{display:block;margin:2px 0 4px;font:800 22px/1.1 Jost,sans-serif;letter-spacing:.08em;color:#10392B}
+.cm-mot.fort{background:#F2C230;box-shadow:none}.cm-mot.fort small{color:#3B2E00}
+/* discussion à trois */
+.cm-disc{margin:0 0 12px;padding:14px;border-radius:18px;background:#FFFDF8;box-shadow:inset 0 0 0 1px rgba(16,57,43,.14)}
+.cm-disc h3{margin:0 0 4px;font:600 16px/1.2 Jost,sans-serif}.cm-disc>p{margin:0 0 8px;font-size:12.5px;color:#5E5546}
+.cm-disc ul{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-direction:column;gap:6px}
+.cm-disc li{max-width:86%;padding:8px 10px;border-radius:14px 14px 14px 4px;background:#EFE9DA;font-size:14px}.cm-disc li span{display:block;white-space:pre-wrap}
+.cm-disc li b{font-weight:600;font-size:12.5px}.cm-disc li small{font-size:11.5px;color:#5E5546}
+.cm-disc li.moi{align-self:flex-end;border-radius:14px 14px 4px 14px;background:rgba(16,57,43,.12)}.cm-disc li.mdg{background:rgba(242,194,48,.3)}
+.cm-disc li.vide{max-width:none;background:none;color:#5E5546;font-size:13px;padding:0}
+.cm-disc textarea{width:100%;box-sizing:border-box;min-height:64px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#fff;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512;resize:vertical}
+.cm-disc button{margin-top:6px;min-height:46px;width:100%;border:0;border-radius:23px;background:#10392B;color:#F3EFE4;font:600 15px Jost,sans-serif;cursor:pointer}.cm-disc button:disabled{opacity:.55}
 /* paiement sécurisé (séquestre) */
 .cm-sq{margin:0 0 12px;padding:14px;border-radius:18px;background:#FFFDF8;box-shadow:inset 0 0 0 1px rgba(16,57,43,.14)}
 .cm-sq h3{display:flex;align-items:center;gap:8px;margin:0 0 6px;font:600 16px/1.2 Jost,sans-serif}.cm-sq h3 span{font:normal 18px/1 "Apple Color Emoji","Segoe UI Emoji",sans-serif}
@@ -186,7 +201,8 @@
   const horsLigne = e => navigator.onLine === false || /Failed to fetch|NetworkError|Load failed|network|ERR_INTERNET/i.test(String((e && e.message) || e || ''));
   const erreurTxt = e => { if (horsLigne(e)) return 'Pas de connexion : rien n’a été enregistré. Réessayez quand le réseau revient.'; const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : m || 'Réessayez dans un instant.'; };
 
-  const seq = {};           // commande → séquestre (commande_sequestre, schéma 57)
+  const seq = {};           // commande → séquestre (commande_sequestre, schémas 57-58)
+  const disc = {};          // commande → discussion à trois pendant un litige (litige_messages_lire, schéma 58)
   async function lireListe() {
     if (!N() || !N().session()) return;
     liste = J(KC(), liste);
@@ -203,6 +219,7 @@
       c && c.mode_transport !== 'reseau' ? N().rpc('suivi_lien_etat', { p_cmd: id }).catch(() => null) : null]);
     if (j) journal[id] = j; if (t) transport[id] = t; if (p) pos[id] = p; lien[id] = l || null;
     if (c && ['terminee', 'litige', 'en_cours', 'a_confirmer'].includes(c.etat)) { const s = await N().rpc('commande_sequestre', { p_id: id }).catch(() => null); if (s) seq[id] = s; }
+    if (c && (c.etat === 'litige' || c.refus_le)) { const d = await N().rpc('litige_messages_lire', { p_cmd: id }).catch(() => null); if (d) disc[id] = d; }
     if (c && c.etat === 'terminee') { const a = await N().rpc('avis_commande_moi', { p_cmd: id }).catch(() => null); if (a) avis[id] = a; }
   }
   async function rafraichir() {
@@ -217,7 +234,7 @@
   // ——— la liste ———
   // reçue mais pas encore clôturée (libere_le vaut null seulement avec mes_commandes2 : l'ancienne liste ne le donne pas)
   const aVerifier = x => x.etat === 'terminee' && x.libere_le === null;
-  const dansDelai = x => aVerifier(x) && x.termine_le && Date.parse(x.termine_le) + 48 * 3600e3 > Date.now();
+  const dansDelai = x => aVerifier(x);   // pas de libération automatique (schéma 58) : l'acheteur peut refuser tant qu'il n'a pas libéré
   const enCours = x => x.etat === 'en_cours' || x.etat === 'a_confirmer' || x.etat === 'litige' || aVerifier(x);
   const aAgir = x => (x.etat === 'a_confirmer' && !x.cree_par_moi) || x.annulation === 'autre' || (x.role === 'acheteur' && dansDelai(x))
     || (x.etat === 'en_cours' && ((x.role === 'vendeur' && ['confirmee', 'preparation'].includes(x.etape)) || (x.role === 'acheteur' && ['transport', 'transbordement', 'arrivee'].includes(x.etape))));
@@ -239,7 +256,7 @@
       <div class="cm-li">${charge && !liste.length ? (window.MDGSac ? MDGSac.charge('Vos commandes arrivent…') : '<p>Chargement…</p>')
         : L.length ? L.map(ligneCmd).join('')
         : (window.MDGSac ? MDGSac.vide(filtre === 'cours' ? 'Aucune commande en cours' : 'Rien ici pour l’instant', 'Après un accord conclu, touchez « Suivre la commande » dans la négociation.') : '<p>Aucune commande.</p>')}</div>
-      <p class="cm-note">Le paiement sécurisé (argent bloqué jusqu’à la réception) arrive bientôt. Pour l’instant, aucun paiement ne passe par l’application : payez à la réception, après avoir vu la marchandise.</p>`;
+      <p class="cm-note">Paiement à la livraison, après avoir vu la marchandise. Le séquestre (argent bloqué jusqu’à ce que l’acheteur valide) est en construction.</p>`;
     box.querySelector('[data-x]').onclick = fermer;
     box.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { filtre = b.dataset.f; peindre(); });
     box.querySelectorAll('[data-id]').forEach(b => b.onclick = () => detail(b.dataset.id));
@@ -252,15 +269,15 @@
     if (c.etat === 'annulee') return ['Commande <em>annulée</em>', 'Le stock est revenu sur l’annonce.'];
     const S = seq[c.id], R = S && S.refus;
     if (c.etat === 'litige' && R) {
-      if (c.role === 'acheteur') return ['Refus <em>envoyé</em>', 'Le chauffeur et le vendeur répondent dans l’application. S’ils ne sont pas d’accord, l’équipe tranche avec le numéro de commande.'];
-      if (c.role === 'vendeur') return R.vendeur ? ['Refus <em>contesté</em>', 'L’équipe du Marché de Gros va trancher, avec le numéro de commande et les accords enregistrés.'] : [`${lui} refuse la <em>marchandise</em>`, 'Regardez les photos ci-dessous, puis répondez.'];
+      if (c.role === 'acheteur') return ['Refus <em>envoyé</em>', 'Le vendeur va répondre. S’il n’est pas d’accord, expliquez-vous dans la discussion à trois : l’équipe du Marché de Gros juge.'];
+      if (c.role === 'vendeur') return R.vendeur ? ['Refus <em>contesté</em>', 'Expliquez-vous dans la discussion à trois : l’équipe du Marché de Gros juge avec les photos, le mot secret et le numéro de commande.'] : [`${lui} refuse la <em>marchandise</em>`, 'Regardez les photos ci-dessous, puis répondez. Vous pouvez aussi écrire dans la discussion à trois.'];
     }
     if (c.etat === 'litige') return ['Litige <em>ouvert</em>', 'L’équipe du Marché de Gros examine l’historique de la commande et les accords enregistrés.'];
-    if (aVerifier(c) || (S && S.echeance)) {
-      const fin = S && S.echeance ? quand(S.echeance) : '';
+    if (aVerifier(c) || (S && c.etat === 'terminee' && !S.libere_le)) {
       return c.role === 'acheteur'
-        ? ['Vérifiez la <em>marchandise</em>', `Tout est bon : confirmez. Un problème (gâté, abîmé, manquant) : refusez avec des photos (délai : ${fin || '48 h après la réception'}). Sans réponse, la commande se clôture d’elle-même.`]
-        : ['Réception <em>confirmée</em>', `${lui} vérifie la marchandise (délai : ${fin || '48 h après la réception'}). Ensuite, la commande se clôture.`];
+        ? ['Vérifiez la <em>marchandise</em>', 'Tout est bon : confirmez. C’est vous seul qui libérez le paiement. Un problème (gâté, abîmé, manquant) : refusez avec des photos et le mot du vendeur.']
+        : S && S.sans_reponse ? ['Réception <em>confirmée</em>', `${lui} n’a pas répondu depuis 48 h : l’équipe du Marché de Gros est prévenue et va intervenir.`]
+        : ['Réception <em>confirmée</em>', `${lui} vérifie la marchandise. Lui seul libère le paiement ; sans réponse sous 48 h, l’équipe du Marché de Gros intervient.`];
     }
     if (c.etat === 'terminee' && (c.liberation || (S && S.liberation))) {
       const L = c.liberation || S.liberation, mr = Number(c.montant_refuse || (S && S.montant_refuse) || 0);
@@ -275,13 +292,13 @@
     if (c.validation === 'code') switch (c.etape) {
       case 'confirmee': case 'preparation': if (V) return ['Préparez la <em>marchandise</em>', 'Quand elle est dans le camion, donnez au chauffeur le code de prise en charge (ci-dessous).']; break;
       case 'transport': case 'transbordement': if (!V) return ['Votre marchandise est <em>en route</em>', 'À l’arrivée, vérifiez la marchandise, puis donnez au chauffeur le code de réception (ci-dessous).']; break;
-      case 'arrivee': if (!V) return ['Le chauffeur est <em>arrivé</em>', 'Vérifiez la quantité et la qualité, puis donnez-lui le code de réception.']; break;
+      case 'arrivee': if (!V) return ['Le chauffeur est <em>arrivé</em>', 'Vérifiez la quantité, la qualité et le papier du vendeur, puis donnez-lui le code de réception. Un problème : refusez avec des photos.']; break;
     }
     switch (c.etape) {
       case 'confirmee': return V ? ['Préparez la <em>marchandise</em>', 'Touchez « En préparation », puis « Chargement confirmé » quand le camion est chargé.'] : ['Le vendeur prépare votre <em>marchandise</em>', 'Vous serez prévenu au chargement.'];
       case 'preparation': return V ? ['Marchandise en <em>préparation</em>', 'Confirmez le chargement quand le camion est chargé.'] : ['Marchandise en <em>préparation</em>', 'Prochaine étape : le chargement.'];
       case 'transport': case 'transbordement': return V ? ['Transport <em>en cours</em>', 'L’acheteur confirmera l’arrivée et la réception.'] : ['Votre marchandise est <em>en route</em>', 'Signalez l’arrivée du chauffeur, puis confirmez la réception après avoir vérifié.'];
-      case 'arrivee': return V ? ['Le chauffeur est <em>arrivé</em>', 'L’acheteur vérifie la marchandise.'] : ['Le chauffeur est <em>arrivé</em>', 'Vérifiez la marchandise avant de confirmer la réception.'];
+      case 'arrivee': return V ? ['Le chauffeur est <em>arrivé</em>', 'L’acheteur vérifie la marchandise.'] : ['Le chauffeur est <em>arrivé</em>', 'Vérifiez la marchandise et le papier du vendeur avant de confirmer la réception. Un problème : refusez avec des photos.'];
       default: return ['Commande <em>en cours</em>', ''];
     }
   }
@@ -298,7 +315,8 @@
         if (c.role === 'acheteur' && ['transport', 'transbordement'].includes(c.etape)) { b('arrivee', 'Le chauffeur est arrivé', K ? '' : 'p'); if (!K) b('reception', 'Réception confirmée'); }
         if (c.role === 'acheteur' && c.etape === 'arrivee' && !K) b('reception', 'Réception confirmée', 'p');
         if (['transport', 'transbordement'].includes(c.etape)) b('transbordement', 'Signaler un transbordement', 'm');
-        if (['confirmee', 'preparation'].includes(c.etape) && c.annulation !== 'moi') b('annuler', 'Demander l’annulation', 'm');
+        // commande confirmée : seul le vendeur peut demander l'annulation (l'acheteur peut l'accepter), avant le chargement
+        if (c.role === 'vendeur' && ['confirmee', 'preparation'].includes(c.etape) && c.annulation !== 'moi') b('annuler', 'Demander l’annulation', 'm');
       }
       if (['chargement', 'transport', 'transbordement', 'arrivee', 'reception'].includes(c.etape)) b('litige', 'Signaler un problème', 'm');
       // une fois la commande confirmée, l'acheteur ne peut plus l'annuler seul : seulement d'un commun accord, avant le chargement
@@ -337,7 +355,7 @@
       <div class="cm-st" role="status" aria-live="polite"><b>${titre}</b>${sous ? `<small>${esc(sous)}</small>` : ''}<small>Dernière actualisation : ${ilya(der)}</small></div>
       ${actions(c)}
       ${c.etat === 'terminee' && c.role === 'acheteur' && window.MDGRacheter ? `<div class="cm-act"><button type="button" class="p" data-racheter>Racheter · prix du jour</button></div>` : ''}
-      ${blocRefus(c)}${blocSequestre(c)}${c.etat === 'litige' || seq[c.id] && seq[c.id].refus ? blocWa(c) : ''}
+      ${blocMot(c)}${blocRefus(c)}${blocDisc(c)}${blocSequestre(c)}${c.etat === 'litige' || seq[c.id] && seq[c.id].refus ? blocWa(c) : ''}
       ${blocAvis(c)}
       ${c.validation === 'declaration' && ['a_confirmer', 'en_cours'].includes(c.etat) ? `<p class="cm-info"><b>Validation sans code.</b> Le vendeur déclare le chargement, l’acheteur l’arrivée et la réception. Je recommande que le chauffeur crée un compte gratuit sur le Marché de Gros : avec les codes, personne ne peut déclarer une livraison à votre place.</p>` : ''}
       ${blocCode(c)}
@@ -353,7 +371,7 @@
         ${transport[c.id] && transport[c.id].total_livraison != null && c.etat !== 'annulee' ? `<dt>À payer à la livraison</dt><dd><b>${F(transport[c.id].total_livraison)}</b><br><small style="font-weight:400;color:#5E5546">marchandise ${F(c.montant)} + transport ${F(transport[c.id].prix_transport)}, payés à la réception, hors application</small></dd>` : ''}
         <dt>Départ</dt><dd>${esc(c.ville_depart || '—')}</dd>
         <dt>Livraison</dt><dd>${esc(c.lieu_livraison || 'À convenir')}</dd>
-        <dt>Paiement</dt><dd>${seq[c.id] && seq[c.id].actif ? 'Séquestre ' + esc(OPE[seq[c.id].operateur] || '') : 'À la réception, hors application'}</dd>
+        <dt>Paiement</dt><dd>${seq[c.id] && seq[c.id].actif ? 'Séquestre ' + esc(OPE[seq[c.id].operateur] || '') : 'À la livraison<br><small style="font-weight:400;color:#5E5546">séquestre en construction</small>'}</dd>
       </dl>
       ${Jr.length ? `<h3 class="cm-h3">Historique</h3><ul class="cm-j">${Jr.slice().reverse().map(e => `<li><b>${esc(EV[e.evenement] || e.evenement)}</b> · ${esc(e.par_moi ? 'vous' : ROLE[e.role] || '')}<small>${quand(e.at)} · ${esc(PREUVE[e.preuve] || '')}${e.lieu ? ' · ' + esc(e.lieu) : ''}${e.lat != null ? ' · position jointe' : ''}</small>${e.note ? `<small>« ${esc(e.note)} »</small>` : ''}</li>`).join('')}</ul>` : ''}
       <button type="button" class="cm-act" style="all:unset;display:block;margin:16px auto 0;padding:10px;min-height:44px;box-sizing:border-box;color:#10392B;text-decoration:underline;cursor:pointer" data-retour>Toutes mes commandes</button>`;
@@ -361,7 +379,7 @@
     box.querySelector('[data-retour]').onclick = () => { oublierCarte(); sel = null; vue = 'liste'; peindre(); };
     box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => geste(c, b.dataset.g));
     const rb = box.querySelector('[data-racheter]'); if (rb) rb.onclick = () => { fermer(); MDGRacheter.ouvrir(c.id); };
-    lierTransport(c, box); lierLien(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box); photos(box);
+    lierTransport(c, box); lierLien(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box); photos(box); lierDisc(c, box);
     if (arrive) { if (navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {} toast('Le chauffeur est arrivé', { type: 'ok', sous: c.role === 'acheteur' ? 'Vérifiez la marchandise avant de confirmer.' : esc(c.produit || '') }); }
   }
   // ——— paiement sécurisé : où en est l'argent, et qui reçoit quoi à la libération (schéma 57) ———
@@ -370,9 +388,9 @@
     const S = seq[c.id]; if (!S || c.etat === 'annulee' || c.etat === 'a_confirmer') return '';
     const r = S.repartition || {}, A = S.actif, V = c.role === 'vendeur';
     const clos = !!S.libere_le, recu = c.etat === 'terminee' || c.etat === 'litige', parti = recu || ['chargement', 'transport', 'transbordement', 'arrivee', 'reception'].includes(c.etape);
-    const pas = [['Commande confirmée', true], ['Livraison', parti], ['Vérification (48 h)', recu], ['Libération', clos]];
+    const pas = [['Commande confirmée', true], ['Livraison', parti], ['Vérification', recu], ['Libération par l’acheteur', clos]];
     const ici = pas.findIndex(p => !p[1]);
-    const etat = !A ? '<span class="cm-sq-e">Bientôt : partenaire en cours de connexion</span>'
+    const etat = !A ? '<span class="cm-sq-e">Séquestre en construction</span>'
       : S.etat === 'bloque' ? `<span class="cm-sq-e on">🔒 ${F(r.total)} bloqués chez ${esc(OPE[S.operateur] || '')}</span>`
       : `<span class="cm-sq-e on">✓ Séquestre soldé${S.solde_le ? ' le ' + quand(S.solde_le) : ''}</span>`;
     const lignes = [];
@@ -384,25 +402,54 @@
     return `<section class="cm-sq" aria-label="Paiement sécurisé"><h3><span aria-hidden="true">🛡️</span> Paiement sécurisé</h3>${etat}
       <ol>${pas.map((p, i) => `<li class="${p[1] ? 'fait' : ''}${i === ici ? ' ici' : ''}">${p[0]}</li>`).join('')}</ol>
       <table><tbody>${lignes.join('')}</tbody></table>
-      <p>${A ? 'L’argent reste bloqué jusqu’à ce que l’acheteur confirme la marchandise, ou 48 h après la réception sans problème signalé. Le Marché de Gros n’est payé qu’à la libération.'
-        : 'Bientôt, l’acheteur paiera par Wave, Orange Money ou MTN MoMo dès la confirmation : l’argent restera bloqué jusqu’à la réception, puis chacun recevra sa part. Pour l’instant, rien ne passe par l’application : paiement à la livraison, hors application.'}</p></section>`;
+      <p>${A ? 'L’argent reste bloqué jusqu’à ce que l’acheteur valide la marchandise. Lui seul le libère ; en cas de problème, on en discute à trois. Le Marché de Gros n’est payé qu’à la libération.'
+        : 'Pour l’instant : <b>paiement à la livraison</b>. Le séquestre est en construction : bientôt, l’acheteur paiera par Wave, Orange Money ou MTN MoMo dès la confirmation, l’argent restera bloqué jusqu’à ce qu’il valide la marchandise, puis chacun recevra sa part. Le vendeur ne fera plus le voyage pour rien.'}</p></section>`;
   }
   function blocRefus(c) {
     const S = seq[c.id], R = S && S.refus; if (!R) return '';
     const qte_ = R.quantite != null ? qte(R.quantite, R.unite) : 'toute la marchandise';
-    const ch = R.chauffeur === 'confirme' ? '✓ Le chauffeur confirme' : R.chauffeur === 'conteste' ? '✗ Le chauffeur conteste' : R.a_chauffeur ? '… Le chauffeur n’a pas encore répondu' : '— Pas de chauffeur inscrit sur l’application';
+    const ch = R.chauffeur === 'confirme' ? '✓ Le chauffeur confirme' : R.chauffeur === 'conteste' ? '✗ Le chauffeur conteste' : R.a_chauffeur ? '… Le chauffeur n’a pas encore répondu' : '— Chauffeur hors de l’application : l’équipe jugera';
     const ve = R.vendeur === 'reconnu' ? '✓ Le vendeur reconnaît le problème' : R.vendeur === 'conteste' ? '✗ Le vendeur conteste' : '… Le vendeur n’a pas encore répondu';
-    const regle = R.chauffeur_suffit ? 'Si le chauffeur confirme, ou si le vendeur reconnaît le problème, le remboursement se fait tout seul.'
-      : 'Le chauffeur a été choisi par l’acheteur : il faut que le vendeur reconnaisse le problème, sinon l’équipe tranche.';
+    const regle = R.chauffeur_suffit ? 'Si le chauffeur (inscrit et vérifié par le Marché de Gros) confirme, ou si le vendeur reconnaît le problème, le remboursement se fait tout seul. Sinon, on en discute à trois et l’équipe juge.'
+      : 'Si le vendeur reconnaît le problème, le remboursement se fait tout seul. Sinon, on en discute à trois ci-dessous et l’équipe du Marché de Gros juge.';
+    const mot = R.mot === 'retrouve' ? '✓ Mot du vendeur retrouvé dans la marchandise' : R.mot === 'absent' ? '✗ Papier du vendeur absent de la marchandise' : '';
     return `<section class="cm-rf" aria-label="Refus de la marchandise"><h3>Marchandise refusée</h3>
       <p><b>${esc(qte_)}</b> · « ${esc(R.motif || '')} »</p>
       <div class="cm-ph">${(R.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du refus"></span>`).join('')}</div>
-      <ul>${R.chauffeur || c.etat === 'litige' ? `<li>${ch}</li>` : ''}${R.vendeur || c.etat === 'litige' ? `<li>${ve}</li>` : ''}</ul>
+      <ul>${mot ? `<li>${mot}</li>` : ''}${R.chauffeur || c.etat === 'litige' ? `<li>${ch}</li>` : ''}${R.vendeur || c.etat === 'litige' ? `<li>${ve}</li>` : ''}</ul>
       ${c.etat === 'litige' ? `<p style="color:#5E5546;font-size:12.5px">${regle}</p>` : ''}</section>`;
+  }
+  // le mot secret : le vendeur l'écrit sur un papier glissé dans la marchandise ; l'acheteur le retrouve à l'arrivée
+  function blocMot(c) {
+    const S = seq[c.id]; if (!S || !S.mot || c.role !== 'vendeur' || !['en_cours', 'litige'].includes(c.etat)) return '';
+    const avant = c.etat === 'en_cours' && ['confirmee', 'preparation'].includes(c.etape);
+    return `<section class="cm-mot${avant ? ' fort' : ''}" aria-label="Mot secret à glisser dans la marchandise"><span aria-hidden="true">📝</span><span>
+      <small>Mot secret à glisser dans la marchandise</small><b>${esc(S.mot)}</b>
+      <small>${avant ? 'Écrivez-le sur un papier et mettez-le dans le colis avant le chargement. À l’arrivée, l’acheteur le retrouve et le photographie : c’est la preuve que c’est bien votre marchandise. Ne le donnez à personne, ni par message.' : 'Il est dans la marchandise. Ne le donnez à personne.'}</small></span></section>`;
+  }
+  // la discussion à trois (acheteur, vendeur, Marché de Gros) pendant un litige
+  const ROLE_D = { acheteur: 'Acheteur', vendeur: 'Vendeur', admin: 'Marché de Gros' };
+  function blocDisc(c) {
+    const D = disc[c.id]; if (!D || (!D.ouvert && !(D.messages || []).length)) return '';
+    const L = (D.messages || []).map(m => `<li class="${m.moi ? 'moi' : ''}${m.role === 'admin' ? ' mdg' : ''}"><b>${m.moi ? 'Vous' : esc(ROLE_D[m.role] || '')}</b> <small>${quand(m.at)}</small><span>${esc(m.texte)}</span></li>`).join('');
+    return `<section class="cm-disc" aria-label="Discussion à trois"><h3>Discussion à trois</h3>
+      <p>L’acheteur, le vendeur et l’équipe du Marché de Gros. Expliquez-vous ici : l’équipe juge avec les photos, le mot du vendeur, la négociation et tous vos messages (rien n’est secret sur le Marché de Gros).</p>
+      <ul>${L || '<li class="vide">Aucun message pour l’instant.</li>'}</ul>
+      ${D.ouvert ? `<form data-disc><label class="cm-sr" for="cmDm">Votre message</label><textarea id="cmDm" maxlength="600" placeholder="Votre message aux deux autres…"></textarea><p class="cm-err" role="alert"></p><button type="submit">Envoyer</button></form>` : '<p><b>Discussion close :</b> le litige est réglé.</p>'}</section>`;
+  }
+  function lierDisc(c, box) {
+    const f = box.querySelector('[data-disc]'); if (!f) return;
+    f.onsubmit = async e => {
+      e.preventDefault(); const t = f.querySelector('textarea').value.trim(), err = f.querySelector('.cm-err'); if (!t) return;
+      if (N().texteRefus) { const r = N().texteRefus(t); if (r) { err.textContent = r; return; } }
+      const b = f.querySelector('button'); b.disabled = true; err.textContent = '';
+      try { await N().rpc('litige_ecrire', { p_cmd: c.id, p_texte: t }); disc[c.id] = await N().rpc('litige_messages_lire', { p_cmd: c.id }).catch(() => disc[c.id]); peindre(); }
+      catch (x) { err.textContent = erreurTxt(x); b.disabled = false; }
+    };
   }
   function blocWa(c) {
     return WA_LITIGES ? `<div class="cm-wa"><span aria-hidden="true">💬</span><span><b>Service litiges</b> sur WhatsApp : <a href="https://wa.me/${WA_LITIGES}?text=${encodeURIComponent('Bonjour, litige sur la commande n° ' + c.numero)}" target="_blank" rel="noopener">écrire au service</a>. Donnez votre numéro de commande <b>${esc(c.numero)}</b>. Nous ne demandons jamais d’argent ni de code.</span></div>`
-      : `<div class="cm-wa"><span aria-hidden="true">💬</span><span><b>Service litiges WhatsApp : bientôt.</b> Gardez votre numéro de commande <b>${esc(c.numero)}</b> : il suffit pour retrouver tous les accords. Nous ne demandons jamais d’argent ni de code.</span></div>`;
+      : `<div class="cm-wa"><span aria-hidden="true">💬</span><span><b>Service litiges WhatsApp : bientôt.</b> Gardez votre numéro de commande <b>${esc(c.numero)}</b> : il suffit pour retrouver l’accord, la négociation et vos messages. Nous ne demandons jamais d’argent ni de code.</span></div>`;
   }
   // photos privées : liens signés de courte durée (le serveur vérifie qui peut les voir)
   function photos(box) {
@@ -437,10 +484,13 @@
         <small style="display:block;margin-top:4px;color:#5E5546;font-size:12.5px">Sur ${c.quantite != null ? qte(c.quantite, c.unite) : 'la commande'}. Laissez tout si toute la marchandise est mauvaise.</small>
         <label class="t" for="cmRm">Qu’est-ce qui ne va pas ?</label>
         <textarea id="cmRm" maxlength="300" placeholder="Ex. : 4 régimes pourris, sacs mouillés, quantité manquante…"></textarea>
-        <span class="t" style="display:block;margin:14px 0 6px;font-weight:600">Photos (1 à 4)</span>
+        ${seq[c.id] && seq[c.id].avec_mot ? `<label class="t" for="cmRw">Le mot écrit sur le papier du vendeur</label>
+        <input type="text" id="cmRw" autocomplete="off" autocapitalize="characters" placeholder="Ex. : MANGUE 47">
+        <label class="cm-ck"><input type="checkbox" id="cmRx"> Il n’y avait pas de papier dans la marchandise</label>` : ''}
+        <span class="t" style="display:block;margin:14px 0 6px;font-weight:600">Photos (1 à 4) : la marchandise, et le papier du vendeur</span>
         <div class="cm-ph" data-apercu></div>
         <label class="cm-pick">📷 Ajouter des photos<input type="file" accept="image/*" multiple data-fic></label>
-        <p class="cm-note" style="font-size:13.5px">Le chauffeur et le vendeur verront vos photos et répondront dans l’application. Si le chauffeur confirme, la partie refusée vous est rendue sans attendre l’équipe. Le transport reste dû : le chauffeur a fait son travail.</p>
+        <p class="cm-note" style="font-size:13.5px">Le vendeur verra vos photos et répondra. S’il reconnaît le problème, la partie refusée vous est rendue. Sinon, on en discute à trois et l’équipe du Marché de Gros juge. Le transport reste dû : le chauffeur a fait son travail.</p>
         <p class="cm-err" role="alert"></p>
         <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">Envoyer le refus</button><button type="button" data-ann>Retour</button></div>
       </form>`;
@@ -449,7 +499,7 @@
     const f = box.querySelector('form'), err = f.querySelector('.cm-err'), ap = f.querySelector('[data-apercu]');
     const apercu = () => { ap.innerHTML = fichiers.map((b, i) => `<span><img src="${URL.createObjectURL(b)}" alt="Photo ${i + 1}"></span>`).join(''); };
     f.querySelector('[data-fic]').onchange = async e => {
-      err.textContent = '';
+      err.textContent = ''; f._chemins = null;
       for (const fi of Array.from(e.target.files || [])) {
         if (fichiers.length >= 4) { err.textContent = '4 photos au plus.'; break; }
         try { fichiers.push(await reduirePhoto(fi)); } catch (x) { err.textContent = x.message; }
@@ -462,15 +512,19 @@
       if (q != null && !(q > 0)) { err.textContent = 'Indiquez la quantité refusée.'; return; }
       if (!m) { err.textContent = 'Expliquez le problème en quelques mots.'; f.querySelector('#cmRm').focus(); return; }
       if (!fichiers.length) { err.textContent = 'Ajoutez au moins une photo de la marchandise.'; return; }
+      const W = f.querySelector('#cmRw'), X = f.querySelector('#cmRx'), mot = W ? W.value.trim() : '', sansMot = !!(X && X.checked);
+      if (W && !mot && !sansMot) { err.textContent = 'Tapez le mot écrit sur le papier du vendeur, ou cochez « pas de papier ».'; W.focus(); return; }
       if (N().texteRefus) { const r = N().texteRefus(m); if (r) { err.textContent = r; return; } }
       const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = 'Envoi des photos…';
       try {
         const u = me(), chemins = [];
-        for (let i = 0; i < fichiers.length; i++) { const ch = u + '/refus-' + c.id.slice(0, 8) + '-' + Date.now() + '-' + i + '.jpg'; await N().deposerPrive('preuves', ch, fichiers[i]); chemins.push(ch); }
+        if (!f._chemins) { for (let i = 0; i < fichiers.length; i++) { const ch = u + '/refus-' + c.id.slice(0, 8) + '-' + Date.now() + '-' + i + '.jpg'; await N().deposerPrive('preuves', ch, fichiers[i]); chemins.push(ch); } f._chemins = chemins; }
         err.textContent = '';
-        await N().rpc('commande_refuser', { p_id: c.id, p_quantite: q, p_motif: m, p_photos: chemins });
+        const r = await N().rpc('commande_refuser2', { p_id: c.id, p_quantite: q, p_motif: m, p_photos: f._chemins, p_mot: mot || null, p_sans_mot: sansMot });
+        if (r === 'mot_bloque') { err.textContent = 'Trop d’essais faux. Cochez « pas de papier » : l’équipe du Marché de Gros jugera.'; btn.disabled = false; return; }
+        if (String(r).startsWith('mot_incorrect')) { const n = String(r).split(':')[1]; err.textContent = `Ce n’est pas le mot du vendeur. Vérifiez le papier (il reste ${n} essai${n > 1 ? 's' : ''}).`; btn.disabled = false; return; }
         await lireListe(); await lireJournal(c.id);
-        toast('Refus envoyé', { type: 'ok', sous: 'Le chauffeur et le vendeur sont prévenus.' });
+        toast('Refus envoyé', { type: 'ok', sous: 'Le vendeur est prévenu. La discussion à trois est ouverte.' });
         peindre();
       } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }
     };
@@ -660,7 +714,7 @@
       case 'arrivee': return av('arrivee', 'Le chauffeur est arrivé');
       case 'reception': return av('reception', 'Réception confirmée', { texte: 'Confirmez seulement après avoir vérifié la quantité et la qualité. La commande sera terminée.', fait: 'Réception confirmée : commande terminée' });
       case 'annuler': return confirmer(c, { titre: c.etat === 'a_confirmer' ? 'Retirer la commande' : 'Demander l’annulation', ok: c.etat === 'a_confirmer' ? 'Retirer' : 'Demander', note: 'Pourquoi ? (facultatif)',
-        texte: c.etat === 'a_confirmer' ? '' : 'L’annulation se fait d’un commun accord : l’autre partie doit l’accepter. Le stock reviendra sur l’annonce.',
+        texte: c.etat === 'a_confirmer' ? '' : 'L’acheteur doit accepter l’annulation. Le stock reviendra sur l’annonce.',
         fait: c.etat === 'a_confirmer' ? 'Commande retirée' : 'Demande d’annulation envoyée', fn: v => R('commande_annuler', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
       case 'annul-oui': return confirmer(c, { titre: 'Accepter l’annulation', ok: 'Accepter', note: 'Un mot (facultatif)', fait: 'Commande annulée', texte: 'Le stock reviendra sur l’annonce.',
         fn: v => R('commande_annuler', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
@@ -675,10 +729,10 @@
         texte: 'La partie refusée revient à l’acheteur. Le reste de la commande vous revient, et le transporteur garde le prix de son transport.',
         fn: v => R('commande_refus_vendeur', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
       case 'rf-non': return confirmer(c, { titre: 'Contester le <em>refus</em>', ok: 'Contester', note: 'Pourquoi ?', noteRequise: true, fait: 'Contestation envoyée : l’équipe va trancher',
-        texte: 'L’équipe du Marché de Gros tranchera avec le numéro de commande, les accords enregistrés, les photos et la réponse du chauffeur. Elle ne lit pas vos conversations.',
+        texte: 'L’équipe du Marché de Gros tranchera avec le numéro de commande : l’accord, la négociation, vos messages, les photos et la réponse du chauffeur. Les échanges sur le Marché de Gros ne sont pas secrets.',
         fn: v => R('commande_refus_vendeur', { p_id: c.id, p_oui: false, p_note: v.note }) });
       case 'litige': return confirmer(c, { titre: 'Signaler un <em>problème</em>', ok: 'Ouvrir un litige', note: 'Que s’est-il passé ?', noteRequise: true, fait: 'Litige ouvert : l’équipe va examiner',
-        texte: 'L’équipe du Marché de Gros examinera l’historique de la commande et les accords enregistrés (prix, quantité, transport), avec le numéro de commande. Elle ne lit pas vos conversations.',
+        texte: 'L’équipe du Marché de Gros examinera l’historique de la commande et les accords enregistrés (prix, quantité, transport), avec le numéro de commande. Elle lit aussi la négociation et vos messages : les échanges sur le Marché de Gros ne sont pas secrets.',
         fn: v => R('commande_litige', { p_id: c.id, p_motif: v.note }) });
     }
   }

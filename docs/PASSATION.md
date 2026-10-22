@@ -681,3 +681,9 @@ Lui proposer de coller ceci :
 - **Jamais « PAYÉ »** : l'application ne voit pas l'argent (paiement à la livraison, hors application).
 - `mes_transactions2()` (schéma 54) = `mes_transactions` + départ, destination, n° et état de la commande, date de livraison. Le bon et le relevé (colonnes Trajet et Livraison) les affichent. Repli automatique sur `mes_transactions` si besoin.
 - Impression : page blanche forcée (`color-scheme: light` à l'impression, sinon les marges sortaient foncées).
+
+## Fil public « Dernières annonces » + défilement sans flash (22/10/2026) — schéma 55
+- Le fil (Accueil → Activité) est visible par tout le monde, partout, sans compte : offres, demandes, et maintenant **ventes conclues** (`ventes_recentes()`, anonymes : produit, quantité, ville, date ; 30 derniers jours). Toucher une ligne ouvre la fiche du produit ; écrire, négocier ou publier demandent la connexion (puis l'action reprend).
+- « En cours » sans compte : un bouton « Se connecter » au lieu de deux phrases « connectez-vous ».
+- Défilement au doigt : les lignes ne « flashent » plus (l'effet d'appui attend 0,12 s sur écran tactile, plus de voile gris d'iOS).
+- Tournée de toutes les pages et fenêtres (visiteur et connecté) : aucune erreur.

@@ -772,10 +772,15 @@ label.cp-r{cursor:pointer}
       const L = notifs();
       main.innerHTML = `<div class="cp-pg"><h2>Notifications</h2><p>Propositions, contre-propositions, accords, refus et expirations, et nouvelles annonces sur vos produits.</p>
         <div data-pousse></div>
+        <div class="cp-grp" style="margin-top:12px"><label class="cp-r">${ti('cloche', 'marche')}<span class="cp-r-t"><b>Annonces du marché</b><small>Nouvelles offres et demandes, achats groupés, approvisionnements des pros. 10 par jour au plus ; vos notifications personnelles restent toujours actives.</small></span><input type="checkbox" class="cp-tog" role="switch" data-diff checked aria-label="Recevoir les annonces du marché"></label></div>
         <h3 class="cp-lab">Récentes${L.some(n => !n.lu) ? '<button type="button" data-lu>Tout marquer comme lu</button>' : ''}</h3>
         <div class="cp-grp">${L.length ? L.slice(0, 60).map((n, i) => `<button type="button" class="cp-r cp-it${n.lu ? '' : ' neuf'}" data-i="${i}"><span class="pt${n.lu ? ' lu' : ''}" aria-label="${n.lu ? 'Lue' : 'Non lue'}"></span><b style="white-space:normal">${esc(n.texte)}</b><span></span><small><span>${ago(n.t)}</span></small></button>`).join('')
           : '<p class="cp-vide"><b>Rien de nouveau</b>Les réponses à vos propositions et les accords apparaîtront ici.</p>'}</div></div>`;
       cartePousse(main.querySelector('[data-pousse]'));
+      // annonces du marché (schéma 43) : le réglage vit sur le serveur, c'est lui qui choisit les destinataires
+      const df = main.querySelector('[data-diff]');
+      if (df) { N().rpc('notif_reglage_moi').then(r => { if (r && r.diffusions === false) df.checked = false; }).catch(() => {});
+        df.onchange = async () => { df.disabled = true; try { await N().rpc('notif_reglage_diffusions', { p_oui: df.checked }); N().toast(df.checked ? 'Annonces du marché *activées*' : 'Annonces du marché *coupées*'); } catch (x) { df.checked = !df.checked; N().toast('Impossible : ' + (x.message || 'réessayez')); } df.disabled = false; }; }
       const lu = main.querySelector('[data-lu]'); if (lu) lu.onclick = () => { W(KN, notifs().map(n => Object.assign(n, { lu: true }))); bg.rafraichir(); };
       main.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const all = notifs(), n = all[+b.dataset.i]; if (!n) return; n.lu = true; W(KN, all); if (n.nego && window.MDGNegoce) { fermer(); MDGNegoce.thread(n.nego); } else bg.rafraichir(); });
     },

@@ -383,3 +383,18 @@ Lui proposer de coller ceci :
   - prix 0 refusé ; changer le prix après le chargement refusé ;
   - litige → suspendue, annulation → annulée, mission retirée → annulée.
 - Reste à faire : les **marges de négociation des transporteurs (< 8–10 %)**, évoquées par le propriétaire, ne sont pas construites. Aujourd'hui le chauffeur fixe son prix seul.
+
+**Annonces du marché et la vraie panne des notifications** (schémas 43 et 44, pousser v11, 22/10)
+- **Panne trouvée** (schéma 44) : le rôle service de la fonction « pousser » ne pouvait pas lire `offres`, `demandes`, `besoins`, `alertes_produits`, `groupes_achat`, `groupe_participants`, `rappels_achat`, `admins`, `alertes`, `verifications`.
+  - Ces notifications ne partaient donc jamais : nouvelles annonces, achats groupés, rappels, alertes admin, dossiers d'identité.
+  - Droit de lecture donné. Vérifié avec la vraie demande « Gombo » du propriétaire : envoyée (1 compte, 2 téléphones).
+- **Annonces du marché** (schéma 43, demandé par le propriétaire) : tous les comptes qui ont activé les notifications sont prévenus.
+  - Nouvelle offre ou demande : étiquette `marche-annonce`, la dernière remplace la précédente sur le téléphone.
+  - Achat groupé, à son ouverture.
+  - Besoin pro : une seule notification par besoin, envoyée aux comptes à identité vérifiée, en plus des abonnés au produit et des vendeurs qui en ont.
+- Garde-fous :
+  - `push_diffusion_cible(type, exclure, max)` choisit et compte les destinataires : 10 par personne et par jour, réglage respecté, bannis et supprimés exclus, jamais l'auteur ;
+  - envoi par paquets de 40 ;
+  - interrupteur « Annonces du marché » dans Mon compte → Notifications (`notif_reglage_diffusions`, réglage gardé sur le serveur).
+- Un compte ne reçoit rien tant qu'il n'a pas activé les notifications sur son téléphone. Aujourd'hui, 1 seul compte l'a fait. Sur iPhone, il faut d'abord ajouter l'app à l'écran d'accueil.
+- **Pas de SMS** : c'est payant (règle du propriétaire : aucun service payant). Les notifications Web Push sont gratuites.

@@ -378,6 +378,12 @@
 - Rien d'inventé : tout vient des listes déjà gardées par `v3/negoce.js`, `v3/commandes.js` et `v3/messages.js` (chacun exporte `activite()`). Les commandes sont relues au démarrage et au retour sur l'application (une fois par minute au plus).
 - Code : `app/activite.js` (`MDGActivite.noter / tout / dernier / aFaire`, événement `mdg:activite`) ; `ecListe`, `ecRep` dans `application.dc.html` ; styles `.ec-*`.
 
+### Notifications réparées (annonces, conseils réguliers, et toutes les autres sur iPhone)
+- Cause 1 (serveur) : les annonces du marché, achats groupés, besoins et notifications régulières n'allaient qu'aux comptes ayant une ligne dans `profils`. Le compte « Marché de Gros » (abonné le 22/10 à 2 h 51) n'a pas de profil : il ne recevait rien. `supabase/schema-46-notifs-sans-profil.sql` : jointure à gauche, les comptes supprimés restent exclus. Test annulé : les 2 comptes abonnés sont maintenant visés.
+- Cause 2 (iPhone) : Safari ne prend pas en charge `renotify`. Une notification qui remplace une autre de même étiquette (`marche-annonce`, `marche-pub`, `dm-…`, `nego-…`, `cmd-…`) arrivait sans bannière ni son. `sw.js` : chaque notification a maintenant sa propre étiquette (`base~heure`) et l'ancienne du même sujet est retirée. Une seule par sujet dans le centre de notifications, mais toujours une alerte.
+- Rythme des notifications régulières : toutes les 25 minutes environ de 7 h à 21 h (avant : toutes les 30). Tâche `mdg-marketing` passée à `*/5`, écart minimal 23 min, toujours 30 par jour au plus.
+- À noter : le compte qui publie une annonce ne reçoit pas sa propre notification (normal). Seuls 2 téléphones sont abonnés aujourd'hui.
+
 ## 5. En attente d'une décision du propriétaire
 
 

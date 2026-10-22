@@ -321,7 +321,7 @@
 .pt-txt{position:absolute;left:22px;right:22px;bottom:16px;transition:opacity .42s cubic-bezier(.2,.8,.2,1),transform .42s cubic-bezier(.2,.8,.2,1)}
 .pt-txt.is-out{opacity:0;transform:translateY(6px)}
 .pt-k{display:flex;align-items:center;gap:8px;color:#CFC4B1;font:500 12.5px/1 Jost,sans-serif}.pt-k em{font-style:normal}
-.pt-k i{width:9px;height:9px;flex:none}.pt-i-v{border-radius:50%;background:#6CC58C}.pt-i-a{border-radius:2px;background:#F2C94C}.pt-i-l{height:2px!important;width:14px!important;border-radius:1px;background:#6AAEF0}
+.pt-k i{width:9px;height:9px;flex:none}.pt-k i.pt-i-v, .pt-k i.pt-i-a{display:inline-grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 11px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.pt-k i.pt-i-v::before,.pt-k i.pt-i-a::before{content:"🧺"}.pt-k i.pt-i-a{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.pt-k i.pt-i-a::before{content:"🛒"}.pt-i-l{height:2px!important;width:14px!important;border-radius:1px;background:#6AAEF0}
 .pt-m{margin:6px 0 0!important;max-width:22ch;color:#F5F0E6!important;font:600 17px/1.15 Jost,sans-serif!important;letter-spacing:-.015em;text-wrap:balance;text-shadow:0 2px 18px rgba(10,9,7,.9)}
 .pt-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (min-width:760px){.pt-txt{left:40px;right:40px;bottom:40px}.pt-m{font-size:clamp(34px,3.4vw,46px)!important;line-height:1.05!important;max-width:16ch}.pt-k{font-size:13.5px}}

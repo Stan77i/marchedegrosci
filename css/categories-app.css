@@ -14,8 +14,8 @@
 .ct-chiffres div { min-width: 0; padding: 11px 10px 10px; border-radius: 16px; background: rgba(243, 239, 228, .08); box-shadow: inset 0 0 0 1px rgba(243, 239, 228, .1); }
 .ct-chiffres b { display: block; font: 600 24px/1 Jost, system-ui, sans-serif; font-variant-numeric: tabular-nums; }
 .ct-chiffres small { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; margin-top: 5px; font: 400 12px/1.25 Jost, system-ui, sans-serif; color: rgba(243, 239, 228, .72); }
-.ct-chiffres i, .ct-pas i, .ct-ann i { display: inline-block; flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--offre, #6CC58C); }
-.ct-chiffres i.d, .ct-pas .d i, .ct-ann .d i { border-radius: 2px; background: var(--demande, #F2C94C); }
+.ct-chiffres i, .ct-pas i, .ct-ann i{display:inline-grid;place-items:center;flex:none;width:17px;height:17px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 10px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.ct-chiffres i::before,.ct-pas i::before,.ct-ann i::before{content:"🧺"}
+.ct-chiffres i.d, .ct-pas .d i, .ct-ann .d i{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.ct-chiffres i.d::before,.ct-pas .d i::before,.ct-ann .d i::before{content:"🛒"}
 .ct-chiffres i.d { margin-left: 4px; }
 
 /* recherche et tri */

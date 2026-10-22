@@ -31,7 +31,7 @@
       ['📦', 'Ensuite, la commande', 'Depuis l’accord, créez la commande : qui transporte, où livrer. Pour l’instant, *paiement à la livraison*, après avoir vu la marchandise.'],
       ['👀', 'Rien n’est secret', 'La négociation reste dans l’application. En cas de litige, l’équipe du Marché de Gros peut la *relire*.']] },
     commande: { t: 'Créer la commande', cartes: [
-      ['🚚', 'Qui transporte ?', 'Le *vendeur* livre, l’*acheteur* s’en charge, ou l’équipe du Marché de Gros vous affecte un *transporteur vérifié*.'],
+      ['🚚', 'Qui transporte ?', 'Le *vendeur* livre, ou l’*acheteur* s’en charge. Le transporteur du réseau Marché de Gros arrive *bientôt*.'],
       ['🔐', 'Avec codes : le plus sûr', 'Le chauffeur a l’application : il tape le code du *vendeur* au chargement, puis celui de l’*acheteur* à la réception. Personne ne peut valider à votre place.'],
       ['👍', 'L’autre partie confirme', 'Puis chaque étape s’affiche avec son heure : préparation, chargement, transport, arrivée, réception.'],
       ['🚫', 'Confirmée = engagée', 'Une fois la commande confirmée, l’*acheteur ne peut plus l’annuler*. Seul le vendeur peut demander l’annulation, avant le chargement.']] },

@@ -675,3 +675,9 @@ Lui proposer de coller ceci :
 - `app/admin-pc.js` : barre « Admin · 📱 Mobile | 🖥️ Site » en haut à droite, sur PC, pour l'admin seulement ; revérifie `est_admin` au serveur (sinon : barre retirée, drapeau effacé, l'application quitte le PC). Sur le site, elle apparaît après la vérification de l'écran admin.
 - Le drapeau n'est qu'un aiguillage : l'application elle-même est publique (la même sur téléphone) ; le site et admin.html restent protégés par le serveur.
 - **Correctif (22/10/2026)** : l'interrupteur admin semblait « recharger la page sans rien faire ». Cause : le souvenir d'onglet `mdg-app` (posé par un ancien « Ouvrir l'application ») faisait rebondir index-v3 → application → maintenance. Désormais `?admin=1` (et la vérification en cours) efface ce souvenir et reste sur l'écran de connexion ; l'interrupteur et l'application sur PC l'effacent aussi.
+
+## Relevé et bon PDF : tampon rouge du Marché de Gros (22/10/2026) — `v3/releve.js`, schéma 54
+- Tampon rond rouge (SVG, imprimé en couleur) en bas du bon de transaction et du relevé : « MARCHÉ DE GROS · CÔTE D'IVOIRE », au centre VENDU / ACHETÉ (accord conclu), LIVRÉ (commande terminée = réception confirmée) ou ANNULÉ ; la date ; le n° du bon. Relevé : « RELEVÉ », date d'établissement, nombre de ventes et d'achats.
+- **Jamais « PAYÉ »** : l'application ne voit pas l'argent (paiement à la livraison, hors application).
+- `mes_transactions2()` (schéma 54) = `mes_transactions` + départ, destination, n° et état de la commande, date de livraison. Le bon et le relevé (colonnes Trajet et Livraison) les affichent. Repli automatique sur `mes_transactions` si besoin.
+- Impression : page blanche forcée (`color-scheme: light` à l'impression, sinon les marges sortaient foncées).

@@ -1,10 +1,9 @@
 """Images des surgelés et produits de rente (lot du 22/10/2026) : fichier → produit existant.
 
 Usage : python3 tools/images/surgeles-rente.py <dossier des images sources>
-Même mise en forme que tools/images/poissons-volailles.py. Aucun produit n'est ajouté au catalogue.
-Photos non utilisées (pas encore de produit au catalogue) : crevettes séchées, anchois (×2), tripes de bœuf, saucisses (×2),
-maquereau surgelé, cuisses de dinde surgelées, dos de poulet surgelés, foie de bœuf surgelé ; cajou brut et panier de poissons
-(les produits noix-de-cajou et poisson-seche ont déjà leur photo).
+Même mise en forme que tools/images/poissons-volailles.py.
+Les 8 derniers produits (crevettes séchées … foie de bœuf surgelé) ont été ajoutés au catalogue (v2/data.js) à la demande du propriétaire.
+Photos non utilisées : 2e anchois et 2e saucisses (doublons), cajou brut et panier de poissons (noix-de-cajou et poisson-seche ont déjà leur photo).
 """
 import os, sys, re, math, colorsys
 from PIL import Image
@@ -20,6 +19,14 @@ IMAGES = {
     'Box_containing_frozen_fish_2K_20261022180036.webp': 'poisson-surgele',
     'Frozen_beef_cuts_in_box_2K_20261022180446.webp': 'viande-de-boeuf-surgelee',
     'Frozen_chicken_box_in_wholesale_2K_20261022175709.webp': 'poulet-surgele',   # hauts de cuisse
+    'Basket_filled_with_dried_shrimp_2K_20261022175637.webp': 'crevettes-sechees',
+    'Market_basket_filled_with_anchovies_2K_20261022175525.webp': 'anchois-seches',
+    'Frozen_mackerel_in_cardboard_box_2K_20261022180222.webp': 'maquereau-surgele',
+    'Open_frozen_turkey_cardboard_box_2K_20261022175923.webp': 'cuisses-de-dinde-surgelees',
+    'Frozen_chicken_box_isolated_2K_20261022175813.webp': 'dos-de-poulet-surgele',  # carton « dos de poulet surgelés »
+    'Frozen_sausages_in_cardboard_box_2K_20261022180359.webp': 'saucisses-surgelees',
+    'Frozen_beef_tripe_box_2K_20261022181620.webp': 'tripes-de-boeuf-surgelees',
+    'Open_cardboard_box_with_frozen_2K_20261022180316.webp': 'foie-de-boeuf-surgele',  # foie, rouge sombre
 }
 
 def teinte(im):

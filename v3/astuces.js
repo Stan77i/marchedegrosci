@@ -28,11 +28,13 @@
       ['🤝', 'Proposez votre prix', 'Écrivez votre *prix* et la *quantité*. L’autre personne reçoit votre proposition dans l’application.'],
       ['⏳', 'Elle a 48 heures pour répondre', 'Elle *accepte*, elle *refuse*, ou elle propose un autre prix. Vous pouvez retirer votre proposition tant qu’elle n’a pas répondu.'],
       ['✅', 'L’accord est conclu', 'Le prix et la quantité ne bougent plus. L’annonce baisse de la quantité convenue.'],
-      ['📦', 'Ensuite, la commande', 'Depuis l’accord, créez la commande : qui transporte, où livrer. *Aucun paiement* ne passe par l’application : payez à la livraison, après avoir vu la marchandise.']] },
+      ['📦', 'Ensuite, la commande', 'Depuis l’accord, créez la commande : qui transporte, où livrer. Pour l’instant, *paiement à la livraison*, après avoir vu la marchandise.'],
+      ['👀', 'Rien n’est secret', 'La négociation reste dans l’application. En cas de litige, l’équipe du Marché de Gros peut la *relire*.']] },
     commande: { t: 'Créer la commande', cartes: [
       ['🚚', 'Qui transporte ?', 'Le *vendeur* livre, l’*acheteur* s’en charge, ou l’équipe du Marché de Gros vous affecte un *transporteur vérifié*.'],
       ['🔐', 'Avec codes : le plus sûr', 'Le chauffeur a l’application : il tape le code du *vendeur* au chargement, puis celui de l’*acheteur* à la réception. Personne ne peut valider à votre place.'],
-      ['👍', 'L’autre partie confirme', 'Puis chaque étape s’affiche avec son heure : préparation, chargement, transport, arrivée, réception.']] },
+      ['👍', 'L’autre partie confirme', 'Puis chaque étape s’affiche avec son heure : préparation, chargement, transport, arrivée, réception.'],
+      ['🚫', 'Confirmée = engagée', 'Une fois la commande confirmée, l’*acheteur ne peut plus l’annuler*. Seul le vendeur peut demander l’annulation, avant le chargement.']] },
     transport: { t: 'Choisir le chauffeur', cartes: [
       ['🪪', 'Chaque chauffeur a son code', 'Il le trouve dans son *Espace chauffeur*. Il ressemble à *T-4K7P*.'],
       ['⌨️', 'Tapez son code ici', 'Demandez-lui son code, tapez-le, puis touchez *« Choisir »*. La mission arrive dans son application.'],
@@ -47,16 +49,53 @@
       ['🚛', 'Bienvenue, chauffeur', 'Inscrivez-vous, c’est *gratuit*. L’équipe du Marché de Gros vérifie votre profil.'],
       ['🪪', 'Votre code transporteur', 'Donnez-le au vendeur ou à l’acheteur : il le tape pour vous confier la mission. Vous *acceptez* en fixant votre prix, ou vous refusez.'],
       ['📦', 'Au chargement', 'Montrez votre code transporteur au vendeur. Il vous dit son *code de prise en charge* : tapez-le. Besoin ? Touchez *« Demander le code »*.'],
-      ['📍', 'À la livraison', 'Même chose avec l’acheteur : il vérifie la marchandise, puis vous dit le *code de réception*. Vous le tapez : la livraison est validée.']] }
+      ['📍', 'À la livraison', 'Même chose avec l’acheteur : il vérifie la marchandise, puis vous dit le *code de réception*. Vous le tapez : la livraison est validée.'],
+      ['💰', 'Votre prix, moins 6,9 %', 'C’est la commission du Marché de Gros. Si l’acheteur refuse la marchandise, dites honnêtement ce que vous avez vu : *votre transport reste dû*.']] },
+    // ——— schémas 57 à 61 : séquestre, mot secret, refus, discussion, tableau des prix (montrés jusqu'à 3 fois, tant que « J’ai compris » n’est pas touché) ———
+    mot: { t: 'Le mot secret', insiste: 3, cartes: [
+      ['📝', 'Votre mot secret', 'Il s’affiche en jaune dans votre commande, par exemple *MANGUE 47*.'],
+      ['✍️', 'Sur un papier, dans le colis', 'Écrivez-le sur un papier et *glissez-le dans la marchandise* avant le chargement.'],
+      ['📸', 'C’est votre protection', 'Pour refuser la marchandise, l’acheteur *doit taper ce mot* et le photographier. Sans lui, il ne peut pas se faire rembourser.'],
+      ['🤐', 'Ne le donnez à personne', 'Ni par message, ni au téléphone. Il est *dans le colis*, c’est tout.']] },
+    verifier: { t: 'Vérifier et libérer', insiste: 3, cartes: [
+      ['🔍', 'Vérifiez la marchandise', 'Quantité, qualité, et le *papier du vendeur* glissé dans le colis.'],
+      ['✅', 'Tout est bon ?', 'Touchez *« Tout est conforme »*. Le vendeur et le transporteur reçoivent leur part.'],
+      ['⏰', 'Sans réponse : 24 h', 'Si vous ne réclamez pas, le paiement est *libéré tout seul 24 h après la réception*. L’heure exacte est affichée.'],
+      ['⚠️', 'Un problème ?', 'Touchez *« Refuser la marchandise »* avant la fin du délai, avec le mot du vendeur et des photos.']] },
+    refus: { t: 'Refuser la marchandise', insiste: 3, cartes: [
+      ['🧾', 'Il faut des preuves réelles', 'Le *mot secret du vendeur* (le papier dans le colis) et *1 à 4 photos* : la marchandise et le papier.'],
+      ['🤝', 'Si le vendeur reconnaît', 'La partie refusée vous revient, le reste va au vendeur. Le *transport reste dû* : le chauffeur a fait son travail.'],
+      ['⚖️', 'Sinon, on en parle à trois', 'Vous, le vendeur et le *Marché de Gros*, dans la discussion de la commande. L’équipe juge avec tous les échanges.'],
+      ['📄', 'Pas de papier ?', 'Revenez en arrière et touchez *« Signaler un problème »* : rien n’est rendu tout seul, l’équipe juge.']] },
+    discussion: { t: 'La discussion à trois', insiste: 2, cartes: [
+      ['💬', 'Acheteur, vendeur, Marché de Gros', 'Expliquez-vous ici, calmement. Chaque message prévient les deux autres.'],
+      ['👀', 'Rien n’est secret', 'L’équipe lit *tout* : la négociation, vos messages, les photos, le mot du vendeur. C’est comme ça qu’elle juge.'],
+      ['🚫', 'Pas de numéro, pas de lien', 'Tout se règle dans l’application. Le Marché de Gros ne vous demandera *jamais d’argent* par message.']] },
+    sequestre: { t: 'Le paiement sécurisé', insiste: 2, cartes: [
+      ['💵', 'Aujourd’hui : à la livraison', 'Vous payez *à la livraison*, après avoir vu la marchandise. Le séquestre est *en construction*.'],
+      ['🔒', 'Bientôt : l’argent bloqué', 'Dès la commande confirmée, l’acheteur paiera par Wave, Orange Money ou MTN MoMo. L’argent restera *bloqué* : le vendeur ne fera plus le voyage pour rien.'],
+      ['🔓', 'La libération', 'L’acheteur valide, ou *24 h* passent sans réclamation : chacun reçoit sa part. Vendeur : moins *3,5 %*. Transporteur : moins *6,9 %*.']] },
+    prix: { t: 'Le tableau des prix', insiste: 2, cartes: [
+      ['📊', 'Comme un marché P2P', '*Acheter* : les vendeurs, le moins cher en haut. *Vendre* : les acheteurs, le meilleur budget en haut.'],
+      ['⬆️', 'Baissez votre prix, vous montez', 'Le tableau se met à jour tout seul. À prix égal, le *transport compris* passe devant.'],
+      ['🤝', 'Touchez « Acheter » ou « Vendre »', 'Vous proposez votre prix dans l’application. *Aucun numéro* : le Marché de Gros est le seul intermédiaire.']] }
   };
   // quand le tutoriel se montre : le premier écran trouvé dans la page (ordre = priorité)
   const DECLENCHE = [
+    ['refus', '.cm-bg #cmRm'],
+    ['discussion', '.cm-bg [data-disc]'],
+    ['mot', '.cm-bg .cm-mot.fort'],
+    ['verifier', '.cm-bg [data-g="liberer"]'],
     ['codes', '.cm-bg [data-code-bloc]'],
     ['transport', '.cm-bg [data-trf]'],
     ['commande', '.cm-bg input[name="val"]'],
     ['chauffeur', '.cm-bg[aria-label="Espace chauffeur"] .cm-st, .cm-bg[aria-label="Espace chauffeur"] form'],
-    ['negoce', '.nx-bg .nx-edbox']
+    ['negoce', '.nx-bg .nx-edbox'],
+    ['sequestre', '.cm-bg .cm-sq'],
+    ['prix', 'mdg-tableau .tb-seg']
   ];
+  // déjà vu ? Un tutoriel « insistant » revient (jusqu'à N fois) tant qu'on n'a pas touché « J’ai compris » à la dernière carte
+  const fini = id => { const v = vus(), T = TOURS[id] || {}; return !!v['ok:' + id] || (v['tour:' + id] || 0) >= (T.insiste || 1); };
 
   const CSS = `.as-tour{position:fixed;inset:0;z-index:2147483200;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,24,18,.55);font-family:Jost,system-ui,sans-serif;animation:asFond .25s ease both}
 .as-c{width:100%;max-width:440px;margin:0 12px calc(14px + env(safe-area-inset-bottom));background:#FFFDF8;color:#171512;border-radius:28px;padding:18px 20px 16px;box-shadow:0 20px 50px rgba(0,0,0,.35);animation:asMonte .4s cubic-bezier(.22,1,.36,1) both}
@@ -95,8 +134,8 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
   let tourEl = null;
   function tour(id, force) {
     const T = TOURS[id]; if (!T || tourEl) return false;
-    if (!force && (!actif() || vus()['tour:' + id])) return false;
-    style(); bulleFermer(); noter('tour:' + id, 1);
+    if (!force && (!actif() || fini(id))) return false;
+    style(); bulleFermer(); noter('tour:' + id);
     const retour = document.activeElement; let i = 0;
     tourEl = document.createElement('div'); tourEl.className = 'as-tour';
     tourEl.setAttribute('role', 'dialog'); tourEl.setAttribute('aria-modal', 'true'); tourEl.setAttribute('aria-label', 'Comment ça marche : ' + T.t);
@@ -112,7 +151,7 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
       tourEl.querySelectorAll('.as-pts i').forEach((x, k) => x.classList.toggle('on', k === i));
       ret.hidden = i === 0; suiv.textContent = i === T.cartes.length - 1 ? 'J’ai compris' : 'Suivant'; };
     const cle = e => { if (!tourEl) return; if (e.key === 'Escape') { e.stopPropagation(); fermer(); } else if (e.key === 'ArrowRight' && i < T.cartes.length - 1) { i++; montrer(); } else if (e.key === 'ArrowLeft' && i > 0) { i--; montrer(); } };
-    suiv.onclick = () => { if (i < T.cartes.length - 1) { i++; montrer(); } else fermer(); };
+    suiv.onclick = () => { if (i < T.cartes.length - 1) { i++; montrer(); } else { noter('ok:' + id, 1); fermer(); } };
     ret.onclick = () => { if (i > 0) { i--; montrer(); } };
     tourEl.querySelector('[data-passer]').onclick = fermer;
     const off = tourEl.querySelector('[data-off]'); if (off) off.onclick = () => { regler(false); fermer(); if (window.MDGToast) MDGToast.dire('Tutoriels *coupés*', { type: 'info', sous: 'Réglages → Aide pour débuter, pour les revoir.' }); };
@@ -124,11 +163,11 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
   }
 
   // un écran compliqué vient de s'ouvrir ? (on regarde la page quand elle change, au plus une fois par image)
-  let guetT = 0;
+  let guetT = 0; const vu1 = new Set();   // une seule fois par ouverture de l'application, même pour un tutoriel insistant
   function guetter() {
     if (guetT || tourEl || !actif()) return;
     guetT = requestAnimationFrame(() => { guetT = 0; if (tourEl) return; const v = vus();
-      for (const [id, sel] of DECLENCHE) if (!v['tour:' + id] && document.querySelector(sel)) { setTimeout(() => { if (document.querySelector(sel)) tour(id); }, 700); return; } });
+      for (const [id, sel] of DECLENCHE) if (!fini(id) && !vu1.has(id) && document.querySelector(sel)) { vu1.add(id); setTimeout(() => { if (document.querySelector(sel)) tour(id); }, 700); return; } });
   }
   function surveiller() { if (!document.body || !window.MutationObserver) return; new MutationObserver(guetter).observe(document.body, { childList: true, subtree: true }); }
 
@@ -168,7 +207,8 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
   const SIGNES = [
     { k: 'menu', max: 3, sel: '.acc-mq', html: 'Touchez le <b>panier</b> : c’est le menu.<br>Le réseau, vos messages, vos commandes… tout est là.', glisse: true },
     { k: 'roue', max: 2, sel: '.acc-flotte', html: 'Glissez le doigt sur le <b>sac</b> pour changer de produit.', main: true, dessus: true },
-    { k: 'onglets', max: 2, sel: '.acc-ong', html: '<b>Activité</b> : vos négociations et commandes.<br><b>Alertes</b> : ce qui vous attend, et vos codes.' }
+    { k: 'onglets', max: 2, sel: '.acc-ong', html: '<b>Activité</b> : vos négociations et commandes.<br><b>Alertes</b> : ce qui vous attend, et vos codes.' },
+    { k: 'prix', max: 3, sel: '.acc-ong', html: 'Nouveau : l’onglet <b>Prix</b>.<br>Qui vend le moins cher, qui achète le plus cher, en direct.' }
   ];
   let signeFait = false;
   // une fenêtre réellement à l'écran (le menu fermé et les feuilles cachées restent dans la page : on ne les compte pas)

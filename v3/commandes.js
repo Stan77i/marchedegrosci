@@ -89,6 +89,7 @@
 .cm-st{margin:10px 0 12px;padding:14px;border-radius:18px;background:#10392B;color:#F3EFE4}
 .cm-st b{display:block;font:600 18px/1.25 Jost,sans-serif}.cm-st b em{font-style:italic;font-weight:900;color:#F2C230}
 .cm-st small{display:block;margin-top:4px;color:rgba(243,239,228,.8);font-size:13px}
+.cm-tcode{margin:0 0 10px;padding:8px 12px;border-radius:12px;background:rgba(16,57,43,.08);color:#171512;font:400 13px/1.4 Jost,sans-serif}.cm-tcode b{display:inline;font:800 15px/1 Jost,sans-serif;letter-spacing:.06em;color:#10392B}.cm-garde b{display:inline;font:inherit;font-weight:800;letter-spacing:.04em}
 .cm-garde{margin:-2px 0 10px;padding:8px 12px;border-radius:12px;background:#F2C230;color:#171512;font:600 14px/1.35 Jost,sans-serif}
 .cm-act{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
 .cm-act button{min-height:50px;border-radius:25px;border:1px solid #10392B;background:none;color:#10392B;font:600 15.5px Jost,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:0 16px}
@@ -373,7 +374,7 @@
     const k = codesVus[c.id + (pec ? ':p' : ':r')], titre = pec ? 'Code de prise en charge' : 'Code de réception';
     const regle = pec ? 'Donnez-le au chauffeur seulement quand la marchandise est dans son véhicule.' : 'Donnez-le au chauffeur seulement après avoir vérifié la quantité et la qualité.';
     const garde = pec ? '🔐 Gardez bien ce code : vous aurez à le présenter au chauffeur au chargement.' : '🔐 Gardez bien ce code : vous aurez à le présenter à la réception.';
-    return `<div class="cm-st" data-code-bloc style="background:#FFFDF8;color:#171512;box-shadow:inset 0 0 0 2px #10392B"><p class="cm-garde">${garde}</p><b style="color:#10392B">${titre}</b>
+    return `<div class="cm-st" data-code-bloc style="background:#FFFDF8;color:#171512;box-shadow:inset 0 0 0 2px #10392B"><p class="cm-garde">${garde}</p>${ok && T.mission.code ? `<p class="cm-tcode">🚚 Code du chauffeur : <b>${esc(T.mission.code)}</b><br>Exigez qu’il vous le montre dans son application avant de donner votre code : s’il ne l’a pas, ce n’est pas le bon chauffeur.</p>` : ''}<b style="color:#10392B">${titre}</b>
       ${!ok ? '<small style="color:#5E5546">Le code s’affichera quand le chauffeur (avec l’application) aura accepté la mission.</small>'
         : k ? `<div aria-live="polite" style="margin:10px 0 4px;font:800 40px/1 Jost,sans-serif;letter-spacing:.18em;color:#10392B;font-variant-numeric:tabular-nums">${esc(k.code.slice(0, 3))} ${esc(k.code.slice(3))}</div>
             <small style="color:#5E5546">Valable jusqu’à ${heure(k.expire_le)}. Un seul usage. ${regle} Dites-le de vive voix : ne l’envoyez pas par message.</small>

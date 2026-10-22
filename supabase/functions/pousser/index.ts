@@ -23,6 +23,7 @@
 // 13. par la base (pg_cron « mdg-marketing », public.marketing_tick, schema-45) avec { marketing: true, numero } :
 //     une notification régulière à tous (30 par jour au plus, réglable), tirée des VRAIES données du moment ou présentant
 //     une vraie fonction de l'application. Jamais de message faux. Étiquette « marche-pub » : elle remplace la précédente.
+// 14. par la base (déclencheur public.push_code_demande, schéma 51) quand le chauffeur demande le code, avec { code_demande_id }.
 // Annonces du marché (schema-43) : achat groupé ouvert, besoin pro, nouvelle offre ou demande → tous les comptes qui ont activé
 // les notifications, sauf ceux qui les ont coupées ; au plus 10 par personne et par jour (push_diffusion_cible).
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
@@ -43,7 +44,7 @@ async function config() {
   return cfg;
 }
 
-const F = (n: number | null | undefined) => n == null ? "" : new Intl.NumberFormat("fr-FR").format(Number(n)).replace(/ | /g, " ") + " F";
+const F = (n: number | null | undefined) => n == null ? "" : new Intl.NumberFormat("fr-FR").format(Number(n)).replace(/[\u00a0\u202f]/g, " ") + " F";
 const coupe = (t: string, n: number) => t.length > n ? t.slice(0, n - 1) + "…" : t;
 
 async function estAdmin(uid: string) {
@@ -153,7 +154,7 @@ Deno.serve(async (req) => {
     if (corps.commande_etape_id) {
       const { data: e } = await sb.from("commande_etapes").select("id, commande_id, evenement, par, lieu").eq("id", String(corps.commande_etape_id)).maybeSingle();
       if (!e) return json({ erreur: "étape introuvable" }, 404);
-      const { data: k } = await sb.from("commandes").select("id, numero, vendeur_id, acheteur_id, produit, validation").eq("id", e.commande_id).maybeSingle();
+      const { data: k } = await sb.from("commandes").select("id, numero, vendeur_id, acheteur_id, produit, validation, transporteur_id").eq("id", e.commande_id).maybeSingle();
       if (!k) return json({ erreur: "commande introuvable" }, 404);
       const dests = [k.vendeur_id, k.acheteur_id].filter((u: string) => u && u !== e.par);
       const qui = e.par ? await nomDe(e.par) : "Marché de Gros", produit = k.produit || "votre commande";
@@ -177,12 +178,40 @@ Deno.serve(async (req) => {
       const rappel = (d: string): [string, string] | null => {
         if (k.validation !== "code") return null;
         if (d === k.acheteur_id && ["chargement", "transbordement"].includes(e.evenement)) return [title, `${produit} · 🔐 Gardez bien votre code de réception : vous aurez à le présenter au chauffeur, après avoir vérifié la marchandise.`];
-        if (d === k.acheteur_id && e.evenement === "arrivee") return ["🔐 Le chauffeur est arrivé : préparez votre code", `${produit} · Vérifiez la marchandise, puis donnez votre code de réception au chauffeur. Il est dans Accueil → Alertes.`];
+        if (d === k.acheteur_id && e.evenement === "arrivee") return ["🔐 Le chauffeur est arrivé : préparez votre code", `${produit} · Exigez d'abord qu'il vous montre son code transporteur, vérifiez la marchandise, puis montrez-lui votre code de réception. Il est dans Accueil → Alertes.`];
         if (d === k.vendeur_id && e.evenement === "confirmee") return [title, `${produit} · 🔐 Gardez bien votre code de prise en charge : vous le donnerez au chauffeur au chargement.`];
         return null;
       };
       for (const d of dests) { const [t2, b2] = rappel(d) || [title, body]; res.push(await envoyer(d, { title: t2, body: b2, tag: "cmd-" + k.id, url: "application.dc.html#/?commande=" + k.id })); }
+      // le chauffeur inscrit (schéma 51) : on lui rappelle d'exiger le code au bon moment
+      if (k.validation === "code" && k.transporteur_id) {
+        const { data: t } = await sb.from("transporteurs").select("user_id").eq("id", k.transporteur_id).maybeSingle();
+        const C: Record<string, [string, string]> = {
+          preparation: ["🔐 Marchandise en préparation", `${produit} · Au chargement, exigez que le vendeur vous montre son code de prise en charge, puis tapez-le dans votre Espace chauffeur.`],
+          chargement: ["🔐 Chargement confirmé", `${produit} · À la livraison, exigez que l'acheteur vous montre son code de réception, après sa vérification.`],
+          arrivee: ["🔐 Exigez le code de réception", `${produit} · L'acheteur vérifie la marchandise, puis il doit vous montrer son code. Tapez-le dans votre Espace chauffeur.`],
+        };
+        if (t?.user_id && t.user_id !== e.par && C[e.evenement]) res.push(await envoyer(t.user_id, { title: C[e.evenement][0], body: C[e.evenement][1], tag: "mission-cmd-" + k.id, url: "application.dc.html#/?chauffeur=1" }));
+        // arrivée signalée par le chauffeur lui-même : le rappel lui est donné dans l'application, pas en notification
+      }
       return json({ res });
+    }
+
+    // 14. le chauffeur demande le code dans l'application ({ code_demande_id }, déclencheur public.push_code_demande, schéma 51).
+    //     Le code n'est jamais dans la notification : il se montre sur place. On rappelle aussi d'exiger le code transporteur du chauffeur.
+    if (corps.code_demande_id) {
+      const { data: q } = await sb.from("code_demandes").select("id, commande_id, quoi").eq("id", String(corps.code_demande_id)).maybeSingle();
+      if (!q) return json({ rien: true });
+      const { data: k } = await sb.from("commandes").select("id, vendeur_id, acheteur_id, produit, transporteur_id").eq("id", q.commande_id).maybeSingle();
+      if (!k) return json({ rien: true });
+      const { data: t } = k.transporteur_id ? await sb.from("transporteurs").select("nom, code").eq("id", k.transporteur_id).maybeSingle() : { data: null };
+      const produit = k.produit || "votre commande", qui = t?.nom || "Le chauffeur", tc = t?.code ? ` (${t.code})` : "";
+      const pec = q.quoi === "prise_en_charge";
+      return json(await envoyer(pec ? k.vendeur_id : k.acheteur_id, {
+        title: pec ? `🔐 ${qui} demande votre code de prise en charge` : `🔐 ${qui} demande votre code de réception`,
+        body: pec ? `${produit} · Exigez qu'il vous montre son code transporteur${tc}. Quand la marchandise est chargée, montrez-lui votre code.`
+                  : `${produit} · Exigez qu'il vous montre son code transporteur${tc}. Vérifiez la marchandise, puis montrez-lui votre code.`,
+        tag: "cmd-" + k.id, url: "application.dc.html#/?commande=" + k.id }));
     }
 
     // 8. une mission de transport ({ mission_id }, déclencheur public.push_mission, schema-27) :
@@ -317,7 +346,7 @@ Deno.serve(async (req) => {
     // 13. notification marketing régulière : vraies données ou vraie fonction, à tour de rôle
     if (corps.marketing) {
       const k = Math.max(0, Number(corps.numero || 0)), jour = new Date(Date.now() - 24 * 3600e3).toISOString(), semaine = new Date(Date.now() - 7 * 24 * 3600e3).toISOString();
-      const nf = (n: number) => new Intl.NumberFormat("fr-FR").format(n).replace(/ | /g, " ");
+      const nf = (n: number) => new Intl.NumberFormat("fr-FR").format(n).replace(/[\u00a0\u202f]/g, " ");
       const { data: of } = await sb.from("offres").select("product_slug, product_label, city, price, unit, created_at").eq("status", "active").order("created_at", { ascending: false }).limit(300);
       const { data: de } = await sb.from("demandes").select("product_slug, product_label, city, created_at").eq("status", "active").gte("created_at", semaine).order("created_at", { ascending: false }).limit(300);
       const { count: grp } = await sb.from("groupes_achat").select("id", { count: "exact", head: true }).in("statut", ["ouvert", "seuil_atteint"]);

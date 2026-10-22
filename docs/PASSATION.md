@@ -662,3 +662,9 @@ Lui proposer de coller ceci :
 - `produits_activite()` (SECURITY DEFINER, ouverte à anon) : par produit, chiffres agrégés seulement (ventes conclues 14 j + dernière, demandes publiées 14 j + dernière, négociations ouvertes actives 7 j, forte demande posée par l'équipe). Aucun nom, numéro, prix ni ville.
 - `application.dc.html` (`tendVeille`, `tendMsg`, `tendCharger`) : quand un produit s'arrête devant soi sur la roue (onglet Marché), une bulle sort de derrière le sac pendant 5 s puis repart ; elle revient à chaque retour sur le produit. Données relues au plus toutes les 5 min (cache `mdg-app:tendance`).
 - Messages, par ordre : « Très vendu » (≥ 3 ventes en 2 semaines) · « Très demandé » (≥ 3 demandes) · « Forte demande » (équipe) · « Vendu il y a … » · « N négociations en cours » · « Demandé il y a … ». Rien à dire → pas de bulle (jamais de chiffre inventé).
+
+## Bandeau de l'accueil : garanties + fonctions utiles (22/10/2026) — `app/garanties.js`
+- La bande fine (« Ni liens, ni arnaques au code ») fait aussi connaître les fonctions utiles, dans le même style (icône maïs, mot clé en accent) :
+  L'année du marché · Prix par zone · Le réseau · Suivi de commande · Code secret (ouvre le tutoriel) · Achats groupés · Alertes produits · Espace chauffeur.
+- Une garantie touchée ouvre la feuille « Pourquoi le Marché de Gros » ; une fonction touchée ouvre directement la fonction (module pas encore chargé → la feuille).
+- Garanties et fonctions alternent ; 14 phrases, une toutes les 4,2 s. N'ajouter que ce que l'application fait déjà.

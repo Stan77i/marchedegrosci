@@ -819,3 +819,11 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Mon compte** : héros allégé (avatar 104 → 92 px, titre 24 px au lieu de 28, hauteur réduite).
 - **Mode sombre** : le bouton secondaire « Publier une demande avec un budget » (Prix du marché) était illisible ; règle ajoutée dans `css/sombre.css`.
 - Cache `mgci-v184`.
+
+## Cartes, formulaires, sons, carte du réseau : finitions (22/10/2026)
+- Audit avec des annonces d'essai locales (localStorage `mdg-v2:offres` / `mdg-v2:demandes`, jamais envoyées) pour voir les cartes remplies.
+- **Formulaires Vendre et Demander** : même étiquette de champ partout (`.f-lab`, 14 px, 600), mêmes marges (20 px), rythme de 8 px entre étiquette et champ ; l'aperçu « Ce que l'acheteur verra » perd sa grosse ombre pour le contrat des cartes (liseré fin + ombre légère).
+- **Étiquettes** : la dernière en capitales espacées (« 4 OFFRES » dans Acheter) passe en phrase.
+- **Sons** (`v3/sons.js`) : deux motifs de balafon accordés au sac : `entree` (trois notes qui montent, au moment où il saute dans la transition de connexion) et `sortie` (deux notes qui descendent, quand il se ficelle). Même réglage que les confirmations (Sons → Confirmations à l'écran).
+- **Carte du réseau** : les lignes de la liste du panneau du bas prennent le liseré fin du contrat des cartes.
+- Cache `mgci-v186`.

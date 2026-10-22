@@ -59,9 +59,12 @@
     ok: [['C5', 0], ['G5', 0.09]],
     info: [['E5', 0]],
     alerte: [['A4', 0], ['A4', 0.13]],
-    erreur: [['D4', 0], ['G3', 0.12]]
+    erreur: [['D4', 0], ['G3', 0.12]],
+    // le sac (v3/porte.js) : on entre dans le marché (trois notes qui montent, plus courtes que l'accord), on en sort (deux notes qui descendent, douces)
+    entree: [['G4', 0], ['C5', 0.1], ['E5', 0.2]],
+    sortie: [['E4', 0], ['C4', 0.18]]
   };
-  const VOL = { accord: 0.32, proposition: 0.26, refus: 0.18, annonce: 0.12, ok: 0.14, info: 0.09, alerte: 0.13, erreur: 0.15 };
+  const VOL = { accord: 0.32, proposition: 0.26, refus: 0.18, annonce: 0.12, ok: 0.14, info: 0.09, alerte: 0.13, erreur: 0.15, entree: 0.16, sortie: 0.1 };
   function jouer(cat) {
     const c = audio(); if (!c || c.state !== 'running') return false;
     const r = reglages(), t0 = c.currentTime + 0.02;

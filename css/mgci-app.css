@@ -145,6 +145,9 @@ html[data-theme=sombre] .acc-sc .qd[data-u] { --qd-lis: #171512; }
 /* étiquette de section, la même partout : phrase en minuscules, 13 px, 600, couleur discrète (jamais de capitales espacées) */
 .lab { display: inline-block; font: 600 13px/1.25 var(--f-texte, Jost), system-ui, sans-serif; color: var(--texte-3); letter-spacing: 0; text-transform: none; }
 .lab-d { color: var(--sable); }
+/* étiquette de champ (Vendre, Demander) : la même partout */
+.f-lab { font: 600 14px/1.3 var(--f-texte, Jost), system-ui, sans-serif; color: var(--texte-2); }
+.f-lab small, .f-lab i { font-weight: 400; color: var(--mute); font-style: normal; }
 
 /* écran d'ouverture : le sac v2 (app/sac.js, humeur « plein ») fait son entrée, puis « marché » monte et « de Gros » s'écrit.
    Une seule scène orchestrée : le sac arrive de dessous (0,25 s), les produits tombent, il encaisse et saute, le nom se pose. */

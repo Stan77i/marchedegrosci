@@ -615,3 +615,11 @@ Lui proposer de coller ceci :
 - Le code de réception ou de prise en charge n'est **jamais** envoyé par notification ni par message : il se montre sur place.
 - Testé (SQL annulé par rollback) : demande acceptée vers l'acheteur, 2e demande refusée (2 min), acheteur refusé, code transporteur vu par l'acheteur. Playwright clair et sombre : bandeaux, bouton, appel envoyé, aucune erreur.
 - pousser v15 : les deux `replace(/ | /g…)` sont écrits `/[  ]/g` (caractères invisibles qui risquaient d'être perdus au copier-coller).
+
+**Écran d'ouverture qui ne reste plus bloqué** (22/10, signalé par le propriétaire : « l'app est plantée » à 9 h 45)
+- Cause probable : l'application a été ouverte à 9 h 45, pendant la mise en ligne de la PR #141 (GitHub Pages, de 9 h 44 à 9 h 45). Le téléphone a reçu un mélange de fichiers. Sans `v2/data.js` ou `app/marche-app.js`, `ready` ne passe jamais à vrai et l'écran d'ouverture restait affiché pour toujours.
+- Aucune erreur dans le code publié : 3 ouvertures avec le service hors-ligne, aucune erreur.
+- Filet ajouté (`componentDidMount`) :
+  - après 9 s sans données, on demande la nouvelle version au service hors-ligne (`registration.update()`), puis on recharge **une fois** (`sessionStorage mdg-relance`) ;
+  - si cela échoue encore, l'écran dit « Le chargement n'aboutit pas. Vérifiez internet, puis réessayez. » avec un bouton **Réessayer** (`.spl-re`).
+- Testé (Playwright, `v2/data.js` refusé) : refusé une seule fois → rechargement automatique, l'application s'ouvre ; toujours refusé → message et bouton.

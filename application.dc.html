@@ -49,7 +49,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261025p">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261025q">
 <link rel="stylesheet" href="css/sombre.css?v=20261025f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261025g">
@@ -779,7 +779,8 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 
 <div class="spl" style="position:absolute;inset:0;background:{{ splashBg }};color:var(--ivoire);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:{{ splashOp }};pointer-events:{{ splashPe }};transition:opacity .6s ease;z-index:30">
   <div class="spl-marque">{{ splashMark }}</div>
-  <span class="spl-dev">On remplit les étals…</span>
+  <span class="spl-dev">{{ splashTxt }}</span>
+  <sc-if value="{{ splBloque }}" hint-placeholder-val="{{ false }}"><button type="button" class="spl-re" onClick="{{ splRe }}">Réessayer</button></sc-if>
 </div>
 
 </div>
@@ -879,9 +880,16 @@ class Component extends DCLogic {
     const boot = () => {
       if (!window.MDG || !window.MDG.products || !window.MDGApp) return false;
       if (!window.MDG.search && !document.getElementById('mdg-search')) { const s = document.createElement('script'); s.id = 'mdg-search'; s.src = 'v2/search.js'; s.onload = this.onData; document.head.appendChild(s); }
-      this.buildFams(); this.fromHash(); this.setState({ ready: true }, () => this.finSplash && this.finSplash()); return true;
+      this.buildFams(); this.fromHash(); this.setState({ ready: true, splBloque: false }, () => this.finSplash && this.finSplash());
+      try { sessionStorage.removeItem('mdg-relance'); } catch (_) {} return true;
     };
     if (!boot()) this.poll = setInterval(() => { if (boot()) clearInterval(this.poll); }, 60);
+    // filet : si un fichier manque (mise à jour du site en cours, réseau coupé), l'écran d'ouverture ne reste pas bloqué.
+    // Après 9 s : on demande la nouvelle version au service hors-ligne et on recharge une fois ; ensuite, bouton « Réessayer ».
+    setTimeout(() => { if (this.state.ready) return;
+      let deja = false; try { deja = sessionStorage.getItem('mdg-relance') === '1'; sessionStorage.setItem('mdg-relance', '1'); } catch (_) { deja = true; }
+      if (!deja) { const go = () => location.reload(); try { navigator.serviceWorker.getRegistration().then(r => r ? r.update().catch(() => {}).then(go) : go(), go); } catch (_) { go(); } setTimeout(go, 3000); }
+      else this.setState({ splBloque: true }); }, 9000);
     if (this.state.splash === 'on') { const t0 = Date.now(); setTimeout(() => this.setState({ splashLine: true }), 80);
       const fin = () => { if (this.state.splash !== 'on') return; const r = Math.max(0, 1300 - (Date.now() - t0)); setTimeout(() => this.setState({ splash: 'fade' }), r); setTimeout(() => this.setState({ splash: 'off' }), r + 450); };
       this.finSplash = fin; const chk = setInterval(() => { if (this.state.ready) { clearInterval(chk); fin(); } }, 100); setTimeout(() => { clearInterval(chk); fin(); }, 2200); }
@@ -1387,7 +1395,8 @@ class Component extends DCLogic {
     const kbH = !framed && S.kbH ? S.kbH : 0;
     const base = { shellAlign: framed ? 'center' : 'flex-start', shellPad: framed ? '11px' : '0', shellRad: framed ? '64px' : '0', scale: sc, W: framed ? '390px' : '100vw', H: framed ? '844px' : kbH ? kbH + 'px' : '100dvh', rad: framed ? '53px' : '0', framed,
       topPad: framed ? '50px' : 'max(12px, env(safe-area-inset-top))', botPad: framed ? '34px' : 'max(18px, env(safe-area-inset-bottom))', clock: S.clock,
-      splashBg: this.isDark() ? '#141414' : '#10392B', splashOp: S.splash === 'on' || !S.ready ? 1 : 0, splashPe: S.splash === 'off' && S.ready ? 'none' : 'auto', splashLine: S.splashLine ? '56px' : '0px', splashMark: S.splash === 'off' && S.ready ? null : this.splashMark(), toast: S.toast, toastOp: S.toastOn ? 1 : 0, toastY: S.toastOn ? '0' : '12px' };
+      splashBg: this.isDark() ? '#141414' : '#10392B', splashTxt: S.splBloque ? 'Le chargement n’aboutit pas. Vérifiez internet, puis réessayez.' : 'On remplit les étals…', splBloque: !!S.splBloque && !S.ready,
+      splRe: () => { try { sessionStorage.removeItem('mdg-relance'); } catch (_) {} location.reload(); }, splashOp: S.splash === 'on' || !S.ready ? 1 : 0, splashPe: S.splash === 'off' && S.ready ? 'none' : 'auto', splashLine: S.splashLine ? '56px' : '0px', splashMark: S.splash === 'off' && S.ready ? null : this.splashMark(), toast: S.toast, toastOp: S.toastOn ? 1 : 0, toastY: S.toastOn ? '0' : '12px' };
     if (!S.ready) return base;
     const A = window.MDGApp, M = window.MDG, h = React.createElement, html = (x, extra) => h('div', Object.assign({ dangerouslySetInnerHTML: { __html: x } }, extra || {}));
     // icônes : une tuile teintée par le sens (css/mgci-app.css .ui-tile) ; « nom:ton » ou une clé ci-dessous

@@ -114,7 +114,7 @@ p{margin:0 auto;max-width:440px;font:400 17px/1.5 Jost,sans-serif;color:var(--sa
   // l'administrateur : le point en bas à droite montre l'interrupteur ; l'allumer ouvre le site, qui vérifie la connexion
   var pt = $('pt'), box = $('adm'), sw = $('admSw');
   pt.onclick = function () { arreter(); box.classList.toggle('on'); if (box.classList.contains('on')) sw.focus(); };
-  sw.onchange = function () { if (sw.checked) setTimeout(function () { location.href = 'index-v3.html?admin=1' + h; }, 250); };
+  sw.onchange = function () { if (!sw.checked) return; try { sessionStorage.removeItem('mdg-app'); } catch (_) {} setTimeout(function () { location.href = 'index-v3.html?admin=1' + h; }, 250); };
 })();
 </script>
 </body>

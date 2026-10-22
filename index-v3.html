@@ -38,7 +38,9 @@ html.mdg-garde body{overflow:hidden}#mdgGarde>div{max-width:380px;display:grid;g
 <link rel="stylesheet" href="v3/constellation.css?v=20261023f">
 <link rel="stylesheet" href="css/typo.css?v=20261023f">
 <link rel="stylesheet" href="v3/ux.css?v=20261023f">
-<script>/* téléphone : ouvre l'application mobile (même adresse, même données). ?ordinateur=1 force le site complet */(function(){try{var q=location.search,f=/[?&]ordinateur=1/.test(q);if(f)sessionStorage.setItem('mdg-ordi','1');var o=sessionStorage.getItem('mdg-ordi')==='1';if(/[?&]app=1/.test(q)){sessionStorage.setItem('mdg-app','1');sessionStorage.removeItem('mdg-ordi');o=false}var tel=sessionStorage.getItem('mdg-app')==='1'||(matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<768);if(tel&&!o)location.replace('application.dc.html'+(location.hash||'#/'));}catch(e){}})();</script>
+<script>/* téléphone : ouvre l'application mobile (même adresse, même données). ?ordinateur=1 force le site complet.
+   L'administrateur qui entre (?admin=1, ou vérification en cours) reste ici : sinon le souvenir « application » de l'onglet le renvoyait
+   vers l'application, puis l'application (sur PC) vers la maintenance — la page semblait juste se recharger (22/10/2026). */(function(){try{var q=location.search;if(/[?&]admin=1/.test(q)||sessionStorage.getItem('mdg-site:essai')==='1'){sessionStorage.removeItem('mdg-app');return}var f=/[?&]ordinateur=1/.test(q);if(f)sessionStorage.setItem('mdg-ordi','1');var o=sessionStorage.getItem('mdg-ordi')==='1';if(/[?&]app=1/.test(q)){sessionStorage.setItem('mdg-app','1');sessionStorage.removeItem('mdg-ordi');o=false}var tel=sessionStorage.getItem('mdg-app')==='1'||(matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<768);if(tel&&!o)location.replace('application.dc.html'+(location.hash||'#/'));}catch(e){}})();</script>
 <script>/* sans adresse : ouvre l'Accueil */ if (!location.hash) history.replaceState(null, '', '#/');</script>
 <script src="vendor/gsap.min.js" defer></script>
 <script src="vendor/ScrollTrigger.min.js" defer></script>

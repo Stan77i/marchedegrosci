@@ -56,7 +56,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261026c">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261026d">
 <link rel="stylesheet" href="css/sombre.css?v=20261025f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261025g">
@@ -173,11 +173,12 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   </div>
 
   <div style="display:{{ accA }}">
-    <section class="acc-carte acc-ec"><div class="acc-ttl"><h2>En <em>cours</em></h2><sc-if value="{{ ecEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ ecEff }}">Tout effacer</button></sc-if></div><p class="acc-sub">{{ ecSous }}</p>
+    <!-- « En cours » : seulement pour une personne connectée (demandé le 22/10/2026) -->
+    <sc-if value="{{ ecOn }}" hint-placeholder-val="{{ false }}"><section class="acc-carte acc-ec"><div class="acc-ttl"><h2>En <em>cours</em></h2><sc-if value="{{ ecEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ ecEff }}">Tout effacer</button></sc-if></div><p class="acc-sub">{{ ecSous }}</p>
       <sc-if value="{{ ecRepOn }}" hint-placeholder-val="{{ false }}"><div class="glis glis-rep" onScroll="{{ ecRep.glis }}"><button class="ec-rep ec-{{ ecRep.etat }}" onClick="{{ ecRep.go }}" aria-label="{{ ecRep.lab }}"><span class="ec-rep-h">Reprendre là où vous en étiez</span><span class="ec-l"><span class="ec-i ec-{{ ecRep.k }} {{ ecRep.anim }}" aria-hidden="true">{{ ecRep.emo }}<sc-if value="{{ ecRep.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ ecRep.titre }}</b><small>{{ ecRep.sous }}</small></span><span class="ec-go" aria-hidden="true">{{ accIco.suite }}</span></span></button><button type="button" class="glis-z" onClick="{{ ecRep.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-if>
       <sc-for list="{{ ecListe }}" as="e" hint-placeholder-count="0"><div class="glis" onScroll="{{ e.glis }}"><button class="acc-ligne ec-ligne ec-{{ e.etat }}" onClick="{{ e.go }}" aria-label="{{ e.lab }}"><span class="ec-i ec-{{ e.k }} {{ e.anim }}" aria-hidden="true">{{ e.emo }}<sc-if value="{{ e.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ e.titre }}</b><small><span class="ec-tag">{{ e.tag }}</span>{{ e.sous }}</small></span><sc-if value="{{ e.vague }}" hint-placeholder-val="{{ false }}"><span class="ec-vague" aria-hidden="true"><i></i><i></i><i></i></span></sc-if></button><button type="button" class="glis-z" onClick="{{ e.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-for>
-      <sc-if value="{{ ecVideOn }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ ecVideTxt }}</p></sc-if><sc-if value="{{ ecCnx }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-cnx" onClick="{{ ecCnxGo }}">Se connecter</button></sc-if>
-    </section>
+      <sc-if value="{{ ecVideOn }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ ecVideTxt }}</p></sc-if>
+    </section></sc-if>
     <section class="acc-carte"><div class="acc-ttl"><h2>Dernières annonces</h2><sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ actEff }}">Tout effacer</button></sc-if></div><p class="acc-sub">Ce qui vient d’arriver sur le marché : annonces et ventes conclues.<sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><span class="acc-astuce"> Glissez une ligne vers la gauche pour la retirer.</span></sc-if></p>
       <sc-for list="{{ accActs }}" as="a" hint-placeholder-count="0"><div class="glis" onScroll="{{ a.glis }}"><button class="acc-ligne" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span><span class="acc-h">{{ a.h }}</span></button><button type="button" class="glis-z" onClick="{{ a.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-for>
       <sc-if value="{{ accActVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ actVideTxt }}</p></sc-if>
@@ -1280,7 +1281,7 @@ class Component extends DCLogic {
       actVideTxt: Object.keys(MQ).some(k => k.startsWith('a:')) ? 'Rien de nouveau depuis votre dernier effacement.' : 'Aucune annonce pour l’instant.',
       ecListe: ecT.filter(x => !ecD || x.k !== ecD.k || x.id !== ecD.id).map(ecEl), ecVide: !ecT.length && !ecRepE,
       ecSous: !moiS ? 'Connectez-vous pour retrouver vos négociations, commandes et messages.' : nAf ? nAf + ' démarche' + (nAf > 1 ? 's attendent' : ' attend') + ' votre réponse.' : ecT.length ? 'Vos démarches en cours, pour reprendre en un geste.' : 'Vos négociations, commandes et messages en cours apparaîtront ici.',
-      ecVideOn: !!(moiS && !ecT.length && !ecRepE), ecCnx: !moiS, ecCnxGo: () => { if (window.MDGNuage) MDGNuage.open(); },   // pas connecté : un bouton, pas une deuxième phrase « connectez-vous »
+      ecOn: !!moiS, ecVideOn: !!(moiS && !ecT.length && !ecRepE),   // « En cours » n'existe que pour une personne connectée
       ecVideTxt: moiS ? 'Rien en cours. Proposez un prix sur une annonce : la négociation s’affichera ici.' : 'Connectez-vous pour voir vos démarches.',
       accActs: acts, // J'ai / Je cherche : seulement sur l'onglet Marché (Activité et Alertes n'ont rien à publier)
       accBasC: (S.accTab || 'marche') === 'marche' ? '' : 'cache', accBasH: String((S.accTab || 'marche') !== 'marche'), accActVide: !acts.length, accAlertes: al, accAlVide: !!moiS && !al.length && !nCd, accAlRien: !!moiS && !al.length && nCd > 0,

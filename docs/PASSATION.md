@@ -366,6 +366,18 @@
 - La liste « Dernières annonces » (Activité) affichait encore le colis et le chariot dessinés : elle passe en 🧺 / 🛒.
 - Code : `accBasC` / `accBasH` (classe `.acc-bas.cache`).
 
+### Accueil → Activité : « En cours » et « Reprendre »
+- L'onglet Activité montre d'abord ce qui est **en cours**, pour ne jamais se perdre dans l'application :
+  - négociations : proposition à laquelle répondre, proposition en attente de l'autre, accord conclu depuis moins de 3 jours ;
+  - commandes : à confirmer, en préparation, en route, litige ;
+  - messages : conversations avec des messages non lus.
+- « Reprendre là où vous en étiez » (bord maïs, en tête) : la dernière démarche ouverte (négociation, commande ou conversation), gardée 2 jours sur le téléphone, tant qu'elle est encore en cours. Un toucher la rouvre.
+- Ordre : ce qui attend ma réponse, puis ce qui roule, puis ce qui attend l'autre, puis les accords.
+- Animations : 🤝 / 💬 / 📦 avec un anneau maïs quand c'est à moi d'agir ; 🚚 qui roule sur une route en pointillés quand la commande est en route ; trois points qui ondulent quand on attend l'autre ; ✅ pour un accord.
+- Pastille sur l'onglet Activité : le nombre de démarches en cours. Elle bat (maïs) s'il y a quelque chose à faire, sinon elle reste discrète.
+- Rien d'inventé : tout vient des listes déjà gardées par `v3/negoce.js`, `v3/commandes.js` et `v3/messages.js` (chacun exporte `activite()`). Les commandes sont relues au démarrage et au retour sur l'application (une fois par minute au plus).
+- Code : `app/activite.js` (`MDGActivite.noter / tout / dernier / aFaire`, événement `mdg:activite`) ; `ecListe`, `ecRep` dans `application.dc.html` ; styles `.ec-*`.
+
 ## 5. En attente d'une décision du propriétaire
 
 

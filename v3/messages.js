@@ -223,6 +223,7 @@
   // ——— une conversation ———
   async function conversation(id, depuisBoite, meta) {
     if (!id || !N() || !N().session()) return;
+    if (window.MDGActivite) MDGActivite.noter('dm', id);   // pour « Reprendre » dans Accueil → Activité
     let c = liste.find(x => x.id === id) || Object.assign({ id, bloque: false, je_bloque: false }, meta || {});
     if (!c.autre_id) { await refresh(); c = liste.find(x => x.id === id) || c; }
     const u = me(); ouverte = id;
@@ -329,7 +330,12 @@
   }
   if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'mdg-dm' && e.data.dm) conversation(e.data.dm); });
 
-  window.MDGMessages = { boite, ecrire, ecrireMarche, diffuser, conversation, unread, refresh, JOURS };
+  // Accueil → Activité : les conversations avec des messages non lus (et, pour « Reprendre », une conversation précise)
+  const ligneAct = c => ({ k: 'dm', id: c.id, titre: c.autre_nom || 'Conversation', avec: c.autre_nom || '', etat: c.non_lu ? 'moi' : 'attente',
+    tag: c.non_lu ? 'Nouveau message' : 'Conversation', apercu: String(c.dernier_texte || '').slice(0, 70), ts: Date.parse(c.updated_at) || 0, ouvrir: () => conversation(c.id) });
+  const activite = () => liste.filter(c => c.non_lu && c.id !== ouverte).map(ligneAct);
+  const trouverAct = id => { const c = liste.find(x => x.id === id); return c ? ligneAct(c) : null; };
+  window.MDGMessages = { boite, ecrire, ecrireMarche, diffuser, conversation, unread, refresh, JOURS, activite, trouverAct };
   addEventListener('mdg:connecte', () => { premier = true; setTimeout(refresh, 1200); });
   addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte' && !(N() && N().session())) { liste = []; W(KL, []); fermer(); annoncer(); } });
   addEventListener('hashchange', depuisAdresse);

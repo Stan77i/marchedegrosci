@@ -26,7 +26,7 @@
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261023f','v3/porte.js','v3/sons.js?v=20261023f','v3/negoce.js?v=20261024j','v3/compte.js?v=20261025g','v3/souffle.js?v=20261023t','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261025g','v3/statuts.js?v=20261023a','v3/messages.js?v=20261023h','v3/alertes.js?v=20261023f','v3/releve.js?v=20261025a','v3/commandes.js?v=20261024g','v3/chauffeur.js?v=20261024g','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261023f','v3/appro.js?v=20261023f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261025g','v3/identite.js?v=20261023f'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261023f','v3/porte.js','v3/sons.js?v=20261023f','v3/negoce.js?v=20261025j','v3/compte.js?v=20261025g','v3/souffle.js?v=20261023t','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261025g','v3/statuts.js?v=20261023a','v3/messages.js?v=20261025j','v3/alertes.js?v=20261023f','v3/releve.js?v=20261025a','v3/commandes.js?v=20261025j','v3/chauffeur.js?v=20261024g','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261023f','v3/appro.js?v=20261023f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261025g','v3/identite.js?v=20261023f'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -44,11 +44,12 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <script src="app/nuit.js?v=20261024c" defer></script>
 <script src="app/stable.js?v=20261025f" defer></script>
 <script src="app/vibre.js?v=20261025a" defer></script>
+<script src="app/activite.js?v=20261025j" defer></script>
 <link rel="preload" href="fonts/jost-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261025i">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261025j">
 <link rel="stylesheet" href="css/sombre.css?v=20261025f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261025g">
@@ -89,7 +90,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
       <button class="acc-r av" onClick="{{ goMoi }}" aria-label="{{ moiLabel }}">{{ accMoi }}</button>
     </div>
     <div class="acc-ong" role="tablist" aria-label="Accueil" style="--i:{{ accOngI }}"><span class="acc-ong-ind" aria-hidden="true"></span>
-      <sc-for list="{{ accOngs }}" as="o" hint-placeholder-count="3"><button role="tab" aria-selected="{{ o.sel }}" class="{{ o.cls }}" onClick="{{ o.go }}">{{ o.t }}<sc-if value="{{ o.hasN }}" hint-placeholder-val="{{ false }}"><span class="acc-n">{{ o.n }}</span></sc-if></button></sc-for>
+      <sc-for list="{{ accOngs }}" as="o" hint-placeholder-count="3"><button role="tab" aria-selected="{{ o.sel }}" class="{{ o.cls }}" onClick="{{ o.go }}">{{ o.t }}<sc-if value="{{ o.hasN }}" hint-placeholder-val="{{ false }}"><span class="acc-n {{ o.nC }}">{{ o.n }}</span></sc-if></button></sc-for>
     </div>
   </div>
 
@@ -164,6 +165,11 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   </div>
 
   <div style="display:{{ accA }}">
+    <section class="acc-carte acc-ec"><h2>En <em>cours</em></h2><p class="acc-sub">{{ ecSous }}</p>
+      <sc-if value="{{ ecRepOn }}" hint-placeholder-val="{{ false }}"><button class="ec-rep ec-{{ ecRep.etat }}" onClick="{{ ecRep.go }}" aria-label="{{ ecRep.lab }}"><span class="ec-rep-h">Reprendre là où vous en étiez</span><span class="ec-l"><span class="ec-i ec-{{ ecRep.k }} {{ ecRep.anim }}" aria-hidden="true">{{ ecRep.emo }}<sc-if value="{{ ecRep.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ ecRep.titre }}</b><small>{{ ecRep.sous }}</small></span><span class="ec-go" aria-hidden="true">{{ accIco.suite }}</span></span></button></sc-if>
+      <sc-for list="{{ ecListe }}" as="e" hint-placeholder-count="0"><button class="acc-ligne ec-ligne ec-{{ e.etat }}" onClick="{{ e.go }}" aria-label="{{ e.lab }}"><span class="ec-i ec-{{ e.k }} {{ e.anim }}" aria-hidden="true">{{ e.emo }}<sc-if value="{{ e.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ e.titre }}</b><small><span class="ec-tag">{{ e.tag }}</span>{{ e.sous }}</small></span><sc-if value="{{ e.vague }}" hint-placeholder-val="{{ false }}"><span class="ec-vague" aria-hidden="true"><i></i><i></i><i></i></span></sc-if></button></sc-for>
+      <sc-if value="{{ ecVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ ecVideTxt }}</p></sc-if>
+    </section>
     <section class="acc-carte"><h2>Dernières annonces</h2><p class="acc-sub">Ce qui vient d’arriver sur le marché.</p>
       <sc-for list="{{ accActs }}" as="a" hint-placeholder-count="0"><button class="acc-ligne" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span><span class="acc-h">{{ a.h }}</span></button></sc-for>
       <sc-if value="{{ accActVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">Aucune annonce pour l’instant.</p></sc-if>
@@ -833,7 +839,7 @@ class Component extends DCLogic {
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { this._w = {}; this.forceUpdate(); });
     this.setIcons(this.isDark());
     this.onAller = e => { const p = e.detail && e.detail.page; if (p && HASH[p]) { this.setState({ menu: false }); this.push(p); } }; addEventListener('mdg:aller', this.onAller);   // « Montrer dans l'app » du guide (v3/guide.js)
-    addEventListener('resize', this.onResize); addEventListener('storage', this.onData); addEventListener('mdg:change', this.onData); addEventListener('mdg:negoce', this.onData); addEventListener('mdg:dm', this.onData); addEventListener('mdg:rep', this.onData); addEventListener('mdg:profil', this.onData); addEventListener('mdg:alertes', this.onData); addEventListener('popstate', this.onPop); addEventListener('mdg:nouvelles', this.onNeuves); window.MDGAnnonceHaut = true;
+    addEventListener('resize', this.onResize); addEventListener('storage', this.onData); addEventListener('mdg:change', this.onData); addEventListener('mdg:negoce', this.onData); addEventListener('mdg:dm', this.onData); addEventListener('mdg:activite', this.onData); addEventListener('mdg:rep', this.onData); addEventListener('mdg:profil', this.onData); addEventListener('mdg:alertes', this.onData); addEventListener('popstate', this.onPop); addEventListener('mdg:nouvelles', this.onNeuves); window.MDGAnnonceHaut = true;
     const tick = () => { const d = new Date(); this.setState({ clock: d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0') }); }; tick(); this.clk = setInterval(tick, 20000);
     const boot = () => {
       if (!window.MDG || !window.MDG.products || !window.MDGApp) return false;
@@ -1134,7 +1140,16 @@ class Component extends DCLogic {
       mine.filter(x => x.kind === 'offre' && (x.epuise || !(x.qty > 0))).slice(0, 4).forEach(x => al.push({ tint: 'r', ico: ico('boite'), t: 'Stock épuisé', s: this.prod(x.slug).name + ' : l’offre n’est plus proposée', go: () => this.push('pubs') }));
     }
     const nAl = moiS ? al.length : 0;
-    const ongs = [['marche', 'Marché'], ['activite', 'Activité'], ['alertes', 'Alertes']].map(([k, t]) => ({ t, sel: String(tab === k), cls: tab === k ? 'on' : '', hasN: k === 'alertes' && nAl > 0, n: nAl,
+    // en cours (app/activite.js) : négociations, commandes, messages ; « Reprendre » = la dernière démarche ouverte, si elle est encore en cours
+    const AV = window.MDGActivite, ecT = moiS && AV ? AV.tout() : [], ecD = moiS && AV ? AV.dernier() : null, nAf = moiS && AV ? AV.aFaire() : 0;
+    const EMO = { nego: '🤝', cmd: '🚚', dm: '💬' };
+    const ecEl = x => { const roule = x.k === 'cmd' && !!x.route, emo = x.k === 'cmd' && !roule ? '📦' : x.k === 'nego' && x.etat === 'ok' ? '✅' : EMO[x.k] || '•';
+      const avec = x.avec ? (x.k === 'cmd' ? (x.role === 'vendeur' ? ' · pour ' : ' · de ') : x.k === 'nego' ? ' · avec ' : '') + x.avec : '';
+      const sous = x.k === 'dm' ? (x.apercu ? ' · « ' + x.apercu + ' »' : '') : (x.prix ? ' · ' + x.prix : '') + (x.k === 'dm' ? '' : avec);
+      return { k: x.k, etat: x.etat, emo, titre: x.titre, tag: x.tag, sous, route: roule, vague: x.etat === 'attente' && x.k !== 'dm',
+        anim: roule ? 'ec-roule' + (x.etat === 'moi' ? ' ec-appel' : '') : x.etat === 'moi' || x.etat === 'litige' ? 'ec-appel' : '', lab: x.titre + ' : ' + x.tag + sous, go: () => x.ouvrir() }; };
+    const ecRepE = ecD ? ecEl(ecD) : null;
+    const ongs = [['marche', 'Marché'], ['activite', 'Activité'], ['alertes', 'Alertes']].map(([k, t]) => ({ t, sel: String(tab === k), cls: tab === k ? 'on' : '', hasN: (k === 'alertes' && nAl > 0) || (k === 'activite' && ecT.length > 0), n: k === 'activite' ? ecT.length : nAl, nC: k === 'activite' ? (nAf ? 'vif' : 'doux') : '',
       go: () => { this.setState({ accTab: k }); const sc = document.querySelector('[data-pg="home"] .acc-sc'); if (sc) sc.scrollTop = 0; } }));
     // la salutation : par son prénom quand on le connaît
     const prenom = moiS && moiP ? (moiP.pseudo || moiP.prenom || '') : '';
@@ -1159,6 +1174,10 @@ class Component extends DCLogic {
       accMoi: moiS && window.MDGAvatar ? h('img', { src: window.MDGAvatar.uri(moiP && moiP.avatar, { size: 38, nom: (moiP && moiC && moiC.nomAffiche(moiP)) || String(moiS.user.tel || ''), seed: moiS.user.id }), alt: '', width: 38, height: 38, style: { borderRadius: '50%', display: 'block' } }) : ico('compte', 22),
       accOngs: ongs, accOngI: String(['marche', 'activite', 'alertes'].indexOf(tab)), accM: tab === 'marche' ? 'block' : 'none', accA: tab === 'activite' ? 'block' : 'none', accL: tab === 'alertes' ? 'block' : 'none',
       accTitre: titre, accSous: sous, accStats: stats,
+      ecRepOn: !!ecRepE, ecRep: ecRepE ? Object.assign({}, ecRepE, { sous: ecRepE.tag + ecRepE.sous }) : { k: '', etat: '', emo: '', titre: '', sous: '', route: false, anim: '', lab: '', go: () => {} },
+      ecListe: ecT.filter(x => !ecD || x.k !== ecD.k || x.id !== ecD.id).map(ecEl), ecVide: !ecT.length && !ecRepE,
+      ecSous: !moiS ? 'Connectez-vous pour retrouver vos négociations, commandes et messages.' : nAf ? nAf + ' démarche' + (nAf > 1 ? 's attendent' : ' attend') + ' votre réponse.' : ecT.length ? 'Vos démarches en cours, pour reprendre en un geste.' : 'Vos négociations, commandes et messages en cours apparaîtront ici.',
+      ecVideTxt: moiS ? 'Rien en cours. Proposez un prix sur une annonce : la négociation s’affichera ici.' : 'Connectez-vous pour voir vos démarches.',
       accActs: acts, // J'ai / Je cherche : seulement sur l'onglet Marché (Activité et Alertes n'ont rien à publier)
       accBasC: (S.accTab || 'marche') === 'marche' ? '' : 'cache', accBasH: String((S.accTab || 'marche') !== 'marche'), accActVide: !acts.length, accAlertes: al, accAlVide: !!moiS && !al.length };
   }

@@ -309,6 +309,10 @@
   - Le choix reste sur le téléphone (`mdg-app:vibrations`).
   - Non vérifié sur un vrai iPhone (impossible ici) : à tester par le propriétaire.
   - Les vibrations de confirmation qui existaient déjà (annonce publiée, chauffeur arrivé, code refusé, bannières) ne dépendent pas de ce réglage.
+- Profil et avatar → « Votre structure » : toucher À mon compte / Coopérative / Groupement / Entreprise / Marché redessinait tout le bloc et mettait le curseur dans le champ du nom. Sur iPhone, ça ouvrait le clavier et la page sautait.
+  - Maintenant, la sélection change sur place. Seul le détail (nom, logo, preuves) apparaît ou disparaît sous les choix, et le clavier ne s'ouvre plus tout seul.
+  - Corrigé aussi : « Nom de la marché » → « Nom du marché ».
+  - Robot : dans chaque page de Mon compte, il touche tous les choix et vérifie que rien ne bouge et que le clavier ne s'ouvre pas : 0 saut.
 
 ## 5. En attente d'une décision du propriétaire
 

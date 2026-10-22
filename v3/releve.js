@@ -1,7 +1,8 @@
 /* ═════════ Marché de Gros CI — Mes ventes et achats : historique, relevés, bons de transaction ═════════
    Une transaction = une négociation conclue (prix et quantité fixés). Il n'y a pas encore de paiement dans l'application :
    le bon de transaction le dit (« Paiement : à la livraison, hors application »).
-   Privé : seule la personne voit ses montants (serveur : supabase/schema-24-releves.sql → mes_transactions(p_debut, p_fin)).
+   Privé : seule la personne voit ses montants (serveur : supabase/schema-24-releves.sql → mes_transactions ; schéma 54 → mes_transactions2 : départ, destination, livraison).
+   Tampon rouge du Marché de Gros en bas du bon et du relevé : VENDU / ACHETÉ / LIVRÉ / ANNULÉ (ou RELEVÉ), la date, le numéro — jamais « payé ».
    Public : le profil ne montre que des volumes (« 12 t vendues »), jamais de montants.
    • période : ce mois, 3 mois, cette année, tout, ou des dates choisies ;
    • totaux : nombre de ventes et d'achats, montants, volumes par unité (kg et tonnes ensemble ; sacs, litres… à part, sans conversion inventée) ;
@@ -85,10 +86,11 @@
 .rl-bon .tot{display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;border-top:1px dashed rgba(23,21,18,.2)}
 .rl-bon .tot b{font:800 28px Jost,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .rl-bon .pay{margin:14px 0 0;padding:10px 12px;border-radius:12px;background:rgba(242,194,48,.2);font-size:13.5px}
+.rl-tp{display:flex;justify-content:flex-end;margin:6px -4px -8px 0}.rl-tampon{transform:rotate(-9deg);opacity:.9;mix-blend-mode:multiply}
 .rl-print{display:none}
-@media print{html,body{background:#fff!important}body>*:not(.rl-print){display:none!important}.rl-print{display:block!important;color:#000;background:#fff;font:400 12pt/1.4 Jost,Arial,sans-serif;padding:0}
+@media print{@page{margin:1.4cm}:root,html,html[data-theme],body{background:#fff!important;background-image:none!important;color-scheme:light!important}body>*:not(.rl-print){display:none!important}.rl-print{display:block!important;color:#000;background:#fff;font:400 12pt/1.4 Jost,Arial,sans-serif;padding:0}
   .rl-print h1{font:900 italic 20pt Jost,sans-serif;margin:0 0 4pt}.rl-print table{width:100%;border-collapse:collapse;margin-top:10pt}.rl-print th,.rl-print td{border-bottom:1px solid #bbb;padding:4pt 3pt;text-align:left;font-size:9pt;vertical-align:top}.rl-print td.n{white-space:nowrap}.rl-print td.num{font-size:7.5pt;color:#444;word-break:break-all}
-  .rl-print td.n,.rl-print th.n{text-align:right}.rl-print .pied{margin-top:14pt;font-size:9.5pt;color:#444}.rl-print .bon{max-width:15cm}.rl-print dl{display:grid;grid-template-columns:5cm 1fr;gap:4pt}.rl-print dd{margin:0;font-weight:600}
+  .rl-print td.n,.rl-print th.n{text-align:right}.rl-print .pied{margin-top:14pt;font-size:9.5pt;color:#444}.rl-print .bon{max-width:15cm}.rl-print .tp{display:flex;justify-content:flex-end;margin:12pt 1cm 0 0;page-break-inside:avoid;break-inside:avoid}.rl-print .rl-tampon{width:4.2cm;height:4.2cm;transform:rotate(-9deg);opacity:.9;-webkit-print-color-adjust:exact;print-color-adjust:exact}.rl-print dl{display:grid;grid-template-columns:5cm 1fr;gap:4pt}.rl-print dd{margin:0;font-weight:600}
   @page{margin:16mm}}
 @media (prefers-reduced-motion:reduce){.rl *{transition:none!important}}`;
   function css() { if (document.getElementById('rlCss')) return; const s = document.createElement('style'); s.id = 'rlCss'; s.textContent = CSS; document.head.appendChild(s); }
@@ -102,7 +104,7 @@
     const c = J(KC, {}); if (c[cle]) liste = c[cle];
     if (!navigator.onLine) return;
     charge = true; peindre();
-    try { liste = (await N().rpc('mes_transactions', { p_debut: d1, p_fin: d2 })) || []; c[cle] = liste; const k = Object.keys(c); if (k.length > 8) delete c[k[0]]; W(KC, c); }
+    try { liste = (await N().rpc('mes_transactions2', { p_debut: d1, p_fin: d2 }).catch(() => N().rpc('mes_transactions', { p_debut: d1, p_fin: d2 }))) || []; c[cle] = liste; const k = Object.keys(c); if (k.length > 8) delete c[k[0]]; W(KC, c); }
     catch (e) { if (window.MDGToast) MDGToast.dire('Relevé indisponible pour l’instant', { type: 'erreur', sous: /mes_transactions|schema cache|Could not find/i.test(e.message) ? 'Le serveur n’est pas encore à jour.' : e.message }); }
     charge = false; peindre();
   }
@@ -140,16 +142,44 @@
 
   // ——— le bon de transaction ———
   const parties = x => x.sens === 'vente' ? [moi(), x.partenaire_nom] : [x.partenaire_nom, moi()];
+  // ——— le tampon rouge du Marché de Gros (22/10/2026) ———
+  // Il dit ce que le serveur sait, rien de plus : VENDU / ACHETÉ (accord conclu), LIVRÉ (réception confirmée), ANNULÉ.
+  // Jamais « PAYÉ » : l'application ne voit pas l'argent (paiement à la livraison, hors application).
+  const dcourt = t => new Date(t).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const ETAT_CMD = { a_confirmer: 'Commande à confirmer', en_cours: 'Livraison en cours', terminee: 'Livrée · réception confirmée', annulee: 'Commande annulée', litige: 'Litige en cours d’examen', refusee: 'Commande refusée' };
+  function motTampon(x) { return x.commande_etat === 'terminee' ? 'LIVRÉ' : x.commande_etat === 'annulee' ? 'ANNULÉ' : x.sens === 'vente' ? 'VENDU' : 'ACHETÉ'; }
+  function tampon(mot, haut, bas, aria) {
+    const R = '#B3261E', fs = mot.length > 7 ? 24 : mot.length > 6 ? 27 : 30;
+    return `<svg class="rl-tampon" viewBox="0 0 200 200" width="150" height="150" role="img" aria-label="${esc(aria)}">
+      <defs><path id="rlTpH" d="M30,100 a70,70 0 1,1 140,0"/><path id="rlTpB" d="M24,100 a76,76 0 0,0 152,0"/></defs>
+      <g fill="none" stroke="${R}"><circle cx="100" cy="100" r="94" stroke-width="4"/><circle cx="100" cy="100" r="87" stroke-width="1.4"/><circle cx="100" cy="100" r="57" stroke-width="1.4"/></g>
+      <g fill="${R}" font-family="Jost,Arial,sans-serif">
+        <text font-size="13.5" font-weight="700" letter-spacing="2.2"><textPath href="#rlTpH" startOffset="50%" text-anchor="middle">MARCHÉ DE GROS</textPath></text>
+        <text font-size="11.5" font-weight="700" letter-spacing="3"><textPath href="#rlTpB" startOffset="50%" text-anchor="middle">★ CÔTE D’IVOIRE ★</textPath></text>
+        <text x="100" y="72" font-size="11" font-weight="600" text-anchor="middle">${esc(haut)}</text>
+        <text x="100" y="140" font-size="8.5" font-weight="600" text-anchor="middle" letter-spacing=".5">${esc(bas)}</text>
+      </g>
+      <rect x="8" y="81" width="184" height="38" fill="#fff" fill-opacity=".9" stroke="${R}" stroke-width="2.4"/>
+      <text x="100" y="${100 + fs * .36}" fill="${R}" font-family="Jost,Arial,sans-serif" font-size="${fs}" font-weight="900" font-style="italic" text-anchor="middle" letter-spacing="1.5">${esc(mot)}</text></svg>`;
+  }
+  function tamponBon(x) {
+    const mot = motTampon(x), d = mot === 'LIVRÉ' && x.livre_le ? x.livre_le : x.conclu_le;
+    return tampon(mot, dcourt(d), x.numero ? 'N° ' + String(x.numero).split('-').pop() : '', 'Tampon du Marché de Gros : ' + mot.toLowerCase() + ' le ' + dcourt(d));
+  }
   function bonHTML(x, imp) {
     const [v, a] = parties(x), q = x.quantite != null ? nf(x.quantite, 2) + ' ' + pluriel(x.unite || '', x.quantite) : '—';
-    const lignes = [['Date', jour(x.conclu_le)], ['Vendeur', v], ['Acheteur', a], ['Produit', x.produit || '—'], ['Quantité', q],
-      ['Prix unitaire', x.prix_unitaire != null ? F(x.prix_unitaire) + ' / ' + (x.unite || 'unité') : '—'], ['Lieu', x.ville || '—']];
+    const lignes = [['Accord conclu le', jour(x.conclu_le)], ['Vendeur', v], ['Acheteur', a], ['Produit', x.produit || '—'], ['Quantité', q],
+      ['Prix unitaire', x.prix_unitaire != null ? F(x.prix_unitaire) + ' / ' + (x.unite || 'unité') : '—'],
+      ['Départ', x.depart || x.ville || '—'], ['Destination', x.destination || (x.commande_numero ? 'Non précisée' : '—')]];
+    if (x.commande_numero) lignes.push(['Commande', x.commande_numero], ['Livraison', (ETAT_CMD[x.commande_etat] || '—') + (x.commande_etat === 'terminee' && x.livre_le ? ', le ' + jour(x.livre_le) : '')]);
+    else lignes.push(['Livraison', 'Pas encore de commande']);
     if (imp) return `<div class="bon"><h1>marché de Gros</h1><p>Bon de transaction n° <b>${esc(x.numero)}</b></p><dl>${lignes.map(([k, w]) => `<dt>${k}</dt><dd>${esc(w)}</dd>`).join('')}<dt>Total</dt><dd>${x.total != null ? F(x.total) : '—'}</dd><dt>Paiement</dt><dd>À la livraison, hors application</dd></dl>
+      <div class="tp">${tamponBon(x)}</div>
       <p class="pied">Ce bon récapitule l’accord conclu sur le Marché de Gros (négociation acceptée par les deux parties). Il ne remplace pas une facture fiscale. Établi le ${jour(Date.now())}.</p></div>`;
     return `<div class="rl-bon"><header><div><h3>Bon de transaction</h3><small>n° ${esc(x.numero)}</small></div>${window.MDGMarque ? MDGMarque.dg(42, { fond: 'vert' }) : ''}</header>
       <dl>${lignes.map(([k, w]) => `<dt>${k}</dt><dd>${esc(w)}</dd>`).join('')}</dl>
       <div class="tot"><span>Total</span><b>${x.total != null ? F(x.total) : '—'}</b></div>
-      <p class="pay"><b>Paiement :</b> à la livraison, hors application. Voyez la marchandise avant de payer.</p></div>`;
+      <p class="pay"><b>Paiement :</b> à la livraison, hors application. Voyez la marchandise avant de payer.</p><div class="rl-tp">${tamponBon(x)}</div></div>`;
   }
   function bon(x) {
     if (!x || !bg) return;
@@ -169,9 +199,10 @@
     const L = visibles(), V = L.filter(x => x.sens === 'vente'), A = L.filter(x => x.sens === 'achat'), som = l => l.reduce((s, x) => s + (+x.total || 0), 0);
     return `<h1>marché de Gros</h1><p>Relevé de ${esc(moi())} — ${esc(libelle(etat.p, etat.d1, etat.d2))}${etat.sens !== 'tout' ? ' — ' + (etat.sens === 'vente' ? 'ventes' : 'achats') : ''}</p>
       <p>${V.length} vente${V.length > 1 ? 's' : ''} : <b>${F(som(V))}</b> · ${A.length} achat${A.length > 1 ? 's' : ''} : <b>${F(som(A))}</b>${volumes(L).length ? ' · ' + volumes(L).map(vTxt).join(', ') : ''}</p>
-      <table><thead><tr><th>Date</th><th>N°</th><th>Sens</th><th>Produit</th><th class="n">Quantité</th><th class="n">Prix unit.</th><th class="n">Total</th><th>Avec</th></tr></thead><tbody>
-      ${L.map(x => `<tr><td>${new Date(x.conclu_le).toLocaleDateString('fr-FR')}</td><td class="num">${esc(x.numero)}</td><td>${x.sens === 'vente' ? 'Vente' : 'Achat'}</td><td>${esc(x.produit || '')}</td><td class="n">${x.quantite != null ? nf(x.quantite, 2) + ' ' + esc(x.unite || '') : ''}</td><td class="n">${x.prix_unitaire != null ? F(x.prix_unitaire) : ''}</td><td class="n">${x.total != null ? F(x.total) : ''}</td><td>${esc(x.partenaire_nom)}</td></tr>`).join('')}
-      </tbody></table><p class="pied">Transactions conclues sur le Marché de Gros (négociations acceptées par les deux parties). Paiement à la livraison, hors application. Ce relevé ne remplace pas une comptabilité certifiée. Établi le ${jour(Date.now())}.</p>`;
+      <table><thead><tr><th>Date</th><th>N°</th><th>Sens</th><th>Produit</th><th class="n">Quantité</th><th class="n">Prix unit.</th><th class="n">Total</th><th>Avec</th><th>Trajet</th><th>Livraison</th></tr></thead><tbody>
+      ${L.map(x => `<tr><td>${new Date(x.conclu_le).toLocaleDateString('fr-FR')}</td><td class="num">${esc(x.numero)}</td><td>${x.sens === 'vente' ? 'Vente' : 'Achat'}</td><td>${esc(x.produit || '')}</td><td class="n">${x.quantite != null ? nf(x.quantite, 2) + ' ' + esc(x.unite || '') : ''}</td><td class="n">${x.prix_unitaire != null ? F(x.prix_unitaire) : ''}</td><td class="n">${x.total != null ? F(x.total) : ''}</td><td>${esc(x.partenaire_nom)}</td><td>${esc((x.depart || x.ville || '—') + ' → ' + (x.destination || '—'))}</td><td>${esc(x.commande_numero ? (ETAT_CMD[x.commande_etat] || '—') : '—')}</td></tr>`).join('')}
+      </tbody></table><p class="pied">Transactions conclues sur le Marché de Gros (négociations acceptées par les deux parties). Paiement à la livraison, hors application. Ce relevé ne remplace pas une comptabilité certifiée. Établi le ${jour(Date.now())}.</p>
+      <div class="tp">${tampon('RELEVÉ', dcourt(Date.now()), V.length + ' vente' + (V.length > 1 ? 's' : '') + ' · ' + A.length + ' achat' + (A.length > 1 ? 's' : ''), 'Tampon du Marché de Gros : relevé établi le ' + dcourt(Date.now()))}</div>`;
   }
   function imprimer(html) {
     let z = document.querySelector('.rl-print'); if (!z) { z = document.createElement('div'); z.className = 'rl-print'; document.body.appendChild(z); }

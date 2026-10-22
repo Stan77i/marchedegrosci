@@ -142,27 +142,23 @@
 .qd[data-u] { overflow-wrap: anywhere; hyphens: manual; }
 html[data-theme=sombre] .acc-sc .qd[data-u] { --qd-lis: #171512; }
 
-/* écran d'ouverture « le sac qui se remplit » (logo Étal vert) : trois produits tombent dans le sac, le sac se remplit,
-   puis « marché » monte et « de Gros » s'écrit. Les produits continuent de tomber tant que l'application se prépare. */
+/* écran d'ouverture : le sac v2 (app/sac.js, humeur « plein ») fait son entrée, puis « marché » monte et « de Gros » s'écrit.
+   Une seule scène orchestrée : le sac arrive de dessous (0,25 s), les produits tombent, il encaisse et saute, le nom se pose. */
 .spl-bloc { display: flex; flex-direction: column; align-items: center; gap: 22px; }
-.spl-sac { width: min(180px, 46vw); height: auto; display: block; overflow: visible; }
-.sac-plein { animation: sacMonte 1.6s cubic-bezier(.22, 1, .36, 1) both; }
-.sac-a, .sac-b, .sac-c { animation: sacTombe 1.3s cubic-bezier(.5, 0, .7, 1) infinite both; }
-.sac-b { animation-delay: .18s; }
-.sac-c { animation-delay: .36s; }
+.spl-sac { display: block; line-height: 0; animation: splSac .55s cubic-bezier(.22, 1, .36, 1) both; }
+.spl-sac svg { width: min(180px, 46vw); height: auto; display: block; overflow: visible; }
 .spl-mq { width: min(230px, 60vw); height: auto; }
-.spl-mq .mq-m { animation: splMonte .4s .25s cubic-bezier(.22, 1, .36, 1) both; }
-.spl-mq .mq-g { animation: splEcrit .45s .4s cubic-bezier(.65, 0, .35, 1) both; }
+.spl-mq .mq-m { animation: splMonte .4s 1.15s cubic-bezier(.22, 1, .36, 1) both; }
+.spl-mq .mq-g { animation: splEcrit .45s 1.3s cubic-bezier(.65, 0, .35, 1) both; }
 .spl-repli { font: 600 34px/1 Jost, sans-serif; color: #F3EFE4; }
 .spl-re { margin-top: 18px; min-height: 48px; padding: 0 28px; border: 0; border-radius: 24px; background: #F2C230; color: #171512; font: 600 16px Jost, system-ui, sans-serif; cursor: pointer; }
-.spl-dev { margin-top: 18px; font-size: var(--t-sm); color: #9DBBA9; animation: splMonte .45s .55s cubic-bezier(.22, 1, .36, 1) both; }
-@keyframes sacMonte { from { transform: translateY(150px); } to { transform: translateY(0); } }
-@keyframes sacTombe { 0% { transform: translateY(-110px); opacity: 0; } 15% { opacity: 1; } 55% { transform: translateY(46px); opacity: 1; } 70%, 100% { transform: translateY(56px); opacity: 0; } }
+.spl-dev { margin-top: 18px; font-size: var(--t-sm); color: #9DBBA9; animation: splMonte .45s 1.45s cubic-bezier(.22, 1, .36, 1) both; }
+@keyframes splSac { from { opacity: 0; transform: translateY(26px) scale(.96); } to { opacity: 1; transform: none; } }
 @keyframes splMonte { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 @keyframes splEcrit { from { clip-path: inset(-20% 100% -20% 0); } to { clip-path: inset(-20% -5% -20% 0); } }
 @media (prefers-reduced-motion: reduce) {
-  .sac-plein, .spl-mq .mq-m, .spl-mq .mq-g, .spl-dev { animation: none; }
-  .sac-a, .sac-b, .sac-c { animation: none; opacity: 0; }
+  .spl-sac, .spl-mq .mq-m, .spl-mq .mq-g, .spl-dev { animation: none; }
+}
 }
 /* en-tête du menu : le nom seul, sans symbole */
 .mq-menu { display: block; line-height: 0; }

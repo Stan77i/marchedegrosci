@@ -22,12 +22,11 @@
 
   function rng(seed) { let s = seed >>> 0; return () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296; }
 
-  // ——— application sur téléphone : une illustration SVG (la porte du marché) au lieu de la scène animée ———
-  // Le bandeau ne fait que 132 px : des points mobiles y passaient sous le texte. Ici, une seule image lisible :
-  // à gauche les sillons d'un champ, à droite les étals ; au centre une porte ouverte d'où vient la lumière.
-  // Le cercle vert (qui produit) et le carré jaune (qui cherche) marchent vers elle ; la ligne bleue (la rencontre) passe le seuil.
-  // L'état du formulaire ouvre la porte (saisie), allume la lumière (envoi), fait se rejoindre les deux (réussite).
-  // k : préfixe des identifiants (la scène peut être dessinée plusieurs fois dans la page : bandeau, fond de l'accueil, transition)
+  // ——— application sur téléphone : le sac, notre personnage, à la porte du marché (demande du propriétaire, 22/10/2026 :
+  // « l'entrée doit être en harmonie : notre logo phare, c'est le sac ») ———
+  // Le bandeau de 132 px montre le sac v2 (app/sac.js) sous une lumière chaude. Son humeur suit l'état réel du formulaire :
+  // repos → il attend et regarde autour ; saisie → il se redresse, la lumière monte ; envoi → les produits tombent (il se remplit) ;
+  // réussite → plein, il saute ; erreur → triste ; hors connexion → ficelé, il dort. La scène « deux mondes » reste pour le site.
   const scene = (k = 'ps') => `<svg class="ps" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
   <defs>
     <radialGradient id="${k}L" cx="50%" cy="78%" r="60%"><stop offset="0" stop-color="#FCE6B8"/><stop offset=".45" stop-color="#E9A35E" stop-opacity=".55"/><stop offset="1" stop-color="#E07A3F" stop-opacity="0"/></radialGradient>
@@ -104,16 +103,33 @@
 .pt[data-etat=erreur] .ps-battant{transform:scaleX(.6)}.pt[data-etat=erreur] .ps-lien path{stroke-dashoffset:.85}.pt[data-etat=erreur] .ps-lien{opacity:.4}
 @media (prefers-reduced-motion:reduce){.ps *{animation:none!important;transition:none!important}}`;
 
+  const SCSS = `.pt--sac .ps-fond{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pt--sac .ps-halo{opacity:.55;transform-box:fill-box;transform-origin:50% 100%;transition:opacity .7s,transform .9s cubic-bezier(.22,1,.36,1);animation:psSouffle 5s ease-in-out infinite}
+.pt--sac .ps-sac{position:absolute;left:50%;bottom:8px;line-height:0;transform:translateX(-50%);transition:transform .55s cubic-bezier(.22,1,.36,1)}
+.pt--sac .ps-sac svg{display:block}
+.pt--sac .ps-sac.chg svg{animation:psPose .4s cubic-bezier(.22,1,.36,1) both}
+@keyframes psPose{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
+.pt[data-etat=saisie] .ps-sac{transform:translateX(-50%) translateY(-5px) scale(1.04)}.pt[data-etat=saisie] .ps-halo{opacity:.85}
+.pt[data-etat=envoi] .ps-halo{opacity:1;transform:scale(1.1)}
+.pt[data-etat=ok] .ps-halo{opacity:1;transform:scale(1.25)}.pt[data-etat=ok] .ps-sac{transform:translateX(-50%) scale(1.06)}
+.pt[data-etat=erreur] .ps-halo{opacity:.22;animation:none}
+.pt[data-etat=ferme] .ps-halo{opacity:.14;animation:none}
+@media (prefers-reduced-motion:reduce){.pt--sac .ps-halo,.pt--sac .ps-sac{transition:none;animation:none}.pt--sac .ps-sac.chg svg{animation:none}}`;
+  const HUMEUR = { repos: 'vide', saisie: 'vide', envoi: 'charge', ok: 'plein', erreur: 'triste', ferme: 'ferme' };
   function monterSvg(el) {
-    if (!document.getElementById('psCss')) { const st = document.createElement('style'); st.id = 'psCss'; st.textContent = CSS; document.head.appendChild(st); }
-    el.classList.add('pt', 'pt--svg'); el.dataset.mode = 'in'; el.dataset.etat = 'repos';
-    el.innerHTML = SVG + `<p class="pt-sr">La porte du marché : ceux qui produisent et ceux qui cherchent s'y retrouvent.</p>`;
-    const svg = el.querySelector('svg'), fige = () => { try { REDUIT.matches ? (svg.pauseAnimations(), svg.setCurrentTime(1.2)) : svg.unpauseAnimations(); } catch (_) {} };
-    fige(); REDUIT.addEventListener && REDUIT.addEventListener('change', fige);
+    if (!document.getElementById('psSacCss')) { const st = document.createElement('style'); st.id = 'psSacCss'; st.textContent = SCSS; document.head.appendChild(st); }
+    el.classList.add('pt', 'pt--sac'); el.dataset.mode = 'in'; el.dataset.etat = 'repos';
+    el.innerHTML = `<svg class="ps-fond" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+      <defs><radialGradient id="psH" cx="50%" cy="100%" r="62%"><stop offset="0" stop-color="#F2C230" stop-opacity=".4"/><stop offset=".55" stop-color="#E9A35E" stop-opacity=".14"/><stop offset="1" stop-color="#E07A3F" stop-opacity="0"/></radialGradient></defs>
+      <ellipse class="ps-halo" cx="200" cy="134" rx="200" ry="104" fill="url(#psH)"/><path d="M0 123.5H400" stroke="rgba(245,240,230,.16)"/></svg>
+      <div class="ps-sac"></div><p class="pt-sr">Le sac du Marché de Gros vous attend à l'entrée.</p>`;
+    const hote = el.querySelector('.ps-sac'); let h = '';
+    const poser = humeur => { if (h === humeur || !window.MDGSac) return; h = humeur; hote.innerHTML = MDGSac.svg(humeur, { t: 94 }); hote.classList.remove('chg'); void hote.offsetWidth; hote.classList.add('chg'); };
+    poser('vide');
     return {
-      etat(n) { if (n in CIBLE) el.dataset.etat = n; },
+      etat(n) { if (!(n in HUMEUR)) return; el.dataset.etat = n; poser(HUMEUR[n]); },
       mode(m) { el.dataset.mode = m; },
-      arreter() { REDUIT.removeEventListener && REDUIT.removeEventListener('change', fige); }
+      arreter() {}
     };
   }
 
@@ -249,22 +265,22 @@
      puis la lumière se retire sur l'accueil — et le marché flouté derrière la roue. ≈ 2,4 s. Mouvement réduit : rien, on arrive directement. */
   function entrer(fini, couvert) {
     const une = f => { let fait = false; return () => { if (fait) return; fait = true; try { f && f(); } catch (_) {} }; }, fin = une(fini), dessous = une(couvert);
-    if (REDUIT.matches || !document.documentElement.hasAttribute('data-app') || !Element.prototype.animate) { dessous(); return fin(); }
-    cssScene();
+    if (REDUIT.matches || !document.documentElement.hasAttribute('data-app') || !Element.prototype.animate || !window.MDGSac) { dessous(); return fin(); }
     const ov = document.createElement('div'); ov.setAttribute('aria-hidden', 'true');
-    ov.style.cssText = 'position:fixed;inset:0;z-index:10050;background:radial-gradient(120% 80% at 50% 60%,#2a2219 0%,#120f0b 70%);overflow:hidden;opacity:0';
-    ov.innerHTML = `<div class="pt" data-etat="ok" data-mode="in" style="position:absolute;left:-40%;width:180%;top:46%;aspect-ratio:400/132;transform-origin:50% 60.6%;margin-top:calc(-180vw * 132 / 400 * .606)">${scene('me')}</div>
-      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#FFF6DE 0%,#FCE6B8 45%,#F2B872 100%);opacity:0"></div>
-      <p style="position:absolute;left:24px;right:24px;top:50%;margin:-24px 0 0;text-align:center;font:600 26px/1.2 Jost,sans-serif;letter-spacing:-.015em;color:#171512;opacity:0">Vous êtes dans le <em style="font:900 italic 1em Jost,sans-serif;color:#10392B;padding:0 .06em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%)">marché</em>.</p>`;
+    ov.style.cssText = 'position:fixed;inset:0;z-index:10050;background:#10392B;overflow:hidden;opacity:0;display:grid;place-items:center';
+    ov.innerHTML = `<div style="line-height:0;transform-origin:50% 29%;will-change:transform">${MDGSac.svg('plein', { t: 170 })}</div>
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#FFF6DE 0%,#FCE6B8 45%,#F2C230 100%);opacity:0"></div>
+      <p style="position:absolute;left:24px;right:24px;top:50%;margin:-24px 0 0;text-align:center;font:600 26px/1.2 Jost,sans-serif;letter-spacing:-.015em;color:#171512;opacity:0">Vous êtes dans le <em style="font:900 italic 1em Jost,sans-serif;color:#10392B;padding:0 .06em;background:linear-gradient(transparent 62%,rgba(242,194,48,.65) 62%,rgba(242,194,48,.65) 94%,transparent 94%)">marché</em>.</p>`;
     document.body.appendChild(ov);
-    const [sc, flash, txt] = ov.children, E = 'cubic-bezier(.22,1,.36,1)';
-    ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, fill: 'forwards' }).onfinish = dessous;  // ce qui était dessous (la fenêtre de connexion) se ferme une fois couvert
-    sc.animate([{ transform: 'scale(1)', easing: 'cubic-bezier(.3,0,.6,1)' }, { transform: 'scale(1.35)', offset: .35, easing: 'cubic-bezier(.55,0,.9,.4)' }, { transform: 'scale(12)' }], { duration: 1300, delay: 260, fill: 'forwards' });
-    flash.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, delay: 1080, easing: 'ease-in', fill: 'forwards' });
-    txt.animate([{ opacity: 0, transform: 'translateY(10px)', filter: 'blur(4px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 520, delay: 1380, easing: E, fill: 'forwards' });
-    const out = ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 560, delay: 2150, easing: 'ease-out', fill: 'forwards' });
+    const [sac, flash, txt] = ov.children, E = 'cubic-bezier(.22,1,.36,1)';
+    ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 240, fill: 'forwards' }).onfinish = dessous;  // ce qui était dessous (la connexion) se ferme une fois couvert
+    // le sac se remplit et saute (sa propre animation, ≈ 1,9 s), puis on avance dans son ouverture jusqu'à y entrer
+    sac.animate([{ transform: 'scale(1)', easing: 'cubic-bezier(.5,0,.85,.4)' }, { transform: 'scale(16)' }], { duration: 760, delay: 1900, fill: 'forwards' });
+    flash.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 380, delay: 2380, easing: 'ease-in', fill: 'forwards' });
+    txt.animate([{ opacity: 0, transform: 'translateY(10px)', filter: 'blur(4px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 480, delay: 2600, easing: E, fill: 'forwards' });
+    const out = ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 520, delay: 3350, easing: 'ease-out', fill: 'forwards' });
     out.onfinish = () => { ov.remove(); fin(); };
-    setTimeout(() => { if (ov.isConnected) { ov.remove(); dessous(); fin(); } }, 4200);  // filet de sécurité
+    setTimeout(() => { if (ov.isConnected) { ov.remove(); dessous(); fin(); } }, 5200);  // filet de sécurité
   }
 
   /* ——— Sortir du marché : la transition de la déconnexion (application), l'inverse de l'entrée ———
@@ -273,24 +289,21 @@
      La déconnexion elle-même se fait dès que l'écran est couvert (l'accueil se met à jour dessous). Mouvement réduit : rien. */
   function sortir(fini, couvert) {
     const une = f => { let fait = false; return () => { if (fait) return; fait = true; try { f && f(); } catch (_) {} }; }, fin = une(fini), dessous = une(couvert);
-    if (REDUIT.matches || !document.documentElement.hasAttribute('data-app') || !Element.prototype.animate) { dessous(); return fin(); }
-    cssScene();
+    if (REDUIT.matches || !document.documentElement.hasAttribute('data-app') || !Element.prototype.animate || !window.MDGSac) { dessous(); return fin(); }
     const ov = document.createElement('div'); ov.setAttribute('aria-hidden', 'true');
-    ov.style.cssText = 'position:fixed;inset:0;z-index:10050;background:radial-gradient(120% 80% at 50% 60%,#2a2219 0%,#120f0b 70%);overflow:hidden;opacity:0';
-    ov.innerHTML = `<div class="pt" data-etat="ok" data-mode="in" style="position:absolute;left:-40%;width:180%;top:46%;aspect-ratio:400/132;transform-origin:50% 60.6%;margin-top:calc(-180vw * 132 / 400 * .606);transform:scale(12)">${scene('ms')}</div>
-      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#FFF6DE 0%,#FCE6B8 45%,#F2B872 100%)"></div>
-      <p style="position:absolute;left:24px;right:24px;top:50%;margin:-24px 0 0;text-align:center;font:600 26px/1.2 Jost,sans-serif;letter-spacing:-.015em;color:#171512">À bientôt au <em style="font:900 italic 1em Jost,sans-serif;color:#10392B;padding:0 .06em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%)">marché</em>.</p>`;
+    ov.style.cssText = 'position:fixed;inset:0;z-index:10050;background:#10392B;overflow:hidden;opacity:0;display:grid;place-items:center;align-content:center;gap:26px;padding:24px;box-sizing:border-box';
+    ov.innerHTML = `<div style="line-height:0;position:relative"><span>${MDGSac.svg('vide', { t: 150 })}</span><span style="position:absolute;inset:0;opacity:0">${MDGSac.svg('ferme', { t: 150 })}</span></div>
+      <p style="margin:0;text-align:center;font:600 26px/1.2 Jost,sans-serif;letter-spacing:-.015em;color:#F3EFE4;opacity:0">À bientôt au <em style="font:900 italic 1em Jost,sans-serif;color:#F2C230;padding:0 .06em">marché</em>.</p>`;
     document.body.appendChild(ov);
-    const [sc, lumiere, txt] = ov.children;
-    ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, easing: 'ease-out', fill: 'forwards' }).onfinish = dessous;
-    txt.animate([{ opacity: 1, transform: 'none', filter: 'blur(0)' }, { opacity: 0, transform: 'translateY(-8px)', filter: 'blur(4px)' }], { duration: 420, delay: 1050, easing: 'ease-in', fill: 'forwards' });
-    lumiere.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 520, delay: 1250, easing: 'ease-out', fill: 'forwards' });
-    sc.animate([{ transform: 'scale(12)' }, { transform: 'scale(1)' }], { duration: 1150, delay: 1250, easing: 'cubic-bezier(.16,1,.3,1)', fill: 'forwards' });
-    // dehors : la porte se referme derrière nous, ses lumières baissent, le vert et le jaune repartent chacun de leur côté
-    setTimeout(() => { sc.dataset.etat = 'ferme'; sc.dataset.mode = ''; }, 2050);
-    const out = ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 600, delay: 2750, easing: 'ease-in', fill: 'forwards' });
+    const [sacs, txt] = ov.children, [ouvert, ferme] = sacs.children, E = 'cubic-bezier(.22,1,.36,1)';
+    ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: 'ease-out', fill: 'forwards' }).onfinish = dessous;  // la déconnexion se fait dès que l'écran est couvert
+    txt.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 480, delay: 350, easing: E, fill: 'forwards' });
+    // le sac se ficelle : l'ouvert s'efface, le ficelé prend sa place avec un petit resserrement
+    ouvert.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, delay: 900, fill: 'forwards' });
+    ferme.animate([{ opacity: 0, transform: 'scale(1.03,.98)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: 900, easing: E, fill: 'forwards' });
+    const out = ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 560, delay: 2300, easing: 'ease-in', fill: 'forwards' });
     out.onfinish = () => { ov.remove(); fin(); };
-    setTimeout(() => { if (ov.isConnected) { ov.remove(); dessous(); fin(); } }, 4600);  // filet de sécurité
+    setTimeout(() => { if (ov.isConnected) { ov.remove(); dessous(); fin(); } }, 4200);  // filet de sécurité
   }
 
   window.MDGPorte = { monter, entrer, sortir };

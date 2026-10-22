@@ -746,3 +746,8 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 ## Procédure admin : traiter un litige (22/10/2026) — `docs/traiter-un-litige-admin.pdf`
 - 4 pages, pour les administrateurs : on ne discute pas, on vérifie des preuves. Où tout trouver dans admin → Commandes ; cas A (refus avec mot + photos), B (problème sans papier), C (problème pendant le transport) ; questions dans l'ordre, tableau de décision, messages prêts à copier dans la discussion à trois, suites (avertissement, bannissement en cas de fraude).
 - Rappel : « Clore : annulée » rend tout à l'acheteur, transport compris ; pour une marchandise livrée mais abîmée, passer par le refus.
+
+## Design : arrivée du camion et onglet Prix en mode sombre (22/10/2026)
+- Commande : à l'arrivée, le camion s'arrête entièrement visible devant un repère jaune (lieu de livraison), avec l'étiquette « ✓ Arrivé · À destination » puis « ✓ Colis livré · Chez l'acheteur » (petite apparition animée, coupée si le téléphone réduit les animations). Pendant le trajet, le repère est grisé.
+- Boutons plus courts : « Refuser la marchandise », « Pas de papier ? Signaler un problème ».
+- Onglet Prix, mode sombre : titres, message « Aucune offre », onglets Acheter / Vendre, boutons, badges et prix lisibles (vert clair et corail sur fond sombre). Un produit s'ouvre sur l'onglet qui a des annonces quand l'autre est vide.

@@ -21,6 +21,7 @@
   const nf = (v, d) => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: d == null ? 0 : d }).format(v || 0);
   const F = v => nf(v) + ' F';
   const heure = t => new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const signal = () => { try { dispatchEvent(new CustomEvent('mdg:activite')); } catch (_) {} };
   const jour = t => new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
   const quand = t => { const d = new Date(t), a = new Date(); return d.toDateString() === a.toDateString() ? 'aujourd’hui à ' + heure(t) : jour(t) + ' à ' + heure(t); };
   const ilya = t => { const m = Math.round((Date.now() - new Date(t)) / 60000); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'le ' + jour(t); };
@@ -88,6 +89,7 @@
 .cm-st{margin:10px 0 12px;padding:14px;border-radius:18px;background:#10392B;color:#F3EFE4}
 .cm-st b{display:block;font:600 18px/1.25 Jost,sans-serif}.cm-st b em{font-style:italic;font-weight:900;color:#F2C230}
 .cm-st small{display:block;margin-top:4px;color:rgba(243,239,228,.8);font-size:13px}
+.cm-garde{margin:-2px 0 10px;padding:8px 12px;border-radius:12px;background:#F2C230;color:#171512;font:600 14px/1.35 Jost,sans-serif}
 .cm-act{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
 .cm-act button{min-height:50px;border-radius:25px;border:1px solid #10392B;background:none;color:#10392B;font:600 15.5px Jost,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:0 16px}
 .cm-act button.p{background:#10392B;color:#F3EFE4}.cm-act button.m{border-color:transparent;background:none;text-decoration:underline;min-height:44px;font-weight:500}
@@ -370,7 +372,8 @@
     const T = transport[c.id], ok = T && T.mission && T.mission.statut === 'acceptee' && T.mission.avec_application;
     const k = codesVus[c.id + (pec ? ':p' : ':r')], titre = pec ? 'Code de prise en charge' : 'Code de réception';
     const regle = pec ? 'Donnez-le au chauffeur seulement quand la marchandise est dans son véhicule.' : 'Donnez-le au chauffeur seulement après avoir vérifié la quantité et la qualité.';
-    return `<div class="cm-st" style="background:#FFFDF8;color:#171512;box-shadow:inset 0 0 0 2px #10392B"><b style="color:#10392B">${titre}</b>
+    const garde = pec ? '🔐 Gardez bien ce code : vous aurez à le présenter au chauffeur au chargement.' : '🔐 Gardez bien ce code : vous aurez à le présenter à la réception.';
+    return `<div class="cm-st" data-code-bloc style="background:#FFFDF8;color:#171512;box-shadow:inset 0 0 0 2px #10392B"><p class="cm-garde">${garde}</p><b style="color:#10392B">${titre}</b>
       ${!ok ? '<small style="color:#5E5546">Le code s’affichera quand le chauffeur (avec l’application) aura accepté la mission.</small>'
         : k ? `<div aria-live="polite" style="margin:10px 0 4px;font:800 40px/1 Jost,sans-serif;letter-spacing:.18em;color:#10392B;font-variant-numeric:tabular-nums">${esc(k.code.slice(0, 3))} ${esc(k.code.slice(3))}</div>
             <small style="color:#5E5546">Valable jusqu’à ${heure(k.expire_le)}. Un seul usage. ${regle} Dites-le de vive voix : ne l’envoyez pas par message.</small>
@@ -382,7 +385,7 @@
     const go = async b => {
       const et = c.role === 'vendeur' ? 'prise_en_charge' : 'reception', err = box.querySelector('[data-code-err]');
       b.disabled = true;
-      try { codesVus[c.id + (et === 'prise_en_charge' ? ':p' : ':r')] = await N().rpc('commande_code_obtenir', { p_cmd: c.id, p_etape: et }); await lireJournal(c.id); peindre(); }
+      try { codesVus[c.id + (et === 'prise_en_charge' ? ':p' : ':r')] = await N().rpc('commande_code_obtenir', { p_cmd: c.id, p_etape: et }); signal(); await lireJournal(c.id); peindre(); }
       catch (x) { b.disabled = false; if (err) err.textContent = erreurTxt(x); }
     };
     const v = box.querySelector('[data-code-voir]'); if (v) v.onclick = () => go(v);
@@ -609,12 +612,14 @@
     // le serveur fait foi : on relit toutes les 20 s quand l'écran est visible (pas de suivi inventé entre deux lectures)
     minuteur = setInterval(rafraichir, 20000);
   }
-  async function ouvrir(id) {
+  async function ouvrir(id, auCode) {
     if (!N() || !N().session()) { if (N()) N().open(); return; }
     monter(); sel = id || null; vue = id ? 'detail' : 'liste';
     if (id && window.MDGActivite) MDGActivite.noter('cmd', id);
     liste = J(KC(), []); peindre();
     await lireListe(); if (id) await lireJournal(id); peindre();
+    // depuis Accueil → Alertes → Mes codes : on descend jusqu'au code
+    if (auCode && bg) { const b = bg.querySelector('[data-code-bloc]'); if (b) b.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
   }
 
   // notification touchée : #/?commande=… à l'ouverture, ou message du service worker si l'application est déjà ouverte
@@ -640,5 +645,19 @@
       return { k: 'cmd', id: x.id, titre: (x.produit || 'Commande') + (x.quantite != null ? ' · ' + qte(x.quantite, x.unite) : ''), avec: x.partenaire_nom || '', role: x.role,
         etat: x.etat === 'litige' ? 'litige' : aAgir(x) ? 'moi' : enRoute(x) ? 'route' : 'attente', route: enRoute(x), tag: st, ts: Date.parse(x.updated_at || x.maj_le || x.created_at) || 0, ouvrir: () => ouvrir(x.id) }; });
   }
-  window.MDGCommandes = { ouvrir, depuisAccord, creer, css, aAgir: () => J(KC(), []).filter(aAgir).length, activite };
+  // Accueil → Alertes → « Mes codes » : les commandes où je détiens un code MAINTENANT (vendeur avant le chargement,
+  // acheteur pendant le transport). Les chiffres ne sont donnés que s'ils ont été affichés pendant cette visite (gardés en mémoire seulement).
+  function codes() {
+    return J(KC(), []).filter(x => x.validation === 'code' && x.etat === 'en_cours').map(x => {
+      const pec = x.role === 'vendeur' && ['confirmee', 'preparation'].includes(x.etape), rec = x.role === 'acheteur' && ['transport', 'transbordement', 'arrivee'].includes(x.etape);
+      if (!pec && !rec) return null;
+      const k = codesVus[x.id + (pec ? ':p' : ':r')], vivant = k && k.code && (!k.expire_le || Date.parse(k.expire_le) > Date.now());
+      return { id: x.id, quoi: pec ? 'prise_en_charge' : 'reception', titre: (x.produit || 'Commande') + (x.quantite != null ? ' · ' + qte(x.quantite, x.unite) : ''),
+        genre: pec ? 'Code de prise en charge' : 'Code de réception',
+        quand: pec ? 'À donner au chauffeur au chargement' : x.etape === 'arrivee' ? 'Le chauffeur est arrivé : vérifiez, puis donnez-le' : 'À donner au chauffeur à la réception, après vérification',
+        code: vivant ? k.code.slice(0, 3) + ' ' + k.code.slice(3) : '', expire: vivant && k.expire_le ? heure(k.expire_le) : '', urgent: x.etape === 'arrivee',
+        ts: Date.parse(x.updated_at || x.maj_le || x.created_at) || 0, ouvrir: () => ouvrir(x.id, true) };
+    }).filter(Boolean);
+  }
+  window.MDGCommandes = { ouvrir, depuisAccord, creer, css, aAgir: () => J(KC(), []).filter(aAgir).length, activite, codes };
 })();

@@ -26,7 +26,7 @@
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261023f','v3/porte.js','v3/sons.js?v=20261023f','v3/negoce.js?v=20261025m','v3/compte.js?v=20261025g','v3/souffle.js?v=20261023t','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261025g','v3/statuts.js?v=20261023a','v3/messages.js?v=20261025j','v3/alertes.js?v=20261023f','v3/releve.js?v=20261025a','v3/commandes.js?v=20261025m','v3/chauffeur.js?v=20261024g','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261023f','v3/appro.js?v=20261023f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261025g','v3/identite.js?v=20261023f'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261023f','v3/porte.js','v3/sons.js?v=20261023f','v3/negoce.js?v=20261025m','v3/compte.js?v=20261025g','v3/souffle.js?v=20261023t','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261025g','v3/statuts.js?v=20261023a','v3/messages.js?v=20261025j','v3/alertes.js?v=20261023f','v3/releve.js?v=20261025a','v3/commandes.js?v=20261025n','v3/chauffeur.js?v=20261025a','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261023f','v3/appro.js?v=20261023f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261025g','v3/identite.js?v=20261023f'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -49,7 +49,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261025o">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261025p">
 <link rel="stylesheet" href="css/sombre.css?v=20261025f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261025g">
@@ -177,9 +177,14 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   </div>
 
   <div style="display:{{ accL }}">
+    <sc-if value="{{ codesOn }}" hint-placeholder-val="{{ false }}"><section class="acc-carte acc-codes"><h2>🔐 Mes codes</h2><p class="acc-garde">{{ codesGarde }}</p>
+      <sc-for list="{{ codesL }}" as="c" hint-placeholder-count="0"><button class="acc-ligne cd-ligne {{ c.cls }}" onClick="{{ c.go }}" aria-label="{{ c.lab }}"><span class="cd-i" aria-hidden="true">🔐</span><span class="acc-tx"><b>{{ c.titre }}</b><small><span class="cd-genre">{{ c.genre }}</span>{{ c.quand }}</small></span><sc-if value="{{ c.aCode }}" hint-placeholder-val="{{ false }}"><span class="cd-code">{{ c.code }}<small>{{ c.exp }}</small></span></sc-if><sc-if value="{{ c.sansCode }}" hint-placeholder-val="{{ false }}"><span class="cd-voir">{{ c.voir }}</span></sc-if></button></sc-for>
+      <p class="acc-sub cd-note">{{ codesNote }}</p>
+    </section></sc-if>
     <section class="acc-carte"><h2>Alertes</h2><p class="acc-sub">Ce qui demande votre attention.</p>
       <sc-for list="{{ accAlertes }}" as="a" hint-placeholder-count="0"><button class="acc-al {{ a.tint }}" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span>{{ accIco.suite }}</button></sc-for>
       <sc-if value="{{ accAlVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">Rien à signaler. Tout est en ordre.</p></sc-if>
+      <sc-if value="{{ accAlRien }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">Rien d’autre à signaler.</p></sc-if>
     </section>
   </div>
   </div>
@@ -1200,7 +1205,13 @@ class Component extends DCLogic {
       if (dm) al.push({ tint: 'v', ico: ico('messages'), t: 'Messages', s: pl(dm, 'message') + ' non lu' + (dm > 1 ? 's' : ''), go: () => window.MDGMessages.boite() });
       mine.filter(x => x.kind === 'offre' && (x.epuise || !(x.qty > 0))).slice(0, 4).forEach(x => al.push({ tint: 'r', ico: ico('boite'), t: 'Stock épuisé', s: this.prod(x.slug).name + ' : l’offre n’est plus proposée', go: () => this.push('pubs') }));
     }
-    const nAl = moiS ? al.length : 0;
+    // mes codes (schéma 28) : acheteur et vendeur d'une commande « avec codes », transporteur inscrit qui doit taper un code
+    const cdC = moiS && window.MDGCommandes && MDGCommandes.codes ? MDGCommandes.codes() : [], cdT = moiS && window.MDGChauffeur && MDGChauffeur.codes ? MDGChauffeur.codes() : [];
+    const codesL = [...cdC.map(c => ({ ...c, moi: true })), ...cdT.map(c => ({ ...c, moi: false }))].sort((a, b) => (b.urgent ? 1 : 0) - (a.urgent ? 1 : 0)).map(c => ({
+      titre: c.titre, genre: c.genre, quand: c.quand, cls: c.urgent ? 'cd-urgent' : '', aCode: !!c.code, sansCode: !c.code, code: c.code || '', exp: c.expire ? 'jusqu’à ' + c.expire : '',
+      voir: c.moi ? 'Afficher' : 'Taper', lab: c.genre + ', ' + c.titre + ' : ' + c.quand, go: () => c.ouvrir() }));
+    const nCd = codesL.length, cdMoi = cdC.length > 0;
+    const nAl = moiS ? al.length + nCd : 0;
     // en cours (app/activite.js) : négociations, commandes, messages ; « Reprendre » = la dernière démarche ouverte, si elle est encore en cours
     // éléments retirés par la personne (glisser vers la gauche ou « Tout effacer ») : seulement sur ce téléphone.
     // Une démarche retirée revient si elle bouge (nouvelle réponse, nouvelle étape) ; une annonce retirée ne revient pas.
@@ -1250,7 +1261,9 @@ class Component extends DCLogic {
       ecSous: !moiS ? 'Connectez-vous pour retrouver vos négociations, commandes et messages.' : nAf ? nAf + ' démarche' + (nAf > 1 ? 's attendent' : ' attend') + ' votre réponse.' : ecT.length ? 'Vos démarches en cours, pour reprendre en un geste.' : 'Vos négociations, commandes et messages en cours apparaîtront ici.',
       ecVideTxt: moiS ? 'Rien en cours. Proposez un prix sur une annonce : la négociation s’affichera ici.' : 'Connectez-vous pour voir vos démarches.',
       accActs: acts, // J'ai / Je cherche : seulement sur l'onglet Marché (Activité et Alertes n'ont rien à publier)
-      accBasC: (S.accTab || 'marche') === 'marche' ? '' : 'cache', accBasH: String((S.accTab || 'marche') !== 'marche'), accActVide: !acts.length, accAlertes: al, accAlVide: !!moiS && !al.length };
+      accBasC: (S.accTab || 'marche') === 'marche' ? '' : 'cache', accBasH: String((S.accTab || 'marche') !== 'marche'), accActVide: !acts.length, accAlertes: al, accAlVide: !!moiS && !al.length && !nCd, accAlRien: !!moiS && !al.length && nCd > 0,
+      codesOn: nCd > 0, codesL, codesGarde: cdMoi ? 'Gardez bien ce code : vous aurez à le présenter au chauffeur. Donnez-le de vive voix, jamais par message.' : 'Demandez le code au bon moment, puis tapez-le dans votre Espace chauffeur.',
+      codesNote: cdMoi ? 'Pour votre sécurité, le code n’est jamais enregistré dans le téléphone : touchez la ligne pour l’afficher au moment voulu. Un nouveau code remplace l’ancien.' : 'Le code fait 6 chiffres. 5 essais au plus.' };
   }
   isDark() { return this.state.logoDark != null ? this.state.logoDark : ls('mdg-app:logo-noir') === true; }
   setIcons(d) { const n = d ? '-noir' : ''; document.querySelectorAll('link[rel="apple-touch-icon"]').forEach(l => l.href = 'icons/v2/apple-touch-icon' + n + '.png'); document.querySelectorAll('link[rel="icon"]').forEach(l => l.href = l.type === 'image/svg+xml' ? 'icons/v2/favicon' + n + '.svg' : 'icons/v2/favicon' + n + '-32.png'); }

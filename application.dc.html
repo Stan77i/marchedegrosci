@@ -49,7 +49,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261025n">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261025o">
 <link rel="stylesheet" href="css/sombre.css?v=20261025f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261025g">
@@ -165,14 +165,14 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   </div>
 
   <div style="display:{{ accA }}">
-    <section class="acc-carte acc-ec"><h2>En <em>cours</em></h2><p class="acc-sub">{{ ecSous }}</p>
-      <sc-if value="{{ ecRepOn }}" hint-placeholder-val="{{ false }}"><button class="ec-rep ec-{{ ecRep.etat }}" onClick="{{ ecRep.go }}" aria-label="{{ ecRep.lab }}"><span class="ec-rep-h">Reprendre là où vous en étiez</span><span class="ec-l"><span class="ec-i ec-{{ ecRep.k }} {{ ecRep.anim }}" aria-hidden="true">{{ ecRep.emo }}<sc-if value="{{ ecRep.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ ecRep.titre }}</b><small>{{ ecRep.sous }}</small></span><span class="ec-go" aria-hidden="true">{{ accIco.suite }}</span></span></button></sc-if>
-      <sc-for list="{{ ecListe }}" as="e" hint-placeholder-count="0"><button class="acc-ligne ec-ligne ec-{{ e.etat }}" onClick="{{ e.go }}" aria-label="{{ e.lab }}"><span class="ec-i ec-{{ e.k }} {{ e.anim }}" aria-hidden="true">{{ e.emo }}<sc-if value="{{ e.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ e.titre }}</b><small><span class="ec-tag">{{ e.tag }}</span>{{ e.sous }}</small></span><sc-if value="{{ e.vague }}" hint-placeholder-val="{{ false }}"><span class="ec-vague" aria-hidden="true"><i></i><i></i><i></i></span></sc-if></button></sc-for>
+    <section class="acc-carte acc-ec"><div class="acc-ttl"><h2>En <em>cours</em></h2><sc-if value="{{ ecEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ ecEff }}">Tout effacer</button></sc-if></div><p class="acc-sub">{{ ecSous }}</p>
+      <sc-if value="{{ ecRepOn }}" hint-placeholder-val="{{ false }}"><div class="glis glis-rep" onScroll="{{ ecRep.glis }}"><button class="ec-rep ec-{{ ecRep.etat }}" onClick="{{ ecRep.go }}" aria-label="{{ ecRep.lab }}"><span class="ec-rep-h">Reprendre là où vous en étiez</span><span class="ec-l"><span class="ec-i ec-{{ ecRep.k }} {{ ecRep.anim }}" aria-hidden="true">{{ ecRep.emo }}<sc-if value="{{ ecRep.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ ecRep.titre }}</b><small>{{ ecRep.sous }}</small></span><span class="ec-go" aria-hidden="true">{{ accIco.suite }}</span></span></button><button type="button" class="glis-z" onClick="{{ ecRep.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-if>
+      <sc-for list="{{ ecListe }}" as="e" hint-placeholder-count="0"><div class="glis" onScroll="{{ e.glis }}"><button class="acc-ligne ec-ligne ec-{{ e.etat }}" onClick="{{ e.go }}" aria-label="{{ e.lab }}"><span class="ec-i ec-{{ e.k }} {{ e.anim }}" aria-hidden="true">{{ e.emo }}<sc-if value="{{ e.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ e.titre }}</b><small><span class="ec-tag">{{ e.tag }}</span>{{ e.sous }}</small></span><sc-if value="{{ e.vague }}" hint-placeholder-val="{{ false }}"><span class="ec-vague" aria-hidden="true"><i></i><i></i><i></i></span></sc-if></button><button type="button" class="glis-z" onClick="{{ e.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-for>
       <sc-if value="{{ ecVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ ecVideTxt }}</p></sc-if>
     </section>
-    <section class="acc-carte"><h2>Dernières annonces</h2><p class="acc-sub">Ce qui vient d’arriver sur le marché.</p>
-      <sc-for list="{{ accActs }}" as="a" hint-placeholder-count="0"><button class="acc-ligne" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span><span class="acc-h">{{ a.h }}</span></button></sc-for>
-      <sc-if value="{{ accActVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">Aucune annonce pour l’instant.</p></sc-if>
+    <section class="acc-carte"><div class="acc-ttl"><h2>Dernières annonces</h2><sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ actEff }}">Tout effacer</button></sc-if></div><p class="acc-sub">Ce qui vient d’arriver sur le marché.<sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><span class="acc-astuce"> Glissez une ligne vers la gauche pour la retirer.</span></sc-if></p>
+      <sc-for list="{{ accActs }}" as="a" hint-placeholder-count="0"><div class="glis" onScroll="{{ a.glis }}"><button class="acc-ligne" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span><span class="acc-h">{{ a.h }}</span></button><button type="button" class="glis-z" onClick="{{ a.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-for>
+      <sc-if value="{{ accActVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ actVideTxt }}</p></sc-if>
     </section>
   </div>
 
@@ -1202,16 +1202,22 @@ class Component extends DCLogic {
     }
     const nAl = moiS ? al.length : 0;
     // en cours (app/activite.js) : négociations, commandes, messages ; « Reprendre » = la dernière démarche ouverte, si elle est encore en cours
-    const AV = window.MDGActivite, ecT = moiS && AV ? AV.tout() : [], ecD = moiS && AV ? AV.dernier() : null, nAf = moiS && AV ? AV.aFaire() : 0;
+    // éléments retirés par la personne (glisser vers la gauche ou « Tout effacer ») : seulement sur ce téléphone.
+    // Une démarche retirée revient si elle bouge (nouvelle réponse, nouvelle étape) ; une annonce retirée ne revient pas.
+    const AV = window.MDGActivite, MQ = this.masques(), cacheE = x => (MQ['e:' + x.k + ':' + x.id] || 0) >= (x.ts || 1);
+    const ecT = (moiS && AV ? AV.tout() : []).filter(x => !cacheE(x)), ecD0 = moiS && AV ? AV.dernier() : null, ecD = ecD0 && !cacheE(ecD0) ? ecD0 : null;
+    const nAf = ecT.filter(x => x.etat === 'moi' || x.etat === 'litige').length;
+    const cleE = x => ['e:' + x.k + ':' + x.id, Math.max(x.ts || 0, Date.now())];
     const EMO = { nego: '🤝', cmd: '🚚', dm: '💬' };
     const ecEl = x => { const roule = x.k === 'cmd' && !!x.route, emo = x.k === 'cmd' && !roule ? '📦' : x.k === 'nego' && x.etat === 'ok' ? '✅' : EMO[x.k] || '•';
       const avec = x.avec ? (x.k === 'cmd' ? (x.role === 'vendeur' ? ' · pour ' : ' · de ') : x.k === 'nego' ? ' · avec ' : '') + x.avec : '';
       const sous = x.k === 'dm' ? (x.apercu ? ' · « ' + x.apercu + ' »' : '') : (x.prix ? ' · ' + x.prix : '') + (x.k === 'dm' ? '' : avec);
       return { k: x.k, etat: x.etat, emo, titre: x.titre, tag: x.tag, sous, route: roule, vague: x.etat === 'attente' && x.k !== 'dm',
-        anim: roule ? 'ec-roule' + (x.etat === 'moi' ? ' ec-appel' : '') : x.etat === 'moi' || x.etat === 'litige' ? 'ec-appel' : '', lab: x.titre + ' : ' + x.tag + sous, go: () => x.ouvrir() }; };
+        anim: roule ? 'ec-roule' + (x.etat === 'moi' ? ' ec-appel' : '') : x.etat === 'moi' || x.etat === 'litige' ? 'ec-appel' : '', lab: x.titre + ' : ' + x.tag + sous, go: () => x.ouvrir(),
+        glis: this.glisser([cleE(x)], x.titre + ' retiré de votre activité'), ret: () => this.masquer([cleE(x)], x.titre + ' retiré de votre activité') }; };
     const ecRepE = ecD ? ecEl(ecD) : null;
     const ongs = [['marche', 'Marché'], ['activite', 'Activité'], ['alertes', 'Alertes']].map(([k, t]) => ({ t, sel: String(tab === k), cls: tab === k ? 'on' : '', hasN: (k === 'alertes' && nAl > 0) || (k === 'activite' && ecT.length > 0), n: k === 'activite' ? ecT.length : nAl, nC: k === 'activite' ? (nAf ? 'vif' : 'doux') : '',
-      go: () => { this.setState({ accTab: k }); const sc = document.querySelector('[data-pg="home"] .acc-sc'); if (sc) sc.scrollTop = 0; } }));
+      go: () => { this.setState({ accTab: k }); const sc = document.querySelector('[data-pg="home"] .acc-sc'); if (sc) sc.scrollTop = 0; if (k === 'activite') this.astuceGlisser(); } }));
     // la salutation : par son prénom quand on le connaît
     const prenom = moiS && moiP ? (moiP.pseudo || moiP.prenom || '') : '';
     const titre = h('h1', { className: 'acc-h1' }, prenom ? 'Bonjour, ' : 'Bienvenue au ', h('em', null, prenom || 'marché'), prenom ? ' !' : '');
@@ -1222,9 +1228,10 @@ class Component extends DCLogic {
       { cls: 'acc-k', t: 'Demandes', tint: 'j', ico: emo('🛒', 1), v: String(dem.length), s: 'sur ' + pl(nP(dem), 'produit'), go: () => this.push('carte', { cprod: '', csel: '' }) },
       mine.length ? { cls: 'acc-k large', t: 'Mes annonces', tint: 't', ico: ico('vendre'), v: String(mine.length), s: pl(nO, 'offre') + ' · ' + pl(nD, 'demande'), go: () => this.push('pubs') }
         : { cls: 'acc-k large', t: 'Prix du marché', tint: 't', ico: ico('tendance'), v: 'Par zone', s: 'Les prix relevés, produit par produit', go: () => this.push('prix') } ];
-    const acts = [...this.offersAll(), ...dem].filter(x => x.at).sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 12).map(x => {
+    const acts = [...this.offersAll(), ...dem].filter(x => x.at && !MQ['a:' + x.id]).sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 12).map(x => {
       const o = x.kind === 'offre', P = this.prod(x.slug);
-      return { tint: o ? 'v' : 'j', ico: emo(o ? '🧺' : '🛒', !o), t: P.name + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + x.unit : ''), s: (o ? 'Offre' : 'Demande') + ' · ' + this.place(x) + (x.name ? ' · ' + x.name : ''), h: A.ago(x.at), go: () => this.openFiche(x.slug) }; });
+      return { tint: o ? 'v' : 'j', ico: emo(o ? '🧺' : '🛒', !o), t: P.name + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + x.unit : ''), s: (o ? 'Offre' : 'Demande') + ' · ' + this.place(x) + (x.name ? ' · ' + x.name : ''), h: A.ago(x.at), cle: 'a:' + x.id, go: () => this.openFiche(x.slug),
+        glis: this.glisser([['a:' + x.id]], 'Annonce retirée de votre activité'), ret: () => this.masquer([['a:' + x.id]], 'Annonce retirée de votre activité') }; });
     return {
       accLogo: window.MDGSac ? h('span', { className: 'acc-sac', dangerouslySetInnerHTML: { __html: MDGSac.svg('plein', { t: 34 }) } }) : null,
       accIco: { chercher: ico('chercher'), plus: ico('plus', 22), suite: ico('suite', 18), cloche: ico('cloche', 21) },
@@ -1235,7 +1242,10 @@ class Component extends DCLogic {
       accMoi: moiS && window.MDGAvatar ? h('img', { src: window.MDGAvatar.uri(moiP && moiP.avatar, { size: 38, nom: (moiP && moiC && moiC.nomAffiche(moiP)) || String(moiS.user.tel || ''), seed: moiS.user.id }), alt: '', width: 38, height: 38, style: { borderRadius: '50%', display: 'block' } }) : ico('compte', 22),
       accOngs: ongs, accOngI: String(['marche', 'activite', 'alertes'].indexOf(tab)), accM: tab === 'marche' ? 'block' : 'none', accA: tab === 'activite' ? 'block' : 'none', accL: tab === 'alertes' ? 'block' : 'none',
       accTitre: titre, accSous: sous, accStats: stats,
-      ecRepOn: !!ecRepE, ecRep: ecRepE ? Object.assign({}, ecRepE, { sous: ecRepE.tag + ecRepE.sous }) : { k: '', etat: '', emo: '', titre: '', sous: '', route: false, anim: '', lab: '', go: () => {} },
+      ecRepOn: !!ecRepE, ecRep: ecRepE ? Object.assign({}, ecRepE, { sous: ecRepE.tag + ecRepE.sous }) : { k: '', etat: '', emo: '', titre: '', sous: '', route: false, anim: '', lab: '', go: () => {}, glis: () => {}, ret: () => {} },
+      ecEffOn: ecT.length + (ecD ? 1 : 0) > 1, ecEff: () => this.masquer(ecT.concat(ecD ? [ecD] : []).map(cleE), 'Activité en cours effacée'),
+      actEffOn: acts.length > 1, actEff: () => this.masquer(acts.map(a => [a.cle]), 'Dernières annonces effacées'),
+      actVideTxt: Object.keys(MQ).some(k => k.startsWith('a:')) ? 'Rien de nouveau depuis votre dernier effacement.' : 'Aucune annonce pour l’instant.',
       ecListe: ecT.filter(x => !ecD || x.k !== ecD.k || x.id !== ecD.id).map(ecEl), ecVide: !ecT.length && !ecRepE,
       ecSous: !moiS ? 'Connectez-vous pour retrouver vos négociations, commandes et messages.' : nAf ? nAf + ' démarche' + (nAf > 1 ? 's attendent' : ' attend') + ' votre réponse.' : ecT.length ? 'Vos démarches en cours, pour reprendre en un geste.' : 'Vos négociations, commandes et messages en cours apparaîtront ici.',
       ecVideTxt: moiS ? 'Rien en cours. Proposez un prix sur une annonce : la négociation s’affichera ici.' : 'Connectez-vous pour voir vos démarches.',
@@ -1277,6 +1287,24 @@ class Component extends DCLogic {
       toutSecs: secs, toutSous: q ? nb + ' résultat' + (nb > 1 ? 's' : '') : nb + ' produit' + (nb > 1 ? 's' : '') + (tf === 'vif' ? ' avec des annonces' : ''),
       toutVide: !secs.length, toutVideTxt: q ? 'Aucun produit ne correspond à « ' + S.tq.trim() + ' ».' : 'Aucune annonce pour l’instant : publiez la première.' });
   }
+  // Accueil → Activité : retirer des éléments (sur ce téléphone seulement), avec « Annuler »
+  masques() { try { return JSON.parse(localStorage.getItem('mdg-activite:masques')) || {}; } catch (_) { return {}; } }
+  masquer(cles, texte) {
+    const avant = this.masques(), m = Object.assign({}, avant), lim = Date.now() - 60 * 864e5;
+    cles.forEach(([k, ts]) => { m[k] = ts || Date.now(); });
+    Object.keys(m).forEach(k => { if (m[k] < lim) delete m[k]; });   // on oublie au bout de 60 jours
+    const ecrire = v => { try { localStorage.setItem('mdg-activite:masques', JSON.stringify(v)); } catch (_) {} this.setState(s => ({ tick: s.tick + 1 })); };
+    ecrire(m);
+    if (window.MDGToast) MDGToast.dire(texte, { type: 'info', sous: cles.length > 1 ? cles.length + ' éléments, sur ce téléphone seulement' : 'Sur ce téléphone seulement', action: { t: 'Annuler', fn: () => ecrire(avant) } });
+  }
+  // les 3 premières fois : la première ligne glisse un peu puis revient, pour montrer le geste
+  astuceGlisser() { let n = 0; try { n = +localStorage.getItem('mdg-activite:astuce') || 0; } catch (_) {} if (n >= 3 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    try { localStorage.setItem('mdg-activite:astuce', n + 1); } catch (_) {}
+    setTimeout(() => { const g = document.querySelector('[data-pg="home"] .glis:not(.glis-rep)'); if (!g) return; g.style.scrollSnapType = 'none'; g.scrollTo({ left: 72, behavior: 'smooth' });
+      setTimeout(() => { g.scrollTo({ left: 0, behavior: 'smooth' }); setTimeout(() => { g.style.scrollSnapType = ''; }, 450); }, 650); }, 700); }
+  // glisser une ligne vers la gauche : au-delà de la moitié, elle part ; la bande est remise à zéro avant de redessiner
+  glisser(cles, texte) { return e => { const el = e.currentTarget; if (el._part || el.scrollLeft < el.clientWidth * .55) return; el._part = true; el.classList.add('glis-out');
+    setTimeout(() => { el.scrollLeft = 0; el.classList.remove('glis-out'); el._part = false; this.masquer(cles, texte); }, 200); }; }
   // carte : aller à l'annonce i du groupe ; inviter à glisser (la bande avance un peu puis revient)
   cPickAller(i) { const el = document.querySelector('[data-cpick]'), c = el && el.firstElementChild; if (!c) return; const n = el.children.length; i = Math.max(0, Math.min(n - 1, i));
     el.scrollTo({ left: i * (c.offsetWidth + 10), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); this.setState({ cPickI: i, cPickVu: true }); }

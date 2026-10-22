@@ -624,3 +624,20 @@ html[data-theme=sombre] .acc-n.doux { background: rgba(245, 240, 230, .16); }
 .lieu-b:focus-visible { outline: 2px solid #10392B; outline-offset: 2px; }
 @keyframes lieuCoche { 0% { transform: scale(.4); } 100% { transform: none; } }
 @media (prefers-reduced-motion: reduce) { .lieu-b, .lieu-c { transition: none; animation: none !important; } }
+
+/* ——— Accueil → Activité : retirer un élément en le glissant vers la gauche, ou « Tout effacer » ———
+   défilement natif du téléphone (fluide, ne gêne pas le défilement vertical) : la ligne, puis une zone rouge « Retirer ».
+   Au-delà de la moitié, la ligne part ; « Annuler » dans le message en haut. Sur ce téléphone seulement. */
+.acc-ttl { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.acc-eff { flex: none; min-height: 36px; padding: 0 12px; border: 1px solid rgba(23, 21, 18, .16); border-radius: 18px; background: transparent; color: #8A2414; font: 600 13px Jost, system-ui, sans-serif; cursor: pointer; }
+.acc-eff:active { transform: scale(.96); }
+html[data-theme=sombre] .acc-eff { border-color: rgba(245, 240, 230, .18); color: #F3A08C; }
+.glis { display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; margin: 0 0 8px; border-radius: 18px; transition: opacity .2s, transform .2s; }
+.glis::-webkit-scrollbar { display: none; }
+.glis > .acc-ligne, .glis > .ec-rep { flex: 0 0 100%; scroll-snap-align: start; margin: 0; }
+.glis-rep { margin: 4px 0 10px; border-radius: 20px; }
+.glis-z { flex: 0 0 100%; scroll-snap-align: start; display: flex; align-items: center; gap: 8px; padding: 0 22px; border: 0; border-radius: 18px; margin-left: 6px; background: #C2452F; color: #fff; font: 600 15px Jost, system-ui, sans-serif; cursor: pointer; }
+.glis-z span { font: normal 18px/1 "Apple Color Emoji", "Segoe UI Emoji", sans-serif; }
+.glis-out { opacity: 0; transform: translateX(-12px); }
+@media (prefers-reduced-motion: reduce) { .glis { transition: none; } }
+.acc-astuce { color: var(--texte-3, #8A8170); font-style: italic; }

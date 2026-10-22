@@ -44,9 +44,12 @@ p{margin:0 auto;max-width:440px;font:400 17px/1.5 Jost,sans-serif;color:var(--sa
 .tel-lien button{flex:none;min-height:42px;padding:0 16px;border:0;border-radius:21px;background:var(--mais);color:#171512;font:700 14px Jost,sans-serif;cursor:pointer}
 .tel-pt{font-size:13.5px!important}
 /* l'entrée de l'administrateur : un point presque invisible, en bas à droite */
-.pt{position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));width:28px;height:28px;border:0;background:none;padding:0;cursor:default;display:grid;place-items:center}
-.pt::after{content:"";width:5px;height:5px;border-radius:50%;background:rgba(243,239,228,.16)}
-.adm{position:fixed;right:12px;bottom:calc(46px + env(safe-area-inset-bottom));display:none;align-items:center;gap:12px;padding:10px 14px;border-radius:16px;background:var(--carte);border:1px solid var(--trait);box-shadow:0 10px 30px rgba(0,0,0,.4);font:500 14px Jost,sans-serif;color:var(--creme);cursor:pointer}
+.pt{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom));width:40px;height:40px;border:0;border-radius:50%;background:none;padding:0;cursor:pointer;display:grid;place-items:center}
+.pt:focus-visible{outline:2px solid var(--mais);outline-offset:2px}
+.pt::after{content:"";width:10px;height:10px;border-radius:50%;background:rgba(242,194,48,.6);animation:ptPouls 3s ease-in-out infinite}
+.pt:hover::after{background:var(--mais)}
+@keyframes ptPouls{0%,100%{box-shadow:0 0 0 0 rgba(242,194,48,.35)}50%{box-shadow:0 0 0 7px rgba(242,194,48,0)}}
+.adm{position:fixed;right:12px;bottom:calc(60px + env(safe-area-inset-bottom));display:none;align-items:center;gap:12px;padding:10px 14px;border-radius:16px;background:var(--carte);border:1px solid var(--trait);box-shadow:0 10px 30px rgba(0,0,0,.4);font:500 14px Jost,sans-serif;color:var(--creme);cursor:pointer}
 .adm.on{display:flex;animation:monte .3s cubic-bezier(.22,1,.36,1) both}
 .adm input{appearance:none;-webkit-appearance:none;flex:none;width:46px;height:28px;border-radius:14px;background:rgba(243,239,228,.2);position:relative;margin:0;cursor:pointer;transition:background .2s}
 .adm input::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s cubic-bezier(.22,1,.36,1)}
@@ -54,7 +57,7 @@ p{margin:0 auto;max-width:440px;font:400 17px/1.5 Jost,sans-serif;color:var(--sa
 .adm input:focus-visible{outline:3px solid var(--mais);outline-offset:2px}
 @keyframes monte{from{opacity:0;transform:translateY(14px)}}
 @keyframes pouls{50%{opacity:.35;transform:scale(.8)}}
-@media (prefers-reduced-motion:reduce){main,.adm.on,.badge i{animation:none}}
+@media (prefers-reduced-motion:reduce){main,.adm.on,.badge i,.pt::after{animation:none}}
 </style>
 </head>
 <body>

@@ -6,6 +6,14 @@
 <meta name="theme-color" content="#171512">
 <meta name="color-scheme" content="dark">
 <style>/* avant toute feuille de style : jamais d'écran blanc pendant le chargement */html{background:#171512}</style>
+<script>/* SITE EN MAINTENANCE (22/10/2026) : seul l'administrateur entre. Les autres vont à maintenance.html (qui mène à l'application).
+   L'admin arrive par le point secret de maintenance.html (?admin=1) ; un cache plein écran reste posé jusqu'à ce que le serveur
+   confirme est_admin pour le compte connecté (vérifié à chaque ouverture). Pour rouvrir le site à tous : retirer ce bloc, le cache #mdgGarde et sa vérification. */
+(function(){try{var ok=localStorage.getItem('mdg-site:admin')==='1';if(/[?&]admin=1/.test(location.search)){sessionStorage.setItem('mdg-site:essai','1');ok=true}else if(sessionStorage.getItem('mdg-site:essai')==='1')ok=true;
+if(!ok){location.replace('maintenance.html'+(location.hash||''));return}document.documentElement.classList.add('mdg-garde')}catch(e){location.replace('maintenance.html')}})();</script>
+<style>#mdgGarde{display:none}html.mdg-garde #mdgGarde{display:flex;position:fixed;inset:0;z-index:8990;background:#171512;color:#F3EFE4;align-items:center;justify-content:center;padding:24px;text-align:center;font-family:Jost,system-ui,sans-serif}
+html.mdg-garde body{overflow:hidden}#mdgGarde>div{max-width:380px;display:grid;gap:14px;justify-items:center}#mdgGarde b{font:700 24px/1.2 Jost,sans-serif}#mdgGarde p{margin:0;color:#B9AD98;font:400 16px/1.45 Jost,sans-serif}
+#mdgGarde button{min-height:52px;padding:0 26px;border-radius:26px;border:0;background:#F2C230;color:#171512;font:700 16px Jost,sans-serif;cursor:pointer}#mdgGarde button[hidden]{display:none}#mdgGarde a{color:#F3EFE4;font:500 14px Jost,sans-serif}</style>
 <title>Marché de Gros de Côte d'Ivoire — du producteur à l'acheteur, en direct</title>
 <meta name="description" content="Trouvez les produits des marchés ivoiriens directement auprès de ceux qui les produisent : riz local, igname, tomate, poisson fumé, djoumblé… Contact direct, carte, demande d'achat.">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1179,6 +1187,7 @@ body.tzmode .tz{height:100svh}
 </style>
 </head>
 <body class="light">
+<div id="mdgGarde" role="dialog" aria-modal="true" aria-labelledby="mdgGardeT"><div><b id="mdgGardeT">Espace administrateur</b><p id="mdgGardeP">Vérification…</p><button type="button" id="mdgGardeB" hidden>Se connecter</button><a href="maintenance.html">Retour</a></div></div>
 <!-- Chargeur : affiché pendant que le site se construit (les scripts du bas). Le vert (qui produit) et le jaune (qui cherche)
      se rejoignent sur la ligne bleue, en boucle ; dès que le site est prêt, il s'efface. N'apparaît pas si le site arrive en moins de 0,18 s. -->
 <div id="mdgCharge" aria-hidden="true"><style>
@@ -1281,6 +1290,15 @@ body.tzmode .tz{height:100svh}
 <script src="v3/terre.js?v=20261011a"></script>
 <script src="v3/porte.js?v=20261023f"></script>
 <script src="v3/nuage.js?v=20261025m"></script>
+<script>/* site en maintenance : le compte connecté doit être administrateur (le serveur décide : est_admin) */
+(function(){if(!document.documentElement.classList.contains('mdg-garde'))return;var N=window.MDGNuage,P=document.getElementById('mdgGardeP'),B=document.getElementById('mdgGardeB');
+function etat(t,btn){P.textContent=t;B.hidden=!btn}
+function refuse(){try{localStorage.removeItem('mdg-site:admin');sessionStorage.removeItem('mdg-site:essai')}catch(e){}etat('Ce compte n’est pas administrateur. Le site est en maintenance : retour vers l’application…');setTimeout(function(){location.replace('maintenance.html')},2500)}
+function verifier(){if(!N||!N.session()){etat('Connectez-vous avec le compte administrateur.',true);return}etat('Vérification…');
+  N.rpc('est_admin').then(function(a){if(a===true){try{localStorage.setItem('mdg-site:admin','1');sessionStorage.removeItem('mdg-site:essai')}catch(e){}document.documentElement.classList.remove('mdg-garde')}else refuse()})
+  .catch(function(){etat('Vérification impossible pour l’instant (réseau ?). Réessayez.',true)})}
+B.onclick=function(){if(N&&N.session())verifier();else if(N)N.open()};
+addEventListener('mdg:connecte',function(){setTimeout(verifier,300)});verifier()})();</script>
 <script src="v3/sons.js?v=20261023f"></script>
 <script src="app/stable.js?v=20261025f" defer></script>
 <script src="v3/negoce.js?v=20261025m"></script>

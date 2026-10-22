@@ -673,3 +673,6 @@ html[data-theme=sombre] .cd-genre{color:#10392B}
    Sur écran tactile, l'effet d'appui n'arrive qu'après un vrai toucher (≈ 0,12 s) : un défilement l'annule avant ; plus de voile gris d'iOS. ——— */
 .acc-ligne,.acc-al,.acc-k,.glis,.glis-z,.ec-rep{-webkit-tap-highlight-color:transparent}
 @media (hover:none){.acc-k:active,.acc-ligne:active,.acc-al:active{transition-delay:.12s}}
+/* nom d'une annonce : celui du compte, en lecture seule (22 oct. 2026) */
+.nom-cpt{display:grid;gap:3px;padding:12px 14px;border-radius:14px;background:var(--champ,#F7F4EC);border:1px solid var(--trait,rgba(23,21,18,.1))}
+.nom-cpt-l{font-size:var(--t-sm,13px);color:var(--texte-3,#8A8170)}.nom-cpt b{font-size:var(--t-lg,17px);font-weight:600;color:var(--encre,#171512)}.nom-cpt small{font-size:var(--t-sm,13px);color:var(--texte-2,#5E5546);line-height:1.4}

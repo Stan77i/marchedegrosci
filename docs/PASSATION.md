@@ -751,3 +751,4 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Commande : à l'arrivée, le camion s'arrête entièrement visible devant un repère jaune (lieu de livraison), avec l'étiquette « ✓ Arrivé · À destination » puis « ✓ Colis livré · Chez l'acheteur » (petite apparition animée, coupée si le téléphone réduit les animations). Pendant le trajet, le repère est grisé.
 - Boutons plus courts : « Refuser la marchandise », « Pas de papier ? Signaler un problème ».
 - Onglet Prix, mode sombre : titres, message « Aucune offre », onglets Acheter / Vendre, boutons, badges et prix lisibles (vert clair et corail sur fond sombre). Un produit s'ouvre sur l'onglet qui a des annonces quand l'autre est vide.
+- Onglet Prix : changer de zone ne vide plus la liste (plus d'éclair blanc en mode sombre) : l'ancienne liste reste affichée, estompée, le temps du chargement ; les cases de chargement sont neutres, lisibles en clair comme en sombre.

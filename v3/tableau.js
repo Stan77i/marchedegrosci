@@ -60,7 +60,7 @@ mdg-tableau{display:block;padding:6px 16px 24px;font:400 15px/1.45 Jost,system-u
 @keyframes tbM{0%{opacity:0;transform:translateY(6px)}15%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
 .tb-vide{padding:22px 16px;border-radius:18px;background:#FFFDF8;text-align:center;color:#5E5546}.tb-vide b{display:block;color:#171512;margin-bottom:4px}
 .tb-n{margin:14px 2px 0;font-size:12.5px;color:#5E5546}
-.tb-charge{height:72px;border-radius:18px;background:linear-gradient(90deg,#EFE9DA,#F8F4EA,#EFE9DA);background-size:200% 100%;animation:tbC 1.2s linear infinite}@keyframes tbC{to{background-position:-200% 0}}
+.tb-charge{height:72px;border-radius:18px;background:linear-gradient(90deg,rgba(128,118,96,.12),rgba(128,118,96,.22),rgba(128,118,96,.12));background-size:200% 100%;animation:tbC 1.2s linear infinite}@keyframes tbC{to{background-position:-200% 0}}
 html[data-theme=sombre] mdg-tableau{color:#F3EFE4}
 html[data-theme=sombre] .tb-h{color:#F3EFE4}
 html[data-theme=sombre] .tb-vide{box-shadow:inset 0 0 0 1px rgba(243,239,228,.1)}html[data-theme=sombre] .tb-vide b{color:#F3EFE4}html[data-theme=sombre] .tb-vide{color:#CFC4B1}
@@ -74,6 +74,7 @@ html[data-theme=sombre] .tb-b{background:rgba(159,220,178,.16);color:#9FDCB2}htm
 html[data-theme=sombre] .tb-t.v{background:rgba(159,220,178,.16);color:#9FDCB2}
 html[data-theme=sombre] .tb-r.top .tb-rg{background:#F2C230;color:#171512}html[data-theme=sombre] .tb-nom{color:#F3EFE4}
 html[data-theme=sombre] .tb-charge{background:linear-gradient(90deg,#1E1B16,#2A261F,#1E1B16);background-size:200% 100%}
+.tb-attente .tb-l,.tb-attente .tb-vide{opacity:.45;transition:opacity .15s}
 html[data-theme=sombre] .tb-p,html[data-theme=sombre] .tb-r,html[data-theme=sombre] .tb-vide,html[data-theme=sombre] .tb-zone select,html[data-theme=sombre] .tb-ch button{background:#1E1B16;color:#F3EFE4;border-color:rgba(243,239,228,.12)}
 html[data-theme=sombre] .tb-s,html[data-theme=sombre] .tb-p small,html[data-theme=sombre] .tb-i,html[data-theme=sombre] .tb-n,html[data-theme=sombre] .tb-zone label,html[data-theme=sombre] .tb-prix small{color:#CFC4B1}
 html[data-theme=sombre] .tb-h em,html[data-theme=sombre] .tb-prix,html[data-theme=sombre] .tb-p .px b,html[data-theme=sombre] .tb-dos{color:#F2C230}
@@ -172,7 +173,7 @@ html[data-theme=sombre] .tb-rg,html[data-theme=sombre] .tb-t{background:#2A261F;
     }
     lier() {
       const s = this.st;
-      const z = this.querySelector('[data-zone]'); if (z) z.onchange = () => { s.region = z.value; s.data = null; s.produits = null; s.rangs = {}; this.memo(); this.peindre(); this.charger(); };
+      const z = this.querySelector('[data-zone]'); if (z) z.onchange = async () => { s.region = z.value; s.rangs = {}; this.memo(); this.classList.add('tb-attente'); await this.charger(); this.classList.remove('tb-attente'); };
       this.querySelectorAll('[data-slug]').forEach(b => b.onclick = () => { s.slug = b.dataset.slug; s.data = null; s.sensChoisi = false; s.unite = null; s.rangs = {}; this.memo(); this.peindre(); this.charger(); this.scrollIntoView({ block: 'start', behavior: 'smooth' }); });
       const dos = this.querySelector('[data-dos]'); if (dos) dos.onclick = () => { s.slug = null; s.data = null; this.memo(); this.peindre(); this.charger(); };
       this.querySelectorAll('[data-sens]').forEach(b => b.onclick = () => { s.sens = b.dataset.sens; s.sensChoisi = true; s.unite = null; this.memo(); this.peindre(); });

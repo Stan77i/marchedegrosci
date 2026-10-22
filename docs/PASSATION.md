@@ -623,3 +623,15 @@ Lui proposer de coller ceci :
   - après 9 s sans données, on demande la nouvelle version au service hors-ligne (`registration.update()`), puis on recharge **une fois** (`sessionStorage mdg-relance`) ;
   - si cela échoue encore, l'écran dit « Le chargement n'aboutit pas. Vérifiez internet, puis réessayez. » avec un bouton **Réessayer** (`.spl-re`).
 - Testé (Playwright, `v2/data.js` refusé) : refusé une seule fois → rechargement automatique, l'application s'ouvre ; toujours refusé → message et bouton.
+
+**Vente conclue : l'annonce baisse ou disparaît, partout** (schéma 52, 22/10, signalé par le propriétaire : demande de gombo conclue toujours visible)
+- Règle (déjà au serveur depuis le schéma 12) : à l'accord, l'annonce baisse de la quantité convenue (20 t demandées, 10 t convenues → il reste 10 t) ; à zéro, elle est retirée.
+- Bug trouvé : le téléphone du propriétaire de l'annonce ne reprenait la quantité du serveur que pour les **offres** (`stockDuServeur`), jamais pour les **demandes**. Il gardait sa copie (20 t) et l'a renvoyée au serveur : la quantité est remontée à 20 t (le statut est resté « retiree »).
+- Corrections :
+  - `v3/nuage.js` : `stockDuServeur()` reprend offres ET demandes (quantité, offre `epuise`, demande `servie`). Il est appelé **avant** tout envoi dans `sync()` : le téléphone ne renvoie plus jamais une ancienne quantité ;
+  - application : `demands()` exclut les demandes servies (`demandsAll()` les garde pour Mes publications, avec le badge « SERVIE · TOUT EST TROUVÉ ») ; « Dernières annonces » n'affiche plus les offres épuisées (`offers()` au lieu de `offersAll()`) ;
+  - schéma 52, garde au serveur (`_stock_garde`, offres et demandes) : sur une annonce dont un accord a pris du stock, une annonce retirée à zéro ne remonte pas par un renvoi, et une annonce à zéro ne redevient pas active. Une commande annulée rend toujours le stock (`_cmd_rendre_stock` passe la garde, réglage `mdg.stock_rendu`) ;
+  - données : la demande de gombo est remise à 0 t (20 − 20), seule annonce touchée (vérifié sur tous les accords conclus).
+- Testé :
+  - SQL avec rollback : 20 t, 10 vendues → 10 actif ; 20 vendues → 0 retiré ; renvoi du téléphone (20, actif) → reste 0 retiré ; commande annulée → 10 rendues ;
+  - Playwright : gombo → servie et absent de l'accueil (« 1 demande ») ; ail 20 → 10 t ; Mes publications montre les deux.

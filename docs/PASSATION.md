@@ -408,3 +408,10 @@ Lui proposer de coller ceci :
 - Cartes de chiffres : un reflet passe à tour de rôle (`.acc-k::after`, 7 s, décalé) et les icônes bougent légèrement, chacune à son tour.
 - Cartes et dernières annonces : la cascade d'arrivée se rejoue à chaque retour à l'écran (`app/effets.js`, `MONTE`).
 - Si le téléphone demande moins d'animations, rien ne bouge.
+
+**Négociation lisible** (22/10, signalé par le propriétaire)
+- La carte de proposition (`.nx-tk`) avait un fond presque noir codé en dur (`#16130f`), un reste de l'ancien design sombre, avec un texte foncé : le montant était illisible.
+  - Votre proposition : carte encre et texte crème. Celle de l'autre : carte claire.
+  - Les étiquettes (en attente, acceptée…) sont relues sur ces fonds.
+- Réglette des prix : l'étiquette « affiché 100 000 » se superposait à « acheteur ». Quand un prix est à moins de 14 % du repère, l'étiquette n'est plus écrite et le prix dit « acheteur · = affiché ».
+- Fouille en mode jour (robot sur 12 pages et 22 fenêtres) : aucun autre texte illisible. Les 3 signalements restants sont des faux positifs : indicateur d'onglet, texte de secours caché sous le sac, croix posée sur une photo.

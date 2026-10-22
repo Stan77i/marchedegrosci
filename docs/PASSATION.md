@@ -827,3 +827,9 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Sons** (`v3/sons.js`) : deux motifs de balafon accordés au sac : `entree` (trois notes qui montent, au moment où il saute dans la transition de connexion) et `sortie` (deux notes qui descendent, quand il se ficelle). Même réglage que les confirmations (Sons → Confirmations à l'écran).
 - **Carte du réseau** : les lignes de la liste du panneau du bas prennent le liseré fin du contrat des cartes.
 - Cache `mgci-v186`.
+
+## Bulle sur les onglets de l'accueil + audit des écrans (22/10/2026)
+- Retour du propriétaire : le « 2 » à côté d'« Activité » doit être une bulle au coin de l'onglet, comme une notification. Fait (`.acc-ong button .acc-n`, position absolue au coin ; terre cuite quand quelque chose vous attend, maïs quand c'est seulement en cours ; le mot se décale de 14 px pour laisser la place).
+- **Audit automatique** (Playwright, 390 et 320 px, clair et sombre, 24 écrans, avec des annonces d'essai locales) : erreurs JS, débordements horizontaux, cibles trop petites, textes coupés. Résultat : aucun débordement réel (les dépassements trouvés sont tous coupés par des points de suspension dans leur conteneur), aucune erreur JS, aucune cible trop petite hors contrôles volontairement fins (barres des mois de l'année, interrupteurs).
+- **Corrigé** : `v3/identite.js` plantait (`Cannot read properties of null`) si le serveur renvoyait une réponse vide au lieu du dossier ; on affiche maintenant « La vérification n'est pas encore disponible ». Le bouton final de Vendre disait « Publier l'offre » alors que partout ailleurs c'est « Publier mon offre » : unifié.
+- Cache `mgci-v187`.

@@ -427,6 +427,10 @@
   - Test annulé : proposition marquée, l'autre partie ne peut pas la modifier, accord « transport inclus », commande « réseau » refusée.
 - Commande : le lien de suivi est conseillé à celui qui livre : « 🛡️ Donnez un lien de suivi à votre chauffeur · Recommandé », trois raisons (📍 l'autre partie voit le camion, 🔒 sécurité, 📲 sans compte), puis « Facultatif, mais vivement conseillé ». L'autre partie voit « 🟢 Le chauffeur partage sa position · il y a 2 min ».
 
+### Vendre : « Je suis intermédiaire » / « J'ai un stock ici aussi » lisibles
+- Défaut : en mode sombre, ces deux boutons utilisaient les jetons `--encre` / `--champ`, qui s'inversent, posés dans un encadré qui reste crème. Le choix retenu paraissait éteint et l'autre semblait choisi : on ne savait pas ce qui se passait au toucher.
+- Maintenant (`.lieu-b`, mêmes couleurs dans les deux modes) : choix retenu = bord vert, fond vert pâle, coche qui apparaît avec un petit rebond ; l'autre = rond vide ; enfoncement au toucher. Rôle « radio » pour les lecteurs d'écran.
+
 ## 5. En attente d'une décision du propriétaire
 
 

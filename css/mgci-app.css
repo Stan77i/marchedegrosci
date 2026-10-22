@@ -605,3 +605,22 @@ html[data-theme=sombre] .acc-n.doux { background: rgba(245, 240, 230, .16); }
 .qd[data-u="tr"] { --qd-bg: #7DB9F2; --qd-fg: #0B2D4E; --qd-bd: rgba(30, 110, 190, .5); --qd-r: 1.6deg; }
 .qd[data-u="trd"] { --qd-bg: #F5F0E6; --qd-fg: #3B342A; --qd-bd: rgba(23, 21, 18, .3); --qd-r: 1deg; outline: 1.5px dashed rgba(23, 21, 18, .35); outline-offset: -4px; }
 .qd[data-u="tr"]::before, .qd[data-u="trd"]::before { width: 15px; height: 15px; }
+
+/* ——— « Je suis intermédiaire » / « J'ai un stock ici aussi » (lieu différent du profil) ———
+   avant : en mode sombre les couleurs s'inversaient dans l'encadré crème, le choix retenu paraissait éteint.
+   Maintenant : retenu = bord vert, fond vert pâle, coche ; l'autre = rond vide ; un petit enfoncement au toucher. */
+.lieu-b { flex: 1 1 140px; position: relative; display: flex; align-items: flex-start; gap: 10px; min-height: 56px; padding: 10px 12px; border-radius: 14px; text-align: left; cursor: pointer;
+  border: 1.5px solid rgba(23, 21, 18, .16); background: #FFFDF8; color: #171512; font-family: var(--f-texte, Jost), sans-serif;
+  transition: border-color .18s, background .18s, box-shadow .18s, transform .12s; }
+.lieu-b:active { transform: scale(.97); }
+.lieu-b[aria-checked="true"] { border: 2px solid #1F7A45; background: #E3F3E8; box-shadow: 0 4px 14px rgba(31, 122, 69, .18); }
+.lieu-c { flex: none; width: 22px; height: 22px; margin-top: 1px; border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(23, 21, 18, .28); display: grid; place-items: center; transition: background .18s, box-shadow .18s; }
+.lieu-b[aria-checked="true"] .lieu-c { background: #1F7A45; box-shadow: none; animation: lieuCoche .35s cubic-bezier(.3, 1.6, .5, 1); }
+.lieu-b[aria-checked="true"] .lieu-c::after { content: ""; width: 10px; height: 6px; margin-top: -3px; border-left: 2.5px solid #fff; border-bottom: 2.5px solid #fff; transform: rotate(-45deg); }
+.lieu-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lieu-tx b { font-size: var(--t-md, 15px); font-weight: 600; }
+.lieu-tx small { font-size: var(--t-sm, 13px); line-height: 1.35; color: #5E5546; }
+.lieu-b[aria-checked="true"] .lieu-tx small { color: #1F5A37; }
+.lieu-b:focus-visible { outline: 2px solid #10392B; outline-offset: 2px; }
+@keyframes lieuCoche { 0% { transform: scale(.4); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .lieu-b, .lieu-c { transition: none; animation: none !important; } }

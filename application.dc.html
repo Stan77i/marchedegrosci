@@ -49,7 +49,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261025m">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261025n">
 <link rel="stylesheet" href="css/sombre.css?v=20261025f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261025g">
@@ -1003,10 +1003,12 @@ class Component extends DCLogic {
   lieuDe(f) { return this.ailleurs(f) ? (f.lieu || 'secteur') : ''; }
   lieuEl(f, set) {
     if (!this.ailleurs(f)) return null; const h = React.createElement, home = this.chezMoi(), ou = home.city || this.regName(home.region), cur = f.lieu || 'secteur';
-    const b = (k, t, x) => h('button', { key: k, type: 'button', onClick: () => set({ lieu: k }), 'aria-pressed': cur === k ? 'true' : 'false', style: { flex: '1 1 140px', minHeight: 52, padding: '8px 12px', borderRadius: 14, border: '1.5px solid ' + (cur === k ? 'var(--encre)' : 'var(--trait)'), background: cur === k ? 'var(--encre)' : 'var(--champ)', color: cur === k ? 'var(--ivoire)' : 'var(--encre)', textAlign: 'left', display: 'flex', flexDirection: 'column', gap: 2 } }, h('span', { style: { fontSize: 14, fontWeight: 600 } }, t), h('span', { style: { fontSize: 12, opacity: .75, lineHeight: 1.3 } }, x));
+    // un choix net, le même en clair et en sombre (l'encadré reste crème) : bord vert + coche quand il est retenu, rond vide sinon
+    const b = (k, t, x) => h('button', { key: k, type: 'button', role: 'radio', 'aria-checked': cur === k ? 'true' : 'false', className: 'lieu-b', onClick: () => set({ lieu: k }) },
+      h('span', { className: 'lieu-c', 'aria-hidden': 'true' }), h('span', { className: 'lieu-tx' }, h('b', null, t), h('small', null, x)));
     return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 16, background: '#fff4dd' } },
       h('span', { style: { fontSize: 13.5, color: '#563e01', lineHeight: 1.45 } }, 'Ce lieu n\u2019est pas celui de votre profil (' + ou + '). Sur la carte, ce sera toujours vous. Précisez :'),
-      h('div', { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } }, b('intermediaire', 'Je suis intermédiaire', 'Je vends pour d\u2019autres, ici'), b('secteur', 'J\u2019ai un stock ici aussi', 'Plusieurs secteurs ou un gros tas ailleurs')));
+      h('div', { role: 'radiogroup', 'aria-label': 'Ce lieu', style: { display: 'flex', gap: 8, flexWrap: 'wrap' } }, b('intermediaire', 'Je suis intermédiaire', 'Je vends pour d\u2019autres, ici'), b('secteur', 'J\u2019ai un stock ici aussi', 'Plusieurs secteurs ou un gros tas ailleurs')));
   }
   /* administration : marquer une forte demande sur la carte (district, ville, produit, note, durée) — supabase/schema-11-zones.sql */
   zoneForm() {

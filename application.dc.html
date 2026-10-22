@@ -18,7 +18,7 @@
 <script src="v3/nuage.js?v=20261023g"></script>
 <script src="v3/avatar.js?v=20261023f"></script>
 <script src="app/icones.js?v=20261023m"></script>
-<script src="app/effets.js?v=20261024b"></script>
+<script src="app/effets.js?v=20261024i"></script>
 <script src="app/marque.js?v=20261023v"></script>
 <script src="app/sac.js?v=20261019b"></script>
 <script src="app/garanties.js?v=20261024c"></script>
@@ -46,7 +46,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261024f">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261024i">
 <link rel="stylesheet" href="css/sombre.css?v=20261024c">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261023f">
@@ -97,7 +97,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
       <p>{{ accSous }}</p>
     </div>
     <div class="acc-orb">
-  <div style="position:absolute;left:50%;top:250px;width:640px;height:640px;margin:-320px 0 0 -320px;border-radius:50%;background:radial-gradient(circle,{{ halo }} 0%,transparent 60%);opacity:.5;pointer-events:none;transition:background .6s"></div>
+  <div class="acc-halo" style="position:absolute;left:50%;top:250px;width:640px;height:640px;margin:-320px 0 0 -320px;border-radius:50%;background:radial-gradient(circle,{{ halo }} 0%,transparent 60%);opacity:.5;pointer-events:none;transition:background .6s"></div>
       <mdg-marche></mdg-marche>
   <!-- nos garanties, une à la fois (app/garanties.js) : toucher → « Pourquoi le Marché de Gros » -->
   <div style="position:relative;z-index:2;flex:none;height:32px;margin-top:2px"><mdg-garanties></mdg-garanties></div>
@@ -116,7 +116,8 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
     <svg width="390" height="388" viewBox="0 0 390 388" style="position:absolute;left:50%;top:0;margin-left:-195px;pointer-events:none;overflow:visible">
       <path d="M -85.8 231 A 318 318 0 0 1 475.8 231" fill="none" stroke="rgba(245,240,230,.14)" stroke-width="1"></path>
       <path d="M -69.9 239.2 A 300 300 0 0 1 459.9 239.2" fill="none" stroke="{{ halo }}" stroke-opacity=".6" stroke-width="1"></path>
-      <circle cx="195" cy="62" r="9" fill="#F2C230" fill-opacity=".18"></circle>
+      <path class="acc-comete" d="M -69.9 239.2 A 300 300 0 0 1 459.9 239.2" pathLength="100" fill="none" stroke="#F2C230" stroke-width="2.2" stroke-linecap="round"></path>
+      <circle class="acc-pouls" cx="195" cy="62" r="9" fill="#F2C230" fill-opacity=".18"></circle>
       <circle cx="195" cy="62" r="3.5" fill="#F2C230"></circle>
     </svg>
     <div style="position:absolute;left:50%;top:380px;width:0;height:0">
@@ -125,8 +126,8 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
         <button onClick="{{ l.go }}" class="arc-l" style="position:absolute;left:0;top:0;border:0;background:transparent;padding:6px 4px;white-space:nowrap;font-size:{{ l.fs }};letter-spacing:.16em;text-transform:uppercase;color:{{ l.color }};font-weight:{{ l.weight }};transform:{{ l.tf }};opacity:{{ l.op }};transition:{{ l.tr }};transform-origin:0 0;pointer-events:{{ l.pe }}">{{ l.name }}</button>
       </sc-for>
     </div>
-    <div style="position:absolute;left:50%;top:104px;width:250px;height:250px;margin-left:-125px;pointer-events:none">
-      <div style="position:absolute;left:30px;right:30px;bottom:6px;height:26px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.6),transparent 70%)"></div>
+    <div class="acc-flotte" style="position:absolute;left:50%;top:104px;width:250px;height:250px;margin-left:-125px;pointer-events:none">
+      <div class="acc-ombre" style="position:absolute;left:30px;right:30px;bottom:6px;height:26px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.6),transparent 70%)"></div>
       <sc-for list="{{ sacks }}" as="k" hint-placeholder-count="0"><img sc-camel-src="{{ k.src }}" alt="{{ k.alt }}" draggable="false" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:{{ k.op }};transform:{{ k.tf }};transition:{{ k.tr }}"></sc-for>
       <div style="position:absolute;inset:0;opacity:{{ jute.op }};transform:{{ jute.tf }};transition:opacity .4s,transform .55s cubic-bezier(.22,1,.36,1)">
         <svg viewBox="0 0 250 250" width="250" height="250">

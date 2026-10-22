@@ -398,3 +398,13 @@ Lui proposer de coller ceci :
   - interrupteur « Annonces du marché » dans Mon compte → Notifications (`notif_reglage_diffusions`, réglage gardé sur le serveur).
 - Un compte ne reçoit rien tant qu'il n'a pas activé les notifications sur son téléphone. Aujourd'hui, 1 seul compte l'a fait. Sur iPhone, il faut d'abord ajouter l'app à l'écran d'accueil.
 - **Pas de SMS** : c'est payant (règle du propriétaire : aucun service payant). Les notifications Web Push sont gratuites.
+
+**Accueil vivant** (22/10, demandé par le propriétaire)
+- Orbite (`.acc-orb`) :
+  - une lueur maïs parcourt l'arc en continu (`.acc-comete`, 7 s) ;
+  - le point du produit actif respire (`.acc-pouls`) ;
+  - le sac flotte, avec une ombre qui suit (`.acc-flotte`) ;
+  - le halo pulse (`.acc-halo`).
+- Cartes de chiffres : un reflet passe à tour de rôle (`.acc-k::after`, 7 s, décalé) et les icônes bougent légèrement, chacune à son tour.
+- Cartes et dernières annonces : la cascade d'arrivée se rejoue à chaque retour à l'écran (`app/effets.js`, `MONTE`).
+- Si le téléphone demande moins d'animations, rien ne bouge.

@@ -318,6 +318,29 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px
 .acc-k b mdg-nb{font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.acc-salut,.acc-orb,.acc-k,.acc-carte,.acc-ligne,.acc-al{animation:none}.acc-ong-ind{transition:none}.acc-k:active,.acc-ligne:active,.acc-al:active,.acc-r:active,.acc-mq:active{transform:none}}
 .acc-sac{display:block;line-height:0}.acc-sac svg{display:block}
+/* ——— accueil vivant (22 oct. 2026, demandé par le propriétaire) ———
+   orbite : une lueur maïs parcourt l'arc ; le point du produit actif respire ; le sac flotte (son ombre suit) ; le halo pulse.
+   cartes de chiffres : un reflet passe de temps en temps, les icônes bougent à tour de rôle.
+   (la cascade d'arrivée des cartes et des annonces est rejouée à chaque retour à l'écran : app/effets.js) */
+.acc-comete{stroke-dasharray:7 93;stroke-dashoffset:100;filter:drop-shadow(0 0 4px rgba(242,194,48,.85));animation:accComete 7s linear infinite}
+@keyframes accComete{0%{stroke-dashoffset:100;opacity:0}6%{opacity:1}88%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+.acc-pouls{transform-box:fill-box;transform-origin:center;animation:accPouls 2.6s ease-in-out infinite}
+@keyframes accPouls{50%{transform:scale(1.7);fill-opacity:.06}}
+.acc-flotte{animation:accFlotte 4.8s ease-in-out infinite}
+.acc-flotte .acc-ombre{animation:accOmbre 4.8s ease-in-out infinite}
+@keyframes accFlotte{50%{transform:translateY(-5px)}}
+@keyframes accOmbre{50%{transform:translateY(5px) scaleX(.86);opacity:.7}}
+.acc-halo{animation:accHalo 6s ease-in-out infinite}
+@keyframes accHalo{50%{opacity:.72;transform:scale(1.06)}}
+.acc-k{overflow:hidden}
+.acc-k::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:45%;pointer-events:none;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);animation:accReflet 7s ease-in-out infinite}
+.acc-k:nth-child(2)::after{animation-delay:2.3s}.acc-k:nth-child(3)::after{animation-delay:4.6s}
+@keyframes accReflet{0%,78%{left:-60%}92%,100%{left:130%}}
+.acc-k .acc-i{animation:accBouge 6s ease-in-out infinite}
+.acc-k:nth-child(2) .acc-i{animation-delay:2s}.acc-k:nth-child(3) .acc-i{animation-delay:4s}
+@keyframes accBouge{0%,82%,100%{transform:none}87%{transform:translateY(-4px) rotate(-6deg)}93%{transform:translateY(0) rotate(4deg)}}
+html[data-theme=sombre] .acc-k::after{background:linear-gradient(100deg,transparent,rgba(255,255,255,.08),transparent)}
+@media (prefers-reduced-motion:reduce){.acc-comete,.acc-pouls,.acc-flotte,.acc-flotte .acc-ombre,.acc-halo,.acc-k::after,.acc-k .acc-i{animation:none}.acc-comete{opacity:0}}
 
 /* ═══ Menu clair (21 oct. 2026) : icônes Lucide dans des tuiles en léger dégradé, teinte par rubrique (couleurs lisibles sur le blanc) ═══ */
 .dr-clair{--t-offre:#1F7A45;--t-demande:#8A6400;--t-vous:#2F62A8;--t-lien:#6A4FB0;--t-marche:#A4472C;--t-aide:#5E5546}

@@ -11,7 +11,7 @@
    • Dans la conversation avec le Marché de Gros, pendant qu'on écrit, les réponses toutes prêtes s'affichent aussi (v3/messages.js).
    Les réponses décrivent ce que l'application fait vraiment (mêmes règles que v3/guide.js et v3/astuces.js). Une règle change ?
    Mettre la réponse à jour ici aussi.
-   API : MDGAide.ouvrir({ q, id }?) · fermer() · chercher(texte, n) → [{ id, q }] · QR */
+   API : MDGAide.ouvrir({ q, id }?) · fermer() · chercher(texte, n) → [{ id, q }] · frequentes(n) · QR */
 (function () {
   'use strict';
   if (window.MDGAide) return;
@@ -210,12 +210,13 @@
 .ai-f .ai-info{margin:12px 0 0;display:flex;gap:10px;align-items:flex-start;background:#DDE9F6;color:#1F5A96;border-radius:16px;padding:12px 14px;font-size:14.5px}
 .ai-f .ai-env{margin:16px 0 0;width:100%;min-height:54px;border:0;border-radius:27px;background:#10392B;color:#F3EFE4;font:600 17px Jost,sans-serif;display:flex;align-items:center;justify-content:center;gap:10px}
 .ai-f .ai-env:disabled{opacity:.5}
-/* les réponses toutes prêtes dans la conversation avec le Marché de Gros (v3/messages.js) */
-.dm-f:has(.dm-sug:not([hidden])){flex-wrap:wrap}
-.dm-sug[hidden]{display:none}
-.dm-sug{flex-basis:100%;display:flex;flex-direction:column;gap:6px;margin:0 0 8px}
-.dm-sug small{font:600 12px/1 Jost,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#7a7064;padding:0 4px}
-.dm-sug button{min-height:44px;border:1px solid rgba(23,21,18,.12);border-radius:16px;background:#FBEFC4;color:#4d3a00;font:500 15px/1.3 Jost,sans-serif;text-align:left;padding:8px 12px;display:flex;align-items:center;gap:8px}
+/* la rangée d'aide dans la conversation avec le Marché de Gros (v3/messages.js) : défile de gauche à droite */
+.dm-f:has(.dm-sug){flex-wrap:wrap}
+.dm-sug{flex-basis:100%;display:flex;gap:6px;margin:0 -10px 8px;padding:0 10px 2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.dm-sug::-webkit-scrollbar{display:none}
+.dm-sug button{flex:none;max-width:78%;min-height:40px;border:1px solid rgba(23,21,18,.12);border-radius:20px;background:#FFFCF6;color:#171512;font:500 14.5px/1.2 Jost,sans-serif;padding:0 14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-sug button.trouve{background:#FBEFC4;border-color:rgba(122,86,0,.25);color:#4d3a00}
+.dm-sug .dm-sug-aide{background:#10392B;border-color:#10392B;color:#F3EFE4;font-weight:600}
 @media (prefers-reduced-motion:reduce){.ai,.ai-it.ouv .ai-r,.ai-hum.vif{transition:none;animation:none}}`;
   function style() { if (document.getElementById('aiCss')) return; const s = document.createElement('style'); s.id = 'aiCss'; s.textContent = CSS; document.head.appendChild(s); }
   style();
@@ -338,5 +339,6 @@
   }
   function fermer() { if (!el) return; el.classList.remove('on'); const e = el; el = null; setTimeout(() => e.remove(), 400); }
 
-  window.MDGAide = { ouvrir, fermer, chercher: (t, n) => chercher(t, n).map(e => ({ id: e.id, q: e.q })), QR, THEMES };
+  window.MDGAide = { ouvrir, fermer, chercher: (t, n) => chercher(t, n).map(e => ({ id: e.id, q: e.q })),
+    frequentes: n => FREQ.slice(0, n || 4).map(t => QR.find(e => e.q === t)).filter(Boolean).map(e => ({ id: e.id, q: e.q })), QR, THEMES };
 })();

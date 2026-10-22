@@ -658,3 +658,13 @@ html[data-theme=sombre] .cd-ligne .acc-tx small{color:#5E5546}
 .cd-ligne .acc-tx small{white-space:normal;display:block}
 .cd-genre{display:block;font-weight:600;color:#10392B}
 html[data-theme=sombre] .cd-genre{color:#10392B}
+/* ——— roue de l'accueil : la bulle d'activité (« Très vendu », « Vendu il y a 3 min »…), qui sort de derrière le sac 5 s (22 oct. 2026) ——— */
+.acc-tend{position:absolute;left:50%;top:-30px;display:flex;align-items:center;gap:9px;width:max-content;max-width:250px;padding:8px 14px 8px 9px;border-radius:18px;
+  background:rgba(23,21,18,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 10px 26px rgba(0,0,0,.4),inset 0 0 0 1px rgba(242,194,48,.35);
+  color:#F3EFE4;font-family:Jost,sans-serif;text-align:left;white-space:normal;transform:translateX(-50%);animation:accTend 5.2s cubic-bezier(.22,1,.36,1) both}
+.acc-tend-i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:16px;line-height:1;background:rgba(242,194,48,.16)}
+.acc-tend-x{display:flex;flex-direction:column;gap:1px;min-width:0}.acc-tend-x b{font-size:14px;font-weight:700;line-height:1.15;color:#F2C230}.acc-tend-x small{font-size:11.5px;line-height:1.25;color:rgba(243,239,228,.78)}
+.acc-tend.demande .acc-tend-x b{color:#F2C230}.acc-tend.vente .acc-tend-x b{color:#9FD8AE}.acc-tend.vente{box-shadow:0 10px 26px rgba(0,0,0,.4),inset 0 0 0 1px rgba(159,216,174,.4)}.acc-tend.vente .acc-tend-i{background:rgba(159,216,174,.16)}
+@keyframes accTend{0%{opacity:0;transform:translate(-50%,56px) scale(.9)}12%{opacity:1;transform:translate(-50%,0) scale(1)}86%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,56px) scale(.92)}}
+@media (prefers-reduced-motion:reduce){.acc-tend{animation:accTendDoux 5.2s linear both}}
+@keyframes accTendDoux{0%,100%{opacity:0}8%,90%{opacity:1}}

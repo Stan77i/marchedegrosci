@@ -351,7 +351,7 @@
   let retourFocus = null;
   function peindre() { if (!bg) return; const box = bg.querySelector('.cm'); if (vue === 'profil') formulaire(); else { const y = box.scrollTop; accueil(); box.scrollTop = y; } }
   function focusTitre() { const h = bg && bg.querySelector('.cm h2'); if (h) { h.tabIndex = -1; try { h.focus({ preventScroll: true }); } catch (_) {} } }
-  async function ouvrir() {
+  async function ouvrir(tap, quoi) {
     if (!N() || !N().session()) { if (N()) N().open(); return; }
     if (window.MDGCommandes && MDGCommandes.css) MDGCommandes.css();
     fermer(); retourFocus = document.activeElement;
@@ -361,6 +361,7 @@
     document.addEventListener('keydown', clavier);
     vue = 'accueil';
     await lire(); peindre(); focusTitre();
+    if (tap && quoi && missions.some(m => m.commande_id === tap)) taper(tap, quoi);   // depuis Accueil → Alertes → Mes codes
     minuteur = setInterval(async () => { if (!bg || document.hidden || vue !== 'accueil') return; await lire(); peindre(); }, 30000);
   }
 
@@ -373,5 +374,28 @@
     setTimeout(() => go(0), 700);
   })();
 
-  window.MDGChauffeur = { ouvrir, etat: () => { const c = J(K(), {}); return { inscrit: !!c.inscrit, statut: c.statut || null, propositions: c.propositions || 0 }; } };
+  // Accueil → Alertes → « Mes codes » (transporteur inscrit) : les codes à demander et à taper MAINTENANT.
+  // Le chauffeur ne détient pas de code : il tape celui du vendeur au chargement, puis celui de l'acheteur à la réception.
+  function codes() {
+    const c = J(K(), {}); if (!c.inscrit) return [];
+    return (c.missions || []).filter(m => m.mission === 'acceptee' && m.etat === 'en_cours' && m.validation === 'code').map(m => {
+      const pec = ['confirmee', 'preparation'].includes(m.etape), rec = ['transport', 'transbordement', 'arrivee'].includes(m.etape);
+      if (!pec && !rec) return null;
+      return { id: m.commande_id, quoi: pec ? 'prise' : 'reception', titre: (m.produit || 'Marchandise') + (m.quantite != null ? ' · ' + nf(m.quantite, 2) + ' ' + unites(m.quantite, m.unite) : ''),
+        genre: pec ? 'Code de prise en charge à taper' : 'Code de réception à taper',
+        quand: pec ? 'Demandez-le au vendeur quand la marchandise est chargée, puis tapez-le' : 'Demandez-le à l’acheteur après sa vérification, puis tapez-le',
+        urgent: m.etape === 'arrivee', ouvrir: () => ouvrir(m.commande_id, pec ? 'prise' : 'reception') };
+    }).filter(Boolean);
+  }
+  // relu au démarrage et au retour sur l'application (une fois par minute au plus), seulement pour un transporteur inscrit
+  let fondT = 0;
+  async function fond() {
+    if (bg || document.hidden || !N() || !N().session() || !J(K(), {}).inscrit || navigator.onLine === false || Date.now() - fondT < 60000) return;
+    fondT = Date.now();
+    try { moi = await N().rpc('transporteur_moi'); missions = moi ? ((await N().rpc('chauffeur_missions')) || []) : []; memoriser(); dispatchEvent(new CustomEvent('mdg:activite')); } catch (_) {}
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) fond(); });
+  setTimeout(fond, 2000);
+
+  window.MDGChauffeur = { ouvrir, codes, etat: () => { const c = J(K(), {}); return { inscrit: !!c.inscrit, statut: c.statut || null, propositions: c.propositions || 0 }; } };
 })();

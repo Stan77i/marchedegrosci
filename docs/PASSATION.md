@@ -588,3 +588,17 @@ Lui proposer de coller ceci :
   - la ligne Sons, de l'ancienne fenêtre de compte (`v3/nuage.js`).
   - L'ancienne page « Réglages » de Mon compte n'est plus reliée à rien.
 - Les deux lectures (état du téléphone, réglage serveur) sont indépendantes, avec 4 s au plus pour le téléphone. Sinon l'interrupteur restait bloqué (constaté au test).
+
+**Codes de réception et de prise en charge mis en avant** (schéma 50, pousser v14, 22/10, demandé par le propriétaire)
+- Notifications (pousser v14), seulement pour une commande « avec codes » :
+  - acheteur, au chargement et au transbordement : « 🔐 Gardez bien votre code de réception : vous aurez à le présenter au chauffeur, après avoir vérifié la marchandise » ;
+  - acheteur, à l'arrivée : « 🔐 Le chauffeur est arrivé : préparez votre code » ;
+  - vendeur, à la confirmation : « 🔐 Gardez bien votre code de prise en charge ».
+- Fenêtre de la commande : bandeau maïs « 🔐 Gardez bien ce code : vous aurez à le présenter… » en haut du bloc code (`blocCode`, `.cm-garde`).
+- Accueil → Alertes → **« 🔐 Mes codes »**, compté dans la pastille Alertes :
+  - acheteur (transport, transbordement, arrivée) et vendeur (confirmée, préparation) : `MDGCommandes.codes()`. Toucher ouvre la commande au bloc code (`ouvrir(id, true)`) ;
+  - transporteur inscrit : `MDGChauffeur.codes()`, les codes à demander puis taper. Toucher ouvre l'Espace chauffeur directement sur la saisie (`ouvrir(cmd, quoi)`). Ses missions sont relues au démarrage (`fond()`, une fois par minute au plus) ;
+  - « arrivé » passe en tête, avec un halo.
+- **Choix de sécurité gardé** : le code n'est jamais enregistré dans le téléphone (mémoire seulement). « Mes codes » montre les chiffres s'ils ont été affichés pendant la visite ; sinon « Afficher », qui crée le code au serveur (l'ancien ne marche plus). Si l'application est fermée, il suffit de toucher à nouveau.
+- **Commission** (schéma 50) : quand le transport est compris dans le prix du vendeur (`negociations.transport_final`, sinon l'annonce), aucune commission transport de 6,9 % n'est enregistrée, même si le vendeur prend un transporteur inscrit (`_cmd_transport_inclus`, garde dans `_ctr_sync`). La commission de 3,5 % porte déjà sur le seul prix du vendeur (schéma 30).
+  - Testé et annulé (rollback) : inclus → aucune ligne ; non inclus, 12 000 F → 828 F.

@@ -317,12 +317,24 @@
 ### Carte : plusieurs annonces au même endroit
 - Avant : quand on touchait une bulle « 2 dès 13 k F », une seule annonce apparaissait, et rien ne disait qu'il y en avait une autre en glissant. Avec le badge « Officiel · Marché de Gros », la carte s'élargissait à 420 px, sortait de l'écran et cachait complètement la suivante.
 - Maintenant :
-  - la carte d'annonce est plus compacte sur la carte : seul le tampon reste sous les chiffres, 238 px de haut au lieu de 280 ;
+  - la carte d'annonce est plus compacte sur la carte : seul le tampon reste sous les chiffres, 238 px de haut au lieu de 280. « C'est votre annonce » reste affiché sur ses propres annonces (validé par le propriétaire sur capture) ;
   - le bord de l'annonce suivante dépasse à droite ;
   - une pastille « ‹ ● ○ 1 sur 2 · glissez › » s'affiche : la flèche suivante est maïs et pulse tant qu'on n'a pas changé d'annonce ; les points et les flèches font changer d'annonce ;
   - à l'ouverture, la bande avance un peu puis revient, pour montrer qu'elle glisse (rien si le téléphone demande moins d'animations).
 - Partout : un nom ou un badge long ne fait plus déborder la carte d'annonce. Pour le compte officiel, le nom en double est caché (le badge dit déjà « Marché de Gros »), et la ville cède la place en premier.
 - Code : `cPickMulti`, `cPickDots`, `cPickAller()`, `cPickInvite()` dans `application.dc.html` ; styles `.an-carte` et `.cpk-*` dans `css/mgci-app.css`.
+
+### Accueil : « Tout » dans la roue → tous les produits en grille
+- Pastille « ▦ Tout » en haut à droite de la roue (verre, icône maïs), pour ne plus faire tourner la roue produit par produit.
+- Fenêtre « Tous les produits » (même panneau sombre que les familles) :
+  - grille de 3 colonnes (4 sur les grands écrans), photo du sac ou vignette, nom sur 2 lignes au plus ;
+  - sous chaque produit, le nombre d'offres (rond vert) et de demandes (carré jaune) en cours ;
+  - filtres : « Avec annonces » (seulement ce qui a des offres ou des demandes), « Tout » (les 162 produits, rangés par famille), ou une famille. Par défaut : la famille affichée dans la roue ;
+  - recherche sur le nom et les autres noms (alias), dans toutes les familles ;
+  - le produit au centre de la roue est entouré de maïs ;
+  - toucher un produit ferme la fenêtre et le met au centre de la roue, dans sa famille.
+- Calculé seulement quand la fenêtre est ouverte ; les vignettes se chargent au fil du défilement.
+- Code : `toutVoir()` dans `application.dc.html` (état `sheet: 'tout'`, `tq`, `tvF`), styles `.tv-*` dans `css/mgci-app.css`.
 
 ## 5. En attente d'une décision du propriétaire
 

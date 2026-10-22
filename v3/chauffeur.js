@@ -98,13 +98,19 @@
     if (m.mission === 'proposee' && prixOuvert !== m.mission_id) B.push(`<button type="button" class="p" data-acc="${m.mission_id}">Accepter et fixer mon prix</button>`, `<button type="button" data-ref="${m.mission_id}">Refuser</button>`);
     if (m.mission === 'acceptee' && avantChargement && prixOuvert !== m.mission_id) B.push(`<button type="button" data-chpx="${m.mission_id}">${m.prix != null ? 'Changer mon prix' : 'Indiquer mon prix'}</button>`);
     const K = m.validation === 'code', go = m.mission === 'acceptee' && m.etat === 'en_cours';
-    if (go && K && ['confirmee', 'preparation'].includes(m.etape)) B.push(`<button type="button" class="p" data-tap="${m.commande_id}" data-quoi="prise">Taper le code de prise en charge</button>`);
+    if (go && K && ['confirmee', 'preparation'].includes(m.etape)) B.push(`<button type="button" class="p" data-tap="${m.commande_id}" data-quoi="prise">Taper le code de prise en charge</button>`,
+      `<button type="button" data-dem="${m.commande_id}">🔐 Demander le code au vendeur</button>`);
     if (go && ['transport', 'transbordement', 'arrivee'].includes(m.etape))
       B.push(partage && partage.cmd === m.commande_id ? `<button type="button" data-gps-stop>${IC('localiser', 18)} Arrêter le partage de position</button>`
         : `<button type="button" class="p" data-gps="${m.commande_id}">${IC('localiser', 18)} Partager ma position</button>`);
     if (go && ['transport', 'transbordement'].includes(m.etape))
       B.push(`<button type="button" class="${K ? '' : 'p'}" data-arr="${m.commande_id}">Je suis arrivé</button>`);
-    if (go && K && ['transport', 'transbordement', 'arrivee'].includes(m.etape)) B.push(`<button type="button" class="p" data-tap="${m.commande_id}" data-quoi="reception">Taper le code de réception</button>`);
+    if (go && K && ['transport', 'transbordement', 'arrivee'].includes(m.etape)) B.push(`<button type="button" class="p" data-tap="${m.commande_id}" data-quoi="reception">Taper le code de réception</button>`,
+      `<button type="button" data-dem="${m.commande_id}">🔐 Demander le code à l’acheteur</button>`);
+    // schéma 51 : chacun exige le code de l'autre, sur place ; la demande passe par l'application, jamais par WhatsApp
+    const moiCode = moi && moi.code ? ` Montrez-lui aussi votre code transporteur <b>${esc(moi.code)}</b> : il doit le vérifier.` : '';
+    const exige = go && K ? (['confirmee', 'preparation'].includes(m.etape) ? `🔐 Quand la marchandise est chargée, exigez que le vendeur vous montre son code de prise en charge.${moiCode}`
+      : ['transport', 'transbordement', 'arrivee'].includes(m.etape) ? `🔐 À la livraison, exigez que l’acheteur vous montre son code de réception, après sa vérification.${moiCode}` : '') : '';
     if (go && ['transport', 'transbordement'].includes(m.etape))
       B.push(K ? `<button type="button" class="m" data-pas="${m.commande_id}">Passer la marchandise à un autre chauffeur</button>` : `<button type="button" class="m" data-trb="${m.commande_id}">Signaler un transbordement</button>`);
     const st = m.mission === 'proposee' ? ['Nouvelle mission', 'mais'] : m.mission === 'refusee' ? ['Refusée', 'rouge'] : m.etat === 'annulee' ? ['Commande annulée', 'rouge'] : m.etat === 'litige' ? ['Litige en cours', 'rouge'] : [ETAPE[m.etape] || 'Acceptée', ''];
@@ -116,6 +122,7 @@
       ${m.mission === 'acceptee' && m.prix != null ? `<small style="margin-top:6px;color:inherit"><b>Votre prix : ${nf(m.prix)} F</b> · commission Marché de Gros (6,9 %) : ${nf(m.commission)} F · vous gardez ${nf(m.net)} F</small>` : ''}
       ${m.mission === 'acceptee' && m.prix == null && avantChargement ? '<small style="margin-top:6px;color:#8A6400"><b>Prix du transport à indiquer</b> : l’acheteur le verra dans sa commande.</small>' : ''}
       ${prixOuvert === m.mission_id ? formPrix(m) : ''}
+      ${exige ? `<p class="cm-garde" style="margin:10px 0 0">${exige}</p>` : ''}
       ${B.length ? `<div class="cm-act" style="margin:10px 0 0">${B.join('')}</div>` : ''}</span></div>`;
   }
   function formPrix(m) {
@@ -179,6 +186,14 @@
     box.querySelectorAll('[data-arr]').forEach(b => b.onclick = () => etape(b.dataset.arr, 'arrivee'));
     box.querySelectorAll('[data-trb]').forEach(b => b.onclick = () => etape(b.dataset.trb, 'transbordement'));
     box.querySelectorAll('[data-tap]').forEach(b => b.onclick = () => taper(b.dataset.tap, b.dataset.quoi));
+    box.querySelectorAll('[data-dem]').forEach(b => b.onclick = async () => {
+      b.disabled = true;
+      try { const r = await N().rpc('commande_code_demander', { p_cmd: b.dataset.dem });
+        if (r && r.ok) toast('Demande envoyée', { type: 'ok', sous: (r.a === 'vendeur' ? 'Le vendeur' : 'L’acheteur') + ' est prévenu sur son téléphone. Il vous montrera son code sur place.' });
+        else toast('Déjà demandé', { sous: (r && r.message) || 'Attendez un peu avant de redemander.' }); }
+      catch (e) { toast('Demande impossible', { type: 'erreur', sous: erreurTxt(e) }); }
+      setTimeout(() => { b.disabled = false; }, 4000);
+    });
     box.querySelectorAll('[data-pas]').forEach(b => b.onclick = () => passer(b.dataset.pas));
     box.querySelectorAll('[data-gps]').forEach(b => b.onclick = () => partager(b.dataset.gps));
     box.querySelectorAll('[data-gps-stop]').forEach(b => b.onclick = () => { arreterPartage('Partage arrêté.'); peindre(); });

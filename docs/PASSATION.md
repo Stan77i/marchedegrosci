@@ -602,3 +602,16 @@ Lui proposer de coller ceci :
 - **Choix de sécurité gardé** : le code n'est jamais enregistré dans le téléphone (mémoire seulement). « Mes codes » montre les chiffres s'ils ont été affichés pendant la visite ; sinon « Afficher », qui crée le code au serveur (l'ancien ne marche plus). Si l'application est fermée, il suffit de toucher à nouveau.
 - **Commission** (schéma 50) : quand le transport est compris dans le prix du vendeur (`negociations.transport_final`, sinon l'annonce), aucune commission transport de 6,9 % n'est enregistrée, même si le vendeur prend un transporteur inscrit (`_cmd_transport_inclus`, garde dans `_ctr_sync`). La commission de 3,5 % porte déjà sur le seul prix du vendeur (schéma 30).
   - Testé et annulé (rollback) : inclus → aucune ligne ; non inclus, 12 000 F → 828 F.
+
+**Chacun exige le code de l'autre, la demande passe par l'application** (schéma 51, pousser v15, 22/10, demandé par le propriétaire : « ça se discute dans l'application, pas sur WhatsApp »)
+- Chauffeur (transporteur inscrit) :
+  - sa carte de mission affiche un bandeau « 🔐 Exigez que le vendeur / l'acheteur vous montre son code… Montrez-lui aussi votre code transporteur T-XXXX » ;
+  - le bouton « 🔐 Demander le code au vendeur / à l'acheteur » appelle `commande_code_demander` (une demande toutes les 2 min au plus par commande), et l'autre reçoit une notification.
+- Acheteur et vendeur : le bloc code montre « 🚚 Code du chauffeur : T-XXXX. Exigez qu'il vous le montre dans son application : s'il ne l'a pas, ce n'est pas le bon chauffeur » (`commande_transport.mission.code`, seulement une fois la mission acceptée).
+- Notifications :
+  - au vendeur ou à l'acheteur quand le chauffeur demande le code (table `code_demandes`, déclencheur `push_code_demande`, cas 14 de pousser) ;
+  - au chauffeur à la préparation (« exigez le code de prise en charge ») ;
+  - l'acheteur, à l'arrivée, lit « exigez d'abord qu'il vous montre son code transporteur ».
+- Le code de réception ou de prise en charge n'est **jamais** envoyé par notification ni par message : il se montre sur place.
+- Testé (SQL annulé par rollback) : demande acceptée vers l'acheteur, 2e demande refusée (2 min), acheteur refusé, code transporteur vu par l'acheteur. Playwright clair et sombre : bandeaux, bouton, appel envoyé, aucune erreur.
+- pousser v15 : les deux `replace(/ | /g…)` sont écrits `/[  ]/g` (caractères invisibles qui risquaient d'être perdus au copier-coller).

@@ -114,6 +114,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
     </div>
   </div>
   <div onPointerDown="{{ wDown }}" onPointerMove="{{ wMove }}" onPointerUp="{{ wUp }}" onPointerCancel="{{ wUp }}" style="position:relative;height:{{ wheelH }};flex:none;touch-action:pan-y;user-select:none">
+    <button class="tv-ouvrir" onPointerDown="{{ stop }}" onClick="{{ openTout }}" aria-label="{{ toutL }}"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="3" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" opacity=".45"></rect></svg><span>Tout</span></button>
     <div style="position:absolute;left:50%;top:0;width:390px;height:388px;margin-left:-195px;transform:scale({{ wheelSc }});transform-origin:50% 0">
     <svg width="390" height="388" viewBox="0 0 390 388" style="position:absolute;left:50%;top:0;margin-left:-195px;pointer-events:none;overflow:visible">
       <path d="M -85.8 231 A 318 318 0 0 1 475.8 231" fill="none" stroke="rgba(245,240,230,.14)" stroke-width="1"></path>
@@ -651,6 +652,21 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   </div>
 </div>
 
+<!-- ═══ TOUS LES PRODUITS (bouton « Tout voir » de la roue) : grille de 3 ou 4 colonnes, recherche, familles, offres et demandes en direct ═══ -->
+<div class="tv" role="dialog" aria-modal="true" aria-label="Tous les produits" aria-hidden="{{ toutCache }}" style="transform:{{ toutTf }};transition:{{ sheetTr }}">
+  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" onPointerCancel="{{ sUp }}" onLostPointerCapture="{{ sUp }}" class="tv-poignee"><span></span></div>
+  <div class="tv-tete"><div class="voix tv-titre"><span>Tous les <em>produits</em></span><small>{{ toutSous }}</small></div><button onClick="{{ closeAll }}" class="tv-x" aria-label="Fermer"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div>
+  <label class="tv-cherche"><svg width="18" height="18" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input type="search" value="{{ tq }}" onChange="{{ tqh }}" placeholder="Chercher : tomate, igname, poulet…" aria-label="Chercher un produit" enterkeyhint="search"><sc-if value="{{ tqOn }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ tqVide }}" aria-label="Effacer" class="tv-eff">×</button></sc-if></label>
+  <div class="tv-fams" role="group" aria-label="Familles"><sc-for list="{{ toutFams }}" as="c" hint-placeholder-count="6"><button type="button" aria-pressed="{{ c.on }}" onClick="{{ c.go }}"><sc-if value="{{ c.vif }}" hint-placeholder-val="{{ false }}"><i></i></sc-if>{{ c.t }}<b>{{ c.n }}</b></button></sc-for></div>
+  <div class="tv-corps">
+    <sc-for list="{{ toutSecs }}" as="g" hint-placeholder-count="0"><section class="tv-sec"><sc-if value="{{ g.titreOn }}" hint-placeholder-val="{{ false }}"><h3>{{ g.t }}<span>{{ g.n }}</span></h3></sc-if><div class="tv-grille">
+      <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="0"><button type="button" class="tv-p" aria-current="{{ p.ici }}" onClick="{{ p.go }}" aria-label="{{ p.lab }}"><span class="tv-img"><img sc-camel-src="{{ p.img }}" alt="" loading="lazy" decoding="async" style="object-fit:{{ p.fit }};border-radius:{{ p.rad }}"></span><span class="tv-n">{{ p.name }}</span><sc-if value="{{ p.vif }}" hint-placeholder-val="{{ false }}"><span class="tv-c"><sc-if value="{{ p.hasO }}" hint-placeholder-val="{{ false }}"><span class="o"><i></i>{{ p.o }}</span></sc-if><sc-if value="{{ p.hasD }}" hint-placeholder-val="{{ false }}"><span class="d"><i></i>{{ p.d }}</span></sc-if></span></sc-if></button></sc-for>
+    </div></section></sc-for>
+    <sc-if value="{{ toutVide }}" hint-placeholder-val="{{ false }}"><p class="tv-vide">{{ toutVideTxt }}</p></sc-if>
+    <div style="height:{{ botPad }}"></div>
+  </div>
+</div>
+
 <!-- ═══ notification en haut : une annonce vient d'arriver ═══ -->
 <sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}"><button class="ui-toast" onClick="{{ toast.go }}" role="status" aria-live="polite" style="top:{{ toastTop }}">{{ toast.ico }}<span class="tx"><b>{{ toast.t }}</b><span>{{ toast.x }}</span></span><span style="flex:none;font-size:var(--t-sm);font-weight:600;color:var(--terre-clair)">Voir</span></button></sc-if>
 
@@ -1150,6 +1166,30 @@ class Component extends DCLogic {
   closeAll() { this.setState({ menu: false, sheet: null, sheetDy: 0, done: null }); }
   // messages après une action : la bannière commune (app/toast.js) ; l'ancienne pastille reste en secours
   say(t, o) { if (window.MDGToast) return window.MDGToast.dire(t, o); clearTimeout(this.tt); this.setState({ toast: t, toastOn: true }); this.tt = setTimeout(() => this.setState({ toastOn: false }), 2400); }
+  /* « Tout voir » : tous les produits en grille. Par défaut la famille affichée dans la roue ; « Avec annonces » ne garde que ce qui a des offres
+     ou des demandes ; la recherche porte sur le nom et les autres noms (alias). Toucher un produit le met au centre de la roue. Calculé seulement
+     quand la fenêtre est ouverte (des centaines de vignettes). */
+  toutVoir(S, O, D, F) {
+    const nP = this.FAMS.reduce((a, f) => a + f.prods.length, 0), base = { openTout: () => this.setState({ sheet: 'tout', sheetDy: 0, tq: '', tvF: this.state.fam }), toutL: 'Tout voir : les ' + nP + ' produits en grille' };
+    if (S.sheet !== 'tout') return Object.assign(base, { toutSecs: [], toutFams: [], toutSous: '', tq: '', tqOn: false, toutVide: false });
+    const A = window.MDGApp, cO = {}, cD = {}; O.forEach(x => { cO[x.slug] = (cO[x.slug] || 0) + 1; }); D.forEach(x => { cD[x.slug] = (cD[x.slug] || 0) + 1; });
+    const vif = p => (cO[p.slug] || 0) + (cD[p.slug] || 0) > 0, q = A.norm((S.tq || '').trim()), tf = S.tvF == null ? S.fam : S.tvF;
+    const trouve = p => { if (!q) return true; const P = (window.MDG.products || []).find(x => x.slug === p.slug) || {}; return [p.name, ...(P.aliases || [])].some(t => A.norm(t || '').includes(q)); };
+    const act = F.prods[Math.round(S.rot)] || {};
+    const tuile = (p, f, i) => { const P = this.prod(p.slug), o = cO[p.slug] || 0, d = cD[p.slug] || 0;
+      return { name: p.name, img: P.thumb, fit: P.fit, rad: P.sack ? '0' : '14px', ici: String(p.slug === act.slug), vif: o + d > 0, hasO: o > 0, hasD: d > 0, o, d,
+        lab: p.name + (o ? ', ' + o + ' offre' + (o > 1 ? 's' : '') : '') + (d ? ', ' + d + ' demande' + (d > 1 ? 's' : '') : ''),
+        go: () => this.setState({ fam: f, rot: i, dragging: false, sheet: null, sheetDy: 0, tq: '' }) }; };
+    // en cherchant, toutes les familles ; sinon la famille choisie, « avec annonces » ou toutes
+    const secs = this.FAMS.map((f, fi) => ({ f, fi, items: f.prods.map((p, i) => ({ p, i })).filter(({ p }) => trouve(p) && (q || tf === 'tout' || (tf === 'vif' ? vif(p) : fi === tf))) }))
+      .filter(g => g.items.length).map(g => ({ t: g.f.name, n: g.items.length, titreOn: !!q || tf === 'tout' || tf === 'vif', items: g.items.map(({ p, i }) => tuile(p, g.fi, i)) }));
+    const nVif = this.FAMS.reduce((a, f) => a + f.prods.filter(vif).length, 0), nb = secs.reduce((a, g) => a + g.n, 0);
+    const chip = (k, t, n, v) => ({ on: String(!q && tf === k), t, n, vif: !!v, go: () => this.setState({ tvF: k, tq: '' }) });
+    return Object.assign(base, { tq: S.tq || '', tqOn: !!q, tqh: e => this.setState({ tq: e.target.value }), tqVide: () => this.setState({ tq: '' }),
+      toutFams: [chip('vif', 'Avec annonces', nVif, true), chip('tout', 'Tout', nP), ...this.FAMS.map((f, fi) => chip(fi, f.name, f.prods.length))],
+      toutSecs: secs, toutSous: q ? nb + ' résultat' + (nb > 1 ? 's' : '') : nb + ' produit' + (nb > 1 ? 's' : '') + (tf === 'vif' ? ' avec des annonces' : ''),
+      toutVide: !secs.length, toutVideTxt: q ? 'Aucun produit ne correspond à « ' + S.tq.trim() + ' ».' : 'Aucune annonce pour l’instant : publiez la première.' });
+  }
   // carte : aller à l'annonce i du groupe ; inviter à glisser (la bande avance un peu puis revient)
   cPickAller(i) { const el = document.querySelector('[data-cpick]'), c = el && el.firstElementChild; if (!c) return; const n = el.children.length; i = Math.max(0, Math.min(n - 1, i));
     el.scrollTo({ left: i * (c.offsetWidth + 10), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); this.setState({ cPickI: i, cPickVu: true }); }
@@ -1461,7 +1501,7 @@ class Component extends DCLogic {
     if (S.pick === 'carte' && !pq) pickGroups.unshift({ t: 'RÉSEAU', items: [{ name: 'Tous les produits', sub: 'Toutes les offres et demandes', thumb: A.IMG + 'famille-autres-produits-vivriers.webp', fit: 'cover', rad: '10px', pick: () => this.doPick('') }] });
 
     const light = ['acheter', 'vendre', 'demande', 'categories', 'prix', 'pubs'].includes(top) || !!S.pick;
-    const sheetOn = S.sheet === 'match', dy = S.sheetDy, anyS = S.menu || sheetOn || S.sheet === 'fam';
+    const sheetOn = S.sheet === 'match', dy = S.sheetDy, anyS = S.menu || sheetOn || S.sheet === 'fam' || S.sheet === 'tout';
     const mi = (k, t, s, go) => ({ ico: ico(k), t, s, go });
     const logoIco = (sz) => window.MDGMarque ? h('span', { style: { display: 'block', flex: 'none' }, dangerouslySetInnerHTML: { __html: MDGMarque.dg(sz, { fond: this.isDark() ? 'noir' : 'vert' }) } }) : null;
     // le compte, à droite de la barre du haut : votre avatar (ou une silhouette pour se connecter)
@@ -1478,6 +1518,7 @@ class Component extends DCLogic {
         const fin = () => N.toast('Vous êtes sorti du marché. Vos annonces restent publiées.');
         setTimeout(() => { if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N.signOut()); else { N.signOut(); fin(); } }, 320); }, moiEl, moiLabel: moiS ? 'Mon compte' : 'Se connecter', sfGo: S.splash !== 'on' && S.ready ? '1' : '0', moiDot: !!(moiS && ((window.MDGNegoce && window.MDGNegoce.unread()) || (window.MDGMessages && window.MDGMessages.unread()))), goMoi: () => { if (!moiN) return; if (moiS && moiC) moiC.ouvrir(); else moiN.open(); }, hasPubs: mine.length > 0,
       famPips: this.FAMS.map((f, i) => ({ name: f.name, w: i === S.fam ? '18px' : '6px', bg: i === S.fam ? '#F2C230' : 'rgba(245,240,230,.22)', go: () => this.setState({ fam: i, rot: 0 }) })),
+      ...this.toutVoir(S, O, D, F),
       famName: F.name.toUpperCase(), prevFam: () => this.famStep(-1), nextFam: () => this.famStep(1), openFams: () => { this._famDepuis = +ls('mdg-app:famVu') || Date.now(); ls('mdg-app:famVu', Date.now()); this.setState({ sheet: 'fam', sheetDy: 0 }); },
       wDown: e => this.wDown(e), wMove: e => this.wMove(e), wUp: () => this.wUp(), labels, ticks, sacks,
       jute: { op: act.sack ? 0 : 1, tf: act.sack ? 'scale(.86)' : 'none', mound: act.tint, l1: act.name.toUpperCase(), fs: act.name.length > 14 ? '14px' : act.name.length > 9 ? '17px' : '21px' },
@@ -1576,7 +1617,7 @@ class Component extends DCLogic {
        scrimPe: anyS ? 'auto' : 'none', closeAll: () => this.closeAll(),
       sheetTr: this.sd ? 'none' : 'transform .45s cubic-bezier(.22,1,.36,1)', sDown: e => this.sDown(e), sMove: e => this.sMove(e), sUp: () => this.sUp(),
       menuTf: S.menu ? 'translateX(' + Math.min(0, S.drDx || 0) + 'px)' : 'translateX(-105%)', drTr: this.dd ? 'none' : 'transform .42s cubic-bezier(.22,1,.36,1), visibility 0s linear ' + (S.menu ? '0s' : '.42s'), menuVis: S.menu ? 'visible' : 'hidden', menuHid: S.menu ? 'false' : 'true',
-      dDown: e => { this.dx0 = e.clientX; this.dy0 = e.clientY; this.dd = false; }, dMove: e => { if (this.dx0 == null) return; const dx = e.clientX - this.dx0, dyy = e.clientY - this.dy0; if (!this.dd && dx < -10 && Math.abs(dx) > Math.abs(dyy) * 1.3) this.dd = true; if (this.dd) this.setState({ drDx: Math.min(0, dx) }); }, dUp: () => { if (this.dd) { const fermer = (this.state.drDx || 0) < -70; this.dd = false; this.setState(fermer ? { menu: false, drDx: 0 } : { drDx: 0 }); } this.dx0 = null; }, famTf: S.sheet === 'fam' ? 'translateY(' + dy + 'px)' : 'translateY(105%)', matchTf: sheetOn ? 'translateY(' + dy + 'px)' : 'translateY(105%)',
+      dDown: e => { this.dx0 = e.clientX; this.dy0 = e.clientY; this.dd = false; }, dMove: e => { if (this.dx0 == null) return; const dx = e.clientX - this.dx0, dyy = e.clientY - this.dy0; if (!this.dd && dx < -10 && Math.abs(dx) > Math.abs(dyy) * 1.3) this.dd = true; if (this.dd) this.setState({ drDx: Math.min(0, dx) }); }, dUp: () => { if (this.dd) { const fermer = (this.state.drDx || 0) < -70; this.dd = false; this.setState(fermer ? { menu: false, drDx: 0 } : { drDx: 0 }); } this.dx0 = null; }, famTf: S.sheet === 'fam' ? 'translateY(' + dy + 'px)' : 'translateY(105%)', toutTf: S.sheet === 'tout' ? 'translateY(' + dy + 'px)' : 'translateY(105%)', toutCache: String(S.sheet !== 'tout'), matchTf: sheetOn ? 'translateY(' + dy + 'px)' : 'translateY(105%)',
       menu: (() => {
         // une ligne du tiroir : icône, nom, (sous-titre), (compteur) ; la page ouverte est surlignée comme dans Gmail
         const ln = (o) => Object.assign({ hasS: !!o.s, s: o.s || '', hasN: !!o.n, n: o.n || '', nBg: o.nBg || 'var(--dr-nbg, rgba(23,21,18,.07))', nFg: o.nFg || 'var(--dr-nfg, #171512)', cur: o.page && o.page === top ? 'page' : 'false', bg: o.page && o.page === top ? 'rgba(16,57,43,.08)' : 'transparent', fg: o.page && o.page === top ? '#10392B' : '#171512' }, o);

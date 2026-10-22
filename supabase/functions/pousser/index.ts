@@ -25,6 +25,7 @@
 //     une vraie fonction de l'application. Jamais de message faux. Étiquette « marche-pub » : elle remplace la précédente.
 // 14. par la base (déclencheur public.push_code_demande, schéma 51) quand le chauffeur demande le code, avec { code_demande_id }.
 //  7 bis (schéma 57) : refus de la marchandise après réception → le vendeur et le chauffeur inscrit sont prévenus ; clôture → « Commande clôturée ».
+// 15. par la base (déclencheur public.push_litige_msg, schéma 58) pour un message de la discussion à trois, avec { litige_msg_id }.
 // Annonces du marché (schema-43) : achat groupé ouvert, besoin pro, nouvelle offre ou demande → tous les comptes qui ont activé
 // les notifications, sauf ceux qui les ont coupées ; au plus 10 par personne et par jour (push_diffusion_cible).
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
@@ -203,6 +204,21 @@ Deno.serve(async (req) => {
         if (t?.user_id && t.user_id !== e.par && C[e.evenement]) res.push(await envoyer(t.user_id, { title: C[e.evenement][0], body: C[e.evenement][1], tag: "mission-cmd-" + k.id, url: "application.dc.html#/?chauffeur=1" }));
         // arrivée signalée par le chauffeur lui-même : le rappel lui est donné dans l'application, pas en notification
       }
+      return json({ res });
+    }
+
+    // 15. un message dans la discussion à trois d'un litige ({ litige_msg_id }, déclencheur public.push_litige_msg, schéma 58) :
+    //     l'acheteur, le vendeur et les administrateurs, sauf l'auteur
+    if (corps.litige_msg_id) {
+      const { data: lm } = await sb.from("litige_messages").select("id, commande_id, auteur_id, role, texte").eq("id", Number(corps.litige_msg_id)).maybeSingle();
+      if (!lm) return json({ rien: true });
+      const { data: k } = await sb.from("commandes").select("id, numero, vendeur_id, acheteur_id, produit").eq("id", lm.commande_id).maybeSingle();
+      if (!k) return json({ rien: true });
+      const qui = lm.role === "admin" ? "Marché de Gros" : lm.role === "vendeur" ? "Le vendeur" : "L'acheteur";
+      const { data: ads } = await sb.from("admins").select("user_id");
+      const res = [], vus = new Set<string>([lm.auteur_id]);
+      for (const d of [k.vendeur_id, k.acheteur_id]) if (d && !vus.has(d)) { vus.add(d); res.push(await envoyer(d, { title: `${qui} · litige ${k.produit || ""}`.trim(), body: coupe(String(lm.texte || ""), 140), tag: "litige-" + k.id, url: "application.dc.html#/?commande=" + k.id })); }
+      for (const ad of ads || []) if (!vus.has(ad.user_id)) { vus.add(ad.user_id); res.push(await envoyer(ad.user_id, { title: `${qui} · litige n° ${k.numero}`, body: coupe(String(lm.texte || ""), 140), tag: "litige-" + k.id, url: "admin.html#commandes" })); }
       return json({ res });
     }
 

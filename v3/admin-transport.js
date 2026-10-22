@@ -6,7 +6,7 @@
 (function () {
   'use strict';
   const EXT = window.MDGAdminExt = window.MDGAdminExt || {};
-  const D = { tr: [], cmd: [], aTraiter: [], vueCmd: 'a_traiter', ouverts: {}, rfImg: {}, numero: undefined, numeroQ: '' };
+  const D = { tr: [], cmd: [], aTraiter: [], vueCmd: 'a_traiter', ouverts: {}, rfImg: {}, disc: {}, numero: undefined, numeroQ: '' };
   const VEH = { moto: 'Moto', tricycle: 'Tricycle', camionnette: 'Camionnette', camion: 'Camion', semi: 'Semi-remorque', autre: 'Autre' };
   const ST = { en_attente: 'À vérifier', verifie: 'Vérifié', refuse: 'Refusé', suspendu: 'Suspendu' };
   const ETAPE = { confirmee: 'Confirmée', preparation: 'Préparation', chargement: 'Chargée', transport: 'En route', transbordement: 'Transbordement', arrivee: 'Chauffeur arrivé', reception: 'Reçue', terminee: 'Terminée' };
@@ -110,10 +110,16 @@
             ${c.refus ? `<small style="color:var(--bad-t)">Marchandise refusée : ${c.refus.quantite != null ? e(String(c.refus.quantite)) + ' ' + e(c.unite || '') : 'tout'} · « ${e(c.refus.motif || '')} »</small>
               <small>Chauffeur : ${c.refus.chauffeur === 'confirme' ? 'confirme' : c.refus.chauffeur === 'conteste' ? 'conteste' : 'pas de réponse'}${c.refus.chauffeur_suffit ? '' : ' (choisi par l’acheteur : ne suffit pas seul)'} · Vendeur : ${c.refus.vendeur === 'reconnu' ? 'reconnaît' : c.refus.vendeur === 'conteste' ? 'conteste' : 'pas de réponse'}</small>
               <span class="at-ph">${(c.refus.photos || []).map((x, i) => D.rfImg[c.id] && D.rfImg[c.id][i] ? `<a href="${e(D.rfImg[c.id][i])}" target="_blank" rel="noopener"><img src="${e(D.rfImg[c.id][i])}" alt="Photo ${i + 1} du refus"></a>` : '').join('')}</span>` : ''}
+            ${c.refus && c.refus.mot ? `<small>${c.refus.mot === 'retrouve' ? '✓ mot du vendeur retrouvé' : '✗ papier du vendeur absent'}${c.mot_secret ? ' (mot : ' + e(c.mot_secret) + ')' : ''}</small>` : ''}
+            ${c.sans_reponse ? `<small style="color:var(--bad-t)">Reçue, l’acheteur n’a ni validé ni refusé depuis 48 h</small>` : ''}
+            ${D.disc[c.id] ? `<ul class="at-j">${(D.disc[c.id].messages || []).map(m => `<li><b>${e({ acheteur: 'Acheteur', vendeur: 'Vendeur', admin: 'Marché de Gros' }[m.role] || m.role)}</b> · ${new Date(m.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })} · ${e(m.texte)}</li>`).join('') || '<li>Aucun message.</li>'}</ul>
+              ${D.disc[c.id].ouvert ? `<form class="at-f" data-dsf="${c.id}" style="display:flex;gap:8px;align-items:end"><label style="flex:1">Répondre au nom du Marché de Gros<input name="t" maxlength="600" autocomplete="off"></label><button class="btn sm pri">Envoyer</button></form>` : ''}` : ''}
             ${c.libere_le && c.etat === 'terminee' ? `<small>Clôturée (${e({ conforme: 'acheteur satisfait', auto: 'automatique 48 h', refus: 'refus confirmé', admin: 'équipe' }[c.liberation] || '')})${Number(c.montant_refuse) > 0 ? ' · ' + H.fmt(c.montant_refuse) + ' F rendus à l’acheteur' : ''}</small>` : ''}</div>
           <div class="at-a">
             ${sansTr ? (dispo.length ? `<select class="at-sel" data-trsel="${c.id}" aria-label="Transporteur">${dispo.map(t => `<option value="${t.id}">${e(t.nom)} · ${e(VEH[t.vehicule] || '')}${t.disponible ? ' · disponible' : ''}${t.avec_application ? '' : ' · sans appli'}</option>`).join('')}</select><button class="btn sm pri" data-aff="${c.id}">Affecter</button>` : '<small>Aucun transporteur vérifié</small>') : ''}
             ${c.mission && c.mission.id && c.mission.statut === 'acceptee' && !c.mission.avec_application && ['a_confirmer', 'en_cours'].includes(c.etat) && ['confirmee', 'preparation', null, undefined].includes(c.etape) ? `<input class="at-sel" type="number" inputmode="numeric" min="1" step="1" data-mpx="${c.mission.id}" value="${c.mission.prix != null ? Math.round(c.mission.prix) : ''}" placeholder="Prix du transport (F)" aria-label="Prix du transport, donné par le chauffeur au téléphone" style="max-width:170px"><button class="btn sm pri" data-mpxb="${c.mission.id}">${c.mission.prix != null ? 'Changer le prix' : 'Saisir le prix'}</button>` : ''}
+            ${c.sans_reponse ? `<button class="btn sm pri" data-lib="${c.id}">Libérer le paiement</button>` : ''}
+            ${c.etat === 'litige' ? `<button class="btn sm ghost" data-ds="${c.id}" aria-expanded="${!!D.disc[c.id]}">Discussion</button>` : ''}
             ${c.etat === 'litige' && c.refus ? `<button class="btn sm ghost" data-rfph="${c.id}">Photos (${(c.refus.photos || []).length})</button><button class="btn sm pri" data-rft="${c.id}" data-q="0">Rejeter le refus</button><button class="btn sm bad" data-rft="${c.id}" data-q="">Accepter le refus</button>` : ''}
             ${c.etat === 'litige' && !c.refus ? `<button class="btn sm pri" data-lit="${c.id}" data-iss="terminee">Clore : livrée</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee">Clore : annulée</button>` : ''}
             <button class="btn sm ghost" data-hist="${c.id}">Historique</button></div>
@@ -155,6 +161,16 @@
         try { await H.rpc('admin_litige_trancher', { p_cmd: b.dataset.lit, p_issue: iss, p_note: note.trim() }); H.toast('Litige clos.'); await H.relire(); }
         catch (e) { b.disabled = false; H.toast('Impossible : ' + e.message); }
       });
+      root.querySelectorAll('[data-lib]').forEach(b => b.onclick = async () => {
+        const note = prompt('Libérer le paiement (l’acheteur ne répond pas). Expliquez (les parties le verront) :'); if (!note || !note.trim()) return; b.disabled = true;
+        try { await H.rpc('admin_liberer', { p_cmd: b.dataset.lib, p_note: note.trim() }); H.toast('Paiement libéré.'); await H.relire(); }
+        catch (x) { b.disabled = false; H.toast('Impossible : ' + x.message); }
+      });
+      root.querySelectorAll('[data-ds]').forEach(b => b.onclick = async () => { const id = b.dataset.ds;
+        if (D.disc[id]) { delete D.disc[id]; return H.repeindre(); }
+        try { D.disc[id] = (await H.rpc('litige_messages_lire', { p_cmd: id })) || { messages: [] }; H.repeindre(); } catch (x) { H.toast('Lecture impossible : ' + x.message); } });
+      root.querySelectorAll('[data-dsf]').forEach(f => f.onsubmit = async ev => { ev.preventDefault(); const id = f.dataset.dsf, t = f.t.value.trim(); if (!t) return;
+        try { await H.rpc('litige_ecrire', { p_cmd: id, p_texte: t }); D.disc[id] = await H.rpc('litige_messages_lire', { p_cmd: id }); H.repeindre(); } catch (x) { H.toast('Envoi impossible : ' + x.message); } });
       const fn = root.querySelector('[data-num]');
       if (fn) fn.onsubmit = async ev => { ev.preventDefault(); const q = fn.n.value.trim(); D.numeroQ = q; if (!q) { D.numero = undefined; return H.repeindre(); }
         try { D.numero = (await H.rpc('admin_commande_numero', { p_numero: q })) || null; } catch (x) { H.toast('Recherche impossible : ' + x.message); } H.repeindre(); };

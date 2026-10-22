@@ -709,3 +709,12 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Historique : les événements du séquestre (`sequestre_journal`, intouchable) s'ajoutent à `commande_journal` sous le préfixe `sq_`.
 - Notifications (`pousser` v16) : refus → vendeur et chauffeur inscrit prévenus ; clôture → « Commande clôturée ».
 - Testé sur la base (transaction annulée) : dépôt refusé à un membre et à un mauvais montant ; libération 8 000 F → vendeur 5 790 F, transporteur 1 862 F, Marché de Gros 348 F ; refus partiel 4/10 confirmé par le chauffeur → 2 400 F à l'acheteur, commission vendeur 126 F ; refus total avec chauffeur choisi par l'acheteur → attend le vendeur ; clôture automatique après 49 h.
+
+### Règles précisées par le propriétaire (22/10/2026) — schéma 58
+- « Paiement à la livraison » reste écrit (c'est vrai) ; le séquestre est affiché « en construction ». Il protège le vendeur contre ceux qui font venir un camion puis refusent de payer.
+- **Pas de libération automatique** : seul l'acheteur libère, quand il valide. Après 48 h sans réponse, la commande arrive dans la file de l'équipe (« Reçue, l'acheteur n'a ni validé ni refusé ») : bouton « Libérer le paiement » (`admin_liberer`). La tâche `mdg-liberer-echus` est retirée.
+- **L'acheteur ne peut plus annuler** une commande confirmée (le serveur refuse) ; seul le vendeur peut demander l'annulation avant le chargement, l'acheteur l'accepte ou non.
+- **Refus à l'arrivée** (chauffeur arrivé) ou après la réception, tant que rien n'est libéré (`commande_refuser2`). L'ancienne `commande_refuser` demande de mettre l'application à jour.
+- **Mot secret du vendeur** : tiré au hasard à la confirmation (ex. « AVOCAT 70 »), visible seulement par le vendeur (et l'équipe). Il l'écrit sur un papier glissé dans la marchandise. Au refus, l'acheteur le tape (5 essais) et photographie le papier ; ou coche « pas de papier » (l'équipe jugera).
+- **Chauffeur** : sa confirmation ne compte seule que s'il est intégré (inscrit ET vérifié par l'équipe) et que le mot a été retrouvé. Sinon l'équipe juge.
+- **Discussion à trois** (acheteur, vendeur, Marché de Gros) pendant le litige : `litige_messages`, `litige_messages_lire`, `litige_ecrire` (mêmes interdits que les autres messages : pas de numéro, pas de lien). L'équipe répond depuis admin → Commandes → « Discussion ». Notification à chaque message (`pousser` v17). Une partie de la commande écrit toujours sous son rôle, même si son compte est administrateur.

@@ -1,8 +1,8 @@
-/* ═════════ Marché de Gros CI — <mdg-souffle> : le milieu de la barre du haut, à la manière de Gmail ═════════
-   À l'ouverture, le nom « Marché de Gros » s'écrit (≈ 3,5 s), puis il s'efface et laisse passer, l'une après l'autre,
-   des phrases qui disent ce qu'on vient faire ici. Chaque phrase monte mot par mot, en escalier, en sortant d'un léger flou ;
-   elle repart vers le haut de la même façon avant la suivante. Toute la barre reste un bouton « Chercher ».
-   Mouvement réduit : le nom, puis une seule phrase, en fondu, sans déplacement. Onglet caché : pause.
+/* ═════════ Marché de Gros CI — <mdg-souffle> : le milieu de la barre du haut ═════════
+   Demande du propriétaire (22/10/2026) : la barre du haut est LIBÉRÉE. Plus de phrases défilantes.
+   Seul le nom « Marché de Gros » s'écrit, reste 5 secondes, puis s'efface : à l'ouverture, à chaque retour sur l'application,
+   et toutes les 30 minutes si elle reste ouverte. Les phrases d'accroche sont dans la bande sous le titre (app/garanties.js).
+   Mouvement réduit : le nom apparaît et disparaît en fondu. (L'ancien défilement de phrases reste plus bas, éteint.)
    Utilisation : <mdg-souffle></mdg-souffle> (data-go="0" pour attendre, puis "1" pour lancer) (le composant se dessine seul ; le cadre de l'application ne touche pas à son contenu). */
 (function () {
   'use strict';
@@ -38,6 +38,8 @@
 @keyframes sfIn{0%{opacity:0;transform:translateY(.55em);filter:blur(6px)}100%{opacity:1;transform:none;filter:blur(0)}}
 @keyframes sfOut{0%{opacity:1;transform:none;filter:blur(0)}100%{opacity:0;transform:translateY(-.45em);filter:blur(5px)}}
 @media (prefers-reduced-motion:reduce){.sf-mq.sf-in .mq-m,.sf-mq.sf-in .mq-g{animation:none}.sf-in span{animation:sfFade .4s ease forwards;animation-delay:0s}.sf-out span{animation:sfFadeOut .3s ease forwards;animation-delay:0s}}
+.sf-fin{animation:sfFin .6s cubic-bezier(.4,0,1,1) forwards}@keyframes sfFin{to{opacity:0;transform:translateY(-6px);filter:blur(4px)}}
+@media (prefers-reduced-motion:reduce){.sf-fin{animation:sfFadeOut .4s ease forwards}}
 @keyframes sfFade{to{opacity:1}}@keyframes sfFadeOut{from{opacity:1}to{opacity:0}}`;
   const REDUIT = matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -51,14 +53,22 @@
       this.setAttribute('aria-hidden', 'true');
       this._i = -1; this._t = 0;
       // le nom (logo Étal vert, app/marque.js) : « marché » monte, « de Gros » s'écrit ; sans la marque, le nom s'écrit lettre par lettre
+      this._nom();
+      // retour sur l'application (au moins 20 s après la dernière fois) : le nom revient 5 s ; et toutes les 30 minutes
+      this._vis = () => { if (!document.hidden && Date.now() - (this._vu || 0) > 20000) this._nom(); };
+      document.addEventListener('visibilitychange', this._vis);
+      this._ti = setInterval(() => { if (!document.hidden) this._nom(); }, 30 * 60000);
+    }
+    disconnectedCallback() { clearTimeout(this._t); clearInterval(this._ti); document.removeEventListener('visibilitychange', this._vis); this._pret = false; this.textContent = ''; }
+    // le nom (logo Étal, app/marque.js) s'écrit, reste 5 s, puis s'efface ; ensuite la barre reste vide
+    _nom() {
+      clearTimeout(this._t); this._vu = Date.now(); this.textContent = '';
       if (window.MDGMarque) { const l = document.createElement('span'); l.className = 'sf-l sf-nom sf-mq sf-in';
         const s = document.createElement('span'); s.style.setProperty('--i', 0); s.innerHTML = MDGMarque.empile({ fond: 'clair', trait: false }); /* sur deux lignes : la place est comptée entre le rond et la loupe */ l.appendChild(s); this.appendChild(l); }
       else this._ligne('Marché de Gros', 'sf-nom', true);
-      this._suite(3600);
-      this._vis = () => { if (document.hidden) clearTimeout(this._t); else this._suite(2400); };
-      document.addEventListener('visibilitychange', this._vis);
+      this._t = setTimeout(() => { const l = this.querySelector('.sf-l'); if (!l) return;
+        l.classList.add('sf-fin'); setTimeout(() => { if (l.isConnected) l.remove(); }, 650); }, 5000);
     }
-    disconnectedCallback() { clearTimeout(this._t); document.removeEventListener('visibilitychange', this._vis); this._pret = false; this.textContent = ''; }
     _ligne(txt, cls, lettres) {
       const l = document.createElement('span'); l.className = 'sf-l ' + cls + ' sf-in';
       const morceaux = lettres ? [...txt] : txt.split(/(?<=\s)/).filter(Boolean);  // chaque mot garde son espace : un retour à la ligne ne laisse pas d'espace en tête

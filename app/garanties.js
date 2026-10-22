@@ -13,6 +13,10 @@
   if (window.MDGGaranties) return;
   // icônes (lucide, 24 × 24, trait) : le dessin seul, la couleur suit le texte
   const P = {
+    tableau: '<path d="M3 3v18h18"/><path d="M8 17v-6M13 17V7M18 17v-4"/>',
+    papier: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/>',
+    panier: '<path d="M5 10h14l-1.5 9h-11z"/><path d="M9 10l3-6 3 6"/>',
+    pousse: '<path d="M12 21v-9"/><path d="M12 12C12 8 9 6 5 6c0 4 3 6 7 6z"/><path d="M12 14c0-3 2-5 6-5 0 3-2 5-6 5z"/>',
     bouclier: '<path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
     sceau: '<path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m9 12 2 2 4-4"/>',
     cache: '<path d="M10.7 5.1A10.7 10.7 0 0 1 12 5c4.6 0 8.4 2.9 9.9 7a10.8 10.8 0 0 1-1.6 2.9"/><path d="M6.6 6.6A10.8 10.8 0 0 0 2.1 12a10.8 10.8 0 0 0 13.3 6.4"/><path d="M9.9 9.9a3 3 0 1 0 4.2 4.2"/><path d="m2 2 20 20"/>',
@@ -40,20 +44,35 @@
   // ouvrent directement la fonction. Seulement ce que l'application fait déjà.
   const PAGE = p => () => dispatchEvent(new CustomEvent('mdg:aller', { detail: { page: p } }));
   const FEN = (m, f, a) => () => { const o = window[m]; if (!o || typeof o[f] !== 'function') return false; o[f].apply(o, a || []); };
+  // un onglet de l'accueil (Marché, Prix, Activité, Alertes)
+  const ONGLET = nom => () => { const x = [...document.querySelectorAll('.acc-ong button')].find(y => y.textContent.trim().startsWith(nom)); if (!x) return false; x.click(); };
+  // Toutes les phrases d'accroche vivent ici (22/10/2026 : la barre du haut est libérée, elle ne montre plus que le nom 5 s).
+  // Garanties, nouveautés et fonctions utiles alternent ; seulement ce que l'application fait vraiment.
   const BANDE = [
+    ['tableau', 'Nouveau : l’onglet ', 'Prix', ', le moins cher en haut', ONGLET('Prix')],
     ['bouclier', 'Parcours ', 'sécurisé', ' : tout se passe ici'],
-    ['calendrier', 'L’année du ', 'marché', ' : quoi récolter, et quand', PAGE('annee')],
+    ['panier', 'Vendez en ', 'direct', ', sans intermédiaire', PAGE('vendre')],
+    ['papier', 'Un ', 'mot secret', ' du vendeur dans chaque colis', FEN('MDGAstuces', 'tour', ['mot', true])],
     ['sceau', 'Identités ', 'vérifiées', ' par l’équipe'],
-    ['prix', 'Les prix du marché, ', 'par zone', '', PAGE('prix')],
-    ['cache', 'Votre numéro reste ', 'caché', ''],
-    ['carte', 'Le ', 'réseau', ' : tout le pays sur la carte', PAGE('carte')],
     ['main', 'Négociez ici, payez ', 'à la livraison', ''],
+    ['horloge', 'Pas de réclamation ? Payé sous ', '24 h', '', FEN('MDGAstuces', 'tour', ['verifier', true])],
+    ['calendrier', 'L’année du ', 'marché', ' : quoi récolter, et quand', PAGE('annee')],
+    ['cadenas', 'Pas de remboursement ', 'sans preuves', '', FEN('MDGAstuces', 'tour', ['refus', true])],
+    ['cache', 'Votre numéro reste ', 'caché', ''],
+    ['tableau', 'Baissez votre prix : vous ', 'montez', ' dans le tableau', ONGLET('Prix')],
+    ['carte', 'Le ', 'réseau', ' : tout le pays sur la carte', PAGE('carte')],
+    ['bouclier', 'Bientôt : l’argent ', 'bloqué', ' jusqu’à la livraison', FEN('MDGAstuces', 'tour', ['sequestre', true])],
     ['camion', 'Suivez votre ', 'commande', ', étape par étape', FEN('MDGCommandes', 'ouvrir')],
+    ['sceau', 'Coopératives ', 'vérifiées', ''],
     ['lien', 'Ni liens, ni ', 'arnaques', ' au code'],
+    ['prix', 'Les prix du marché, ', 'par zone', '', PAGE('prix')],
     ['cadenas', 'Réception validée par ', 'code secret', '', FEN('MDGAstuces', 'tour', ['codes', true])],
+    ['panier', 'Achetez en ', 'gros', ', partout en Côte d’Ivoire', PAGE('acheter')],
     ['reel', 'Que des annonces ', 'réelles', ''],
     ['groupe', 'Achats ', 'groupés', ' : à plusieurs, moins cher', FEN('MDGGroupes', 'ouvrir')],
+    ['main', 'Un litige ? On juge sur ', 'preuves', ', à trois'],
     ['cloche', 'Alertes produits : ', 'prévenu', ' dès qu’il arrive', FEN('MDGAlertes', 'gerer')],
+    ['pousse', 'Du champ au ', 'marché', ''],
     ['volant', 'Chauffeur ? Inscrivez-vous, c’est ', 'gratuit', '', FEN('MDGChauffeur', 'ouvrir')]
   ];
   // la feuille : chaque garantie, ce que l'application fait vraiment

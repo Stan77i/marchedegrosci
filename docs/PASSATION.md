@@ -763,3 +763,6 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 ## Nom de l'application : « Marché de Gros » (22/10/2026)
 - iPhone : les notifications d'une application web affichent « from <nom de l'application> » ; c'est l'iPhone qui l'ajoute, on ne peut pas l'enlever. Le nom passe de « MGCI » à « Marché de Gros » (manifest.webmanifest : name et short_name ; apple-mobile-web-app-title).
 - Pour que le nouveau nom s'applique, il faut retirer l'icône de l'écran d'accueil et la rajouter (Partager → Sur l'écran d'accueil), puis réactiver les notifications.
+## Barre du haut libérée, accroches dans la bande (22/10/2026) — `v3/souffle.js`, `app/garanties.js`
+- Barre du haut : plus aucune phrase défilante. Seul le nom « marché de Gros » s'écrit, reste 5 s, puis s'efface ; il revient à chaque retour sur l'application (au moins 20 s après la dernière fois) et toutes les 30 minutes.
+- Toutes les accroches sont dans la bande sous le titre, même design (icône maïs, mot clé en accent), 25 phrases qui alternent garanties, nouveautés et fonctions : onglet Prix, mot secret, payé sous 24 h, pas de remboursement sans preuves, séquestre bientôt, litiges jugés sur preuves, vendez en direct, achetez en gros, coopératives vérifiées, du champ au marché… Toucher une phrase ouvre la fonction ou son tutoriel.

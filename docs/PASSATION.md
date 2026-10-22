@@ -759,3 +759,7 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Fenêtres : Mon compte, Mes négociations, Messages, Message à tous (admin), Mon profil public, Les mieux notés, Alertes produits, Mes commandes, Vérifier son identité.
 - Tableau de bord admin (admin.html charge maintenant astuces.js) : aperçu, Commandes et litiges, Identités.
 - Menu : « Messages » dit « Gardés 1 an · lisibles par l’équipe » (avant : « Effacés après 365 jours »).
+
+## Nom de l'application : « Marché de Gros » (22/10/2026)
+- iPhone : les notifications d'une application web affichent « from <nom de l'application> » ; c'est l'iPhone qui l'ajoute, on ne peut pas l'enlever. Le nom passe de « MGCI » à « Marché de Gros » (manifest.webmanifest : name et short_name ; apple-mobile-web-app-title).
+- Pour que le nouveau nom s'applique, il faut retirer l'icône de l'écran d'accueil et la rajouter (Partager → Sur l'écran d'accueil), puis réactiver les notifications.

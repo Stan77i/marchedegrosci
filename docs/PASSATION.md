@@ -384,6 +384,21 @@
 - Rythme des notifications régulières : toutes les 25 minutes environ de 7 h à 21 h (avant : toutes les 30). Tâche `mdg-marketing` passée à `*/5`, écart minimal 23 min, toujours 30 par jour au plus.
 - À noter : le compte qui publie une annonce ne reçoit pas sa propre notification (normal). Seuls 2 téléphones sont abonnés aujourd'hui.
 
+### Exigences dans les demandes ordinaires (« Je cherche »)
+- Avant : les exigences n'existaient que dans Approvisionnement pro. Une demande ordinaire ne pouvait dire que la quantité, le budget et le délai.
+- Serveur, `supabase/schema-47-exigences-demandes.sql` (appliqué) : trois colonnes sur `demandes`, vides par défaut.
+  - `criteres` : cases cochées, même liste fermée que les besoins (schéma 38) ;
+  - `detail` : qualité, calibre, maturité, conditionnement, vérifiés par `_besoin_detail` (schéma 40) dans un déclencheur `demandes_exigences` ;
+  - `exigences` : texte libre, 300 caractères au plus, passé au filtre `garde_textes` (pas de numéro ni de lien).
+  - Test annulé : doublons retirés, cases vides ignorées, texte rogné ; un numéro caché dans le texte est refusé.
+- Application : bloc « Vos exigences » dans la fenêtre Je cherche et dans la page Je cherche.
+  - 9 cases rapides (récolte fraîche, calibre régulier, trié, bien sec, emballage propre, échantillon, pesée devant moi, livraison sur place, reçu) ;
+  - « Plus de précisions » : qualité, calibre, maturité, emballage ;
+  - un texte libre « Autres exigences ».
+- Sur l'annonce, chaque exigence s'affiche avec une coche verte (8 au plus, puis « + n »). Elles se voient donc aussi dans « Demandes qui vous cherchent » quand un vendeur publie.
+- Code : `EXI_CRIT`, `EXI_DET`, `exiBloc()`, `exiTextes()` dans `application.dc.html` ; lecture et envoi dans `v3/nuage.js` ; styles `.exi*`.
+- Pas encore fait : des qualités garanties côté offre (le vendeur coche « frais, trié… ») pour rapprocher offres et demandes.
+
 ## 5. En attente d'une décision du propriétaire
 
 

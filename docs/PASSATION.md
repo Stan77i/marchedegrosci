@@ -336,6 +336,13 @@
 - Calculé seulement quand la fenêtre est ouverte ; les vignettes se chargent au fil du défilement.
 - Code : `toutVoir()` dans `application.dc.html` (état `sheet: 'tout'`, `tq`, `tvF`), styles `.tv-*` dans `css/mgci-app.css`.
 
+### Bande blanche en bas d'Approvisionnement pro (et pieds de page)
+- Défaut : en descendant dans Approvisionnement pro, une bande blanche floue coupait l'écran au-dessus de « Publier un besoin ». C'était l'ombre crème du pied de page (`.ap-pied`, pareil pour `.rc-pied` dans Racheter) : le mode nuit traduit les fonds, pas les ombres.
+  - `css/sombre.css` : en mode nuit, cette ombre prend la couleur sombre du pied.
+- Le pied restait au milieu de la fenêtre quand la liste était courte (192 px de vide dessous), depuis que la fenêtre a une hauteur fixe. `app/stable.js` le pousse maintenant en bas (`coller()`).
+- Le petit sac des listes vides était collé à gauche dans Approvisionnement pro, Achats groupés, Prix par zone et Racheter. Il est centré (`app/sac.js`).
+- Robot d'audit du mode nuit étendu : il repère aussi les ombres claires, les dégradés clairs des éléments décoratifs (`::before` / `::after`) et les pieds de page qui flottent. Sur les 20 fenêtres et les 12 pages, il ne reste que les contours voulus (tampons, voyants, interrupteurs).
+
 ## 5. En attente d'une décision du propriétaire
 
 

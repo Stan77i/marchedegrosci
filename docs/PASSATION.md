@@ -767,9 +767,12 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Barre du haut : plus aucune phrase défilante. Seul le nom « marché de Gros » s'écrit, reste 5 s, puis s'efface ; il revient à chaque retour sur l'application (au moins 20 s après la dernière fois) et toutes les 30 minutes.
 - Toutes les accroches sont dans la bande sous le titre, même design (icône maïs, mot clé en accent), 25 phrases qui alternent garanties, nouveautés et fonctions : onglet Prix, mot secret, payé sous 24 h, pas de remboursement sans preuves, séquestre bientôt, litiges jugés sur preuves, vendez en direct, achetez en gros, coopératives vérifiées, du champ au marché… Toucher une phrase ouvre la fonction ou son tutoriel.
 
-## Photos : surgelés et produits de rente (22/10/2026)
-- 7 produits du catalogue reçoivent leur photo (lot envoyé par le propriétaire, script `tools/images/surgeles-rente.py`, même mise en forme que les lots précédents) :
-  cacao en fèves, café en grains, noix de karité, noix de palme, poisson surgelé, viande de bœuf surgelée, poulet surgelé.
-- Photos reçues mais **non utilisées**, car ces produits ne sont pas encore au catalogue : crevettes séchées, anchois, tripes de bœuf, saucisses,
-  maquereau surgelé, cuisses de dinde surgelées, dos de poulet surgelés, foie de bœuf surgelé. Cajou brut et panier de poissons : les produits ont déjà leur photo.
-- `marche-app.js?v=20261026c`, cache `mgci-v177`.
+## Photos et nouveaux produits : surgelés, produits de rente, poissons séchés (22/10/2026)
+- 15 photos envoyées par le propriétaire, posées par le script `tools/images/surgeles-rente.py` (même mise en forme que les lots précédents).
+- 7 produits qui existaient déjà reçoivent leur photo : cacao en fèves, café en grains, noix de karité, noix de palme, poisson surgelé, viande de bœuf surgelée, poulet surgelé.
+- **8 nouveaux produits au catalogue** (`v2/data.js`, demandé par le propriétaire), chacun dans sa famille :
+  - Poissons : crevettes séchées, anchois séchés ;
+  - Produits surgelés : maquereau surgelé, cuisses de dinde surgelées, dos de poulet surgelé, saucisses surgelées, tripes de bœuf surgelées, foie de bœuf surgelé.
+  - Le catalogue passe de 162 à 170 produits. Aucune liste de produits côté base : rien à changer dans Supabase.
+- Photos non utilisées : 2e anchois et 2e saucisses (doublons) ; cajou brut et panier de poissons (noix-de-cajou et poisson-seche ont déjà leur photo).
+- `data.js?v=20261026c`, `marche-app.js?v=20261026c`, cache `mgci-v177`.

@@ -11,6 +11,9 @@
   // aller quelque part dans l'application : une page (l'application écoute « mdg:aller ») ou une fenêtre (module chargé)
   const PAGE = p => () => dispatchEvent(new CustomEvent('mdg:aller', { detail: { page: p } }));
   const FEN = (mod, fn) => () => { const m = window[mod]; if (m && typeof m[fn] === 'function') m[fn](); };
+  // un onglet de l'accueil (Marché, Prix, Activité, Alertes)
+  const ONGLET = nom => () => { if (location.hash && location.hash !== '#/') location.hash = '#/';
+    setTimeout(() => { const b = [...document.querySelectorAll('.acc-ong button')].find(x => x.textContent.trim().startsWith(nom)); if (b) b.click(); }, 450); };
 
   /* ——— le contenu ——— (ton : couleur de la tuile ; aller : ce que fait « Montrer dans l'app ») */
   const GESTES = [
@@ -38,8 +41,23 @@
       etapes: ['Sur une annonce, touchez « Écrire ».', 'Écrivez votre message et envoyez-le.', 'Retrouvez vos conversations dans le menu, à « Messages ».'],
       conseil: 'Restez dans les messages de l’application : votre numéro reste caché. L’équipe peut relire les échanges en cas de litige.', aller: FEN('MDGMessages', 'boite') },
     { id: 'negoce', ico: 'negoce', ton: 'marche', t: 'Proposer un prix', sert: 'Négocier calmement, par écrit, jusqu’à un accord.',
-      etapes: ['Sur une annonce, touchez « Proposer un prix ». Écrivez votre prix et la quantité.', 'L’autre personne a 48 heures pour accepter, refuser ou proposer un autre prix.', 'Quand vous êtes d’accord, l’accord est conclu : le prix et la quantité ne bougent plus.', 'Ensuite, entendez-vous sur la livraison et le paiement.'],
-      conseil: 'Un accord conclu n’est pas un paiement : voyez toujours la marchandise avant de payer.', aller: FEN('MDGNegoce', 'inbox') },
+      etapes: ['Sur une annonce, touchez « Proposer un prix ». Écrivez votre prix et la quantité.', 'L’autre personne a 48 heures pour accepter, refuser ou proposer un autre prix.', 'Quand vous êtes d’accord, l’accord est conclu : le prix et la quantité ne bougent plus.', 'Ensuite, touchez « Suivre la commande » : vous choisissez qui transporte et où livrer.'],
+      conseil: 'Un accord conclu n’est pas un paiement. La négociation n’est pas secrète : l’équipe peut la relire en cas de litige.', aller: FEN('MDGNegoce', 'inbox') },
+    { id: 'tableau', ico: 'tableau', ton: 'marche', t: 'L’onglet Prix : le tableau du marché', sert: 'Voir tout de suite qui vend le moins cher et qui achète le plus cher, comme sur un marché P2P.',
+      etapes: ['Sur l’accueil, touchez l’onglet « Prix ».', 'Touchez un produit. « Acheter » : les vendeurs, le moins cher en haut. « Vendre » : les acheteurs, le meilleur budget en haut.', 'À prix égal, le transport compris passe devant. Les prix ne se comparent que dans la même unité (kg, sac, régime…).', 'Touchez « Acheter » ou « Vendre » sur une ligne pour proposer votre prix.'],
+      conseil: 'Vous vendez ? Baissez votre prix : vous montez dans le tableau. Aucun numéro n’est affiché : le Marché de Gros est le seul intermédiaire.', aller: ONGLET('Prix') },
+    { id: 'commande', ico: 'camion', ton: 'offre', t: 'La commande et la livraison', sert: 'Suivre la marchandise, du « oui » jusqu’à la livraison.',
+      etapes: ['Après un accord, touchez « Suivre la commande ». Dites qui transporte et où livrer. L’autre partie confirme.', 'Vendeur : un mot secret s’affiche (par exemple « MANGUE 47 »). Écrivez-le sur un papier et glissez-le dans la marchandise.', 'Chaque étape s’affiche avec son heure : préparation, chargement, transport, arrivée, réception. Avec les codes, le chauffeur tape le code du vendeur, puis celui de l’acheteur.', 'Une commande confirmée ne s’annule plus du côté de l’acheteur : seul le vendeur peut demander l’annulation, avant le chargement.'],
+      conseil: 'Ne donnez jamais vos codes ni le mot secret par message : seulement sur place.', aller: FEN('MDGCommandes', 'ouvrir') },
+    { id: 'sequestre', ico: 'cadenas', ton: 'lien', t: 'Le paiement sécurisé (séquestre)', sert: 'Protéger le vendeur, qui paie le transport, et l’acheteur, qui ne paie pas pour rien.',
+      etapes: ['Aujourd’hui : paiement à la livraison, après avoir vu la marchandise. Le séquestre est en construction.', 'Bientôt : dès la commande confirmée, l’acheteur paie par Wave, Orange Money ou MTN MoMo. L’argent reste bloqué.', 'À la réception, l’acheteur vérifie. Tout est bon : il libère. Sans réclamation, le paiement se libère tout seul 24 h après la réception.', 'À la libération, chacun reçoit sa part : le vendeur moins 3,5 %, le transporteur moins 6,9 %. Le Marché de Gros n’est payé qu’à ce moment-là.'],
+      conseil: 'Chaque commande montre « qui reçoit quoi » dans le bloc « Paiement sécurisé ».', aller: FEN('MDGCommandes', 'ouvrir') },
+    { id: 'refus', ico: 'signaler', ton: 'aide', t: 'Un problème à la livraison', sert: 'Refuser une marchandise gâtée, avec de vraies preuves.',
+      etapes: ['Quand le chauffeur est arrivé, ou dans les 24 h après la réception, touchez « Refuser la marchandise ».', 'Tapez le mot secret du vendeur (sur le papier dans le colis) et ajoutez des photos : la marchandise et le papier. Sans le mot, pas de remboursement.', 'Si le vendeur reconnaît le problème (ou si un chauffeur vérifié par l’équipe le confirme), la partie refusée vous est rendue. Le transport reste dû.', 'Sinon, on en parle à trois dans la « Discussion » : vous, le vendeur et le Marché de Gros. L’équipe juge.'],
+      conseil: 'Pas de papier dans le colis ? Touchez « Signaler un problème » : l’équipe juge avec tous les échanges. Les échanges ne sont pas secrets sur le Marché de Gros.', aller: FEN('MDGCommandes', 'ouvrir') },
+    { id: 'chauffeur', ico: 'camion', ton: 'lien', t: 'Vous êtes chauffeur', sert: 'Recevoir des missions de transport et être payé de votre prix.',
+      etapes: ['Dans le menu, touchez « Espace chauffeur » et inscrivez-vous (gratuit). L’équipe vérifie votre profil.', 'Donnez votre code transporteur (T-4K7P) au vendeur ou à l’acheteur. Acceptez la mission en fixant votre prix.', 'Au chargement, puis à la livraison, tapez le code qu’on vous montre sur place.', 'Si l’acheteur refuse la marchandise, dites ce que vous avez vu. Votre transport reste dû.'],
+      conseil: 'La commission du Marché de Gros est de 6,9 % de votre prix : comptez-la dedans.' },
     { id: 'categories', ico: 'categories', ton: 'marche', t: 'Les familles de produits', sert: 'Tous les produits vivriers, rangés en 12 familles.',
       etapes: ['Touchez « Catégories » dans le menu.', 'Touchez une famille, par exemple « Tubercules et féculents ».', 'Touchez un produit pour ouvrir sa fiche.'],
       conseil: 'La recherche en haut comprend aussi les noms locaux.', aller: PAGE('categories') },
@@ -59,7 +77,7 @@
       etapes: ['Touchez le petit bonhomme en haut à droite.', 'Retrouvez vos offres, vos demandes, vos négociations et vos statuts.', 'Réglez les notifications, les sons et votre code secret.'],
       conseil: 'Dans le menu, « Alertes produits » vous prévient quand votre produit arrive.', aller: FEN('MDGCompte', 'ouvrir') },
     { id: 'securite', ico: 'cadenas', ton: 'aide', t: 'Pour être en sécurité', sert: 'Quelques règles simples protègent contre les arnaques.',
-      etapes: ['Voyez toujours la marchandise avant de payer. Ne payez jamais d’avance.', 'Restez dans les messages de l’application : votre numéro reste caché.', 'Préférez les membres avec le sceau bleu et de bonnes notes.', 'Quelque chose ne va pas ? Touchez « Signaler » sur l’annonce ou sur le profil : l’équipe regarde chaque signalement.'],
+      etapes: ['Voyez toujours la marchandise avant de payer. Ne payez jamais d’avance à quelqu’un (le séquestre du Marché de Gros, quand il ouvrira, sera dans l’application, jamais par un numéro).', 'Restez dans les messages de l’application : votre numéro reste caché.', 'Préférez les membres avec le sceau bleu et de bonnes notes.', 'Quelque chose ne va pas ? Touchez « Signaler » sur l’annonce ou sur le profil : l’équipe regarde chaque signalement.', 'Le Marché de Gros ne vous demandera jamais d’argent ni de code par message ou par téléphone.'],
       conseil: 'Si quelqu’un vous presse de payer vite, arrêtez l’échange.' },
     { id: 'probleme', ico: 'bouee', ton: 'aide', t: 'Si ça ne marche pas', sert: 'Les solutions aux soucis les plus courants.',
       etapes: ['Pas de réseau : les annonces déjà vues restent affichées. Réessayez quand le réseau revient.', 'L’application semble bloquée : fermez-la complètement, puis rouvrez-la.', 'Toujours un souci : dans le menu, touchez « Écrire au Marché de Gros ». L’équipe vous répond ici.'],

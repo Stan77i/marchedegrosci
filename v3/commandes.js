@@ -83,6 +83,17 @@
 @keyframes cmBob{50%{transform:translateY(-2px)}}@keyframes cmRoute{to{background-position:-34px 0}}
 .cm-scene.arrive .cm-camion{animation:cmArrive 1s cubic-bezier(.2,.9,.3,1.2) both}.cm-scene.arrive .sac{animation:cmSaut .6s .9s ease-out both}
 @keyframes cmArrive{from{left:-40%}}@keyframes cmSaut{40%{transform:translateY(-16px) rotate(-6deg)}}
+/* arrivée : repère de livraison + étiquette */
+.cm-dest{position:absolute;right:10px;bottom:22px;display:flex;flex-direction:column;align-items:center;gap:2px;max-width:86px;color:#5E5546;opacity:.55}
+.cm-dest.la{opacity:1;color:#10392B}
+.cm-pin{display:grid;place-items:center;width:34px;height:34px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);background:#FFFDF8;box-shadow:0 2px 6px rgba(23,21,18,.18)}
+.cm-pin svg{transform:rotate(45deg)}.cm-dest.la .cm-pin{background:#F2C230;color:#10392B}
+.cm-dest small{max-width:86px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 11.5px Jost,sans-serif}
+.cm-arr{position:absolute;right:10px;top:6px;text-align:right;padding:5px 10px 6px;border-radius:14px;background:#10392B;color:#F3EFE4;box-shadow:0 6px 16px rgba(16,57,43,.25)}
+.cm-arr b{display:block;font:700 15px/1.1 Jost,sans-serif;color:#F2C230;white-space:nowrap}.cm-arr small{display:block;font-size:11.5px;white-space:nowrap;color:rgba(243,239,228,.82)}
+.cm-arr.ok{background:#1F6B40}.cm-arr.ok b{color:#fff}
+.cm-arr.pop{animation:cmPop .6s 1s cubic-bezier(.2,1.4,.4,1) both}@keyframes cmPop{from{opacity:0;transform:scale(.6) translateY(8px)}}
+.cm-scene.fini .cm-route{right:60px}
 .cm-scene .seul{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);width:104px;height:104px}.cm-scene .seul svg{width:104px;height:104px}
 /* progression */
 .cm-prog{margin:0 0 4px}
@@ -323,8 +334,8 @@
     }
     const S = seq[c.id];
     if (c.role === 'acheteur' && (S ? S.peut_liberer : aVerifier(c))) b('liberer', S && S.actif ? 'Tout est conforme : libérer le paiement' : 'Tout est conforme', 'p');
-    if (c.role === 'acheteur' && (S ? S.peut_refuser : dansDelai(c))) b('refuser', 'Refuser la marchandise (mot du vendeur + photos)');
-    if (c.role === 'acheteur' && c.etat === 'terminee' && aVerifier(c)) b('litige', 'Pas de papier du vendeur ? Signaler un problème', 'm');
+    if (c.role === 'acheteur' && (S ? S.peut_refuser : dansDelai(c))) b('refuser', 'Refuser la marchandise');
+    if (c.role === 'acheteur' && c.etat === 'terminee' && aVerifier(c)) b('litige', 'Pas de papier ? Signaler un problème', 'm');
     if (S && S.peut_repondre) { b('rf-oui', 'Je reconnais le problème', 'p'); b('rf-non', 'Je conteste'); }
     return B.length ? `<div class="cm-act">${B.join('')}</div>` : '';
   }
@@ -332,9 +343,15 @@
     const roule = c.etat === 'en_cours' && ['transport', 'transbordement'].includes(c.etape) && MOUV();
     const surCamion = c.etat !== 'a_confirmer' && c.etat !== 'annulee' && ['chargement', 'transport', 'transbordement', 'arrivee', 'reception', 'terminee'].includes(c.etape);
     if (!surCamion) return `<div class="cm-scene" aria-hidden="true"><div class="cm-route"></div><div class="seul">${sac(humeur(c), 104)}</div></div>`;
-    const x = { chargement: 8, transport: 30, transbordement: 46, arrivee: 62, reception: 62, terminee: 62 }[c.etape] || 8;
-    return `<div class="cm-scene${roule ? ' roule' : ''}${arrive && MOUV() ? ' arrive' : ''}" aria-hidden="true"><div class="cm-route"></div>
-      <div class="cm-camion" style="--x:${x}%">${CAMION}<div class="sac">${sac(humeur(c), 62)}</div></div></div>`;
+    // arrivé : le camion s'arrête devant le repère de livraison, entièrement visible, avec l'étiquette « Arrivé » ou « Colis livré »
+    const la = ['arrivee', 'reception', 'terminee'].includes(c.etape) || c.etat === 'terminee' || (c.etat === 'litige' && c.etape === 'arrivee');
+    const livre = c.etat === 'terminee' || c.etape === 'reception' || c.etape === 'terminee';
+    const x = { chargement: 8, transport: 26, transbordement: 40 }[c.etape];
+    const pos = la ? 'calc(100% - 270px)' : (x || 8) + '%';
+    const fin = `<div class="cm-dest${la ? ' la' : ''}"><span class="cm-pin">${IC('lieu', 20)}</span><small>${esc(c.lieu_livraison || 'Livraison')}</small></div>`;
+    const tag = la ? `<div class="cm-arr${livre ? ' ok' : ''}${arrive && MOUV() ? ' pop' : ''}"><b>${livre ? '✓ Colis livré' : '✓ Arrivé'}</b><small>${livre ? 'Chez l’acheteur' : 'À destination'}</small></div>` : '';
+    return `<div class="cm-scene${roule ? ' roule' : ''}${arrive && MOUV() ? ' arrive' : ''}${la ? ' fini' : ''}" aria-hidden="true"><div class="cm-route"></div>${fin}${tag}
+      <div class="cm-camion" style="--x:${pos}">${CAMION}<div class="sac">${sac(humeur(c), 62)}</div></div></div>`;
   }
   function peindreDetail(change) {
     const c = trouve(sel), box = bg.querySelector('.cm');

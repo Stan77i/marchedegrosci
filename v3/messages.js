@@ -307,13 +307,19 @@
       const envoyer = () => { const t = ta.value.trim(); if (!t) return;
         // pas de lien, d'e-mail ni de code (supabase/schema-22) : on le dit avant l'envoi, le texte reste dans la case pour être corrigé
         const refus = N().texteRefus ? N().texteRefus(t) : ''; if (refus) { N().toast(refus); ta.focus(); return; }
-        ta.value = ''; grandir(); const sg = pied.querySelector('.dm-sug'); if (sg) sg.hidden = true; const m = { id: 'tmp-' + Date.now(), created_at: new Date().toISOString(), auteur_id: u, texte: t }; attente.push(m); partir(m); ta.focus(); };
+        ta.value = ''; grandir(); const sg = pied.querySelector('.dm-sug'); if (sg && sg._remplir) sg._remplir(); const m = { id: 'tmp-' + Date.now(), created_at: new Date().toISOString(), auteur_id: u, texte: t }; attente.push(m); partir(m); ta.focus(); };
       ta.addEventListener('input', grandir);
-      // avec le Marché de Gros : pendant qu'on écrit, les réponses toutes prêtes de l'aide (v3/aide.js) s'affichent au-dessus
-      if (c.officiel && !admin() && window.MDGAide) { let tSug = 0; const sug = document.createElement('div'); sug.className = 'dm-sug'; sug.hidden = true; pied.prepend(sug);
-        ta.addEventListener('input', () => { clearTimeout(tSug); tSug = setTimeout(() => { const v = ta.value.trim(), r = v.length >= 3 ? MDGAide.chercher(v, 3) : [];
-          sug.hidden = !r.length; sug.innerHTML = r.length ? '<small>Réponse toute prête</small>' + r.map(x => `<button type="button" data-q="${x.id}">💡 ${esc(x.q)}</button>`).join('') : '';
-          sug.querySelectorAll('[data-q]').forEach(bt => bt.onclick = () => MDGAide.ouvrir({ id: bt.dataset.q })); }, 220); }); }
+      // avec le Marché de Gros : une rangée d'aide toujours visible au-dessus de la case (v3/aide.js).
+      // Case vide : « Aide » + les questions les plus posées ; pendant qu'on écrit : les réponses toutes prêtes qui correspondent.
+      if (c.officiel && !admin() && window.MDGAide) { let tSug = 0; const sug = document.createElement('div'); sug.className = 'dm-sug'; pied.prepend(sug);
+        const bouton = (x, cls) => `<button type="button"${cls ? ' class="' + cls + '"' : ''} data-q="${x.id}">${esc(x.q)}</button>`;
+        const remplir = () => { const v = ta.value.trim(), r = v.length >= 3 ? MDGAide.chercher(v, 4) : [];
+          sug.innerHTML = '<button type="button" class="dm-sug-aide" data-aide>💡 Aide</button>' + (r.length ? r.map(x => bouton(x, 'trouve')).join('') : (MDGAide.frequentes ? MDGAide.frequentes(4) : []).map(x => bouton(x)).join(''));
+          sug.setAttribute('aria-label', r.length ? 'Réponses toutes prêtes' : 'Questions fréquentes'); sug.scrollLeft = 0;
+          sug.querySelector('[data-aide]').onclick = () => MDGAide.ouvrir({ q: ta.value.trim() });
+          sug.querySelectorAll('[data-q]').forEach(bt => bt.onclick = () => MDGAide.ouvrir({ id: bt.dataset.q })); };
+        sug.setAttribute('role', 'group'); remplir(); sug._remplir = remplir;
+        ta.addEventListener('input', () => { clearTimeout(tSug); tSug = setTimeout(remplir, 200); }); }
       // ordinateur : Entrée envoie, Maj+Entrée va à la ligne ; téléphone : le bouton envoie (Entrée va à la ligne)
       ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && matchMedia('(hover:hover) and (pointer:fine)').matches) { e.preventDefault(); envoyer(); } });
       go.onclick = envoyer;

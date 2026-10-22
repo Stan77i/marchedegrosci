@@ -392,3 +392,30 @@ html[data-theme=sombre] .dr-clair div[style*="height:1px"]{background:rgba(243,2
 html[data-theme=sombre] .dr-clair .mq-m{fill:#F3EFE4}html[data-theme=sombre] .dr-clair .mq-g{fill:#F2C230}
 html[data-theme=sombre] .dr-clair .ui-tile{background:linear-gradient(145deg,color-mix(in srgb,var(--t) 22%,#1C1915),color-mix(in srgb,var(--t) 10%,#1C1915));box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 0 1px color-mix(in srgb,var(--t) 22%,transparent)}
 html[data-theme=sombre] .dr-clair button[style*="A4472C"]{color:#EE9A62!important}
+
+/* ——— un nom ou un badge long (« Officiel · Marché de Gros ») ne fait plus déborder la carte d'annonce ——— */
+.an-qui { overflow: hidden; }
+.an-qui b { min-width: 3.5em; }
+.an-qui:has(.st-officiel) > b { display: none; }   /* le badge dit déjà « Marché de Gros » */
+.an-qui > span:not(.an-st):not(.an-forme):not(.an-org) { flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }   /* la ville cède la place en premier */
+.an-qui .an-st { flex-shrink: 0; max-width: 100%; min-width: 0; }
+.an-qui .st-p { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+
+/* ——— carte : annonces d'un même endroit, en bande qui glisse ———
+   carte plus compacte (seul le tampon reste sous les chiffres), le bord de la suivante dépasse,
+   et une pastille « ‹ ● ○ 1 sur 2 › » dit qu'il y en a d'autres ; la flèche suivante appelle tant qu'on n'a pas glissé */
+.an-carte .an { gap: 10px; padding: 12px; }
+.an-carte .an-infos > span:not(.qd), .an-carte .an-moi { display: none; }
+.an-carte .an-act { padding: 0 10px; font-size: var(--t-md); }
+.cpk-nav { align-self: center; display: flex; align-items: center; gap: 4px; padding: 3px; border-radius: 999px; background: #171512; color: #F5F0E6; box-shadow: 0 0 0 1px rgba(245, 240, 230, .1), 0 6px 18px rgba(0, 0, 0, .35); font: 600 13px/1 var(--f-texte, Jost), sans-serif; }
+.cpk-f { width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(245, 240, 230, .1); color: inherit; display: grid; place-items: center; cursor: pointer; }
+.cpk-f:disabled { opacity: .3; cursor: default; }
+.cpk-f.appel { background: #F2C230; color: #171512; animation: cpkAppel 1.5s ease-in-out infinite; }
+@keyframes cpkAppel { 0%, 100% { box-shadow: 0 0 0 0 rgba(242, 194, 48, .55); transform: translateX(0); } 50% { box-shadow: 0 0 0 7px rgba(242, 194, 48, 0); transform: translateX(2px); } }
+.cpk-pts { display: flex; align-items: center; }
+.cpk-d { width: 22px; height: 40px; border: 0; padding: 0; background: none; display: grid; place-items: center; cursor: pointer; }
+.cpk-d i { display: block; width: 7px; height: 7px; border-radius: 4px; background: rgba(245, 240, 230, .4); transition: width .25s, background .25s; }
+.cpk-d[aria-current="true"] i { width: 18px; background: #F2C230; }
+.cpk-t { padding: 0 6px; white-space: nowrap; letter-spacing: .02em; }
+.cpk-f:focus-visible, .cpk-d:focus-visible { outline: 2px solid #F2C230; outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) { .cpk-f.appel { animation: none; } }

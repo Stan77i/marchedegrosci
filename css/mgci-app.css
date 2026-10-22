@@ -598,3 +598,10 @@ html[data-theme=sombre] .acc-n.doux { background: rgba(245, 240, 230, .16); }
 .trp b { font-size: var(--t-md); font-weight: 600; }
 .trp small { font-size: var(--t-sm); line-height: 1.35; color: var(--texte-3); }
 .trp button:focus-visible { outline: 2px solid var(--terre, #C16A3A); outline-offset: 2px; }
+
+/* ——— tampon « Transport » sur l'annonce (schémas 48-49) : même famille que « Il le faut cette semaine » ———
+   bleu = le transport est compris (inclus, livré hors de la ville, demandé inclus) ; crème pointillé = à discuter / par l'acheteur. Penché dans l'autre sens. */
+.qd[data-u="tr"], .qd[data-u="trd"] { --qd-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2'/%3E%3Cpath d='M15 18H9'/%3E%3Cpath d='M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14'/%3E%3Ccircle cx='17' cy='18' r='2'/%3E%3Ccircle cx='7' cy='18' r='2'/%3E%3C/svg%3E"); }
+.qd[data-u="tr"] { --qd-bg: #7DB9F2; --qd-fg: #0B2D4E; --qd-bd: rgba(30, 110, 190, .5); --qd-r: 1.6deg; }
+.qd[data-u="trd"] { --qd-bg: #F5F0E6; --qd-fg: #3B342A; --qd-bd: rgba(23, 21, 18, .3); --qd-r: 1deg; outline: 1.5px dashed rgba(23, 21, 18, .35); outline-offset: -4px; }
+.qd[data-u="tr"]::before, .qd[data-u="trd"]::before { width: 15px; height: 15px; }

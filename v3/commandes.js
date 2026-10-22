@@ -150,7 +150,7 @@
     liste = J(KC(), liste);
     if (navigator.onLine === false) return;
     charge = true;
-    try { liste = (await N().rpc('mes_commandes')) || []; W(KC(), liste); lu = true; } catch (e) { if (bg) toast('Commandes indisponibles pour l’instant', { type: 'erreur', sous: erreurTxt(e) }); }
+    try { liste = (await N().rpc('mes_commandes')) || []; W(KC(), liste); lu = true; try { dispatchEvent(new CustomEvent('mdg:activite')); } catch (_) {} } catch (e) { if (bg) toast('Commandes indisponibles pour l’instant', { type: 'erreur', sous: erreurTxt(e) }); }
     charge = false;
   }
   async function lireJournal(id) {
@@ -551,6 +551,7 @@
   async function ouvrir(id) {
     if (!N() || !N().session()) { if (N()) N().open(); return; }
     monter(); sel = id || null; vue = id ? 'detail' : 'liste';
+    if (id && window.MDGActivite) MDGActivite.noter('cmd', id);
     liste = J(KC(), []); peindre();
     await lireListe(); if (id) await lireJournal(id); peindre();
   }
@@ -567,5 +568,16 @@
   addEventListener('online', rafraichir);
   depuisAdresse();
 
-  window.MDGCommandes = { ouvrir, depuisAccord, creer, css, aAgir: () => J(KC(), []).filter(aAgir).length };
+  // Accueil → Activité : la liste est relue au démarrage et à chaque retour sur l'application, même fenêtre fermée
+  let fondT = 0;
+  async function fond() { if (bg || document.hidden || !N() || !N().session() || Date.now() - fondT < 60000) return; fondT = Date.now(); await lireListe(); }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) fond(); });
+  setTimeout(fond, 1500);
+  function activite() {
+    return J(KC(), []).filter(enCours).map(x => {
+      const st = x.etat === 'a_confirmer' ? (x.cree_par_moi ? 'En attente de confirmation' : 'À confirmer') : x.etat === 'litige' ? 'Litige en cours' : LIB[x.etape] || 'En cours';
+      return { k: 'cmd', id: x.id, titre: (x.produit || 'Commande') + (x.quantite != null ? ' · ' + qte(x.quantite, x.unite) : ''), avec: x.partenaire_nom || '', role: x.role,
+        etat: x.etat === 'litige' ? 'litige' : aAgir(x) ? 'moi' : enRoute(x) ? 'route' : 'attente', route: enRoute(x), tag: st, ts: Date.parse(x.updated_at || x.maj_le || x.created_at) || 0, ouvrir: () => ouvrir(x.id) }; });
+  }
+  window.MDGCommandes = { ouvrir, depuisAccord, creer, css, aAgir: () => J(KC(), []).filter(aAgir).length, activite };
 })();

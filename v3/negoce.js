@@ -126,7 +126,7 @@
       const avant = liste; liste = (r || []).filter(n => !masquee(n)); W(KL, liste);
       if (!first || avant.length) evenements(avant, liste); first = false;
     } catch (e) { if (e.code === 'auth') { liste = []; W(KL, []); } }
-    announce(); return liste;
+    announce(); try { dispatchEvent(new CustomEvent('mdg:activite')); } catch (_) {} return liste;
   }
   const messages = id => N().api('/rest/v1/messages?select=*&negociation_id=eq.' + id + '&order=created_at.asc&limit=300', { auth: true });
   const one = async id => { const r = await N().api('/rest/v1/negociations?select=*&id=eq.' + id, { auth: true }); return r && r[0]; };
@@ -424,6 +424,7 @@
   /* ——— le fil d'une négociation ——— */
   async function thread(id) {
     if (!N() || !N().session()) return N() && N().open();
+    if (window.MDGActivite) MDGActivite.noter('nego', id);   // pour « Reprendre » dans Accueil → Activité
     let n = liste.find(x => x.id === id), msgs = null, mode = '', dispo = null;
     sheet(head(n ? (n.produit || 'Négociation') : 'Négociation', '', true) + `<div class="nx-b"><div class="nx-top"></div><div class="nx-msgs" aria-live="polite"></div><div class="nx-bottom"></div></div><div class="nx-f"></div>`, 'Négociation');
     bindSnd();
@@ -555,5 +556,13 @@
   // en arrière-plan, on continue de relire (plus lentement) pour pouvoir signaler au retour
   setInterval(() => { if (document.hidden) refresh(); }, 180000);
 
-  window.MDGNegoce = { proposer, inbox, thread, unread, refresh, masquer, glisser };
+  // ce qui est en cours, pour Accueil → Activité : propositions en attente (à moi ou à l'autre) et accords conclus depuis moins de 3 jours
+  function activite() {
+    if (!me()) return [];
+    return liste.filter(n => enCours(n) || (n.statut === 'conclue' && Date.now() - Date.parse(n.updated_at) < 3 * 864e5)).map(n => {
+      const e = etat(n), av = avDe(n, 40), p = n.statut === 'conclue' ? n.prix_final : n.dernier_prix;
+      return { k: 'nego', id: n.id, titre: n.produit || 'Négociation', avec: av.nom || leLa(autre(monRole(n))), etat: n.statut === 'conclue' ? 'ok' : aMoi(n) ? 'moi' : 'attente',
+        tag: e.t, prix: p ? fmt(p) + ' F / ' + (n.unite || 'unité') : '', ts: Date.parse(n.updated_at) || 0, ouvrir: () => thread(n.id) }; });
+  }
+  window.MDGNegoce = { proposer, inbox, thread, unread, refresh, masquer, glisser, activite };
 })();

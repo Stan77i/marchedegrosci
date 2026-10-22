@@ -684,6 +684,13 @@ Lui proposer de coller ceci :
 
 ## Fil public « Dernières annonces » + défilement sans flash (22/10/2026) — schéma 55
 - Le fil (Accueil → Activité) est visible par tout le monde, partout, sans compte : offres, demandes, et maintenant **ventes conclues** (`ventes_recentes()`, anonymes : produit, quantité, ville, date ; 30 derniers jours). Toucher une ligne ouvre la fiche du produit ; écrire, négocier ou publier demandent la connexion (puis l'action reprend).
-- « En cours » sans compte : un bouton « Se connecter » au lieu de deux phrases « connectez-vous ».
+- « En cours » n'apparaît que pour une personne connectée (sans compte : la section n'existe pas).
 - Défilement au doigt : les lignes ne « flashent » plus (l'effet d'appui attend 0,12 s sur écran tactile, plus de voile gris d'iOS).
 - Tournée de toutes les pages et fenêtres (visiteur et connecté) : aucune erreur.
+
+## Le nom d'une annonce = le nom du compte, impossible d'en mettre un autre (22/10/2026) — schéma 56
+- Formulaires Offre, Demande et Recherche : plus de champ « Votre nom » / « Votre contact » / « Nom du producteur » / « Votre nom (agent terrain) ». À la place, en lecture seule : « Nom affiché : Lévis K. — c'est le nom de votre compte (Mon compte → Profil) ».
+- Serveur (`annonce_nom_compte`, avant chaque écriture sur offres/demandes) : `seller_name` / `buyer_name` = `nom_public(user_id)` quoi que le téléphone envoie ; `agent` (mode « Pour un producteur ») = ce même nom. Compte admin : « Marché de Gros » (inchangé).
+- Changement de nom dans le profil → ses annonces suivent (`profils_nom_annonces`).
+- Annonces existantes corrigées : « Coopérative gg », « Levi 02 », « Ttt » → « Lévis ».
+- Inclut aussi « En cours seulement connecté », arrivé trop tard pour la PR #152.

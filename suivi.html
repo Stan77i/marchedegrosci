@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10392B">
+<meta name="robots" content="noindex">
+<title>Suivi de livraison · Marché de Gros</title>
+<link rel="icon" href="icons/v2/favicon-32.png">
+<!-- Page du chauffeur qui a reçu un lien de suivi (schéma 48). Sans compte : le lien suffit.
+     Il partage sa position pendant le trajet ; le vendeur et l'acheteur la voient dans le suivi de la commande.
+     La page ne montre que le produit, la quantité et les villes : ni nom, ni numéro. Rien n'est envoyé tant qu'il n'a pas touché « Partager ». -->
+<style>
+@font-face { font-family: Jost; font-weight: 400; font-display: swap; src: url(fonts/jost-latin-400-normal.woff2) format('woff2'); }
+@font-face { font-family: Jost; font-weight: 600; font-display: swap; src: url(fonts/jost-latin-600-normal.woff2) format('woff2'); }
+@font-face { font-family: Jost; font-weight: 800; font-style: italic; font-display: swap; src: url(fonts/jost-latin-800-italic.woff2) format('woff2'); }
+:root { --vert: #10392B; --mais: #F2C230; --creme: #F4EEE3; --encre: #171512; --mute: #5E5546; color-scheme: light; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100dvh; background: var(--creme); color: var(--encre); font: 400 16px/1.45 Jost, system-ui, sans-serif; display: flex; flex-direction: column; }
+header { background: var(--vert); color: #F5F0E6; padding: calc(18px + env(safe-area-inset-top)) 20px 22px; border-radius: 0 0 28px 28px; }
+.logo { font: 600 18px/1 Jost, sans-serif; letter-spacing: -.01em; }
+.logo em { font: 800 italic 20px/1 Jost, sans-serif; color: var(--mais); }
+h1 { margin: 14px 0 4px; font: 600 26px/1.15 Jost, sans-serif; }
+.sous { margin: 0; color: rgba(245, 240, 230, .8); }
+main { flex: 1; width: 100%; max-width: 520px; margin: 0 auto; padding: 18px 16px calc(24px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 14px; }
+.carte { background: #FFFDF8; border-radius: 22px; padding: 16px; box-shadow: 0 1px 2px rgba(16, 57, 43, .06), 0 10px 26px rgba(16, 57, 43, .08); }
+.ligne { display: flex; gap: 12px; align-items: center; }
+.ligne + .ligne { margin-top: 10px; }
+.ico { flex: none; width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: rgba(106, 174, 240, .16); font: normal 22px/1 "Apple Color Emoji", "Segoe UI Emoji", sans-serif; }
+.ligne b { display: block; font-weight: 600; }
+.ligne small { color: var(--mute); }
+button { width: 100%; min-height: 56px; border: 0; border-radius: 28px; font: 600 17px Jost, sans-serif; cursor: pointer; }
+.go { background: var(--vert); color: #F5F0E6; }
+.stop { background: transparent; color: var(--vert); border: 1.5px solid var(--vert); }
+button:disabled { opacity: .5; }
+button:focus-visible { outline: 3px solid var(--mais); outline-offset: 2px; }
+.etat { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 18px; background: rgba(23, 21, 18, .05); }
+.etat.on { background: rgba(108, 197, 140, .18); }
+.etat.ko { background: rgba(226, 115, 91, .14); }
+.point { flex: none; width: 14px; height: 14px; border-radius: 50%; background: #B9AD98; }
+.etat.on .point { background: #2F8C55; animation: pouls 1.6s ease-out infinite; }
+.etat.ko .point { background: #C2452F; }
+@keyframes pouls { 0% { box-shadow: 0 0 0 0 rgba(47, 140, 85, .55); } 70%, 100% { box-shadow: 0 0 0 12px rgba(47, 140, 85, 0); } }
+.note { margin: 0; font-size: 14px; color: var(--mute); }
+@media (prefers-reduced-motion: reduce) { .etat.on .point { animation: none; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">marché <em>de Gros</em></div>
+  <h1>Suivi de livraison</h1>
+  <p class="sous" id="sous">Un instant…</p>
+</header>
+<main>
+  <div class="carte" id="infos" hidden></div>
+  <div class="etat" id="etat" role="status" aria-live="polite"><span class="point" aria-hidden="true"></span><span id="etatT">Chargement du lien…</span></div>
+  <button class="go" id="go" hidden>Partager ma position pendant le trajet</button>
+  <button class="stop" id="stop" hidden>Arrêter le partage</button>
+  <p class="note" id="note" hidden>Gardez cette page ouverte pendant le trajet : un téléphone ne partage pas sa position quand la page est fermée. Votre position n'est vue que par le vendeur et l'acheteur de cette commande, et seulement jusqu'à la livraison.</p>
+</main>
+<script>
+(function () {
+  'use strict';
+  const URL0 = 'https://catmsypctymgkjkfzdkt.supabase.co', KEY = 'sb_publishable_KC2au-t8dqasp5ez9Lq6XQ_JvbTtVQ5';
+  const jeton = (new URLSearchParams(location.search).get('j') || '').replace(/[^0-9a-f]/gi, '').slice(0, 64);
+  const $ = id => document.getElementById(id);
+  const rpc = async (f, args) => { const r = await fetch(URL0 + '/rest/v1/rpc/' + f, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(args) });
+    if (!r.ok) throw new Error('serveur ' + r.status); return r.json(); };
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const pl = (u, q) => q > 1 && u && !/(s|x|kg|g|l|L|t)$/.test(u) ? u + 's' : u;   // 12 sacs, 3 tonnes ; kg et L ne changent pas
+  const nf = n => Number(n).toLocaleString('fr-FR', { maximumFractionDigits: 2 });
+  const etat = (t, cls) => { $('etatT').textContent = t; $('etat').className = 'etat' + (cls ? ' ' + cls : ''); };
+  let suivi = null, verrou = null, envoye = 0, dernier = 0, minuteur = null;
+
+  async function charger() {
+    if (!jeton) { $('sous').textContent = 'Lien incomplet'; etat('Ce lien est incomplet. Demandez au vendeur ou à l’acheteur de vous le renvoyer.', 'ko'); return; }
+    let i = null; try { i = await rpc('suivi_lien_infos', { p_jeton: jeton }); } catch (_) { etat('Pas de connexion au serveur. Vérifiez internet puis rechargez la page.', 'ko'); return; }
+    if (!i) { $('sous').textContent = 'Lien expiré'; etat('Ce lien n’est plus valable : la livraison est terminée ou le lien a expiré.', 'ko'); return; }
+    $('sous').textContent = 'Commande ' + i.numero;
+    $('infos').innerHTML = `<div class="ligne"><span class="ico" aria-hidden="true">📦</span><span><b>${esc(nf(i.quantite))} ${esc(pl(i.unite || '', i.quantite))} · ${esc(i.produit || 'Marchandise')}</b><small>À transporter</small></span></div>
+      <div class="ligne"><span class="ico" aria-hidden="true">🚚</span><span><b>${esc(i.depart || 'Départ à préciser')} → ${esc(i.arrivee || 'Livraison à préciser')}</b><small>Trajet</small></span></div>`;
+    $('infos').hidden = false;
+    if (i.etat !== 'en_cours' && i.etat !== 'a_confirmer') { etat('Cette commande n’est plus en cours.', 'ko'); return; }
+    etat('Touchez le bouton quand vous partez : votre position s’affichera pour le vendeur et l’acheteur.');
+    $('go').hidden = false; $('note').hidden = false;
+  }
+  async function envoyer(p) {
+    const t = Date.now(); if (t - dernier < 15000) return; dernier = t;
+    try {
+      const r = await rpc('suivi_lien_position', { p_jeton: jeton, p_lat: p.coords.latitude, p_lon: p.coords.longitude, p_precision: Math.round(p.coords.accuracy || 0) });
+      if (r && r.ok) { envoye++; etat('Position partagée · ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + (envoye > 1 ? ' · ' + envoye + ' envois' : ''), 'on'); }
+      else if (r && r.arreter) { arreter(); etat(r.message || 'Le partage s’arrête.', ''); $('go').hidden = true; }
+    } catch (_) { etat('Connexion perdue : la position sera renvoyée dès que le réseau revient.', 'ko'); dernier = 0; }
+  }
+  async function partager() {
+    if (!navigator.geolocation) { etat('Ce téléphone ne donne pas sa position à cette page.', 'ko'); return; }
+    $('go').disabled = true; etat('Autorisez la position quand le téléphone le demande…');
+    suivi = navigator.geolocation.watchPosition(p => { $('go').hidden = true; $('stop').hidden = false; envoyer(p); },
+      e => { $('go').disabled = false; etat(e.code === 1 ? 'Position refusée. Réglages du téléphone → Confidentialité → Service de localisation → autorisez le navigateur, puis réessayez.' : 'Position introuvable pour l’instant. Restez à découvert et réessayez.', 'ko'); },
+      { enableHighAccuracy: true, maximumAge: 10000, timeout: 30000 });
+    try { if ('wakeLock' in navigator) verrou = await navigator.wakeLock.request('screen'); } catch (_) {}
+    minuteur = setInterval(() => { if (Date.now() - dernier > 60000) navigator.geolocation.getCurrentPosition(envoyer, () => {}, { enableHighAccuracy: true, maximumAge: 20000, timeout: 20000 }); }, 30000);
+  }
+  function arreter() {
+    if (suivi != null) navigator.geolocation.clearWatch(suivi); suivi = null; clearInterval(minuteur);
+    try { verrou && verrou.release(); } catch (_) {} verrou = null;
+    $('stop').hidden = true; $('go').hidden = false; $('go').disabled = false;
+  }
+  $('go').onclick = partager;
+  $('stop').onclick = () => { arreter(); etat('Partage arrêté. Touchez le bouton pour reprendre.'); };
+  document.addEventListener('visibilitychange', async () => { if (!document.hidden && suivi != null && !verrou && 'wakeLock' in navigator) { try { verrou = await navigator.wakeLock.request('screen'); } catch (_) {} } });
+  charger();
+})();
+</script>
+</body>
+</html>

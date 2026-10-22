@@ -399,6 +399,22 @@
 - Code : `EXI_CRIT`, `EXI_DET`, `exiBloc()`, `exiTextes()` dans `application.dc.html` ; lecture et envoi dans `v3/nuage.js` ; styles `.exi*`.
 - Pas encore fait : des qualités garanties côté offre (le vendeur coche « frais, trié… ») pour rapprocher offres et demandes.
 
+### Transport inclus ou non, et lien de suivi pour son propre chauffeur
+- Règle du marché (demandée par le propriétaire, comme à Abidjan) : entre deux villes, le vendeur livre, le transport est compris dans son prix ; dans la même ville, l'acheteur s'en charge.
+- À la publication (fenêtre J'ai / Je cherche, page J'ai, page Je cherche), choix « 🚚 Transport » :
+  - offre : « Inclus hors de ma ville » (par défaut, la règle du marché) · « Inclus partout » · « Non inclus » ;
+  - demande : « Le vendeur livre » (par défaut) · « Je prends le transport ».
+  - Sur l'annonce : « 🚚 Transport inclus », « 🚚 Livré hors d'Abidjan », « 🚚 Transport à la charge de l'acheteur », « 🚚 Livraison par le vendeur », « 🚚 L'acheteur prend le transport ». Les anciennes annonces n'affichent rien.
+- À la commande (`v3/commandes.js`, `choixTransport`) :
+  - offre « inclus » ou demande « le vendeur livre » : seul « Le vendeur livre » est proposé, pas de transporteur du réseau. Le serveur le refuse aussi (`commande_creer` + `_transport_vendeur`) ;
+  - offre « inclus hors de ma ville » : autre ville → le vendeur livre (par défaut) ; même ville → l'acheteur, ou un transporteur du réseau ;
+  - non inclus : l'acheteur par défaut.
+- Lien de suivi (`supabase/schema-48-transport-inclus.sql`, appliqué) : celui qui s'occupe du transport crée un lien dans le suivi de la commande, puis l'envoie à son chauffeur (bouton « Envoyer au chauffeur » : partage du téléphone ou WhatsApp, ou « Copier »).
+  - Le chauffeur ouvre `suivi.html?j=…`, sans compte, et touche « Partager ma position ». Sa position arrive dans `positions` (une toutes les 15 s au plus) et s'affiche dans le suivi, comme pour un chauffeur du réseau.
+  - L'autre partie voit « Le chauffeur a ouvert le lien · il y a 2 min ».
+  - La page du chauffeur ne montre que le produit, la quantité et les villes (ni nom ni numéro). Le lien expire à la fin de la commande, 10 jours au plus. L'écran reste allumé pendant le partage (Wake Lock) ; une page fermée ne partage plus.
+  - Fonctions : `suivi_lien_creer`, `suivi_lien_etat` (comptes), `suivi_lien_infos`, `suivi_lien_position` (sans compte). Test annulé : le vendeur crée le lien, l'acheteur est refusé, la position est enregistrée, le 2ᵉ envoi trop rapproché est ignoré.
+
 ## 5. En attente d'une décision du propriétaire
 
 

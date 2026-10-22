@@ -361,6 +361,11 @@
 - Le choix ferme la grille, met le produit au centre de la roue et ouvre la fenêtre J'ai / Je cherche déjà réglée sur ce produit et sur ce sens : quantité, unité, région, prix ou budget, ville, délai. Le lien vers le formulaire complet donne les exigences.
 - Code : état `tvPlus` dans `toutVoir()` ; styles `.tv-case`, `.tv-plus`, `.tv-choix`.
 
+### Accueil : J'ai / Je cherche seulement sur l'onglet Marché
+- Sur Activité et Alertes, il n'y a rien à publier : les boutons J'ai / Je cherche glissent vers le bas et disparaissent. Ils reviennent sur Marché. Rien ne bouge si le téléphone demande moins d'animations.
+- La liste « Dernières annonces » (Activité) affichait encore le colis et le chariot dessinés : elle passe en 🧺 / 🛒.
+- Code : `accBasC` / `accBasH` (classe `.acc-bas.cache`).
+
 ## 5. En attente d'une décision du propriétaire
 
 

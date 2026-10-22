@@ -18,7 +18,7 @@
    il passe de l'une à l'autre avec la barre « Admin » (app/admin-pc.js). Téléphone : rien ne change. */
 (function(){try{var q=location.search,h=location.hash||"#/",tel=matchMedia('(pointer: coarse)').matches&&Math.min(screen.width,screen.height)<768;if(tel)return;
 var adm=false;try{adm=localStorage.getItem("mdg-site:admin")==="1"}catch(e){}
-if(!adm){location.replace("maintenance.html"+(location.hash||""));return}
+if(!adm){try{sessionStorage.removeItem("mdg-app")}catch(e){}location.replace("maintenance.html"+(location.hash||""));return}
 if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.getItem("mdg-app")!=="1")location.replace("index-v3.html"+h)}catch(e){}})();</script>
 <script>/* service worker : vérifie les mises à jour à chaque retour sur l'application ; quand une nouvelle version prend la main, la page se recharge (tout de suite si elle vient de s'ouvrir, sinon au prochain retour, jamais pendant une saisie) */if('serviceWorker' in navigator){(function(){var sw=navigator.serviceWorker,avant=!!sw.controller,t0=Date.now(),attente=false;sw.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(attente)location.reload();else r.update().catch(function(){})}})}).catch(function(){});sw.addEventListener('controllerchange',function(){if(!avant||attente)return;if(Date.now()-t0<6000)location.reload();else attente=true})})()}</script>
 <script src="v3/nuage.js?v=20261025m"></script>

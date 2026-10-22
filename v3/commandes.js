@@ -94,7 +94,13 @@
 .cm-act button:disabled{opacity:.55;cursor:default}
 .cm-info{margin:0 0 12px;padding:12px 14px;border-radius:14px;background:rgba(242,194,48,.2);font-size:13.5px}
 .cm-lien{display:flex;flex-direction:column;gap:8px;margin:10px 0 4px;padding:14px;border-radius:16px;background:rgba(106,174,240,.12);border:1px solid rgba(106,174,240,.35)}
-.cm-lien b{font:600 15px Jost,sans-serif}.cm-lien small{font-size:13.5px;line-height:1.4;color:#4A4336}
+.cm-lien b{font:600 15px Jost,sans-serif}
+.cm-lien-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.cm-lien-h b{flex:1;min-width:0}
+.cm-lien-i{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#FFFDF8;font:normal 20px/1 "Apple Color Emoji","Segoe UI Emoji",sans-serif}
+.cm-lien-l{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}.cm-lien-l li{display:flex;gap:8px;font-size:13.5px;line-height:1.4;color:#3B342A}
+.cm-lien-l li span{flex:none;font:normal 15px/1.3 "Apple Color Emoji","Segoe UI Emoji",sans-serif}
+.cm-lien-e{display:inline-flex;align-self:flex-start;padding:4px 10px;border-radius:999px;background:rgba(23,21,18,.06);font:500 13px Jost,sans-serif;color:#4A4336}.cm-lien-e.on{background:rgba(108,197,140,.2);color:#1F6B40}
+.cm-lien-f{font-size:12.5px!important;color:#5E5546!important}.cm-lien small{font-size:13.5px;line-height:1.4;color:#4A4336}
 .cm-lien code{display:block;padding:8px 10px;border-radius:10px;background:#FFFDF8;font:500 12.5px/1.35 ui-monospace,Menlo,monospace;word-break:break-all;color:#10392B}
 .cm-lien button{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid #10392B;background:none;color:#10392B;font:600 14.5px Jost,sans-serif;cursor:pointer}
 .cm-lien button.p{background:#10392B;color:#FFFDF8}.cm-lien-a{display:flex;gap:8px;flex-wrap:wrap}.cm-lien-a button{flex:1}
@@ -502,6 +508,9 @@
   function choixTransport(n) {
     let a = null; try { a = (N().list(n.cible === 'offre' ? 'offres' : 'demandes') || []).find(x => x._rid === n.cible_id) || null; } catch (_) {}
     const t = a && a.transport, ville = (a && a.city) || n.ville || '';
+    // ce qui a été convenu dans la négociation passe avant l'annonce (schéma 49)
+    if (n.transport_final === true) return { modes: ['vendeur'], defaut: 'vendeur', lib: { vendeur: 'Le vendeur livre (transport inclus dans l’accord)' }, info: 'L’accord comprend le transport : c’est le vendeur qui livre.' };
+    if (n.transport_final === false) return { modes: ['acheteur', 'reseau', 'vendeur'], defaut: 'acheteur', lib: {}, info: 'L’accord est sans transport : l’acheteur s’en charge.' };
     if ((n.cible === 'offre' && t === 'inclus') || (n.cible === 'demande' && t === 'vendeur'))
       return { modes: ['vendeur'], defaut: 'vendeur', lib: { vendeur: 'Le vendeur livre (transport inclus)' }, info: 'Le transport est inclus dans le prix : c’est le vendeur qui s’en occupe.' };
     if (n.cible === 'offre' && t === 'hors_ville')
@@ -516,12 +525,18 @@
   const lienURL = j => new URL('suivi.html?j=' + j, location.href).href;
   function blocLien(c) {
     if (c.mode_transport === 'reseau' || !['a_confirmer', 'en_cours'].includes(c.etat)) return '';
-    const L = lien[c.id], moi = c.role === c.mode_transport, qui = c.mode_transport === 'vendeur' ? 'le vendeur' : 'l’acheteur';
-    const vu = L && L.vu_le ? 'Le chauffeur a ouvert le lien · ' + ago(L.vu_le) : L ? 'Le chauffeur n’a pas encore ouvert le lien.' : '';
-    if (!moi) return `<div class="cm-lien"><b>📍 Suivi du chauffeur</b><small>${L ? esc(vu) : 'Quand ' + qui + ' donnera le lien de suivi à son chauffeur, sa position s’affichera ici.'}</small></div>`;
-    if (!L || !L.jeton) return `<div class="cm-lien"><b>📍 Votre chauffeur n’a pas l’application ?</b><small>Créez un lien de suivi et envoyez-le-lui. Quand il l’ouvre, sa position s’affiche ici pour vous deux.</small><button type="button" class="p" data-lien>Créer le lien de suivi</button><p class="cm-err" data-liene role="alert"></p></div>`;
-    return `<div class="cm-lien"><b>📍 Lien de suivi pour votre chauffeur</b><code>${esc(lienURL(L.jeton))}</code><small>${esc(vu)}</small>
-      <div class="cm-lien-a"><button type="button" class="p" data-lps>Envoyer au chauffeur</button><button type="button" data-lpc>Copier</button></div></div>`;
+    const L = lien[c.id], moi = c.role === c.mode_transport, qui = c.mode_transport === 'vendeur' ? 'le vendeur' : 'l’acheteur', autre = c.mode_transport === 'vendeur' ? 'l’acheteur' : 'le vendeur';
+    const etat = L && L.vu_le ? `<span class="cm-lien-e on">🟢 Le chauffeur partage sa position · ${esc(ago(L.vu_le))}</span>` : L ? '<span class="cm-lien-e">⏳ Le chauffeur n’a pas encore ouvert le lien</span>' : '';
+    if (!moi) return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">🛡️</span><b>Suivi de la livraison</b></div>
+      ${L ? etat : `<small>Nous avons conseillé à ${qui} de donner un lien de suivi à son chauffeur. Dès qu’il l’ouvre, vous voyez le camion avancer ici.</small>`}</div>`;
+    const pourquoi = `<ul class="cm-lien-l"><li><span aria-hidden="true">📍</span>${autre === 'l’acheteur' ? 'L’acheteur' : 'Le vendeur'} voit le camion avancer : moins d’appels, plus de confiance.</li>
+      <li><span aria-hidden="true">🔒</span>Sécurité : en cas de retard ou d’incident, la dernière position est connue.</li>
+      <li><span aria-hidden="true">📲</span>Sans compte : le chauffeur ouvre le lien et touche « Partager ma position ».</li></ul>`;
+    if (!L || !L.jeton) return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">🛡️</span><b>Donnez un lien de suivi à votre chauffeur</b><span class="cm-tag mais">Recommandé</span></div>
+      ${pourquoi}<button type="button" class="p" data-lien>📍 Créer le lien de suivi</button><small class="cm-lien-f">Facultatif, mais vivement conseillé pour votre sécurité et celle de ${autre}.</small><p class="cm-err" data-liene role="alert"></p></div>`;
+    return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">📍</span><b>Lien de suivi prêt</b></div>
+      <small>Envoyez-le à votre chauffeur avant le départ. Il l’ouvre pendant le trajet.</small><code>${esc(lienURL(L.jeton))}</code>${etat}
+      <div class="cm-lien-a"><button type="button" class="p" data-lps>📲 Envoyer au chauffeur</button><button type="button" data-lpc>Copier</button></div></div>`;
   }
   function lierLien(c, box) {
     const cr = box.querySelector('[data-lien]');

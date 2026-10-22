@@ -415,6 +415,18 @@
   - La page du chauffeur ne montre que le produit, la quantité et les villes (ni nom ni numéro). Le lien expire à la fin de la commande, 10 jours au plus. L'écran reste allumé pendant le partage (Wake Lock) ; une page fermée ne partage plus.
   - Fonctions : `suivi_lien_creer`, `suivi_lien_etat` (comptes), `suivi_lien_infos`, `suivi_lien_position` (sans compte). Test annulé : le vendeur crée le lien, l'acheteur est refusé, la position est enregistrée, le 2ᵉ envoi trop rapproché est ignoré.
 
+### Le transport se négocie, tampon « Transport », lien de suivi conseillé
+- Tampon sur l'annonce, de la même famille que « Il le faut cette semaine », penché dans l'autre sens :
+  - bleu (camion) : « Transport inclus », « Livré hors d'Abidjan », « Transport inclus demandé » ;
+  - crème à bord pointillé : « Transport à discuter » (offre non incluse), « Transport par l'acheteur ».
+  - Il remplace l'étiquette bleue de la version précédente ; il reste visible sur la carte compacte.
+- Négociation (`supabase/schema-49-transport-negocie.sql`, appliqué ; `v3/negoce.js`) : dans chaque proposition, « 🚚 Transport inclus » ou « Sans transport ».
+  - Point de départ : ce que dit l'annonce. L'acheteur peut demander « transport inclus » et le vendeur ajuste son prix.
+  - Le choix s'affiche sur la proposition, dans le total, dans l'accord (« 12 000 F, transport inclus »).
+  - Serveur : `nego_transport(p_nego, p_oui)` marque la proposition en attente de son auteur. Un déclencheur recopie l'information dans `negociations.transport_final` à l'accord. `commande_creer` suit l'accord avant l'annonce : accord « transport inclus » → le vendeur transporte.
+  - Test annulé : proposition marquée, l'autre partie ne peut pas la modifier, accord « transport inclus », commande « réseau » refusée.
+- Commande : le lien de suivi est conseillé à celui qui livre : « 🛡️ Donnez un lien de suivi à votre chauffeur · Recommandé », trois raisons (📍 l'autre partie voit le camion, 🔒 sécurité, 📲 sans compte), puis « Facultatif, mais vivement conseillé ». L'autre partie voit « 🟢 Le chauffeur partage sa position · il y a 2 min ».
+
 ## 5. En attente d'une décision du propriétaire
 
 

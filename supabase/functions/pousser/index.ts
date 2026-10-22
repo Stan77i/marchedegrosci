@@ -16,7 +16,9 @@
 //  8. par la base (déclencheur public.push_mission) pour une mission de transport, avec { mission_id } (schema-27) ;
 //  9. par la base (déclencheur public.push_transporteur) quand l'équipe décide d'un profil de transporteur, avec { transporteur_id }.
 // 10. par la base (pg_cron, public.rappels_envoyer) pour un rappel d'achat, avec { rappel_id } (schema-33) : rien n'est acheté.
-// 11. par la base (déclencheur public.push_groupe) pour un achat groupé, avec { groupe_id, statut } ou { groupe_id, reconfirmer } (schema-35).
+// 11. par la base (déclencheur public.push_groupe) pour un achat groupé, avec { groupe_id, statut }, { groupe_id, reconfirmer }
+//     ou { groupe_id, rejoint } (schema-35, complété au schema-41 : groupe ouvert, nouvel acheteur).
+//  5 bis. une demande qui vient d'un besoin professionnel (schema-34) prévient aussi les vendeurs qui ont une offre active de ce produit.
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
 import webpush from "npm:web-push@3.6.7";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -205,6 +207,27 @@ Deno.serve(async (req) => {
       if (corps.reconfirmer) return json(await envoyer(String(corps.reconfirmer), { title: `${produit} : le prix a changé`, body: `Nouveau prix ${F(g.prix_final)} — reconfirmez ou retirez-vous.`, tag, url }));
       const { data: ps } = await sb.from("groupe_participants").select("user_id").eq("groupe_id", g.id).neq("statut", "retire");
       const parts = (ps || []).map((p: { user_id: string }) => p.user_id);
+      // un acheteur rejoint : le créateur et le vendeur (la notification remplace la précédente, même étiquette)
+      if (corps.rejoint) {
+        if (g.statut === "propose") return json({ rien: true });   // le créateur s'inscrit en proposant : le vendeur reçoit déjà « proposé »
+        const qui = String(corps.rejoint), res = [];
+        for (const d of [...new Set([g.createur_id, g.vendeur_id])].filter((u) => u && u !== qui))
+          res.push(await envoyer(d, { title: `${produit} : un acheteur a rejoint le groupe`, body: `${parts.length} participant${parts.length > 1 ? "s" : ""} pour l'instant. Touchez pour suivre le groupe.`, tag, url }));
+        return json({ res });
+      }
+      // le groupe s'ouvre : le créateur, et ceux qui suivent ce produit (alertes produit sur les offres) peuvent le rejoindre
+      if (corps.statut === "ouvert") {
+        const res = [];
+        if (g.createur_id && g.createur_id !== g.vendeur_id) res.push(await envoyer(g.createur_id, { title: `${produit} : le groupe est ouvert`, body: "Le vendeur a fixé ses conditions. Partagez le groupe pour atteindre le seuil.", tag, url }));
+        const { data: g2 } = await sb.from("groupes_achat").select("offre_id").eq("id", g.id).maybeSingle();
+        const { data: o } = g2 ? await sb.from("offres").select("product_slug").eq("id", g2.offre_id).maybeSingle() : { data: null };
+        if (o?.product_slug) {
+          const { data: abos } = await sb.from("alertes_produits").select("user_id").eq("product_slug", o.product_slug).eq("offres", true);
+          const deja = new Set([g.vendeur_id, g.createur_id, ...parts]);
+          for (const ab of abos || []) if (!deja.has(ab.user_id)) res.push(await envoyer(ab.user_id, { title: `Achat groupé ouvert : ${produit}`, body: "Rejoignez d'autres acheteurs pour payer moins cher. Rien n'est commandé sans votre confirmation.", tag, url }));
+        }
+        return json({ res });
+      }
       const T: Record<string, [string[], string, string]> = {
         propose: [[g.vendeur_id], `Achat groupé proposé : ${produit}`, "Un acheteur propose un groupe sur votre offre. Fixez vos conditions ou refusez."],
         seuil_atteint: [[g.vendeur_id], `${produit} : seuil atteint`, "Lancez la confirmation : chaque participant confirmera sa quantité."],
@@ -228,7 +251,13 @@ Deno.serve(async (req) => {
       const nom = a.product_label || a.product_slug, u = a.unit || "kg", px = t === "offres" ? a.price : a.budget;
       const corpsTxt = [a.quantity ? new Intl.NumberFormat("fr-FR").format(a.quantity) + " " + u : "", a.city || "", px ? (t === "offres" ? "" : "budget ") + F(px) + " / " + u : ""].filter(Boolean).join(" · ");
       const res = [];
-      for (const ab of abos || []) res.push(await envoyer(ab.user_id, { title: (t === "offres" ? "Nouvelle offre : " : "Nouvelle demande : ") + nom, body: corpsTxt || "Touchez pour voir", tag: "annonce-" + a.id, url: "application.dc.html#/produits/" + a.product_slug }));
+      const prevenus = new Set<string>();
+      for (const ab of abos || []) { prevenus.add(ab.user_id); res.push(await envoyer(ab.user_id, { title: (t === "offres" ? "Nouvelle offre : " : "Nouvelle demande : ") + nom, body: corpsTxt || "Touchez pour voir", tag: "annonce-" + a.id, url: "application.dc.html#/produits/" + a.product_slug })); }
+      // 5 bis. besoin professionnel (schema-34) : les vendeurs qui ont une offre active de ce produit sont prévenus aussi
+      if (t === "demandes" && a.besoin_id) {
+        const { data: vs } = await sb.from("offres").select("user_id").eq("product_slug", a.product_slug).eq("status", "active").neq("user_id", a.user_id).limit(200);
+        for (const v of [...new Set((vs || []).map((x: { user_id: string }) => x.user_id))]) if (!prevenus.has(v)) { prevenus.add(v); res.push(await envoyer(v, { title: "Un professionnel cherche : " + nom, body: (corpsTxt || "Touchez pour voir") + " — vous en vendez : proposez votre prix.", tag: "annonce-" + a.id, url: "application.dc.html#/produits/" + a.product_slug })); }
+      }
       return json({ abonnes: res.length, res });
     }
 

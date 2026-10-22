@@ -36,9 +36,13 @@ p{margin:0 auto;max-width:440px;font:400 17px/1.5 Jost,sans-serif;color:var(--sa
 .liste{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:30px 0 0;padding:0;list-style:none;text-align:left}
 .liste li{padding:12px 14px;border-radius:16px;background:var(--carte);border:1px solid var(--trait);font:500 15px/1.3 Jost,sans-serif;color:var(--creme)}
 .liste li small{display:block;margin-top:2px;font-weight:400;font-size:13px;color:var(--sable)}
-.pc{display:none;margin:22px auto 0;max-width:440px;padding:14px 16px;border-radius:16px;border:1px dashed rgba(243,239,228,.2);font:400 14px/1.45 Jost,sans-serif;color:var(--sable)}
-.pc b{color:var(--creme);font-weight:600}
-@media (pointer:fine),(min-width:768px){.pc{display:block}}
+.tel{margin:24px auto 0;max-width:460px;padding:20px 18px;border-radius:22px;background:var(--carte);border:1px solid rgba(242,194,48,.35);display:grid;gap:10px;justify-items:center;animation:monte .4s cubic-bezier(.22,1,.36,1) both}
+.tel[hidden]{display:none}.tel-i{font-size:40px;line-height:1}.tel>b{font:700 22px/1.2 Jost,sans-serif;color:var(--mais)}.tel p{font-size:15px}.tel p b{color:var(--creme);font-weight:600}
+.tel-qr{width:200px;height:200px;padding:12px;border-radius:18px;background:#FFFDF8;box-shadow:0 0 0 6px rgba(242,194,48,.25)}.tel-qr svg{display:block;width:100%;height:100%}
+.tel-lien{display:flex;align-items:center;gap:8px;width:100%;padding:6px 6px 6px 14px;border-radius:16px;background:#171512;border:1px solid var(--trait)}
+.tel-lien span{flex:1;min-width:0;text-align:left;font:600 16px/1.3 Jost,sans-serif;color:var(--creme);word-break:break-all}
+.tel-lien button{flex:none;min-height:42px;padding:0 16px;border:0;border-radius:21px;background:var(--mais);color:#171512;font:700 14px Jost,sans-serif;cursor:pointer}
+.tel-pt{font-size:13.5px!important}
 /* l'entrée de l'administrateur : un point presque invisible, en bas à droite */
 .pt{position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));width:28px;height:28px;border:0;background:none;padding:0;cursor:default;display:grid;place-items:center}
 .pt::after{content:"";width:5px;height:5px;border-radius:50%;background:rgba(243,239,228,.16)}
@@ -61,8 +65,15 @@ p{margin:0 auto;max-width:440px;font:400 17px/1.5 Jost,sans-serif;color:var(--sa
   <p>Nous préparons le nouveau site. En attendant, tout se passe dans l’application : acheter, vendre, négocier, suivre vos commandes.</p>
   <a class="go" id="go" href="application.dc.html?app=1">Ouvrir l’application<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
   <p class="compte" id="compte" aria-live="polite"></p>
-  <div class="pc">Sur ordinateur, l’application s’ouvre ici, dans votre navigateur. Sur téléphone, ouvrez la même adresse dans <b>Chrome</b> ou <b>Safari</b>, puis touchez <b>« Ajouter à l’écran d’accueil »</b>.</div>
-  <ul class="liste">
+  <div class="tel" id="telPanneau" hidden role="status" aria-live="polite">
+    <span class="tel-i" aria-hidden="true">📱</span>
+    <b>Prenez votre téléphone</b>
+    <p>L’application ne s’ouvre pas sur ordinateur. <b>Scannez ce code</b> avec l’appareil photo de votre téléphone :</p>
+    <div class="tel-qr" id="telQr" role="img" aria-label="QR code vers l’application du Marché de Gros"></div>
+    <p>Ou tapez ce lien dans <b>Chrome</b> ou <b>Safari</b> :</p>
+    <div class="tel-lien"><span id="telLien"></span><button type="button" id="telCopie">Copier</button></div>
+    <p class="tel-pt">Vous verrez l’application web. Pour la garder : menu du navigateur → <b>« Ajouter à l’écran d’accueil »</b>.</p>
+  </div>  <ul class="liste">
     <li>Vendre et acheter en gros<small>Offres et demandes, partout en Côte d’Ivoire</small></li>
     <li>Négocier le prix<small>Par écrit, jusqu’à l’accord</small></li>
     <li>Suivre la commande<small>Du chargement à la réception</small></li>
@@ -72,22 +83,34 @@ p{margin:0 auto;max-width:440px;font:400 17px/1.5 Jost,sans-serif;color:var(--sa
 <button type="button" class="pt" id="pt" aria-label="Administration"></button>
 <label class="adm" id="adm"><span>Entrer en tant qu’admin</span><input type="checkbox" role="switch" id="admSw"></label>
 <script src="app/marque.js?v=20261023v"></script>
+<script src="vendor/qrcode-generator-1.4.4.js"></script>
 <script>
 (function () {
   'use strict';
   try { if (window.MDGMarque) document.getElementById('logo').innerHTML = MDGMarque.empile({ fond: 'vert', trait: false }); } catch (_) {}
+  var $ = function (i) { return document.getElementById(i); };
   // l'adresse demandée (#/catalogue…) suit vers l'application
-  var go = document.getElementById('go'), h = location.hash && location.hash !== '#' ? location.hash : '';
+  var go = $('go'), h = location.hash && location.hash !== '#' ? location.hash : '', t = 0, n = 8;
   go.href = 'application.dc.html?app=1' + h;
-  // redirection vers l'application après quelques secondes ; on peut rester sur la page
-  var n = 8, compte = document.getElementById('compte'), t = 0;
-  function dire() { compte.innerHTML = 'Vous allez être redirigé vers l’application dans ' + n + ' s. <button type="button" id="reste">Rester sur cette page</button>'; document.getElementById('reste').onclick = arreter; }
-  function arreter() { clearInterval(t); t = 0; compte.textContent = ''; }
-  dire();
-  t = setInterval(function () { n--; if (n <= 0) { clearInterval(t); location.href = go.href; } else dire(); }, 1000);
+  function arreter() { clearInterval(t); t = 0; $('compte').textContent = ''; }
+  // téléphone, ou administrateur reconnu sur ce navigateur : l'application peut s'ouvrir
+  var tel = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 768, adm = false;
+  try { adm = localStorage.getItem('mdg-site:admin') === '1'; } catch (_) {}
+  if (tel || adm) {
+    // redirection vers l'application après quelques secondes ; on peut rester sur la page
+    var dire = function () { $('compte').innerHTML = 'Vous allez être redirigé vers l’application dans ' + n + ' s. <button type="button" id="reste">Rester sur cette page</button>'; $('reste').onclick = arreter; };
+    dire(); t = setInterval(function () { n--; if (n <= 0) { clearInterval(t); location.href = go.href; } else dire(); }, 1000);
+  } else {
+    // ordinateur ou tablette (22/10/2026) : l'application ne s'ouvre pas → « Prenez votre téléphone », QR code et lien
+    var lien = location.href.replace(/[?#].*$/, '').replace(/maintenance\.html$/, '');
+    $('telLien').textContent = lien.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    try { var q = qrcode(0, 'M'); q.addData(lien); q.make(); $('telQr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (_) { $('telQr').hidden = true; }
+    $('telCopie').onclick = function () { var b = this; (navigator.clipboard ? navigator.clipboard.writeText(lien) : Promise.reject()).then(function () { b.textContent = 'Copié ✓'; }, function () { b.textContent = 'Copiez le lien'; }); };
+    go.onclick = function (e) { e.preventDefault(); var p = $('telPanneau'); p.hidden = false; p.scrollIntoView({ block: 'center', behavior: 'smooth' }); };
+  }
   // l'administrateur : le point en bas à droite montre l'interrupteur ; l'allumer ouvre le site, qui vérifie la connexion
-  var pt = document.getElementById('pt'), adm = document.getElementById('adm'), sw = document.getElementById('admSw');
-  pt.onclick = function () { arreter(); adm.classList.toggle('on'); if (adm.classList.contains('on')) sw.focus(); };
+  var pt = $('pt'), box = $('adm'), sw = $('admSw');
+  pt.onclick = function () { arreter(); box.classList.toggle('on'); if (box.classList.contains('on')) sw.focus(); };
   sw.onchange = function () { if (sw.checked) setTimeout(function () { location.href = 'index-v3.html?admin=1' + h; }, 250); };
 })();
 </script>

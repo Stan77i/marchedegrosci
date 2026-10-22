@@ -195,7 +195,9 @@
 .nx-m.me{align-self:flex-end;background:#171512;color:#F5F0E6}
 .nx-m time{display:block;margin-top:4px;font-size:11.5px;opacity:.6}
 .nx-tk time{display:block;margin-top:6px;font-size:11.5px;color:var(--mute)}
-.nx-tk{align-self:flex-start;min-width:200px;max-width:86%;padding:12px 16px 12px;border-radius:18px;border:1px solid var(--line);background:#16130f}
+.nx-tk{align-self:flex-start;min-width:200px;max-width:86%;padding:12px 16px 12px;border-radius:18px;border:1px solid var(--line);background:#FFFDF8;color:var(--ink)}
+.nx-tk.me{background:#171512;color:#F5F0E6;border-color:transparent}.nx-tk.me .who,.nx-tk.me .qty,.nx-tk.me time,.nx-tk.me .amt small{color:rgba(245,240,230,.72)}
+.nx-tk.me .nx-tag{background:rgba(245,240,230,.12);color:#F5F0E6}.nx-tk.me .nx-tag.acc{background:rgba(242,194,48,.2);color:#F2C230}.nx-tk.me .nx-tag.ok{background:rgba(106,174,240,.22);color:#A9CEF5}.nx-tk.me .nx-tag.bad{background:rgba(226,115,91,.22);color:#F3A08C}
 .nx-tk.me{align-self:flex-end}
 .nx-tk .who{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mute)}
 .nx-tk .amt{margin:6px 0 2px;font:800 27px/1 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}.nx-tk .amt small{font:400 14px Jost,sans-serif;color:var(--mute)}
@@ -311,14 +313,17 @@
     const lab = ok ? 'Accord à ' + fmt(n.prix_final) + ' F' : ['vendeur', 'acheteur'].filter(r => last[r]).map(r => Le(r) + ' : ' + fmt(last[r].p) + ' F').join(', ');
     let h = '<div class="nx-rail" role="img" aria-label="' + esc(lab) + '"><div class="tr">';
     const same = (x, y) => x && y && Math.abs(x - y) < 1;
-    if (n.prix_annonce && !(ok && same(n.prix_final, n.prix_annonce)) && !(last.vendeur && same(last.vendeur.p, n.prix_annonce) && last.acheteur && same(last.acheteur.p, n.prix_annonce))) h += `<span class="tick" style="left:${x(n.prix_annonce)}"><b>affiché ${fmt(n.prix_annonce)}</b></span>`;
+    if (n.prix_annonce && !(ok && same(n.prix_final, n.prix_annonce)) && !(last.vendeur && same(last.vendeur.p, n.prix_annonce) && last.acheteur && same(last.acheteur.p, n.prix_annonce))) {
+      const proche = p => p && Math.abs(parseFloat(x(p.p)) - parseFloat(x(n.prix_annonce))) < 14;   // étiquettes à moins de 14 % : elles se chevaucheraient
+      h += `<span class="tick" style="left:${x(n.prix_annonce)}">${proche(last.acheteur) || (proche(last.vendeur) && !last.acheteur) ? '' : `<b>affiché ${fmt(n.prix_annonce)}</b>`}</span>`; }
     if (ok) h += `<span class="gap is-ok" style="left:0;width:100%"></span><span class="pin ok up" style="left:${x(n.prix_final)}"><i></i><b>${fmt(n.prix_final)} F<small>convenu</small></b></span>`;
     else {
       const v = last.vendeur, a = last.acheteur;
       if (v && a && same(v.p, a.p)) return h + `<span class="pin ok up" style="left:${x(v.p)}"><i></i><b>${fmt(v.p)} F<small>même prix des deux côtés</small></b></span></div></div>`;
       if (v && a) { const l = Math.min(v.p, a.p), r = Math.max(v.p, a.p); h += `<span class="gap" style="left:${x(l)};width:calc(${x(r)} - ${x(l)})"></span>`; }
       if (v) h += `<span class="pin v up${v.live ? '' : ' off'}" style="left:${x(v.p)}"><i></i><b>${fmt(v.p)}<small>vendeur</small></b></span>`;
-      if (a) h += `<span class="pin a ${v ? 'dn' : 'up'}${a.live ? '' : ' off'}" style="left:${x(a.p)}"><i></i><b>${v ? '<small>acheteur</small>' : ''}${fmt(a.p)}${v ? '' : '<small>acheteur</small>'}</b></span>`;
+      const aff = q => n.prix_annonce && same(q.p, n.prix_annonce) ? ' · = affiché' : '';
+      if (a) h += `<span class="pin a ${v ? 'dn' : 'up'}${a.live ? '' : ' off'}" style="left:${x(a.p)}"><i></i><b>${v ? `<small>acheteur${aff(a)}</small>` : ''}${fmt(a.p)}${v ? '' : `<small>acheteur${aff(a)}</small>`}</b></span>`;
     }
     return h + '</div></div>';
   }

@@ -684,6 +684,6 @@ Lui proposer de coller ceci :
 
 ## Fil public « Dernières annonces » + défilement sans flash (22/10/2026) — schéma 55
 - Le fil (Accueil → Activité) est visible par tout le monde, partout, sans compte : offres, demandes, et maintenant **ventes conclues** (`ventes_recentes()`, anonymes : produit, quantité, ville, date ; 30 derniers jours). Toucher une ligne ouvre la fiche du produit ; écrire, négocier ou publier demandent la connexion (puis l'action reprend).
-- « En cours » sans compte : un bouton « Se connecter » au lieu de deux phrases « connectez-vous ».
+- « En cours » n'apparaît que pour une personne connectée (sans compte : la section n'existe pas).
 - Défilement au doigt : les lignes ne « flashent » plus (l'effet d'appui attend 0,12 s sur écran tactile, plus de voile gris d'iOS).
 - Tournée de toutes les pages et fenêtres (visiteur et connecté) : aucune erreur.

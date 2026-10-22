@@ -1,5 +1,7 @@
 # Paiement par séquestre : l'argent passe par le Marché de Gros
 
+> **Mise à jour du 22/10/2026 : la mécanique est construite (schéma 57, voir PASSATION.md). Il ne manque que le partenaire financier : sa fonction Edge appellera `sequestre_depot_confirme()`, puis versera ce que `sequestre_versements` indique.** Ci-dessous, la proposition d'origine.
+>
 > Proposition d'architecture, rien n'est construit. Il n'y a **aucun paiement** dans l'application aujourd'hui. Les bons de transaction disent honnêtement : « Paiement : à la livraison, hors application ».
 > Rédigé le 20 octobre 2026. Les décisions marquées **À trancher** reviennent au propriétaire.
 

@@ -18,7 +18,10 @@
 // 10. par la base (pg_cron, public.rappels_envoyer) pour un rappel d'achat, avec { rappel_id } (schema-33) : rien n'est acheté.
 // 11. par la base (déclencheur public.push_groupe) pour un achat groupé, avec { groupe_id, statut }, { groupe_id, reconfirmer }
 //     ou { groupe_id, rejoint } (schema-35, complété au schema-41 : groupe ouvert, nouvel acheteur).
-//  5 bis. une demande qui vient d'un besoin professionnel (schema-34) prévient aussi les vendeurs qui ont une offre active de ce produit.
+// 12. par la base (déclencheur public.push_besoin) pour un besoin professionnel publié, avec { besoin_id } (schema-43) :
+//     ceux qui suivent ses produits, les vendeurs de ces produits, puis les comptes à identité vérifiée (annonce du marché).
+// Annonces du marché (schema-43) : achat groupé ouvert, besoin pro, nouvelle offre ou demande → tous les comptes qui ont activé
+// les notifications, sauf ceux qui les ont coupées ; au plus 10 par personne et par jour (push_diffusion_cible).
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
 import webpush from "npm:web-push@3.6.7";
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
@@ -51,6 +54,21 @@ async function nomDe(uid: string) {
   if (data.pseudo) return data.pseudo;
   if (data.prenom) return data.prenom + (data.nom ? " " + (data.nom_public ? data.nom : data.nom[0] + ".") : "");
   return "Votre interlocuteur";
+}
+
+// annonce du marché : les destinataires sont choisis et comptés par la base (plafond du jour, réglage, bannis exclus) ;
+// envoi par paquets de 40 en parallèle, pour tenir même avec des milliers de comptes
+const PLAFOND_JOUR = 10;
+async function diffuser(type: string, exclure: string[], charge: Record<string, unknown>) {
+  const { data, error } = await sb.rpc("push_diffusion_cible", { p_type: type, p_exclure: exclure, p_max_jour: PLAFOND_JOUR });
+  if (error) return { erreur: error.message };
+  const ids = ((data || []) as unknown[]).map((x) => typeof x === "string" ? x : String((x as Record<string, unknown>).push_diffusion_cible ?? ""));
+  let envoyees = 0;
+  for (let i = 0; i < ids.length; i += 40) {
+    const r = await Promise.all(ids.slice(i, i + 40).filter(Boolean).map((u) => envoyer(u, charge).catch(() => ({ envoyees: 0 }))));
+    envoyees += r.reduce((n, x) => n + ((x as { envoyees?: number }).envoyees || 0), 0);
+  }
+  return { comptes: ids.length, envoyees };
 }
 
 // envoie à tous les téléphones d'un compte ; retire ceux que le service de notification ne connaît plus
@@ -224,7 +242,10 @@ Deno.serve(async (req) => {
         if (o?.product_slug) {
           const { data: abos } = await sb.from("alertes_produits").select("user_id").eq("product_slug", o.product_slug).eq("offres", true);
           const deja = new Set([g.vendeur_id, g.createur_id, ...parts]);
-          for (const ab of abos || []) if (!deja.has(ab.user_id)) res.push(await envoyer(ab.user_id, { title: `Achat groupé ouvert : ${produit}`, body: "Rejoignez d'autres acheteurs pour payer moins cher. Rien n'est commandé sans votre confirmation.", tag, url }));
+          for (const ab of abos || []) if (!deja.has(ab.user_id)) { deja.add(ab.user_id); res.push(await envoyer(ab.user_id, { title: `Achat groupé ouvert : ${produit}`, body: "Rejoignez d'autres acheteurs pour payer moins cher. Rien n'est commandé sans votre confirmation.", tag, url })); }
+          // annonce du marché : tous les comptes
+          const tous = await diffuser("groupe", [...deja].filter(Boolean) as string[], { title: `Achat groupé : ${produit}`, body: "Des acheteurs se regroupent pour payer moins cher. Rejoignez-les : rien n'est commandé sans votre confirmation.", tag, url });
+          return json({ res, tous });
         }
         return json({ res });
       }
@@ -247,18 +268,39 @@ Deno.serve(async (req) => {
       const t = corps.annonce === "demandes" ? "demandes" : "offres";
       const { data: a } = await sb.from(t).select("*").eq("id", String(corps.id)).maybeSingle();
       if (!a || a.status !== "active") return json({ rien: true });
+      if (t === "demandes" && a.besoin_id) return json({ rien: true, besoin: true });   // le besoin entier est annoncé une fois (cas 12)
       const { data: abos } = await sb.from("alertes_produits").select("user_id").eq("product_slug", a.product_slug).eq(t, true).neq("user_id", a.user_id);
       const nom = a.product_label || a.product_slug, u = a.unit || "kg", px = t === "offres" ? a.price : a.budget;
       const corpsTxt = [a.quantity ? new Intl.NumberFormat("fr-FR").format(a.quantity) + " " + u : "", a.city || "", px ? (t === "offres" ? "" : "budget ") + F(px) + " / " + u : ""].filter(Boolean).join(" · ");
       const res = [];
       const prevenus = new Set<string>();
       for (const ab of abos || []) { prevenus.add(ab.user_id); res.push(await envoyer(ab.user_id, { title: (t === "offres" ? "Nouvelle offre : " : "Nouvelle demande : ") + nom, body: corpsTxt || "Touchez pour voir", tag: "annonce-" + a.id, url: "application.dc.html#/produits/" + a.product_slug })); }
-      // 5 bis. besoin professionnel (schema-34) : les vendeurs qui ont une offre active de ce produit sont prévenus aussi
-      if (t === "demandes" && a.besoin_id) {
-        const { data: vs } = await sb.from("offres").select("user_id").eq("product_slug", a.product_slug).eq("status", "active").neq("user_id", a.user_id).limit(200);
-        for (const v of [...new Set((vs || []).map((x: { user_id: string }) => x.user_id))]) if (!prevenus.has(v)) { prevenus.add(v); res.push(await envoyer(v, { title: "Un professionnel cherche : " + nom, body: (corpsTxt || "Touchez pour voir") + " — vous en vendez : proposez votre prix.", tag: "annonce-" + a.id, url: "application.dc.html#/produits/" + a.product_slug })); }
-      }
-      return json({ abonnes: res.length, res });
+      // annonce du marché : tous les autres comptes ; une seule notification d'annonce à la fois sur le téléphone (même étiquette)
+      const tous = await diffuser("annonce", [a.user_id, ...prevenus], { title: (t === "offres" ? "Nouvelle offre : " : "Nouvelle demande : ") + nom, body: corpsTxt || "Touchez pour voir", tag: "marche-annonce", url: "application.dc.html#/produits/" + a.product_slug });
+      return json({ abonnes: res.length, res, tous });
+    }
+
+    // 12. un besoin professionnel publié (une seule notification pour tout le besoin)
+    if (corps.besoin_id) {
+      const { data: b } = await sb.from("besoins").select("id, user_id, titre, type_acheteur, frequence, ville, region_slug, statut").eq("id", String(corps.besoin_id)).maybeSingle();
+      if (!b || b.statut !== "ouvert") return json({ rien: true });
+      const { data: ds } = await sb.from("demandes").select("product_slug, product_label").eq("besoin_id", b.id);
+      const slugs = [...new Set((ds || []).map((d: { product_slug: string }) => d.product_slug))];
+      const noms = [...new Set((ds || []).map((d: { product_label: string; product_slug: string }) => d.product_label || d.product_slug))];
+      if (!slugs.length) return json({ rien: true });
+      const TYPES: Record<string, string> = { restaurant: "Un restaurant", hotel: "Un hôtel", cantine: "Une cantine", revendeur: "Un revendeur", autre: "Un professionnel" };
+      const nomQ = await nomDe(b.user_id), qui = nomQ === "Votre interlocuteur" ? (TYPES[b.type_acheteur] || "Un professionnel") : nomQ;
+      const quand = b.frequence === "mensuelle" ? " chaque mois" : b.frequence === "hebdomadaire" ? " chaque semaine" : "";
+      const lieu = b.ville || "";
+      const charge = { title: `${qui} s'approvisionne${quand}`, body: `${noms.slice(0, 3).join(", ")}${noms.length > 3 ? "…" : ""}${lieu ? " · " + lieu : ""} — proposez vos prix.`, tag: "besoin-" + b.id, url: "application.dc.html#/?besoin=" + b.id };
+      const prevenus = new Set<string>([b.user_id]), res = [];
+      // personnel : ceux qui suivent ces produits, et les vendeurs qui en ont en stock
+      const { data: abos } = await sb.from("alertes_produits").select("user_id").in("product_slug", slugs).eq("demandes", true);
+      const { data: vs } = await sb.from("offres").select("user_id").in("product_slug", slugs).eq("status", "active").limit(500);
+      for (const u of [...new Set([...(abos || []), ...(vs || [])].map((x: { user_id: string }) => x.user_id))]) if (!prevenus.has(u)) { prevenus.add(u); res.push(await envoyer(u, charge)); }
+      // annonce du marché : les comptes à identité vérifiée
+      const tous = await diffuser("besoin", [...prevenus], charge);
+      return json({ personnels: res.length, tous });
     }
 
     const id = String(corps.message_id || "");

@@ -20,6 +20,9 @@
 //     ou { groupe_id, rejoint } (schema-35, complété au schema-41 : groupe ouvert, nouvel acheteur).
 // 12. par la base (déclencheur public.push_besoin) pour un besoin professionnel publié, avec { besoin_id } (schema-43) :
 //     ceux qui suivent ses produits, les vendeurs de ces produits, puis les comptes à identité vérifiée (annonce du marché).
+// 13. par la base (pg_cron « mdg-marketing », public.marketing_tick, schema-45) avec { marketing: true, numero } :
+//     une notification régulière à tous (30 par jour au plus, réglable), tirée des VRAIES données du moment ou présentant
+//     une vraie fonction de l'application. Jamais de message faux. Étiquette « marche-pub » : elle remplace la précédente.
 // Annonces du marché (schema-43) : achat groupé ouvert, besoin pro, nouvelle offre ou demande → tous les comptes qui ont activé
 // les notifications, sauf ceux qui les ont coupées ; au plus 10 par personne et par jour (push_diffusion_cible).
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
@@ -301,6 +304,52 @@ Deno.serve(async (req) => {
       // annonce du marché : les comptes à identité vérifiée
       const tous = await diffuser("besoin", [...prevenus], charge);
       return json({ personnels: res.length, tous });
+    }
+
+    // 13. notification marketing régulière : vraies données ou vraie fonction, à tour de rôle
+    if (corps.marketing) {
+      const k = Math.max(0, Number(corps.numero || 0)), jour = new Date(Date.now() - 24 * 3600e3).toISOString(), semaine = new Date(Date.now() - 7 * 24 * 3600e3).toISOString();
+      const nf = (n: number) => new Intl.NumberFormat("fr-FR").format(n).replace(/ | /g, " ");
+      const { data: of } = await sb.from("offres").select("product_slug, product_label, city, price, unit, created_at").eq("status", "active").order("created_at", { ascending: false }).limit(300);
+      const { data: de } = await sb.from("demandes").select("product_slug, product_label, city, created_at").eq("status", "active").gte("created_at", semaine).order("created_at", { ascending: false }).limit(300);
+      const { count: grp } = await sb.from("groupes_achat").select("id", { count: "exact", head: true }).in("statut", ["ouvert", "seuil_atteint"]);
+      const { count: bes } = await sb.from("besoins").select("id", { count: "exact", head: true }).eq("statut", "ouvert");
+      const nom = (x: { product_label?: string; product_slug: string }) => x.product_label || x.product_slug;
+      const of24 = (of || []).filter((x: { created_at: string }) => x.created_at >= jour);
+      const donnees: { title: string; body: string; url: string }[] = [];
+      if (of24.length) donnees.push({ title: `🧺 ${nf(of24.length)} nouvelle${of24.length > 1 ? "s" : ""} offre${of24.length > 1 ? "s" : ""} aujourd'hui`, body: `Dont ${nom(of24[0])}${of24[0].city ? " à " + of24[0].city : ""}. Négociez le prix directement avec le vendeur.`, url: "application.dc.html#/catalogue" });
+      if ((de || []).length) { const ps = [...new Set((de || []).map(nom))]; donnees.push({ title: `🛒 Des acheteurs cherchent : ${ps.slice(0, 3).join(", ")}${ps.length > 3 ? "…" : ""}`, body: "Vous en avez ? Publiez votre offre : ils sont prévenus tout de suite.", url: "application.dc.html#/vendre" }); }
+      if (grp) donnees.push({ title: `👥 ${nf(grp)} achat${grp > 1 ? "s" : ""} groupé${grp > 1 ? "s" : ""} ouvert${grp > 1 ? "s" : ""}`, body: "Achetez à plusieurs, payez moins cher. Rien n'est commandé sans votre confirmation.", url: "application.dc.html#/catalogue" });
+      if (bes) donnees.push({ title: `🏪 ${nf(bes)} professionnel${bes > 1 ? "s" : ""} s'approvisionne${bes > 1 ? "nt" : ""}`, body: "Restaurants, hôtels, cantines cherchent des fournisseurs. Proposez vos prix.", url: "application.dc.html#/catalogue" });
+      { const par: Record<string, number[]> = {}, lab: Record<string, string> = {}, un: Record<string, string> = {};
+        for (const o of of || []) if (o.price) { (par[o.product_slug] = par[o.product_slug] || []).push(Number(o.price)); lab[o.product_slug] = nom(o); un[o.product_slug] = o.unit || "kg"; }
+        const top = Object.keys(par).filter((p) => par[p].length >= 2).sort((a, b) => par[b].length - par[a].length)[0];
+        if (top) { const v = par[top]; donnees.push({ title: `📊 ${lab[top]} : de ${nf(Math.min(...v))} à ${nf(Math.max(...v))} F / ${un[top]}`, body: "Comparez les prix des vendeurs avant d'acheter, dans Prix du marché.", url: "application.dc.html#/prix" }); } }
+      const CONSEILS = [
+        { title: "🤝 Négociez le prix", body: "Proposez votre prix au vendeur, il vous répond dans l'application. C'est gratuit.", url: "application.dc.html#/catalogue" },
+        { title: "🧺 Vendez en direct", body: "Publiez votre récolte en une minute : les acheteurs sont prévenus tout de suite.", url: "application.dc.html#/vendre" },
+        { title: "🔒 Votre numéro reste caché", body: "On vous écrit dans l'application : pas d'appels de gens inconnus.", url: "application.dc.html#/" },
+        { title: "👥 Achetez à plusieurs", body: "Regroupez-vous avec d'autres acheteurs pour atteindre le gros volume et payer moins cher.", url: "application.dc.html#/catalogue" },
+        { title: "💵 Payez à la livraison", body: "Voyez la marchandise d'abord : rien n'est payé dans l'application.", url: "application.dc.html#/" },
+        { title: "🔔 Suivez vos produits", body: "Activez une alerte produit : on vous prévient dès qu'une offre arrive.", url: "application.dc.html#/catalogue" },
+        { title: "🏪 Approvisionnement pro", body: "Restaurant, hôtel, cantine : publiez votre liste une fois, les vendeurs vous répondent.", url: "application.dc.html#/demande" },
+        { title: "🚚 Transporteurs vérifiés", body: "Faites livrer par un chauffeur vérifié par l'équipe, et suivez la livraison en direct.", url: "application.dc.html#/" },
+        { title: "📅 Le calendrier des récoltes", body: "Achetez au bon moment : la saison de chaque produit, mois par mois.", url: "application.dc.html#/annee" },
+        { title: "✅ Faites vérifier votre identité", body: "Un profil vérifié inspire confiance : vous vendez et achetez plus facilement.", url: "application.dc.html#/" },
+        { title: "🗺️ Qui a quoi, et où ?", body: "La carte montre les offres et les demandes près de chez vous.", url: "application.dc.html#/carte" },
+        { title: "📈 Le juste prix", body: "Ce que demandent les vendeurs, partout en Côte d'Ivoire : consultez Prix du marché.", url: "application.dc.html#/prix" },
+      ];
+      // une notification sur quatre donne une donnée du moment (sans répéter la même trop souvent), les autres un conseil
+      const m = donnees.length && k % 4 === 0 ? donnees[(k / 4) % donnees.length] : CONSEILS[(k - Math.floor(k / 4) - 1 + CONSEILS.length * 9) % CONSEILS.length];
+      const { data: ids, error } = await sb.rpc("push_marketing_cible");
+      if (error) return json({ erreur: error.message }, 500);
+      const L = ((ids || []) as unknown[]).map((x) => typeof x === "string" ? x : String((x as Record<string, unknown>).push_marketing_cible ?? "")).filter(Boolean);
+      let envoyees = 0;
+      for (let i = 0; i < L.length; i += 40) {
+        const r = await Promise.all(L.slice(i, i + 40).map((u) => envoyer(u, { ...m, tag: "marche-pub" }).catch(() => ({ envoyees: 0 }))));
+        envoyees += r.reduce((n, x) => n + ((x as { envoyees?: number }).envoyees || 0), 0);
+      }
+      return json({ message: m.title, comptes: L.length, envoyees });
     }
 
     const id = String(corps.message_id || "");

@@ -415,3 +415,13 @@ Lui proposer de coller ceci :
   - Les étiquettes (en attente, acceptée…) sont relues sur ces fonds.
 - Réglette des prix : l'étiquette « affiché 100 000 » se superposait à « acheteur ». Quand un prix est à moins de 14 % du repère, l'étiquette n'est plus écrite et le prix dit « acheteur · = affiché ».
 - Fouille en mode jour (robot sur 12 pages et 22 fenêtres) : aucun autre texte illisible. Les 3 signalements restants sont des faux positifs : indicateur d'onglet, texte de secours caché sous le sac, croix posée sur une photo.
+
+**Notifications régulières « marketing »** (schéma 45, pousser v13, 22/10)
+- Choix du propriétaire : **30 par jour**, envoyées à tous les comptes, avec l'interrupteur « Annonces du marché » pour les couper.
+- Règle tenue (signalée au propriétaire) : **aucun message faux** (« une personne vous attend » quand ce n'est pas vrai). Les messages viennent des vraies données ou présentent une vraie fonction :
+  - une notification sur quatre : offres du jour, acheteurs qui cherchent tel produit, achats groupés ouverts, besoins pros, fourchette de prix ;
+  - les autres : 12 conseils sur l'application (négocier, vendre en direct, numéro caché, achat groupé, paiement à la livraison, alertes, approvisionnement pro, transporteurs, calendrier, identité, carte, prix).
+- Horloge pg_cron `mdg-marketing` toutes les 10 min. `marketing_tick()` envoie si l'intervalle est écoulé : (21 h − 7 h) / 30 ≈ 28 min. Pas d'envoi la nuit.
+- Compteur séparé (`push_marketing_jour`), qui n'entame pas les 10 annonces du marché. Étiquette `marche-pub` : la notification remplace la précédente sur le téléphone.
+- **Pour changer la fréquence sans toucher au code** : `update public.marketing_reglage set max_jour = 12;` (0 = arrêt). On peut aussi régler `debut_h` et `fin_h`.
+- Vérifié sans envoi réel, de nuit, avec le plafond à 0 : 200, messages bien composés. Remis à 30.

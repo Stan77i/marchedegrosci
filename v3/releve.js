@@ -66,7 +66,7 @@
 .rl-t b{display:block;margin-top:2px;font:800 26px/1.05 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}
 .rl-t span{display:block;margin-top:4px;font:600 15px/1.2 Jost,sans-serif;font-variant-numeric:tabular-nums}
 .rl-t.v span{color:#F2C230}
-.rl-vol{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}.rl-vol span{display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border-radius:15px;background:rgba(16,57,43,.08);color:#10392B;font:600 13.5px Jost,sans-serif}
+.rl-vol{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;min-height:30px}.rl-vol span{display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border-radius:15px;background:rgba(16,57,43,.08);color:#10392B;font:600 13.5px Jost,sans-serif}
 .rl-seg{display:flex;padding:3px;border-radius:14px;background:rgba(23,21,18,.07);margin:0 0 10px}
 .rl-seg button{flex:1;min-height:44px;border:0;border-radius:11px;background:none;color:#4B4436;font:500 14px Jost,sans-serif;cursor:pointer}
 .rl-seg button[aria-pressed=true]{background:#FFFDF8;color:#171512;font-weight:600;box-shadow:0 1px 3px rgba(23,21,18,.12)}
@@ -119,7 +119,7 @@
       <div class="rl-chips" role="group" aria-label="Période">${PERIODES.map(([k, l]) => `<button type="button" class="rl-chip" data-p="${k}" aria-pressed="${etat.p === k}">${l}</button>`).join('')}</div>
       ${etat.p === 'dates' ? `<div class="rl-dates"><label>Du<input type="date" data-d1 value="${esc(etat.d1)}"></label><label>Au<input type="date" data-d2 value="${esc(etat.d2)}"></label></div>` : ''}
       <div class="rl-tot">${t('v', V.length > 1 ? 'Ventes' : 'Vente', V.length, som(V))}${t('', A.length > 1 ? 'Achats' : 'Achat', A.length, som(A))}</div>
-      ${vol.length ? `<div class="rl-vol" aria-label="Volumes">${vol.map(v => `<span>${esc(vTxt(v))}</span>`).join('')}</div>` : '<div style="height:6px"></div>'}
+      ${vol.length ? `<div class="rl-vol" aria-label="Volumes">${vol.map(v => `<span>${esc(vTxt(v))}</span>`).join('')}</div>` : '<div class="rl-vol" aria-hidden="true"></div>'}
       <div class="rl-seg" role="group" aria-label="Afficher">${[['tout', 'Tout'], ['vente', 'Ventes'], ['achat', 'Achats']].map(([k, l]) => `<button type="button" data-s="${k}" aria-pressed="${etat.sens === k}">${l}</button>`).join('')}</div>
       <div class="rl-li">${charge && !liste.length ? (window.MDGSac ? MDGSac.charge('Vos transactions arrivent…') : '<p>Chargement…</p>')
         : L.length ? L.map((x, i) => `<button type="button" class="rl-r${x.sens === 'achat' ? ' a' : ''}" data-i="${liste.indexOf(x)}"><span class="o" aria-hidden="true">${IC(x.sens === 'vente' ? 'vendre' : 'acheter', 20)}</span>

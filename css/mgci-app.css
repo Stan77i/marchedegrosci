@@ -491,3 +491,25 @@ html[data-theme=sombre] .dr-clair button[style*="A4472C"]{color:#EE9A62!importan
 .acc-emo { display: block; font: normal 21px/1 "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; animation: odPanier 7s 1.6s ease-in-out infinite; }
 .acc-emo.d { animation-name: odCaddie; animation-delay: 3.1s; }
 @media (prefers-reduced-motion: reduce) { .acc-emo { animation: none; } }
+
+/* ——— « Tout » : le « + » de chaque produit → J'ai / Je cherche, puis la publication déjà réglée sur ce produit ——— */
+.tv-case { position: relative; display: grid; }
+.tv-plus { position: absolute; top: 5px; right: 5px; width: 30px; height: 30px; border: 0; border-radius: 15px; display: grid; place-items: center; cursor: pointer;
+  background: #F2C230; color: #171512; box-shadow: 0 2px 8px rgba(0, 0, 0, .35); transition: transform .25s cubic-bezier(.3, 1.6, .5, 1), background .2s; }
+.tv-plus::after { content: ""; position: absolute; inset: -7px; }   /* cible de 44 px */
+.tv-plus[aria-expanded="true"] { transform: rotate(45deg); background: #F5F0E6; z-index: 3; }
+.tv-plus:focus-visible { outline: 2px solid #F5F0E6; outline-offset: 2px; }
+.tv-choix { position: absolute; inset: 0; z-index: 2; display: grid; grid-template-rows: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 18px; background: rgba(18, 16, 13, .9);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); animation: tvOuvre .22s cubic-bezier(.22, 1, .36, 1) both; }
+.tv-choix button { display: flex; align-items: center; gap: 7px; min-height: 44px; padding: 0 8px; border: 0; border-radius: 14px; cursor: pointer; text-align: left; font-family: var(--f-texte, Jost), sans-serif; }
+.tv-choix button span { display: flex; flex-direction: column; min-width: 0; line-height: 1.1; }
+.tv-choix b { font-size: 13.5px; font-weight: 700; white-space: nowrap; }
+.tv-choix small { font-size: 11px; opacity: .78; white-space: nowrap; }
+.tv-choix .o { background: linear-gradient(135deg, #6FD39A, #4CC488); color: #0E3B25; }
+.tv-choix .d { background: linear-gradient(135deg, #FFD95A, #F2C230); color: #3D2E00; }
+.tv-choix .od { background: rgba(255, 255, 255, .55); box-shadow: none; }
+.tv-choix button:active { transform: scale(.97); }
+.tv-choix button:focus-visible { outline: 2px solid #F5F0E6; outline-offset: 1px; }
+@keyframes tvOuvre { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .tv-choix { animation: none; } .tv-plus { transition: none; } }
+.tv-choix .o { padding-right: 38px; }

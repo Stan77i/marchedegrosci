@@ -355,6 +355,12 @@
   - Les repères bleus (négociations, achats conclus) et le voyant « en ligne » ne changent pas : ce ne sont ni des offres ni des demandes.
 - Les fenêtres des modules (`v3/…`) dessinent ces repères en CSS, sur leurs `<i>` existants (`::before { content: "🧺" }`).
 
+### « Tout » : le « + » de chaque produit → J'ai / Je cherche
+- Chaque produit de la grille « Tous les produits » a un « + » maïs en haut à droite.
+- En le touchant, la case se coupe en deux : « 🧺 J'ai, à vendre » (vert) et « 🛒 Je cherche, à acheter » (maïs). Le « + » tourne en « × » pour annuler.
+- Le choix ferme la grille, met le produit au centre de la roue et ouvre la fenêtre J'ai / Je cherche déjà réglée sur ce produit et sur ce sens : quantité, unité, région, prix ou budget, ville, délai. Le lien vers le formulaire complet donne les exigences.
+- Code : état `tvPlus` dans `toutVoir()` ; styles `.tv-case`, `.tv-plus`, `.tv-choix`.
+
 ## 5. En attente d'une décision du propriétaire
 
 

@@ -48,7 +48,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261025g">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261025h">
 <link rel="stylesheet" href="css/sombre.css?v=20261025f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261025g">
@@ -660,7 +660,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   <div class="tv-fams" role="group" aria-label="Familles"><sc-for list="{{ toutFams }}" as="c" hint-placeholder-count="6"><button type="button" aria-pressed="{{ c.on }}" onClick="{{ c.go }}"><sc-if value="{{ c.vif }}" hint-placeholder-val="{{ false }}"><i></i></sc-if>{{ c.t }}<b>{{ c.n }}</b></button></sc-for></div>
   <div class="tv-corps">
     <sc-for list="{{ toutSecs }}" as="g" hint-placeholder-count="0"><section class="tv-sec"><sc-if value="{{ g.titreOn }}" hint-placeholder-val="{{ false }}"><h3>{{ g.t }}<span>{{ g.n }}</span></h3></sc-if><div class="tv-grille">
-      <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="0"><button type="button" class="tv-p" aria-current="{{ p.ici }}" onClick="{{ p.go }}" aria-label="{{ p.lab }}"><span class="tv-img"><img sc-camel-src="{{ p.img }}" alt="" loading="lazy" decoding="async" style="object-fit:{{ p.fit }};border-radius:{{ p.rad }}"></span><span class="tv-n">{{ p.name }}</span><sc-if value="{{ p.vif }}" hint-placeholder-val="{{ false }}"><span class="tv-c"><sc-if value="{{ p.hasO }}" hint-placeholder-val="{{ false }}"><span class="o"><i></i>{{ p.o }}</span></sc-if><sc-if value="{{ p.hasD }}" hint-placeholder-val="{{ false }}"><span class="d"><i></i>{{ p.d }}</span></sc-if></span></sc-if></button></sc-for>
+      <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="0"><div class="tv-case"><button type="button" class="tv-p" aria-current="{{ p.ici }}" onClick="{{ p.go }}" aria-label="{{ p.lab }}"><span class="tv-img"><img sc-camel-src="{{ p.img }}" alt="" loading="lazy" decoding="async" style="object-fit:{{ p.fit }};border-radius:{{ p.rad }}"></span><span class="tv-n">{{ p.name }}</span><sc-if value="{{ p.vif }}" hint-placeholder-val="{{ false }}"><span class="tv-c"><sc-if value="{{ p.hasO }}" hint-placeholder-val="{{ false }}"><span class="o"><i></i>{{ p.o }}</span></sc-if><sc-if value="{{ p.hasD }}" hint-placeholder-val="{{ false }}"><span class="d"><i></i>{{ p.d }}</span></sc-if></span></sc-if></button><button type="button" class="tv-plus" onClick="{{ p.plus }}" aria-label="{{ p.plusL }}" aria-expanded="{{ p.plusX }}"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button><sc-if value="{{ p.plusOn }}" hint-placeholder-val="{{ false }}"><div class="tv-choix" role="group" aria-label="{{ p.choixL }}"><button type="button" class="o" onClick="{{ p.jai }}"><i class="od od-o" aria-hidden="true">🧺</i><span><b>J’ai</b><small>à vendre</small></span></button><button type="button" class="d" onClick="{{ p.cherche }}"><i class="od od-d" aria-hidden="true">🛒</i><span><b>Je cherche</b><small>à acheter</small></span></button></div></sc-if></div></sc-for>
     </div></section></sc-for>
     <sc-if value="{{ toutVide }}" hint-placeholder-val="{{ false }}"><p class="tv-vide">{{ toutVideTxt }}</p></sc-if>
     <div style="height:{{ botPad }}"></div>
@@ -1168,10 +1168,10 @@ class Component extends DCLogic {
   // messages après une action : la bannière commune (app/toast.js) ; l'ancienne pastille reste en secours
   say(t, o) { if (window.MDGToast) return window.MDGToast.dire(t, o); clearTimeout(this.tt); this.setState({ toast: t, toastOn: true }); this.tt = setTimeout(() => this.setState({ toastOn: false }), 2400); }
   /* « Tout voir » : tous les produits en grille. Par défaut la famille affichée dans la roue ; « Avec annonces » ne garde que ce qui a des offres
-     ou des demandes ; la recherche porte sur le nom et les autres noms (alias). Toucher un produit le met au centre de la roue. Calculé seulement
+     ou des demandes ; la recherche porte sur le nom et les autres noms (alias). Toucher un produit le met au centre de la roue ; son « + » propose J'ai / Je cherche et ouvre la publication. Calculé seulement
      quand la fenêtre est ouverte (des centaines de vignettes). */
   toutVoir(S, O, D, F) {
-    const nP = this.FAMS.reduce((a, f) => a + f.prods.length, 0), base = { openTout: () => this.setState({ sheet: 'tout', sheetDy: 0, tq: '', tvF: this.state.fam }), toutL: 'Tout voir : les ' + nP + ' produits en grille' };
+    const nP = this.FAMS.reduce((a, f) => a + f.prods.length, 0), base = { openTout: () => this.setState({ sheet: 'tout', sheetDy: 0, tq: '', tvF: this.state.fam, tvPlus: null }), toutL: 'Tout voir : les ' + nP + ' produits en grille' };
     if (S.sheet !== 'tout') return Object.assign(base, { toutSecs: [], toutFams: [], toutSous: '', tq: '', tqOn: false, toutVide: false });
     const A = window.MDGApp, cO = {}, cD = {}; O.forEach(x => { cO[x.slug] = (cO[x.slug] || 0) + 1; }); D.forEach(x => { cD[x.slug] = (cD[x.slug] || 0) + 1; });
     const vif = p => (cO[p.slug] || 0) + (cD[p.slug] || 0) > 0, q = A.norm((S.tq || '').trim()), tf = S.tvF == null ? S.fam : S.tvF;
@@ -1180,7 +1180,12 @@ class Component extends DCLogic {
     const tuile = (p, f, i) => { const P = this.prod(p.slug), o = cO[p.slug] || 0, d = cD[p.slug] || 0;
       return { name: p.name, img: P.thumb, fit: P.fit, rad: P.sack ? '0' : '14px', ici: String(p.slug === act.slug), vif: o + d > 0, hasO: o > 0, hasD: d > 0, o, d,
         lab: p.name + (o ? ', ' + o + ' offre' + (o > 1 ? 's' : '') : '') + (d ? ', ' + d + ' demande' + (d > 1 ? 's' : '') : ''),
-        go: () => this.setState({ fam: f, rot: i, dragging: false, sheet: null, sheetDy: 0, tq: '' }) }; };
+        go: () => this.setState({ fam: f, rot: i, dragging: false, sheet: null, sheetDy: 0, tq: '', tvPlus: null }),
+        // « + » : la case se coupe en deux (J'ai / Je cherche) ; le choix ouvre la publication déjà réglée sur ce produit
+        plusOn: S.tvPlus === p.slug, plusX: String(S.tvPlus === p.slug), plusL: S.tvPlus === p.slug ? 'Fermer le choix' : 'Publier pour ' + p.name + ' : j’ai ou je cherche', choixL: p.name + ' : que voulez-vous publier ?',
+        plus: () => this.setState({ tvPlus: this.state.tvPlus === p.slug ? null : p.slug }),
+        jai: () => { this.setState({ fam: f, rot: i, dragging: false, tvPlus: null, tq: '' }); this.openSheet('jai', p.slug); },
+        cherche: () => { this.setState({ fam: f, rot: i, dragging: false, tvPlus: null, tq: '' }); this.openSheet('cherche', p.slug); } }; };
     // en cherchant, toutes les familles ; sinon la famille choisie, « avec annonces » ou toutes
     const secs = this.FAMS.map((f, fi) => ({ f, fi, items: f.prods.map((p, i) => ({ p, i })).filter(({ p }) => trouve(p) && (q || tf === 'tout' || (tf === 'vif' ? vif(p) : fi === tf))) }))
       .filter(g => g.items.length).map(g => ({ t: g.f.name, n: g.items.length, titreOn: !!q || tf === 'tout' || tf === 'vif', items: g.items.map(({ p, i }) => tuile(p, g.fi, i)) }));

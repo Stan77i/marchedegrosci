@@ -258,7 +258,7 @@
 .idv-go[disabled]{opacity:.45;cursor:default}
 .idv-alt{min-height:46px;border:0;border-radius:23px;background:rgba(23,21,18,.07);color:var(--ink);font:500 15px Jost,sans-serif;cursor:pointer}
 .idv-bad{color:var(--bad);font-size:14px}
-.idv-sg-t{margin-top:4px;font:600 12px Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.idv-sg-t{margin-top:4px;font:600 13px Jost,sans-serif;letter-spacing:0;color:var(--faint)}
 .idv-sg-p{font-size:14px}
 .idv-l i{font-style:normal;float:right;color:var(--faint);font-weight:400}
 .idv-preuves{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}

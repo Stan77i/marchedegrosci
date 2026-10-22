@@ -84,7 +84,7 @@
 .ap-l .t button{min-height:44px;min-width:44px;border:0;background:transparent;color:#8E2A1C;font:600 13px Jost,system-ui,sans-serif;cursor:pointer}
 .ap-err{margin:8px 0 0;color:#8E2A1C;font-size:13.5px;font-weight:600}.ap-note{margin:6px 0 0;color:#5E5546;font-size:13px}
 .ap-info{background:#E9E3D3;border-radius:16px;padding:11px 14px;margin:0 0 12px;font-size:14px;color:#3E382C}
-.ap-sec{margin:18px 0 8px;font:600 11px Jost,sans-serif;letter-spacing:.16em;color:#655C4D;text-transform:uppercase}
+.ap-sec{margin:18px 0 8px;font:600 13px Jost,sans-serif;letter-spacing:0;color:#655C4D;}
 .ap-ln{background:#FFFDF8;border-radius:20px;padding:14px 16px;margin:0 0 12px}
 .ap-ln h3{margin:0;font:600 17px/1.2 Jost,sans-serif}.ap-ln>small{color:#5E5546;font-size:13px}
 .ap-p{border-top:1px solid #ECE6D6;padding:10px 0 0;margin:10px 0 0}

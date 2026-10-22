@@ -33,7 +33,7 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261027a','v3/astuces.js?v=20261027d','v3/porte.js?v=20261027e','v3/sons.js?v=20261023f','v3/negoce.js?v=20261025m','v3/compte.js?v=20261027a','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261025g','v3/statuts.js?v=20261023a','v3/messages.js?v=20261027c','v3/aide.js?v=20261027d','v3/alertes.js?v=20261023f','v3/releve.js?v=20261026a','v3/commandes.js?v=20261027d','v3/tableau.js?v=20261026y','v3/chauffeur.js?v=20261026t','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261023f','v3/appro.js?v=20261023f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261025g','v3/identite.js?v=20261023f'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261027f','v3/astuces.js?v=20261027f','v3/porte.js?v=20261027e','v3/sons.js?v=20261027f','v3/negoce.js?v=20261027f','v3/compte.js?v=20261027f','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261027f','v3/statuts.js?v=20261023a','v3/messages.js?v=20261027c','v3/aide.js?v=20261027f','v3/alertes.js?v=20261023f','v3/releve.js?v=20261026a','v3/commandes.js?v=20261027d','v3/tableau.js?v=20261026y','v3/chauffeur.js?v=20261026t','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261027f','v3/appro.js?v=20261027f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261025g','v3/identite.js?v=20261027f'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -47,7 +47,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
-<script src="app/theme.js?v=20261026u"></script>
+<script src="app/theme.js?v=20261027f"></script>
 <script src="app/nuit.js?v=20261024c" defer></script>
 <script src="app/stable.js?v=20261025f" defer></script>
 <script src="app/vibre.js?v=20261025a" defer></script>
@@ -56,10 +56,10 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261027e">
-<link rel="stylesheet" href="css/sombre.css?v=20261025f">
-<link rel="stylesheet" href="css/annee-app.css?v=20261023f">
-<link rel="stylesheet" href="css/categories-app.css?v=20261025g">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261027f">
+<link rel="stylesheet" href="css/sombre.css?v=20261027f">
+<link rel="stylesheet" href="css/annee-app.css?v=20261027f">
+<link rel="stylesheet" href="css/categories-app.css?v=20261027f">
 <link rel="stylesheet" href="v3/ux.css?v=20261023f">
 <script src="v2/data.js?v=20261026d"></script>
 <script src="app/marche-app.js?v=20261026d"></script>
@@ -213,7 +213,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   <div style="background:var(--nuit-2);color:var(--ivoire);flex:none;padding-top:{{ topPad }}">
     <div style="display:flex;align-items:center;height:52px;padding:0 8px">
       <button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button>
-      <span style="width:44px;flex:none"></span><span style="flex:1;text-align:center;font-size:var(--t-xs);letter-spacing:.2em;color:var(--sable);font-weight:500">{{ fp.famCaps }}</span>
+      <span style="width:44px;flex:none"></span><span class="lab lab-d" style="flex:1;text-align:center;font-weight:500">{{ fp.famCaps }}</span>
       <button onClick="{{ ficheAlerte }}" aria-label="{{ fAlerte.l }}" title="{{ fAlerte.l }}" style="width:44px;height:44px;border:0;background:transparent;color:{{ fAlerte.c }};display:flex;align-items:center;justify-content:center"><svg width="21" height="21" stroke="currentColor" stroke-width="1.7" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="cloche"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg></button>
       <button onClick="{{ share }}" aria-label="Partager" style="width:44px;height:44px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" stroke="currentColor" stroke-width="1.7" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="partager"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" x2="12" y1="2" y2="15"></line></svg></button>
     </div>
@@ -229,7 +229,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
     </div>
     <div style="padding:24px 20px 130px;display:flex;flex-direction:column;gap:28px">
       <div style="display:flex;flex-direction:column;gap:12px">
-        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:var(--t-xs);letter-spacing:.2em;color:var(--texte-3);font-weight:600">SUR LE MARCHÉ</span><button onClick="{{ ficheCarte }}" style="border:0;background:transparent;color:var(--rouille);font-size:var(--t-md);font-weight:500;padding:8px 0;min-height:36px">Voir sur la carte →</button></div>
+        <div style="display:flex;justify-content:space-between;align-items:center"><span class="lab">Sur le marché</span><button onClick="{{ ficheCarte }}" style="border:0;background:transparent;color:var(--rouille);font-size:var(--t-md);font-weight:500;padding:8px 0;min-height:36px">Voir sur la carte →</button></div>
         <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px">
           <div style="background:var(--carte);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:8px;font-size:var(--t-md);color:var(--texte-3)"><i class="od od-o" aria-hidden="true">🧺</i>Offres</div><div style="font-family:Jost,sans-serif;font-weight:800;font-size:31px;line-height:1;font-variant-numeric:tabular-nums lining-nums">{{ fp.nOff }}</div></div>
           <div style="background:var(--carte);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:4px"><div style="display:flex;align-items:center;gap:8px;font-size:var(--t-md);color:var(--texte-3)"><i class="od od-d" aria-hidden="true">🛒</i>Demandes</div><div style="font-family:Jost,sans-serif;font-weight:800;font-size:31px;line-height:1;font-variant-numeric:tabular-nums lining-nums">{{ fp.nDem }}</div></div>
@@ -241,7 +241,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
         <sc-if value="{{ fp.empty }}" hint-placeholder-val="{{ true }}"><div style="border:1px dashed rgba(23,21,18,.22);border-radius:16px;padding:18px;font-size:var(--t-base);color:var(--texte-3);line-height:1.5;text-wrap:pretty">{{ fp.emptyTxt }}</div></sc-if>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px">
-        <span style="font-size:var(--t-xs);letter-spacing:.2em;color:var(--texte-3);font-weight:600">PRIX</span>
+        <span class="lab">Prix</span>
         <div style="background:var(--carte);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:14px">
           <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px"><span style="font-size:var(--t-base);color:var(--texte-3)">Prix vendeur le plus bas</span><span style="font-weight:600;font-size:var(--t-lead)">{{ fp.low }}</span></div>
           <div style="height:1px;background:var(--trait-doux)"></div>
@@ -252,7 +252,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:12px">
-        <span style="font-size:var(--t-xs);letter-spacing:.2em;color:var(--texte-3);font-weight:600">SAISON</span>
+        <span class="lab">Saison</span>
         <sc-if value="{{ fp.hasSeason }}" hint-placeholder-val="{{ false }}">
           <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px"><sc-for list="{{ fp.season }}" as="c" hint-placeholder-count="12"><div style="display:flex;flex-direction:column;align-items:center;gap:5px"><div style="width:100%;height:28px;border-radius:5px;background:{{ c.bg }};outline:{{ c.ring }};outline-offset:1px"></div><span style="font-size:var(--t-xs);color:var(--texte-3);font-weight:{{ c.w }}">{{ c.l }}</span></div></sc-for></div>
           <span style="font-size:var(--t-sm);color:var(--texte-3);line-height:1.45">{{ fp.seasonNote }}</span>
@@ -324,7 +324,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   </div>
   <div style="flex:1;overflow-y:auto;padding:16px 18px 130px;display:flex;flex-direction:column;gap:18px">
     <div style="display:flex;flex-direction:column;gap:8px">
-      <span style="font-size:var(--t-xs);letter-spacing:.2em;color:var(--texte-3);font-weight:600">CE QUE L'ACHETEUR VERRA</span>
+      <span class="lab">Ce que l'acheteur verra</span>
       <div style="background:var(--carte);border-radius:18px;padding:14px;display:flex;gap:12px;align-items:center;box-shadow:0 6px 20px rgba(23,21,18,.08)">
         <img sc-camel-src="{{ vPrev.img }}" alt="" style="width:72px;height:72px;border-radius:14px;object-fit:{{ vPrev.fit }};flex:none;background:var(--sable-clair)">
         <span style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0"><span style="display:flex;align-items:center;gap:7px;font-weight:600;font-size:var(--t-lg)"><i class="od od-o" aria-hidden="true">🧺</i>{{ vPrev.product }}</span><span style="font-size:var(--t-md);color:var(--texte-2)">{{ vPrev.line }}</span><span class="qd" data-u="{{ vPrev.qU }}">{{ vPrev.qT }}</span><span style="font-size:var(--t-md)"><b style="font-weight:600">{{ vPrev.price }}</b> <span style="color:var(--mute)">{{ vPrev.who }}</span></span></span>
@@ -555,7 +555,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   <div style="flex:none;padding-top:{{ topPad }}"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" class="an2-ib"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span style="flex:1;text-align:center;font-size:var(--t-lead);font-weight:600">L'année du marché</span><span style="width:44px"></span></div></div>
   <div class="an2-scroll">
     <div class="an2-hero">
-      <p class="an2-k">CALENDRIER DES RÉCOLTES</p>
+      <p class="an2-k">Calendrier des récoltes</p>
       <h1 class="an2-h">Ce qui se récolte, <em>mois après mois.</em></h1>
       {{ yearEl }}
       <div class="an2-leg" aria-hidden="true"><span><i style="background:#6CC58C"></i>Pleine récolte</span><span><i style="background:#B5DEC1"></i>Ça commence</span><span><i style="background:#F2C230"></i>Ça se termine</span></div>
@@ -585,7 +585,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
               </button>
               <sc-if value="{{ it.open }}" hint-placeholder-val="{{ false }}">
                 <div class="an2-det">
-                  <span class="an2-dk">CE PRODUIT DANS L’ANNÉE</span>
+                  <span class="an2-dk">Ce produit dans l’année</span>
                   <div class="an2-frise" role="img" aria-label="{{ it.fLeg }}"><sc-for list="{{ it.frise }}" as="f" hint-placeholder-count="12"><span class="{{ f.sel }}" title="{{ f.t }}"><span class="an2-fc"><i style="height:{{ f.h }};background:{{ f.c }}"></i></span><small>{{ f.l }}</small></span></sc-for></div>
                   <p class="an2-fl">{{ it.fLeg }} Source : {{ it.src }}.</p>
                   <button onClick="{{ it.fiche }}" class="an2-go">Voir la fiche, les prix et les annonces<svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
@@ -606,11 +606,11 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <sc-if value="{{ on.pubs }}" hint-placeholder-val="{{ false }}">
   <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid var(--trait-doux)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span style="flex:1;text-align:center;font-size:var(--t-lead);font-weight:600">Mes publications</span><span style="width:44px"></span></div></div>
   <div style="flex:1;overflow-y:auto;padding:18px 18px 40px;display:flex;flex-direction:column;gap:10px">
-    <sc-if value="{{ stockOn }}" hint-placeholder-val="{{ false }}"><div style="background:var(--nuit-2);color:var(--ivoire);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:10px"><span style="font-size:var(--t-xs);letter-spacing:.2em;color:var(--sable);font-weight:600">MON STOCK EN LIGNE</span><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ stockSum }}" as="k" hint-placeholder-count="3"><span style="padding:6px 11px;border-radius:999px;background:rgba(245,240,230,.08);font-size:var(--t-md)"><b style="font-weight:700">{{ k.q }}</b> {{ k.n }}</span></sc-for></div><span style="font-size:var(--t-sm);color:var(--sable);line-height:1.45">À chaque vente conclue dans l’application, la quantité baisse toute seule. Touchez « Stock » pour la corriger.</span></div></sc-if>
+    <sc-if value="{{ stockOn }}" hint-placeholder-val="{{ false }}"><div style="background:var(--nuit-2);color:var(--ivoire);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:10px"><span class="lab lab-d">Mon stock en ligne</span><div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{ stockSum }}" as="k" hint-placeholder-count="3"><span style="padding:6px 11px;border-radius:999px;background:rgba(245,240,230,.08);font-size:var(--t-md)"><b style="font-weight:700">{{ k.q }}</b> {{ k.n }}</span></sc-for></div><span style="font-size:var(--t-sm);color:var(--sable);line-height:1.45">À chaque vente conclue dans l’application, la quantité baisse toute seule. Touchez « Stock » pour la corriger.</span></div></sc-if>
     <sc-for list="{{ myPubs }}" as="p" hint-placeholder-count="0">
       <div style="background:var(--carte);border-radius:16px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;animation:mkFade .35s both">
         <img sc-camel-src="{{ p.thumb }}" alt="" style="width:48px;height:48px;object-fit:{{ p.fit }};border-radius:{{ p.rad }};flex:none">
-        <button onClick="{{ p.go }}" style="flex:1;border:0;background:transparent;padding:0;text-align:left;display:flex;flex-direction:column;gap:3px;color:var(--encre);min-width:0"><span style="font-size:var(--t-xs);letter-spacing:.14em;color:{{ p.typeColor }};font-weight:600;display:flex;align-items:center;gap:6px"><i class="od {{ p.mkC }}" aria-hidden="true">{{ p.emo }}</i>{{ p.type }}</span><span style="font-weight:500;font-size:var(--t-lead)">{{ p.name }}</span><span style="font-size:var(--t-sm);color:var(--mute)">{{ p.line }}</span><span class="qd" data-u="{{ p.qU }}">{{ p.qT }}</span><span style="font-size:var(--t-sm);color:var(--vert-texte)">{{ p.match }}</span><sc-if value="{{ p.epuise }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;margin-top:2px;padding:2px 9px;border-radius:999px;background:#efe0cf;color:var(--rouille);font-size:var(--t-xs);font-weight:700;letter-spacing:.04em">{{ p.epTxt }}</span></sc-if></button>
+        <button onClick="{{ p.go }}" style="flex:1;border:0;background:transparent;padding:0;text-align:left;display:flex;flex-direction:column;gap:3px;color:var(--encre);min-width:0"><span style="font-size:var(--t-xs);font-weight:700;color:{{ p.typeColor }};font-weight:600;display:flex;align-items:center;gap:6px"><i class="od {{ p.mkC }}" aria-hidden="true">{{ p.emo }}</i>{{ p.type }}</span><span style="font-weight:500;font-size:var(--t-lead)">{{ p.name }}</span><span style="font-size:var(--t-sm);color:var(--mute)">{{ p.line }}</span><span class="qd" data-u="{{ p.qU }}">{{ p.qT }}</span><span style="font-size:var(--t-sm);color:var(--vert-texte)">{{ p.match }}</span><sc-if value="{{ p.epuise }}" hint-placeholder-val="{{ false }}"><span style="align-self:flex-start;margin-top:2px;padding:2px 9px;border-radius:999px;background:#efe0cf;color:var(--rouille);font-size:var(--t-xs);font-weight:700;letter-spacing:.04em">{{ p.epTxt }}</span></sc-if></button>
         <sc-if value="{{ p.hasStock }}" hint-placeholder-val="{{ false }}"><button onClick="{{ p.stock }}" aria-label="Modifier la quantité en stock" style="order:3;flex:1 0 100%;min-height:44px;padding:0 14px;border-radius:12px;border:0;background:var(--sable-clair);color:var(--encre);display:flex;align-items:center;gap:8px;line-height:1.1"><span style="font-size:var(--t-2xs);letter-spacing:.12em;color:var(--mute);font-weight:600">STOCK</span><span style="font-size:var(--t-base);font-weight:700">{{ p.stockTxt }}</span><span style="margin-left:auto;font-size:var(--t-sm);font-weight:600;color:var(--rouille)">Modifier</span></button></sc-if>
         <button onClick="{{ p.del }}" aria-label="Retirer" style="width:44px;height:44px;border:0;background:transparent;color:var(--mute);display:flex;align-items:center;justify-content:center;border-radius:22px"><svg width="18" height="18" stroke="currentColor" stroke-width="1.7" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="supprimer"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" x2="10" y1="11" y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg></button>
       </div>
@@ -624,11 +624,11 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <!-- ═══ VENDEUR ═══ -->
 <div data-pg="vendeur" data-screen-label="Vendeur" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:var(--papier);color:var(--encre);display:flex;flex-direction:column;transform:{{ tf.vendeur }};visibility:{{ vis.vendeur }};z-index:{{ zi.vendeur }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.vendeur }}" hint-placeholder-val="{{ false }}">
-  <div style="flex:none;padding-top:{{ topPad }};background:var(--nuit-2);color:var(--ivoire)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span style="flex:1;text-align:center;font-size:var(--t-xs);letter-spacing:.2em;color:var(--sable)">VENDEUR</span><span style="width:44px"></span></div>
+  <div style="flex:none;padding-top:{{ topPad }};background:var(--nuit-2);color:var(--ivoire)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span class="lab lab-d" style="flex:1;text-align:center">Vendeur</span><span style="width:44px"></span></div>
     <div style="padding:6px 24px 26px;display:flex;flex-direction:column;gap:8px"><span style="font-family:Jost,sans-serif;font-size:34px;font-weight:900;font-style:italic;letter-spacing:-.025em;line-height:1">{{ vd.name }}</span><span style="font-size:var(--t-base);color:var(--sable)">{{ vd.place }}</span><span style="font-size:var(--t-sm);color:var(--mute-d)">{{ vd.agent }}</span>
       <sc-if value="{{ vd.canDm }}" hint-placeholder-val="{{ false }}"><div style="display:flex;gap:8px;margin-top:8px"><button onClick="{{ vd.dm }}" style="flex:1;height:48px;border-radius:24px;border:0;background:var(--action);color:var(--action-t);display:flex;align-items:center;justify-content:center;gap:8px;font-size:var(--t-lead);font-weight:600"><svg width="18" height="18" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="messages"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path><path d="M8 12h.01"></path><path d="M12 12h.01"></path><path d="M16 12h.01"></path></svg>Écrire au vendeur</button><sc-if value="{{ vd.canVoir }}" hint-placeholder-val="{{ false }}"><button onClick="{{ vd.voir }}" style="flex:1;height:48px;border-radius:24px;border:1px solid rgba(245,240,230,.3);background:transparent;color:var(--ivoire);font-size:var(--t-lead);font-weight:600">Voir son profil</button></sc-if></div></sc-if><sc-if value="{{ vd.mine }}" hint-placeholder-val="{{ false }}"><span style="margin-top:6px;font-size:var(--t-md);color:var(--terre-clair)">C’est vous : voici vos offres telles que les acheteurs les voient.</span></sc-if></div></div>
   <div style="flex:1;overflow-y:auto;padding:20px 18px 40px;display:flex;flex-direction:column;gap:10px">
-    <span style="font-size:var(--t-xs);letter-spacing:.2em;color:var(--texte-3);font-weight:600">SES OFFRES</span>
+    <span class="lab">Ses offres</span>
     <sc-for list="{{ vd.offers }}" as="o" hint-placeholder-count="1"><button onClick="{{ o.go }}" style="border:0;background:var(--carte);border-radius:16px;padding:12px 14px;display:flex;gap:12px;align-items:center;text-align:left;color:var(--encre)"><img sc-camel-src="{{ o.img }}" alt="" style="width:56px;height:56px;border-radius:12px;object-fit:{{ o.fit }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:3px"><span style="font-weight:600;font-size:var(--t-lead)">{{ o.product }}</span><span style="font-size:var(--t-md);color:var(--texte-2)">{{ o.line }}</span><span class="qd" data-u="{{ o.qU }}">{{ o.qT }}</span><sc-if value="{{ o.hasTr }}" hint-placeholder-val="{{ false }}"><span class="qd" data-u="{{ o.trU }}">{{ o.trT }}</span></sc-if><span style="font-size:var(--t-md);font-weight:600">{{ o.price }}</span></span></button></sc-for>
   </div>
 </sc-if>
@@ -643,7 +643,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
     <sc-for list="{{ info.steps }}" as="s" hint-placeholder-count="3">
       <div style="display:flex;gap:16px;align-items:flex-start;animation:mkFade .5s both">
         {{ s.ico }}
-        <span style="display:flex;flex-direction:column;gap:4px;padding-top:4px"><span style="font-size:var(--t-xs);letter-spacing:.2em;color:#D6A83E;font-weight:600">{{ s.n }}</span><span style="font-size:var(--t-xl);font-weight:500">{{ s.t }}</span><span style="font-size:var(--t-base);color:var(--sable);line-height:1.5">{{ s.x }}</span></span>
+        <span style="display:flex;flex-direction:column;gap:4px;padding-top:4px"><span style="font-size:13px;color:#D6A83E;font-weight:600">{{ s.n }}</span><span style="font-size:var(--t-xl);font-weight:500">{{ s.t }}</span><span style="font-size:var(--t-base);color:var(--sable);line-height:1.5">{{ s.x }}</span></span>
       </div>
     </sc-for>
     <button onClick="{{ info.go }}" style="flex:none;height:56px;border-radius:28px;border:0;background:var(--action);color:var(--action-t);font-size:var(--t-lg);font-weight:600;margin-top:8px">{{ info.cta }}</button>
@@ -718,7 +718,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   <div style="flex:1;overflow-y:auto;padding:6px 20px 120px;display:flex;flex-direction:column;gap:18px">
     <button onClick="{{ pickMatch }}" style="display:flex;align-items:center;gap:12px;background:var(--carte);border-radius:18px;padding:10px 12px;border:0;text-align:left;color:var(--encre)"><img sc-camel-src="{{ mfP.thumb }}" alt="" style="width:52px;height:52px;object-fit:{{ mfP.fit }};border-radius:{{ mfP.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column;gap:1px"><span style="font-size:var(--t-sm);color:var(--mute)">{{ mfP.fam }}</span><span style="font-family:Jost,sans-serif;font-size:23px;font-weight:900;font-style:italic;letter-spacing:-.02em;line-height:1">{{ mfP.name }}</span></span><span style="height:36px;padding:0 12px;border-radius:18px;border:1px solid rgba(23,21,18,.2);font-size:var(--t-md);font-weight:500;display:flex;align-items:center">Changer</span></button>
     <div style="display:flex;flex-direction:column;gap:8px">
-      <span style="font-size:var(--t-xs);letter-spacing:.2em;color:var(--texte-3);font-weight:600">{{ matchTitle }}</span>
+      <span class="lab">{{ matchTitle }}</span>
       <sc-for list="{{ matches }}" as="o" hint-placeholder-count="0"><div style="background:var(--carte);border-radius:18px;padding:12px 12px 12px 12px;display:flex;flex-direction:column;gap:10px;animation:mkFade .35s both;box-shadow:inset 0 0 0 1px rgba(23,21,18,.05)">
         <div style="display:flex;align-items:center;gap:12px">
           <button onClick="{{ o.voir }}" aria-label="Voir le profil de {{ o.who }}" style="position:relative;flex:none;width:46px;height:46px;border:0;padding:0;background:none;border-radius:50%"><sc-if value="{{ o.hasAv }}" hint-placeholder-val="{{ false }}"><img sc-camel-src="{{ o.avBig }}" alt="" width="46" height="46" style="display:block;width:46px;height:46px;border-radius:50%"></sc-if><sc-if value="{{ o.noAv }}" hint-placeholder-val="{{ true }}"><span style="display:flex;width:46px;height:46px;border-radius:50%;background:#e8dcc6;color:#5a4a33;align-items:center;justify-content:center;font:600 18px Jost,sans-serif">{{ o.ini }}</span></sc-if><i class="od od-coin {{ o.mkC }}" aria-hidden="true">{{ o.emo }}</i></button>
@@ -775,7 +775,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   <div style="display:flex;gap:8px;align-items:center;padding:8px 14px"><div style="flex:1;display:flex;align-items:center;gap:10px;height:48px;border-radius:24px;background:var(--champ);border:1px solid rgba(23,21,18,.14);padding:0 16px"><svg width="18" height="18" stroke="#847966" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="chercher"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><input ref="{{ pRef }}" value="{{ pq }}" onChange="{{ onPq }}" placeholder="Tomate, aloco, gnangnan…" style="flex:1;min-width:0;border:0;background:transparent;font-size:var(--t-lg);outline:none;color:var(--encre)"></div><button onClick="{{ closePick }}" style="height:44px;border:0;background:transparent;font-size:var(--t-lead);padding:0 6px;color:var(--encre)">Annuler</button></div>
   <div style="flex:1;overflow-y:auto;padding:4px 0 40px">
     <sc-for list="{{ pickGroups }}" as="g" hint-placeholder-count="0">
-      <div style="font-size:var(--t-xs);letter-spacing:.2em;color:var(--texte-3);font-weight:600;padding:14px 20px 6px">{{ g.t }}</div>
+      <div class="lab" style="display:block;padding:14px 20px 6px">{{ g.t }}</div>
       <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.pick }}" style="width:100%;border:0;background:transparent;display:flex;align-items:center;gap:12px;padding:6px 20px;min-height:52px;text-align:left;color:var(--encre)"><img sc-camel-src="{{ p.thumb }}" alt="" style="width:38px;height:38px;object-fit:{{ p.fit }};border-radius:{{ p.rad }};flex:none"><span style="flex:1;display:flex;flex-direction:column"><span style="font-size:var(--t-lead)">{{ p.name }}</span><span style="font-size:var(--t-sm);color:var(--mute)">{{ p.sub }}</span></span></button></sc-for>
     </sc-for>
   </div>
@@ -1206,7 +1206,7 @@ class Component extends DCLogic {
     });
     for (let m = 1; m <= 12; m++) s += `<path d="${secteur(r0 - 12, rOut + 34, am(m), am(m + 1))}" fill="transparent" data-m="${m}" class="an2-zone"><title>${A.MOIS[m - 1]}</title></path>`;
     s += `<text x="${cx}" y="${cy - 2}" text-anchor="middle" class="an2-c1">${A.MOIS[month - 1]}</text>`;
-    s += `<text x="${cx}" y="${cy + 17}" text-anchor="middle" class="an2-c2">${n ? n + ' RÉCOLTE' + (n > 1 ? 'S' : '') + ' EN COURS' : 'HORS RÉCOLTES'}</text></svg>`;
+    s += `<text x="${cx}" y="${cy + 17}" text-anchor="middle" class="an2-c2">${n ? n + ' récolte' + (n > 1 ? 's' : '') + ' en cours' : 'Hors récoltes'}</text></svg>`;
     return s;
   }
   openVendeur(vid) { this.push('vendeur', { vid }); }
@@ -1487,7 +1487,7 @@ class Component extends DCLogic {
     /* fiche */
     const FP = this.prod(S.slug), fo = O.filter(o => o.slug === S.slug), fd = D.filter(d => d.slug === S.slug), mk = this.market(S.slug, O), low = fo.filter(o => o.price).sort((a, b) => a.price - b.price)[0];
     const calE = A.CAL.filter(c => c[0] === S.slug);
-    const fp = Object.assign({}, FP, { famCaps: FP.catName.toUpperCase(), imgSize: FP.sack ? '230px' : '190px', imgRad: FP.sack ? '0' : '28px', nOff: fo.length, nDem: fd.length,
+    const fp = Object.assign({}, FP, { famCaps: FP.catName, imgSize: FP.sack ? '230px' : '190px', imgRad: FP.sack ? '0' : '28px', nOff: fo.length, nDem: fd.length,
       items: [...fo, ...fd].sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0)).map(x => this.card(x)), empty: !fo.length && !fd.length,
       emptyTxt: 'Pas encore d\u2019offre ni de demande pour ' + FP.name.toLowerCase() + '. Publiez la première : le réseau commence par vous.',
       low: low ? A.fmt(low.price) + ' F CFA / ' + low.unit : '—', market: mk.ok ? mk.range : 'Pas assez de données pour calculer un prix du marché',
@@ -1551,7 +1551,7 @@ class Component extends DCLogic {
     const cCompat = [...cO, ...cD].filter(x => !this.isMine(x) && mesA.some(m => vaAvec(m, x))), mesLies = mesA.filter(m => cCompat.some(x => vaAvec(m, x)));
     const cCx = cK === 'compat' ? [...cCompat, ...mesLies] : null;
     const cOf = cCx ? cCx.filter(x => x.kind === 'offre') : cK === 'demande' ? [] : cO, cDf = cCx ? cCx.filter(x => x.kind !== 'offre') : cK === 'offre' ? [] : cD;
-    let cItems = (cCx ? cCompat : [...cOf, ...cDf]).sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0)), cListT = cK === 'offre' ? 'LES OFFRES' : cK === 'demande' ? 'LES DEMANDES' : cCx ? 'COMPATIBLES AVEC VOS ANNONCES' : 'TOUTES LES PUBLICATIONS';
+    let cItems = (cCx ? cCompat : [...cOf, ...cDf]).sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0)), cListT = cK === 'offre' ? 'Les offres' : cK === 'demande' ? 'Les demandes' : cCx ? 'Compatibles avec vos annonces' : 'Toutes les publications';
     if (S.csel) { cItems = cItems.filter(x => x.region === S.csel); cListT = 'À ' + ((A.REG[S.csel] || [])[2] || '').toUpperCase(); }
     else if (S.cme) { const tr = x => { const d = A.km(A.REG[S.cme], A.REG[x.region] || A.REG[S.cme]); return d < 60 ? 0 : d < 180 ? 1 : d < 350 ? 2 : 3; };
       cItems = cItems.slice().sort((a, b) => tr(a) - tr(b) || (b.qty || 0) - (a.qty || 0)); cListT = 'PRÈS DE VOUS D\u2019ABORD'; }
@@ -1615,9 +1615,9 @@ class Component extends DCLogic {
     /* publications */
     const mine = [...this.offersAll(), ...this.demandsAll()].filter(x => !x.remote).sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0));
     const myPubs = mine.map(x => { const P = this.prod(x.slug), c = this.card(x), m = (x.kind === 'offre' ? D : O).filter(y => y.slug === x.slug).length;
-      return { thumb: c.img, fit: c.fit, rad: x.photo ? '10px' : P.rad, type: x.kind === 'offre' ? "J'AI" : 'JE CHERCHE', typeColor: x.kind === 'offre' ? '#31543C' : '#765802', shapeRad: c.shapeRad, shapeBg: c.shapeBg, emo: c.emo, mkC: c.mkC, name: P.name, line: c.line + ' · ' + c.ago, qT: c.qT, qU: c.qU,
+      return { thumb: c.img, fit: c.fit, rad: x.photo ? '10px' : P.rad, type: x.kind === 'offre' ? "J'ai" : 'Je cherche', typeColor: x.kind === 'offre' ? '#31543C' : '#765802', shapeRad: c.shapeRad, shapeBg: c.shapeBg, emo: c.emo, mkC: c.mkC, name: P.name, line: c.line + ' · ' + c.ago, qT: c.qT, qU: c.qU,
         match: m ? m + (x.kind === 'offre' ? ' demande' : ' offre') + (m > 1 ? 's' : '') + ' compatible' + (m > 1 ? 's' : '') : '', go: () => this.openFiche(x.slug),
-        epuise: !!x.epuise || !!x.servie || (x.kind === 'offre' && x.qty <= 0), epTxt: x.kind === 'offre' ? 'ÉPUISÉ · TOUT EST VENDU' : 'SERVIE · TOUT EST TROUVÉ', hasStock: x.kind === 'offre', stockTxt: A.fmt(x.qty) + ' ' + x.unit,
+        epuise: !!x.epuise || !!x.servie || (x.kind === 'offre' && x.qty <= 0), epTxt: x.kind === 'offre' ? 'Épuisé · tout est vendu' : 'Servie · tout est trouvé', hasStock: x.kind === 'offre', stockTxt: A.fmt(x.qty) + ' ' + x.unit,
         stock: () => { const v = prompt('Quantité de ' + P.name.toLowerCase() + ' encore disponible (' + x.unit + ') :', String(x.qty)); if (v == null) return; const q = +String(v).replace(',', '.').replace(/\s/g, ''); if (!(q >= 0)) { this.say('Quantité invalide'); return; }
           A.write('offres', A.read('offres').map(y => y.id === x.id ? Object.assign({}, y, { quantity: q, epuise: q <= 0 }) : y)); this.say(q > 0 ? 'Stock mis à jour : ' + A.fmt(q) + ' ' + x.unit : 'Stock à zéro : l\u2019offre ne sera plus proposée'); },
         del: () => { const k = x.kind === 'offre' ? 'offres' : 'demandes'; A.write(k, A.read(k).filter(y => y.id !== x.id)); this.say('Publication retirée'); } }; });
@@ -1687,7 +1687,7 @@ class Component extends DCLogic {
 
     /* sélecteur de produit */
     const pq = A.norm(S.pq), pl = M.products.filter(p => !pq || A.norm(p.name).includes(pq) || (p.aliases || []).some(a => A.norm(a).includes(pq)));
-    const pickGroups = this.cats.map(c => ({ t: c.name.toUpperCase(), items: pl.filter(p => p.categorySlug === c.slug).map(p => Object.assign(mini(p), { sub: (p.aliases || []).slice(0, 2).join(' · '), pick: () => this.doPick(p.slug) })) })).filter(g => g.items.length);
+    const pickGroups = this.cats.map(c => ({ t: c.name, items: pl.filter(p => p.categorySlug === c.slug).map(p => Object.assign(mini(p), { sub: (p.aliases || []).slice(0, 2).join(' · '), pick: () => this.doPick(p.slug) })) })).filter(g => g.items.length);
     if (S.pick === 'carte' && !pq) pickGroups.unshift({ t: 'RÉSEAU', items: [{ name: 'Tous les produits', sub: 'Toutes les offres et demandes', thumb: A.IMG + 'famille-autres-produits-vivriers.webp', fit: 'cover', rad: '10px', pick: () => this.doPick('') }] });
 
     const light = ['acheter', 'vendre', 'demande', 'categories', 'prix', 'pubs'].includes(top) || !!S.pick;
@@ -1729,7 +1729,7 @@ class Component extends DCLogic {
       vfBtn: Object.assign(chip(!!S.af.vf), { pressed: S.af.vf ? 'true' : 'false', go: () => this.setState(s => ({ af: Object.assign({}, s.af, { vf: !s.af.vf }) })) }),
       understood: { on: chipsU.length > 0, chips: chipsU },
       sugg: { on: sug.length > 0, list: sug.map(s => Object.assign(mini(s), { sub: s.matchedAlias ? 'aussi appelé « ' + s.matchedAlias + ' »' : this.prod(s.slug).catName, go: () => this.setState({ aq: parsed && parsed.productText && S.aq.includes(parsed.productText) ? S.aq.replace(parsed.productText, s.name) : s.name }) })) },
-      aCount: (n => aK === 'offre' ? (n ? n + ' OFFRE' + (n > 1 ? 'S' : '') : 'OFFRES') : aK === 'demande' ? (n ? n + ' DEMANDE' + (n > 1 ? 'S' : '') : 'DEMANDES') : (n ? n + ' PUBLICATION' + (n > 1 ? 'S' : '') : 'PUBLICATIONS'))(aL.length),
+      aCount: (n => aK === 'offre' ? (n ? n + ' offre' + (n > 1 ? 's' : '') : 'Offres') : aK === 'demande' ? (n ? n + ' demande' + (n > 1 ? 's' : '') : 'Demandes') : (n ? n + ' publication' + (n > 1 ? 's' : '') : 'Publications'))(aL.length),
       aSeg: [['offre', '🧺 Offres', O.length], ['demande', '🛒 Demandes', D.length], ['tout', 'Tout', O.length + D.length]].map(k => ({ l: k[1], n: k[2], bg: aK === k[0] ? 'var(--encre)' : 'transparent', color: aK === k[0] ? 'var(--ivoire)' : 'var(--texte-2)', on: aK === k[0] ? 'true' : 'false', go: () => this.setState({ aK: k[0] }) })), aCarte: () => this.push('carte', { cprod: pslug, csel: lreg }),
       aList: aL.map(x => this.card(x)), aEmpty: !aL.length,
       aEmptyT: aK === 'demande' ? 'Pas encore de demande' + (pslug ? ' pour ' + this.prod(pslug).name.toLowerCase() : ' qui correspond') : O.length ? 'Pas encore d\u2019offre' + (pslug ? ' pour ' + this.prod(pslug).name.toLowerCase() : ' qui correspond') : 'Le marché attend sa première offre',
@@ -1800,7 +1800,7 @@ class Component extends DCLogic {
       yearEl: html(this.anDial(S.month, cm, !this._anVu), { className: 'an2-dial', onClick: e => { const t = e.target.closest && e.target.closest('[data-m]'); if (t) this.setState({ month: +t.dataset.m, anOpen: null }); },
         onPointerDown: e => { this._anX = e.clientX; }, onPointerUp: e => { const dx = e.clientX - (this._anX == null ? e.clientX : this._anX); this._anX = null; if (Math.abs(dx) > 48) this.setState(s => ({ month: dx < 0 ? (s.month === 12 ? 1 : s.month + 1) : (s.month === 1 ? 12 : s.month - 1), anOpen: null })); } }),
       mPrev: () => this.setState(s => ({ month: s.month === 1 ? 12 : s.month - 1, anOpen: null })), mNext: () => this.setState(s => ({ month: s.month === 12 ? 1 : s.month + 1, anOpen: null })),
-      mName: A.MOIS[S.month - 1], mKicker: S.month === cm ? 'CE MOIS-CI' : S.month === (cm % 12) + 1 ? 'LE MOIS PROCHAIN' : String(S.month).padStart(2, '0') + ' / 12', mGroups, mEmpty: !mGroups.length,
+      mName: A.MOIS[S.month - 1], mKicker: S.month === cm ? 'Ce mois-ci' : S.month === (cm % 12) + 1 ? 'Le mois prochain' : String(S.month).padStart(2, '0') + ' / 12', mGroups, mEmpty: !mGroups.length,
       anStrip, anResume: anN ? anN + ' culture' + (anN > 1 ? 's' : '') + ' en récolte en ' + A.MOIS[S.month - 1].toLowerCase() + '. Touchez un produit pour voir son année.' : 'Aucune récolte sourcée ce mois-ci : la plupart des produits viennent des stocks.',
       myPubs, pubsEmpty: !myPubs.length, stockOn: stockSum.length > 0, stockSum,
       fAlerte: (() => { const AL = window.MDGAlertes, a = AL && AL.suit(S.slug); return { l: a ? 'Alertes activées pour ce produit' : 'M\u2019alerter pour ce produit', c: a ? '#F2C230' : 'inherit', f: a ? 'rgba(243,180,138,.35)' : 'none' }; })(),
@@ -1863,7 +1863,7 @@ class Component extends DCLogic {
       sacVide: window.MDGSac ? html(window.MDGSac.svg('vide', { t: 96 })) : null, sacVidePetit: window.MDGSac ? html(window.MDGSac.svg('vide', { t: 64 })) : null,
       doneEl: S.done ? html(window.MDGSac ? window.MDGSac.svg('plein', { t: 118 }) : this.doneSVG(S.done)) : null,
       pickMatch: () => this.openPick('match'), mfP: { thumb: MP.thumb, fit: MP.fit, rad: MP.rad, fam: MP.catName, name: MP.name },
-      matchTitle: isJai ? 'DEMANDES QUI VOUS CHERCHENT' : 'OFFRES DISPONIBLES', matches: opp.slice(0, 3).map(x => this.card(x)), noMatch: !opp.length,
+      matchTitle: isJai ? 'Demandes qui vous cherchent' : 'Offres disponibles', matches: opp.slice(0, 3).map(x => this.card(x)), noMatch: !opp.length,
       noMatchTxt: isJai ? 'Pas encore de demande pour ' + MP.name.toLowerCase() + '. Votre offre sera la première du réseau.' : 'Pas encore d\u2019offre pour ' + MP.name.toLowerCase() + '. Publiez votre demande : elle sera la première.',
       mCity: this.cityUI(mf, patchM), mf, mfh: { qty: setM('qty'), region: e => patchM(this.regionPatch(S.mf, e.target.value)), price: setM('price'), name: setM('name'), phone: setM('phone') }, mEb: { qty: eb(S.mErr, 'qty'), region: eb(S.mErr, 'region'), phone: eb(S.mErr, 'phone') }, mErr: S.mErr,
       mUnits: A.UNITS.map(u => Object.assign(chip(mf.unit === u), { l: u, go: () => this.setState(s => ({ mf: Object.assign({}, s.mf, { unit: u }) })) })),

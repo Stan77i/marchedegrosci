@@ -811,3 +811,11 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Notifications dans l'app** (`app/toast.js`) : le sac v2 en 36 px (visage lisible) ; une erreur technique (réseau, session, délai, fonction manquante, refus du serveur) devient une phrase et un conseil (`lisible()`), le texte brut ne s'affiche plus ; les titres courts n'ont plus de point final ; une réussite fait saluer le sac de l'en-tête.
 - **Notifications poussées** (`pousser` v18, déployée) : plus d'emoji dans les titres, plus de tirets longs dans les corps, le conseil « Transporteurs vérifiés » (option en pause, schéma 62) remplacé par « Suivez la livraison ».
 - Vérifié dans le navigateur, clair et sombre : ouverture (mesure image par image), porte dans ses 6 états, 5 humeurs du sac, 6 notifications, entrée et sortie. Cache `mgci-v183`.
+
+## Design mûr : plus d'étiquettes en capitales, icônes dans les tutoriels, Mon compte allégé, sombre corrigé (22/10/2026)
+- Le propriétaire a donné carte blanche (« fais ce que tu veux », référence : une app métier au design calme, cartes au contrat identique, hiérarchie par le poids et non par la taille, bordures fines). Audit des 24 écrans en clair et en sombre.
+- **Étiquettes de section** : les capitales espacées (« CE QUE L'ACHETEUR VERRA », « CALENDRIER DES RÉCOLTES », « LE CATALOGUE DU MARCHÉ DE GROS », « APPARENCE »…) sont le premier signe de « généré ». Toutes passent en phrase, 13 px, 600, couleur discrète : classe `.lab` (`.lab-d` sur fond sombre) dans `css/mgci-app.css` pour le gabarit ; 20 règles CSS converties dans les modules (guide, aide, compte, négoce, réputation, identité, racheter, appro, astuces, sons, réglages, prix, catégories, année). Gardées en capitales, voulues : les tampons d'urgence (`.qd`), les badges « Officiel », les labels de la roue de l'accueil (le seul endroit « fort »).
+- **Tutoriels** (`v3/astuces.js`) : une icône de l'application (`PICTO`, app/icones.js) remplace l'emoji en tête de chaque carte ; les emoji restent dans le code comme clé lisible.
+- **Mon compte** : héros allégé (avatar 104 → 92 px, titre 24 px au lieu de 28, hauteur réduite).
+- **Mode sombre** : le bouton secondaire « Publier une demande avec un budget » (Prix du marché) était illisible ; règle ajoutée dans `css/sombre.css`.
+- Cache `mgci-v184`.

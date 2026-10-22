@@ -95,11 +95,11 @@
 .gd-t{margin:0;font:600 31px/1.02 Jost,sans-serif;letter-spacing:-.015em}.gd-t em{color:#10392B}
 .gd-lead{margin:10px 0 0;color:#5b5348;font-size:17px}
 .gd-3{margin:20px 0 0;background:#10392B;color:#F3EFE4;border-radius:24px;padding:18px 16px;display:flex;flex-direction:column;gap:14px}
-.gd-3 h2{margin:0;font:600 13px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#F2C230}
+.gd-3 h2{margin:0;font:600 13px/1 Jost,sans-serif;letter-spacing:0;color:#F2C230}
 .gd-g{display:flex;gap:12px;align-items:flex-start}
 .gd-g i{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:700 16px Jost,sans-serif;font-style:normal;background:#F2C230;color:#10392B}
 .gd-g b{display:block;font-size:18px;font-weight:600;line-height:1.3}.gd-g span{display:block;color:rgba(243,239,228,.82);font-size:16px;margin-top:2px}
-.gd-sh{margin:28px 0 12px;font:600 13px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7a7064}
+.gd-sh{margin:28px 0 12px;font:600 13px/1 Jost,sans-serif;letter-spacing:0;color:#7a7064}
 .gd-tu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .gd-tu button{min-height:118px;border:0;border-radius:20px;background:#FFFCF6;box-shadow:0 1px 2px rgba(23,21,18,.06),0 6px 16px rgba(23,21,18,.05);padding:14px;text-align:left;color:#171512;display:flex;flex-direction:column;gap:10px;align-items:flex-start;font:inherit}
 .gd-tu button span{width:44px;height:44px;border-radius:14px;display:grid;place-items:center}
@@ -112,7 +112,7 @@
 .gd-et li{counter-increment:e;display:flex;gap:14px;align-items:flex-start;background:#FFFCF6;border-radius:18px;padding:14px;font-size:17px}
 .gd-et li::before{content:counter(e);flex:none;width:34px;height:34px;border-radius:50%;background:#10392B;color:#F3EFE4;display:grid;place-items:center;font-weight:700;font-size:16px}
 .gd-cs{margin:18px 0 0;display:flex;gap:12px;align-items:flex-start;background:#FBEFC4;border-radius:18px;padding:14px 16px;color:#4d3a00;font-size:16.5px}
-.gd-cs b{display:block;font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px}
+.gd-cs b{display:block;font-size:13px;letter-spacing:0;margin-bottom:2px}
 .gd-go{margin:22px 0 0;width:100%;min-height:54px;border:0;border-radius:27px;background:#10392B;color:#F3EFE4;font:600 17px Jost,sans-serif;display:flex;align-items:center;justify-content:center;gap:10px}
 .gd-nav{margin:12px 0 0;display:flex;gap:10px}
 .gd-nav button{flex:1;min-height:48px;border-radius:24px;border:1px solid rgba(23,21,18,.16);background:none;color:#171512;font:500 16px Jost,sans-serif;padding:0 12px}

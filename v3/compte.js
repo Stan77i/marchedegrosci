@@ -117,17 +117,17 @@
 .cp-main>h2+p,.cp-pg>h2+p,.cp-w>h2+p{margin:0 4px 18px;color:var(--mute);font-size:14px;line-height:1.5}
 .cp-pg{animation:cpFade var(--ux-d2,200ms) ease both}
 /* l'en-tête de l'accueil : un champ de terre chaude, l'avatar au centre */
-.cp-hero{position:relative;margin:0 -16px;padding:86px 20px 64px;color:#fff;text-align:center;overflow:hidden;
+.cp-hero{position:relative;margin:0 -16px;padding:64px 20px 44px;color:#fff;text-align:center;overflow:hidden;
   background:radial-gradient(120% 80% at 85% 0%,rgba(242,194,48,.22),transparent 55%),radial-gradient(90% 70% at 0% 100%,rgba(4,20,14,.7),transparent 60%),linear-gradient(165deg,#1C5A43 0%,#10392B 50%,#0A261C 100%)}
 @media (min-width:760px){.cp-hero{margin:0 -28px}}
 .cp-hero::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:28px 28px;-webkit-mask-image:linear-gradient(180deg,#000,transparent 85%);mask-image:linear-gradient(180deg,#000,transparent 85%)}
 .cp-hero>*{position:relative}
-.cp-hero-av{position:relative;width:128px;height:128px;margin:0 auto;border-radius:50%;padding:7px;background:rgba(255,255,255,.18);box-shadow:0 18px 40px rgba(40,12,2,.35)}
-.cp-hero-av>svg,.cp-hero-av>img{display:block;width:114px;height:114px;border-radius:50%}
+.cp-hero-av{position:relative;width:104px;height:104px;margin:0 auto;border-radius:50%;padding:6px;background:rgba(255,255,255,.18);box-shadow:0 18px 40px rgba(40,12,2,.35)}
+.cp-hero-av>svg,.cp-hero-av>img{display:block;width:92px;height:92px;border-radius:50%}
 .cp-hero-cam{position:absolute;right:-4px;bottom:2px;width:40px;height:40px;display:grid;place-items:center;border:3px solid #10392B;border-radius:50%;background:#FFFDF8;color:#10392B;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25)}
 .cp-hero-cam svg{width:18px;height:18px}
-.cp-hero h2 em{font:900 italic 1.04em Jost,sans-serif;color:#F2C230;letter-spacing:-.02em}
-.cp-hero h2{margin:16px 0 0;font:600 28px/1.05 Jost,sans-serif;letter-spacing:-.015em;letter-spacing:-.005em;overflow-wrap:anywhere}
+.cp-hero h2 em{font:800 italic 1em Jost,sans-serif;color:#F2C230;letter-spacing:-.015em}
+.cp-hero h2{margin:14px 0 0;font:600 24px/1.1 Jost,sans-serif;letter-spacing:-.01em;overflow-wrap:anywhere}
 .cp-hero p{margin:6px 0 0;color:rgba(255,255,255,.82);font-size:14px}
 .cp-hero-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:10px}
 .cp-hero-tags span{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:13px;background:rgba(255,255,255,.16);color:#fff;font:600 12.5px/1 Jost,sans-serif}
@@ -141,8 +141,8 @@
 .cp-idv b{display:block;font:600 16.5px/1.25 Jost,sans-serif}.cp-idv p{margin:4px 0 0;color:var(--mute);font-size:14px;line-height:1.45}
 .cp-idv-j{display:flex;gap:5px}.cp-idv-j i{flex:1;height:6px;border-radius:3px;background:rgba(23,21,18,.12)}.cp-idv-j i.on{background:var(--warn)}
 .cp-idv button{min-height:48px;border:0;border-radius:24px;background:var(--ink);color:#F5F0E6;font:600 15.5px Jost,sans-serif;cursor:pointer}
-.cp-hero-act{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
-.cp-hero-act button{position:relative;display:flex;align-items:center;justify-content:center;gap:9px;min-height:56px;padding:0 12px;border:1px solid rgba(255,255,255,.22);border-radius:18px;background:rgba(255,255,255,.14);color:#fff;font:600 15px Jost,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.cp-hero-act{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
+.cp-hero-act button{position:relative;display:flex;align-items:center;justify-content:center;gap:9px;min-height:50px;padding:0 12px;border:1px solid rgba(255,255,255,.22);border-radius:18px;background:rgba(255,255,255,.14);color:#fff;font:600 15px Jost,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .cp-hero-act button:active{background:rgba(255,255,255,.22)}
 .cp-hero-act svg{width:20px;height:20px}
 .cp-hero-act em{position:absolute;top:-6px;right:-4px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#FFE7A8;color:#5B3D00;font:700 12px/22px Jost,sans-serif;font-style:normal}
@@ -175,7 +175,7 @@
 .cp-bdg-f{display:grid;gap:12px}.cp-bdg-f .cp-st-pv{grid-template-columns:repeat(3,minmax(0,1fr))}
 .cp-st-aide{margin:8px 0 0;font-size:12.5px;line-height:1.45;color:var(--mute,#5E574B)}
 .cp-voix{font:600 26px/1.08 Jost,sans-serif;letter-spacing:-.015em}.cp-voix em{font:900 italic 1em Jost,sans-serif;color:#10392B;letter-spacing:-.02em;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
-.cp-lab{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:24px 16px 8px;font:600 12px/1.2 Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.cp-lab{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:24px 16px 8px;font:600 13px/1.2 Jost,sans-serif;letter-spacing:0;color:var(--faint)}
 .cp-lab em{font-style:normal;letter-spacing:0;color:var(--mute)}
 .cp-lab button{border:0;background:none;padding:6px 0;color:var(--acc-t);font:600 13px Jost,sans-serif;letter-spacing:0;text-transform:none;cursor:pointer}
 .cp-note{margin:10px 16px 0;color:var(--faint);font-size:12.5px;line-height:1.45}
@@ -295,7 +295,7 @@ label.cp-r{cursor:pointer}
 .cp-avz .cp-row{justify-content:center}
 /* glisser pour retirer (v3/negoce.js) : sur le papier clair, la ligne reste claire et les séparateurs restent fins */
 .cp .sw{border-radius:0}.cp .sw+.sw{margin-top:0}.cp .sw>.sw-row{background-color:var(--card)!important;color:var(--ink)}.cp .sw+.sw::before{content:"";position:absolute;left:60px;right:0;top:0;height:1px;background:var(--line);z-index:2}
-@media (max-width:360px){.cp-hero-av{width:108px;height:108px;padding:6px}.cp-hero-av>svg,.cp-hero-av>img{width:96px;height:96px}.cp-hero h2{font-size:29px}.cp-hero-act button{font-size:14px;gap:7px}.cp-st b{font-size:22px}}
+@media (max-width:360px){.cp-hero-av{width:92px;height:92px;padding:6px}.cp-hero-av>svg,.cp-hero-av>img{width:80px;height:80px}.cp-hero h2{font-size:23px}.cp-hero-act button{font-size:14px;gap:7px}.cp-st b{font-size:22px}}
 @media (prefers-reduced-motion:reduce){.cp-tog,.cp-tog::after,.cp-top-t{transition:none}}
 /* avatar (choix) */
 .cp-avbig svg{display:block;border-radius:50%}

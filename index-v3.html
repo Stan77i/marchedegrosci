@@ -1296,7 +1296,7 @@ body.tzmode .tz{height:100svh}
 function etat(t,form){P.textContent=t;F.hidden=!form;if(form)setTimeout(function(){try{$('mdgGardeTel').focus()}catch(e){}},50)}
 function refuse(){try{localStorage.removeItem('mdg-site:admin');sessionStorage.removeItem('mdg-site:essai')}catch(e){}etat('Ce compte n’est pas administrateur. Le site est en maintenance : retour vers l’application…');setTimeout(function(){location.replace('maintenance.html')},2500)}
 function verifier(){if(!N||!N.session()){etat('Réservé à l’administrateur. Entrez votre numéro et votre code secret.',true);return}etat('Vérification…');
-  N.rpc('est_admin').then(function(a){if(a===true){try{localStorage.setItem('mdg-site:admin','1');sessionStorage.removeItem('mdg-site:essai')}catch(e){}document.documentElement.classList.remove('mdg-garde')}else refuse()})
+  N.rpc('est_admin').then(function(a){if(a===true){try{localStorage.setItem('mdg-site:admin','1');sessionStorage.removeItem('mdg-site:essai')}catch(e){}document.documentElement.classList.remove('mdg-garde');var x=document.createElement('script');x.src='app/admin-pc.js?v=20261026a';x.setAttribute('data-ici','site');document.body.appendChild(x)}else refuse()})
   .catch(function(){etat('Vérification impossible pour l’instant (réseau ?). Réessayez.',true)})}
 F.onsubmit=function(e){e.preventDefault();E.textContent='';if(!N)return;B.disabled=true;B.textContent='Vérification…';
   N.signIn($('mdgGardeTel').value,$('mdgGardeCode').value.trim()).then(function(){verifier()}).catch(function(x){E.textContent=(x&&x.message)||'Connexion impossible. Réessayez.'}).then(function(){B.disabled=false;B.textContent='Entrer'})};

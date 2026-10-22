@@ -668,3 +668,9 @@ Lui proposer de coller ceci :
   L'année du marché · Prix par zone · Le réseau · Suivi de commande · Code secret (ouvre le tutoriel) · Achats groupés · Alertes produits · Espace chauffeur.
 - Une garantie touchée ouvre la feuille « Pourquoi le Marché de Gros » ; une fonction touchée ouvre directement la fonction (module pas encore chargé → la feuille).
 - Garanties et fonctions alternent ; 14 phrases, une toutes les 4,2 s. N'ajouter que ce que l'application fait déjà.
+
+## Sur ordinateur : application réservée à l'admin, QR code, barre Mobile / Site (22/10/2026)
+- `application.dc.html` sur PC/tablette : seul l'administrateur (drapeau `mdg-site:admin`, posé après `est_admin`) l'ouvre ; les autres → `maintenance.html`. Téléphone : inchangé.
+- `maintenance.html` sur PC : pas de redirection ; « Ouvrir l'application » montre « Prenez votre téléphone » avec un **QR code** (vendor/qrcode-generator-1.4.4.js, MIT, fabriqué sur place à partir de l'adresse de la page) et le lien à taper/copier. Téléphone ou admin : redirection après 8 s comme avant.
+- `app/admin-pc.js` : barre « Admin · 📱 Mobile | 🖥️ Site » en haut à droite, sur PC, pour l'admin seulement ; revérifie `est_admin` au serveur (sinon : barre retirée, drapeau effacé, l'application quitte le PC). Sur le site, elle apparaît après la vérification de l'écran admin.
+- Le drapeau n'est qu'un aiguillage : l'application elle-même est publique (la même sur téléphone) ; le site et admin.html restent protégés par le serveur.

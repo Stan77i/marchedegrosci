@@ -49,6 +49,9 @@
   // Tant qu'il est vide, l'application dit « bientôt » et ne montre aucun numéro.
   const WA_LITIGES = '';
   const COM_V = 0.035, COM_T = 0.069;   // commissions : vendeur 3,5 %, transporteur 6,9 % (calculées par le serveur, rappelées ici pour l'affichage)
+  // « Transporteur du réseau Marché de Gros » en pause (schéma 62, demande du propriétaire le 22/10/2026) : pas encore de transporteurs.
+  // L'option reste visible, grisée « Bientôt », et ne se choisit pas. Pour rouvrir : true ici ET public._transport_reseau_ouvert() côté serveur.
+  const RESEAU_OUVERT = false;
   const MODES = { reseau: 'Transporteur du réseau Marché de Gros', acheteur: 'Transporteur choisi par l’acheteur', vendeur: 'Transporteur choisi par le vendeur' };
   const ROLE = { vendeur: 'Vendeur', acheteur: 'Acheteur', chauffeur: 'Chauffeur', admin: 'Marché de Gros', systeme: 'Automatique' };
   const PREUVE = { declaration: 'déclaré', gps: 'déclaré avec position', code: 'validé par code', auto: 'automatique', admin: 'équipe' };
@@ -136,6 +139,7 @@
 .cm-f label.t{display:block;margin:14px 0 6px;font-weight:600}
 .cm-opt{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start;padding:12px 14px;margin:0 0 8px;border-radius:16px;background:#FFFDF8;border:2px solid transparent;cursor:pointer}
 .cm-opt:has(input:checked){border-color:#10392B}.cm-opt input{width:20px;height:20px;margin:2px 0 0;accent-color:#10392B}
+.cm-opt.cm-off{opacity:.55;cursor:not-allowed}.cm-opt.cm-off .cm-tag{margin-left:4px;vertical-align:2px}
 .cm-opt b{display:block;font-weight:600}.cm-opt small{display:block;font-size:13px;color:#5E5546}
 .cm-opt.off{opacity:.6;cursor:default}
 .cm-f input[type=text],.cm-f textarea{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512}
@@ -238,6 +242,8 @@
     const avant = sel && trouve(sel) && trouve(sel).etape;
     await lireListe(); if (sel) await lireJournal(sel);
     if (!bg) return;
+    // un formulaire est ouvert (créer la commande, refuser, confirmer une étape) : on ne le redessine pas, sinon ce qu'on a choisi ou écrit disparaît
+    if (dernierEcran === 'creer' || dernierEcran === 'geste') return;
     const apres = sel && trouve(sel) && trouve(sel).etape;
     peindre(avant && apres && avant !== apres ? apres : null);
   }
@@ -759,6 +765,11 @@
   // offre « inclus » ou demande « le vendeur livre » : le vendeur transporte, pas de transporteur du réseau (le serveur le refuse aussi).
   // offre « inclus hors de ma ville » : autre ville → le vendeur livre ; même ville → l'acheteur s'en charge.
   function choixTransport(n) {
+    const t = choixTransport0(n); if (RESEAU_OUVERT) return t;
+    const modes = t.modes.filter(k => k !== 'reseau');
+    return Object.assign({}, t, { modes, defaut: modes.includes(t.defaut) ? t.defaut : modes[0], bientot: t.modes.includes('reseau') });
+  }
+  function choixTransport0(n) {
     let a = null; try { a = (N().list(n.cible === 'offre' ? 'offres' : 'demandes') || []).find(x => x._rid === n.cible_id) || null; } catch (_) {}
     const t = a && a.transport, ville = (a && a.city) || n.ville || '';
     // ce qui a été convenu dans la négociation passe avant l'annonce (schéma 49)
@@ -815,6 +826,7 @@
         <label class="t">Qui transporte la marchandise ?</label>
         ${tr.info ? `<p class="cm-info">🚚 ${esc(tr.info)}</p>` : ''}
         ${tr.modes.map(k => `<label class="cm-opt"><input type="radio" name="mode" value="${k}"${k === tr.defaut ? ' checked' : ''}><span><b>${tr.lib[k] || MODES[k]}</b><small>${k === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié.' : k === 'acheteur' ? 'L’acheteur envoie son camion ou son chauffeur. Il peut lui donner un lien de suivi.' : 'Le vendeur livre avec son camion ou son chauffeur. Il peut lui donner un lien de suivi.'}</small></span></label>`).join('')}
+        ${tr.bientot ? `<label class="cm-opt cm-off" aria-disabled="true"><input type="radio" name="mode" value="reseau" disabled><span><b>${MODES.reseau} <span class="cm-tag">Bientôt</span></b><small>Pas encore disponible : le réseau de transporteurs se construit. Pour l’instant, l’acheteur ou le vendeur s’occupe du transport.</small></span></label>` : ''}
         <label class="t">Comment valider le chargement et la réception ?</label>
         <label class="cm-opt"><input type="radio" name="val" value="code" checked><span><b>Avec codes — le chauffeur a l’application</b><small><span class="cm-tag mais">Recommandé</span> Le chauffeur tape le code du vendeur au chargement, puis celui de l’acheteur à la réception. Personne ne peut valider à votre place.</small></span></label>
         <label class="cm-opt"><input type="radio" name="val" value="declaration"><span><b>Sans code — nous validons nous-mêmes</b><small>Pour un chauffeur sans l’application : le vendeur déclare le chargement, l’acheteur l’arrivée et la réception.</small></span></label>

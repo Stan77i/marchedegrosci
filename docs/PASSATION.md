@@ -791,3 +791,13 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 ## La cloche se calme une fois touchée (22/10/2026)
 - Retour du propriétaire : après avoir touché la cloche et vu le message, le « 1 » restait et la cloche continuait de se balancer. Cause : la cloche comptait les notifications « non lues », et une notification ne passait en lue que si on la touchait une par une (ou « Tout marquer comme lu »).
 - Désormais, un toucher sur la cloche = « vu » : l'heure est retenue sur le téléphone (`mdg-cloche:vu`). La pastille et le balancement ne reviennent que pour une notification ou un message arrivé **après** (`MDGMessages.unreadDepuis(ts)` pour les messages). Les notifications gardent leur état « non lu » dans leur liste. Cache `mgci-v181`.
+
+## « Suivre la commande » ne se ferme plus tout seul + transporteur du réseau en pause (22/10/2026) — schéma 62
+- **Défaut corrigé** : la fenêtre des commandes se relit toute seule toutes les 20 s. Elle redessinait « Mes commandes » par-dessus le formulaire ouvert : en choisissant qui transporte, on était renvoyé à la liste. Même risque pour « Refuser la marchandise » (photos) et les écrans de confirmation. Désormais, la relecture met les données à jour mais ne redessine pas un formulaire ouvert (`dernierEcran` = 'creer' ou 'geste'). Vérifié : formulaire toujours là après 22 s, choix gardé.
+- **Transporteur du réseau Marché de Gros en pause** (demande du propriétaire : pas encore de transporteurs) :
+  - formulaire : l'option reste visible, grisée « Bientôt », impossible à choisir (`RESEAU_OUVERT = false` dans `v3/commandes.js`) ;
+  - serveur (schéma 62) : déclencheur `commandes_reseau_pause` qui refuse une nouvelle commande en mode « reseau » (même depuis une ancienne version) ; vérifié dans une transaction annulée ;
+  - tutoriel « Créer la commande » et aide : textes mis à jour (« arrive bientôt »).
+  - L'Espace chauffeur reste ouvert : c'est là que de vrais transporteurs s'inscriront. Au 22/10 : 0 transporteur, aucune commande « reseau ».
+  - **Pour rouvrir** : `RESEAU_OUVERT = true` dans `v3/commandes.js`, `create or replace function public._transport_reseau_ouvert() … select true`, et remettre les textes du tutoriel et de l'aide.
+- Cache `mgci-v182`.

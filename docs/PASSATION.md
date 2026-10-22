@@ -752,3 +752,10 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Boutons plus courts : « Refuser la marchandise », « Pas de papier ? Signaler un problème ».
 - Onglet Prix, mode sombre : titres, message « Aucune offre », onglets Acheter / Vendre, boutons, badges et prix lisibles (vert clair et corail sur fond sombre). Un produit s'ouvre sur l'onglet qui a des annonces quand l'autre est vide.
 - Onglet Prix : changer de zone ne vide plus la liste (plus d'éclair blanc en mode sombre) : l'ancienne liste reste affichée, estompée, le temps du chargement ; les cases de chargement sont neutres, lisibles en clair comme en sombre.
+
+## Un tutoriel à l'entrée de chaque écran (22/10/2026) — `v3/astuces.js`
+- Demandé : « quand on rentre dedans, un tuto explicatif propre », partout. 2 ou 3 cartes, montrées 2 fois au plus (une fois par ouverture) tant que « J’ai compris » n'est pas touché.
+- Pages (reconnues par leur adresse) : Acheter, Vendre, Demander, Le réseau (carte), Catégories, Prix du marché, L’année du marché, fiche produit, Mes publications.
+- Fenêtres : Mon compte, Mes négociations, Messages, Message à tous (admin), Mon profil public, Les mieux notés, Alertes produits, Mes commandes, Vérifier son identité.
+- Tableau de bord admin (admin.html charge maintenant astuces.js) : aperçu, Commandes et litiges, Identités.
+- Menu : « Messages » dit « Gardés 1 an · lisibles par l’équipe » (avant : « Effacés après 365 jours »).

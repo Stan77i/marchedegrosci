@@ -78,7 +78,84 @@
     prix: { t: 'Le tableau des prix', insiste: 2, cartes: [
       ['📊', 'Comme un marché P2P', '*Acheter* : les vendeurs, le moins cher en haut. *Vendre* : les acheteurs, le meilleur budget en haut.'],
       ['⬆️', 'Baissez votre prix, vous montez', 'Le tableau se met à jour tout seul. À prix égal, le *transport compris* passe devant.'],
-      ['🤝', 'Touchez « Acheter » ou « Vendre »', 'Vous proposez votre prix dans l’application. *Aucun numéro* : le Marché de Gros est le seul intermédiaire.']] }
+      ['🤝', 'Touchez « Acheter » ou « Vendre »', 'Vous proposez votre prix dans l’application. *Aucun numéro* : le Marché de Gros est le seul intermédiaire.']] },
+    // ——— un tutoriel à l'entrée de chaque écran du menu (montré 2 fois au plus, tant que « J’ai compris » n’est pas touché) ———
+    p_acheter: { t: 'Acheter', insiste: 2, cartes: [
+      ['🔎', 'Tout ce qui est à vendre', 'Cherchez un produit en haut : les noms locaux sont compris (aloco, gnangnan…). Affinez avec les *filtres*.'],
+      ['🧺', 'Chaque offre en un coup d’œil', 'Produit, quantité, prix, lieu et nom du vendeur. Le *sceau bleu* : identité vérifiée par l’équipe.'],
+      ['🤝', 'Écrire ou proposer un prix', 'Touchez une offre, puis *« Écrire »* ou *« Proposer un prix »*. Votre numéro reste caché.']] },
+    p_vendre: { t: 'Vendre', insiste: 2, cartes: [
+      ['🧺', 'Publiez votre offre', 'Choisissez le *produit*, ajoutez une *photo* si vous pouvez, puis la *quantité*.'],
+      ['💰', 'Votre prix et votre transport', 'Écrivez votre prix, ou laissez *« À discuter »*. Dites si le *transport est compris*. Un bon prix vous fait monter dans l’onglet *Prix*.'],
+      ['🪪', 'Votre nom, toujours', 'L’annonce porte le *nom de votre compte* : il ne se change pas ici. Les acheteurs vous écrivent dans l’application.']] },
+    p_demande: { t: 'Demander', insiste: 2, cartes: [
+      ['🛒', 'Dites ce qu’il vous faut', '*Quoi*, *combien*, *où* et *pour quand*.'],
+      ['💵', 'Donnez votre budget', 'Avec un budget, les vendeurs savent tout de suite s’ils peuvent vous servir. Dites aussi qui s’occupe du *transport*.'],
+      ['🔔', 'Les vendeurs sont prévenus', 'Ceux qui ont ce produit reçoivent votre demande et vous proposent leur prix, dans l’application.']] },
+    p_carte: { t: 'Le réseau', insiste: 2, cartes: [
+      ['🗺️', 'La carte du marché', 'Chaque bulle est une *ville* : *verte* pour les offres, *jaune* pour les demandes.'],
+      ['👆', 'Touchez une bulle', 'Vous voyez les annonces de cette ville. En haut, choisissez un *produit* ou *« Où êtes-vous ? »*.'],
+      ['📍', 'Jamais d’adresse exacte', 'La position montrée est celle de la *ville*, jamais l’adresse d’une personne.']] },
+    p_categories: { t: 'Catégories', insiste: 2, cartes: [
+      ['🗂️', 'Tous les produits vivriers', 'Rangés en *12 familles* : céréales, tubercules, légumes et fruits, poissons…'],
+      ['👆', 'Touchez une famille, puis un produit', 'Vous ouvrez sa *fiche* : ses offres, ses demandes et sa saison.']] },
+    p_prix: { t: 'Prix du marché', insiste: 2, cartes: [
+      ['📈', 'Ce que demandent les vendeurs', 'Pour chaque produit : les *ronds verts* sont les prix des vendeurs, les *carrés jaunes* les budgets des acheteurs.'],
+      ['🤝', '« Accord possible »', 'Un acheteur paie au moins le prix d’un vendeur : il y a une affaire à faire.'],
+      ['📊', 'Le classement est dans « Prix »', 'Pour voir qui est le moins cher, en direct, ouvrez l’onglet *Prix* de l’accueil. Tous les prix viennent de vraies annonces.']] },
+    p_annee: { t: 'L’année du marché', insiste: 2, cartes: [
+      ['🌾', 'La saison de chaque produit', 'Touchez un *mois*, ou glissez le doigt sur le *cercle*.'],
+      ['🌱', 'Touchez un produit', 'Vous voyez ses mois de *récolte* : début, pleine récolte, fin.'],
+      ['💡', 'Achetez au bon moment', 'En *pleine récolte*, il y a beaucoup de marchandise : les prix baissent souvent.']] },
+    p_fiche: { t: 'La fiche produit', insiste: 2, cartes: [
+      ['🧺', 'Tout sur un produit', 'Ses *offres* (vendeurs) et ses *demandes* (acheteurs) du moment, avec les prix et les lieux.'],
+      ['🤝', 'Agissez depuis la fiche', 'Touchez une annonce pour *écrire* ou *proposer un prix*. Ou publiez la vôtre avec *« J’ai »* / *« Je cherche »*.']] },
+    p_pubs: { t: 'Mes publications', insiste: 2, cartes: [
+      ['📦', 'Vos annonces et votre stock', 'Toutes vos offres et demandes publiées, au même endroit.'],
+      ['✏️', 'Gardez-les à jour', 'Quand vous vendez, mettez à jour la *quantité* : les acheteurs voient le vrai stock. Retirez une annonce qui n’est plus valable.']] },
+    m_compte: { t: 'Mon compte', insiste: 2, cartes: [
+      ['👤', 'Votre espace', 'Votre profil, vos annonces, vos négociations et vos statuts.'],
+      ['✅', 'Faites vérifier votre identité', 'Le *sceau bleu* rassure vos acheteurs et vos vendeurs.'],
+      ['⚙️', 'Vos réglages', 'Notifications, sons, thème clair ou sombre, *aide pour débuter* (ces tutoriels).']] },
+    m_negos: { t: 'Mes négociations', insiste: 2, cartes: [
+      ['🤝', 'Toutes vos propositions', 'Chaque ligne est une négociation : la *dernière proposition* et qui doit répondre.'],
+      ['⏳', 'Répondez dans les 48 h', 'Touchez une ligne pour *accepter*, *refuser* ou *proposer un autre prix*.'],
+      ['📦', 'Accord conclu ?', 'Touchez *« Suivre la commande »* pour organiser la livraison.']] },
+    m_messages: { t: 'Messages', insiste: 2, cartes: [
+      ['💬', 'Vos conversations', 'Écrivez aux vendeurs et aux acheteurs *sans donner votre numéro*.'],
+      ['👀', 'Rien n’est secret', 'Les échanges sont *gardés 1 an*. L’équipe du Marché de Gros peut les lire pour régler un litige.'],
+      ['🚫', 'Quelqu’un vous dérange ?', 'Vous pouvez le *bloquer*. Les liens, numéros et réseaux sociaux sont refusés.']] },
+    m_diffuser: { t: 'Message à tous', insiste: 2, cartes: [
+      ['📣', 'Au nom du Marché de Gros', 'Ce message part à *tous les membres*, avec le logo, comme une annonce officielle.'],
+      ['✍️', 'Court et utile', 'Une information vraie et utile à tous. Relisez avant d’envoyer : on ne peut pas le reprendre.']] },
+    m_profil: { t: 'Mon profil public', insiste: 2, cartes: [
+      ['🪪', 'Ce que voient les autres', 'Quand on touche votre nom : qui vous êtes, ce que vous faites, vos notes et vos statuts.'],
+      ['🔒', 'Votre numéro reste caché', 'Il n’est jamais affiché. Votre nom de famille complet s’affiche seulement si vous le choisissez (Réglages).']] },
+    m_notes: { t: 'Les mieux notés', insiste: 2, cartes: [
+      ['🏅', 'Les membres recommandés', 'Classés d’après les *notes réelles* laissées après une négociation.'],
+      ['👆', 'Touchez un nom', 'Vous voyez son profil, ses notes et ses statuts. Un statut ne s’achète pas.']] },
+    m_alertes: { t: 'Alertes produits', insiste: 2, cartes: [
+      ['🔔', 'Soyez prévenu', 'Choisissez vos produits (igname, tomate…) : une *notification* arrive dès qu’une annonce est publiée.'],
+      ['🎯', 'Offres, demandes, ou les deux', 'Vendeur ? Suivez les *demandes*. Acheteur ? Suivez les *offres*.']] },
+    m_commandes: { t: 'Mes commandes', insiste: 2, cartes: [
+      ['🚚', 'Du « oui » à la livraison', 'Chaque commande, avec ses étapes et leur heure. *En cours* d’un côté, *terminées* de l’autre.'],
+      ['👆', 'Touchez une commande', 'Le camion avance avec elle. Les boutons vous disent quoi faire maintenant.']] },
+    m_identite: { t: 'Vérifier son identité', insiste: 2, cartes: [
+      ['🪪', 'Votre pièce d’identité', 'Prenez-la en photo, *recto* et *verso*, bien nette, sans reflet.'],
+      ['🤳', 'Un selfie avec le code', 'Écrivez le code affiché sur un papier et tenez-le près de votre visage.'],
+      ['👀', 'L’équipe décide', 'Une personne compare et décide, en quelques jours. Une pièce expirée est refusée.']] },
+    // administrateur (admin.html)
+    a_tableau: { t: 'Tableau de bord', insiste: 2, cartes: [
+      ['📊', 'L’administration', 'Le menu donne chaque partie : aperçu, à traiter, annonces, comptes, négociations, messages, identités, commandes, transporteurs.'],
+      ['🧾', 'Commencez par « À traiter »', 'Signalements, alertes, dossiers en attente : ce qui demande une décision.'],
+      ['⚖️', 'Les litiges', 'Dans *Commandes* : on décide sur des *preuves* (mot du vendeur, photos, échanges). Suivez la procédure « Traiter un litige ».']] },
+    a_commandes: { t: 'Commandes et litiges', insiste: 2, cartes: [
+      ['🔎', 'Tout voir', 'Tapez le *numéro de commande* en haut, ou touchez *« Tout voir »* : accord, négociation, messages, mot secret, historique.'],
+      ['🧾', 'Vérifiez les preuves', '*Photos*, mot du vendeur retrouvé, réponse du chauffeur et du vendeur. Une preuve manque ? Demandez-la une fois dans la *Discussion*.'],
+      ['⚖️', 'Décidez', '*Accepter le refus* (quantité retenue) ou *le rejeter*. « Clore : annulée » rend tout à l’acheteur : seulement si rien n’a été livré.']] },
+    a_identites: { t: 'Identités', insiste: 2, cartes: [
+      ['🪪', 'Comparer et décider', 'Pièce recto et verso, selfie avec le code écrit : même personne, pièce valide, code lisible.'],
+      ['✅', 'Valider ou refuser', 'Refusez une pièce expirée, floue, ou un selfie sans le bon code, en donnant la raison.']] }
   };
   // quand le tutoriel se montre : le premier écran trouvé dans la page (ordre = priorité)
   const DECLENCHE = [
@@ -92,8 +169,39 @@
     ['chauffeur', '.cm-bg[aria-label="Espace chauffeur"] .cm-st, .cm-bg[aria-label="Espace chauffeur"] form'],
     ['negoce', '.nx-bg .nx-edbox'],
     ['sequestre', '.cm-bg .cm-sq'],
-    ['prix', 'mdg-tableau .tb-seg']
+    ['prix', 'mdg-tableau .tb-seg'],
+    // fenêtres du menu
+    ['m_identite', '.idv-bg'],
+    ['m_diffuser', '.dm-bg .dm-dif'],
+    ['m_messages', '.dm-bg .dm-l'],
+    ['m_negos', '.nx-bg:not(:has(.nx-edbox))'],
+    ['m_notes', '.rp[aria-label="Les mieux notés"]'],
+    ['m_profil', '.rp[aria-label="Mon profil public"]'],
+    ['m_alertes', '.al-bg'],
+    ['m_commandes', '.cm-bg[aria-label="Mes commandes"] .cm-seg'],
+    ['m_compte', '.cp-bg'],
+    // pages (adresse de l'application)
+    ['p_acheter', 'hash:^#/catalogue'],
+    ['p_vendre', 'hash:^#/vendre'],
+    ['p_demande', 'hash:^#/demande'],
+    ['p_carte', 'hash:^#/carte'],
+    ['p_categories', 'hash:^#/categories'],
+    ['p_prix', 'hash:^#/prix'],
+    ['p_annee', 'hash:^#/annee'],
+    ['p_pubs', 'hash:^#/mes-publications'],
+    ['p_fiche', 'hash:^#/produits/'],
+    // administrateur
+    ['a_commandes', 'admin:^#commandes'],
+    ['a_identites', 'admin:^#identites'],
+    ['a_tableau', 'admin:^(#apercu)?$']
   ];
+  // « hash:… » : la page de l'application ouverte ; « admin:… » : la partie du tableau de bord ouverte ; sinon un sélecteur
+  const ADMIN = /admin\.html$/.test(location.pathname);
+  const present = sel => { try {
+    if (sel.startsWith('hash:')) return !ADMIN && new RegExp(sel.slice(5)).test(location.hash);
+    if (sel.startsWith('admin:')) return ADMIN && !!document.querySelector('#main') && new RegExp(sel.slice(6)).test(location.hash);
+    return !!document.querySelector(sel);
+  } catch (_) { return false; } };
   // déjà vu ? Un tutoriel « insistant » revient (jusqu'à N fois) tant qu'on n'a pas touché « J’ai compris » à la dernière carte
   const fini = id => { const v = vus(), T = TOURS[id] || {}; return !!v['ok:' + id] || (v['tour:' + id] || 0) >= (T.insiste || 1); };
 
@@ -167,7 +275,7 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
   function guetter() {
     if (guetT || tourEl || !actif()) return;
     guetT = requestAnimationFrame(() => { guetT = 0; if (tourEl) return; const v = vus();
-      for (const [id, sel] of DECLENCHE) if (!fini(id) && !vu1.has(id) && document.querySelector(sel)) { vu1.add(id); setTimeout(() => { if (document.querySelector(sel)) tour(id); }, 700); return; } });
+      for (const [id, sel] of DECLENCHE) if (!fini(id) && !vu1.has(id) && present(sel)) { vu1.add(id); setTimeout(() => { if (present(sel)) tour(id); }, 900); return; } });
   }
   function surveiller() { if (!document.body || !window.MutationObserver) return; new MutationObserver(guetter).observe(document.body, { childList: true, subtree: true }); }
 
@@ -229,6 +337,6 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
   function revoir() { ecrire(KVU, {}); regler(true); }
 
   window.MDGAstuces = { actif, regler, revoir, tour, TOURS, pointer };
-  const go = () => { surveiller(); guetter(); setTimeout(signe, 4500); };
+  const go = () => { surveiller(); guetter(); addEventListener('hashchange', () => setTimeout(guetter, 300)); if (!ADMIN) setTimeout(signe, 4500); };
   if (document.readyState === 'loading') addEventListener('DOMContentLoaded', go); else go();
 })();

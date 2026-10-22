@@ -49,7 +49,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261025q">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261026b">
 <link rel="stylesheet" href="css/sombre.css?v=20261025f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261025g">
@@ -131,6 +131,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
       </sc-for>
     </div>
     <div class="acc-flotte" style="position:absolute;left:50%;top:104px;width:250px;height:250px;margin-left:-125px;pointer-events:none">
+      <sc-if value="{{ tendOn }}" hint-placeholder-val="{{ false }}"><div class="acc-tend {{ tend.cls }}" role="status"><span class="acc-tend-i" aria-hidden="true">{{ tend.ico }}</span><span class="acc-tend-x"><b>{{ tend.t }}</b><small>{{ tend.s }}</small></span></div></sc-if>
       <div class="acc-ombre" style="position:absolute;left:30px;right:30px;bottom:6px;height:26px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.6),transparent 70%)"></div>
       <sc-for list="{{ sacks }}" as="k" hint-placeholder-count="0"><img sc-camel-src="{{ k.src }}" alt="{{ k.alt }}" draggable="false" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:{{ k.op }};transform:{{ k.tf }};transition:{{ k.tr }}"></sc-for>
       <div style="position:absolute;inset:0;opacity:{{ jute.op }};transform:{{ jute.tf }};transition:opacity .4s,transform .55s cubic-bezier(.22,1,.36,1)">
@@ -902,7 +903,7 @@ class Component extends DCLogic {
     if (st.includes(prev)) { go(top, T_OFF, T_IN); go(prev, T_IN, T_UNDER); } else { go(prev, T_IN, T_OFF); go(top, T_UNDER, T_IN); }
     this.animT = setTimeout(() => { (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; }, 650);
   }
-  componentDidUpdate(pp, ps) { if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
+  componentDidUpdate(pp, ps) { this.tendVeille(); if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
   /* carte en profondeur (app/carte-gl.js) : chargée après l'affichage de la carte Canvas, elle la remplace en fondu.
      Sans WebGL, sur un appareil faible ou si un fichier manque, la carte Canvas reste. */
   /* la carte : une seule, sans changement visible. Téléphone capable → la carte en relief directement (fond de la même couleur pendant
@@ -1309,6 +1310,31 @@ class Component extends DCLogic {
       toutSecs: secs, toutSous: q ? nb + ' résultat' + (nb > 1 ? 's' : '') : nb + ' produit' + (nb > 1 ? 's' : '') + (tf === 'vif' ? ' avec des annonces' : ''),
       toutVide: !secs.length, toutVideTxt: q ? 'Aucun produit ne correspond à « ' + S.tq.trim() + ' ».' : 'Aucune annonce pour l’instant : publiez la première.' });
   }
+  // ——— roue de l'accueil : la petite bulle « très vendu / très demandé / vendu il y a… » (schéma 53, chiffres réels du serveur) ———
+  // Elle sort de derrière le sac quand un produit s'arrête devant soi, reste 5 s, puis repart ; elle revient chaque fois qu'on revient sur le produit.
+  tendCharger() { if (this._tendL || !window.MDGNuage || !MDGNuage.rpc) return; const c = ls('mdg-app:tendance'); if (c && c.t && Date.now() - c.t < 3e5 && this.tendData) return;
+    if (c && c.d && !this.tendData) this.tendData = c.d;
+    this._tendL = true; MDGNuage.rpc('produits_activite', {}, false).then(d => { const m = {}; (Array.isArray(d) ? d : []).forEach(x => { m[x.slug] = x; }); const neuf = !this.tendData; this.tendData = m; ls('mdg-app:tendance', { t: Date.now(), d: m }); if (neuf) { this._tendSlug = null; this.tendVeille(); } })
+      .catch(() => {}).then(() => { this._tendL = false; }); }
+  tendMsg(slug) { const x = this.tendData && this.tendData[slug]; if (!x) return null;
+    const il = t => { const m = Math.max(0, Math.round((Date.now() - new Date(t)) / 6e4)); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
+    const pl = (n, w) => n + ' ' + w + (n > 1 ? 's' : '');
+    if (x.ventes >= 3) return { ico: '🔥', t: 'Très vendu', s: pl(x.ventes, 'vente') + ' en 2 semaines · la dernière ' + il(x.derniere_vente), cls: 'vente' };
+    if (x.demandes >= 3) return { ico: '📈', t: 'Très demandé', s: pl(x.demandes, 'demande') + ' en 2 semaines' + (x.derniere_demande ? ' · la dernière ' + il(x.derniere_demande) : ''), cls: 'demande' };
+    if (x.forte_demande) return { ico: '📈', t: 'Forte demande', s: 'Signalée par l’équipe du Marché de Gros', cls: 'demande' };
+    if (x.ventes > 0 && x.derniere_vente) return { ico: '✅', t: 'Vendu ' + il(x.derniere_vente), s: x.ventes > 1 ? pl(x.ventes, 'vente') + ' en 2 semaines' : 'Une vente conclue sur le marché', cls: 'vente' };
+    if (x.negociations > 0) return { ico: '🤝', t: x.negociations > 1 ? x.negociations + ' négociations en cours' : 'Négocié en ce moment', s: 'Des acheteurs et des vendeurs discutent le prix', cls: 'nego' };
+    if (x.demandes > 0 && x.derniere_demande) return { ico: '🛒', t: 'Demandé ' + il(x.derniere_demande), s: x.demandes > 1 ? pl(x.demandes, 'demande') + ' en 2 semaines' : 'Quelqu’un le cherche', cls: 'demande' };
+    return null; }
+  tendVeille() { const S = this.state, home = S.stack.length === 1 && S.ready && (S.accTab || 'marche') === 'marche' && !S.sheet && !S.menu && !document.hidden;
+    if (!home || S.dragging) { if (!home) this._tendSlug = null; clearTimeout(this._tendT); if (S.tendS) this.setState({ tendS: null }); return; }
+    this.tendCharger();
+    if (!this.tendData) { clearTimeout(this._tendR); this._tendR = setTimeout(() => this.tendVeille(), 1500); return; }   // modules pas encore chargés : on réessaie
+    const F = this.FAMS[S.fam], p = F && F.prods[Math.max(0, Math.min(F.prods.length - 1, Math.round(S.rot)))], slug = p && p.slug;
+    if (!slug || slug === this._tendSlug) return;
+    this._tendSlug = slug; clearTimeout(this._tendT); if (S.tendS) this.setState({ tendS: null });
+    this._tendT = setTimeout(() => { if (this._tendSlug !== slug) return; this.tendCharger(); const m = this.tendMsg(slug); if (!m) return;
+      this.setState({ tendS: slug, tendM: m }); this._tendT = setTimeout(() => { if (this.state.tendS === slug) this.setState({ tendS: null }); }, 5200); }, 650); }
   // Accueil → Activité : retirer des éléments (sur ce téléphone seulement), avec « Annuler »
   masques() { try { return JSON.parse(localStorage.getItem('mdg-activite:masques')) || {}; } catch (_) { return {}; } }
   masquer(cles, texte) {
@@ -1665,6 +1691,7 @@ class Component extends DCLogic {
       markEl: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.ligne({ fond: 'clair', h: 24 }) } }) : 'Marché de Gros',
       act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, oAnim: ao ? 'mkLuciole 3.2s ease-in-out infinite' : 'none', dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
       openFicheAct: () => this.openFiche(act.slug),
+      tendOn: !!(S.tendS && S.tendS === act.slug && S.tendM), tend: S.tendM || { ico: '', t: '', s: '', cls: '' },
       duoH: { jaiL: 'J\u2019ai ' + act.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + act.name.toLowerCase() + ' à acheter : publier une demande' }, duoF: { jaiL: 'J\u2019ai ' + FP.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + FP.name.toLowerCase() + ' à acheter : publier une demande' },
       openJai: () => this.openSheet('jai', top === 'fiche' ? S.slug : act.slug), openCherche: () => this.openSheet('cherche', top === 'fiche' ? S.slug : act.slug),
       fp, share: () => { const u = location.href, t = FP.name + ' — Marché de Gros de Côte d\u2019Ivoire'; if (navigator.share) navigator.share({ title: t, url: u }).catch(() => {}); else { try { navigator.clipboard.writeText(u); this.say('Lien copié'); } catch (_) {} } },

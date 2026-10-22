@@ -657,3 +657,8 @@ Lui proposer de coller ceci :
   Le site reste caché sous un écran « Espace administrateur » (numéro + code secret seulement : pas de création de compte ni de « code oublié ») tant que le serveur n'a pas confirmé `est_admin` pour le compte connecté (vérifié à chaque ouverture). Un compte non admin est renvoyé à la maintenance.
   Le drapeau `mdg-site:admin` (localStorage) ne sert qu'à l'aiguillage ; la décision vient toujours du serveur. `admin.html` garde sa propre protection.
 - Pour rouvrir le site à tous : retirer le bloc « SITE EN MAINTENANCE » en tête d'`index-v3.html`, le cache `#mdgGarde` et sa vérification (après `v3/nuage.js`), et remettre `index-v3.html` dans `index.html`.
+
+## Roue de l'accueil : la bulle d'activité (22/10/2026) — schéma 53
+- `produits_activite()` (SECURITY DEFINER, ouverte à anon) : par produit, chiffres agrégés seulement (ventes conclues 14 j + dernière, demandes publiées 14 j + dernière, négociations ouvertes actives 7 j, forte demande posée par l'équipe). Aucun nom, numéro, prix ni ville.
+- `application.dc.html` (`tendVeille`, `tendMsg`, `tendCharger`) : quand un produit s'arrête devant soi sur la roue (onglet Marché), une bulle sort de derrière le sac pendant 5 s puis repart ; elle revient à chaque retour sur le produit. Données relues au plus toutes les 5 min (cache `mdg-app:tendance`).
+- Messages, par ordre : « Très vendu » (≥ 3 ventes en 2 semaines) · « Très demandé » (≥ 3 demandes) · « Forte demande » (équipe) · « Vendu il y a … » · « N négociations en cours » · « Demandé il y a … ». Rien à dire → pas de bulle (jamais de chiffre inventé).

@@ -180,7 +180,7 @@
 .ai-th{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
 .ai-th button{min-height:44px;padding:0 14px;border-radius:22px;border:1px solid rgba(23,21,18,.14);background:#FFFCF6;color:#171512;font:500 15px Jost,sans-serif;display:inline-flex;align-items:center;gap:7px}
 .ai-th button[aria-pressed=true]{background:#10392B;border-color:#10392B;color:#F3EFE4}
-.ai-sh{margin:22px 0 10px;font:600 13px/1 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#7a7064}
+.ai-sh{margin:22px 0 10px;font:600 13px/1 Jost,sans-serif;letter-spacing:0;color:#7a7064}
 .ai-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .ai-it{background:#FFFCF6;border-radius:18px;box-shadow:0 1px 2px rgba(23,21,18,.06)}
 .ai-q{width:100%;min-height:56px;border:0;background:none;text-align:left;padding:12px 14px;display:flex;align-items:center;gap:12px;font:500 16.5px/1.3 Jost,sans-serif;color:#171512}

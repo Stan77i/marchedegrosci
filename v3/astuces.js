@@ -22,6 +22,15 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const gras = s => esc(s).replace(/\*([^*]+)\*/g, '<b>$1</b>');
 
+  // le pictogramme de chaque carte : une icône de l'application (app/icones.js), jamais un emoji (chaque téléphone dessine
+  // les emoji à sa façon, et ils font « généré »). Les cartes gardent leur emoji dans le code pour rester lisibles ; voici la correspondance.
+  const PICTO = { '🤝': 'echanger', '🪪': 'verifie', '👀': 'oeil', '👆': 'fleche', '✅': 'traiter', '📦': 'boite', '🚚': 'camion', '🚛': 'camion', '🚫': 'signaler', '💰': 'prix', '💵': 'prix',
+    '🧾': 'etiquette', '⚖️': 'confiance', '🛡️': 'confiance', '📊': 'tableau', '🔎': 'chercher', '🔍': 'chercher', '🧺': 'offre', '⏳': 'sablier', '⏰': 'horloge', '🔐': 'cadenas', '🔒': 'cadenas', '🤐': 'cadenas',
+    '🔓': 'cle', '📍': 'lieu', '✍️': 'crayon', '📝': 'crayon', '✏️': 'crayon', '💬': 'messages', '🔔': 'cloche', '👍': 'traiter', '⌨️': 'ecran', '🗣️': 'comment', '📸': 'photo', '🤳': 'photo',
+    '⚠️': 'signaler', '📄': 'donnees', '⬆️': 'haut', '🛒': 'panier', '🗺️': 'pays', '🗂️': 'categories', '📈': 'tendance', '🌾': 'annee', '🌱': 'producteur', '💡': 'info', '👤': 'compte', '⚙️': 'reglages',
+    '📣': 'partager', '🏅': 'notes', '🎯': 'localiser' };
+  const pictogramme = e => { const n = PICTO[e]; return n && window.MDGIco && MDGIco.a(n) ? MDGIco.svg(n, 40, 1.7) : esc(e); };
+
   /* ——— les tutoriels : des phrases courtes, un geste par carte (ce que l'application fait vraiment, rien d'autre) ——— */
   const TOURS = {
     negoce: { t: 'Proposer un prix', cartes: [
@@ -212,12 +221,12 @@
   const CSS = `.as-tour{position:fixed;inset:0;z-index:2147483200;display:flex;align-items:flex-end;justify-content:center;background:rgba(10,24,18,.55);font-family:Jost,system-ui,sans-serif;animation:asFond .25s ease both}
 .as-c{width:100%;max-width:440px;margin:0 12px calc(14px + env(safe-area-inset-bottom));background:#FFFDF8;color:#171512;border-radius:28px;padding:18px 20px 16px;box-shadow:0 20px 50px rgba(0,0,0,.35);animation:asMonte .4s cubic-bezier(.22,1,.36,1) both}
 .as-haut{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}
-.as-titre{font:600 12px/1 Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#655C4D}
+.as-titre{font:600 13px/1 Jost,sans-serif;letter-spacing:0;color:#655C4D}
 .as-passer{border:0;background:rgba(23,21,18,.06);color:#171512;font:600 14px Jost,sans-serif;min-height:40px;padding:0 16px;border-radius:20px;cursor:pointer}
 .as-vue{min-height:206px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
 .as-vue.in{animation:asCarte .38s cubic-bezier(.22,1,.36,1) both}
 .as-ill{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;font-size:46px;line-height:1;background:radial-gradient(circle at 35% 30%,#FFF6D6,#F2C230);box-shadow:0 0 0 8px rgba(242,194,48,.18);margin:4px 0 2px}
-.as-ill span{display:block;animation:asBouge 2.4s ease-in-out infinite}
+.as-ill span{display:block;line-height:0;color:#10392B;animation:asBouge 2.4s ease-in-out infinite}.as-ill span svg{display:block}
 .as-vue h3{margin:0;font:700 22px/1.2 Jost,sans-serif;letter-spacing:-.01em;text-wrap:balance}
 .as-vue p{margin:0;font:400 16px/1.45 Jost,sans-serif;color:#3E382C;text-wrap:pretty}.as-vue p b{color:#10392B;font-weight:600}
 .as-pts{display:flex;justify-content:center;gap:6px;margin:14px 0 12px}.as-pts i{width:7px;height:7px;border-radius:4px;background:rgba(23,21,18,.18);transition:width .3s,background .3s}.as-pts i.on{width:22px;background:#10392B}
@@ -259,7 +268,7 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
     const fermer = () => { if (!tourEl) return; const e = tourEl; tourEl = null; e.remove(); removeEventListener('keydown', cle, true); try { retour && retour.focus && retour.focus(); } catch (_) {} setTimeout(guetter, 400); };
     const montrer = () => { const [ill, h, p] = T.cartes[i];
       vue.classList.remove('in'); void vue.offsetWidth; vue.classList.add('in');
-      vue.innerHTML = `<div class="as-ill" aria-hidden="true"><span>${ill}</span></div><h3>${esc(h)}</h3><p>${gras(p)}</p>`;
+      vue.innerHTML = `<div class="as-ill" aria-hidden="true"><span>${pictogramme(ill)}</span></div><h3>${esc(h)}</h3><p>${gras(p)}</p>`;
       tourEl.querySelectorAll('.as-pts i').forEach((x, k) => x.classList.toggle('on', k === i));
       ret.hidden = i === 0; suiv.textContent = i === T.cartes.length - 1 ? 'J’ai compris' : 'Suivant'; };
     const cle = e => { if (!tourEl) return; if (e.key === 'Escape') { e.stopPropagation(); fermer(); } else if (e.key === 'ArrowRight' && i < T.cartes.length - 1) { i++; montrer(); } else if (e.key === 'ArrowLeft' && i > 0) { i--; montrer(); } };

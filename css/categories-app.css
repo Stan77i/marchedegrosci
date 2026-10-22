@@ -7,7 +7,7 @@
 /* en-tête */
 .ct-tete { position: relative; margin: 14px 14px 0; padding: 22px 20px 18px; border-radius: 26px; background: #10392B; color: #F3EFE4; overflow: hidden; }
 .ct-tete::after { content: ""; position: absolute; right: -60px; top: -70px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(242, 194, 48, .22), transparent 68%); pointer-events: none; }
-.ct-k { margin: 0 0 8px; font: 600 11px/1 Jost, system-ui, sans-serif; letter-spacing: .2em; text-transform: uppercase; color: rgba(243, 239, 228, .62); }
+.ct-k{ margin: 0 0 8px; font: 600 13px/1 Jost, system-ui, sans-serif; letter-spacing:0;  color: rgba(243, 239, 228, .62); }
 .ct-h { margin: 0; font:600 31px/1 Jost,sans-serif;letter-spacing:-.015em; letter-spacing: -.01em; }
 .ct-h em { font-style: italic; font-weight: 600; color: #F2C230; }
 .ct-chiffres { position: relative; z-index: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 20px; }

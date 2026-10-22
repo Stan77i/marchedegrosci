@@ -43,7 +43,7 @@
 .rc-note{margin:8px 0 0;color:#5E5546;font-size:13px}.rc-err{margin:8px 0 0;color:#8E2A1C;font-size:13.5px;font-weight:600}
 .rc-conf{margin:12px 0 0;padding:12px 14px;border-radius:16px;background:#FFF6D6;box-shadow:inset 0 0 0 1.5px #E6C65C;font-size:14px}
 .rc-conf .rc-duo{display:flex;gap:8px}.rc-conf .rc-b{margin-top:10px}
-.rc-sec{margin:18px 0 8px;font:600 11px Jost,sans-serif;letter-spacing:.16em;color:#655C4D;text-transform:uppercase}
+.rc-sec{margin:18px 0 8px;font:600 13px Jost,sans-serif;letter-spacing:0;color:#655C4D;}
 .rc-rap{background:#FFFDF8;border-radius:20px;padding:14px 16px;margin:6px 0 10px}
 .rc-seg{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.rc-seg button{min-height:44px;padding:0 14px;border:1px solid #D9D1BE;border-radius:22px;background:#FFF;color:#171512;font:500 14px Jost,system-ui,sans-serif;cursor:pointer}
 .rc-seg button[aria-pressed=true]{background:#10392B;border-color:#10392B;color:#FFFDF8}

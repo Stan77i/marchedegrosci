@@ -25,7 +25,7 @@
 .rg-p{width:40px;height:4px;border-radius:2px;background:rgba(23,21,18,.16);margin:0 auto 12px}
 .rg-h{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 6px}.rg-h h2{margin:0;font:600 24px/1.15 Jost,sans-serif;letter-spacing:-.015em}
 .rg-x{width:44px;height:44px;border:0;border-radius:50%;background:rgba(23,21,18,.06);color:inherit;display:grid;place-items:center;cursor:pointer}
-.rg-sec{margin:14px 0 8px;font:600 12px/1 Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#655C4D}
+.rg-sec{margin:14px 0 8px;font:600 13px/1 Jost,sans-serif;letter-spacing:0;color:#655C4D}
 .rg-l{display:grid;gap:8px}
 .rg-o{display:flex;align-items:center;gap:14px;width:100%;min-height:60px;padding:8px 14px 8px 8px;border:1px solid rgba(23,21,18,.08);border-radius:18px;background:#F7F4EC;color:inherit;font:500 16px Jost,sans-serif;text-align:left;cursor:pointer;transition:background .2s,border-color .2s,transform .15s}
 .rg-o:active{transform:scale(.985)}

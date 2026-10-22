@@ -73,6 +73,7 @@ html[data-theme=sombre] .px-zbtn { border-color: rgba(242, 194, 48, .35); color:
 html[data-theme=sombre] .px-obs { border-top-color: rgba(243, 239, 228, .1); }
 html[data-theme=sombre] .px-vide { border-color: rgba(243, 239, 228, .2); }
 html[data-theme=sombre] .px-cta .o { background: #F2C230; color: #171512; }
+html[data-theme=sombre] .px-cta .d { background: rgba(242, 194, 48, .14); color: #F2C230; box-shadow: inset 0 0 0 1px rgba(242, 194, 48, .35); }
 html[data-theme=sombre] :is(.px-c img, .px-hero img, [data-pg=prix] img) { background-color: #2A251E !important; }
 html[data-theme=sombre] .ct-cherche { background: #25211B; border-color: rgba(243, 239, 228, .14); color: #F3EFE4; }
 html[data-theme=sombre] .ct-cherche input { color: #F3EFE4; }

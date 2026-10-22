@@ -776,3 +776,13 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
   - Le catalogue passe de 162 à 170 produits. Aucune liste de produits côté base : rien à changer dans Supabase.
 - Photos non utilisées : 2e anchois et 2e saucisses (doublons) ; cajou brut et panier de poissons (noix-de-cajou et poisson-seche ont déjà leur photo).
 - `data.js?v=20261026d`, `marche-app.js?v=20261026d`, cache `mgci-v178` (les 7 premières photos sont parties avec la PR #164 ; les 8 nouveaux produits avec la suivante).
+
+## L'aide : questions et réponses toutes prêtes, puis une personne (22/10/2026) — `v3/aide.js`
+- Demandé par le propriétaire : des « pré-questions » et des « pré-réponses » pour tout ce qui est dans l'application ; pendant qu'on écrit, les questions s'affichent ; un toucher ouvre la réponse ; si rien n'aide, « Je veux parler à une personne » et l'équipe reçoit une notification.
+- **76 questions et réponses** en 11 thèmes (débuter, vendre, acheter, négocier, commande et transport, paiement, problème et litige, confiance et sécurité, prix/carte/saisons, chauffeurs, l'application). Les réponses reprennent les règles réelles (mêmes textes que `v3/guide.js` et `v3/astuces.js`). **Une règle change ? Mettre la réponse à jour dans `QR` (v3/aide.js).**
+- Recherche sur le téléphone, sans serveur : sans accents, débuts de mots, une faute de frappe tolérée, mots de tous les jours dans le champ « mots » de chaque question (argent, pourri, arnaque, camion, whatsapp…). Les questions les plus posées sont légèrement favorisées.
+- Une réponse peut avoir un bouton qui emmène au bon endroit (« Ouvrir mes commandes », « Publier une offre »…), et « Ça vous a aidé ? Oui / Non ».
+- « Écrire au Marché de Gros » (menu, Mon compte, Messages, guide) ouvre d'abord l'aide (`MDGMessages.ecrireMarche()` ; `{ direct: true }` pour la conversation tout de suite). L'administrateur garde « Message à tous ».
+- « Je veux parler à une personne » : la personne écrit ou garde sa question, puis touche « Envoyer à l'équipe ». `MDGMessages.parlerPersonne(texte)` envoie dans la conversation avec le Marché de Gros : « 🙋 Je veux parler à une personne. » + la question. L'administrateur reçoit la notification habituelle des messages (push_dm → pousser), avec le nom du membre en titre. Rien ne part sans ce toucher. Sans compte : on demande de se connecter.
+- Dans la conversation avec le Marché de Gros, pendant qu'on écrit, jusqu'à 3 « Réponses toutes prêtes » s'affichent au-dessus de la case ; un toucher ouvre la réponse.
+- Tutoriel « L'aide » (3 cartes, montré 2 fois) ; le guide renvoie à l'aide. Aucun changement Supabase.

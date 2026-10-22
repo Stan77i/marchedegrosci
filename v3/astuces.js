@@ -144,6 +144,10 @@
       ['🪪', 'Votre pièce d’identité', 'Prenez-la en photo, *recto* et *verso*, bien nette, sans reflet.'],
       ['🤳', 'Un selfie avec le code', 'Écrivez le code affiché sur un papier et tenez-le près de votre visage.'],
       ['👀', 'L’équipe décide', 'Une personne compare et décide, en quelques jours. Une pièce expirée est refusée.']] },
+    aide: { t: 'L’aide', insiste: 2, cartes: [
+      ['🔎', 'Écrivez votre question', 'Avec vos mots : *payer*, *marchandise gâtée*, *code oublié*… Les questions s’affichent *pendant que vous tapez*.'],
+      ['👆', 'Touchez une question', 'La *réponse* s’ouvre tout de suite. Souvent, un bouton vous emmène au bon endroit de l’application.'],
+      ['🙋', 'Rien ne vous aide ?', 'Touchez *« Je veux parler à une personne »* en bas. L’équipe reçoit une notification et vous répond dans vos *Messages*.']] },
     // administrateur (admin.html)
     a_tableau: { t: 'Tableau de bord', insiste: 2, cartes: [
       ['📊', 'L’administration', 'Le menu donne chaque partie : aperçu, à traiter, annonces, comptes, négociations, messages, identités, commandes, transporteurs.'],

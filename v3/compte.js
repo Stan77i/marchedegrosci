@@ -689,7 +689,7 @@ label.cp-r{cursor:pointer}
             ${ligne({ ico: mono('cloche'), t: 'Notifications', v: '<span data-pst>…</span>', n: nl, attrs: 'data-go="notifs"' })}
             ${ID && !off0 ? ligne({ ico: mono('verifie'), t: 'Identité', s: (ID.RESUME[idS] || ID.RESUME.non_verifie)[1], v: (ID.RESUME[idS] || ID.RESUME.non_verifie)[0], vf: idS === 'verifie', attrs: 'data-idv' }) : ''}
             ${ligne({ ico: mono('cadenas'), t: 'Sécurité et code secret', attrs: 'data-go="securite"' })}
-            ${M && M.ecrireMarche && !adm ? ligne({ ico: mono('service'), t: 'Écrire au Marché de Gros', s: 'Une question, un problème : l’équipe répond', attrs: 'data-marche' }) : ''}
+            ${M && M.ecrireMarche && !adm ? ligne({ ico: mono('service'), t: 'Écrire au Marché de Gros', s: 'Réponses tout de suite, sinon l’équipe répond', attrs: 'data-marche' }) : ''}
             ${adm ? (() => { const nI = +(J('mdg-admin:identites', {}).n) || 0; return ligne({ ico: mono('tableau'), t: 'Tableau de bord', s: nI ? nI + (nI > 1 ? ' dossiers' : ' dossier') + ' à examiner' : 'Administration', n: nI, href: nI ? 'admin.html#identites' : 'admin.html' }); })() : ''}
           </div>
           <div class="cp-grp">${ligne({ ico: mono('sortir'), t: 'Déconnexion', cls: 'bad', chev: false, attrs: 'data-out' })}</div>

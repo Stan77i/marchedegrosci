@@ -80,8 +80,8 @@
       etapes: ['Voyez toujours la marchandise avant de payer. Ne payez jamais d’avance à quelqu’un (le séquestre du Marché de Gros, quand il ouvrira, sera dans l’application, jamais par un numéro).', 'Restez dans les messages de l’application : votre numéro reste caché.', 'Préférez les membres avec le sceau bleu et de bonnes notes.', 'Quelque chose ne va pas ? Touchez « Signaler » sur l’annonce ou sur le profil : l’équipe regarde chaque signalement.', 'Le Marché de Gros ne vous demandera jamais d’argent ni de code par message ou par téléphone.'],
       conseil: 'Si quelqu’un vous presse de payer vite, arrêtez l’échange.' },
     { id: 'probleme', ico: 'bouee', ton: 'aide', t: 'Si ça ne marche pas', sert: 'Les solutions aux soucis les plus courants.',
-      etapes: ['Pas de réseau : les annonces déjà vues restent affichées. Réessayez quand le réseau revient.', 'L’application semble bloquée : fermez-la complètement, puis rouvrez-la.', 'Toujours un souci : dans le menu, touchez « Écrire au Marché de Gros ». L’équipe vous répond ici.'],
-      conseil: 'Vos annonces publiées restent en ligne, même si votre téléphone s’éteint.', aller: FEN('MDGMessages', 'ecrireMarche') }
+      etapes: ['Pas de réseau : les annonces déjà vues restent affichées. Réessayez quand le réseau revient.', 'L’application semble bloquée : fermez-la complètement, puis rouvrez-la.', 'Toujours un souci : dans le menu, touchez « Écrire au Marché de Gros ». Écrivez votre question : les réponses toutes prêtes s’affichent. Rien ne vous aide ? Touchez « Je veux parler à une personne » : l’équipe vous répond.'],
+      conseil: 'Vos annonces publiées restent en ligne, même si votre téléphone s’éteint.', aller: FEN('MDGAide', 'ouvrir') }
   ];
   const TON = { marche: ['#10392B', '#F2C230'], offre: ['#DDF0E3', '#23744A'], demande: ['#FBEFC4', '#7A5600'], lien: ['#DDE9F6', '#1F5A96'], vous: ['#EFE3F5', '#6B3C86'], aide: ['#F7E1DA', '#9A3B22'] };
 
@@ -137,7 +137,7 @@
       <div class="gd-tu">${FICHES.filter(f => !['securite', 'probleme'].includes(f.id)).map((f, i, L) => `<button type="button"${L.length % 2 && i === L.length - 1 ? ' class="large"' : ''} data-f="${f.id}"><span ${pastille(TON[f.ton])}>${IC(f.ico, 24)}</span><b>${esc(f.t)}</b></button>`).join('')}</div>
       <h2 class="gd-sh">Bon à savoir</h2>
       <div class="gd-tu">${['securite', 'probleme'].map(id => FICHES.find(f => f.id === id)).map(f => `<button type="button" class="large" data-f="${f.id}"><span ${pastille(TON[f.ton])}>${IC(f.ico, 24)}</span><b>${esc(f.t)}</b></button>`).join('')}</div>
-      <p class="gd-pied">Une question ? Menu → « Écrire au Marché de Gros ».</p>`;
+      <p class="gd-pied">Une question ? <button type="button" data-aide style="border:0;background:none;padding:0;font:inherit;color:#10392B;text-decoration:underline;min-height:44px">Ouvrir l’aide : questions et réponses</button></p>`;
   }
   function fiche(f) {
     const i = FICHES.indexOf(f), av = FICHES[i - 1], ap = FICHES[i + 1];
@@ -152,6 +152,7 @@
     b.innerHTML = f ? fiche(f) : sommaire(); b.scrollTop = 0;
     el.querySelector('.gd-h b').textContent = f ? 'Comment ça marche' : 'Le guide';
     b.querySelectorAll('[data-f]').forEach(x => x.onclick = () => { pile.push(x.dataset.f); dessiner(); });
+    const aide = b.querySelector('[data-aide]'); if (aide) aide.onclick = () => { if (window.MDGAide) MDGAide.ouvrir(); };
     const go = b.querySelector('[data-aller]'); if (go) go.onclick = () => { const a = f.aller; fermer(); setTimeout(a, 380); };
   }
   function ouvrir(id) {

@@ -654,6 +654,6 @@ Lui proposer de coller ceci :
   - `maintenance.html` : « Site web en maintenance — disponible uniquement sur l'application », bouton « Ouvrir l'application » (`application.dc.html?app=1`), redirection automatique au bout de 8 s (« Rester sur cette page » l'arrête).
   - `application.dc.html` ne renvoie plus les ordinateurs vers le site : l'application s'ouvre aussi sur PC (cadre de téléphone).
 - **Entrée de l'administrateur** : petit point presque invisible en bas à droite de `maintenance.html` → interrupteur « Entrer en tant qu'admin » → `index-v3.html?admin=1`.
-  Le site reste caché sous un écran « Espace administrateur » tant que le serveur n'a pas confirmé `est_admin` pour le compte connecté (vérifié à chaque ouverture). Un compte non admin est renvoyé à la maintenance.
+  Le site reste caché sous un écran « Espace administrateur » (numéro + code secret seulement : pas de création de compte ni de « code oublié ») tant que le serveur n'a pas confirmé `est_admin` pour le compte connecté (vérifié à chaque ouverture). Un compte non admin est renvoyé à la maintenance.
   Le drapeau `mdg-site:admin` (localStorage) ne sert qu'à l'aiguillage ; la décision vient toujours du serveur. `admin.html` garde sa propre protection.
 - Pour rouvrir le site à tous : retirer le bloc « SITE EN MAINTENANCE » en tête d'`index-v3.html`, le cache `#mdgGarde` et sa vérification (après `v3/nuage.js`), et remettre `index-v3.html` dans `index.html`.

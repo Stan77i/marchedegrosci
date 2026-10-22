@@ -40,8 +40,12 @@
   const etat = new WeakMap();   // élément → { barre, attente (animation « caché » tant qu'il est hors écran) }
   const CACHE_BARRE = { backgroundSize: '0% 100%', backgroundRepeat: 'no-repeat', backgroundPosition: '0 0' };
   const cacher = (el, st) => { if (!st.attente) st.attente = el.animate([st.barre ? CACHE_BARRE : { opacity: 0 }], { duration: 1, fill: 'forwards' }); };
+  // cartes de l'accueil (chiffres, dernières annonces) : la cascade d'arrivée se rejoue quand elles reviennent à l'écran
+  const MONTE = '.acc-k, .acc-ligne, .acc-al';
   function jouer(el, st) {
     if (st.attente) { st.attente.cancel(); st.attente = null; }
+    if (st.monte) { const i = [...el.parentElement.children].filter(x => x.classList.contains(el.classList[0])).indexOf(el);
+      el.animate([{ opacity: 0, transform: 'translateY(16px) scale(.98)' }, { opacity: 1, transform: 'none' }], { duration: 520, delay: 60 + Math.max(0, i) * 70, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }); return; }
     if (st.barre) el.animate([CACHE_BARRE, { backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat', backgroundPosition: '0 0' }],
       { duration: 750, delay: 120, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'backwards' });
     else { const r = getComputedStyle(el).getPropertyValue('--qd-r').trim() || '-2deg';
@@ -50,15 +54,15 @@
   }
   const io = new IntersectionObserver(es => es.forEach(e => { const st = etat.get(e.target); if (!st) return;
     if (e.isIntersecting) { if (!st.vu) { st.vu = true; jouer(e.target, st); } }
-    else { st.vu = false; cacher(e.target, st); } }), { threshold: .5 });
+    else if (st.vu) { st.vu = false; cacher(e.target, st); } }), { threshold: .5 });
   const estBarre = el => { const b = getComputedStyle(el).backgroundImage; return !!b && b.indexOf('gradient') >= 0 && /242,\s*194,\s*48/.test(b); };
   let file = false;
   function scanner() {
     file = false; if (calme()) return;
-    document.querySelectorAll('em, .voix-mot, .qd[data-u]').forEach(el => {
+    document.querySelectorAll('em, .voix-mot, .qd[data-u], ' + MONTE).forEach(el => {
       if (etat.has(el)) return;
-      const tampon = el.matches('.qd[data-u]'); if (!tampon && !estBarre(el)) return;
-      const st = { barre: !tampon, vu: false, attente: null }; etat.set(el, st); cacher(el, st); io.observe(el);
+      const monte = el.matches(MONTE), tampon = !monte && el.matches('.qd[data-u]'); if (!monte && !tampon && !estBarre(el)) return;
+      const st = { barre: !tampon && !monte, monte, vu: false, attente: null }; etat.set(el, st); if (!monte) cacher(el, st); io.observe(el);
     });
   }
   const demander = () => { if (!file) { file = true; Promise.resolve().then(scanner); } };   // avant l'affichage : pas de clignotement

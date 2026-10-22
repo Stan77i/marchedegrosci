@@ -668,3 +668,10 @@ html[data-theme=sombre] .cd-genre{color:#10392B}
 @keyframes accTend{0%{opacity:0;transform:translate(-50%,56px) scale(.9)}12%{opacity:1;transform:translate(-50%,0) scale(1)}86%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,56px) scale(.92)}}
 @media (prefers-reduced-motion:reduce){.acc-tend{animation:accTendDoux 5.2s linear both}}
 @keyframes accTendDoux{0%,100%{opacity:0}8%,90%{opacity:1}}
+
+/* ——— défilement au doigt sans « flash » (22 oct. 2026) : les lignes que le doigt survole en faisant défiler ne clignotent plus.
+   Sur écran tactile, l'effet d'appui n'arrive qu'après un vrai toucher (≈ 0,12 s) : un défilement l'annule avant ; plus de voile gris d'iOS. ——— */
+.acc-ligne,.acc-al,.acc-k,.glis,.glis-z,.ec-rep{-webkit-tap-highlight-color:transparent}
+@media (hover:none){.acc-k:active,.acc-ligne:active,.acc-al:active{transition-delay:.12s}}
+.acc-cnx{margin:4px 0 0;min-height:46px;padding:0 22px;border:0;border-radius:23px;background:#10392B;color:#F3EFE4;font:600 15px Jost,system-ui,sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent}
+html[data-theme=sombre] .acc-cnx{background:#F2C230;color:#171512}

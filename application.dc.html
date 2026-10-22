@@ -56,7 +56,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261026b">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261026c">
 <link rel="stylesheet" href="css/sombre.css?v=20261025f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261023f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261025g">
@@ -176,9 +176,9 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
     <section class="acc-carte acc-ec"><div class="acc-ttl"><h2>En <em>cours</em></h2><sc-if value="{{ ecEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ ecEff }}">Tout effacer</button></sc-if></div><p class="acc-sub">{{ ecSous }}</p>
       <sc-if value="{{ ecRepOn }}" hint-placeholder-val="{{ false }}"><div class="glis glis-rep" onScroll="{{ ecRep.glis }}"><button class="ec-rep ec-{{ ecRep.etat }}" onClick="{{ ecRep.go }}" aria-label="{{ ecRep.lab }}"><span class="ec-rep-h">Reprendre là où vous en étiez</span><span class="ec-l"><span class="ec-i ec-{{ ecRep.k }} {{ ecRep.anim }}" aria-hidden="true">{{ ecRep.emo }}<sc-if value="{{ ecRep.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ ecRep.titre }}</b><small>{{ ecRep.sous }}</small></span><span class="ec-go" aria-hidden="true">{{ accIco.suite }}</span></span></button><button type="button" class="glis-z" onClick="{{ ecRep.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-if>
       <sc-for list="{{ ecListe }}" as="e" hint-placeholder-count="0"><div class="glis" onScroll="{{ e.glis }}"><button class="acc-ligne ec-ligne ec-{{ e.etat }}" onClick="{{ e.go }}" aria-label="{{ e.lab }}"><span class="ec-i ec-{{ e.k }} {{ e.anim }}" aria-hidden="true">{{ e.emo }}<sc-if value="{{ e.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ e.titre }}</b><small><span class="ec-tag">{{ e.tag }}</span>{{ e.sous }}</small></span><sc-if value="{{ e.vague }}" hint-placeholder-val="{{ false }}"><span class="ec-vague" aria-hidden="true"><i></i><i></i><i></i></span></sc-if></button><button type="button" class="glis-z" onClick="{{ e.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-for>
-      <sc-if value="{{ ecVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ ecVideTxt }}</p></sc-if>
+      <sc-if value="{{ ecVideOn }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ ecVideTxt }}</p></sc-if><sc-if value="{{ ecCnx }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-cnx" onClick="{{ ecCnxGo }}">Se connecter</button></sc-if>
     </section>
-    <section class="acc-carte"><div class="acc-ttl"><h2>Dernières annonces</h2><sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ actEff }}">Tout effacer</button></sc-if></div><p class="acc-sub">Ce qui vient d’arriver sur le marché.<sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><span class="acc-astuce"> Glissez une ligne vers la gauche pour la retirer.</span></sc-if></p>
+    <section class="acc-carte"><div class="acc-ttl"><h2>Dernières annonces</h2><sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ actEff }}">Tout effacer</button></sc-if></div><p class="acc-sub">Ce qui vient d’arriver sur le marché : annonces et ventes conclues.<sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><span class="acc-astuce"> Glissez une ligne vers la gauche pour la retirer.</span></sc-if></p>
       <sc-for list="{{ accActs }}" as="a" hint-placeholder-count="0"><div class="glis" onScroll="{{ a.glis }}"><button class="acc-ligne" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span><span class="acc-h">{{ a.h }}</span></button><button type="button" class="glis-z" onClick="{{ a.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-for>
       <sc-if value="{{ accActVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ actVideTxt }}</p></sc-if>
     </section>
@@ -910,7 +910,7 @@ class Component extends DCLogic {
     if (st.includes(prev)) { go(top, T_OFF, T_IN); go(prev, T_IN, T_UNDER); } else { go(prev, T_IN, T_OFF); go(top, T_UNDER, T_IN); }
     this.animT = setTimeout(() => { (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; }, 650);
   }
-  componentDidUpdate(pp, ps) { this.tendVeille(); if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
+  componentDidUpdate(pp, ps) { this.tendVeille(); this.ventesCharger(); if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
   /* carte en profondeur (app/carte-gl.js) : chargée après l'affichage de la carte Canvas, elle la remplace en fondu.
      Sans WebGL, sur un appareil faible ou si un fichier manque, la carte Canvas reste. */
   /* la carte : une seule, sans changement visible. Téléphone capable → la carte en relief directement (fond de la même couleur pendant
@@ -1256,7 +1256,11 @@ class Component extends DCLogic {
       { cls: 'acc-k', t: 'Demandes', tint: 'j', ico: emo('🛒', 1), v: String(dem.length), s: 'sur ' + pl(nP(dem), 'produit'), go: () => this.push('carte', { cprod: '', csel: '' }) },
       mine.length ? { cls: 'acc-k large', t: 'Mes annonces', tint: 't', ico: ico('vendre'), v: String(mine.length), s: pl(nO, 'offre') + ' · ' + pl(nD, 'demande'), go: () => this.push('pubs') }
         : { cls: 'acc-k large', t: 'Prix du marché', tint: 't', ico: ico('tendance'), v: 'Par zone', s: 'Les prix relevés, produit par produit', go: () => this.push('prix') } ];
-    const acts = [...this.offers(), ...dem].filter(x => x.at && !MQ['a:' + x.id]).sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 12).map(x => {
+    const ventes = (this.ventesR || ls('mdg-app:ventes') || []).filter(v => v && v.conclu_le && !MQ['v:' + v.cle]).map(v => ({ kind: 'vente', id: v.cle, slug: v.product_slug, at: v.conclu_le, qty: +v.quantite || 0, unit: v.unite || '', ville: v.ville, nom: v.produit }));
+    const acts = [...this.offers(), ...dem, ...ventes].filter(x => x.at && !MQ['a:' + x.id]).sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 15).map(x => {
+      if (x.kind === 'vente') { const P = x.slug ? this.prod(x.slug) : null, nom = (P && P.name) || x.nom || 'Produit', u = x.unit && x.qty > 1 && !/[sx]$|^(kg|t|l)$/i.test(x.unit) ? x.unit + 's' : x.unit;
+        return { tint: 'v', ico: emo('✅'), t: nom + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + u : ''), s: 'Vente conclue · ' + (x.ville || 'Côte d’Ivoire'), h: A.ago(x.at), cle: 'v:' + x.id,
+          go: () => { if (x.slug) this.openFiche(x.slug); }, glis: this.glisser([['v:' + x.id]], 'Vente retirée de votre activité'), ret: () => this.masquer([['v:' + x.id]], 'Vente retirée de votre activité') }; }
       const o = x.kind === 'offre', P = this.prod(x.slug);
       return { tint: o ? 'v' : 'j', ico: emo(o ? '🧺' : '🛒', !o), t: P.name + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + x.unit : ''), s: (o ? 'Offre' : 'Demande') + ' · ' + this.place(x) + (x.name ? ' · ' + x.name : ''), h: A.ago(x.at), cle: 'a:' + x.id, go: () => this.openFiche(x.slug),
         glis: this.glisser([['a:' + x.id]], 'Annonce retirée de votre activité'), ret: () => this.masquer([['a:' + x.id]], 'Annonce retirée de votre activité') }; });
@@ -1276,6 +1280,7 @@ class Component extends DCLogic {
       actVideTxt: Object.keys(MQ).some(k => k.startsWith('a:')) ? 'Rien de nouveau depuis votre dernier effacement.' : 'Aucune annonce pour l’instant.',
       ecListe: ecT.filter(x => !ecD || x.k !== ecD.k || x.id !== ecD.id).map(ecEl), ecVide: !ecT.length && !ecRepE,
       ecSous: !moiS ? 'Connectez-vous pour retrouver vos négociations, commandes et messages.' : nAf ? nAf + ' démarche' + (nAf > 1 ? 's attendent' : ' attend') + ' votre réponse.' : ecT.length ? 'Vos démarches en cours, pour reprendre en un geste.' : 'Vos négociations, commandes et messages en cours apparaîtront ici.',
+      ecVideOn: !!(moiS && !ecT.length && !ecRepE), ecCnx: !moiS, ecCnxGo: () => { if (window.MDGNuage) MDGNuage.open(); },   // pas connecté : un bouton, pas une deuxième phrase « connectez-vous »
       ecVideTxt: moiS ? 'Rien en cours. Proposez un prix sur une annonce : la négociation s’affichera ici.' : 'Connectez-vous pour voir vos démarches.',
       accActs: acts, // J'ai / Je cherche : seulement sur l'onglet Marché (Activité et Alertes n'ont rien à publier)
       accBasC: (S.accTab || 'marche') === 'marche' ? '' : 'cache', accBasH: String((S.accTab || 'marche') !== 'marche'), accActVide: !acts.length, accAlertes: al, accAlVide: !!moiS && !al.length && !nCd, accAlRien: !!moiS && !al.length && nCd > 0,
@@ -1323,6 +1328,12 @@ class Component extends DCLogic {
     if (c && c.d && !this.tendData) this.tendData = c.d;
     this._tendL = true; MDGNuage.rpc('produits_activite', {}, false).then(d => { const m = {}; (Array.isArray(d) ? d : []).forEach(x => { m[x.slug] = x; }); const neuf = !this.tendData; this.tendData = m; ls('mdg-app:tendance', { t: Date.now(), d: m }); if (neuf) { this._tendSlug = null; this.tendVeille(); } })
       .catch(() => {}).then(() => { this._tendL = false; }); }
+  // fil public « Dernières annonces » : les ventes conclues (schéma 55, anonymes : produit, quantité, ville, date), visibles même sans compte
+  ventesCharger() { if (this._vrL || !window.MDGNuage || !MDGNuage.rpc || Date.now() - (this._vrT || 0) < 18e4) return;
+    if (!this.ventesR) this.ventesR = ls('mdg-app:ventes') || [];
+    this._vrL = true; this._vrT = Date.now();
+    MDGNuage.rpc('ventes_recentes', { p_limite: 12 }, false).then(d => { this.ventesR = Array.isArray(d) ? d : []; ls('mdg-app:ventes', this.ventesR); this.setState(s => ({ tick: s.tick + 1 })); })
+      .catch(() => {}).then(() => { this._vrL = false; }); }
   tendMsg(slug) { const x = this.tendData && this.tendData[slug]; if (!x) return null;
     const il = t => { const m = Math.max(0, Math.round((Date.now() - new Date(t)) / 6e4)); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
     const pl = (n, w) => n + ' ' + w + (n > 1 ? 's' : '');

@@ -6,7 +6,7 @@
    Les administrateurs écrivent au nom du « Marché de Gros » (logo, mention Officiel) ; chacun peut écrire au Marché de Gros ;
    un administrateur peut écrire à tous les membres d'un coup (supabase/schema-10-admin-messages.sql).
    Un numéro écrit dans un message est masqué par le serveur et signalé aux administrateurs : les échanges restent ici.
-   API : MDGMessages.boite() · ecrire(uid, { nom, avatar }) · ecrireMarche() · diffuser() · conversation(id) · unread() · refresh()
+   API : MDGMessages.boite() · ecrire(uid, { nom, avatar }) · ecrireMarche({ direct }) (d'abord l'aide, v3/aide.js) · parlerPersonne(texte) · diffuser() · conversation(id) · unread() · refresh()
    Événement : mdg:dm { unread } quand le nombre de conversations à lire change. */
 (function () {
   'use strict';
@@ -198,10 +198,27 @@
   }
 
   // ——— écrire au Marché de Gros (un administrateur répond) ———
-  async function ecrireMarche() {
+  // D'abord l'aide (v3/aide.js) : des réponses toutes prêtes ; « Je veux parler à une personne » mène ici. { direct: true } : la conversation tout de suite.
+  async function ecrireMarche(o = {}) {
+    if (!o.direct && window.MDGAide && !admin()) { MDGAide.ouvrir(o); return; }
     if (!N() || !N().session()) { N() && N().open('Connectez-vous pour écrire au Marché de Gros.'); return; }
     try { const uid = await N().rpc('contact_marche'); if (!uid) throw new Error('Aucun administrateur pour l’instant.'); if (uid === me()) { N().toast('Vous êtes l’administrateur : écrivez à un membre, ou à tous.'); return; } ecrire(uid, { nom: 'Marché de Gros', officiel: true }); }
     catch (x) { N().toast(/contact_marche|schema cache|Could not find/i.test(String(x.message)) ? 'Pas encore activé sur le serveur.' : err(x)); }
+  }
+  // « Je veux parler à une personne » (v3/aide.js) : la question part à l'équipe, qui reçoit la notification des messages (push_dm).
+  // Seulement après le toucher « Envoyer à l'équipe ». Renvoie true si le message est parti.
+  async function parlerPersonne(texte) {
+    const t = String(texte || '').trim(); if (!t) return false;
+    if (!N() || !N().session()) { N() && N().open('Connectez-vous pour écrire au Marché de Gros.'); return false; }
+    try {
+      const uid = await N().rpc('contact_marche'); if (!uid) throw new Error('Aucun administrateur pour l’instant.');
+      if (uid === me()) { N().toast('Vous êtes l’administrateur : écrivez à un membre, ou à tous.'); return false; }
+      const id = await N().rpc('dm_ouvrir', { p_autre: uid });
+      await N().rpc('dm_envoyer', { p_discussion: id, p_texte: '🙋 Je veux parler à une personne.\n' + t });
+      N().toast('Message envoyé : l’équipe vous répond ici.');
+      conversation(id, false, { autre_id: uid, autre_nom: 'Marché de Gros', officiel: true });
+      return true;
+    } catch (x) { N().toast(/contact_marche|schema cache|Could not find/i.test(String(x.message)) ? 'Pas encore activé sur le serveur.' : err(x)); return false; }
   }
   // ——— l'administration écrit à tous les membres ———
   function diffuser() {
@@ -290,8 +307,13 @@
       const envoyer = () => { const t = ta.value.trim(); if (!t) return;
         // pas de lien, d'e-mail ni de code (supabase/schema-22) : on le dit avant l'envoi, le texte reste dans la case pour être corrigé
         const refus = N().texteRefus ? N().texteRefus(t) : ''; if (refus) { N().toast(refus); ta.focus(); return; }
-        ta.value = ''; grandir(); const m = { id: 'tmp-' + Date.now(), created_at: new Date().toISOString(), auteur_id: u, texte: t }; attente.push(m); partir(m); ta.focus(); };
+        ta.value = ''; grandir(); const sg = pied.querySelector('.dm-sug'); if (sg) sg.hidden = true; const m = { id: 'tmp-' + Date.now(), created_at: new Date().toISOString(), auteur_id: u, texte: t }; attente.push(m); partir(m); ta.focus(); };
       ta.addEventListener('input', grandir);
+      // avec le Marché de Gros : pendant qu'on écrit, les réponses toutes prêtes de l'aide (v3/aide.js) s'affichent au-dessus
+      if (c.officiel && !admin() && window.MDGAide) { let tSug = 0; const sug = document.createElement('div'); sug.className = 'dm-sug'; sug.hidden = true; pied.prepend(sug);
+        ta.addEventListener('input', () => { clearTimeout(tSug); tSug = setTimeout(() => { const v = ta.value.trim(), r = v.length >= 3 ? MDGAide.chercher(v, 3) : [];
+          sug.hidden = !r.length; sug.innerHTML = r.length ? '<small>Réponse toute prête</small>' + r.map(x => `<button type="button" data-q="${x.id}">💡 ${esc(x.q)}</button>`).join('') : '';
+          sug.querySelectorAll('[data-q]').forEach(bt => bt.onclick = () => MDGAide.ouvrir({ id: bt.dataset.q })); }, 220); }); }
       // ordinateur : Entrée envoie, Maj+Entrée va à la ligne ; téléphone : le bouton envoie (Entrée va à la ligne)
       ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && matchMedia('(hover:hover) and (pointer:fine)').matches) { e.preventDefault(); envoyer(); } });
       go.onclick = envoyer;
@@ -335,7 +357,7 @@
     tag: c.non_lu ? 'Nouveau message' : 'Conversation', apercu: String(c.dernier_texte || '').slice(0, 70), ts: Date.parse(c.updated_at) || 0, ouvrir: () => conversation(c.id) });
   const activite = () => liste.filter(c => c.non_lu && c.id !== ouverte).map(ligneAct);
   const trouverAct = id => { const c = liste.find(x => x.id === id); return c ? ligneAct(c) : null; };
-  window.MDGMessages = { boite, ecrire, ecrireMarche, diffuser, conversation, unread, refresh, JOURS, activite, trouverAct };
+  window.MDGMessages = { boite, ecrire, ecrireMarche, parlerPersonne, diffuser, conversation, unread, refresh, JOURS, activite, trouverAct };
   addEventListener('mdg:connecte', () => { premier = true; setTimeout(refresh, 1200); });
   addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte' && !(N() && N().session())) { liste = []; W(KL, []); fermer(); annoncer(); } });
   addEventListener('hashchange', depuisAdresse);

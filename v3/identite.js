@@ -301,6 +301,7 @@
     main.innerHTML = window.MDGSac ? MDGSac.charge('Un instant…') : '<p>Chargement…</p>';
     let s; try { s = await statut(true); } catch (e) { main.innerHTML = `<div class="idv-etat"><p class="idv-bad">${!navigator.onLine ? 'Pas de connexion internet : réessayez quand le réseau revient.' : 'La vérification n’est pas encore disponible. Réessayez plus tard.'}</p></div>`; return; }
     if (!bg) return;
+    if (!s || typeof s !== 'object') { main.innerHTML = '<div class="idv-etat"><p class="idv-bad">La vérification n’est pas encore disponible. Réessayez plus tard.</p></div>'; return; }   // réponse vide du serveur : on le dit, sans planter
     if (s.banni) return etat(Object.assign({}, s, { statut: 'banni' }));
     if (s.statut === 'non_verifie' || s.statut === 'brouillon') return parcours(s);
     etat(s);

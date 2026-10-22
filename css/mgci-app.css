@@ -585,3 +585,16 @@ html[data-theme=sombre] .acc-n.doux { background: rgba(245, 240, 230, .16); }
 .exi-txt { display: flex; flex-direction: column; gap: 6px; }
 .exi-txt textarea { min-height: 64px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--trait, rgba(23, 21, 18, .16)); background: var(--champ); color: var(--encre); font: 400 16px/1.4 var(--f-texte, Jost), sans-serif; resize: vertical; }
 .exi button:focus-visible, .exi-plus:focus-visible, .exi-txt textarea:focus-visible { outline: 2px solid var(--terre, #C16A3A); outline-offset: 2px; }
+
+/* ——— « Transport » à la publication (schéma 48) : un choix, trois lignes pour une offre, deux pour une demande ——— */
+.trp { display: flex; flex-direction: column; gap: 6px; }
+.trp-t { display: flex; align-items: center; gap: 7px; font-size: var(--t-base); font-weight: 600; color: var(--encre); }
+.trp-t i { font: normal 18px/1 "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+.trp button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%; min-height: 52px; padding: 9px 14px 9px 40px; position: relative; text-align: left; cursor: pointer;
+  border: 1px solid var(--trait, rgba(23, 21, 18, .16)); border-radius: 14px; background: transparent; color: var(--encre); font-family: var(--f-texte, Jost), sans-serif; }
+.trp button::before { content: ""; position: absolute; left: 14px; top: 50%; width: 16px; height: 16px; margin-top: -8px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--trait, rgba(23, 21, 18, .3)); transition: box-shadow .15s; }
+.trp button[aria-checked="true"] { border-color: #6AAEF0; background: rgba(106, 174, 240, .12); }
+.trp button[aria-checked="true"]::before { box-shadow: inset 0 0 0 5px #3E8FE0; }
+.trp b { font-size: var(--t-md); font-weight: 600; }
+.trp small { font-size: var(--t-sm); line-height: 1.35; color: var(--texte-3); }
+.trp button:focus-visible { outline: 2px solid var(--terre, #C16A3A); outline-offset: 2px; }

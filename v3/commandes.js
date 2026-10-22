@@ -93,6 +93,11 @@
 .cm-act button.p{background:#10392B;color:#F3EFE4}.cm-act button.m{border-color:transparent;background:none;text-decoration:underline;min-height:44px;font-weight:500}
 .cm-act button:disabled{opacity:.55;cursor:default}
 .cm-info{margin:0 0 12px;padding:12px 14px;border-radius:14px;background:rgba(242,194,48,.2);font-size:13.5px}
+.cm-lien{display:flex;flex-direction:column;gap:8px;margin:10px 0 4px;padding:14px;border-radius:16px;background:rgba(106,174,240,.12);border:1px solid rgba(106,174,240,.35)}
+.cm-lien b{font:600 15px Jost,sans-serif}.cm-lien small{font-size:13.5px;line-height:1.4;color:#4A4336}
+.cm-lien code{display:block;padding:8px 10px;border-radius:10px;background:#FFFDF8;font:500 12.5px/1.35 ui-monospace,Menlo,monospace;word-break:break-all;color:#10392B}
+.cm-lien button{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid #10392B;background:none;color:#10392B;font:600 14.5px Jost,sans-serif;cursor:pointer}
+.cm-lien button.p{background:#10392B;color:#FFFDF8}.cm-lien-a{display:flex;gap:8px;flex-wrap:wrap}.cm-lien-a button{flex:1}
 .cm-info b{font-weight:600}
 .cm-dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 12px;padding:14px;border-radius:18px;background:#FFFDF8}
 .cm-dl dt{color:#5E5546;font-size:13.5px}.cm-dl dd{margin:0;text-align:right;font-weight:600}
@@ -135,7 +140,7 @@
   }
 
   // ——— état ———
-  let lu = false, bg = null, vue = 'liste', filtre = 'cours', liste = [], journal = {}, transport = {}, pos = {}, carte = null, sel = null, charge = false, minuteur = null;
+  let lu = false, bg = null, vue = 'liste', filtre = 'cours', liste = [], journal = {}, transport = {}, lien = {}, pos = {}, carte = null, sel = null, charge = false, minuteur = null;
   const trouve = id => liste.find(x => x.id === id);
   const enRoute = c => c.etat === 'en_cours' && ['chargement', 'transport', 'transbordement', 'arrivee'].includes(c.etape);
   function oublierCarte() { if (carte && carte.api) carte.api.detruire(); carte = null; }
@@ -156,9 +161,10 @@
   async function lireJournal(id) {
     if (navigator.onLine === false) return;
     const c = trouve(id), suivre = c && enRoute(c);
-    const [j, t, p] = await Promise.all([N().rpc('commande_journal', { p_id: id }).catch(() => null), N().rpc('commande_transport', { p_id: id }).catch(() => null),
-      suivre ? N().rpc('commande_position', { p_cmd: id }).catch(() => null) : null]);
-    if (j) journal[id] = j; if (t) transport[id] = t; if (p) pos[id] = p;
+    const [j, t, p, l] = await Promise.all([N().rpc('commande_journal', { p_id: id }).catch(() => null), N().rpc('commande_transport', { p_id: id }).catch(() => null),
+      suivre ? N().rpc('commande_position', { p_cmd: id }).catch(() => null) : null,
+      c && c.mode_transport !== 'reseau' ? N().rpc('suivi_lien_etat', { p_cmd: id }).catch(() => null) : null]);
+    if (j) journal[id] = j; if (t) transport[id] = t; if (p) pos[id] = p; lien[id] = l || null;
     if (c && c.etat === 'terminee') { const a = await N().rpc('avis_commande_moi', { p_cmd: id }).catch(() => null); if (a) avis[id] = a; }
   }
   async function rafraichir() {
@@ -272,7 +278,7 @@
       ${blocAvis(c)}
       ${c.validation === 'declaration' && ['a_confirmer', 'en_cours'].includes(c.etat) ? `<p class="cm-info"><b>Validation sans code.</b> Le vendeur déclare le chargement, l’acheteur l’arrivée et la réception. Je recommande que le chauffeur crée un compte gratuit sur le Marché de Gros : avec les codes, personne ne peut déclarer une livraison à votre place.</p>` : ''}
       ${blocCode(c)}
-      ${blocTransport(c)}
+      ${blocTransport(c)}${blocLien(c)}
       <ol class="cm-et">${etapes}</ol>
       <dl class="cm-dl">
         <dt>Quantité</dt><dd>${c.quantite != null ? qte(c.quantite, c.unite) : '—'}</dd>
@@ -291,7 +297,7 @@
     box.querySelector('[data-retour]').onclick = () => { oublierCarte(); sel = null; vue = 'liste'; peindre(); };
     box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => geste(c, b.dataset.g));
     const rb = box.querySelector('[data-racheter]'); if (rb) rb.onclick = () => { fermer(); MDGRacheter.ouvrir(c.id); };
-    lierTransport(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box);
+    lierTransport(c, box); lierLien(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box);
     if (arrive) { if (navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {} toast('Le chauffeur est arrivé', { type: 'ok', sous: c.role === 'acheteur' ? 'Vérifiez la marchandise avant de confirmer.' : esc(c.produit || '') }); }
   }
   let dernierEcran = '';
@@ -490,17 +496,57 @@
     }
   }
 
+  // ——— le transport annoncé (schéma 48) décide des choix proposés à la commande ———
+  // offre « inclus » ou demande « le vendeur livre » : le vendeur transporte, pas de transporteur du réseau (le serveur le refuse aussi).
+  // offre « inclus hors de ma ville » : autre ville → le vendeur livre ; même ville → l'acheteur s'en charge.
+  function choixTransport(n) {
+    let a = null; try { a = (N().list(n.cible === 'offre' ? 'offres' : 'demandes') || []).find(x => x._rid === n.cible_id) || null; } catch (_) {}
+    const t = a && a.transport, ville = (a && a.city) || n.ville || '';
+    if ((n.cible === 'offre' && t === 'inclus') || (n.cible === 'demande' && t === 'vendeur'))
+      return { modes: ['vendeur'], defaut: 'vendeur', lib: { vendeur: 'Le vendeur livre (transport inclus)' }, info: 'Le transport est inclus dans le prix : c’est le vendeur qui s’en occupe.' };
+    if (n.cible === 'offre' && t === 'hors_ville')
+      return { modes: ['vendeur', 'acheteur', 'reseau'], defaut: 'vendeur', info: 'Le vendeur livre hors ' + (ville ? (/^[aeiouyàâéèêîôh]/i.test(ville) ? 'd’' : 'de ') + ville : 'de sa ville') + ' ; à ' + (ville || 'sa ville') + ', l’acheteur s’en charge.',
+        lib: { vendeur: 'Livraison dans une autre ville : le vendeur livre', acheteur: 'Livraison à ' + (ville || 'la même ville') + ' : l’acheteur s’en charge', reseau: 'Livraison à ' + (ville || 'la même ville') + ' avec un transporteur du réseau' } };
+    if ((n.cible === 'offre' && t === 'non') || (n.cible === 'demande' && t === 'acheteur'))
+      return { modes: ['acheteur', 'reseau', 'vendeur'], defaut: 'acheteur', lib: {}, info: 'Le transport n’est pas inclus : l’acheteur s’en charge, sauf accord avec le vendeur.' };
+    return { modes: ['reseau', 'acheteur', 'vendeur'], defaut: 'acheteur', lib: {}, info: '' };
+  }
+  // ——— le lien de suivi pour son propre chauffeur (schéma 48) ———
+  const ago = t => { const m = Math.round((Date.now() - Date.parse(t)) / 60000); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
+  const lienURL = j => new URL('suivi.html?j=' + j, location.href).href;
+  function blocLien(c) {
+    if (c.mode_transport === 'reseau' || !['a_confirmer', 'en_cours'].includes(c.etat)) return '';
+    const L = lien[c.id], moi = c.role === c.mode_transport, qui = c.mode_transport === 'vendeur' ? 'le vendeur' : 'l’acheteur';
+    const vu = L && L.vu_le ? 'Le chauffeur a ouvert le lien · ' + ago(L.vu_le) : L ? 'Le chauffeur n’a pas encore ouvert le lien.' : '';
+    if (!moi) return `<div class="cm-lien"><b>📍 Suivi du chauffeur</b><small>${L ? esc(vu) : 'Quand ' + qui + ' donnera le lien de suivi à son chauffeur, sa position s’affichera ici.'}</small></div>`;
+    if (!L || !L.jeton) return `<div class="cm-lien"><b>📍 Votre chauffeur n’a pas l’application ?</b><small>Créez un lien de suivi et envoyez-le-lui. Quand il l’ouvre, sa position s’affiche ici pour vous deux.</small><button type="button" class="p" data-lien>Créer le lien de suivi</button><p class="cm-err" data-liene role="alert"></p></div>`;
+    return `<div class="cm-lien"><b>📍 Lien de suivi pour votre chauffeur</b><code>${esc(lienURL(L.jeton))}</code><small>${esc(vu)}</small>
+      <div class="cm-lien-a"><button type="button" class="p" data-lps>Envoyer au chauffeur</button><button type="button" data-lpc>Copier</button></div></div>`;
+  }
+  function lierLien(c, box) {
+    const cr = box.querySelector('[data-lien]');
+    if (cr) cr.onclick = async () => { cr.disabled = true; try { await N().rpc('suivi_lien_creer', { p_cmd: c.id }); lien[c.id] = await N().rpc('suivi_lien_etat', { p_cmd: c.id }).catch(() => null); peindre(); }
+      catch (x) { const e = box.querySelector('[data-liene]'); if (e) e.textContent = erreurTxt(x); cr.disabled = false; } };
+    const L = lien[c.id]; if (!L || !L.jeton) return;
+    const url = lienURL(L.jeton), txt = 'Marché de Gros · livraison ' + (c.produit || '') + ' : ouvrez ce lien pendant le trajet pour partager votre position. ' + url;
+    const ps = box.querySelector('[data-lps]'), pc = box.querySelector('[data-lpc]');
+    if (ps) ps.onclick = async () => { if (navigator.share) { try { await navigator.share({ title: 'Suivi de livraison', text: txt }); return; } catch (_) { return; } } open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank'); };
+    if (pc) pc.onclick = async () => { try { await navigator.clipboard.writeText(url); toast('Lien copié', { type: 'ok', sous: 'Collez-le dans un message à votre chauffeur.' }); } catch (_) { toast('Copie impossible', { type: 'erreur', sous: url }); } };
+  }
+
   // ——— créer une commande à partir d'un accord ———
   function creer(n) {
     if (!N() || !N().session()) { if (N()) N().open(); return; }
     monter();
     const box = bg.querySelector('.cm'), u = n.unite || 'unité', q = n.quantite_finale; box.scrollTop = 0; dernierEcran = 'creer';
+    const tr = choixTransport(n);
     box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
       <h2>Suivre la <em>commande</em></h2>
       <p class="cm-sous">${esc(n.produit || '')}${q ? ' · ' + qte(q, u) : ''}${n.prix_final != null ? ' · ' + F(n.prix_final) + ' / ' + esc(u) : ''}</p>
       <form class="cm-f" novalidate>
         <label class="t">Qui transporte la marchandise ?</label>
-        ${Object.entries(MODES).map(([k, l], i) => `<label class="cm-opt"><input type="radio" name="mode" value="${k}"${i === 1 ? ' checked' : ''}><span><b>${l}</b><small>${k === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié.' : k === 'acheteur' ? 'L’acheteur envoie son camion ou son transporteur (il tape son code transporteur).' : 'Le vendeur organise la livraison (il tape le code de son transporteur).'}</small></span></label>`).join('')}
+        ${tr.info ? `<p class="cm-info">🚚 ${esc(tr.info)}</p>` : ''}
+        ${tr.modes.map(k => `<label class="cm-opt"><input type="radio" name="mode" value="${k}"${k === tr.defaut ? ' checked' : ''}><span><b>${tr.lib[k] || MODES[k]}</b><small>${k === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié.' : k === 'acheteur' ? 'L’acheteur envoie son camion ou son chauffeur. Il peut lui donner un lien de suivi.' : 'Le vendeur livre avec son camion ou son chauffeur. Il peut lui donner un lien de suivi.'}</small></span></label>`).join('')}
         <label class="t">Comment valider le chargement et la réception ?</label>
         <label class="cm-opt"><input type="radio" name="val" value="code" checked><span><b>Avec codes — le chauffeur a l’application</b><small><span class="cm-tag mais">Recommandé</span> Le chauffeur tape le code du vendeur au chargement, puis celui de l’acheteur à la réception. Personne ne peut valider à votre place.</small></span></label>
         <label class="cm-opt"><input type="radio" name="val" value="declaration"><span><b>Sans code — nous validons nous-mêmes</b><small>Pour un chauffeur sans l’application : le vendeur déclare le chargement, l’acheteur l’arrivée et la réception.</small></span></label>

@@ -431,6 +431,17 @@
 - Défaut : en mode sombre, ces deux boutons utilisaient les jetons `--encre` / `--champ`, qui s'inversent, posés dans un encadré qui reste crème. Le choix retenu paraissait éteint et l'autre semblait choisi : on ne savait pas ce qui se passait au toucher.
 - Maintenant (`.lieu-b`, mêmes couleurs dans les deux modes) : choix retenu = bord vert, fond vert pâle, coche qui apparaît avec un petit rebond ; l'autre = rond vide ; enfoncement au toucher. Rôle « radio » pour les lecteurs d'écran.
 
+### Accueil → Activité : retirer des éléments
+- Chaque ligne (Reprendre, En cours, Dernières annonces) se retire en la glissant vers la gauche : une zone rouge « 🗑️ Retirer » apparaît ; au-delà de la moitié, la ligne part. La zone se touche aussi (bouton).
+  - Défilement natif du téléphone (`.glis`, scroll-snap) plutôt qu'un geste simulé : fluide, sans gêner le défilement vertical, sans toucher au moteur de la page.
+- « Tout effacer » en haut de « En cours » et de « Dernières annonces » (s'il y a au moins 2 lignes).
+- Après chaque retrait, le message en haut propose « Annuler ».
+- Sur ce téléphone seulement (`mdg-activite:masques`, oublié au bout de 60 jours). Rien n'est supprimé sur le serveur.
+  - Une démarche retirée revient si elle bouge (nouvelle réponse, nouvelle étape) : on compare son heure à celle du retrait.
+  - Une annonce retirée ne revient pas ; les nouvelles annonces s'affichent normalement.
+- Pour que le geste se devine : la phrase « Glissez une ligne vers la gauche pour la retirer » et, les 3 premières fois, la première ligne glisse un peu puis revient.
+- La pastille de l'onglet Activité ne compte plus ce qui a été retiré.
+
 ## 5. En attente d'une décision du propriétaire
 
 

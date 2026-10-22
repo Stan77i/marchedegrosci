@@ -635,3 +635,15 @@ Lui proposer de coller ceci :
 - Testé :
   - SQL avec rollback : 20 t, 10 vendues → 10 actif ; 20 vendues → 0 retiré ; renvoi du téléphone (20, actif) → reste 0 retiré ; commande annulée → 10 rendues ;
   - Playwright : gombo → servie et absent de l'accueil (« 1 demande ») ; ail 20 → 10 t ; Mes publications montre les deux.
+
+## Astuces et petits tutoriels pour les nouveaux (22/10/2026) — `v3/astuces.js`
+- **Signes sur l'accueil**, un seul par ouverture, le premier pas encore compris :
+  1. le panier (logo, en haut à gauche) glisse de gauche à droite, avec la bulle « Touchez le panier : c'est le menu » (s'arrête dès que le menu a été ouvert, sinon après 3 fois) ;
+  2. la roue des produits (« Glissez le doigt sur le sac », 2 fois) ;
+  3. les onglets Activité / Alertes (2 fois).
+- **Tutoriels** (cartes, « Passer » toujours visible, « Ne plus montrer les tutoriels ») : ils s'affichent une fois, la première fois qu'apparaît
+  un code (`[data-code-bloc]`), le choix du chauffeur (`[data-trf]`), la création d'une commande (`input[name=val]`), l'Espace chauffeur, ou « Proposer un prix ».
+  Détection par MutationObserver : aucun autre module n'a été modifié.
+- **Réglages → Aide pour débuter** : interrupteur « Astuces et tutoriels » (le rallumer remet tout à zéro, comme pour un nouveau) et boutons « Revoir un tutoriel ».
+- Tout reste sur le téléphone (`mdg-astuces:off`, `mdg-astuces:vu`). Mouvement réduit : pas d'animation, seulement la bulle.
+- Les textes décrivent ce que l'app fait vraiment : à mettre à jour si le parcours des codes ou du transport change.

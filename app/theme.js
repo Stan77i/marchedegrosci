@@ -3,7 +3,7 @@
    <html data-theme="clair|sombre"> est posé avant l'affichage, pour éviter un éclair blanc.
    API : MDGTheme.mode() · MDGTheme.choisir('clair'|'sombre'|'auto') · MDGTheme.ouvrir() (la page Réglages) 
    La page Réglages réunit TOUS les réglages (demandé le 22/10) : apparence, notifications du téléphone, annonces du marché,
-   sons, messages à l'écran, confidentialité. Mon compte et Notifications n'en ont plus. */
+   sons, messages à l'écran, aide pour débuter (v3/astuces.js), confidentialité. Mon compte et Notifications n'en ont plus. */
 (function () {
   'use strict';
   if (window.MDGTheme) return;
@@ -50,6 +50,8 @@ html[data-theme=sombre] .rg-o[aria-checked=true] b.ok{background:#F2C230;color:#
 .rg-btn{min-height:48px;border:0;border-radius:24px;background:rgba(23,21,18,.07);color:inherit;font:600 15px Jost,sans-serif;cursor:pointer}.rg-btn.plein{background:#10392B;color:#F3EFE4}
 html[data-theme=sombre] .rg-sw input{background:rgba(243,239,228,.2)}html[data-theme=sombre] .rg-sw input:checked{background:#F2C230}
 html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme=sombre] .rg-btn.plein{background:#F2C230;color:#171512}html[data-theme=sombre] .rg-chev{color:#B9AD98}
+.rg-tours{display:flex;flex-wrap:wrap;gap:8px}.rg-tours button{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid rgba(16,57,43,.25);background:#F7F4EC;color:#10392B;font:600 14px Jost,sans-serif;cursor:pointer}
+.rg-tours button::before{content:"▶ ";font-size:11px}html[data-theme=sombre] .rg-tours button{background:#25211B;color:#F2C230;border-color:rgba(242,194,48,.35)}
 @keyframes rgIn{from{opacity:0}}@keyframes rgUp{from{transform:translateY(40px);opacity:.4}}
 @media (prefers-reduced-motion:reduce){.rg-bg,.rg{animation:none}.rg-o{transition:none}}`;
   const I = n => (window.MDGIco ? MDGIco.svg(n, 22, 1.9) : '');
@@ -94,6 +96,10 @@ html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme
           ${window.MDGVibre ? sw('vibre', 'Vibrations au toucher', MDGVibre.possible ? 'Un petit tic quand vous touchez un bouton ou faites tourner les produits de l’accueil' + (/iP(hone|ad)/.test(navigator.userAgent) ? ' (iPhone : iOS 18 ou plus)' : '') : 'Ce navigateur ne permet pas les vibrations', MDGVibre.actif(), !MDGVibre.possible) : ''}
           ${sw('ecran', 'Messages à l’écran', 'Une ligne quand une proposition arrive, est acceptée ou refusée', pf.toasts !== false)}
         </div>
+        ${window.MDGAstuces ? `<p class="rg-sec">Aide pour débuter</p>
+        <div class="rg-l">${sw('comment', 'Astuces et tutoriels', 'Petits signes animés sur l’accueil, et un court tutoriel la première fois qu’on fait une opération (négocier, commande, codes, chauffeur)', MDGAstuces.actif())}
+          <p class="rg-n" style="margin:4px 2px 0">Revoir un tutoriel :</p>
+          <div class="rg-tours">${Object.keys(MDGAstuces.TOURS).map(k => `<button type="button" data-tour="${k}">${esc(MDGAstuces.TOURS[k].t)}</button>`).join('')}</div></div>` : ''}
         ${pr && connecte() && !(window.MDGStatut && MDGStatut.estOfficiel && N().session().user && MDGStatut.estOfficiel(N().session().user.id)) ? `<p class="rg-sec">Confidentialité</p>
         <div class="rg-l">${sw('oeil', 'Montrer mon nom de famille', 'Sinon, les autres voient « ' + esc(pr.prenom || 'Prénom') + ' ' + esc(pr.nom ? pr.nom[0] + '.' : 'N.') + ' ». Votre numéro n’est jamais affiché.', !!pr.nom_public)}</div>` : ''}
         <p class="rg-n">L’apparence, les sons, les vibrations et les messages à l’écran restent sur ce téléphone.</p></div>`;
@@ -104,12 +110,14 @@ html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme
         try { if (bp.dataset.pousse === 'on') { await P.activer(); dire('Notifications *activées*'); } else { await P.desactiver(); dire('Notifications *désactivées* sur ce téléphone'); } }
         catch (x) { dire(String(x && x.message) === 'REFUS' ? 'Autorisez les notifications dans les réglages du téléphone, puis réessayez.' : 'Impossible pour l’instant. Réessayez.'); }
         st.pousse = P ? await P.etat() : 'impossible'; peindre(); };
+      bg.querySelectorAll('[data-tour]').forEach(b => b.onclick = () => { const k = b.dataset.tour; fermer(); setTimeout(() => MDGAstuces.tour(k, true), 250); });
       const so = bg.querySelector('[data-sons]'); if (so) so.onclick = () => { fermer(); S.panneau(); };
       bg.querySelectorAll('[data-sw]').forEach(i => i.onchange = async () => {
         const k = i.dataset.sw; i.disabled = true;
         try {
           if (k === 'Annonces du marché') { await N().rpc('notif_reglage_diffusions', { p_oui: i.checked }); st.diff = i.checked; dire(i.checked ? 'Annonces du marché *activées*' : 'Annonces du marché *coupées*'); }
           else if (k === 'Vibrations au toucher') { MDGVibre.regler(i.checked); dire(i.checked ? 'Vibrations *activées*' : 'Vibrations *coupées*'); }
+          else if (k === 'Astuces et tutoriels') { if (i.checked) MDGAstuces.revoir(); else MDGAstuces.regler(false); dire(i.checked ? 'Astuces *activées* : elles reviennent comme pour un nouveau' : 'Astuces et tutoriels *coupés*'); }
           else if (k === 'Messages à l’écran') { const o = lirePrefs(); o.toasts = i.checked; localStorage.setItem('mdg-compte:prefs', JSON.stringify(o)); dire('Réglage *enregistré*'); }
           else if (k === 'Montrer mon nom de famille' && C && C.regler) { await C.regler({ nom_public: i.checked }); dire('Réglage *enregistré*'); }
         } catch (x) { i.checked = !i.checked; dire('Impossible : ' + ((x && x.message) || 'réessayez')); }

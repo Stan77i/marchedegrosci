@@ -22,19 +22,39 @@
     drapeau: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>',
     etoile: '<path d="M11.5 2.3a.5.5 0 0 1 .9 0l2.3 4.7a2 2 0 0 0 1.5 1.1l5.2.8a.5.5 0 0 1 .3.9l-3.8 3.7a2 2 0 0 0-.6 1.8l.9 5.1a.5.5 0 0 1-.8.6l-4.6-2.4a2 2 0 0 0-1.9 0L6 21.1a.5.5 0 0 1-.7-.6l.9-5.1a2 2 0 0 0-.6-1.8L1.8 9.9a.5.5 0 0 1 .3-.9l5.2-.8A2 2 0 0 0 8.8 7z"/>',
     horloge: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+    calendrier: '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/>',
+    prix: '<path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/>',
+    carte: '<path d="M14.1 5.6a2 2 0 0 0 1.8 0l3.7-1.9A1 1 0 0 1 21 4.6v12.8a1 1 0 0 1-.6.9l-4.5 2.2a2 2 0 0 1-1.8 0l-4.2-2.1a2 2 0 0 0-1.8 0l-3.7 1.9A1 1 0 0 1 3 19.4V6.6a1 1 0 0 1 .6-.9l4.5-2.2a2 2 0 0 1 1.8 0z"/><path d="M15 5.8v15"/><path d="M9 3.2v15"/>',
+    camion: '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.7a1 1 0 0 0-.2-.6l-3.5-4.3A1 1 0 0 0 17.5 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+    cadenas: '<rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    groupe: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>',
+    cloche: '<path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/><path d="M3.3 15.3A1 1 0 0 0 4 17h16a1 1 0 0 0 .7-1.7C19.4 14 18 12.5 18 8A6 6 0 0 0 6 8c0 4.5-1.4 6-2.7 7.3"/>',
+    volant: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2"/><path d="M14 12h8"/><path d="M2 12h8"/><path d="m13 14 4 7.5"/><path d="m11 14-4 7.5"/>',
     chev: '<path d="m9 18 6-6-6-6"/>',
     fermer: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>'
   };
   const ico = (n, t, w) => `<svg width="${t || 16}" height="${t || 16}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w || 2}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${P[n]}</svg>`;
 
-  // la bande : une phrase courte, le mot qui compte en accent (voix du logo)
+  // la bande : une phrase courte, le mot qui compte en accent (voix du logo).
+  // Les garanties ouvrent la feuille « Pourquoi le Marché de Gros » ; les fonctions utiles (22/10/2026, pour faire connaître l'application)
+  // ouvrent directement la fonction. Seulement ce que l'application fait déjà.
+  const PAGE = p => () => dispatchEvent(new CustomEvent('mdg:aller', { detail: { page: p } }));
+  const FEN = (m, f, a) => () => { const o = window[m]; if (!o || typeof o[f] !== 'function') return false; o[f].apply(o, a || []); };
   const BANDE = [
     ['bouclier', 'Parcours ', 'sécurisé', ' : tout se passe ici'],
+    ['calendrier', 'L’année du ', 'marché', ' : quoi récolter, et quand', PAGE('annee')],
     ['sceau', 'Identités ', 'vérifiées', ' par l’équipe'],
+    ['prix', 'Les prix du marché, ', 'par zone', '', PAGE('prix')],
     ['cache', 'Votre numéro reste ', 'caché', ''],
+    ['carte', 'Le ', 'réseau', ' : tout le pays sur la carte', PAGE('carte')],
     ['main', 'Négociez ici, payez ', 'à la livraison', ''],
+    ['camion', 'Suivez votre ', 'commande', ', étape par étape', FEN('MDGCommandes', 'ouvrir')],
     ['lien', 'Ni liens, ni ', 'arnaques', ' au code'],
-    ['reel', 'Que des annonces ', 'réelles', '']
+    ['cadenas', 'Réception validée par ', 'code secret', '', FEN('MDGAstuces', 'tour', ['codes', true])],
+    ['reel', 'Que des annonces ', 'réelles', ''],
+    ['groupe', 'Achats ', 'groupés', ' : à plusieurs, moins cher', FEN('MDGGroupes', 'ouvrir')],
+    ['cloche', 'Alertes produits : ', 'prévenu', ' dès qu’il arrive', FEN('MDGAlertes', 'gerer')],
+    ['volant', 'Chauffeur ? Inscrivez-vous, c’est ', 'gratuit', '', FEN('MDGChauffeur', 'ouvrir')]
   ];
   // la feuille : chaque garantie, ce que l'application fait vraiment
   const DETAIL = [
@@ -119,7 +139,8 @@
       this.r = this.shadowRoot || this.attachShadow({ mode: 'open' });
       if (this.dataset.mode === 'ligne') return this.ligne();
       this.r.innerHTML = `<style>${CSS}</style><button type="button" class="gr-b" aria-label="Pourquoi le Marché de Gros : nos garanties"><span class="gr-l" aria-live="off"></span><span class="gr-c">${ico('chev', 14)}</span></button>`;
-      this.r.querySelector('.gr-b').onclick = ouvrir;
+      // toucher : la fonction annoncée, ou la feuille des garanties (module pas encore chargé : la feuille)
+      this.r.querySelector('.gr-b').onclick = () => { const go = BANDE[this.i][4]; if (!go || go() === false) ouvrir(); };
       this.i = Math.floor(Math.random() * BANDE.length); this.montrer(false);
       this.t = setInterval(() => { if (document.hidden || !this.isConnected) return; this.i = (this.i + 1) % BANDE.length; this.montrer(true); }, 4200);
     }
@@ -128,6 +149,7 @@
     montrer(anime) {
       const l = this.r && this.r.querySelector('.gr-l'); if (!l) return;
       const [i, a, k, b] = BANDE[this.i];
+      const bt = this.r.querySelector('.gr-b'); if (bt) bt.setAttribute('aria-label', a + k + b + (BANDE[this.i][4] ? ' : ouvrir' : ' : nos garanties'));
       const poser = () => { l.innerHTML = `${ico(i, 16)}<span class="gr-tx">${esc(a)}<em>${esc(k)}</em>${esc(b)}</span>`; l.className = 'gr-l' + (anime && !moinsDeMouvement() ? ' entre' : ''); };
       if (!anime || moinsDeMouvement()) return poser();
       l.className = 'gr-l sort'; setTimeout(poser, 300);

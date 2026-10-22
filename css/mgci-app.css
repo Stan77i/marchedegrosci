@@ -405,7 +405,8 @@ html[data-theme=sombre] .dr-clair button[style*="A4472C"]{color:#EE9A62!importan
    carte plus compacte (seul le tampon reste sous les chiffres), le bord de la suivante dépasse,
    et une pastille « ‹ ● ○ 1 sur 2 › » dit qu'il y en a d'autres ; la flèche suivante appelle tant qu'on n'a pas glissé */
 .an-carte .an { gap: 10px; padding: 12px; }
-.an-carte .an-infos > span:not(.qd), .an-carte .an-moi { display: none; }
+.an-carte .an-infos > span:not(.qd) { display: none; }   /* « C'est votre annonce » reste : sur ses propres annonces, il n'y a pas de bouton */
+.an-carte .an-moi { padding: 8px 12px; }
 .an-carte .an-act { padding: 0 10px; font-size: var(--t-md); }
 .cpk-nav { align-self: center; display: flex; align-items: center; gap: 4px; padding: 3px; border-radius: 999px; background: #171512; color: #F5F0E6; box-shadow: 0 0 0 1px rgba(245, 240, 230, .1), 0 6px 18px rgba(0, 0, 0, .35); font: 600 13px/1 var(--f-texte, Jost), sans-serif; }
 .cpk-f { width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(245, 240, 230, .1); color: inherit; display: grid; place-items: center; cursor: pointer; }

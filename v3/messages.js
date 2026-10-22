@@ -38,6 +38,8 @@
   // ——— la liste des conversations (gardée sur l'appareil pour s'afficher tout de suite) ———
   let liste = J(KL, []), dernierU = -1, premier = true, ouverte = null;
   const unread = () => liste.filter(c => c.non_lu && c.id !== ouverte).length;
+  // pour la cloche de l'accueil : les conversations non lues dont le dernier message est arrivé après « ts » (heure du dernier toucher sur la cloche)
+  const unreadDepuis = ts => liste.filter(c => c.non_lu && c.id !== ouverte && (Date.parse(c.updated_at) || 0) > (+ts || 0)).length;
   function annoncer() { const u = unread(); if (u !== dernierU) { dernierU = u; dispatchEvent(new CustomEvent('mdg:dm', { detail: { unread: u } })); } }
   async function refresh() {
     if (!N() || !N().session()) { if (liste.length) { liste = []; W(KL, []); } annoncer(); return liste; }
@@ -363,7 +365,7 @@
     tag: c.non_lu ? 'Nouveau message' : 'Conversation', apercu: String(c.dernier_texte || '').slice(0, 70), ts: Date.parse(c.updated_at) || 0, ouvrir: () => conversation(c.id) });
   const activite = () => liste.filter(c => c.non_lu && c.id !== ouverte).map(ligneAct);
   const trouverAct = id => { const c = liste.find(x => x.id === id); return c ? ligneAct(c) : null; };
-  window.MDGMessages = { boite, ecrire, ecrireMarche, parlerPersonne, diffuser, conversation, unread, refresh, JOURS, activite, trouverAct };
+  window.MDGMessages = { boite, ecrire, ecrireMarche, parlerPersonne, diffuser, conversation, unread, unreadDepuis, refresh, JOURS, activite, trouverAct };
   addEventListener('mdg:connecte', () => { premier = true; setTimeout(refresh, 1200); });
   addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte' && !(N() && N().session())) { liste = []; W(KL, []); fermer(); annoncer(); } });
   addEventListener('hashchange', depuisAdresse);

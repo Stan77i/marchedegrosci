@@ -314,6 +314,16 @@
   - Corrigé aussi : « Nom de la marché » → « Nom du marché ».
   - Robot : dans chaque page de Mon compte, il touche tous les choix et vérifie que rien ne bouge et que le clavier ne s'ouvre pas : 0 saut.
 
+### Carte : plusieurs annonces au même endroit
+- Avant : quand on touchait une bulle « 2 dès 13 k F », une seule annonce apparaissait, et rien ne disait qu'il y en avait une autre en glissant. Avec le badge « Officiel · Marché de Gros », la carte s'élargissait à 420 px, sortait de l'écran et cachait complètement la suivante.
+- Maintenant :
+  - la carte d'annonce est plus compacte sur la carte : seul le tampon reste sous les chiffres, 238 px de haut au lieu de 280 ;
+  - le bord de l'annonce suivante dépasse à droite ;
+  - une pastille « ‹ ● ○ 1 sur 2 · glissez › » s'affiche : la flèche suivante est maïs et pulse tant qu'on n'a pas changé d'annonce ; les points et les flèches font changer d'annonce ;
+  - à l'ouverture, la bande avance un peu puis revient, pour montrer qu'elle glisse (rien si le téléphone demande moins d'animations).
+- Partout : un nom ou un badge long ne fait plus déborder la carte d'annonce. Pour le compte officiel, le nom en double est caché (le badge dit déjà « Marché de Gros »), et la ville cède la place en premier.
+- Code : `cPickMulti`, `cPickDots`, `cPickAller()`, `cPickInvite()` dans `application.dc.html` ; styles `.an-carte` et `.cpk-*` dans `css/mgci-app.css`.
+
 ## 5. En attente d'une décision du propriétaire
 
 

@@ -77,8 +77,8 @@
 .fam-pills { position: absolute; left: 8px; right: 8px; top: 8px; display: flex; gap: 4px; flex-wrap: wrap; pointer-events: none; }
 .fam-pill { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 8px 0 6px; border-radius: var(--r-rond); background: rgba(18, 16, 13, .78);
   -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); color: var(--ivoire); font: 600 12px/1 var(--f-texte); font-variant-numeric: tabular-nums; }
-.fam-pill i { width: 8px; height: 8px; border-radius: 50%; background: var(--offre); }
-.fam-pill.d i { border-radius: 2px; background: var(--demande); }
+.fam-pill i{display:inline-grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 11px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.fam-pill i::before{content:"🧺"}
+.fam-pill.d i{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.fam-pill.d i::before{content:"🛒"}
 .fam-pill.neuf { background: var(--primary); color: var(--primary-foreground); padding: 0 8px; }
 
 .ui-toast { position: absolute; left: 12px; right: 12px; z-index: var(--z-toast); display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 10px; border-radius: 18px;
@@ -449,7 +449,7 @@ html[data-theme=sombre] .dr-clair button[style*="A4472C"]{color:#EE9A62!importan
 .tv-fams::-webkit-scrollbar { display: none; }
 .tv-fams button { flex: none; display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 0 12px; border-radius: 19px; border: 1px solid rgba(245, 240, 230, .16); background: none; color: #E2D9C8; font: 500 13.5px var(--f-texte, Jost), sans-serif; white-space: nowrap; cursor: pointer; }
 .tv-fams button b { font-weight: 600; font-size: 11.5px; color: #B9AD98; }
-.tv-fams button i { width: 8px; height: 8px; border-radius: 50%; background: var(--offre, #6CC58C); box-shadow: 4px 0 0 -1px var(--demande, #F2C94C); margin-right: 3px; }
+.tv-fams button i{font:normal 13px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal;letter-spacing:-2px}.tv-fams button i::before{content:"🧺🛒"}
 .tv-fams button[aria-pressed="true"] { background: #F2C230; border-color: #F2C230; color: #171512; }
 .tv-fams button[aria-pressed="true"] b { color: rgba(23, 21, 18, .65); }
 .tv-corps { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 0 14px; }
@@ -467,7 +467,49 @@ html[data-theme=sombre] .dr-clair button[style*="A4472C"]{color:#EE9A62!importan
 .tv-c { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; margin-top: -2px; pointer-events: none; }
 .tv-c > span { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 7px 0 6px; border-radius: 10px; background: rgba(245, 240, 230, .08); font: 600 11px/1 var(--f-texte, Jost), sans-serif; color: #F5F0E6; }
 .tv-c span span { display: inline; height: auto; padding: 0; background: none; }
-.tv-c i { width: 6px; height: 6px; border-radius: 50%; background: var(--offre, #6CC58C); }
-.tv-c .d i { border-radius: 1.5px; background: var(--demande, #F2C94C); }
+.tv-c i{display:inline-grid;place-items:center;flex:none;width:16px;height:16px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 10px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.tv-c i::before{content:"🧺"}
+.tv-c .d i{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.tv-c .d i::before{content:"🛒"}
 .tv-vide { margin: 24px 6px; color: #B9AD98; font-size: 15px; line-height: 1.5; text-align: center; }
 @media (prefers-reduced-motion: reduce) { .tv-p, .tv-ouvrir { transition: none; } }
+
+/* ——— offre / demande : les mêmes images que les boutons du bas, partout ———
+   🧺 offre (J'ai, à vendre) sur une pastille ronde verte · 🛒 demande (Je cherche, à acheter) sur une pastille carrée maïs.
+   Trois repères à la fois : l'image, la forme, la couleur. Le panier se pose (petit rebond) puis se balance de temps en temps ;
+   le chariot arrive en roulant puis avance d'un cran. Plus rien ne bouge si le téléphone demande moins d'animations. */
+.od { display: inline-grid; place-items: center; flex: none; width: 20px; height: 20px; border-radius: 50%; font: normal 12px/1 "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; font-style: normal; text-decoration: none; letter-spacing: 0;
+  background: rgba(108, 197, 140, .22); box-shadow: inset 0 0 0 1px rgba(108, 197, 140, .55); animation: odPose .55s cubic-bezier(.3, 1.6, .5, 1) both, odPanier 7s 1.2s ease-in-out infinite; }
+.od-d { border-radius: 30%; background: rgba(242, 194, 48, .24); box-shadow: inset 0 0 0 1px rgba(242, 194, 48, .6); animation: odRoule .6s cubic-bezier(.22, 1, .36, 1) both, odCaddie 7s 2.4s ease-in-out infinite; }
+.od-g { width: 32px; height: 32px; font-size: 18px; }
+.od-coin { position: absolute; right: -3px; bottom: -3px; width: 20px; height: 20px; font-size: 11px; box-shadow: 0 0 0 2.5px var(--carte), inset 0 0 0 1px rgba(108, 197, 140, .55); background: #E3F3E8; }
+.od-coin.od-d { background: #FBEFC7; box-shadow: 0 0 0 2.5px var(--carte), inset 0 0 0 1px rgba(242, 194, 48, .6); }
+.an-forme.od { width: 20px; height: 20px; }
+@keyframes odPose { 0% { opacity: 0; transform: translateY(-7px) scale(.6); } 60% { opacity: 1; transform: translateY(1px) scale(1.08, .92); } 100% { transform: none; } }
+@keyframes odRoule { 0% { opacity: 0; transform: translateX(-9px) rotate(-14deg); } 70% { opacity: 1; transform: translateX(1px) rotate(3deg); } 100% { transform: none; } }
+@keyframes odPanier { 0%, 86%, 100% { transform: none; } 90% { transform: translateY(-2px) rotate(-8deg); } 94% { transform: rotate(6deg); } 97% { transform: rotate(-2deg); } }
+@keyframes odCaddie { 0%, 86%, 100% { transform: none; } 90% { transform: translateX(2px); } 93% { transform: translateX(-1px) rotate(-4deg); } 96% { transform: translateX(1px); } }
+@media (prefers-reduced-motion: reduce) { .od, .od-d { animation: none; } }
+.acc-emo { display: block; font: normal 21px/1 "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; animation: odPanier 7s 1.6s ease-in-out infinite; }
+.acc-emo.d { animation-name: odCaddie; animation-delay: 3.1s; }
+@media (prefers-reduced-motion: reduce) { .acc-emo { animation: none; } }
+
+/* ——— « Tout » : le « + » de chaque produit → J'ai / Je cherche, puis la publication déjà réglée sur ce produit ——— */
+.tv-case { position: relative; display: grid; }
+.tv-plus { position: absolute; top: 5px; right: 5px; width: 30px; height: 30px; border: 0; border-radius: 15px; display: grid; place-items: center; cursor: pointer;
+  background: #F2C230; color: #171512; box-shadow: 0 2px 8px rgba(0, 0, 0, .35); transition: transform .25s cubic-bezier(.3, 1.6, .5, 1), background .2s; }
+.tv-plus::after { content: ""; position: absolute; inset: -7px; }   /* cible de 44 px */
+.tv-plus[aria-expanded="true"] { transform: rotate(45deg); background: #F5F0E6; z-index: 3; }
+.tv-plus:focus-visible { outline: 2px solid #F5F0E6; outline-offset: 2px; }
+.tv-choix { position: absolute; inset: 0; z-index: 2; display: grid; grid-template-rows: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 18px; background: rgba(18, 16, 13, .9);
+  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); animation: tvOuvre .22s cubic-bezier(.22, 1, .36, 1) both; }
+.tv-choix button { display: flex; align-items: center; gap: 7px; min-height: 44px; padding: 0 8px; border: 0; border-radius: 14px; cursor: pointer; text-align: left; font-family: var(--f-texte, Jost), sans-serif; }
+.tv-choix button span { display: flex; flex-direction: column; min-width: 0; line-height: 1.1; }
+.tv-choix b { font-size: 13.5px; font-weight: 700; white-space: nowrap; }
+.tv-choix small { font-size: 11px; opacity: .78; white-space: nowrap; }
+.tv-choix .o { background: linear-gradient(135deg, #6FD39A, #4CC488); color: #0E3B25; }
+.tv-choix .d { background: linear-gradient(135deg, #FFD95A, #F2C230); color: #3D2E00; }
+.tv-choix .od { background: rgba(255, 255, 255, .55); box-shadow: none; }
+.tv-choix button:active { transform: scale(.97); }
+.tv-choix button:focus-visible { outline: 2px solid #F5F0E6; outline-offset: 1px; }
+@keyframes tvOuvre { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .tv-choix { animation: none; } .tv-plus { transition: none; } }
+.tv-choix .o { padding-right: 38px; }

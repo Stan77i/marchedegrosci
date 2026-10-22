@@ -343,6 +343,24 @@
 - Le petit sac des listes vides était collé à gauche dans Approvisionnement pro, Achats groupés, Prix par zone et Racheter. Il est centré (`app/sac.js`).
 - Robot d'audit du mode nuit étendu : il repère aussi les ombres claires, les dégradés clairs des éléments décoratifs (`::before` / `::after`) et les pieds de page qui flottent. Sur les 20 fenêtres et les 12 pages, il ne reste que les contours voulus (tampons, voyants, interrupteurs).
 
+### Offre = 🧺, demande = 🛒, partout
+- Demande du propriétaire : plus de points verts ni de carrés jaunes. Les mêmes images que les boutons J'ai (🧺) et Je cherche (🛒), partout.
+- Repère commun `.od` (`css/mgci-app.css`) : 🧺 sur une pastille ronde verte, 🛒 sur une pastille carrée maïs. Trois repères à la fois : l'image, la forme, la couleur.
+  - Animation : le panier se pose avec un petit rebond puis se balance toutes les 7 s ; le chariot arrive en roulant puis avance d'un cran. Rien ne bouge si le téléphone demande moins d'animations.
+- Remplacés :
+  - accueil : compteurs du produit, cartes « Offres en ligne » et « Demandes » (avant : un colis et un chariot dessiné) ;
+  - cartes d'annonce (`an-forme`), aperçu de publication, fenêtre J'ai / Je cherche, avatar des correspondances ;
+  - carte (bulles, liste), familles, « Tout », catégories (`css/categories-app.css`) ;
+  - Mon compte (`v3/compte.js`), réputation (`v3/reputation.js`), fenêtre de connexion (`v3/nuage.js`).
+  - Les repères bleus (négociations, achats conclus) et le voyant « en ligne » ne changent pas : ce ne sont ni des offres ni des demandes.
+- Les fenêtres des modules (`v3/…`) dessinent ces repères en CSS, sur leurs `<i>` existants (`::before { content: "🧺" }`).
+
+### « Tout » : le « + » de chaque produit → J'ai / Je cherche
+- Chaque produit de la grille « Tous les produits » a un « + » maïs en haut à droite.
+- En le touchant, la case se coupe en deux : « 🧺 J'ai, à vendre » (vert) et « 🛒 Je cherche, à acheter » (maïs). Le « + » tourne en « × » pour annuler.
+- Le choix ferme la grille, met le produit au centre de la roue et ouvre la fenêtre J'ai / Je cherche déjà réglée sur ce produit et sur ce sens : quantité, unité, région, prix ou budget, ville, délai. Le lien vers le formulaire complet donne les exigences.
+- Code : état `tvPlus` dans `toutVoir()` ; styles `.tv-case`, `.tv-plus`, `.tv-choix`.
+
 ## 5. En attente d'une décision du propriétaire
 
 

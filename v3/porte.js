@@ -275,6 +275,8 @@
     const [sac, flash, txt] = ov.children, E = 'cubic-bezier(.22,1,.36,1)';
     ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 240, fill: 'forwards' }).onfinish = dessous;  // ce qui était dessous (la connexion) se ferme une fois couvert
     // le sac se remplit et saute (sa propre animation, ≈ 1,9 s), puis on avance dans son ouverture jusqu'à y entrer
+    // le son suit le geste du sac : les trois notes partent quand il saute (v3/sons.js, réglable dans Sons)
+    setTimeout(() => { try { window.MDGSons && MDGSons.confirmer && MDGSons.confirmer('entree'); } catch (_) {} }, 1250);
     sac.animate([{ transform: 'scale(1)', easing: 'cubic-bezier(.5,0,.85,.4)' }, { transform: 'scale(16)' }], { duration: 760, delay: 1900, fill: 'forwards' });
     flash.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 380, delay: 2380, easing: 'ease-in', fill: 'forwards' });
     txt.animate([{ opacity: 0, transform: 'translateY(10px)', filter: 'blur(4px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 480, delay: 2600, easing: E, fill: 'forwards' });
@@ -299,6 +301,7 @@
     ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: 'ease-out', fill: 'forwards' }).onfinish = dessous;  // la déconnexion se fait dès que l'écran est couvert
     txt.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 480, delay: 350, easing: E, fill: 'forwards' });
     // le sac se ficelle : l'ouvert s'efface, le ficelé prend sa place avec un petit resserrement
+    setTimeout(() => { try { window.MDGSons && MDGSons.confirmer && MDGSons.confirmer('sortie'); } catch (_) {} }, 900);
     ouvert.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, delay: 900, fill: 'forwards' });
     ferme.animate([{ opacity: 0, transform: 'scale(1.03,.98)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: 900, easing: E, fill: 'forwards' });
     const out = ov.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 560, delay: 2300, easing: 'ease-in', fill: 'forwards' });

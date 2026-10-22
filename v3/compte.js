@@ -492,11 +492,22 @@ label.cp-r{cursor:pointer}
   function formStructure(root, p) {
     let type = p.structure_type || '', logo = p.structure_logo || null, preuves = (p.structure_preuves || []).slice(0, 4), nom = p.structure_nom || '';
     const envoyer = async (fichier, quoi) => { const u = me(); const blob = await reduireImg(fichier, quoi === 'logo' ? 600 : 1200), chemin = u.id + '/' + quoi + '-' + Date.now() + '.jpg'; await N().televerser('activites/' + chemin, blob); return chemin; };
+    // les choix sont dessinés une fois ; toucher un choix change la sélection SUR PLACE (rien ne se redessine au-dessus,
+    // le clavier ne s'ouvre pas tout seul) : la page ne monte ni ne descend
+    const libNom = () => type === 'marche' ? 'Nom du marché' : 'Nom de la ' + (type === 'entreprise' ? 'société' : STRUCT[type][0].toLowerCase());
+    const exNom = () => type === 'cooperative' ? 'ex. Coopérative Akwaba de Bouaké' : type === 'groupement' ? 'ex. Groupement des femmes de Daloa' : type === 'marche' ? 'ex. Marché de gros de Bouaké' : 'ex. Ivoire Agro Négoce';
+    root.innerHTML = `<div class="cp-sto" role="radiogroup" aria-label="Vous représentez">${Object.keys(STRUCT).map(k => `<button type="button" role="radio" aria-checked="${type === k}" data-st="${k}"><span class="i" aria-hidden="true">${IC(STRUCT_ICO[k], 20)}</span><b>${STRUCT[k][0]}</b><small>${STRUCT[k][1]}</small></button>`).join('')}</div><div data-std></div>`;
+    const zone = root.querySelector('[data-std]'), garderNom = () => { const n = root.querySelector('#cp-stnom'); if (n) nom = n.value; };
+    root.querySelectorAll('[data-st]').forEach(b => b.onclick = () => {
+      garderNom(); const avant = !!(type && type !== 'particulier'); type = b.dataset.st; const apres = type !== 'particulier';
+      root.querySelectorAll('[data-st]').forEach(x => x.setAttribute('aria-checked', String(x === b)));
+      if (avant !== apres) dessiner();
+      else if (apres) { const l = zone.querySelector('label[for=cp-stnom]'), n = zone.querySelector('#cp-stnom'); if (l) l.textContent = libNom(); if (n) n.placeholder = exNom(); }
+    });
     function dessiner() {
       const st = type && type !== 'particulier';
-      root.innerHTML = `<div class="cp-sto" role="radiogroup" aria-label="Vous représentez">${Object.keys(STRUCT).map(k => `<button type="button" role="radio" aria-checked="${type === k}" data-st="${k}"><span class="i" aria-hidden="true">${IC(STRUCT_ICO[k], 20)}</span><b>${STRUCT[k][0]}</b><small>${STRUCT[k][1]}</small></button>`).join('')}</div>
-        ${st ? `<div class="cp-st-d">
-          <div><label class="cp-l" for="cp-stnom">Nom de la ${type === 'entreprise' ? 'société' : STRUCT[type][0].toLowerCase()}</label><input class="cp-in" id="cp-stnom" maxlength="80" autocomplete="organization" value="${esc(nom)}" placeholder="${type === 'cooperative' ? 'ex. Coopérative Akwaba de Bouaké' : type === 'groupement' ? 'ex. Groupement des femmes de Daloa' : 'ex. Ivoire Agro Négoce'}"><p class="cp-err" id="cp-stnom-e" role="alert"></p></div>
+      zone.innerHTML = `${st ? `<div class="cp-st-d">
+          <div><label class="cp-l" for="cp-stnom">${libNom()}</label><input class="cp-in" id="cp-stnom" maxlength="80" autocomplete="organization" value="${esc(nom)}" placeholder="${exNom()}"><p class="cp-err" id="cp-stnom-e" role="alert"></p></div>
           <div class="cp-st-up"><span class="cp-l">Logo <i>· facultatif</i></span><div class="cp-st-row">
             <label class="cp-st-logo${logo ? ' plein' : ''}">${logo ? `<img src="${esc(imgStruct(logo))}" alt="Logo">` : `${IC('photo', 22)}<span>Ajouter</span>`}<input type="file" accept="image/*" data-logo aria-label="${logo ? 'Changer le logo' : 'Ajouter le logo'}"></label>
             ${logo ? '<button type="button" class="cp-alt" data-logo-x>Retirer le logo</button>' : ''}</div></div>
@@ -504,7 +515,6 @@ label.cp-r{cursor:pointer}
             <div class="cp-st-pv">${preuves.map((c, i) => `<div><img src="${esc(imgStruct(c))}" alt="Preuve ${i + 1}"><button type="button" class="cp-st-x" data-pv-x="${i}" aria-label="Retirer la preuve ${i + 1}">×</button></div>`).join('')}${preuves.length < 4 ? `<label class="cp-st-add">${IC('photo', 20)}<span>Ajouter</span><input type="file" accept="image/*" data-pv aria-label="Ajouter une preuve"></label>` : ''}</div>
             <p class="cp-st-aide">Une enseigne, un entrepôt, un agrément, une parcelle : ce qui montre que votre structure existe vraiment. Les membres les voient sur votre profil.</p></div>
           <p class="cp-msg" data-st-msg role="status"></p></div>` : ''}`;
-      root.querySelectorAll('[data-st]').forEach(b => b.onclick = () => { const n = root.querySelector('#cp-stnom'); if (n) nom = n.value; type = b.dataset.st; dessiner(); const z = root.querySelector('#cp-stnom'); if (z && !nom) z.focus(); });
       const n = root.querySelector('#cp-stnom'); if (n) n.oninput = () => { nom = n.value; };
       const msg = t => { const m = root.querySelector('[data-st-msg]'); if (m) m.textContent = t || ''; };
       const charge = async (inp, quoi) => { const f = inp.files && inp.files[0]; if (!f) return; if (!navigator.onLine) return msg('Pas de connexion internet : réessayez quand le réseau revient.');

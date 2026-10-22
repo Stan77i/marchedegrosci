@@ -694,3 +694,18 @@ Lui proposer de coller ceci :
 - Changement de nom dans le profil → ses annonces suivent (`profils_nom_annonces`).
 - Annonces existantes corrigées : « Coopérative gg », « Levi 02 », « Ttt » → « Lévis ».
 - Inclut aussi « En cours seulement connecté », arrivé trop tard pour la PR #152.
+
+## Séquestre, libération et refus de la marchandise (22/10/2026) — schéma 57
+Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partenaire (Wave, Orange Money, MTN MoMo) dès la commande confirmée ; l'acheteur libère après vérification ; à la libération, le vendeur reçoit sa part moins 3,5 %, le transporteur la sienne moins 6,9 % ; le Marché de Gros n'est payé qu'à la libération.
+- **Aucun partenaire n'est connecté** : rien n'est bloqué, prélevé ni versé. Une ligne `sequestres` ne naît que par `sequestre_depot_confirme()` (réservée au rôle service : la future fonction Edge vérifiera la notification signée du partenaire et le montant exact). Sans elle, l'application dit « Paiement sécurisé : bientôt » et « paiement à la livraison, hors application ».
+- **Ce qui marche dès maintenant** :
+  - après la réception, l'acheteur a 48 h : « Tout est conforme » (`commande_liberer`) ou « Refuser la marchandise (photos) » (`commande_refuser` : quantité refusée, motif, 1 à 4 photos dans l'espace privé « preuves ») ; sans réponse, clôture automatique (`sequestre_liberer_echus`, pg_cron toutes les 15 min) ;
+  - refus : le chauffeur répond dans son Espace chauffeur (`commande_refus_chauffeur`), le vendeur dans sa commande (`commande_refus_vendeur`). Le refus s'applique **sans l'équipe** si le chauffeur confirme (et qu'il n'a pas été choisi par l'acheteur) ou si le vendeur reconnaît. Sinon l'équipe tranche (`admin_refus_trancher`, quantité retenue, 0 = refus rejeté) ;
+  - partie refusée → rendue à l'acheteur (`montant_refuse`) ; le reste → vendeur ; **le transport reste dû** (le chauffeur a fait son travail).
+- **Commissions** : désormais « dues » à la libération seulement (avant : à la réception). Base vendeur = montant − partie refusée (refus total → commission annulée). Transport : dû à la libération, même si la marchandise est refusée.
+- **Annulation** : inchangée — avant le chargement, seulement d'un commun accord (le vendeur doit accepter) ; après le chargement, impossible. L'acheteur ne peut donc jamais annuler seul une commande confirmée.
+- **Code de transaction** = numéro de commande. L'équipe le tape dans admin → Commandes → « Retrouver une commande par son numéro » (`admin_commande_numero`) : accord conclu (prix, quantité, transport, conditions), répartition, historique complet. L'équipe ne lit pas les conversations (textes de l'application corrigés).
+- **WhatsApp litiges** : emplacement prêt (`WA_LITIGES` en haut de `v3/commandes.js`, vide = « bientôt »). Mettre le numéro officiel au format international sans « + » (ex. 2250700000000).
+- Historique : les événements du séquestre (`sequestre_journal`, intouchable) s'ajoutent à `commande_journal` sous le préfixe `sq_`.
+- Notifications (`pousser` v16) : refus → vendeur et chauffeur inscrit prévenus ; clôture → « Commande clôturée ».
+- Testé sur la base (transaction annulée) : dépôt refusé à un membre et à un mauvais montant ; libération 8 000 F → vendeur 5 790 F, transporteur 1 862 F, Marché de Gros 348 F ; refus partiel 4/10 confirmé par le chauffeur → 2 400 F à l'acheteur, commission vendeur 126 F ; refus total avec chauffeur choisi par l'acheteur → attend le vendeur ; clôture automatique après 49 h.

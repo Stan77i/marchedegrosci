@@ -113,7 +113,16 @@
       : ['transport', 'transbordement', 'arrivee'].includes(m.etape) ? `🔐 À la livraison, exigez que l’acheteur vous montre son code de réception, après sa vérification.${moiCode}` : '') : '';
     if (go && ['transport', 'transbordement'].includes(m.etape))
       B.push(K ? `<button type="button" class="m" data-pas="${m.commande_id}">Passer la marchandise à un autre chauffeur</button>` : `<button type="button" class="m" data-trb="${m.commande_id}">Signaler un transbordement</button>`);
-    const st = m.mission === 'proposee' ? ['Nouvelle mission', 'mais'] : m.mission === 'refusee' ? ['Refusée', 'rouge'] : m.etat === 'annulee' ? ['Commande annulée', 'rouge'] : m.etat === 'litige' ? ['Litige en cours', 'rouge'] : [ETAPE[m.etape] || 'Acceptée', ''];
+    // schéma 57 : l'acheteur refuse la marchandise après réception ; le chauffeur dit ce qu'il a vu à la livraison
+    const Rf = m.refus;
+    if (Rf && Rf.a_repondre) B.unshift(`<button type="button" class="p" data-rfo="${m.commande_id}">Oui, c’est ce que j’ai vu</button>`, `<button type="button" data-rfn="${m.commande_id}">Non, ce n’est pas vrai</button>`);
+    const refus = Rf ? `<div style="margin:10px 0 0;padding:12px;border-radius:14px;background:rgba(196,72,52,.08);box-shadow:inset 0 0 0 1px rgba(196,72,52,.25)">
+        <b style="display:block;color:#8A2414">L’acheteur refuse ${Rf.quantite != null ? nf(Rf.quantite, 2) + ' ' + esc(unites(Rf.quantite, m.unite)) : 'toute la marchandise'}</b>
+        <small style="display:block;margin-top:2px;color:inherit">« ${esc(Rf.motif || '')} »</small>
+        <span style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">${(Rf.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du refus" style="display:block;width:64px;height:64px;border-radius:10px;overflow:hidden;background:#E7E0CF"></span>`).join('')}</span>
+        <small style="display:block;color:#5E5546">${Rf.a_repondre ? 'À la livraison, la marchandise était-elle dans cet état ? Répondez honnêtement : votre réponse est enregistrée avec la commande n° ' + esc(m.numero) + '.' + (Rf.suffit ? ' Si vous confirmez, la partie refusée est rendue à l’acheteur.' : '') + ' Votre prix de transport reste dû dans tous les cas.'
+          : Rf.reponse === 'confirme' ? 'Vous avez confirmé le refus.' : Rf.reponse === 'conteste' ? 'Vous avez contesté le refus : l’équipe va trancher.' : 'Refus traité.'}</small></div>` : '';
+    const st = m.mission === 'proposee' ? ['Nouvelle mission', 'mais'] : m.mission === 'refusee' ? ['Refusée', 'rouge'] : m.etat === 'annulee' ? ['Commande annulée', 'rouge'] : m.etat === 'litige' ? [Rf ? 'Marchandise refusée' : 'Litige en cours', 'rouge'] : [ETAPE[m.etape] || 'Acceptée', ''];
     return `<div class="cm-r" style="cursor:default;grid-template-columns:1fr"><span>
       <b>${esc(m.produit || 'Marchandise')}${q}</b>
       <small>${esc(m.ville_depart || 'Départ à préciser')} → ${esc(m.lieu_livraison || 'livraison à préciser')}</small>
@@ -122,7 +131,7 @@
       ${m.mission === 'acceptee' && m.prix != null ? `<small style="margin-top:6px;color:inherit"><b>Votre prix : ${nf(m.prix)} F</b> · commission Marché de Gros (6,9 %) : ${nf(m.commission)} F · vous gardez ${nf(m.net)} F</small>` : ''}
       ${m.mission === 'acceptee' && m.prix == null && avantChargement ? '<small style="margin-top:6px;color:#8A6400"><b>Prix du transport à indiquer</b> : l’acheteur le verra dans sa commande.</small>' : ''}
       ${prixOuvert === m.mission_id ? formPrix(m) : ''}
-      ${exige ? `<p class="cm-garde" style="margin:10px 0 0">${exige}</p>` : ''}
+      ${exige ? `<p class="cm-garde" style="margin:10px 0 0">${exige}</p>` : ''}${refus}
       ${B.length ? `<div class="cm-act" style="margin:10px 0 0">${B.join('')}</div>` : ''}</span></div>`;
   }
   function formPrix(m) {
@@ -195,6 +204,22 @@
       setTimeout(() => { b.disabled = false; }, 4000);
     });
     box.querySelectorAll('[data-pas]').forEach(b => b.onclick = () => passer(b.dataset.pas));
+    const constat = async (id, oui, b) => {
+      let note = null;
+      if (!oui) { note = prompt('Qu’avez-vous vu à la livraison ? (facultatif)') ; if (note === null) return; }
+      else if (!confirm('Vous confirmez que la marchandise était dans cet état à la livraison ?')) return;
+      b.disabled = true;
+      try { const r = await N().rpc('commande_refus_chauffeur', { p_id: id, p_oui: oui, p_note: (note || '').trim() || null });
+        toast(oui ? 'Merci, refus confirmé' : 'Merci, votre réponse est enregistrée', { type: 'ok', sous: r === 'applique' ? 'La partie refusée est rendue à l’acheteur. Votre transport reste dû.' : r === 'attente_vendeur' ? 'Le vendeur doit encore répondre.' : 'L’équipe du Marché de Gros va trancher.' });
+        await lire(); peindre(); }
+      catch (e) { toast('Réponse impossible', { type: 'erreur', sous: erreurTxt(e) }); b.disabled = false; }
+    };
+    box.querySelectorAll('[data-rfo]').forEach(b => b.onclick = () => constat(b.dataset.rfo, true, b));
+    box.querySelectorAll('[data-rfn]').forEach(b => b.onclick = () => constat(b.dataset.rfn, false, b));
+    box.querySelectorAll('[data-ph]').forEach(async el => {
+      const u = await N().lienSigne('preuves', el.dataset.ph, 600).catch(() => null); if (!u || !el.isConnected) return;
+      el.innerHTML = `<a href="${esc(u)}" target="_blank" rel="noopener" aria-label="Agrandir la photo"><img src="${esc(u)}" alt="Photo de la marchandise refusée" style="width:100%;height:100%;object-fit:cover;display:block"></a>`;
+    });
     box.querySelectorAll('[data-gps]').forEach(b => b.onclick = () => partager(b.dataset.gps));
     box.querySelectorAll('[data-gps-stop]').forEach(b => b.onclick = () => { arreterPartage('Partage arrêté.'); peindre(); });
   }

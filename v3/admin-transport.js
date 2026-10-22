@@ -6,7 +6,7 @@
 (function () {
   'use strict';
   const EXT = window.MDGAdminExt = window.MDGAdminExt || {};
-  const D = { tr: [], cmd: [], aTraiter: [], vueCmd: 'a_traiter', ouverts: {} };
+  const D = { tr: [], cmd: [], aTraiter: [], vueCmd: 'a_traiter', ouverts: {}, rfImg: {}, numero: undefined, numeroQ: '' };
   const VEH = { moto: 'Moto', tricycle: 'Tricycle', camionnette: 'Camionnette', camion: 'Camion', semi: 'Semi-remorque', autre: 'Autre' };
   const ST = { en_attente: 'À vérifier', verifie: 'Vérifié', refuse: 'Refusé', suspendu: 'Suspendu' };
   const ETAPE = { confirmee: 'Confirmée', preparation: 'Préparation', chargement: 'Chargée', transport: 'En route', transbordement: 'Transbordement', arrivee: 'Chauffeur arrivé', reception: 'Reçue', terminee: 'Terminée' };
@@ -15,9 +15,13 @@
   const EV = { creee: 'Commande proposée', confirmee: 'Confirmée', refusee: 'Refusée', preparation: 'Préparation', chargement: 'Chargement confirmé', transport: 'Transport en cours',
     transbordement: 'Transbordement', arrivee: 'Chauffeur arrivé', reception: 'Réception confirmée', terminee: 'Terminée', annulation_demandee: 'Annulation demandée',
     annulation_refusee: 'Annulation refusée', annulee: 'Annulée', litige: 'Litige ouvert', transporteur_proposee: 'Transporteur proposé', transporteur_acceptee: 'Transporteur confirmé',
-    transporteur_refusee: 'Transporteur a refusé', transporteur_retiree: 'Transporteur retiré' };
+    transporteur_refusee: 'Transporteur a refusé', transporteur_retiree: 'Transporteur retiré',
+    sq_depot: 'Fonds bloqués', sq_liberee: 'Conforme : clôturée par l’acheteur', sq_liberee_auto: 'Clôture automatique (48 h)', sq_refus: 'Marchandise refusée',
+    sq_refus_chauffeur_confirme: 'Chauffeur confirme le refus', sq_refus_chauffeur_conteste: 'Chauffeur conteste le refus', sq_refus_vendeur_reconnu: 'Vendeur reconnaît',
+    sq_refus_vendeur_conteste: 'Vendeur conteste', sq_refus_applique: 'Refus appliqué', sq_refus_admin: 'Décision de l’équipe', sq_solde: 'Séquestre soldé', sq_rembourse: 'Remboursement' };
 
-  const CSS = `.at-l{border-radius:20px;overflow:hidden;background:var(--panel)}
+  const CSS = `.at-ph{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}.at-ph img{width:64px;height:64px;object-fit:cover;border-radius:10px;display:block}
+.at-l{border-radius:20px;overflow:hidden;background:var(--panel)}
 .at-r{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.4fr) auto;gap:6px 18px;align-items:center;padding:15px 20px;border-top:1px solid var(--line)}.at-r:first-child{border-top:0}
 .at-r b{display:block;font-weight:600}.at-r small{display:block;color:var(--mute);font-size:13px}
 .at-a{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
@@ -102,16 +106,29 @@
             <small>${c.montant != null ? H.fmt(c.montant) + ' F' : '—'}${c.commission_montant != null ? ' · commission prévue ' + H.fmt(c.commission_montant) + ' F (non prélevée)' : ''}</small></div>
           <div>${tag(ETAT[c.etat] || c.etat, c.etat === 'litige' ? 'r' : c.etat === 'en_cours' ? 'v' : '')} ${c.etape && c.etat === 'en_cours' ? tag(ETAPE[c.etape] || c.etape) : ''}
             <small>${e(MODE[c.mode_transport] || '')}${c.mission ? ' · ' + e(c.mission.nom) + ' (' + e(MST[c.mission.statut] || c.mission.statut) + ')' : ''}${c.mission && c.mission.prix != null ? ' · transport ' + H.fmt(c.mission.prix) + ' F (commission 6,9 % : ' + H.fmt(Math.round(Math.round(c.mission.prix) * 0.069)) + ' F, non prélevée)' : ''} · ${H.ago(c.maj)}</small>
-            ${c.etat === 'litige' ? `<small style="color:var(--bad-t)">Litige : « ${e(c.litige_motif || '')} »</small>` : ''}</div>
+            ${c.etat === 'litige' && !c.refus ? `<small style="color:var(--bad-t)">Litige : « ${e(c.litige_motif || '')} »</small>` : ''}
+            ${c.refus ? `<small style="color:var(--bad-t)">Marchandise refusée : ${c.refus.quantite != null ? e(String(c.refus.quantite)) + ' ' + e(c.unite || '') : 'tout'} · « ${e(c.refus.motif || '')} »</small>
+              <small>Chauffeur : ${c.refus.chauffeur === 'confirme' ? 'confirme' : c.refus.chauffeur === 'conteste' ? 'conteste' : 'pas de réponse'}${c.refus.chauffeur_suffit ? '' : ' (choisi par l’acheteur : ne suffit pas seul)'} · Vendeur : ${c.refus.vendeur === 'reconnu' ? 'reconnaît' : c.refus.vendeur === 'conteste' ? 'conteste' : 'pas de réponse'}</small>
+              <span class="at-ph">${(c.refus.photos || []).map((x, i) => D.rfImg[c.id] && D.rfImg[c.id][i] ? `<a href="${e(D.rfImg[c.id][i])}" target="_blank" rel="noopener"><img src="${e(D.rfImg[c.id][i])}" alt="Photo ${i + 1} du refus"></a>` : '').join('')}</span>` : ''}
+            ${c.libere_le && c.etat === 'terminee' ? `<small>Clôturée (${e({ conforme: 'acheteur satisfait', auto: 'automatique 48 h', refus: 'refus confirmé', admin: 'équipe' }[c.liberation] || '')})${Number(c.montant_refuse) > 0 ? ' · ' + H.fmt(c.montant_refuse) + ' F rendus à l’acheteur' : ''}</small>` : ''}</div>
           <div class="at-a">
             ${sansTr ? (dispo.length ? `<select class="at-sel" data-trsel="${c.id}" aria-label="Transporteur">${dispo.map(t => `<option value="${t.id}">${e(t.nom)} · ${e(VEH[t.vehicule] || '')}${t.disponible ? ' · disponible' : ''}${t.avec_application ? '' : ' · sans appli'}</option>`).join('')}</select><button class="btn sm pri" data-aff="${c.id}">Affecter</button>` : '<small>Aucun transporteur vérifié</small>') : ''}
             ${c.mission && c.mission.id && c.mission.statut === 'acceptee' && !c.mission.avec_application && ['a_confirmer', 'en_cours'].includes(c.etat) && ['confirmee', 'preparation', null, undefined].includes(c.etape) ? `<input class="at-sel" type="number" inputmode="numeric" min="1" step="1" data-mpx="${c.mission.id}" value="${c.mission.prix != null ? Math.round(c.mission.prix) : ''}" placeholder="Prix du transport (F)" aria-label="Prix du transport, donné par le chauffeur au téléphone" style="max-width:170px"><button class="btn sm pri" data-mpxb="${c.mission.id}">${c.mission.prix != null ? 'Changer le prix' : 'Saisir le prix'}</button>` : ''}
-            ${c.etat === 'litige' ? `<button class="btn sm pri" data-lit="${c.id}" data-iss="terminee">Clore : livrée</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee">Clore : annulée</button>` : ''}
+            ${c.etat === 'litige' && c.refus ? `<button class="btn sm ghost" data-rfph="${c.id}">Photos (${(c.refus.photos || []).length})</button><button class="btn sm pri" data-rft="${c.id}" data-q="0">Rejeter le refus</button><button class="btn sm bad" data-rft="${c.id}" data-q="">Accepter le refus</button>` : ''}
+            ${c.etat === 'litige' && !c.refus ? `<button class="btn sm pri" data-lit="${c.id}" data-iss="terminee">Clore : livrée</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee">Clore : annulée</button>` : ''}
             <button class="btn sm ghost" data-hist="${c.id}">Historique</button></div>
           ${D.ouverts[c.id] ? `<ul class="at-j">${D.ouverts[c.id].map(j => `<li><b>${e(EV[j.evenement] || j.evenement)}</b> · ${e(j.role)} · ${new Date(j.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${j.lieu ? ' · ' + e(j.lieu) : ''}${j.lat != null ? ' · position jointe' : ''}${j.note ? ' · « ' + e(j.note) + ' »' : ''}</li>`).join('') || '<li>Aucune étape.</li>'}</ul>` : ''}</div>`;
       };
+      const tr = D.numero;
       return H.top('Commandes', 'Affectez un transporteur vérifié aux commandes du réseau et tranchez les litiges. Aucun paiement ne passe par l’application : la commission est seulement calculée.',
-        `<div class="seg" role="group" aria-label="Afficher">${[['a_traiter', 'À traiter'], ['en_cours', 'En cours'], ['tout', 'Toutes']].map(([k, l]) => `<button data-cvue="${k}" aria-pressed="${D.vueCmd === k}">${l}</button>`).join('')}</div>`) + `
+        `<form class="at-f" data-num style="display:flex;gap:8px;align-items:end;margin:0 0 10px"><label style="flex:1">Retrouver une commande par son numéro<input name="n" placeholder="MDG-C-…" autocomplete="off" value="${e(D.numeroQ || '')}"></label><button class="btn sm pri">Chercher</button></form>
+        ${tr === null ? '<p class="at-vide" style="margin:0 0 10px">Aucune commande avec ce numéro.</p>' : tr ? `<section class="sec" style="margin:0 0 12px"><div class="at-r" style="display:block"><b>${e(tr.produit || 'Commande')} ${tag(e(tr.numero))} ${tag(ETAT[tr.etat] || tr.etat, tr.etat === 'litige' ? 'r' : '')}</b>
+          <small>${e(tr.vendeur)} → ${e(tr.acheteur)} · ${tr.quantite != null ? e(String(tr.quantite)) + ' ' + e(tr.unite || '') : ''} à ${tr.prix_unitaire != null ? H.fmt(tr.prix_unitaire) + ' F' : '—'} = ${tr.montant != null ? H.fmt(tr.montant) + ' F' : '—'}</small>
+          <small>${e(tr.ville_depart || 'départ ?')} → ${e(tr.lieu_livraison || 'livraison ?')} · ${e(MODE[tr.mode_transport] || '')} · validation ${tr.validation === 'code' ? 'avec codes' : 'sans code'}</small>
+          ${tr.negociation ? `<small>Accord : ${tr.negociation.prix_final != null ? H.fmt(tr.negociation.prix_final) + ' F' : '—'} × ${e(String(tr.negociation.quantite_finale ?? '—'))}${tr.negociation.transport_final ? ' · transport compris' : ''}${tr.negociation.conditions_finales ? ' · « ' + e(tr.negociation.conditions_finales) + ' »' : ''}${tr.negociation.conclu_le ? ' · conclu le ' + new Date(tr.negociation.conclu_le).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}</small>` : ''}
+          ${tr.sequestre && tr.sequestre.repartition ? `<small>Répartition : vendeur ${H.fmt(tr.sequestre.repartition.vendeur_net)} F net · transporteur ${H.fmt(tr.sequestre.repartition.transporteur_net)} F net · acheteur ${H.fmt(tr.sequestre.repartition.acheteur_rembourse)} F rendus · Marché de Gros ${H.fmt(tr.sequestre.repartition.marche)} F · séquestre : ${tr.sequestre.actif ? e(tr.sequestre.etat) : 'pas encore de partenaire'}</small>` : ''}
+          <ul class="at-j">${(tr.journal || []).map(j => `<li><b>${e(EV[j.evenement] || j.evenement)}</b> · ${e(j.role)} · ${new Date(j.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${j.lieu ? ' · ' + e(j.lieu) : ''}${j.note ? ' · « ' + e(j.note) + ' »' : ''}</li>`).join('') || '<li>Aucune étape.</li>'}</ul></div></section>` : ''}
+        <div class="seg" role="group" aria-label="Afficher">${[['a_traiter', 'À traiter'], ['en_cours', 'En cours'], ['tout', 'Toutes']].map(([k, l]) => `<button data-cvue="${k}" aria-pressed="${D.vueCmd === k}">${l}</button>`).join('')}</div>`) + `
         <section class="sec"><div class="at-l">${D.cmd.length ? D.cmd.map(ligne).join('') : `<div class="at-vide"><b>${D.vueCmd === 'a_traiter' ? 'Rien à traiter' : 'Aucune commande'}</b>${D.vueCmd === 'a_traiter' ? 'Les litiges et les commandes du réseau sans transporteur arrivent ici.' : ''}</div>`}</div></section>`;
     },
     lier(root, H) {
@@ -137,6 +154,20 @@
         if (!note || !note.trim()) return; b.disabled = true;
         try { await H.rpc('admin_litige_trancher', { p_cmd: b.dataset.lit, p_issue: iss, p_note: note.trim() }); H.toast('Litige clos.'); await H.relire(); }
         catch (e) { b.disabled = false; H.toast('Impossible : ' + e.message); }
+      });
+      const fn = root.querySelector('[data-num]');
+      if (fn) fn.onsubmit = async ev => { ev.preventDefault(); const q = fn.n.value.trim(); D.numeroQ = q; if (!q) { D.numero = undefined; return H.repeindre(); }
+        try { D.numero = (await H.rpc('admin_commande_numero', { p_numero: q })) || null; } catch (x) { H.toast('Recherche impossible : ' + x.message); } H.repeindre(); };
+      root.querySelectorAll('[data-rfph]').forEach(b => b.onclick = async () => { const id = b.dataset.rfph, c = D.cmd.find(x => x.id === id) || D.aTraiter.find(x => x.id === id);
+        if (D.rfImg[id]) { delete D.rfImg[id]; return H.repeindre(); }
+        D.rfImg[id] = await Promise.all(((c && c.refus && c.refus.photos) || []).map(x => window.MDGNuage.lienSigne('preuves', x, 300).catch(() => null))); H.repeindre(); });
+      root.querySelectorAll('[data-rft]').forEach(b => b.onclick = async () => {
+        const id = b.dataset.rft, c = D.cmd.find(x => x.id === id) || D.aTraiter.find(x => x.id === id); let q = b.dataset.q === '' ? null : 0;
+        if (q === null) { const v = prompt('Quantité refusée retenue (sur ' + (c && c.quantite != null ? c.quantite + ' ' + (c.unite || '') : 'la commande') + ') :', c && c.refus && c.refus.quantite != null ? c.refus.quantite : (c && c.quantite) || ''); if (v === null) return; q = Number(String(v).replace(',', '.')); if (!(q > 0)) return H.toast('Quantité invalide.'); }
+        const note = prompt(q === 0 ? 'Refus rejeté : tout est payé au vendeur. Expliquez (les parties le verront) :' : 'Refus accepté : la partie refusée revient à l’acheteur. Expliquez (les parties le verront) :');
+        if (!note || !note.trim()) return; b.disabled = true;
+        try { await H.rpc('admin_refus_trancher', { p_cmd: id, p_quantite: q, p_note: note.trim() }); H.toast('Décision enregistrée.'); await H.relire(); }
+        catch (x) { b.disabled = false; H.toast('Impossible : ' + x.message); }
       });
       root.querySelectorAll('[data-hist]').forEach(b => b.onclick = async () => {
         const id = b.dataset.hist;

@@ -24,6 +24,7 @@
 //     une notification régulière à tous (30 par jour au plus, réglable), tirée des VRAIES données du moment ou présentant
 //     une vraie fonction de l'application. Jamais de message faux. Étiquette « marche-pub » : elle remplace la précédente.
 // 14. par la base (déclencheur public.push_code_demande, schéma 51) quand le chauffeur demande le code, avec { code_demande_id }.
+//  7 bis (schéma 57) : refus de la marchandise après réception → le vendeur et le chauffeur inscrit sont prévenus ; clôture → « Commande clôturée ».
 // Annonces du marché (schema-43) : achat groupé ouvert, besoin pro, nouvelle offre ou demande → tous les comptes qui ont activé
 // les notifications, sauf ceux qui les ont coupées ; au plus 10 par personne et par jour (push_diffusion_cible).
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
@@ -152,9 +153,9 @@ Deno.serve(async (req) => {
 
     // 7. une étape de commande ({ commande_etape_id }, déclencheur public.push_commande, schema-26) : l'autre partie est prévenue
     if (corps.commande_etape_id) {
-      const { data: e } = await sb.from("commande_etapes").select("id, commande_id, evenement, par, lieu").eq("id", String(corps.commande_etape_id)).maybeSingle();
+      const { data: e } = await sb.from("commande_etapes").select("id, commande_id, evenement, par, lieu, note").eq("id", String(corps.commande_etape_id)).maybeSingle();
       if (!e) return json({ erreur: "étape introuvable" }, 404);
-      const { data: k } = await sb.from("commandes").select("id, numero, vendeur_id, acheteur_id, produit, validation, transporteur_id").eq("id", e.commande_id).maybeSingle();
+      const { data: k } = await sb.from("commandes").select("id, numero, vendeur_id, acheteur_id, produit, validation, transporteur_id, refus_le, etat").eq("id", e.commande_id).maybeSingle();
       if (!k) return json({ erreur: "commande introuvable" }, 404);
       const dests = [k.vendeur_id, k.acheteur_id].filter((u: string) => u && u !== e.par);
       const qui = e.par ? await nomDe(e.par) : "Marché de Gros", produit = k.produit || "votre commande";
@@ -171,7 +172,10 @@ Deno.serve(async (req) => {
         annulation_refusee: ["Annulation refusée", produit],
         annulee: ["Commande annulée", produit],
         litige: [`${qui} a ouvert un litige`, `${produit} — l'équipe va examiner`],
+        terminee: ["Commande clôturée", `${produit}${e.note ? " · " + coupe(String(e.note), 110) : ""}`],
       };
+      // schéma 57 : l'acheteur refuse la marchandise après réception (photos) → le vendeur doit répondre
+      if (e.evenement === "litige" && k.refus_le) T.litige = [`${qui} refuse la marchandise`, `${produit} — regardez les photos et répondez dans l'application`];
       const [title, body] = T[e.evenement] || ["Votre commande avance", produit];
       const res = [];
       // commande « avec codes » (schéma 28) : on rappelle à celui qui détient le code de le garder et de le présenter au bon moment
@@ -183,6 +187,11 @@ Deno.serve(async (req) => {
         return null;
       };
       for (const d of dests) { const [t2, b2] = rappel(d) || [title, body]; res.push(await envoyer(d, { title: t2, body: b2, tag: "cmd-" + k.id, url: "application.dc.html#/?commande=" + k.id })); }
+      // schéma 57 : le chauffeur inscrit est prévenu du refus, pour dire ce qu'il a vu à la livraison
+      if (e.evenement === "litige" && k.refus_le && k.transporteur_id) {
+        const { data: t } = await sb.from("transporteurs").select("user_id").eq("id", k.transporteur_id).maybeSingle();
+        if (t?.user_id && t.user_id !== e.par) res.push(await envoyer(t.user_id, { title: "L'acheteur refuse la marchandise", body: `${produit} · Était-elle dans cet état à la livraison ? Répondez dans votre Espace chauffeur. Votre transport reste dû.`, tag: "mission-cmd-" + k.id, url: "application.dc.html#/?chauffeur=1" }));
+      }
       // le chauffeur inscrit (schéma 51) : on lui rappelle d'exiger le code au bon moment
       if (k.validation === "code" && k.transporteur_id) {
         const { data: t } = await sb.from("transporteurs").select("user_id").eq("id", k.transporteur_id).maybeSingle();
@@ -367,7 +376,7 @@ Deno.serve(async (req) => {
         { title: "🧺 Vendez en direct", body: "Publiez votre récolte en une minute : les acheteurs sont prévenus tout de suite.", url: "application.dc.html#/vendre" },
         { title: "🔒 Votre numéro reste caché", body: "On vous écrit dans l'application : pas d'appels de gens inconnus.", url: "application.dc.html#/" },
         { title: "👥 Achetez à plusieurs", body: "Regroupez-vous avec d'autres acheteurs pour atteindre le gros volume et payer moins cher.", url: "application.dc.html#/catalogue" },
-        { title: "💵 Payez à la livraison", body: "Voyez la marchandise d'abord : rien n'est payé dans l'application.", url: "application.dc.html#/" },
+        { title: "💵 Payez à la livraison", body: "Voyez la marchandise d'abord : rien n'est payé dans l'application pour l'instant.", url: "application.dc.html#/" },
         { title: "🔔 Suivez vos produits", body: "Activez une alerte produit : on vous prévient dès qu'une offre arrive.", url: "application.dc.html#/catalogue" },
         { title: "🏪 Approvisionnement pro", body: "Restaurant, hôtel, cantine : publiez votre liste une fois, les vendeurs vous répondent.", url: "application.dc.html#/demande" },
         { title: "🚚 Transporteurs vérifiés", body: "Faites livrer par un chauffeur vérifié par l'équipe, et suivez la livraison en direct.", url: "application.dc.html#/" },

@@ -732,3 +732,8 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Admin → Commandes → numéro de commande** (ou bouton « Tout voir » sur une commande) : l'accord, la négociation complète (chaque prix proposé, chaque message), les messages directs entre l'acheteur et le vendeur, la discussion à trois, le mot secret, la répartition, l'historique.
 - Les membres sont prévenus : Messages (« Les échanges ne sont pas secrets… gardés 1 an »), Réglages → Confidentialité, écrans de litige. Les textes « l'équipe ne lit pas vos conversations » sont retirés.
 - Le numéro de téléphone reste caché aux autres membres (inchangé).
+
+## Libération automatique sous 24 h, remboursement seulement avec preuves (22/10/2026) — schéma 61
+- Remplace « pas de libération automatique » (schéma 58). L'acheteur libère quand il valide ; **sans réclamation, le paiement se libère tout seul 24 h après la réception** (`sequestre_liberer_echus`, pg_cron `mdg-liberer-echus` toutes les 15 min). L'acheteur voit l'heure exacte (« libéré automatiquement : 23 oct. à 15:58 »).
+- **Pas de remboursement sans preuves réelles** : pour refuser, le mot secret du vendeur est obligatoire (plus d'option « pas de papier »), avec 1 à 4 photos. Sans papier : « Signaler un problème » (`commande_litige`, jusqu'à la libération) ; rien n'est rendu automatiquement, l'équipe juge avec tous les échanges.
+- Un refus ou un problème signalé dans les 24 h arrête la libération automatique (la commande passe en litige).

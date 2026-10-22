@@ -41,7 +41,7 @@
 .il-in.sans-a{padding-right:18px}
 .il-in.chg{animation:ilChg .38s cubic-bezier(.22,1,.36,1)}
 @keyframes ilChg{from{opacity:0;transform:translateY(8px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
-.il-g{position:relative;flex:none;width:38px;height:38px;border-radius:14px;display:grid;place-items:end center;overflow:visible}
+.il-g{position:relative;flex:none;width:40px;height:40px;border-radius:14px;display:grid;place-items:end center;overflow:visible}
 .il-g.img{place-items:center;overflow:hidden;background:#F3EFE4}.il-g.img img{width:100%;height:100%;object-fit:contain;padding:3px;box-sizing:border-box;display:block}
 .il-g.rond img{object-fit:cover;padding:0}
 .il-g.rond{border-radius:50%}
@@ -85,7 +85,7 @@ html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme
     if (m.img) return `<span class="il-g"><span class="il-g img${m.rond ? ' rond' : ''}" style="position:absolute;inset:0"><img src="${esc(m.img)}" alt=""></span><i class="il-pt"></i></span>`;
     const S = window.MDGSac, humeur = m.type === 'attente' ? 'charge' : m.type === 'ok' ? 'plein' : m.type === 'erreur' ? 'triste' : 'vide';
     if (!S) return '<span class="il-g seul"><i class="il-pt"></i></span>';   // sans le sac (site) : seulement le point
-    return `<span class="il-g">${S.svg(humeur, { t: 30 })}<i class="il-pt"></i></span>`;
+    return `<span class="il-g">${S.svg(humeur, { t: 36, simple: true })}<i class="il-pt"></i></span>`;
   }
   function dessiner(m, change) {
     const el = preparer(), w0 = el.classList.contains('on') ? el.getBoundingClientRect().width : 0;
@@ -116,7 +116,22 @@ html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme
       armer(duree(m));
       if (window.MDGSons && MDGSons.confirmer && !m.muet) try { MDGSons.confirmer(m.type); } catch (_) {}
       if (navigator.vibrate && VIBRE[m.type] && !m.muet) try { navigator.vibrate(VIBRE[m.type]); } catch (_) {}
+      if (m.type === 'ok' && window.MDGSac && MDGSac.saluer && !m.muet) try { MDGSac.saluer(); } catch (_) {}
     } else clearTimeout(minuterie);
+  }
+  // une erreur technique du serveur ou du réseau devient une phrase qu'on comprend (le texte brut ne s'affiche jamais)
+  const TECH = [
+    [/failed to fetch|networkerror|load failed|err_internet|network request failed|fetch failed/i, 'Pas de réseau', 'Vérifiez la connexion, puis réessayez.'],
+    [/\bjwt\b|401|not authenticated|invalid token|session expired/i, 'Reconnectez-vous', 'Votre session a expiré.'],
+    [/timeout|timed out|\b50[234]\b|statement_timeout/i, 'Le serveur met trop de temps', 'Réessayez dans un instant.'],
+    [/schema cache|could not find the function|does not exist|not found in the schema/i, 'Pas encore activé sur le serveur', 'L’équipe est prévenue.'],
+    [/row-level security|permission denied|violates|constraint|duplicate key|syntax error|pgrst\d|p0001|sqlstate|unexpected token|is not a function|undefined/i, 'Le serveur a refusé l’opération', 'Réessayez ; si ça continue, écrivez à l’équipe.']
+  ];
+  const tech = t => TECH.find(r => r[0].test(t));
+  function lisible(texte, sous) {
+    const t = tech(sous || ''); if (t) { const titre = texte.replace(/\s*[:.]\s*$/, ''); return /^(impossible|erreur)$/i.test(titre) ? [t[1], t[2]] : [titre, t[1] + '. ' + t[2]]; }
+    const u = tech(texte); if (u) { const m = texte.match(/^([^:]{3,40}?)\s*:\s/), titre = m && !/^(impossible|erreur)$/i.test(m[1].trim()) ? m[1].trim() : ''; return [titre || u[1], titre ? u[1] + '. ' + u[2] : u[2]]; }
+    return [texte, sous];
   }
   let dernier = { t: '', at: 0 };
   function dire(texte, o) {
@@ -128,6 +143,8 @@ html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme
     // phrase longue sans précision : on la coupe en un titre court et une explication (« Pas de lien ici » / « pour votre sécurité… »)
     if (!o.sous && texte.length > 52) { const i = (k => k > 8 && k < 90 ? k : -1)(texte.search(/ : |\. (?=[A-ZÀ-Ý])/));
       if (i > 0) { const sep = texte.slice(i, i + 3) === ' : ' ? 3 : 2, reste = texte.slice(i + sep).trim(); o = Object.assign({}, o, { sous: reste.charAt(0).toUpperCase() + reste.slice(1) }); texte = texte.slice(0, i).replace(/[.:]$/, ''); } }
+    [texte, o] = (([t2, s2]) => [t2, s2 === o.sous ? o : Object.assign({}, o, { sous: s2 || '' })])(lisible(texte, o.sous || ''));
+    if (texte.length <= 60 && !/[.!?]\s\S/.test(texte)) texte = texte.replace(/\.$/, '');   // un titre court n'a pas de point final (comme les titres de l'app)
     const m = { texte, sous: o.sous || '', type: o.type || deviner(texte + ' ' + (o.sous || '')), duree: o.duree, img: o.img, rond: o.rond, action: o.action, toucher: o.toucher, groupe: o.groupe, pluriel: o.pluriel, n: 1, muet: o.muet };
     // même famille que ce qui est affiché : on regroupe (« 3 nouvelles annonces »)
     if (m.groupe && cur && cur.groupe === m.groupe) {

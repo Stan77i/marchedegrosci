@@ -26,6 +26,7 @@
 // 14. par la base (déclencheur public.push_code_demande, schéma 51) quand le chauffeur demande le code, avec { code_demande_id }.
 //  7 bis (schéma 57) : refus de la marchandise après réception → le vendeur et le chauffeur inscrit sont prévenus ; clôture → « Commande clôturée ».
 // 15. par la base (déclencheur public.push_litige_msg, schéma 58) pour un message de la discussion à trois, avec { litige_msg_id }.
+// v18 (22/10/2026) : titres sans emoji, phrases sans tiret long, conseil « Suivez la livraison » à la place des transporteurs du réseau (en pause, schéma 62).
 // Annonces du marché (schema-43) : achat groupé ouvert, besoin pro, nouvelle offre ou demande → tous les comptes qui ont activé
 // les notifications, sauf ceux qui les ont coupées ; au plus 10 par personne et par jour (push_diffusion_cible).
 // Les clés VAPID et la clé partagée sont lues dans le coffre Supabase (push_config(), réservée au rôle service) — jamais dans le code.
@@ -132,7 +133,7 @@ Deno.serve(async (req) => {
       const qui = a.user_id ? await nomDe(a.user_id) : "Un membre";
       const { data: ads } = await sb.from("admins").select("user_id");
       const res = [];
-      for (const ad of ads || []) res.push(await envoyer(ad.user_id, { title: `Alerte : ${qui} veut sortir de l'application`, body: `${a.motif} dans ${a.source === "dm" ? "un message" : "une négociation"} — « ${coupe(String(a.extrait || ""), 90)} »`, tag: "alerte-" + a.id, url: "admin.html#messages" }));
+      for (const ad of ads || []) res.push(await envoyer(ad.user_id, { title: `Alerte : ${qui} veut sortir de l'application`, body: `${a.motif} dans ${a.source === "dm" ? "un message" : "une négociation"} : « ${coupe(String(a.extrait || ""), 90)} »`, tag: "alerte-" + a.id, url: "admin.html#messages" }));
       return json({ admins: res.length, res });
     }
 
@@ -161,7 +162,7 @@ Deno.serve(async (req) => {
       const dests = [k.vendeur_id, k.acheteur_id].filter((u: string) => u && u !== e.par);
       const qui = e.par ? await nomDe(e.par) : "Marché de Gros", produit = k.produit || "votre commande";
       const T: Record<string, [string, string]> = {
-        creee: [`${qui} vous propose une commande`, `${produit} — touchez pour confirmer`],
+        creee: [`${qui} vous propose une commande`, `${produit}. Touchez pour confirmer.`],
         confirmee: ["Commande confirmée", `${produit} · ${qui} a confirmé`],
         refusee: ["Commande refusée", `${produit} · ${qui} a refusé`],
         preparation: ["Marchandise en préparation", produit],
@@ -169,22 +170,22 @@ Deno.serve(async (req) => {
         transbordement: ["Transbordement", `${produit}${e.lieu ? " · " + e.lieu : ""}`],
         arrivee: ["Le chauffeur est arrivé", produit],
         reception: ["Réception confirmée, commande terminée", produit],
-        annulation_demandee: [`${qui} demande l'annulation`, `${produit} — touchez pour répondre`],
+        annulation_demandee: [`${qui} demande l'annulation`, `${produit}. Touchez pour répondre.`],
         annulation_refusee: ["Annulation refusée", produit],
         annulee: ["Commande annulée", produit],
-        litige: [`${qui} a ouvert un litige`, `${produit} — l'équipe va examiner`],
+        litige: [`${qui} a ouvert un litige`, `${produit}. L'équipe va examiner.`],
         terminee: ["Commande clôturée", `${produit}${e.note ? " · " + coupe(String(e.note), 110) : ""}`],
       };
       // schéma 57 : l'acheteur refuse la marchandise après réception (photos) → le vendeur doit répondre
-      if (e.evenement === "litige" && k.refus_le) T.litige = [`${qui} refuse la marchandise`, `${produit} — regardez les photos et répondez dans l'application`];
+      if (e.evenement === "litige" && k.refus_le) T.litige = [`${qui} refuse la marchandise`, `${produit}. Regardez les photos et répondez dans l'application.`];
       const [title, body] = T[e.evenement] || ["Votre commande avance", produit];
       const res = [];
       // commande « avec codes » (schéma 28) : on rappelle à celui qui détient le code de le garder et de le présenter au bon moment
       const rappel = (d: string): [string, string] | null => {
         if (k.validation !== "code") return null;
-        if (d === k.acheteur_id && ["chargement", "transbordement"].includes(e.evenement)) return [title, `${produit} · 🔐 Gardez bien votre code de réception : vous aurez à le présenter au chauffeur, après avoir vérifié la marchandise.`];
-        if (d === k.acheteur_id && e.evenement === "arrivee") return ["🔐 Le chauffeur est arrivé : préparez votre code", `${produit} · Exigez d'abord qu'il vous montre son code transporteur, vérifiez la marchandise, puis montrez-lui votre code de réception. Il est dans Accueil → Alertes.`];
-        if (d === k.vendeur_id && e.evenement === "confirmee") return [title, `${produit} · 🔐 Gardez bien votre code de prise en charge : vous le donnerez au chauffeur au chargement.`];
+        if (d === k.acheteur_id && ["chargement", "transbordement"].includes(e.evenement)) return [title, `${produit} · Gardez bien votre code de réception : vous aurez à le présenter au chauffeur, après avoir vérifié la marchandise.`];
+        if (d === k.acheteur_id && e.evenement === "arrivee") return ["Le chauffeur est arrivé : préparez votre code", `${produit} · Exigez d'abord qu'il vous montre son code transporteur, vérifiez la marchandise, puis montrez-lui votre code de réception. Il est dans Accueil → Alertes.`];
+        if (d === k.vendeur_id && e.evenement === "confirmee") return [title, `${produit} · Gardez bien votre code de prise en charge : vous le donnerez au chauffeur au chargement.`];
         return null;
       };
       for (const d of dests) { const [t2, b2] = rappel(d) || [title, body]; res.push(await envoyer(d, { title: t2, body: b2, tag: "cmd-" + k.id, url: "application.dc.html#/?commande=" + k.id })); }
@@ -197,9 +198,9 @@ Deno.serve(async (req) => {
       if (k.validation === "code" && k.transporteur_id) {
         const { data: t } = await sb.from("transporteurs").select("user_id").eq("id", k.transporteur_id).maybeSingle();
         const C: Record<string, [string, string]> = {
-          preparation: ["🔐 Marchandise en préparation", `${produit} · Au chargement, exigez que le vendeur vous montre son code de prise en charge, puis tapez-le dans votre Espace chauffeur.`],
-          chargement: ["🔐 Chargement confirmé", `${produit} · À la livraison, exigez que l'acheteur vous montre son code de réception, après sa vérification.`],
-          arrivee: ["🔐 Exigez le code de réception", `${produit} · L'acheteur vérifie la marchandise, puis il doit vous montrer son code. Tapez-le dans votre Espace chauffeur.`],
+          preparation: ["Marchandise en préparation", `${produit} · Au chargement, exigez que le vendeur vous montre son code de prise en charge, puis tapez-le dans votre Espace chauffeur.`],
+          chargement: ["Chargement confirmé", `${produit} · À la livraison, exigez que l'acheteur vous montre son code de réception, après sa vérification.`],
+          arrivee: ["Exigez le code de réception", `${produit} · L'acheteur vérifie la marchandise, puis il doit vous montrer son code. Tapez-le dans votre Espace chauffeur.`],
         };
         if (t?.user_id && t.user_id !== e.par && C[e.evenement]) res.push(await envoyer(t.user_id, { title: C[e.evenement][0], body: C[e.evenement][1], tag: "mission-cmd-" + k.id, url: "application.dc.html#/?chauffeur=1" }));
         // arrivée signalée par le chauffeur lui-même : le rappel lui est donné dans l'application, pas en notification
@@ -233,7 +234,7 @@ Deno.serve(async (req) => {
       const produit = k.produit || "votre commande", qui = t?.nom || "Le chauffeur", tc = t?.code ? ` (${t.code})` : "";
       const pec = q.quoi === "prise_en_charge";
       return json(await envoyer(pec ? k.vendeur_id : k.acheteur_id, {
-        title: pec ? `🔐 ${qui} demande votre code de prise en charge` : `🔐 ${qui} demande votre code de réception`,
+        title: pec ? `${qui} demande votre code de prise en charge` : `${qui} demande votre code de réception`,
         body: pec ? `${produit} · Exigez qu'il vous montre son code transporteur${tc}. Quand la marchandise est chargée, montrez-lui votre code.`
                   : `${produit} · Exigez qu'il vous montre son code transporteur${tc}. Vérifiez la marchandise, puis montrez-lui votre code.`,
         tag: "cmd-" + k.id, url: "application.dc.html#/?commande=" + k.id }));
@@ -256,7 +257,7 @@ Deno.serve(async (req) => {
       const res = [];
       for (const d of [k.vendeur_id, k.acheteur_id]) res.push(await envoyer(d, {
         title: m.statut === "acceptee" ? `${t.nom} transportera votre commande` : `${t.nom} a refusé la mission`,
-        body: m.statut === "acceptee" ? produit : `${produit} — choisissez un autre transporteur`, tag: "cmd-" + k.id, url: "application.dc.html#/?commande=" + k.id }));
+        body: m.statut === "acceptee" ? produit : `${produit}. Choisissez un autre transporteur.`, tag: "cmd-" + k.id, url: "application.dc.html#/?commande=" + k.id }));
       return json({ res });
     }
 
@@ -287,7 +288,7 @@ Deno.serve(async (req) => {
       const { data: g } = await sb.from("groupes_achat").select("id, vendeur_id, createur_id, produit, statut, prix_final, confirmer_avant").eq("id", String(corps.groupe_id)).maybeSingle();
       if (!g) return json({ rien: true });
       const url = "application.dc.html#/?groupe=" + g.id, tag = "groupe-" + g.id, produit = coupe(g.produit || "Achat groupé", 40);
-      if (corps.reconfirmer) return json(await envoyer(String(corps.reconfirmer), { title: `${produit} : le prix a changé`, body: `Nouveau prix ${F(g.prix_final)} — reconfirmez ou retirez-vous.`, tag, url }));
+      if (corps.reconfirmer) return json(await envoyer(String(corps.reconfirmer), { title: `${produit} : le prix a changé`, body: `Nouveau prix ${F(g.prix_final)}. Reconfirmez, ou retirez-vous.`, tag, url }));
       const { data: ps } = await sb.from("groupe_participants").select("user_id").eq("groupe_id", g.id).neq("statut", "retire");
       const parts = (ps || []).map((p: { user_id: string }) => p.user_id);
       // un acheteur rejoint : le créateur et le vendeur (la notification remplace la précédente, même étiquette)
@@ -357,7 +358,7 @@ Deno.serve(async (req) => {
       const nomQ = await nomDe(b.user_id), qui = nomQ === "Votre interlocuteur" ? (TYPES[b.type_acheteur] || "Un professionnel") : nomQ;
       const quand = b.frequence === "mensuelle" ? " chaque mois" : b.frequence === "hebdomadaire" ? " chaque semaine" : "";
       const lieu = b.ville || "";
-      const charge = { title: `${qui} s'approvisionne${quand}`, body: `${noms.slice(0, 3).join(", ")}${noms.length > 3 ? "…" : ""}${lieu ? " · " + lieu : ""} — proposez vos prix.`, tag: "besoin-" + b.id, url: "application.dc.html#/?besoin=" + b.id };
+      const charge = { title: `${qui} s'approvisionne${quand}`, body: `${noms.slice(0, 3).join(", ")}${noms.length > 3 ? "…" : ""}${lieu ? " · " + lieu : ""}. Proposez vos prix.`, tag: "besoin-" + b.id, url: "application.dc.html#/?besoin=" + b.id };
       const prevenus = new Set<string>([b.user_id]), res = [];
       // personnel : ceux qui suivent ces produits, et les vendeurs qui en ont en stock
       const { data: abos } = await sb.from("alertes_produits").select("user_id").in("product_slug", slugs).eq("demandes", true);
@@ -379,27 +380,27 @@ Deno.serve(async (req) => {
       const nom = (x: { product_label?: string; product_slug: string }) => x.product_label || x.product_slug;
       const of24 = (of || []).filter((x: { created_at: string }) => x.created_at >= jour);
       const donnees: { title: string; body: string; url: string }[] = [];
-      if (of24.length) donnees.push({ title: `🧺 ${nf(of24.length)} nouvelle${of24.length > 1 ? "s" : ""} offre${of24.length > 1 ? "s" : ""} aujourd'hui`, body: `Dont ${nom(of24[0])}${of24[0].city ? " à " + of24[0].city : ""}. Négociez le prix directement avec le vendeur.`, url: "application.dc.html#/catalogue" });
-      if ((de || []).length) { const ps = [...new Set((de || []).map(nom))]; donnees.push({ title: `🛒 Des acheteurs cherchent : ${ps.slice(0, 3).join(", ")}${ps.length > 3 ? "…" : ""}`, body: "Vous en avez ? Publiez votre offre : ils sont prévenus tout de suite.", url: "application.dc.html#/vendre" }); }
-      if (grp) donnees.push({ title: `👥 ${nf(grp)} achat${grp > 1 ? "s" : ""} groupé${grp > 1 ? "s" : ""} ouvert${grp > 1 ? "s" : ""}`, body: "Achetez à plusieurs, payez moins cher. Rien n'est commandé sans votre confirmation.", url: "application.dc.html#/catalogue" });
-      if (bes) donnees.push({ title: `🏪 ${nf(bes)} professionnel${bes > 1 ? "s" : ""} s'approvisionne${bes > 1 ? "nt" : ""}`, body: "Restaurants, hôtels, cantines cherchent des fournisseurs. Proposez vos prix.", url: "application.dc.html#/catalogue" });
+      if (of24.length) donnees.push({ title: `${nf(of24.length)} nouvelle${of24.length > 1 ? "s" : ""} offre${of24.length > 1 ? "s" : ""} aujourd'hui`, body: `Dont ${nom(of24[0])}${of24[0].city ? " à " + of24[0].city : ""}. Négociez le prix directement avec le vendeur.`, url: "application.dc.html#/catalogue" });
+      if ((de || []).length) { const ps = [...new Set((de || []).map(nom))]; donnees.push({ title: `Des acheteurs cherchent : ${ps.slice(0, 3).join(", ")}${ps.length > 3 ? "…" : ""}`, body: "Vous en avez ? Publiez votre offre : ils sont prévenus tout de suite.", url: "application.dc.html#/vendre" }); }
+      if (grp) donnees.push({ title: `${nf(grp)} achat${grp > 1 ? "s" : ""} groupé${grp > 1 ? "s" : ""} ouvert${grp > 1 ? "s" : ""}`, body: "Achetez à plusieurs, payez moins cher. Rien n'est commandé sans votre confirmation.", url: "application.dc.html#/catalogue" });
+      if (bes) donnees.push({ title: `${nf(bes)} professionnel${bes > 1 ? "s" : ""} s'approvisionne${bes > 1 ? "nt" : ""}`, body: "Restaurants, hôtels, cantines cherchent des fournisseurs. Proposez vos prix.", url: "application.dc.html#/catalogue" });
       { const par: Record<string, number[]> = {}, lab: Record<string, string> = {}, un: Record<string, string> = {};
         for (const o of of || []) if (o.price) { (par[o.product_slug] = par[o.product_slug] || []).push(Number(o.price)); lab[o.product_slug] = nom(o); un[o.product_slug] = o.unit || "kg"; }
         const top = Object.keys(par).filter((p) => par[p].length >= 2).sort((a, b) => par[b].length - par[a].length)[0];
-        if (top) { const v = par[top]; donnees.push({ title: `📊 ${lab[top]} : de ${nf(Math.min(...v))} à ${nf(Math.max(...v))} F / ${un[top]}`, body: "Comparez les prix des vendeurs avant d'acheter, dans Prix du marché.", url: "application.dc.html#/prix" }); } }
+        if (top) { const v = par[top]; donnees.push({ title: `${lab[top]} : de ${nf(Math.min(...v))} à ${nf(Math.max(...v))} F / ${un[top]}`, body: "Comparez les prix des vendeurs avant d'acheter, dans Prix du marché.", url: "application.dc.html#/prix" }); } }
       const CONSEILS = [
-        { title: "🤝 Négociez le prix", body: "Proposez votre prix au vendeur, il vous répond dans l'application. C'est gratuit.", url: "application.dc.html#/catalogue" },
-        { title: "🧺 Vendez en direct", body: "Publiez votre récolte en une minute : les acheteurs sont prévenus tout de suite.", url: "application.dc.html#/vendre" },
-        { title: "🔒 Votre numéro reste caché", body: "On vous écrit dans l'application : pas d'appels de gens inconnus.", url: "application.dc.html#/" },
-        { title: "👥 Achetez à plusieurs", body: "Regroupez-vous avec d'autres acheteurs pour atteindre le gros volume et payer moins cher.", url: "application.dc.html#/catalogue" },
-        { title: "💵 Payez à la livraison", body: "Voyez la marchandise d'abord : rien n'est payé dans l'application pour l'instant.", url: "application.dc.html#/" },
-        { title: "🔔 Suivez vos produits", body: "Activez une alerte produit : on vous prévient dès qu'une offre arrive.", url: "application.dc.html#/catalogue" },
-        { title: "🏪 Approvisionnement pro", body: "Restaurant, hôtel, cantine : publiez votre liste une fois, les vendeurs vous répondent.", url: "application.dc.html#/demande" },
-        { title: "🚚 Transporteurs vérifiés", body: "Faites livrer par un chauffeur vérifié par l'équipe, et suivez la livraison en direct.", url: "application.dc.html#/" },
-        { title: "📅 Le calendrier des récoltes", body: "Achetez au bon moment : la saison de chaque produit, mois par mois.", url: "application.dc.html#/annee" },
-        { title: "✅ Faites vérifier votre identité", body: "Un profil vérifié inspire confiance : vous vendez et achetez plus facilement.", url: "application.dc.html#/" },
-        { title: "🗺️ Qui a quoi, et où ?", body: "La carte montre les offres et les demandes près de chez vous.", url: "application.dc.html#/carte" },
-        { title: "📈 Le juste prix", body: "Ce que demandent les vendeurs, partout en Côte d'Ivoire : consultez Prix du marché.", url: "application.dc.html#/prix" },
+        { title: "Négociez le prix", body: "Proposez votre prix au vendeur, il vous répond dans l'application. C'est gratuit.", url: "application.dc.html#/catalogue" },
+        { title: "Vendez en direct", body: "Publiez votre récolte en une minute : les acheteurs sont prévenus tout de suite.", url: "application.dc.html#/vendre" },
+        { title: "Votre numéro reste caché", body: "On vous écrit dans l'application : pas d'appels de gens inconnus.", url: "application.dc.html#/" },
+        { title: "Achetez à plusieurs", body: "Regroupez-vous avec d'autres acheteurs pour atteindre le gros volume et payer moins cher.", url: "application.dc.html#/catalogue" },
+        { title: "Payez à la livraison", body: "Voyez la marchandise d'abord : rien n'est payé dans l'application pour l'instant.", url: "application.dc.html#/" },
+        { title: "Suivez vos produits", body: "Activez une alerte produit : on vous prévient dès qu'une offre arrive.", url: "application.dc.html#/catalogue" },
+        { title: "Approvisionnement pro", body: "Restaurant, hôtel, cantine : publiez votre liste une fois, les vendeurs vous répondent.", url: "application.dc.html#/demande" },
+        { title: "Suivez la livraison", body: "Donnez un lien de suivi à votre chauffeur : vous voyez le camion avancer dans la commande.", url: "application.dc.html#/" },
+        { title: "Le calendrier des récoltes", body: "Achetez au bon moment : la saison de chaque produit, mois par mois.", url: "application.dc.html#/annee" },
+        { title: "Faites vérifier votre identité", body: "Un profil vérifié inspire confiance : vous vendez et achetez plus facilement.", url: "application.dc.html#/" },
+        { title: "Qui a quoi, et où ?", body: "La carte montre les offres et les demandes près de chez vous.", url: "application.dc.html#/carte" },
+        { title: "Le juste prix", body: "Ce que demandent les vendeurs, partout en Côte d'Ivoire : consultez Prix du marché.", url: "application.dc.html#/prix" },
       ];
       // une notification sur quatre donne une donnée du moment (sans répéter la même trop souvent), les autres un conseil
       const m = donnees.length && k % 4 === 0 ? donnees[(k / 4) % donnees.length] : CONSEILS[(k - Math.floor(k / 4) - 1 + CONSEILS.length * 9) % CONSEILS.length];
@@ -423,9 +424,9 @@ Deno.serve(async (req) => {
     if (!dest || dest === m.auteur_id) return json({ rien: true });
     const qui = await nomDe(m.auteur_id), produit = n.produit || "votre annonce", u = n.unite || "kg";
     let title = qui, body = produit;
-    if (m.genre === "prix") { title = `${qui} propose ${F(m.prix)} / ${u}`; body = `${produit}${m.quantite ? ` · ${new Intl.NumberFormat("fr-FR").format(m.quantite)} ${u}` : ""} — touchez pour répondre`; }
+    if (m.genre === "prix") { title = `${qui} propose ${F(m.prix)} / ${u}`; body = `${produit}${m.quantite ? ` · ${new Intl.NumberFormat("fr-FR").format(m.quantite)} ${u}` : ""}. Touchez pour répondre.`; }
     else if (m.genre === "accord") { title = `Accord conclu avec ${qui}`; body = `${produit} à ${F(n.prix_final ?? m.prix)} / ${u}`; }
-    else if (m.genre === "refus") { title = `${qui} a refusé votre proposition`; body = `${produit} — vous pouvez proposer un autre prix`; }
+    else if (m.genre === "refus") { title = `${qui} a refusé votre proposition`; body = `${produit}. Vous pouvez proposer un autre prix.`; }
     else if (m.genre === "retrait") { title = `${qui} a retiré sa proposition`; body = produit; }
     else if (m.genre === "fin") { title = "Négociation terminée"; body = `${produit} avec ${qui}`; }
     else if (m.genre === "texte") { title = `${qui} · ${produit}`; body = coupe(String(m.texte || ""), 140); }

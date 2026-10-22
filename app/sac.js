@@ -66,6 +66,7 @@
 @keyframes msCligne{0%,92%,100%{transform:none}95%{transform:scaleY(.1)}}
 @keyframes msDort{0%,100%{transform:none}50%{transform:scale(1.03,.97)}}
 @keyframes msZ{0%{opacity:0;transform:translateY(6px)}40%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+:is(.ap-vide,.gr-vide,.pz-vide,.rc-vide)>svg.ms{display:block;margin:0 auto}
 .ms-etat{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:18px 10px;color:inherit}
 .ms-etat b{font:600 18px/1.25 Jost,system-ui,sans-serif}.ms-etat span{font-size:15px;line-height:1.45;opacity:.72;max-width:290px;text-wrap:pretty}
 .ms-voile{position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;background:inherit;color:#F3EFE4;transition:opacity .4s}

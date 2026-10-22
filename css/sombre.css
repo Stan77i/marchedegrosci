@@ -92,3 +92,6 @@ html[data-theme=sombre] mdg-garanties { --gr-l-bd: rgba(243, 239, 228, .12); --g
 html[data-theme=sombre] ::placeholder { color: rgba(243, 239, 228, .42); }
 html[data-theme=sombre] .nx-pied::before { background: linear-gradient(rgba(33, 29, 25, 0), #211D19) !important; }
 html[data-theme=sombre] .nx-px input::placeholder, html[data-theme=sombre] .cp-in::placeholder { color: rgba(243, 239, 228, .3) !important; }
+
+/* pieds collants (Approvisionnement pro, Racheter) : leur ombre crème faisait une bande blanche au-dessus du bouton */
+html[data-theme=sombre] :is(.ap-pied, .rc-pied) { box-shadow: 0 -10px 16px rgba(33, 30, 25, .95) !important; }

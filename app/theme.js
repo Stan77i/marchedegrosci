@@ -101,6 +101,7 @@ html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme
           <p class="rg-n" style="margin:4px 2px 0">Revoir un tutoriel :</p>
           <div class="rg-tours">${Object.keys(MDGAstuces.TOURS).map(k => `<button type="button" data-tour="${k}">${esc(MDGAstuces.TOURS[k].t)}</button>`).join('')}</div></div>` : ''}
         ${pr && connecte() && !(window.MDGStatut && MDGStatut.estOfficiel && N().session().user && MDGStatut.estOfficiel(N().session().user.id)) ? `<p class="rg-sec">Confidentialité</p>
+        <p class="rg-n" style="margin:4px 2px 8px">Vos échanges (négociations, messages, litiges) ne sont pas secrets : l’équipe du Marché de Gros peut les lire pour vérifier un accord ou régler un litige. Ils sont gardés 1 an. Votre numéro, lui, n’est jamais montré aux autres membres.</p>
         <div class="rg-l">${sw('oeil', 'Montrer mon nom de famille', 'Sinon, les autres voient « ' + esc(pr.prenom || 'Prénom') + ' ' + esc(pr.nom ? pr.nom[0] + '.' : 'N.') + ' ». Votre numéro n’est jamais affiché.', !!pr.nom_public)}</div>` : ''}
         <p class="rg-n">L’apparence, les sons, les vibrations et les messages à l’écran restent sur ce téléphone.</p></div>`;
       bg.querySelector('.rg-x').onclick = fermer;

@@ -725,3 +725,10 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Un produit (`tableau_marche`) : onglets **Acheter** (offres, du moins cher au plus cher) et **Vendre** (demandes, du budget le plus haut au plus bas). À prix égal : transport compris d'abord (pour le vendeur : l'acheteur prend le transport), puis fiable, identité vérifiée, commandes honorées, le plus récent. Prix comparés seulement dans la même unité (puces « Prix par régime / par kg »). Badges : Meilleur prix, +X % plus cher, Officiel, ✓ vérifié, ★ fiable, note, commandes honorées.
 - Relu toutes les 30 s (et au retour sur l'onglet) : une annonce qui gagne des places affiche « ↑ monte ».
 - « Acheter » / « Vendre » ouvre la proposition de prix habituelle (`MDGNegoce.proposer`, connexion demandée si besoin). Aucun numéro ni contact : le Marché de Gros est le seul intermédiaire.
+
+## Les échanges ne sont pas secrets : l'équipe lit tout pour juger (22/10/2026) — schéma 60
+- Règle du propriétaire : « Il n'y a pas de conversation secrète. C'est notre plateforme, c'est nous qui mettons en relation. » L'équipe peut et doit lire les échanges pour juger.
+- **Messages directs gardés 1 an** (`dm_duree` = 365 jours ; avant : effacés après 7 jours). Les messages effacés avant ce changement sont perdus. Place : ≈ 0,5 Ko par message, les 500 Mo gratuits tiennent environ un million de messages.
+- **Admin → Commandes → numéro de commande** (ou bouton « Tout voir » sur une commande) : l'accord, la négociation complète (chaque prix proposé, chaque message), les messages directs entre l'acheteur et le vendeur, la discussion à trois, le mot secret, la répartition, l'historique.
+- Les membres sont prévenus : Messages (« Les échanges ne sont pas secrets… gardés 1 an »), Réglages → Confidentialité, écrans de litige. Les textes « l'équipe ne lit pas vos conversations » sont retirés.
+- Le numéro de téléphone reste caché aux autres membres (inchangé).

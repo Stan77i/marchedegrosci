@@ -36,7 +36,7 @@
       conseil: 'La position est toujours celle de la ville, jamais l’adresse exacte d’une personne.', aller: PAGE('carte') },
     { id: 'messages', ico: 'messages', ton: 'lien', t: 'Écrire à quelqu’un', sert: 'Parler avec un vendeur ou un acheteur, sans donner votre numéro.',
       etapes: ['Sur une annonce, touchez « Écrire ».', 'Écrivez votre message et envoyez-le.', 'Retrouvez vos conversations dans le menu, à « Messages ».'],
-      conseil: 'Restez dans les messages de l’application : votre numéro reste caché. Les messages s’effacent après 7 jours.', aller: FEN('MDGMessages', 'boite') },
+      conseil: 'Restez dans les messages de l’application : votre numéro reste caché. L’équipe peut relire les échanges en cas de litige.', aller: FEN('MDGMessages', 'boite') },
     { id: 'negoce', ico: 'negoce', ton: 'marche', t: 'Proposer un prix', sert: 'Négocier calmement, par écrit, jusqu’à un accord.',
       etapes: ['Sur une annonce, touchez « Proposer un prix ». Écrivez votre prix et la quantité.', 'L’autre personne a 48 heures pour accepter, refuser ou proposer un autre prix.', 'Quand vous êtes d’accord, l’accord est conclu : le prix et la quantité ne bougent plus.', 'Ensuite, entendez-vous sur la livraison et le paiement.'],
       conseil: 'Un accord conclu n’est pas un paiement : voyez toujours la marchandise avant de payer.', aller: FEN('MDGNegoce', 'inbox') },

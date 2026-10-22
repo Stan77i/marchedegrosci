@@ -433,7 +433,7 @@
     const D = disc[c.id]; if (!D || (!D.ouvert && !(D.messages || []).length)) return '';
     const L = (D.messages || []).map(m => `<li class="${m.moi ? 'moi' : ''}${m.role === 'admin' ? ' mdg' : ''}"><b>${m.moi ? 'Vous' : esc(ROLE_D[m.role] || '')}</b> <small>${quand(m.at)}</small><span>${esc(m.texte)}</span></li>`).join('');
     return `<section class="cm-disc" aria-label="Discussion à trois"><h3>Discussion à trois</h3>
-      <p>L’acheteur, le vendeur et l’équipe du Marché de Gros. Expliquez-vous ici : l’équipe juge avec les photos, le mot du vendeur et le numéro de commande.</p>
+      <p>L’acheteur, le vendeur et l’équipe du Marché de Gros. Expliquez-vous ici : l’équipe juge avec les photos, le mot du vendeur, la négociation et tous vos messages (rien n’est secret sur le Marché de Gros).</p>
       <ul>${L || '<li class="vide">Aucun message pour l’instant.</li>'}</ul>
       ${D.ouvert ? `<form data-disc><label class="cm-sr" for="cmDm">Votre message</label><textarea id="cmDm" maxlength="600" placeholder="Votre message aux deux autres…"></textarea><p class="cm-err" role="alert"></p><button type="submit">Envoyer</button></form>` : '<p><b>Discussion close :</b> le litige est réglé.</p>'}</section>`;
   }
@@ -449,7 +449,7 @@
   }
   function blocWa(c) {
     return WA_LITIGES ? `<div class="cm-wa"><span aria-hidden="true">💬</span><span><b>Service litiges</b> sur WhatsApp : <a href="https://wa.me/${WA_LITIGES}?text=${encodeURIComponent('Bonjour, litige sur la commande n° ' + c.numero)}" target="_blank" rel="noopener">écrire au service</a>. Donnez votre numéro de commande <b>${esc(c.numero)}</b>. Nous ne demandons jamais d’argent ni de code.</span></div>`
-      : `<div class="cm-wa"><span aria-hidden="true">💬</span><span><b>Service litiges WhatsApp : bientôt.</b> Gardez votre numéro de commande <b>${esc(c.numero)}</b> : il suffit pour retrouver tous les accords. Nous ne demandons jamais d’argent ni de code.</span></div>`;
+      : `<div class="cm-wa"><span aria-hidden="true">💬</span><span><b>Service litiges WhatsApp : bientôt.</b> Gardez votre numéro de commande <b>${esc(c.numero)}</b> : il suffit pour retrouver l’accord, la négociation et vos messages. Nous ne demandons jamais d’argent ni de code.</span></div>`;
   }
   // photos privées : liens signés de courte durée (le serveur vérifie qui peut les voir)
   function photos(box) {
@@ -729,10 +729,10 @@
         texte: 'La partie refusée revient à l’acheteur. Le reste de la commande vous revient, et le transporteur garde le prix de son transport.',
         fn: v => R('commande_refus_vendeur', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
       case 'rf-non': return confirmer(c, { titre: 'Contester le <em>refus</em>', ok: 'Contester', note: 'Pourquoi ?', noteRequise: true, fait: 'Contestation envoyée : l’équipe va trancher',
-        texte: 'L’équipe du Marché de Gros tranchera avec le numéro de commande, les accords enregistrés, les photos et la réponse du chauffeur. Elle ne lit pas vos conversations.',
+        texte: 'L’équipe du Marché de Gros tranchera avec le numéro de commande : l’accord, la négociation, vos messages, les photos et la réponse du chauffeur. Les échanges sur le Marché de Gros ne sont pas secrets.',
         fn: v => R('commande_refus_vendeur', { p_id: c.id, p_oui: false, p_note: v.note }) });
       case 'litige': return confirmer(c, { titre: 'Signaler un <em>problème</em>', ok: 'Ouvrir un litige', note: 'Que s’est-il passé ?', noteRequise: true, fait: 'Litige ouvert : l’équipe va examiner',
-        texte: 'L’équipe du Marché de Gros examinera l’historique de la commande et les accords enregistrés (prix, quantité, transport), avec le numéro de commande. Elle ne lit pas vos conversations.',
+        texte: 'L’équipe du Marché de Gros examinera l’historique de la commande et les accords enregistrés (prix, quantité, transport), avec le numéro de commande. Elle lit aussi la négociation et vos messages : les échanges sur le Marché de Gros ne sont pas secrets.',
         fn: v => R('commande_litige', { p_id: c.id, p_motif: v.note }) });
     }
   }

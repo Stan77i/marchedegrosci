@@ -1,6 +1,6 @@
 /* ═════════ Marché de Gros CI — messagerie directe ═════════
    Écrire à un vendeur, un acheteur ou n'importe quel membre, sans annonce et sans quitter l'application.
-   Chaque message est effacé 7 jours après son envoi (base gratuite : pas de surcharge) ; on peut bloquer quelqu'un.
+   Chaque message est gardé 1 an (schéma 60) : l'équipe peut relire les échanges pour régler un litige ; on peut bloquer quelqu'un.
    Serveur : supabase/schema-8.sql (dm_ouvrir, dm_envoyer, dm_liste, dm_messages, dm_lu, dm_masquer, dm_bloquer) ;
    notification sur le téléphone : fonction Edge « pousser » (déclencheur push_dm).
    Les administrateurs écrivent au nom du « Marché de Gros » (logo, mention Officiel) ; chacun peut écrire au Marché de Gros ;
@@ -10,7 +10,7 @@
    Événement : mdg:dm { unread } quand le nombre de conversations à lire change. */
 (function () {
   'use strict';
-  const JOURS = 7;  // = dm_duree() dans supabase/schema-8.sql
+  const JOURS = 365;  // = dm_duree() (schéma 60 : gardés 1 an, l'équipe peut les lire pour régler un litige)
   const KL = 'mdg-dm:liste';
   const N = () => window.MDGNuage, A = () => window.MDGAvatar;
   const J = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } };
@@ -156,7 +156,7 @@
   // ——— la boîte : toutes mes conversations ———
   function boite() {
     if (!N() || !N().session()) { N() && N().open('Connectez-vous pour voir vos messages.'); return; }
-    const b = feuille(`<div class="dm-h"><h2 class="dm-t">Messages<small>Effacés ${JOURS} jours après l’envoi</small></h2><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div><div class="dm-b"><div class="dm-act" data-act></div><div class="dm-l" data-l></div></div>`, 'Messages');
+    const b = feuille(`<div class="dm-h"><h2 class="dm-t">Messages<small>Gardés 1 an · lisibles par l’équipe</small></h2><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div><div class="dm-b"><div class="dm-act" data-act></div><div class="dm-l" data-l></div></div>`, 'Messages');
     const actions = () => { const z = b.querySelector('[data-act]'); if (!z) return;
       z.innerHTML = admin()
         ? `<button type="button" data-tous>${LOGO(34)}<span>Message à tous les membres<small>Au nom du Marché de Gros, avec le logo</small></span></button><a href="admin.html#messages">${I.bulle}<span>Toutes les conversations<small>Lire, alertes de sortie de l’application</small></span></a>`
@@ -230,7 +230,7 @@
     const b = feuille(`<div class="dm-h">${depuisBoite ? `<button type="button" class="dm-ib" data-back aria-label="Retour aux messages">${I.retour}</button>` : ''}
       <button type="button" class="dm-qui" data-profil aria-label="${c.officiel ? 'Marché de Gros' : 'Voir le profil de ' + esc(c.autre_nom)}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 40, c.officiel)}<span><b>${esc(c.autre_nom || 'Membre')}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 15 }) : ''}</b>${!c.officiel && window.MDGCompte && MDGCompte.puceStructure ? `<span class="dm-org">${MDGCompte.puceStructure(c.autre_id)}</span>` : ''}<small data-rep>${c.officiel ? 'L’équipe du Marché de Gros' : window.MDGStatut && MDGStatut.liste(c.autre_id).length ? MDGStatut.puces(c.autre_id, { max: 2, sceau: false }) : 'Voir son profil'}</small></span></button>
       <button type="button" class="dm-ib" data-plus aria-label="Plus d’options" aria-haspopup="menu">${I.plus}</button><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div>
-      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les messages s’effacent ${JOURS} jours après leur envoi. Restez ici : les numéros sont masqués et le Marché de Gros peut vérifier en cas de problème.</div>${!c.officiel && window.MDGIdentite && MDGIdentite.gardePaiement ? `<div class="dm-garde" data-garde>${MDGIdentite.gardePaiement(c.autre_id, c.autre_nom)}</div>` : ''}<div data-msgs></div></div>
+      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les échanges ne sont pas secrets : l’équipe du Marché de Gros peut les lire pour vérifier un accord ou régler un litige. Ils sont gardés 1 an. Restez ici : les numéros sont masqués.</div>${!c.officiel && window.MDGIdentite && MDGIdentite.gardePaiement ? `<div class="dm-garde" data-garde>${MDGIdentite.gardePaiement(c.autre_id, c.autre_nom)}</div>` : ''}<div data-msgs></div></div>
       <div class="dm-f" data-f></div>`, 'Conversation avec ' + (c.autre_nom || 'un membre'));
     const corps = b.querySelector('[data-b]'), zone = b.querySelector('[data-msgs]'), pied = b.querySelector('[data-f]');
     const garde = b.querySelector('[data-garde]');
@@ -248,7 +248,7 @@
         const jj = jour(m.created_at); if (jj !== j) { j = jj; h += `<div class="dm-jour">${esc(jj)}</div>`; prec = null; }
         const moi = m.auteur_id === u, suite = prec && prec.auteur_id === m.auteur_id && Date.parse(m.created_at) - Date.parse(prec.created_at) < 3e5;
         const etat = m._etat === 'envoi' ? 'Envoi…' : m._etat === 'rate' ? 'Non envoyé · toucher pour réessayer' : heure(m.created_at);
-        h += `<div class="dm-m${moi ? ' me' : ''}${suite ? ' suite' : ''}${m._etat ? ' ' + m._etat : ''}${neufs && neufs.has(m.id) ? ' neuf' : ''}" data-m="${m.id}"${m._etat === 'rate' ? ' role="button" tabindex="0"' : ''}><p>${(c.officiel && !moi) || (moi && admin()) ? lienOff(m.texte) : esc(m.texte)}<time title="S’efface dans ${reste(m.created_at)}">${etat}</time></p></div>`;
+        h += `<div class="dm-m${moi ? ' me' : ''}${suite ? ' suite' : ''}${m._etat ? ' ' + m._etat : ''}${neufs && neufs.has(m.id) ? ' neuf' : ''}" data-m="${m.id}"${m._etat === 'rate' ? ' role="button" tabindex="0"' : ''}><p>${(c.officiel && !moi) || (moi && admin()) ? lienOff(m.texte) : esc(m.texte)}<time title="Gardé encore ${reste(m.created_at)}">${etat}</time></p></div>`;
         prec = m;
       });
       zone.innerHTML = h || `<div class="dm-vide" style="padding:30px 10px">${window.MDGSac ? MDGSac.svg('vide', { t: 60 }) : I.bulle}<b>Dites bonjour</b>Présentez-vous et dites ce que vous cherchez ou proposez.</div>`;

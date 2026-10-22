@@ -1,6 +1,6 @@
 {
-  "name": "Marché de Gros CI",
-  "short_name": "MGCI",
+  "name": "Marché de Gros",
+  "short_name": "Marché de Gros",
   "description": "Marché de Gros CI : offres et demandes de produits vivriers en Côte d'Ivoire.",
   "start_url": "application.dc.html",
   "scope": "./",

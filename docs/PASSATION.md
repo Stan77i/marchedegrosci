@@ -425,3 +425,16 @@ Lui proposer de coller ceci :
 - Compteur séparé (`push_marketing_jour`), qui n'entame pas les 10 annonces du marché. Étiquette `marche-pub` : la notification remplace la précédente sur le téléphone.
 - **Pour changer la fréquence sans toucher au code** : `update public.marketing_reglage set max_jour = 12;` (0 = arrêt). On peut aussi régler `debut_h` et `fin_h`.
 - Vérifié sans envoi réel, de nuit, avec le plafond à 0 : 200, messages bien composés. Remis à 30.
+
+**Tous les réglages dans Réglages** (22/10, demandé par le propriétaire : « Notifications, c'est que des notifications »)
+- La page Réglages (menu ☰, `app/theme.js`) réunit tout :
+  - Apparence ;
+  - Notifications : activer ou désactiver sur ce téléphone, et l'interrupteur « Annonces du marché » ;
+  - Sons et écran : Sons (ouvre le panneau des sons), Messages à l'écran ;
+  - Confidentialité : montrer mon nom de famille, via `MDGCompte.regler`.
+- Retirés ailleurs :
+  - la carte d'activation et l'interrupteur, de Notifications (qui ne montre plus que la liste) ;
+  - les lignes Sons et Confidentialité, de Mon compte ;
+  - la ligne Sons, de l'ancienne fenêtre de compte (`v3/nuage.js`).
+  - L'ancienne page « Réglages » de Mon compte n'est plus reliée à rien.
+- Les deux lectures (état du téléphone, réglage serveur) sont indépendantes, avec 4 s au plus pour le téléphone. Sinon l'interrupteur restait bloqué (constaté au test).

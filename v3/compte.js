@@ -677,8 +677,6 @@ label.cp-r{cursor:pointer}
             ${window.MDGRacheter && !off0 ? ligne({ ico: mono('echanger'), t: 'Racheter', s: 'Mes achats habituels, prix du jour, rappels', attrs: 'data-racheter' }) : ''}
             ${window.MDGChauffeur && !off0 ? (() => { const e = MDGChauffeur.etat(); return ligne({ ico: mono('distance'), t: 'Espace chauffeur', s: !e.inscrit ? 'Transporteur ? Inscrivez-vous, c’est gratuit' : e.propositions ? e.propositions + (e.propositions > 1 ? ' missions à accepter' : ' mission à accepter') : e.statut === 'verifie' ? 'Profil vérifié · vos missions' : e.statut === 'en_attente' ? 'Vérification en cours · vos missions' : 'Vos missions', n: e.propositions, attrs: 'data-chauffeur' }); })() : ''}
             ${ligne({ ico: mono('cloche'), t: 'Notifications', v: '<span data-pst>…</span>', n: nl, attrs: 'data-go="notifs"' })}
-            ${S ? ligne({ ico: mono('son'), t: 'Sons', v: sn && sn.on ? 'Activés' : 'Désactivés', attrs: 'data-sons' }) : ''}
-            ${off0 ? '' : ligne({ ico: mono('oeil'), t: 'Confidentialité', v: p.nom_public ? 'Nom visible' : 'Initiale', attrs: 'data-go="prefs"' })}
             ${ID && !off0 ? ligne({ ico: mono('verifie'), t: 'Identité', s: (ID.RESUME[idS] || ID.RESUME.non_verifie)[1], v: (ID.RESUME[idS] || ID.RESUME.non_verifie)[0], vf: idS === 'verifie', attrs: 'data-idv' }) : ''}
             ${ligne({ ico: mono('cadenas'), t: 'Sécurité et code secret', attrs: 'data-go="securite"' })}
             ${M && M.ecrireMarche && !adm ? ligne({ ico: mono('service'), t: 'Écrire au Marché de Gros', s: 'Une question, un problème : l’équipe répond', attrs: 'data-marche' }) : ''}
@@ -693,7 +691,6 @@ label.cp-r{cursor:pointer}
       q('[data-nego]').onclick = () => { if (G && G.inbox) { fermer(); G.inbox(); } else bg.aller('activite'); };
       if (q('[data-av]')) q('[data-av]').onclick = () => choisirAvatar(() => ouvrir());
       if (q('[data-idv2]')) q('[data-idv2]').onclick = () => { fermer(); ID.ouvrir(); };
-      if (q('[data-sons]')) q('[data-sons]').onclick = () => { fermer(); S.panneau(); };
       if (q('[data-marche]')) q('[data-marche]').onclick = () => { fermer(); M.ecrireMarche(); };
       if (q('[data-releve]')) q('[data-releve]').onclick = () => { fermer(); window.MDGReleve.ouvrir(); };
       if (q('[data-cmds]')) q('[data-cmds]').onclick = () => { fermer(); window.MDGCommandes.ouvrir(); };
@@ -771,16 +768,11 @@ label.cp-r{cursor:pointer}
     notifs(main) {
       const L = notifs();
       main.innerHTML = `<div class="cp-pg"><h2>Notifications</h2><p>Propositions, contre-propositions, accords, refus et expirations, et nouvelles annonces sur vos produits.</p>
-        <div data-pousse></div>
-        <div class="cp-grp" style="margin-top:12px"><label class="cp-r">${ti('cloche', 'marche')}<span class="cp-r-t"><b>Annonces du marché</b><small>Nouvelles offres et demandes, achats groupés, approvisionnements des pros. 10 par jour au plus ; vos notifications personnelles restent toujours actives.</small></span><input type="checkbox" class="cp-tog" role="switch" data-diff checked aria-label="Recevoir les annonces du marché"></label></div>
+
         <h3 class="cp-lab">Récentes${L.some(n => !n.lu) ? '<button type="button" data-lu>Tout marquer comme lu</button>' : ''}</h3>
         <div class="cp-grp">${L.length ? L.slice(0, 60).map((n, i) => `<button type="button" class="cp-r cp-it${n.lu ? '' : ' neuf'}" data-i="${i}"><span class="pt${n.lu ? ' lu' : ''}" aria-label="${n.lu ? 'Lue' : 'Non lue'}"></span><b style="white-space:normal">${esc(n.texte)}</b><span></span><small><span>${ago(n.t)}</span></small></button>`).join('')
           : '<p class="cp-vide"><b>Rien de nouveau</b>Les réponses à vos propositions et les accords apparaîtront ici.</p>'}</div></div>`;
-      cartePousse(main.querySelector('[data-pousse]'));
-      // annonces du marché (schéma 43) : le réglage vit sur le serveur, c'est lui qui choisit les destinataires
-      const df = main.querySelector('[data-diff]');
-      if (df) { N().rpc('notif_reglage_moi').then(r => { if (r && r.diffusions === false) df.checked = false; }).catch(() => {});
-        df.onchange = async () => { df.disabled = true; try { await N().rpc('notif_reglage_diffusions', { p_oui: df.checked }); N().toast(df.checked ? 'Annonces du marché *activées*' : 'Annonces du marché *coupées*'); } catch (x) { df.checked = !df.checked; N().toast('Impossible : ' + (x.message || 'réessayez')); } df.disabled = false; }; }
+      // les réglages (activer sur ce téléphone, annonces du marché…) sont dans Réglages (app/theme.js), plus ici
       const lu = main.querySelector('[data-lu]'); if (lu) lu.onclick = () => { W(KN, notifs().map(n => Object.assign(n, { lu: true }))); bg.rafraichir(); };
       main.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const all = notifs(), n = all[+b.dataset.i]; if (!n) return; n.lu = true; W(KN, all); if (n.nego && window.MDGNegoce) { fermer(); MDGNegoce.thread(n.nego); } else bg.rafraichir(); });
     },
@@ -988,5 +980,7 @@ label.cp-r{cursor:pointer}
   addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte') { if (me()) charger(); else { profil = null; localStorage.removeItem(KP); dispatchEvent(new CustomEvent('mdg:profil')); } } });
   if (me()) setTimeout(charger, 900);
 
-  window.MDGCompte = { ouvrir, bienvenue, profil: () => profil, nomAffiche, avatar, hydrate, prefs, notifs, nonLues, choisirAvatar, structure, puceStructure, STRUCT, imgStruct };
+  // pour la page Réglages (app/theme.js) : enregistrer un réglage du profil (ex. { nom_public: true })
+  const regler = champs => enregistrer(champs);
+  window.MDGCompte = { regler, ouvrir, bienvenue, profil: () => profil, nomAffiche, avatar, hydrate, prefs, notifs, nonLues, choisirAvatar, structure, puceStructure, STRUCT, imgStruct };
 })();

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#171512">
+<meta name="robots" content="noindex">
+<title>Marché de Gros — site en maintenance</title>
+<meta name="description" content="Le site web du Marché de Gros est en maintenance. Tout se passe dans l'application : acheter, vendre, négocier, suivre ses commandes.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icons/v2/favicon.svg">
+<link rel="apple-touch-icon" href="icons/v2/apple-touch-icon.png">
+<link rel="stylesheet" href="css/fonts.css">
+<!-- Site web en maintenance (demandé par le propriétaire le 22/10/2026) : tout le monde est envoyé vers l'application.
+     Seul l'administrateur entre sur le site : le petit point en bas à droite ouvre « Entrer en tant qu'admin »,
+     puis index-v3.html demande la connexion et vérifie côté serveur (est_admin) avant d'afficher quoi que ce soit. -->
+<style>
+:root{--fond:#171512;--carte:#211E19;--creme:#F3EFE4;--sable:#B9AD98;--mais:#F2C230;--vert:#10392B;--trait:rgba(243,239,228,.1)}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--fond);color:var(--creme);font-family:Jost,system-ui,sans-serif}
+body{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 16px calc(24px + env(safe-area-inset-bottom));
+  background:radial-gradient(90% 60% at 50% 0%,rgba(242,194,48,.12),transparent 60%),radial-gradient(70% 50% at 50% 100%,rgba(16,57,43,.55),transparent 70%),var(--fond)}
+main{width:100%;max-width:520px;text-align:center;animation:monte .6s cubic-bezier(.22,1,.36,1) both}
+.logo{display:flex;justify-content:center;margin:0 0 26px}.logo svg{height:64px;width:auto}
+.logo-txt{font:700 30px/1.05 Jost,sans-serif;letter-spacing:-.02em}.logo-txt span{color:var(--mais)}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:rgba(242,194,48,.12);color:var(--mais);font:600 13px/1 Jost,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.badge i{width:8px;height:8px;border-radius:50%;background:var(--mais);animation:pouls 1.8s ease-in-out infinite}
+h1{margin:18px 0 12px;font:800 clamp(28px,6.4vw,40px)/1.12 Jost,sans-serif;letter-spacing:-.02em;text-wrap:balance}
+h1 em{font-style:italic;color:var(--mais)}
+p{margin:0 auto;max-width:440px;font:400 17px/1.5 Jost,sans-serif;color:var(--sable);text-wrap:pretty}
+.go{display:inline-flex;align-items:center;justify-content:center;gap:10px;margin:28px 0 0;min-height:58px;padding:0 30px;border-radius:29px;background:var(--mais);color:#171512;font:700 18px Jost,sans-serif;text-decoration:none;box-shadow:0 12px 30px rgba(242,194,48,.25);transition:transform .15s}
+.go:active{transform:scale(.97)}.go:focus-visible{outline:3px solid var(--creme);outline-offset:3px}
+.go svg{flex:none}
+.compte{margin:16px 0 0;font:400 14px Jost,sans-serif;color:var(--sable)}
+.compte button{border:0;background:none;color:var(--creme);font:500 14px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer;min-height:40px;padding:0 4px}
+.liste{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:30px 0 0;padding:0;list-style:none;text-align:left}
+.liste li{padding:12px 14px;border-radius:16px;background:var(--carte);border:1px solid var(--trait);font:500 15px/1.3 Jost,sans-serif;color:var(--creme)}
+.liste li small{display:block;margin-top:2px;font-weight:400;font-size:13px;color:var(--sable)}
+.pc{display:none;margin:22px auto 0;max-width:440px;padding:14px 16px;border-radius:16px;border:1px dashed rgba(243,239,228,.2);font:400 14px/1.45 Jost,sans-serif;color:var(--sable)}
+.pc b{color:var(--creme);font-weight:600}
+@media (pointer:fine),(min-width:768px){.pc{display:block}}
+/* l'entrée de l'administrateur : un point presque invisible, en bas à droite */
+.pt{position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));width:28px;height:28px;border:0;background:none;padding:0;cursor:default;display:grid;place-items:center}
+.pt::after{content:"";width:5px;height:5px;border-radius:50%;background:rgba(243,239,228,.16)}
+.adm{position:fixed;right:12px;bottom:calc(46px + env(safe-area-inset-bottom));display:none;align-items:center;gap:12px;padding:10px 14px;border-radius:16px;background:var(--carte);border:1px solid var(--trait);box-shadow:0 10px 30px rgba(0,0,0,.4);font:500 14px Jost,sans-serif;color:var(--creme);cursor:pointer}
+.adm.on{display:flex;animation:monte .3s cubic-bezier(.22,1,.36,1) both}
+.adm input{appearance:none;-webkit-appearance:none;flex:none;width:46px;height:28px;border-radius:14px;background:rgba(243,239,228,.2);position:relative;margin:0;cursor:pointer;transition:background .2s}
+.adm input::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:transform .2s cubic-bezier(.22,1,.36,1)}
+.adm input:checked{background:var(--mais)}.adm input:checked::after{transform:translateX(18px)}
+.adm input:focus-visible{outline:3px solid var(--mais);outline-offset:2px}
+@keyframes monte{from{opacity:0;transform:translateY(14px)}}
+@keyframes pouls{50%{opacity:.35;transform:scale(.8)}}
+@media (prefers-reduced-motion:reduce){main,.adm.on,.badge i{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="logo" id="logo"><span class="logo-txt">Marché <span>de Gros</span></span></div>
+  <span class="badge"><i aria-hidden="true"></i>Site web en maintenance</span>
+  <h1>Le Marché de Gros est disponible <em>uniquement sur l’application</em>.</h1>
+  <p>Nous préparons le nouveau site. En attendant, tout se passe dans l’application : acheter, vendre, négocier, suivre vos commandes.</p>
+  <a class="go" id="go" href="application.dc.html?app=1">Ouvrir l’application<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+  <p class="compte" id="compte" aria-live="polite"></p>
+  <div class="pc">Sur ordinateur, l’application s’ouvre ici, dans votre navigateur. Sur téléphone, ouvrez la même adresse dans <b>Chrome</b> ou <b>Safari</b>, puis touchez <b>« Ajouter à l’écran d’accueil »</b>.</div>
+  <ul class="liste">
+    <li>Vendre et acheter en gros<small>Offres et demandes, partout en Côte d’Ivoire</small></li>
+    <li>Négocier le prix<small>Par écrit, jusqu’à l’accord</small></li>
+    <li>Suivre la commande<small>Du chargement à la réception</small></li>
+    <li>Votre numéro reste caché<small>Tout se discute dans l’application</small></li>
+  </ul>
+</main>
+<button type="button" class="pt" id="pt" aria-label="Administration"></button>
+<label class="adm" id="adm"><span>Entrer en tant qu’admin</span><input type="checkbox" role="switch" id="admSw"></label>
+<script src="app/marque.js?v=20261023v"></script>
+<script>
+(function () {
+  'use strict';
+  try { if (window.MDGMarque) document.getElementById('logo').innerHTML = MDGMarque.empile({ fond: 'vert', trait: false }); } catch (_) {}
+  // l'adresse demandée (#/catalogue…) suit vers l'application
+  var go = document.getElementById('go'), h = location.hash && location.hash !== '#' ? location.hash : '';
+  go.href = 'application.dc.html?app=1' + h;
+  // redirection vers l'application après quelques secondes ; on peut rester sur la page
+  var n = 8, compte = document.getElementById('compte'), t = 0;
+  function dire() { compte.innerHTML = 'Vous allez être redirigé vers l’application dans ' + n + ' s. <button type="button" id="reste">Rester sur cette page</button>'; document.getElementById('reste').onclick = arreter; }
+  function arreter() { clearInterval(t); t = 0; compte.textContent = ''; }
+  dire();
+  t = setInterval(function () { n--; if (n <= 0) { clearInterval(t); location.href = go.href; } else dire(); }, 1000);
+  // l'administrateur : le point en bas à droite montre l'interrupteur ; l'allumer ouvre le site, qui vérifie la connexion
+  var pt = document.getElementById('pt'), adm = document.getElementById('adm'), sw = document.getElementById('admSw');
+  pt.onclick = function () { arreter(); adm.classList.toggle('on'); if (adm.classList.contains('on')) sw.focus(); };
+  sw.onchange = function () { if (sw.checked) setTimeout(function () { location.href = 'index-v3.html?admin=1' + h; }, 250); };
+})();
+</script>
+</body>
+</html>

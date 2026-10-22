@@ -647,3 +647,13 @@ Lui proposer de coller ceci :
 - **Réglages → Aide pour débuter** : interrupteur « Astuces et tutoriels » (le rallumer remet tout à zéro, comme pour un nouveau) et boutons « Revoir un tutoriel ».
 - Tout reste sur le téléphone (`mdg-astuces:off`, `mdg-astuces:vu`). Mouvement réduit : pas d'animation, seulement la bulle.
 - Les textes décrivent ce que l'app fait vraiment : à mettre à jour si le parcours des codes ou du transport change.
+
+## Site web en maintenance (22/10/2026) — `maintenance.html`
+- Le site (`index-v3.html`) n'est pas encore retravaillé : **tout le monde est envoyé vers l'application**.
+  - `index.html` : téléphone → application (inchangé) ; ordinateur/tablette → `maintenance.html` (sauf l'administrateur reconnu → site).
+  - `maintenance.html` : « Site web en maintenance — disponible uniquement sur l'application », bouton « Ouvrir l'application » (`application.dc.html?app=1`), redirection automatique au bout de 8 s (« Rester sur cette page » l'arrête).
+  - `application.dc.html` ne renvoie plus les ordinateurs vers le site : l'application s'ouvre aussi sur PC (cadre de téléphone).
+- **Entrée de l'administrateur** : petit point presque invisible en bas à droite de `maintenance.html` → interrupteur « Entrer en tant qu'admin » → `index-v3.html?admin=1`.
+  Le site reste caché sous un écran « Espace administrateur » tant que le serveur n'a pas confirmé `est_admin` pour le compte connecté (vérifié à chaque ouverture). Un compte non admin est renvoyé à la maintenance.
+  Le drapeau `mdg-site:admin` (localStorage) ne sert qu'à l'aiguillage ; la décision vient toujours du serveur. `admin.html` garde sa propre protection.
+- Pour rouvrir le site à tous : retirer le bloc « SITE EN MAINTENANCE » en tête d'`index-v3.html`, le cache `#mdgGarde` et sa vérification (après `v3/nuage.js`), et remettre `index-v3.html` dans `index.html`.

@@ -293,6 +293,23 @@
   - Avant : 145 points. Après : 0, hors éléments voulus (tampons, boutons maïs, puce sélectionnée claire).
   - Script : voir la PR.
 
+### Fenêtres stables et vibrations au toucher
+- Défaut corrigé : dans « Mes ventes et achats » (et les autres fenêtres du bas), changer de période ou d'onglet faisait monter et descendre tout le haut de la fenêtre. La hauteur suivait le contenu (chargement, liste vide, liste pleine).
+  - Mesuré avant : onglets Tout / Ventes / Achats à 566 → 463 → 531 px. Après : 389 px fixe.
+  - La rangée « Ce mois, 3 mois… » revenait au début à chaque clic ; elle garde maintenant sa position.
+- `app/stable.js` (chargé dans l'app et dans `index-v3.html`) :
+  - hauteur fixe pour les fenêtres à onglets : relevé `.rl`, commandes et chauffeur `.cm`, groupes `.gr`, appro `.ap` ;
+  - les autres fenêtres du bas ne redescendent plus une fois touchées (hauteur minimale posée au toucher) ;
+  - les rangées qui défilent de côté gardent leur position quand la fenêtre se redessine.
+  - Compte, messages, négociations et identité avaient déjà une hauteur fixe.
+- Accueil : le nom de famille long (« Assaisonnements, épices, condiments ») passait sur deux lignes et poussait les cartes de 2 px. Il reste sur une ligne, raccourci par « … ». Les flèches de la roue ne sont plus coupées.
+- `app/vibre.js` (`MDGVibre`) : petites vibrations, réglables dans Réglages → Sons et écran → « Vibrations au toucher ». Désactivées par défaut.
+  - Un tic sur chaque bouton, lien, onglet ou interrupteur ; un cran à chaque produit qui passe dans la roue de l'accueil, et un au lâcher.
+  - Android : API vibrate du navigateur. iPhone : pas d'API ; à partir d'iOS 18, on clique un interrupteur système invisible (`<input type="checkbox" switch>`), ce qui donne un léger retour haptique. Il ne marche que pendant un toucher : pas pendant le glissé de la roue, seulement au lâcher.
+  - Le choix reste sur le téléphone (`mdg-app:vibrations`).
+  - Non vérifié sur un vrai iPhone (impossible ici) : à tester par le propriétaire.
+  - Les vibrations de confirmation qui existaient déjà (annonce publiée, chauffeur arrivé, code refusé, bannières) ne dépendent pas de ce réglage.
+
 ## 5. En attente d'une décision du propriétaire
 
 
@@ -306,6 +323,7 @@
 - L'accueil : J'ai / Je cherche entièrement visibles (#81).
 - L'envoi réel d'un logo et de preuves de structure (testé seulement avec un serveur simulé).
 - L'écran « annonce publiée » après une vraie publication (rappel de confiance, sac qui saute).
+- Les vibrations au toucher sur iPhone (iOS 18 ou plus) et sur Android.
 
 ## 7. Suite logique proposée
 

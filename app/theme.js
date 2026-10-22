@@ -91,11 +91,12 @@ html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme
         <p class="rg-sec">Sons et écran</p>
         <div class="rg-l">
           ${S ? `<button type="button" class="rg-o" data-sons><i>${I('son')}</i><span>Sons<small>Notes de balafon · ${sn && sn.on ? 'activés' : 'désactivés'}</small></span><b class="rg-chev" aria-hidden="true">${I('suite')}</b></button>` : ''}
+          ${window.MDGVibre ? sw('vibre', 'Vibrations au toucher', MDGVibre.possible ? 'Un petit tic quand vous touchez un bouton ou faites tourner les produits de l’accueil' + (/iP(hone|ad)/.test(navigator.userAgent) ? ' (iPhone : iOS 18 ou plus)' : '') : 'Ce navigateur ne permet pas les vibrations', MDGVibre.actif(), !MDGVibre.possible) : ''}
           ${sw('ecran', 'Messages à l’écran', 'Une ligne quand une proposition arrive, est acceptée ou refusée', pf.toasts !== false)}
         </div>
         ${pr && connecte() && !(window.MDGStatut && MDGStatut.estOfficiel && N().session().user && MDGStatut.estOfficiel(N().session().user.id)) ? `<p class="rg-sec">Confidentialité</p>
         <div class="rg-l">${sw('oeil', 'Montrer mon nom de famille', 'Sinon, les autres voient « ' + esc(pr.prenom || 'Prénom') + ' ' + esc(pr.nom ? pr.nom[0] + '.' : 'N.') + ' ». Votre numéro n’est jamais affiché.', !!pr.nom_public)}</div>` : ''}
-        <p class="rg-n">L’apparence, les sons et les messages à l’écran restent sur ce téléphone.</p></div>`;
+        <p class="rg-n">L’apparence, les sons, les vibrations et les messages à l’écran restent sur ce téléphone.</p></div>`;
       bg.querySelector('.rg-x').onclick = fermer;
       bg.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { choisir(b.dataset.m); peindre(); const f = bg.querySelector(`[data-m="${b.dataset.m}"]`); if (f) f.focus(); });
       const bp = bg.querySelector('[data-pousse]');
@@ -108,6 +109,7 @@ html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme
         const k = i.dataset.sw; i.disabled = true;
         try {
           if (k === 'Annonces du marché') { await N().rpc('notif_reglage_diffusions', { p_oui: i.checked }); st.diff = i.checked; dire(i.checked ? 'Annonces du marché *activées*' : 'Annonces du marché *coupées*'); }
+          else if (k === 'Vibrations au toucher') { MDGVibre.regler(i.checked); dire(i.checked ? 'Vibrations *activées*' : 'Vibrations *coupées*'); }
           else if (k === 'Messages à l’écran') { const o = lirePrefs(); o.toasts = i.checked; localStorage.setItem('mdg-compte:prefs', JSON.stringify(o)); dire('Réglage *enregistré*'); }
           else if (k === 'Montrer mon nom de famille' && C && C.regler) { await C.regler({ nom_public: i.checked }); dire('Réglage *enregistré*'); }
         } catch (x) { i.checked = !i.checked; dire('Impossible : ' + ((x && x.message) || 'réessayez')); }

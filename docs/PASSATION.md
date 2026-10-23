@@ -1040,3 +1040,10 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Application** (`v3/reputation.js`) : la moyenne du profil n'utilise que les avis `compte` (sans ce champ, ancien serveur : tous) ; badge « ✓ vérifié » à côté de l'auteur vérifié.
 - Vérifié : test (transaction annulée, vendeur sans avis + 5 avis 5★ d'un même acheteur + 1 avis 2★ d'un autre) → 3,5 sur 2 partout (avant : 4,5 sur 6), 6 avis lisibles dont 2 comptent ; base réelle : chiffres inchangés (5,0 sur 1) ; navigateur : « 3,5 · 2 avis », 6 avis affichés, 1 badge vérifié, aucune erreur.
 - `reputation.js?v=20261031c`, cache `mgci-v211`.
+
+## L'heure de dernière activité n'est plus visible sans compte (23/10/2026) — schéma 78
+- Fuite trouvée à l'audit : `profil_public` (`vu_le`) et `statuts_publics` (`actif_le`), ouvertes à tous, donnaient à n'importe quel visiteur sans compte l'heure exacte de la dernière connexion ou du dernier message d'un membre.
+- **Serveur** (`supabase/schema-78-activite-membres.sql`, appliqué le 23/10) : ces deux heures ne sont renvoyées qu'aux membres connectés ; sans compte, elles sont vides. Le reste des deux fonctions est identique (statuts_publics garde le calcul « un avis par personne » du schéma 77).
+- **Application** : inchangée ; sans heure, « actif il y a… » et le badge « Actif aujourd'hui » ne s'affichent simplement pas.
+- Laissés volontairement : l'identifiant de l'admin (nécessaire pour écrire au Marché de Gros ; `est_admin_id` sert aussi au filtre des textes, retirer son accès casserait les publications) ; le mode « test » des notifications (n'envoie qu'au téléphone de la personne elle-même).
+- Vérifié sur la base réelle (transaction annulée) : sans compte → heures vides, note et ventes inchangées ; membre connecté → heures données.

@@ -122,14 +122,28 @@
     }).catch(function () { [corps, pp].forEach(function (c) { if (c) c.innerHTML = '<p class="tb-attente">Les prix ne répondent pas pour l’instant. Réessayez dans un moment.</p>'; }); });
   }
 
+  // ——— la mesure (schéma 81) : une vue par page et par visite, un clic par bouton d'action ; sans donnée personnelle ; jamais l'administrateur ———
+  var ADMIN = false; try { ADMIN = localStorage.getItem('mdg-site:admin') === '1'; } catch (_) {}
+  var UTM = {}; (location.search.match(/utm_[a-z]+=[^&]*/g) || []).forEach(function (x) { var k = x.split('='); UTM[k[0]] = decodeURIComponent(k[1] || ''); });
+  var PAGE = location.pathname.replace(/^.*?\/site\//, 'site/').replace(/index\.html$/, '') || 'site/';
+  function mesurer(ev, cible) {
+    if (ADMIN) return;
+    var ref = ''; try { ref = document.referrer ? new URL(document.referrer).hostname.replace(/^www\./, '') : ''; } catch (_) {}
+    try { fetch(URL0 + '/rest/v1/rpc/mesurer', { method: 'POST', keepalive: true, headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_evenement: ev, p_page: PAGE, p_cible: cible || null, p_source: UTM.utm_source || (ref && ref !== location.hostname ? ref : null), p_support: UTM.utm_medium || null, p_campagne: UTM.utm_campaign || null,
+        p_appareil: matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 768 ? 'tel' : 'ordi' }) }).catch(function () {}); } catch (_) {}
+  }
+  try { if (!sessionStorage.getItem('mdg-vu:' + PAGE)) { sessionStorage.setItem('mdg-vu:' + PAGE, '1'); mesurer('vue'); } } catch (_) { mesurer('vue'); }
+
   // ——— vers l'application ———
   var APP = new URL(R + 'application.dc.html', document.baseURI).href, RACINE = new URL(R || './', document.baseURI).href;
   var telephone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 768;
-  function lien(hash, intention, support) { return APP + '?utm_source=site&utm_medium=' + (support || 'bouton') + (intention ? '&utm_campaign=' + encodeURIComponent(intention) : '') + (hash || '#/'); }
+  function lien(hash, intention, support) { return APP + '?utm_source=' + encodeURIComponent(UTM.utm_source ? 'site-' + UTM.utm_source : 'site') + '&utm_medium=' + (support || 'bouton') + (intention ? '&utm_campaign=' + encodeURIComponent(intention) : '') + (hash || '#/'); }
   function qr(hote, texte) { if (!hote || !window.qrcode) return; try { var q = qrcode(0, 'M'); q.addData(texte); q.make(); hote.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (_) {} }
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('[data-app]'); if (!a) return;
     var url = lien(a.getAttribute('data-app'), a.getAttribute('data-intention'));
+    mesurer('clic', a.getAttribute('data-intention') || a.getAttribute('data-app'));
     if (telephone) { e.preventDefault(); location.href = url; return; }
     var d = $('tel'); if (!d || !d.showModal) return;
     e.preventDefault(); qr($('telQr'), url); $('telLien').textContent = url.replace(/^https?:\/\//, '').replace(/\?.*?(#|$)/, '$1');

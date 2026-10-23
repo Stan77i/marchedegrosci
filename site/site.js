@@ -76,19 +76,21 @@
   }
   // page produit : <main data-produit="tomate">
   var PROD = (document.querySelector('[data-produit]') || { getAttribute: function () { return ''; } }).getAttribute('data-produit');
+  function publier(h, intention, texte) { return '<a class="lien" href="' + R + 'application.dc.html' + h.replace(/&/g, '&amp;') + '" data-app="' + h.replace(/&/g, '&amp;') + '" data-intention="' + intention + '">' + texte + '</a>'; }
   function fil(L) {
     var court = $('filCourt'), long = $('filLong'), pf = $('filProduit');
     if (pf) {
       var LP = L.filter(function (a) { return a.product_slug === PROD; });
-      pf.innerHTML = LP.length ? LP.map(function (a) { return '<li>' + symb(a.sens) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></li>'; }).join('')
-        : '<li class="fil-vide">Aucune annonce active pour ce produit en ce moment. La première peut être la vôtre : elle sera vue par tout le réseau.</li>';
+      pf.innerHTML = LP.length ? LP.map(function (a) { var h = '#/produits/' + esc(a.product_slug); return '<li><a class="fil-a" href="' + R + 'application.dc.html' + h + '" data-app="' + h + '" data-intention="annonce">' + symb(a.sens) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></a></li>'; }).join('')
+        : '<li class="fil-vide">Aucune annonce active pour ce produit en ce moment. ' + publier('#/publier?sens=offre&produit=' + encodeURIComponent(PROD), 'premiere-annonce', 'Publiez la première') + ' : tout le réseau la verra.</li>';
     }
     if (!L.length) {
-      if (court) court.innerHTML = '<li class="fil-vide">Aucune annonce pour l’instant : la première peut être la vôtre.</li>';
-      if (long) long.innerHTML = '<li class="fil-vide">Aucune annonce active pour l’instant.</li>';
+      if (court) court.innerHTML = '<li class="fil-vide">Aucune annonce pour l’instant. ' + publier('#/publier?sens=offre', 'premiere-annonce', 'Publiez la première') + ' : tout le réseau la verra.</li>';
+      if (long) long.innerHTML = '<li class="fil-vide">Aucune annonce active pour l’instant. ' + publier('#/publier?sens=offre', 'premiere-annonce', 'Publiez la première') + '.</li>';
       return;
     }
-    var ligne = function (a, nuit) { return '<li>' + (photo(a.product_slug) || symb(a.sens, nuit)) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></li>'; };
+    // chaque annonce s'ouvre dans l'application (fiche du produit) : le parcours voulu, « il clique sur une annonce »
+    var ligne = function (a, nuit) { var h = '#/produits/' + esc(a.product_slug); return '<li><a class="fil-a" href="' + R + 'application.dc.html' + h + '" data-app="' + h + '" data-intention="annonce">' + (photo(a.product_slug) || symb(a.sens, nuit)) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></a></li>'; };
     if (court) court.innerHTML = L.slice(0, 3).map(function (a) { return ligne(a, true); }).join('');
     if (long) long.innerHTML = L.slice(0, 40).map(function (a) { return ligne(a, true); }).join('');
   }
@@ -104,13 +106,13 @@
     rpc('tableau_produits', { p_region: null }).then(function (L) {
       if (pp) {
         var r = (L || []).filter(function (x) { return x.slug === PROD; })[0];
-        pp.innerHTML = !r ? '<p class="tb-attente">Aucun prix publié pour ce produit en ce moment.</p>'
+        pp.innerHTML = !r ? '<p class="tb-attente">Aucun prix publié pour ce produit en ce moment. ' + publier('#/publier?sens=offre&produit=' + encodeURIComponent(PROD), 'premier-prix', 'Publier mon prix') + '</p>'
           : '<div class="pp"><span>Vendeur le moins cher</span>' + prix(r.meilleure_offre, r.unite_offre) + (r.n_offres ? '<span class="nbul o">' + symb('offre') + r.n_offres + ' offre' + (r.n_offres > 1 ? 's' : '') + '</span>' : '') + '</div>'
           + '<div class="pp"><span>Meilleur budget d’acheteur</span>' + prix(r.meilleure_demande, r.unite_demande) + (r.n_demandes ? '<span class="nbul d">' + symb('demande') + r.n_demandes + ' demande' + (r.n_demandes > 1 ? 's' : '') + '</span>' : '') + '</div>';
       }
       if (!corps) return;
       L = (L || []).slice(0, 8);
-      if (!L.length) { corps.innerHTML = '<p class="tb-attente">Aucun prix publié pour l’instant. Les premiers vendeurs et acheteurs apparaîtront ici.</p>'; return; }
+      if (!L.length) { corps.innerHTML = '<p class="tb-attente">Aucun prix publié pour l’instant. ' + publier('#/publier?sens=offre', 'premier-prix', 'Publier mon prix') + '</p>'; return; }
       corps.innerHTML = L.map(function (r) {
         var nom = NOMS[r.slug] || r.lab, img = NOMS[r.slug] ? '<img src="' + S + 'img/' + esc(r.slug) + '-160.webp" alt="' + esc(nom) + '" width="56" height="56" loading="lazy">' : '<span style="width:56px"></span>';
         var achat = r.n_offres > 0;
@@ -146,7 +148,10 @@
     mesurer('clic', a.getAttribute('data-intention') || a.getAttribute('data-app'));
     if (telephone) { e.preventDefault(); location.href = url; return; }
     var d = $('tel'); if (!d || !d.showModal) return;
-    e.preventDefault(); qr($('telQr'), url); $('telLien').textContent = url.replace(/^https?:\/\//, '').replace(/\?.*?(#|$)/, '$1');
+    var it = a.getAttribute('data-intention') || '', sens = /sens=demande/.test(a.getAttribute('data-app')) ? 'demande' : /sens=offre|#\/vendre/.test(a.getAttribute('data-app')) ? 'offre' : '';
+    $('t-tel').textContent = sens === 'offre' ? 'Publiez votre offre depuis votre téléphone' : sens === 'demande' ? 'Publiez votre demande depuis votre téléphone' : it === 'annonce' ? 'Voyez cette annonce sur votre téléphone' : 'Continuez sur votre téléphone';
+    $('telTexte').textContent = 'Scannez ce code avec l’appareil photo de votre téléphone : l’application s’ouvre ' + (sens === 'offre' ? 'sur votre offre' : sens === 'demande' ? 'sur votre demande' : 'au bon endroit') + '. Elle vous demande votre numéro pour créer votre compte, gratuitement.';
+    e.preventDefault(); qr($('telQr'), url); $('telLien').textContent = RACINE.replace(/^https?:\/\//, '').replace(/\/$/, '');
     d.showModal();
   });
   qr($('qr'), RACINE + '?utm_source=site&utm_medium=qr');

@@ -1253,3 +1253,10 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 ## Site public : « En ce moment » sur le calendrier, 2 pages produits (23/10/2026)
 - `site/saisons/` : bloc « En ce moment, en <mois> » en tête : les produits en récolte ce mois-ci (lus dans la page même, attribut `data-mois` de chaque produit, petit script dans le gabarit), avec lien vers leur page. Correction : les blocs du calendrier s'alignent sur le titre (marges latérales auto gardées).
 - Pages produits concombre et soja (calendrier FAO, photo) : **27 pages produits**.
+
+## Site public : accueil, conversion (audit `cro-optimization`, 23/10/2026)
+- Chaque annonce du fil (accueil, réseau, page produit) est un **lien** vers la fiche du produit dans l'application (`data-intention="annonce"`).
+- Le panneau « téléphone » reprend ce que la personne voulait faire : « Publiez votre offre / votre demande depuis votre téléphone », « Voyez cette annonce… » ; adresse courte affichée ; « Votre numéro n'est jamais montré aux autres membres ».
+- Fil ou tableau vides : un lien d'action (« Publiez la première », « Publier mon prix »), en maïs sur fond vert.
+- Bouton « Prendre l'application » de l'en-tête mesuré à part (`entete`) ; `href` des deux portes alignés sur leur `data-app` ; sous les rayons : « Votre produit n'est pas affiché ? … Je vends · Je cherche ».
+- Non repris : bandeau de confiance sous les portes (déjà dit sous le titre), nouveau titre de la section « appli » (faible impact).

@@ -356,3 +356,49 @@ html.garde body { overflow: hidden; }
   .cr-carte.repli { height: auto; }
   .cr-panneau { border-left: 0; border-top: 1px solid var(--ligne-n); }
 }
+
+/* ═════════ les guides (site/guides/) ═════════ */
+.gd-tete { background: var(--vert); color: var(--ivoire); padding: clamp(28px, 4vw, 56px) var(--gout); display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 40px; align-items: center; }
+@media (min-width: 1300px) { .gd-tete { padding-left: calc((100% - var(--large)) / 2); padding-right: calc((100% - var(--large)) / 2); } }
+.gd-tete h1 { font-size: clamp(32px, 3.8vw, 52px); max-width: 20ch; }
+.gd-resume { margin-top: 14px; font-size: 19px; color: var(--creme-2); max-width: 56ch; }
+.gd-date { margin-top: 14px; font-size: 14.5px; color: var(--creme-2); }
+.gd-tete img { width: 100%; height: auto; filter: drop-shadow(0 18px 18px rgba(0, 0, 0, .35)); }
+.gd-corps { display: grid; grid-template-columns: minmax(0, 68ch) 320px; justify-content: center; gap: 56px; padding: clamp(40px, 6vw, 72px) var(--gout); }
+.gd-texte { font-size: 18px; line-height: 1.7; color: #2B2620; }
+.gd-texte h2 { font-size: 27px; margin: 44px 0 12px; color: var(--encre); }
+.gd-texte p, .gd-texte ul, .gd-texte ol { margin: 0 0 16px; }
+.gd-texte ul, .gd-texte ol { padding-left: 1.2em; }
+.gd-texte li { margin-bottom: 8px; }
+.gd-texte li::marker { color: var(--vert); font-weight: 700; }
+.gd-texte a { color: var(--vert); text-decoration-color: var(--mais); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.gd-texte b { color: var(--encre); }
+.gd-texte sup a { text-decoration: none; font-weight: 700; padding: 0 2px; }
+.chapo { font-size: 21px; line-height: 1.6; color: var(--encre); }
+.note-g { padding: 14px 18px; border-radius: 14px; background: rgba(242, 194, 48, .16); color: #4A3A08; font-size: 16px; }
+.liste-g { counter-reset: l; list-style: none; padding: 0 !important; }
+.liste-g li { counter-increment: l; display: flex; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--blanc); box-shadow: 0 1px 0 var(--ligne); }
+.liste-g li::before { content: counter(l); flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--vert); color: var(--mais); font: 700 14px Jost; margin-top: 2px; }
+.sources-g { font-size: 15px; color: var(--texte-2); line-height: 1.55; }
+.gd-cote { position: relative; }
+.gd-action { position: sticky; top: 100px; display: grid; gap: 10px; padding: 22px; border-radius: 22px; background: var(--vert); color: var(--ivoire); box-shadow: 0 14px 34px rgba(23, 21, 18, .18); }
+.gd-action b { font-size: 21px; }
+.gd-action p { color: var(--creme-2); font-size: 15.5px; }
+.gd-action .bt { justify-self: start; white-space: normal; }
+.gd-autres { display: grid; gap: 4px; margin-top: 24px; }
+.gd-autres a { padding: 8px 0; color: var(--vert); font-weight: 600; text-decoration: none; border-top: 1px solid var(--ligne); }
+.gd-autres a:hover { text-decoration: underline; text-decoration-color: var(--mais); }
+.gd-cartes { list-style: none; margin: 0 auto; padding: 0; display: grid; gap: 12px; }
+.gd-cartes a { display: flex; align-items: center; gap: 20px; padding: 14px 20px 14px 14px; border-radius: 22px; background: var(--blanc); text-decoration: none; box-shadow: 0 1px 0 var(--ligne), 0 10px 26px rgba(23, 21, 18, .05); transition: transform .25s cubic-bezier(.22, 1, .36, 1); }
+.gd-cartes a:hover { transform: translateX(4px); }
+.gd-cartes img { flex: none; width: 96px; height: 96px; object-fit: contain; filter: drop-shadow(0 6px 6px rgba(23, 21, 18, .18)); }
+.gd-cartes span { display: grid; gap: 4px; }
+.gd-cartes b { font-size: 21px; line-height: 1.2; }
+.gd-cartes small { color: var(--texte-2); font-size: 15.5px; }
+.accueil-guides > p { margin-top: 14px; }
+@media (max-width: 980px) {
+  .gd-tete { grid-template-columns: 1fr; }
+  .gd-tete img { width: 200px; }
+  .gd-corps { grid-template-columns: 1fr; gap: 32px; }
+  .gd-action { position: static; }
+}

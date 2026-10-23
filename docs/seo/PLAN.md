@@ -47,6 +47,7 @@
 3. Fonction `fil_public()` (prénom + initiale, ville, produit, quantité, type, date) : schéma, test sur le projet de test, puis production.
 4. Carte du réseau du site (`site/carte/`) branchée sur `fil_public()`.
 5. Liens d'intention dans l'application : `#/vendre?produit=…`, `#/demande?produit=…`, achats groupés, approvisionnement ; intention gardée pendant l'inscription (`mdg:connecte`).
+   **Fait (23/10/2026)** : `#/publier?sens=offre|demande&produit=<id>&qte=<n>&unite=<u>`, `#/vendre?produit=<id>`, `#/demande?produit=<id>`, `#/groupes`, `#/appro` ; provenance `utm_*` gardée sur le téléphone (`mdg-app:source`).
 
 **P1 (acquisition)**
 6. Pages stratégiques : « Vendre sa récolte », « Acheter du vivrier en gros », « Approvisionner un restaurant ou une cantine », « Achats groupés », « Acheter en gros sans se faire arnaquer ».

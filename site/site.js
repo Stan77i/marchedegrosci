@@ -102,7 +102,7 @@
         return '<div class="tb-ligne" role="row"><span class="tb-p" role="cell">' + img + esc(nom) + '</span>'
           + '<span role="cell">' + prix(r.meilleure_offre, r.unite_offre) + '</span><span role="cell">' + prix(r.meilleure_demande, r.unite_demande) + '</span>'
           + '<span class="tb-n" role="cell">' + (r.n_offres ? '<span class="nbul o">' + symb('offre') + r.n_offres + '</span>' : '') + (r.n_demandes ? '<span class="nbul d">' + symb('demande') + r.n_demandes + '</span>' : '') + '</span>'
-          + '<span role="cell"><a class="tb-go" href="../application.dc.html#/produits/' + esc(r.slug) + '" data-app="#/produits/' + esc(r.slug) + '" data-intention="' + (achat ? 'acheter' : 'vendre') + '">' + (achat ? 'Acheter' : 'Vendre') + '</a></span></div>';
+          + '<span role="cell"><a class="tb-go" href="../application.dc.html#/produits/' + esc(r.slug) + '" data-app="' + (achat ? '#/produits/' + esc(r.slug) : '#/vendre?produit=' + esc(r.slug)) + '" data-intention="' + (achat ? 'acheter' : 'vendre') + '">' + (achat ? 'Acheter' : 'Vendre') + '</a></span></div>';
       }).join('');
     }).catch(function () { corps.innerHTML = '<p class="tb-attente">Le tableau ne répond pas pour l’instant. Réessayez dans un moment.</p>'; });
   }

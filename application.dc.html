@@ -31,6 +31,7 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script src="app/sac.js?v=20261102a"></script>
 <script src="app/garanties.js?v=20261031a"></script>
 <script src="app/toast.js?v=20261027e"></script>
+<script>/* l'adresse d'arrivée (liens d'intention du site : #/publier?…, #/groupes…), gardée avant que l'application ne la remette à #/ */window.MDGAdresse0=location.hash;</script>
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
@@ -889,13 +890,15 @@ class Component extends DCLogic {
     addEventListener('focusin', this.onFocus); addEventListener('focusout', this.onBlur); addEventListener('scroll', this.onVV);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { this._w = {}; this.forceUpdate(); });
     this.setIcons(this.isDark());
-    this.onAller = e => { const p = e.detail && e.detail.page; if (p && HASH[p]) { this.setState({ menu: false }); this.push(p); } }; addEventListener('mdg:aller', this.onAller);   // « Montrer dans l'app » du guide (v3/guide.js)
+    this.onAller = e => { const p = e.detail && e.detail.page; if (p && HASH[p]) { this.setState({ menu: false }); this.push(p); } }; addEventListener('mdg:aller', this.onAller);
+    // un lien d'intention ouvert alors que l'application est déjà ouverte (site → application)
+    this.onHashIntention = () => { if (/^#\/(publier|groupes|appro)\b|^#\/[^?]*\?/.test(location.hash)) this.intention(); }; addEventListener('hashchange', this.onHashIntention);   // « Montrer dans l'app » du guide (v3/guide.js)
     addEventListener('resize', this.onResize); addEventListener('storage', this.onData); addEventListener('mdg:change', this.onData); addEventListener('mdg:negoce', this.onData); addEventListener('mdg:dm', this.onData); addEventListener('mdg:activite', this.onData); addEventListener('mdg:rep', this.onData); addEventListener('mdg:profil', this.onData); addEventListener('mdg:alertes', this.onData); addEventListener('popstate', this.onPop); addEventListener('mdg:nouvelles', this.onNeuves); window.MDGAnnonceHaut = true;
     const tick = () => { const d = new Date(); this.setState({ clock: d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0') }); }; tick(); this.clk = setInterval(tick, 20000);
     const boot = () => {
       if (!window.MDG || !window.MDG.products || !window.MDGApp) return false;
       if (!window.MDG.search && !document.getElementById('mdg-search')) { const s = document.createElement('script'); s.id = 'mdg-search'; s.src = 'v2/search.js'; s.onload = this.onData; document.head.appendChild(s); }
-      this.buildFams(); this.fromHash(); this.setState({ ready: true, splBloque: false }, () => this.finSplash && this.finSplash());
+      this.buildFams(); this.fromHash(); this.setState({ ready: true, splBloque: false }, () => { this.finSplash && this.finSplash(); setTimeout(() => { const h0 = window.MDGAdresse0; window.MDGAdresse0 = ''; this.intention(h0); }, 400); });
       try { sessionStorage.removeItem('mdg-relance'); } catch (_) {} return true;
     };
     if (!boot()) this.poll = setInterval(() => { if (boot()) clearInterval(this.poll); }, 60);
@@ -962,7 +965,7 @@ class Component extends DCLogic {
     this.setState({ toast: { k, slug: x.productSlug, t: titre, x: sous } });
     clearTimeout(this._tt); this._tt = setTimeout(() => this.setState({ toast: null }), 6500);
   }
-  componentWillUnmount() { removeEventListener('mdg:aller', this.onAller); removeEventListener('mdg:nouvelles', this.onNeuves); clearTimeout(this._tt); ['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.removeEventListener(t, this.noZoom)); document.removeEventListener('touchstart', this.tS); document.removeEventListener('touchmove', this.tM); document.removeEventListener('dblclick', this.noDbl); document.removeEventListener('contextmenu', this.noCtx); if (this.map) this.map.destroy(); if (window.visualViewport) { visualViewport.removeEventListener('resize', this.onVV); visualViewport.removeEventListener('scroll', this.onVV); } document.removeEventListener('scroll', this.onAnyScroll, true); removeEventListener('focusin', this.onFocus); removeEventListener('focusout', this.onBlur); removeEventListener('scroll', this.onVV); removeEventListener('resize', this.onResize); removeEventListener('storage', this.onData); removeEventListener('mdg:change', this.onData); removeEventListener('mdg:negoce', this.onData); removeEventListener('mdg:rep', this.onData); removeEventListener('mdg:profil', this.onData); removeEventListener('popstate', this.onPop); clearInterval(this.clk); clearInterval(this.poll); }
+  componentWillUnmount() { removeEventListener('mdg:aller', this.onAller); removeEventListener('hashchange', this.onHashIntention); removeEventListener('mdg:nouvelles', this.onNeuves); clearTimeout(this._tt); ['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.removeEventListener(t, this.noZoom)); document.removeEventListener('touchstart', this.tS); document.removeEventListener('touchmove', this.tM); document.removeEventListener('dblclick', this.noDbl); document.removeEventListener('contextmenu', this.noCtx); if (this.map) this.map.destroy(); if (window.visualViewport) { visualViewport.removeEventListener('resize', this.onVV); visualViewport.removeEventListener('scroll', this.onVV); } document.removeEventListener('scroll', this.onAnyScroll, true); removeEventListener('focusin', this.onFocus); removeEventListener('focusout', this.onBlur); removeEventListener('scroll', this.onVV); removeEventListener('resize', this.onResize); removeEventListener('storage', this.onData); removeEventListener('mdg:change', this.onData); removeEventListener('mdg:negoce', this.onData); removeEventListener('mdg:rep', this.onData); removeEventListener('mdg:profil', this.onData); removeEventListener('popstate', this.onPop); clearInterval(this.clk); clearInterval(this.poll); }
   buildFams() {
     const M = window.MDG, A = window.MDGApp;
     this.cats = M.categories.slice().sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -979,6 +982,30 @@ class Component extends DCLogic {
     if (!page && st && st !== 'accueil') page = st;
     if (page) this.setState(Object.assign({ stack: ['home', page] }, extra));
   }
+  /* ——— liens d'intention venus du site (23/10/2026, docs/seo/PLAN.md) ———
+     #/publier?sens=offre|demande&produit=tomate&qte=20&unite=sac · #/vendre?produit=… · #/demande?produit=… · #/groupes · #/appro
+     La fenêtre « J'ai / Je cherche » s'ouvre déjà remplie ; sans compte, on publie quand même (l'annonce part après la connexion, nuage.js).
+     L'approvisionnement demande un compte : l'intention attend la connexion (mdg:connecte). La provenance (utm_*) est gardée sur ce téléphone. */
+  intention(h) {
+    const brut = (h || location.hash || '').split('?'), r = (brut[0] || '').replace(/^#\/?/, '').split('/')[0], q = new URLSearchParams(brut[1] || '');
+    try { const u = new URLSearchParams(location.search); if (u.get('utm_source') && !localStorage.getItem('mdg-app:source')) localStorage.setItem('mdg-app:source', JSON.stringify({ s: u.get('utm_source').slice(0, 40), m: (u.get('utm_medium') || '').slice(0, 40), c: (u.get('utm_campaign') || '').slice(0, 40), t: Date.now() })); } catch (_) {}
+    const M = window.MDG, slug = q.get('produit'), connu = !!slug && M.products.some(p => p.slug === slug);
+    const sens = r === 'publier' ? (q.get('sens') === 'demande' ? 'cherche' : 'jai') : r === 'vendre' && connu ? 'jai' : r === 'demande' && connu ? 'cherche' : null;
+    if (sens) {
+      this.openSheet(sens, connu ? slug : undefined);
+      const qte = +(q.get('qte') || 0), unite = (q.get('unite') || '').replace(/[^\p{L} ]/gu, '').slice(0, 20);
+      if (qte > 0 || unite) this.setState(st => ({ mf: Object.assign({}, st.mf, qte > 0 && qte < 1e7 ? { qty: String(qte) } : {}, unite ? { unit: unite } : {}) }));
+    } else if (r === 'groupes') this.attendre(() => window.MDGGroupes, () => MDGGroupes.ouvrir());
+    else if (r === 'appro') this.attendre(() => window.MDGAppro && window.MDGNuage, () => {
+      if (MDGNuage.session()) return MDGAppro.ouvrir();
+      const apres = () => { removeEventListener('mdg:connecte', apres); setTimeout(() => MDGAppro.ouvrir(), 500); };
+      addEventListener('mdg:connecte', apres); MDGNuage.open('Connectez-vous pour organiser votre approvisionnement.');
+    });
+    else return;
+    // jouée une seule fois : l'adresse redevient propre (sans les paramètres)
+    try { history.replaceState(history.state, '', location.pathname + (r === 'vendre' || r === 'demande' ? '#/' + r : '#/')); } catch (_) {}
+  }
+  attendre(test, fn, n = 0) { if (test()) return fn(); if (n < 40) setTimeout(() => this.attendre(test, fn, n + 1), 250); }
   hashOf(s, st) { st = st || this.state; return s === 'fiche' ? '#/produits/' + st.slug : s === 'vendeur' ? '#/producteurs/' + st.vid : s === 'info' ? '#/' + st.infoK : (HASH[s] || '#/'); }
 
   /* ——— données (partagées avec le site) ——— */

@@ -26,7 +26,7 @@
 @keyframes pmMonte{from{transform:translateY(60px);opacity:.4}}
 .pm-poi{display:block;width:40px;height:4px;margin:0 auto 14px;border-radius:2px;background:rgba(243,239,228,.22)}
 .pm-x{position:absolute;right:14px;top:14px;width:40px;height:40px;border:0;border-radius:50%;background:rgba(243,239,228,.08);color:#F3EFE4;font:400 20px/1 Jost,sans-serif;cursor:pointer}
-.pm-hd{display:flex;align-items:center;gap:14px;margin:0 46px 18px 0}
+.pm-hd{display:flex;align-items:center;gap:14px;margin:0 58px 18px 0}
 .pm-hd .im{flex:none;width:64px;height:64px;border-radius:20px;background:radial-gradient(120% 90% at 50% 100%,rgba(242,194,48,.22),rgba(243,239,228,.05) 70%);position:relative}
 .pm-hd .im img{position:absolute;left:50%;bottom:2px;width:74px;height:74px;margin-left:-37px;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
 .pm-hd small{display:block;font:600 11px/1.2 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#B9AD98}
@@ -120,7 +120,7 @@
       return `${ech}${vous}${repere}<div class="pm-act"><button type="button" class="go${v ? ' v' : ''}" data-placer="${v ? 'offre' : 'demande'}">${v ? 'Placer mon prix de vente' : 'Placer mon budget d’achat'}</button>${neg}</div>`;
     };
     bg = document.createElement('div'); bg.className = 'pm-bg';
-    bg.innerHTML = `<div class="pm" role="dialog" aria-modal="true" aria-labelledby="pmT"><span class="pm-poi" aria-hidden="true"></span><button type="button" class="pm-x" aria-label="Fermer">×</button>
+    bg.innerHTML = `<div class="pm" role="dialog" aria-modal="true" aria-labelledby="pmT"><span class="pm-poi" aria-hidden="true"></span><button type="button" class="pm-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       <div class="pm-hd">${o.img ? `<span class="im" aria-hidden="true"><img src="${esc(o.img)}" alt=""></span>` : ''}<div><small>${esc(o.nom)}${art ? ' · ' + esc(art) : ''}</small><h2 id="pmT">Ici, chacun <em>place son prix</em></h2></div></div>
       ${o.exemple ? '<p class="pm-ex">Exemple de démonstration : ces prix et ces noms ne sont pas réels.</p>' : ''}
       ${o.activite ? `<div class="pm-ac ${esc(o.activite.cls || '')}" role="status"><i aria-hidden="true">${esc(o.activite.ico)}</i><span><b>${esc(o.activite.t)}</b><small>${esc(o.activite.s)}</small></span></div>` : ''}

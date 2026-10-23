@@ -49,7 +49,7 @@
   function feuille(html, label) {
     if (!document.getElementById('alCss')) { const st = document.createElement('style'); st.id = 'alCss'; st.textContent = CSS; document.head.appendChild(st); }
     const bg = document.createElement('div'); bg.className = 'al-bg';
-    bg.innerHTML = `<div class="al" role="dialog" aria-modal="true" aria-label="${esc(label)}"><button type="button" class="al-x" aria-label="Fermer">×</button>${html}</div>`;
+    bg.innerHTML = `<div class="al" role="dialog" aria-modal="true" aria-label="${esc(label)}"><button type="button" class="al-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button>${html}</div>`;
     document.body.appendChild(bg);
     const rendre = N() && N().piege ? N().piege(bg) : null, k = e => { if (e.key === 'Escape') fermer(); };
     const fermer = () => { bg.remove(); removeEventListener('keydown', k); rendre && rendre(); };

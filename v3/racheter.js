@@ -72,7 +72,7 @@
     document.addEventListener('keydown', clavier);
     return bg.querySelector('.rc');
   }
-  const tete = (t, em) => `<div class="rc-h"><h2 tabindex="-1">${esc(t)}${em ? ' <em>' + esc(em) + '</em>' : ''}</h2><button class="rc-x" data-rcx aria-label="Fermer">×</button></div>`;
+  const tete = (t, em) => `<div class="rc-h"><h2 tabindex="-1">${esc(t)}${em ? ' <em>' + esc(em) + '</em>' : ''}</h2><button class="rc-x" data-rcx aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`;
   const focusTitre = box => { const h = box.querySelector('h2'); if (h) h.focus(); };
   const connecte = () => { if (!N() || !N().session()) { if (N()) N().open(); return false; } return true; };
 

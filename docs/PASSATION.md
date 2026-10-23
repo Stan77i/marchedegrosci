@@ -1074,3 +1074,12 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
   - **Marché** : 31 chiffres sourcés dans `donnees-marche.json` (lien, année, citation, vérifiés le 23/10/2026).
 - `CLAUDE.md` : nouvelle règle n° 1, tenir ce fichier à jour. Nouvelle règle : mettre à jour les modèles et refaire les PDF à chaque changement du projet.
 - Tâche automatique `.github/workflows/strategie-pdf.yml` (accord du propriétaire) : PDF refaits chaque lundi à 6 h 17 (heure d'Abidjan) et à chaque fusion concernée, enregistrés directement dans `main` par le robot GitHub.
+
+## Corrections de l'application (23/10/2026)
+
+- **« En cours » en double** : un accord conclu qui a déjà sa commande ne s'affiche plus ; seule la commande reste (`app/activite.js`). « Reprendre » d'un accord devenu commande ouvre la commande. `v3/commandes.js` expose `parNego(id)` et ajoute `nego` aux éléments d'activité.
+- **Switch « Démo » en mode jour** : la roue reste foncée ; le switch garde ses couleurs claires, comme « Tout » (`app/demo-orbite.js`).
+- **Boutons de fermeture** : le caractère « × » (mal centré avec la police Jost) est remplacé par une croix dessinée, dans 12 fichiers. La fenêtre des prix laisse la place au bouton (le titre ne passe plus dessous).
+- **Pastille appareil photo du profil** : plus petite, maïs, posée proprement sur l'anneau (`v3/compte.js`).
+- **Mode nuit des fenêtres** (`app/nuit.js`) : un dessin posé sur une pastille en dégradé vif garde sa couleur, et les pastilles rondes ne sont plus prises pour un mot surligné (l'icône des tutoriels était délavée).
+- Vérifié dans Chromium (iPhone 13), en clair et en sombre, avec une session simulée et le réseau Supabase coupé. Cache `mgci-v213`.

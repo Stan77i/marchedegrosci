@@ -20,11 +20,16 @@
     const L = [];
     [[window.MDGNegoce, 'activite'], [window.MDGCommandes, 'activite'], [window.MDGMessages, 'activite']].forEach(([m, f]) => {
       if (m && typeof m[f] === 'function') { try { L.push(...(m[f]() || [])); } catch (_) {} } });
-    return L.sort((a, b) => (RANG[a.etat] ?? 9) - (RANG[b.etat] ?? 9) || b.ts - a.ts);
+    // un accord conclu qui a déjà sa commande : seule la commande compte (sinon la même vente apparaît deux fois)
+    const C = window.MDGCommandes, aCmd = id => C && typeof C.parNego === 'function' && !!C.parNego(id);
+    return L.filter(x => !(x.k === 'nego' && x.etat === 'ok' && aCmd(x.id)))
+      .sort((a, b) => (RANG[a.etat] ?? 9) - (RANG[b.etat] ?? 9) || b.ts - a.ts);
   }
   function dernier() {
     const d = J(); if (!d || Date.now() - d.t > DUREE) return null;
-    let x = tout().find(y => y.k === d.k && y.id === d.id);
+    const T = tout();
+    let x = T.find(y => y.k === d.k && y.id === d.id);
+    if (!x && d.k === 'nego') x = T.find(y => y.k === 'cmd' && y.nego === d.id);   // l'accord est devenu une commande : on reprend la commande
     if (!x && d.k === 'dm' && window.MDGMessages && MDGMessages.trouverAct) x = MDGMessages.trouverAct(d.id);   // une conversation reste reprenable, même lue
     return x || null;
   }

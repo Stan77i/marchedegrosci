@@ -53,7 +53,7 @@
 .dm-sw .pi::after{content:"";position:absolute;left:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#F5F0E6;transition:transform .25s cubic-bezier(.22,1,.36,1)}
 html.dm-on .dm-sw{background:rgba(242,194,48,.16);border-color:rgba(242,194,48,.55)}html.dm-on .dm-sw .pi{background:#F2C230}html.dm-on .dm-sw .pi::after{transform:translateX(12px);background:#171512}
 html.dm-cache .dm-sw{display:none}
-html[data-theme=clair] .dm-sw{color:#171512;border-color:rgba(23,21,18,.14);background:rgba(23,21,18,.05)}html[data-theme=clair] .dm-sw .pi{background:rgba(23,21,18,.2)}html[data-theme=clair] .dm-sw .pi::after{background:#fff}
+/* la roue reste foncée en mode jour : le switch garde ses couleurs claires, comme « Tout » */
 @media (prefers-reduced-motion:reduce){.dm-tap,.dm-anneau,.dm-k i{animation:none!important}.dm-carte{transition:none}}`;
   function css() { if (document.getElementById('demoCss')) return; const s = document.createElement('style'); s.id = 'demoCss'; s.textContent = CSS; document.head.appendChild(s); }
   css();   // le switch « Démo » est dans la page dès le départ

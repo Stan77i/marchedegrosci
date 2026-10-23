@@ -11,7 +11,7 @@
 (function () {
   'use strict';
   if (window.MDGNuit || !window.MutationObserver) return;
-  const DEJA = '.rg-bg, .il, mdg-souffle, mdg-marche, .ng-bg';            // ont déjà leur mode nuit
+  const DEJA = '.rg-bg, .il, mdg-souffle, mdg-marche, .ng-bg, .cm-fiche, .cm-plan';            // ont déjà leur mode nuit
   const sombre = () => document.documentElement.getAttribute('data-theme') === 'sombre';
   // l'application elle-même vit dans #dc-root (elle suit le mode nuit par css/sombre.css) ; les fenêtres des modules sont posées à côté, dans <body>
   const app = () => document.getElementById('dc-root') || document.querySelector('[data-screen-label="Application"]');

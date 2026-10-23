@@ -187,22 +187,144 @@
 .cm-f input[type=number]{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512}
 .cm-pick{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:16px;border:2px dashed rgba(16,57,43,.35);background:#FFFDF8;color:#10392B;font:600 15px Jost,sans-serif;cursor:pointer}
 .cm-pick input{position:absolute;width:1px;height:1px;opacity:0}
-@media (prefers-reduced-motion:reduce){.cm-bg,.cm,.cm-camion,.cm-pb i,.cm-scene *{animation:none!important;transition:none!important}}`;
+@media (prefers-reduced-motion:reduce){.cm-bg,.cm,.cm-camion,.cm-pb i,.cm-scene *{animation:none!important;transition:none!important}}
+/* ——— la livraison : un plan en haut (la vraie carte quand le camion roule), une fiche foncée qui monte dessus (23/10/2026) ——— */
+.cm-hero{position:relative;margin:4px -18px 14px}
+.cm-hero .sv{margin:0;height:300px}.cm-hero .sv .sv-bas{bottom:38px}.cm-hero .sv .maplibregl-ctrl-bottom-right{bottom:110px}
+.cm-plan{position:relative;height:250px;overflow:hidden;background:#ECEEE9}
+.cm-plan svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.cm-plan .cm-pchip{position:absolute;left:14px;top:12px;display:inline-flex;align-items:center;gap:7px;min-height:30px;padding:0 12px;border-radius:15px;background:rgba(255,253,248,.94);color:#3F3A30;font:500 12.5px Jost,sans-serif;box-shadow:0 2px 8px rgba(23,21,18,.12)}
+.cm-plan .cm-pchip i{width:7px;height:7px;border-radius:50%;background:#9AA59F}
+.cm-plan .rt{stroke-dasharray:100;stroke-dashoffset:0;animation:cmTrace 1.3s .1s cubic-bezier(.65,0,.35,1) both}
+@keyframes cmTrace{from{stroke-dashoffset:100}}
+.cm-plan .pulse{transform-box:fill-box;transform-origin:50% 50%;animation:cmPulse 2.2s ease-out infinite}
+@keyframes cmPulse{0%{transform:scale(.6);opacity:.55}100%{transform:scale(2.3);opacity:0}}
+.cm-plan .nav{animation:cmNav .7s 1.1s cubic-bezier(.2,1.3,.4,1) both;transform-box:fill-box;transform-origin:50% 50%}
+@keyframes cmNav{from{transform:scale(.3);opacity:0}}
+.cm-fiche{position:relative;z-index:2;margin:-28px 0 0;padding:12px 18px 16px;border-radius:26px;background:#10392B;color:#F3EFE4;box-shadow:0 -10px 30px rgba(16,57,43,.18);animation:cmFiche .55s .05s cubic-bezier(.22,1,.36,1) both}
+@keyframes cmFiche{from{transform:translateY(26px);opacity:0}}
+.cm-poignee{display:block;width:40px;height:4px;margin:0 auto 12px;border-radius:2px;background:rgba(243,239,228,.28)}
+.cm-fiche small{display:block;color:rgba(243,239,228,.62);font:400 12.5px/1.3 Jost,sans-serif}
+.cm-f1{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.cm-f1 b{display:block;margin-top:2px;font:600 22px/1.1 Jost,sans-serif;letter-spacing:.01em;font-variant-numeric:tabular-nums}
+.cm-puce{flex:none;display:inline-flex;align-items:center;min-height:30px;padding:0 13px;border-radius:15px;background:rgba(243,239,228,.1);box-shadow:inset 0 0 0 1px rgba(243,239,228,.16);color:#F3EFE4;font:500 13px Jost,sans-serif;white-space:nowrap}
+.cm-puce.mais{background:#F2C230;box-shadow:none;color:#10392B;font-weight:600}.cm-puce.rouge{background:rgba(226,115,91,.2);box-shadow:inset 0 0 0 1px rgba(226,115,91,.45);color:#FFD9CF}
+.cm-pts{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:16px 0 4px;padding:0}
+.cm-pts li{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;color:rgba(243,239,228,.55);font:500 11.5px/1.2 Jost,sans-serif;text-align:center}
+.cm-pts li::before{content:"";position:absolute;top:10px;left:calc(-50% + 14px);right:calc(50% + 14px);border-top:2px dotted rgba(243,239,228,.3)}
+.cm-pts li:first-child::before{display:none}
+.cm-pts li.fait::before,.cm-pts li.ici::before{border-top-color:#F2C230;border-top-style:solid}
+.cm-pts .o{position:relative;z-index:1;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(243,239,228,.35);color:#10392B}
+.cm-pts li.fait{color:#F3EFE4}.cm-pts li.fait .o{background:#F2C230;box-shadow:none}
+.cm-pts li.ici{color:#F2C230;font-weight:600}.cm-pts li.ici .o{background:#10392B;box-shadow:inset 0 0 0 2px #F2C230}
+.cm-pts li.ici .o::after{content:"";width:8px;height:8px;border-radius:50%;background:#F2C230;animation:cmIci 1.8s ease-in-out infinite}
+@keyframes cmIci{50%{transform:scale(.55);opacity:.6}}
+.cm-pts li.off .o{box-shadow:inset 0 0 0 2px rgba(243,239,228,.2)}
+.cm-f2{display:flex;justify-content:space-between;gap:14px;margin:14px 0 0;padding:0 0 14px;border-bottom:1px solid rgba(243,239,228,.1)}
+.cm-f2 b,.cm-f3 b{display:block;margin-top:3px;font:500 15.5px/1.25 Jost,sans-serif;color:#F3EFE4;overflow-wrap:anywhere}
+.cm-f2 .r{text-align:right}
+.cm-f3{position:relative;min-height:150px;padding:14px 0 6px}
+.cm-f3 dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 14px;width:calc(100% - 118px);margin:0}
+.cm-f3 dt{color:rgba(243,239,228,.62);font:400 12.5px/1.3 Jost,sans-serif}.cm-f3 dd{margin:3px 0 0;font:500 15.5px/1.25 Jost,sans-serif;color:#F3EFE4;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.cm-f3 dd.t{color:#F2C230;font-weight:600}
+.cm-prod{position:absolute;right:-26px;top:4px;width:150px;height:150px;pointer-events:none;animation:cmProd .8s .25s cubic-bezier(.22,1,.36,1) both}
+.cm-prod img,.cm-prod svg{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 16px 18px rgba(0,0,0,.35));animation:cmFlotte 5s 1.2s ease-in-out infinite}
+@keyframes cmProd{from{transform:translateX(30px) rotate(6deg);opacity:0}}
+@keyframes cmFlotte{50%{transform:translateY(-5px) rotate(-1.5deg)}}
+.cm-pers{display:flex;align-items:center;gap:12px;margin:10px 0 0;padding:10px 10px 10px 12px;border-radius:20px;background:rgba(243,239,228,.07)}
+.cm-pers .av{flex:none;width:44px;height:44px;border-radius:50%;overflow:hidden}.cm-pers .av svg{display:block;width:44px;height:44px}
+.cm-pers b{display:block;font:500 15.5px/1.2 Jost,sans-serif;color:#F3EFE4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cm-pers>div{flex:1;min-width:0}
+.cm-pers button{flex:none;display:grid;place-items:center;width:46px;height:46px;border:0;border-radius:50%;background:#F2C230;color:#10392B;cursor:pointer;transition:transform .15s}
+.cm-pers button:active{transform:scale(.94)}.cm-pers button:focus-visible{outline:2px solid #F3EFE4;outline-offset:2px}
+@media (max-width:360px){.cm-f3 dl{width:calc(100% - 96px)}.cm-prod{width:124px;height:124px;right:-22px}}
+@media (prefers-reduced-motion:reduce){.cm-plan *,.cm-fiche,.cm-fiche *{animation:none!important}}`;
   function css() { if (document.getElementById('cmCss')) return; const s = document.createElement('style'); s.id = 'cmCss'; s.textContent = CSS; document.head.appendChild(s); }
 
-  // le camion : une cabine et un plateau, le sac posé dessus (dessiné en SVG, sans image à charger)
-  const CAMION = `<svg viewBox="0 0 150 96" width="150" height="96" aria-hidden="true">
-    <rect x="4" y="52" width="92" height="22" rx="4" fill="#10392B"/><path d="M96 34h26l18 20v20H96z" fill="#10392B"/>
-    <path d="M102 40h17l12 14h-29z" fill="#BFD8CB"/><rect x="132" y="62" width="8" height="5" rx="2" fill="#F2C230"/>
-    <circle cx="28" cy="78" r="11" fill="#171512"/><circle cx="28" cy="78" r="4.5" fill="#E7E0CF"/>
-    <circle cx="116" cy="78" r="11" fill="#171512"/><circle cx="116" cy="78" r="4.5" fill="#E7E0CF"/>
-    <rect x="4" y="50" width="92" height="4" rx="2" fill="#F2C230"/></svg>`;
 
   const humeur = c => c.etat === 'annulee' || c.etat === 'litige' ? 'triste' : c.etat === 'terminee' ? 'plein' : navigator.onLine === false ? 'ferme' : c.etape && c.etape !== 'confirmee' && c.etape !== 'preparation' ? 'plein' : 'charge';
   const ordre = (c, J) => ETAPES.filter(([k]) => k !== 'transbordement' || c.etape === 'transbordement' || (J || []).some(e => e.evenement === 'transbordement'));
   function avance(c, J) {
     const L = ordre(c, J), i = L.findIndex(([k]) => k === c.etape);
     return c.etat === 'a_confirmer' ? 0 : i < 0 ? 0 : i / (L.length - 1);
+  }
+
+  // ——— la livraison : plan, fiche, image du produit (23/10/2026) ———
+  // l'image détourée du produit (sac d'aubergines, bidon d'huile, panier de poisson…) à la place d'un carton ; sinon le sac de l'application
+  const sansAcc = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
+  function imgProduit(nom) {
+    const M = window.MDG, A = window.MDGApp, n = sansAcc(nom);
+    if (!n || !M || !M.products || !A || !A.SACK) return null;
+    const P = M.products, nm = x => sansAcc(x.name);
+    const p = P.find(x => nm(x) === n) || P.find(x => (x.aliases || []).some(a => sansAcc(a) === n))
+      || P.find(x => n.startsWith(nm(x) + ' ')) || P.find(x => nm(x).startsWith(n + ' '));
+    return p && A.SACK[p.slug] != null ? (A.IMG || 'v2/img/') + 'produit-' + p.slug + '.webp' : null;
+  }
+  // les quatre temps de la livraison, et où en est la commande (k : le point en cours ; fini : tout est fait)
+  const TEMPS = ['Confirmée', 'Chargée', 'En route', 'Livrée'];
+  const tempsK = c => c.etat === 'a_confirmer' ? -1 : ({ confirmee: 0, preparation: 0, chargement: 1, transport: 2, transbordement: 2, arrivee: 3, reception: 3, terminee: 3 })[c.etape] ?? 0;
+  const tempsFini = c => c.etat === 'terminee' || ['reception', 'terminee'].includes(c.etape);
+  function puce(c) {
+    if (c.etat === 'a_confirmer') return ['À confirmer', 'mais'];
+    if (c.etat === 'annulee') return ['Annulée', 'rouge'];
+    if (c.etat === 'litige') return ['Litige', 'rouge'];
+    if (tempsFini(c)) return [c.etat === 'terminee' ? 'Livrée' : 'Reçue', ''];
+    return [({ confirmee: 'Confirmée', preparation: 'En préparation', chargement: 'Chargée', transport: 'En route', transbordement: 'Transbordement', arrivee: 'Arrivé' })[c.etape] || 'En cours', 'mais'];
+  }
+  // le plan dessiné (pas une carte) : une ville, une route en lacets du départ à la livraison.
+  // Il ne montre aucune position : le camion est au départ tant que rien n'est chargé, à l'arrivée une fois livré.
+  function plan(c) {
+    const fin = tempsFini(c), mort = c.etat === 'annulee', attente = c.etat === 'a_confirmer';
+    const R = 'M70 184V160Q70 148 82 148H168Q180 148 180 136V104Q180 92 192 92H298Q310 92 310 80V62';
+    const blocs = [[14, 14, 86, 52], [112, 14, 70, 30], [196, 14, 92, 46], [302, 14, 84, 30], [14, 80, 40, 64], [96, 56, 70, 34], [196, 122, 92, 22], [324, 56, 62, 88], [14, 182, 40, 40], [96, 174, 70, 48], [196, 174, 112, 48], [324, 170, 62, 52], [112, 118, 54, 26]]
+      .map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="#E0E4DD"/>`).join('');
+    const nav = (x, y, a) => `<g class="nav" transform="translate(${x} ${y})"><circle r="15" fill="#10392B" stroke="#FFFDF8" stroke-width="3"/><path d="M0 -7L6 6L0 3L-6 6Z" fill="#F2C230" transform="rotate(${a})"/></g>`;
+    const route = mort ? `<path d="${R}" fill="none" stroke="#B5BBB6" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 9"/>`
+      : `<path d="${R}" fill="none" stroke="#FFFDF8" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>` +
+        `<path class="rt" pathLength="100" d="${R}" fill="none" stroke="${fin ? '#A9B1AC' : '#10392B'}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"${attente ? ' stroke-dasharray="1.5 2.5" style="animation:none"' : ''}/>`;
+    const dep = `<circle cx="70" cy="184" r="6.5" fill="#FFFDF8" stroke="#9AA59F" stroke-width="3"/>`;
+    const arr = `<circle class="pulse" cx="310" cy="50" r="12" fill="${fin ? '#2F8A5B' : '#F2C230'}"/>` +
+      `<circle cx="310" cy="50" r="12" fill="${fin ? '#2F8A5B' : '#F2C230'}" stroke="#FFFDF8" stroke-width="3"/>` +
+      (fin ? `<path d="M304.5 50.5l3.8 3.8 7.4-8" fill="none" stroke="#FFFDF8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>` : `<circle cx="310" cy="50" r="4" fill="#10392B"/>`);
+    const camion = mort || attente ? '' : fin ? nav(310, 84, 0) : nav(70, 156, 0);
+    const lab = (x, y, t, a) => `<g transform="translate(${x} ${y})"><rect x="${a === 'end' ? -8 - t.length * 6.4 : -8}" y="-12" width="${t.length * 6.4 + 16}" height="22" rx="11" fill="#FFFDF8" stroke="rgba(23,21,18,.08)"/><text x="${a === 'end' ? 0 : 0}" y="3.5" text-anchor="${a}" font-family="Jost,system-ui,sans-serif" font-size="11.5" font-weight="500" fill="#3F3A30">${esc(t)}</text></g>`;
+    const court = s => { s = String(s || ''); return s.length > 22 ? s.slice(0, 21) + '…' : s; };
+    const chip = mort ? 'Commande annulée' : attente ? 'Trajet prévu' : fin ? 'Livraison faite' : 'Plan · suivi par étapes';
+    return `<div class="cm-plan" aria-hidden="true"><svg viewBox="0 0 400 236" preserveAspectRatio="xMidYMid slice">
+      <rect width="400" height="236" fill="#ECEEE9"/>${blocs}
+      <path d="M232 60Q262 66 286 60Q296 58 296 70V92Q296 108 280 106Q252 102 232 106Q218 108 218 94V74Q218 58 232 60Z" fill="#D3E2CB"/>
+      <path d="M-10 128Q60 112 120 132T260 148T410 136" fill="none" stroke="#D2E2EA" stroke-width="9" stroke-linecap="round"/>
+      <path d="M-10 66L410 50M58 -10L66 246M380 -10L372 246" stroke="#F7F8F5" stroke-width="7" fill="none"/>
+      ${route}${dep}${arr}${camion}
+      ${c.ville_depart ? lab(86, 184, court(c.ville_depart), 'start') : ''}${lab(292, 50, court(c.lieu_livraison || 'Livraison'), 'end')}
+    </svg><span class="cm-pchip"><i></i>${chip}</span></div>`;
+  }
+  // la fiche : numéro, état, les quatre temps, d'où vers où, les chiffres, le produit, la personne en face
+  function fiche(c, Jr) {
+    const [lab, cl] = puce(c), k = tempsK(c), fini = tempsFini(c), mort = c.etat === 'annulee';
+    const pts = TEMPS.map((t, i) => { const s = mort ? 'off' : fini || i < k ? 'fait' : i === k ? 'ici' : '';
+      return `<li class="${s}"><span class="o">${s === 'fait' ? '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2.5 6.3l2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}</span>${t}</li>`; }).join('');
+    const ev = n => (Jr || []).find(e => e.evenement === n);
+    const fin = ev('reception') || ev('terminee'), la = ev('arrivee');
+    const droite = mort ? 'Annulée' : fin ? 'Reçue le ' + jour(fin.at) : la ? 'Arrivé le ' + jour(la.at) : 'Livraison à venir';
+    const img = imgProduit(c.produit);
+    const autre = c.role === 'vendeur' ? 'Acheteur' : 'Vendeur';
+    const av = window.MDGAvatar ? MDGAvatar.svg('', { size: 44, nom: c.partenaire_nom || '?' }) : '';
+    const TR = { reseau: 'Réseau Marché de Gros', acheteur: 'Par l’acheteur', vendeur: 'Par le vendeur' };
+    return `<section class="cm-fiche" aria-label="Fiche de la commande"><span class="cm-poignee" aria-hidden="true"></span>
+      <div class="cm-f1"><div><small>Commande</small><b>n° ${esc(c.numero || '—')}</b></div><span class="cm-puce ${cl}">${esc(lab)}</span></div>
+      <ol class="cm-pts" aria-label="Avancement : ${esc(lab)}">${pts}</ol>
+      <div class="cm-f2"><div><small>Créée le ${jour(c.created_at)}</small><b>${esc(c.ville_depart || 'Départ')}</b></div><div class="r"><small>${esc(droite)}</small><b>${esc(c.lieu_livraison || 'À convenir')}</b></div></div>
+      <div class="cm-f3"><dl>
+        <div><dt>Produit</dt><dd>${esc(c.produit || '—')}</dd></div>
+        <div><dt>Quantité</dt><dd>${c.quantite != null ? qte(c.quantite, c.unite) : '—'}</dd></div>
+        <div><dt>Prix convenu</dt><dd>${c.prix_unitaire != null ? F(c.prix_unitaire) + ' / ' + esc(c.unite || 'unité') : '—'}</dd></div>
+        <div><dt>Total</dt><dd class="t">${c.montant != null ? F(c.montant) : '—'}</dd></div>
+        <div><dt>Transport</dt><dd>${esc(TR[c.mode_transport] || '—')}</dd></div>
+        <div><dt>Paiement</dt><dd>${seq[c.id] && seq[c.id].actif ? 'Séquestre' : 'À la livraison'}</dd></div>
+      </dl><span class="cm-prod" aria-hidden="true">${img ? `<img src="${img}" alt="" decoding="async">` : sac(humeur(c), 150)}</span></div>
+      ${c.partenaire_nom ? `<div class="cm-pers"><span class="av" aria-hidden="true">${av}</span><div><b>${esc(c.partenaire_nom)}</b><small>${autre}</small></div>${c.partenaire_id && window.MDGMessages ? `<button type="button" data-ecrire aria-label="Écrire à ${esc(c.partenaire_nom)}">${IC('messages', 20)}</button>` : ''}</div>` : ''}
+    </section>`;
   }
 
   // ——— état ———
@@ -345,25 +467,11 @@
     if (S && S.peut_repondre) { b('rf-oui', 'Je reconnais le problème', 'p'); b('rf-non', 'Je conteste'); }
     return B.length ? `<div class="cm-act">${B.join('')}</div>` : '';
   }
-  function scene(c, arrive) {
-    const roule = c.etat === 'en_cours' && ['transport', 'transbordement'].includes(c.etape) && MOUV();
-    const surCamion = c.etat !== 'a_confirmer' && c.etat !== 'annulee' && ['chargement', 'transport', 'transbordement', 'arrivee', 'reception', 'terminee'].includes(c.etape);
-    if (!surCamion) return `<div class="cm-scene" aria-hidden="true"><div class="cm-route"></div><div class="seul">${sac(humeur(c), 104)}</div></div>`;
-    // arrivé : le camion s'arrête devant le repère de livraison, entièrement visible, avec l'étiquette « Arrivé » ou « Colis livré »
-    const la = ['arrivee', 'reception', 'terminee'].includes(c.etape) || c.etat === 'terminee' || (c.etat === 'litige' && c.etape === 'arrivee');
-    const livre = c.etat === 'terminee' || c.etape === 'reception' || c.etape === 'terminee';
-    const x = { chargement: 8, transport: 26, transbordement: 40 }[c.etape];
-    const pos = la ? 'calc(100% - 270px)' : (x || 8) + '%';
-    const fin = `<div class="cm-dest${la ? ' la' : ''}"><span class="cm-pin">${IC('lieu', 20)}</span><small>${esc(c.lieu_livraison || 'Livraison')}</small></div>`;
-    const tag = la ? `<div class="cm-arr${livre ? ' ok' : ''}${arrive && MOUV() ? ' pop' : ''}"><b>${livre ? '✓ Colis livré' : '✓ Arrivé'}</b><small>${livre ? 'Chez l’acheteur' : 'À destination'}</small></div>` : '';
-    return `<div class="cm-scene${roule ? ' roule' : ''}${arrive && MOUV() ? ' arrive' : ''}${la ? ' fini' : ''}" aria-hidden="true"><div class="cm-route"></div>${fin}${tag}
-      <div class="cm-camion" style="--x:${pos}">${CAMION}<div class="sac">${sac(humeur(c), 62)}</div></div></div>`;
-  }
   function peindreDetail(change) {
     const c = trouve(sel), box = bg.querySelector('.cm');
     // commande pas encore en mémoire (notification touchée) : on attend la réponse du serveur avant de revenir à la liste
     if (!c) { if (!lu && navigator.onLine !== false) { box.innerHTML = window.MDGSac ? MDGSac.charge('La commande arrive…') : ''; return; } vue = 'liste'; return peindreListe(); }
-    const Jr = journal[c.id] || [], L = ordre(c, Jr), p = avance(c, Jr), [titre, sous] = prochaine(c);
+    const Jr = journal[c.id] || [], L = ordre(c, Jr), [titre, sous] = prochaine(c);
     const der = Jr.length ? Jr[Jr.length - 1].at : c.updated_at;
     const fait = k => Jr.find(e => e.evenement === k);
     const iEt = L.findIndex(([k]) => k === c.etape);
@@ -373,9 +481,8 @@
     box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
       <h2>${esc(c.produit || 'Commande')}</h2>
       <p class="cm-sous">${c.role === 'vendeur' ? 'Vente à' : 'Achat chez'} ${esc(c.partenaire_nom)} · n° ${esc(c.numero)}</p>
-      ${enRoute(c) && window.MDGSuivi ? `<div data-carte></div>
-        <p class="cm-sr" aria-live="polite">${esc(MDGSuivi.texte(pos[c.id]).t)}</p>` : scene(c, arrive)}
-      <div class="cm-prog" role="progressbar" aria-label="Avancement de la commande" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(p * 100)}"><div class="cm-pb"><i style="--p:${p.toFixed(3)}"></i></div></div>
+      <div class="cm-hero">${enRoute(c) && window.MDGSuivi ? `<div data-carte></div>
+        <p class="cm-sr" aria-live="polite">${esc(MDGSuivi.texte(pos[c.id]).t)}</p>` : plan(c)}${fiche(c, Jr)}</div>
       <div class="cm-st" role="status" aria-live="polite"><b>${titre}</b>${sous ? `<small>${esc(sous)}</small>` : ''}<small>Dernière actualisation : ${ilya(der)}</small></div>
       ${actions(c)}
       ${c.etat === 'terminee' && c.role === 'acheteur' && window.MDGRacheter ? `<div class="cm-act"><button type="button" class="p" data-racheter>Racheter · prix du jour</button></div>` : ''}
@@ -386,15 +493,10 @@
       ${blocTransport(c)}${blocLien(c)}
       <ol class="cm-et">${etapes}</ol>
       <dl class="cm-dl">
-        <dt>Quantité</dt><dd>${c.quantite != null ? qte(c.quantite, c.unite) : '—'}</dd>
-        <dt>Prix convenu</dt><dd>${c.prix_unitaire != null ? F(c.prix_unitaire) + ' / ' + esc(c.unite || 'unité') : '—'}</dd>
-        <dt>Total</dt><dd>${c.montant != null ? F(c.montant) : '—'}</dd>
         ${c.role === 'vendeur' && c.commission_montant != null ? (() => { const clos = c.etat === 'terminee' && !aVerifier(c), k = seq[c.id] && seq[c.id].repartition ? seq[c.id].repartition.vendeur_commission : c.commission_montant;
           return `<dt>${c.etat === 'annulee' ? 'Commission (3,5 %) annulée' : c.etat === 'litige' ? 'Commission (3,5 %) suspendue' : clos ? 'Commission due (3,5 %)' : 'Commission prévue (3,5 %)'}</dt><dd>${c.etat === 'annulee' ? '0 F' : F(clos ? k : c.commission_montant)}<br><small style="font-weight:400;color:#5E5546">${c.etat === 'annulee' ? 'commande annulée : rien n’est dû' : clos ? 'rien n’est prélevé : pas encore de paiement dans l’application' : 'due seulement à la libération · rien n’est prélevé'}</small></dd>`; })() : ''}
         <dt>Transport</dt><dd>${esc(MODES[c.mode_transport] || '—')}${transport[c.id] && transport[c.id].prix_transport != null ? '<br>' + F(transport[c.id].prix_transport) + ' <small style="font-weight:400;color:#5E5546">(prix du chauffeur)</small>' : ''}</dd>
         ${transport[c.id] && transport[c.id].total_livraison != null && c.etat !== 'annulee' ? `<dt>À payer à la livraison</dt><dd><b>${F(transport[c.id].total_livraison)}</b><br><small style="font-weight:400;color:#5E5546">marchandise ${F(c.montant)} + transport ${F(transport[c.id].prix_transport)}, payés à la réception, hors application</small></dd>` : ''}
-        <dt>Départ</dt><dd>${esc(c.ville_depart || '—')}</dd>
-        <dt>Livraison</dt><dd>${esc(c.lieu_livraison || 'À convenir')}</dd>
         <dt>Paiement</dt><dd>${seq[c.id] && seq[c.id].actif ? 'Séquestre ' + esc(OPE[seq[c.id].operateur] || '') : 'À la livraison<br><small style="font-weight:400;color:#5E5546">séquestre en construction</small>'}</dd>
       </dl>
       ${Jr.length ? `<h3 class="cm-h3">Historique</h3><ul class="cm-j">${Jr.slice().reverse().map(e => `<li><b>${esc(EV[e.evenement] || e.evenement)}</b> · ${esc(e.par_moi ? 'vous' : ROLE[e.role] || '')}<small>${quand(e.at)} · ${esc(PREUVE[e.preuve] || '')}${e.lieu ? ' · ' + esc(e.lieu) : ''}${e.lat != null ? ' · position jointe' : ''}</small>${e.note ? `<small>« ${esc(e.note)} »</small>` : ''}</li>`).join('')}</ul>` : ''}
@@ -403,6 +505,7 @@
     box.querySelector('[data-retour]').onclick = () => { oublierCarte(); sel = null; vue = 'liste'; peindre(); };
     box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => geste(c, b.dataset.g));
     const rb = box.querySelector('[data-racheter]'); if (rb) rb.onclick = () => { fermer(); MDGRacheter.ouvrir(c.id); };
+    const ec = box.querySelector('[data-ecrire]'); if (ec) ec.onclick = () => { fermer(); MDGMessages.ecrire(c.partenaire_id, { nom: c.partenaire_nom }); };
     lierTransport(c, box); lierLien(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box); photos(box); lierDisc(c, box);
     if (arrive) { if (navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {} toast('Le chauffeur est arrivé', { type: 'ok', sous: c.role === 'acheteur' ? 'Vérifiez la marchandise avant de confirmer.' : esc(c.produit || '') }); }
   }

@@ -50,6 +50,10 @@ html[data-theme=sombre] .rg-o[aria-checked=true] b.ok{background:#F2C230;color:#
 .rg-btn{min-height:48px;border:0;border-radius:24px;background:rgba(23,21,18,.07);color:inherit;font:600 15px Jost,sans-serif;cursor:pointer}.rg-btn.plein{background:#10392B;color:#F3EFE4}
 html[data-theme=sombre] .rg-sw input{background:rgba(243,239,228,.2)}html[data-theme=sombre] .rg-sw input:checked{background:#F2C230}
 html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme=sombre] .rg-btn.plein{background:#F2C230;color:#171512}html[data-theme=sombre] .rg-chev{color:#B9AD98}
+.rg-freq{display:flex;flex-direction:column;gap:10px;padding:12px 14px;border-radius:16px;background:#FFFDF8}.rg-freq>span{font:600 15px/1.3 Jost,sans-serif;color:#171512}.rg-freq small{display:block;margin-top:2px;font:400 13px/1.4 Jost,sans-serif;color:#5E5546}
+.rg-freq [role=radiogroup]{display:flex;padding:3px;border-radius:14px;background:rgba(23,21,18,.07)}.rg-freq [role=radio]{flex:1;min-height:42px;padding:0 6px;border:0;border-radius:11px;background:none;color:#4B4436;font:500 13.5px/1.15 Jost,sans-serif;cursor:pointer}
+.rg-freq [role=radio][aria-checked=true]{background:#10392B;color:#F3EFE4;font-weight:600}
+html[data-theme=sombre] .rg-freq{background:#1E1B16}html[data-theme=sombre] .rg-freq>span{color:#F3EFE4}html[data-theme=sombre] .rg-freq small{color:#CFC4B1}html[data-theme=sombre] .rg-freq [role=radiogroup]{background:#2A261F}html[data-theme=sombre] .rg-freq [role=radio]{color:#E8DFCC}html[data-theme=sombre] .rg-freq [role=radio][aria-checked=true]{background:#F2C230;color:#171512}
 .rg-tours{display:flex;flex-wrap:wrap;gap:8px}.rg-tours button{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid rgba(16,57,43,.25);background:#F7F4EC;color:#10392B;font:600 14px Jost,sans-serif;cursor:pointer}
 .rg-tours button::before{content:"▶ ";font-size:11px}html[data-theme=sombre] .rg-tours button{background:#25211B;color:#F2C230;border-color:rgba(242,194,48,.35)}
 @keyframes rgIn{from{opacity:0}}@keyframes rgUp{from{transform:translateY(40px);opacity:.4}}
@@ -98,6 +102,10 @@ html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme
         </div>
         ${window.MDGAstuces ? `<p class="rg-sec">Aide pour débuter</p>
         <div class="rg-l">${sw('comment', 'Astuces et tutoriels', 'Petits signes animés sur l’accueil, et un court tutoriel la première fois qu’on fait une opération (négocier, commande, codes, chauffeur)', MDGAstuces.actif())}
+          ${MDGAstuces.actif() && MDGAstuces.frequence ? (() => { const f = MDGAstuces.frequence(), b = (k, t) => `<button type="button" role="radio" aria-checked="${f === k}" data-freq="${k}">${t}</button>`;
+            return `<div class="rg-freq"><span>Fréquence<small>${f === 'une' ? 'Chaque astuce, tutoriel et démo s’affiche une seule fois.' : f === 'semaine' ? 'Tout revient une fois par semaine, comme pour un nouveau.' : 'Tout revient à chaque ouverture de l’application.'}</small></span><div role="radiogroup" aria-label="Fréquence des astuces et des démos">${b('une', 'Une fois')}${b('semaine', 'Chaque semaine')}${b('toujours', 'À chaque ouverture')}</div></div>`; })() : ''}
+          ${window.MDGDemo && MDGAstuces.actif() ? sw('apercu', 'Démo de la roue au démarrage', 'L’accueil montre tout seul la roue des produits, le prix et « placer son prix »', MDGDemo.reglages().auto) : ''}
+          ${window.MDGDemo ? sw('tableau', 'Bouton « Démo » sur l’accueil', 'Le petit interrupteur au-dessus de la roue, pour rejouer la démo quand vous voulez', MDGDemo.reglages().bouton) : ''}
           ${window.MDGDemo ? '<button type="button" class="rg-demo" data-demo style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;margin:8px 0 4px;border:0;border-radius:14px;background:#F2C230;color:#171512;font:600 15px Jost,sans-serif;cursor:pointer">▶ Voir la démo : la roue et les prix</button>' : ''}
           <p class="rg-n" style="margin:4px 2px 0">Revoir un tutoriel :</p>
           <div class="rg-tours">${Object.keys(MDGAstuces.TOURS).map(k => `<button type="button" data-tour="${k}">${esc(MDGAstuces.TOURS[k].t)}</button>`).join('')}</div></div>` : ''}
@@ -114,6 +122,7 @@ html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme
         st.pousse = P ? await P.etat() : 'impossible'; peindre(); };
       const dmo = bg.querySelector('[data-demo]'); if (dmo) dmo.onclick = () => { fermer(); if (location.hash && location.hash !== '#/') location.hash = '#/';
         setTimeout(() => { const b = [...document.querySelectorAll('.acc-ong button')].find(x => x.textContent.trim().startsWith('Marché')); if (b) b.click(); setTimeout(() => MDGDemo.lancer(), 600); }, 350); };
+      bg.querySelectorAll('[data-freq]').forEach(b => b.onclick = () => { MDGAstuces.frequence(b.dataset.freq); dire('Fréquence *enregistrée*'); peindre(); const f = bg.querySelector(`[data-freq="${b.dataset.freq}"]`); if (f) f.focus(); });
       bg.querySelectorAll('[data-tour]').forEach(b => b.onclick = () => { const k = b.dataset.tour; fermer(); setTimeout(() => MDGAstuces.tour(k, true), 250); });
       const so = bg.querySelector('[data-sons]'); if (so) so.onclick = () => { fermer(); S.panneau(); };
       bg.querySelectorAll('[data-sw]').forEach(i => i.onchange = async () => {
@@ -121,7 +130,9 @@ html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme
         try {
           if (k === 'Annonces du marché') { await N().rpc('notif_reglage_diffusions', { p_oui: i.checked }); st.diff = i.checked; dire(i.checked ? 'Annonces du marché *activées*' : 'Annonces du marché *coupées*'); }
           else if (k === 'Vibrations au toucher') { MDGVibre.regler(i.checked); dire(i.checked ? 'Vibrations *activées*' : 'Vibrations *coupées*'); }
-          else if (k === 'Astuces et tutoriels') { if (i.checked) MDGAstuces.revoir(); else MDGAstuces.regler(false); dire(i.checked ? 'Astuces *activées* : elles reviennent comme pour un nouveau' : 'Astuces et tutoriels *coupés*'); }
+          else if (k === 'Astuces et tutoriels') { if (i.checked) { MDGAstuces.revoir(); try { localStorage.removeItem('mdg-demo:orbite'); } catch (_) {} } else MDGAstuces.regler(false); dire(i.checked ? 'Astuces *activées* : elles reviennent comme pour un nouveau' : 'Astuces, tutoriels et démo automatique *coupés*'); setTimeout(peindre, 0); }
+          else if (k === 'Démo de la roue au démarrage') { MDGDemo.regler({ auto: i.checked }); dire(i.checked ? 'Démo au démarrage *activée*' : 'Démo au démarrage *coupée*'); }
+          else if (k === 'Bouton « Démo » sur l’accueil') { MDGDemo.regler({ bouton: i.checked }); dire(i.checked ? 'Bouton Démo *affiché*' : 'Bouton Démo *caché* : la démo reste ici, dans les réglages'); }
           else if (k === 'Messages à l’écran') { const o = lirePrefs(); o.toasts = i.checked; localStorage.setItem('mdg-compte:prefs', JSON.stringify(o)); dire('Réglage *enregistré*'); }
           else if (k === 'Montrer mon nom de famille' && C && C.regler) { await C.regler({ nom_public: i.checked }); dire('Réglage *enregistré*'); }
         } catch (x) { i.checked = !i.checked; dire('Impossible : ' + ((x && x.message) || 'réessayez')); }

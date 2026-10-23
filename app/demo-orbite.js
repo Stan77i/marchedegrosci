@@ -7,12 +7,21 @@
    • Une fois automatiquement, la première fois qu'on voit l'accueil (si les astuces sont actives) ; ensuite, à la demande.
    • Aucune donnée inventée : la démo montre les vrais prix ; si aucun produit proche n'a de prix publié, le pop-up s'ouvre
      avec un exemple MARQUÉ « Exemple de démonstration : ces prix ne sont pas réels ».
-   API : MDGDemo.lancer() · arreter() · basculer() · enCours() */
+   • Réglages → Aide pour débuter : démo au démarrage oui/non, bouton « Démo » visible ou non ; la fréquence (une fois, chaque semaine,
+     à chaque ouverture) est celle des astuces (MDGAstuces.frequence).
+   API : MDGDemo.lancer() · arreter() · basculer() · enCours() · reglages() · regler({auto, bouton}) */
 (function () {
   'use strict';
   if (window.MDGDemo) return;
   const KVU = 'mdg-demo:orbite';
   const lu = () => { try { return localStorage.getItem(KVU) === '1'; } catch (_) { return true; } };
+  // réglages (Réglages → Aide pour débuter) : la démo au démarrage, et le bouton « Démo » sur l'accueil (oui par défaut)
+  const KAUTO = 'mdg-demo:auto', KBTN = 'mdg-demo:bouton';
+  const oui = k => { try { return localStorage.getItem(k) !== '0'; } catch (_) { return true; } };
+  const reglages = () => ({ auto: oui(KAUTO), bouton: oui(KBTN) });
+  const montrerBouton = () => document.documentElement.classList.toggle('dm-cache', !oui(KBTN));
+  function regler(o) { try { if ('auto' in o) localStorage.setItem(KAUTO, o.auto ? '1' : '0'); if ('bouton' in o) localStorage.setItem(KBTN, o.bouton ? '1' : '0'); } catch (_) {} montrerBouton(); }
+  montrerBouton();
   const noterVu = () => { try { localStorage.setItem(KVU, '1'); } catch (_) {} };
   const REDUIT = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
   const $ = s => document.querySelector(s);
@@ -43,6 +52,7 @@
 .dm-sw .pi{position:relative;width:28px;height:16px;border-radius:8px;background:rgba(245,240,230,.22);transition:background .25s}
 .dm-sw .pi::after{content:"";position:absolute;left:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#F5F0E6;transition:transform .25s cubic-bezier(.22,1,.36,1)}
 html.dm-on .dm-sw{background:rgba(242,194,48,.16);border-color:rgba(242,194,48,.55)}html.dm-on .dm-sw .pi{background:#F2C230}html.dm-on .dm-sw .pi::after{transform:translateX(12px);background:#171512}
+html.dm-cache .dm-sw{display:none}
 html[data-theme=clair] .dm-sw{color:#171512;border-color:rgba(23,21,18,.14);background:rgba(23,21,18,.05)}html[data-theme=clair] .dm-sw .pi{background:rgba(23,21,18,.2)}html[data-theme=clair] .dm-sw .pi::after{background:#fff}
 @media (prefers-reduced-motion:reduce){.dm-tap,.dm-anneau,.dm-k i{animation:none!important}.dm-carte{transition:none}}`;
   function css() { if (document.getElementById('dmCss')) return; const s = document.createElement('style'); s.id = 'dmCss'; s.textContent = CSS; document.head.appendChild(s); }
@@ -129,7 +139,7 @@ html[data-theme=clair] .dm-sw{color:#171512;border-color:rgba(23,21,18,.14);back
   // la première fois qu'on voit l'accueil (astuces actives) : la démo se lance seule, une fois, quand rien d'autre n'est à l'écran
   let touche = 0; addEventListener('pointerdown', () => { touche = Date.now(); }, true);
   function guetter(essai) {
-    if (lu() || actif) return;
+    if (lu() || actif || !oui(KAUTO)) return;
     if (window.MDGAstuces && !MDGAstuces.actif()) return;
     const px = $('.acc-px'), r = px && px.getBoundingClientRect();
     const libre = r && r.width && r.top > 0 && r.bottom < innerHeight && !document.hidden && (!location.hash || location.hash === '#/')
@@ -139,5 +149,5 @@ html[data-theme=clair] .dm-sw{color:#171512;border-color:rgba(23,21,18,.14);back
   }
   if (document.readyState === 'complete') setTimeout(guetter, 6000); else addEventListener('load', () => setTimeout(guetter, 6000));
 
-  window.MDGDemo = { lancer, arreter, basculer, enCours: () => actif };
+  window.MDGDemo = { lancer, arreter, basculer, enCours: () => actif, reglages, regler };
 })();

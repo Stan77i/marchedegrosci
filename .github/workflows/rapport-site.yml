@@ -1,0 +1,44 @@
+# Tient à jour l'inventaire du site dans PORTAGE-SITE.md (partie 7) : pages, modules communs / propres, WebGL, fichiers lourds, fichiers orphelins.
+# Gratuit (dépôt public). Demandé par le propriétaire le 23/10/2026 (« un rapport qui se met à jour automatiquement »).
+# N'enregistre un commit que si l'inventaire a changé.
+name: Rapport du site
+on:
+  push:
+    branches: [main]
+    paths:
+      - '*.html'
+      - 'app/**'
+      - 'v2/*.js'
+      - 'v3/**'
+      - 'css/**'
+      - 'tools/inventaire-site.js'
+      - '.github/workflows/rapport-site.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: rapport-site
+  cancel-in-progress: false
+jobs:
+  inventaire:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Refaire l'inventaire
+        run: node tools/inventaire-site.js
+      - name: Enregistrer s'il a changé
+        run: |
+          if [ -n "$(git status --porcelain PORTAGE-SITE.md)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add PORTAGE-SITE.md
+            git commit -m "Inventaire du site mis à jour automatiquement"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          else
+            echo "Rien n'a changé."
+          fi

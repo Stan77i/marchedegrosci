@@ -23,6 +23,8 @@
     ['mil', 'Mil', { 9: 'debut', 10: 'plein', 11: 'plein', 12: 'fin' }, 'FAO GIEWS', 'Nord'],
     ['sorgho', 'Sorgho', { 9: 'debut', 10: 'plein', 11: 'plein', 12: 'fin' }, 'FAO GIEWS', 'Nord'],
     ['mangue', 'Mangue', { 3: 'debut', 4: 'plein', 5: 'plein', 6: 'fin' }, 'AIP', 'Savanes, Denguélé'],
+    ['banane-plantain', 'Banane plantain', { 11: 'debut', 12: 'plein', 1: 'plein', 2: 'plein', 3: 'fin' }, 'Nitidae', 'période d’abondance'],
+    ['oignon', 'Oignon (Nord et Centre)', { 2: 'plein', 3: 'plein', 4: 'plein', 5: 'plein', 6: 'plein' }, 'RONGEAD', 'Odienné, Korhogo, Bouaké'],
     ['noix-de-cajou', 'Noix de cajou', { 2: 'debut', 3: 'debut' }, 'Conseil coton-anacarde', 'campagne ouverte le 9 février 2026'],
     ['cacao-en-feves', 'Cacao', { 9: 'plein', 10: 'plein', 11: 'plein', 12: 'plein', 1: 'plein', 2: 'plein' }, 'Conseil café-cacao', 'grande campagne'],
     ['cafe-en-grains', 'Café', { 9: 'plein', 10: 'plein', 11: 'plein', 12: 'plein', 1: 'plein', 2: 'plein' }, 'Conseil café-cacao', 'même campagne que le cacao']

@@ -751,3 +751,19 @@ html[data-theme=sombre] .ec-moi .ec-i { color: #F2C230; } html[data-theme=sombre
 .acc-k .acc-emo { width: 42px; height: 42px; }
 .acc-k .acc-emo::before { width: 100%; }
 .acc-k .acc-i > span > svg, .acc-k .acc-i > svg { width: 30px; height: 30px; }
+
+/* ——— les nombres à côté d'un libellé : toujours dans une pastille, jamais en simple texte (demandé le 23/10/2026) ———
+   neutre par défaut ; vert = offres, maïs = demandes ; elle « pop » une fois à l'apparition. */
+.nbul { display: inline-grid; place-items: center; min-width: 24px; height: 22px; margin-left: 7px; padding: 0 7px; box-sizing: border-box; border-radius: 11px;
+  background: rgba(23, 21, 18, .09); color: #171512; font: 700 12.5px/1 Jost, system-ui, sans-serif; font-variant-numeric: tabular-nums lining-nums; vertical-align: 1px;
+  opacity: 1 !important; animation: nbulPop .45s cubic-bezier(.3, 1.6, .5, 1) both; }
+.nbul.o { background: #6CC58C; color: #0E3323; }
+.nbul.d { background: #F2C230; color: #171512; }
+[aria-pressed="true"] > .nbul:not(.o):not(.d) { background: #F2C230; color: #171512; }
+html[data-theme=sombre] .nbul { background: rgba(243, 239, 228, .14); color: #F3EFE4; }
+html[data-theme=sombre] .nbul.o { background: #6CC58C; color: #0E3323; }
+html[data-theme=sombre] .nbul.d, html[data-theme=sombre] [aria-pressed="true"] > .nbul { background: #F2C230; color: #171512; }
+@keyframes nbulPop { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .nbul { animation: none; } }
+.px-filtres button > .nbul { font-size: 12.5px; opacity: 1; }
+.tv-sec h3 .nbul { color: #F3EFE4; background: rgba(243, 239, 228, .14); font-weight: 700; }

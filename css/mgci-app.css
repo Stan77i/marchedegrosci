@@ -694,3 +694,14 @@ html[data-theme=sombre] .cd-genre{color:#10392B}
 .acc-px-v{display:inline-flex;align-items:baseline;gap:.14em;font:900 italic 46px/1 Jost,sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums lining-nums}
 .acc-px-v i{font-style:italic;font-size:.6em;color:#F2C230;letter-spacing:0}
 .acc-px-t{font-weight:900;font-style:italic;letter-spacing:-.02em;line-height:1.05;white-space:nowrap}
+/* le prix se touche : il ouvre « Ici, chacun place son prix » (app/prixmoment.js) ; les deux triangles disent que le prix bouge, et que chacun place le sien */
+.acc-px{border:0;background:none;color:inherit;font:inherit;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
+.acc-px:active{transform:scale(.97)}.acc-px:focus-visible{outline:2px solid #F2C230;outline-offset:4px;border-radius:16px}
+.acc-px-tri{display:inline-flex;flex-direction:column;gap:3px;margin-left:.3em;align-self:center}
+.acc-px-tri s{display:block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;text-decoration:none}
+.acc-px-tri s:first-child{border-bottom:7px solid #9FDCB2;animation:accTriH 2.2s ease-in-out infinite}
+.acc-px-tri s:last-child{border-top:7px solid #F2C230;animation:accTriB 2.2s ease-in-out infinite}
+@keyframes accTriH{0%,60%,100%{transform:none}30%{transform:translateY(-3px)}}
+@keyframes accTriB{0%,40%,100%{transform:none}70%{transform:translateY(3px)}}
+.acc-px-t .acc-px-tri{vertical-align:middle}
+@media (prefers-reduced-motion:reduce){.acc-px-tri s{animation:none}}

@@ -724,7 +724,7 @@ html[data-theme=sombre] .cd-genre{color:#10392B}
 .od { animation: odPose .55s cubic-bezier(.3, 1.6, .5, 1) both; }
 .od-d { animation: odRoule .6s cubic-bezier(.22, 1, .36, 1) both; }
 .acc-emo, .acc-emo.d { animation: none; }
-.aseg-s { width: 16px; height: 16px; margin: 0 5px -3px 0; background: var(--sym-o) center / contain no-repeat; }
+.aseg-s { width: 28px; height: 28px; margin: -6px 6px -8px 0; vertical-align: middle; background: var(--sym-o) center / contain no-repeat; filter: drop-shadow(0 2px 3px rgba(23, 21, 18, .18)); }
 .aseg-s.d { background-image: var(--sym-d); }
 /* surfaces du navigateur aux couleurs de la marque (audit anti-« design généré », 23/10/2026) */
 ::selection { background: rgba(242, 194, 48, .45); color: #171512; }
@@ -737,3 +737,12 @@ html[data-theme=sombre] input[type=checkbox], html[data-theme=sombre] input[type
 .acc-k::before, .acc-k::after { content: none !important; }
 html[data-theme=sombre] .ec-i { color: #CFE9D8; }
 html[data-theme=sombre] .ec-moi .ec-i { color: #F2C230; } html[data-theme=sombre] .ec-litige .ec-i { color: #F3A08C; } html[data-theme=sombre] .ec-route .ec-i, html[data-theme=sombre] .ec-ok .ec-i { color: #9FE0B5; }
+
+/* le panier et le caddie un peu plus imposants à côté du nom (demandé le 23/10/2026) */
+.an-forme.od { width: 26px; height: 26px; }
+.an-forme.od::before { width: 80%; height: 80%; }
+.od::before, .acc-emo::before, .duo2 .emo::before { height: auto !important; aspect-ratio: 1; }
+.od { width: 26px; height: 26px; }
+.od::before { width: 82%; }
+.od-g { width: 36px; height: 36px; }
+.od-coin { width: 22px; height: 22px; }

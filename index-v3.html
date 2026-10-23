@@ -24,7 +24,7 @@ html.mdg-garde body{overflow:hidden}#mdgGarde>div{max-width:380px;display:grid;g
 <script>/* service worker : vérifie les mises à jour à chaque retour sur l'application ; quand une nouvelle version prend la main, la page se recharge (tout de suite si elle vient de s'ouvrir, sinon au prochain retour, jamais pendant une saisie) */if('serviceWorker' in navigator){(function(){var sw=navigator.serviceWorker,avant=!!sw.controller,t0=Date.now(),attente=false;sw.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(attente)location.reload();else r.update().catch(function(){})}})}).catch(function(){});sw.addEventListener('controllerchange',function(){if(!avant||attente)return;if(Date.now()-t0<6000)location.reload();else attente=true})})()}</script>
 <!-- polices hébergées dans le projet (hors connexion) -->
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
-<link rel="stylesheet" href="css/symboles.css?v=20261102b">
+<link rel="stylesheet" href="css/symboles.css?v=20261102d">
 <link rel="stylesheet" href="css/styles.css?v=20261023f">
 <link rel="stylesheet" href="v3/acheter.css?v=20261009o">
 <link rel="stylesheet" href="v3/vendre.css?v=20261009o">

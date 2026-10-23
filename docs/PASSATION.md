@@ -855,3 +855,8 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - La barre de progression et l'ancienne scène du camion sont retirées ; la liste détaillée des étapes avec leur heure reste en dessous. Le tableau du bas ne répète plus quantité, prix, total, départ et livraison.
 - `app/nuit.js` : `.cm-fiche` et `.cm-plan` ajoutés à `DEJA` (ils gardent leurs couleurs en mode sombre).
 - Cache `mgci-v193`.
+
+## L'onglet Prix avec les images, et le prix du moment sous l'orbite (23/10/2026)
+- **Onglet Prix** (`v3/tableau.js`) : chaque produit a sa vignette — le sac détouré (`v2/img/produit-<slug>.webp`, s'il existe dans `MDGApp.SACK`) qui dépasse de sa tuile teintée à la couleur du produit ; sans image propre, l'initiale du produit en gras italique sur la teinte de sa famille (pas la photo de famille : elle montrait des poivrons pour la carotte). Les lignes s'installent en cascade à la première apparition (ou après un changement de zone), pas à chaque relecture de 30 s ; le sac se soulève au toucher. Compteurs raccourcis (« 2 offres », « 1 demande »). La page d'un produit a aussi sa vignette à côté du titre.
+- **Sous l'orbite de l'accueil** (`application.dc.html`, `prixMoment()`, styles `.acc-px` dans `css/mgci-app.css`) : le grand nom en gras (déjà écrit sur l'arc) est remplacé par **le prix du moment** — « MEILLEUR PRIX · LE SAC » puis « 12 500 F » en gras italique, le nombre défile d'un produit à l'autre (`mdg-nb`). Meilleure offre dans l'unité la plus courante ; sinon le meilleur budget des demandes ; sinon « Aucun prix publié » / « Publiez le premier prix ». Calculé sur les annonces affichées sur l'accueil, rien d'inventé.
+- Cache `mgci-v194`.

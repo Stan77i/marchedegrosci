@@ -686,3 +686,11 @@ html[data-theme=sombre] .cd-genre{color:#10392B}
 /* nom d'une annonce : celui du compte, en lecture seule (22 oct. 2026) */
 .nom-cpt{display:grid;gap:3px;padding:12px 14px;border-radius:14px;background:var(--champ,#F7F4EC);border:1px solid var(--trait,rgba(23,21,18,.1))}
 .nom-cpt-l{font-size:var(--t-sm,13px);color:var(--texte-3,#8A8170)}.nom-cpt b{font-size:var(--t-lg,17px);font-weight:600;color:var(--encre,#171512)}.nom-cpt small{font-size:var(--t-sm,13px);color:var(--texte-2,#5E5546);line-height:1.4}
+
+/* ——— sous l'orbite : le prix du moment, à la place du nom déjà écrit sur l'arc (23/10/2026) ———
+   « MEILLEUR PRIX · LE SAC » en petites capitales, puis le prix en grand (gras italique, comme le logo) qui défile d'un produit à l'autre (mdg-nb). */
+.acc-px{height:76px;width:100%;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;overflow:hidden}
+.acc-px-k{font:600 11px/1.2 Jost,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:var(--sable);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.acc-px-v{display:inline-flex;align-items:baseline;gap:.14em;font:900 italic 46px/1 Jost,sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums lining-nums}
+.acc-px-v i{font-style:italic;font-size:.6em;color:#F2C230;letter-spacing:0}
+.acc-px-t{font-weight:900;font-style:italic;letter-spacing:-.02em;line-height:1.05;white-space:nowrap}

@@ -33,7 +33,7 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261027f','v3/astuces.js?v=20261027f','app/scene.js?v=20261028d','v3/porte.js?v=20261028c','v3/sons.js?v=20261027g','v3/negoce.js?v=20261027f','v3/compte.js?v=20261027f','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261027f','v3/statuts.js?v=20261023a','v3/messages.js?v=20261027c','v3/aide.js?v=20261027f','v3/alertes.js?v=20261023f','v3/releve.js?v=20261026a','v3/commandes.js?v=20261029a','v3/tableau.js?v=20261026y','v3/chauffeur.js?v=20261026t','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261027f','v3/appro.js?v=20261027f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261025g','v3/identite.js?v=20261027h'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261027f','v3/astuces.js?v=20261027f','app/scene.js?v=20261028d','v3/porte.js?v=20261028c','v3/sons.js?v=20261027g','v3/negoce.js?v=20261027f','v3/compte.js?v=20261027f','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261027f','v3/statuts.js?v=20261023a','v3/messages.js?v=20261027c','v3/aide.js?v=20261027f','v3/alertes.js?v=20261023f','v3/releve.js?v=20261026a','v3/commandes.js?v=20261029a','v3/tableau.js?v=20261029b','v3/chauffeur.js?v=20261026t','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261027f','v3/appro.js?v=20261027f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261025g','v3/identite.js?v=20261027h'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -56,7 +56,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261027h">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261029b">
 <link rel="stylesheet" href="css/sombre.css?v=20261027f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261027f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261027f">
@@ -158,7 +158,10 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
     </div>
   </div>
   <div style="text-align:center;padding:0 24px;position:relative;margin-top:-10px;height:156px;flex:none;display:flex;flex-direction:column;align-items:center">
-    <div style="font-family:Jost,sans-serif;font-size:{{ act.fs }};font-weight:900;font-style:italic;line-height:{{ act.lh }};letter-spacing:-.025em;height:76px;width:100%;flex:none;display:flex;align-items:center;justify-content:center;overflow:hidden;text-wrap:balance">{{ act.name }}</div>
+    <!-- sous l'orbite : le nom est déjà sur l'arc ; ici, le prix du moment (le nombre défile d'un produit à l'autre) -->
+    <div class="acc-px" aria-live="polite"><span class="acc-px-k">{{ act.pk }}</span>
+      <sc-if value="{{ act.pOn }}" hint-placeholder-val="{{ false }}"><b class="acc-px-v"><mdg-nb data-v="{{ act.pv }}"></mdg-nb><i>F</i></b></sc-if>
+      <sc-if value="{{ act.tOn }}" hint-placeholder-val="{{ false }}"><b class="acc-px-t" style="font-size:{{ act.tfs }}">{{ act.pt }}</b></sc-if></div>
     <div style="display:flex;justify-content:center;gap:14px;margin:-6px -18px -12px;padding:12px 18px;font-size:var(--t-md);color:var(--sable);flex-wrap:nowrap;white-space:nowrap;height:44px;box-sizing:border-box;flex:none;overflow:hidden">
       <span style="display:flex;align-items:center;gap:6px"><i class="od od-o" aria-hidden="true" style="opacity:{{ act.oOp }}">🧺</i>{{ act.oTxt }}</span>
       <span style="display:flex;align-items:center;gap:6px"><i class="od od-d" aria-hidden="true" style="opacity:{{ act.dOp }}">🛒</i>{{ act.dTxt }}</span>
@@ -1402,6 +1405,16 @@ class Component extends DCLogic {
   edgeUp(e) { const d = this.ed; this.ed = null; if (d && (e.clientX - d.x) / this.sc > 70 && Math.abs(e.clientY - d.y) < Math.abs(e.clientX - d.x)) this.back(); }
   openPick(kind) { this.setState({ pick: kind, pq: '' }); }
   tw(txt, font, ls) { const k = font + '|' + txt, c = this._w || (this._w = {}); if (c[k] == null) { const x = this._mc || (this._mc = document.createElement('canvas').getContext('2d')); x.font = font; c[k] = x.measureText(txt).width + (ls || 0) * txt.length; } return c[k]; }
+  // le prix du moment sous l'orbite : la meilleure offre (dans l'unité la plus courante), sinon le meilleur budget, sinon une phrase
+  prixMoment(act, O, D, saison, maxW) {
+    const art = u => ({ tonne: 'la tonne', unité: 'l’unité', unite: 'l’unité' })[u] || 'le ' + u;
+    const unite = L => { const c = {}; L.forEach(x => { c[x.unit] = (c[x.unit] || 0) + 1; }); return Object.keys(c).sort((a, b) => c[b] - c[a])[0]; };
+    const of = O.filter(o => o.slug === act.slug && o.price > 0), de = D.filter(d => d.slug === act.slug && d.budget > 0);
+    if (of.length) { const u = unite(of); return { pOn: true, tOn: false, pk: 'Meilleur prix · ' + art(u), pv: String(Math.min(...of.filter(x => x.unit === u).map(x => x.price))), pt: '', tfs: '' }; }
+    if (de.length) { const u = unite(de); return { pOn: true, tOn: false, pk: 'Meilleur budget · ' + art(u), pv: String(Math.max(...de.filter(x => x.unit === u).map(x => x.budget))), pt: '', tfs: '' }; }
+    const pt = 'Publiez le premier prix', f = this.fitName(pt, maxW);
+    return { pOn: false, tOn: true, pk: saison ? 'En saison · aucun prix publié' : 'Aucun prix publié', pv: '0', pt, tfs: Math.min(26, parseInt(f.fs, 10)) + 'px' };
+  }
   fitName(name, maxW) { const F = fs => 'italic 900 ' + fs + 'px Jost'; for (const fs of [44, 40, 36, 32]) if (this.tw(name, F(fs)) <= maxW) return { fs: fs + 'px', lh: '1' }; return { fs: (this.tw(name, F(30)) > maxW * 1.9 ? 26 : 30) + 'px', lh: '1.04' }; }
   locate() { const A = window.MDGApp; if (!navigator.geolocation) { this.say('Localisation indisponible : choisissez votre région'); return; } this.say('Recherche de votre position…'); navigator.geolocation.getCurrentPosition(p => { let best = '', bd = 1e9; Object.keys(A.REG).forEach(s => { const d = A.km([p.coords.latitude, p.coords.longitude], A.REG[s]); if (d < bd) { bd = d; best = s; } }); if (bd > 400) { this.say('Vous semblez hors de Côte d\u2019Ivoire'); return; } this.me.region = best; ls('mdg-app:moi', this.me); this.setState({ cme: best, csel: '' }); this.say('Repéré près de ' + A.REG[best][2]); }, () => this.say('Position refusée : choisissez votre région'), { timeout: 8000, maximumAge: 600000 }); }
   doPick(slug) { const k = this.state.pick; this.setState(s => k === 'match' ? { mf: Object.assign({}, s.mf, { slug }), pick: null } : k === 'vendre' ? { vf: Object.assign({}, s.vf, { slug }), vErr: {}, pick: null } : k === 'demande' ? { df: Object.assign({}, s.df, { slug }), dErr: {}, pick: null } : { cprod: slug, csel: '', pick: null, cPick: null }); }
@@ -1715,7 +1728,7 @@ class Component extends DCLogic {
       prev: () => this.snap(Math.round(S.rot) - 1), next: () => this.snap(Math.round(S.rot) + 1),
       ...this.accueil({ h, mine, moiS, moiP, moiC, moiN }),
       markEl: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.ligne({ fond: 'clair', h: 24 }) } }) : 'Marché de Gros',
-      act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, oAnim: ao ? 'mkLuciole 3.2s ease-in-out infinite' : 'none', dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
+      act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, oAnim: ao ? 'mkLuciole 3.2s ease-in-out infinite' : 'none', dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }, this.prixMoment(act, O, D, inSeason(act.slug, cm), Math.min(aW, 390) - 48)), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
       openFicheAct: () => this.openFiche(act.slug),
       tendOn: !!(S.tendS && S.tendS === act.slug && S.tendM), tend: S.tendM || { ico: '', t: '', s: '', cls: '' },
       duoH: { jaiL: 'J\u2019ai ' + act.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + act.name.toLowerCase() + ' à acheter : publier une demande' }, duoF: { jaiL: 'J\u2019ai ' + FP.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + FP.name.toLowerCase() + ' à acheter : publier une demande' },

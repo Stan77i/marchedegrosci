@@ -746,3 +746,8 @@ html[data-theme=sombre] .ec-moi .ec-i { color: #F2C230; } html[data-theme=sombre
 .od::before { width: 82%; }
 .od-g { width: 36px; height: 36px; }
 .od-coin { width: 22px; height: 22px; }
+/* cartes de chiffres de l'accueil : le panier et le caddie bien en vue (demandé le 23/10/2026) */
+.acc-k .acc-i { width: 58px; height: 58px; border-radius: 18px; top: 10px; right: 10px; animation: none; }
+.acc-k .acc-emo { width: 42px; height: 42px; }
+.acc-k .acc-emo::before { width: 100%; }
+.acc-k .acc-i > span > svg, .acc-k .acc-i > svg { width: 30px; height: 30px; }

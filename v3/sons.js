@@ -138,7 +138,9 @@
 .snp-note{margin:12px 16px 0;color:#857A67;font-size:12.5px;line-height:1.45}
 @keyframes snpIn{from{opacity:0}}@keyframes snpUp{from{transform:translateY(30px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.snp-bg,.snp{animation:none}.snp-tog,.snp-tog::after{transition:none}}`;
-  const EMO = { accord: '🤝', proposition: '💬', refus: '⏳', annonce: '🧺', confirmation: '✅' };
+  // icônes dessinées (app/icones.js), pas d'emoji
+  const IC = (n, t) => window.MDGIco ? MDGIco.svg(n, t || 18, 1.9) : '';
+  const EMO = { accord: IC('negoce'), proposition: IC('messages'), refus: IC('sablier'), annonce: IC('offre'), confirmation: IC('verifie') };
   const SOUS = { accord: 'Un prix accepté des deux côtés', proposition: 'Quelqu’un vous propose un prix', refus: 'Une proposition sans suite', annonce: 'Un produit que vous suivez', confirmation: 'Connecté, annonce en ligne, message envoyé…' };
   function panneau() {
     const r = reglages(), esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -146,11 +148,11 @@
     const bg = document.createElement('div'); bg.className = 'snp-bg';
     bg.innerHTML = `<div class="snp" role="dialog" aria-modal="true" aria-labelledby="snpT"><button type="button" class="snp-x ui-x" aria-label="Fermer"></button>
       <h2 id="snpT">Sons</h2><p>De courtes notes de balafon pour ce qui compte. Chaque son s’accompagne toujours d’un message à l’écran.</p>
-      <div class="snp-grp"><label class="snp-r"><span class="snp-ti" aria-hidden="true">🎶</span><span class="snp-t"><b>Sons du marché</b><small>Notes de balafon</small></span><input type="checkbox" class="snp-tog" role="switch" data-on ${r.on ? 'checked' : ''}></label></div>
+      <div class="snp-grp"><label class="snp-r"><span class="snp-ti" aria-hidden="true">${IC('son')}</span><span class="snp-t"><b>Sons du marché</b><small>Notes de balafon</small></span><input type="checkbox" class="snp-tog" role="switch" data-on ${r.on ? 'checked' : ''}></label></div>
       <p class="snp-lab">Quand jouer</p>
-      <div class="snp-grp${r.on ? '' : ' off'}" data-cats>${Object.entries(CATS).map(([k, c]) => `<div class="snp-r"><span class="snp-ti" aria-hidden="true">${EMO[k] || '🔔'}</span><label class="snp-t" for="snp-${k}"><b>${esc(c.nom)}</b><small>${esc(SOUS[k] || '')}</small></label><button type="button" class="snp-ec" data-k="${k}" aria-label="Écouter : ${esc(c.nom)}" title="Écouter" ${r.on ? '' : 'disabled'}>👂</button><input id="snp-${k}" type="checkbox" class="snp-tog" role="switch" data-k="${k}" ${r.cats[k] !== false ? 'checked' : ''} ${r.on ? '' : 'disabled'}></div>`).join('')}</div>
+      <div class="snp-grp${r.on ? '' : ' off'}" data-cats>${Object.entries(CATS).map(([k, c]) => `<div class="snp-r"><span class="snp-ti" aria-hidden="true">${EMO[k] || IC('cloche')}</span><label class="snp-t" for="snp-${k}"><b>${esc(c.nom)}</b><small>${esc(SOUS[k] || '')}</small></label><button type="button" class="snp-ec" data-k="${k}" aria-label="Écouter : ${esc(c.nom)}" title="Écouter" ${r.on ? '' : 'disabled'}>${IC('son', 16)}</button><input id="snp-${k}" type="checkbox" class="snp-tog" role="switch" data-k="${k}" ${r.cats[k] !== false ? 'checked' : ''} ${r.on ? '' : 'disabled'}></div>`).join('')}</div>
       <p class="snp-lab">Volume</p>
-      <div class="snp-grp${r.on ? '' : ' off'}" data-volg><div class="snp-v"><span aria-hidden="true">🔈</span><input type="range" class="snp-vol" min="0.1" max="1" step="0.05" value="${r.volume}" aria-label="Volume des sons" ${r.on ? '' : 'disabled'}><span aria-hidden="true">🔊</span></div></div>
+      <div class="snp-grp${r.on ? '' : ' off'}" data-volg><div class="snp-v"><span aria-hidden="true" style="display:flex;opacity:.6">${IC('son', 14)}</span><input type="range" class="snp-vol" min="0.1" max="1" step="0.05" value="${r.volume}" aria-label="Volume des sons" ${r.on ? '' : 'disabled'}><span aria-hidden="true" style="display:flex">${IC('son', 20)}</span></div></div>
       <p class="snp-note">Le volume suit aussi celui du téléphone ; en mode silencieux, rien ne joue. Application en arrière-plan : un seul son au retour.</p></div>`;
     document.querySelector('.snp-bg')?.remove(); document.querySelector('.ng-bg .sn-on')?.closest('.ng-bg')?.remove(); document.body.appendChild(bg);
     const rendre = window.MDGNuage && MDGNuage.piege ? MDGNuage.piege(bg) : () => {}, close = () => { bg.remove(); rendre(); };

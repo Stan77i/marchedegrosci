@@ -561,7 +561,7 @@
   function blocRefus(c) {
     const S = seq[c.id], R = S && S.refus; if (!R) return '';
     const qte_ = R.quantite != null ? qte(R.quantite, R.unite) : 'toute la marchandise';
-    const ch = R.chauffeur === 'confirme' ? '✓ Le chauffeur confirme' : R.chauffeur === 'conteste' ? '✗ Le chauffeur conteste' : R.a_chauffeur ? '… Le chauffeur n’a pas encore répondu' : '— Chauffeur hors de l’application : l’équipe jugera';
+    const ch = R.chauffeur === 'confirme' ? '✓ Le chauffeur confirme' : R.chauffeur === 'conteste' ? '✗ Le chauffeur conteste' : R.a_chauffeur ? '… Le chauffeur n’a pas encore répondu' : 'Chauffeur hors de l’application : l’équipe jugera';
     const ve = R.vendeur === 'reconnu' ? '✓ Le vendeur reconnaît le problème' : R.vendeur === 'conteste' ? '✗ Le vendeur conteste' : '… Le vendeur n’a pas encore répondu';
     const regle = R.chauffeur_suffit ? 'Si le chauffeur (inscrit et vérifié par le Marché de Gros) confirme, ou si le vendeur reconnaît le problème, le remboursement se fait tout seul. Sinon, on en discute à trois et l’équipe juge.'
       : 'Si le vendeur reconnaît le problème, le remboursement se fait tout seul. Sinon, on en discute à trois ci-dessous et l’équipe du Marché de Gros juge.';

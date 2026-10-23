@@ -129,10 +129,10 @@
 .qd[data-u="dispo"] { --qd-bg: #6CC58C; --qd-fg: #0E3323; --qd-bd: rgba(47, 140, 85, .5); --qd-r: -1.5deg; }
 /* les points : « dès que possible » clignote, « disponible » est plein */
 .qd[data-u="vite"]::before, .qd[data-u="dispo"]::before { width: 7px; height: 7px; margin: 0 2px; border-radius: 50%; -webkit-mask: none; mask: none; }
-.qd[data-u="vite"]::before { animation: qdBat 1.1s steps(2, jump-none) infinite; }
+.qd[data-u="vite"]::before { animation: qdBat 1.1s steps(2, jump-none) 6; }
 @keyframes qdBat { 50% { opacity: .15; } }
 /* le coup de tampon est joué par app/effets.js ; ici, le petit frisson de « dès que possible », toutes les 3 s */
-.qd[data-u="vite"] { animation: qdFrisson 3.2s 1.4s ease-in-out infinite; }
+.qd[data-u="vite"] { animation: qdFrisson 3.2s 1.4s ease-in-out 2; }
 @keyframes qdFrisson { 0%, 86%, 100% { transform: rotate(var(--qd-r)); } 90% { transform: rotate(0deg) scale(1.04); } 94% { transform: rotate(-4.5deg); } }
 @media (prefers-reduced-motion: reduce) { .qd[data-u], .qd[data-u]::before { animation: none !important; } }
 /* sur fond nuit (carte du réseau) : même tampon, liseré sombre */
@@ -344,7 +344,7 @@ html[data-theme=sombre] .acc-ong button .acc-n.doux{background:#F2C230;color:#10
 .acc-halo{animation:accHalo 6s ease-in-out infinite}
 @keyframes accHalo{50%{opacity:.72;transform:scale(1.06)}}
 .acc-k{overflow:hidden}
-.acc-k::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:45%;pointer-events:none;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);animation:accReflet 7s ease-in-out infinite}
+/* (retiré le 23/10/2026 : reflet qui balayait les cartes de chiffres en boucle, et cercles décoratifs : des tics de « design généré ») */
 .acc-k:nth-child(2)::after{animation-delay:2.3s}.acc-k:nth-child(3)::after{animation-delay:4.6s}
 @keyframes accReflet{0%,78%{left:-60%}92%,100%{left:130%}}
 .acc-k .acc-i{animation:accBouge 6s ease-in-out infinite}
@@ -541,7 +541,8 @@ html[data-theme=sombre] .dr-clair button[style*="A4472C"]{color:#EE9A62!importan
 .ec-rep-h{ font: 700 13px/1 Jost, system-ui, sans-serif; letter-spacing:0;  color: #7A5A00; }
 .ec-l { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .ec-go { margin-left: auto; flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; background: #F2C230; color: #171512; }
-.ec-i { position: relative; flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; font: normal 22px/1 "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; background: rgba(23, 21, 18, .06); overflow: hidden; }
+.ec-i { position: relative; flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; color: #10392B; background: rgba(23, 21, 18, .06); overflow: hidden; }
+.ec-moi .ec-i { color: #6B4E00; } .ec-litige .ec-i { color: #9A3F2B; } .ec-route .ec-i, .ec-ok .ec-i { color: #1F6B40; }
 .ec-moi .ec-i, .ec-rep.ec-moi .ec-i { background: rgba(242, 194, 48, .3); }
 .ec-route .ec-i, .ec-rep.ec-route .ec-i { background: rgba(108, 197, 140, .22); }
 .ec-ok .ec-i { background: rgba(108, 197, 140, .18); }
@@ -711,3 +712,42 @@ html[data-theme=sombre] .cd-genre{color:#10392B}
 .acc-tend.px-v .acc-tend-i,.acc-tend.px-a .acc-tend-i{font:600 12px/1 Jost,sans-serif;letter-spacing:.02em}
 .acc-tend.px-v{box-shadow:0 10px 26px rgba(0,0,0,.4),inset 0 0 0 1px rgba(159,216,174,.45)}.acc-tend.px-v .acc-tend-i{background:#2E5B47;color:#F3EFE4}.acc-tend.px-v .acc-tend-x b{color:#9FD8AE}
 .acc-tend.px-a{box-shadow:0 10px 26px rgba(0,0,0,.4),inset 0 0 0 1px rgba(242,194,48,.45)}.acc-tend.px-a .acc-tend-i{background:#5A4A12;color:#F2C230}.acc-tend.px-a .acc-tend-x b{color:#F2C230}
+
+/* ——— 🧺 / 🛒 deviennent des dessins (css/symboles.css) : panier = offre, caddie = demande (23/10/2026) ———
+   Même forme et même couleur de pastille qu'avant (rond vert, carré maïs) ; l'entrée animée reste, mais plus de balancement en boucle. */
+.od, .acc-emo, .duo2 .emo { font-size: 0 !important; color: transparent; }
+.od::before, .acc-emo::before, .duo2 .emo::before { content: ""; display: block; width: 74%; height: 74%; background: var(--sym-o) center / contain no-repeat; }
+.od-d::before, .acc-emo.d::before, .duo2 .emo.d::before { background-image: var(--sym-d); }
+.acc-emo { width: 24px; height: 24px; display: grid; place-items: center; }
+.acc-emo::before { width: 100%; height: 100%; }
+.duo2 .emo::before { width: 66%; height: 66%; }
+.od { animation: odPose .55s cubic-bezier(.3, 1.6, .5, 1) both; }
+.od-d { animation: odRoule .6s cubic-bezier(.22, 1, .36, 1) both; }
+.acc-emo, .acc-emo.d { animation: none; }
+.aseg-s { width: 28px; height: 28px; margin: -6px 6px -8px 0; vertical-align: middle; background: var(--sym-o) center / contain no-repeat; filter: drop-shadow(0 2px 3px rgba(23, 21, 18, .18)); }
+.aseg-s.d { background-image: var(--sym-d); }
+/* surfaces du navigateur aux couleurs de la marque (audit anti-« design généré », 23/10/2026) */
+::selection { background: rgba(242, 194, 48, .45); color: #171512; }
+input, textarea { caret-color: #10392B; }
+input[type=checkbox], input[type=radio], input[type=range], progress { accent-color: #10392B; }
+html[data-theme=sombre] input, html[data-theme=sombre] textarea { caret-color: #F2C230; }
+html[data-theme=sombre] input[type=checkbox], html[data-theme=sombre] input[type=radio], html[data-theme=sombre] input[type=range] { accent-color: #F2C230; }
+:focus-visible { outline: 2px solid #F2C230; outline-offset: 2px; }
+
+.acc-k::before, .acc-k::after { content: none !important; }
+html[data-theme=sombre] .ec-i { color: #CFE9D8; }
+html[data-theme=sombre] .ec-moi .ec-i { color: #F2C230; } html[data-theme=sombre] .ec-litige .ec-i { color: #F3A08C; } html[data-theme=sombre] .ec-route .ec-i, html[data-theme=sombre] .ec-ok .ec-i { color: #9FE0B5; }
+
+/* le panier et le caddie un peu plus imposants à côté du nom (demandé le 23/10/2026) */
+.an-forme.od { width: 26px; height: 26px; }
+.an-forme.od::before { width: 80%; height: 80%; }
+.od::before, .acc-emo::before, .duo2 .emo::before { height: auto !important; aspect-ratio: 1; }
+.od { width: 26px; height: 26px; }
+.od::before { width: 82%; }
+.od-g { width: 36px; height: 36px; }
+.od-coin { width: 22px; height: 22px; }
+/* cartes de chiffres de l'accueil : le panier et le caddie bien en vue (demandé le 23/10/2026) */
+.acc-k .acc-i { width: 58px; height: 58px; border-radius: 18px; top: 10px; right: 10px; animation: none; }
+.acc-k .acc-emo { width: 42px; height: 42px; }
+.acc-k .acc-emo::before { width: 100%; }
+.acc-k .acc-i > span > svg, .acc-k .acc-i > svg { width: 30px; height: 30px; }

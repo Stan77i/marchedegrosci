@@ -17,7 +17,7 @@
     const DK = 'mdg-v2:brouillon-offre';
 
     view.innerHTML = `<div class="v3v">
-  ${V3.head('vendre', { label: 'Vendre — en-tête', kicker: 'Vendre', title: 'Dites ce que vous avez. Les acheteurs vous écrivent.', sub: 'Quatre questions. L’étiquette se remplit à droite, telle que l’acheteur la lira.' })}
+  ${V3.head('vendre', { label: 'Vendre, en-tête', kicker: 'Vendre', title: 'Dites ce que vous avez. Les acheteurs vous écrivent.', sub: 'Quatre questions. L’étiquette se remplit à droite, telle que l’acheteur la lira.' })}
   <section class="vs" id="vs" data-tone="dark" aria-label="Votre offre">
     <div class="vs-panel" id="vbox">
       <form id="vform" data-s="0" novalidate>

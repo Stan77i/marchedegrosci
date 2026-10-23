@@ -85,6 +85,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
   4. `playwright-cli` : vérifier dans un navigateur (sinon Playwright de `/opt/node-tools`), iPhone émulé, clair et sombre.
 - « Reverse-engineer any design system » = l'outil `skillui` (`npx skillui@1.3.4`), mode d'emploi dans `.claude/skills/marche-de-gros-design/SKILL.md`.
 - Les compétences sont dans `.claude/skills/` (licences Apache 2.0 et MIT, fichiers `LICENSE` gardés). Les mettre à jour depuis leurs dépôts : `pbakaus/impeccable`, `nextlevelbuilder/ui-ux-pro-max-skill`, `microsoft/playwright-cli`, `amaancoderx/npxskillui`.
+- **Avant de toucher au design, relire les 32 lois anti-« design généré par IA » et anti-amateur** (`DESIGN.md`, section 8), puis vérifier l'écran rendu contre chacune.
 - Mode « Opérer » : la précision et la retenue d'abord. Quand une règle de `DESIGN.md` change, mettre `DESIGN.md` à jour dans la même PR.
 
 ## Commits et PR

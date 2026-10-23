@@ -1098,3 +1098,10 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Ombre noire** pendant l'animation : l'animation remettait l'opacité à 1 ; elle reste à 0,2.
 - **« Au hasard » ne marchait pas** : `data-mgd` est vide, donc `d.mgd` valait `''` (faux). On teste `'mgd' in d` (même correction pour l'ancien `data-dice`).
 - **Le dé** : le gros bouton jaune est remplacé par un dé dessiné (face blanche, épaisseur, points verts, le 1 en rouge) posé dans la carte d'aperçu, à droite. Au toucher : il roule, montre une nouvelle face, le téléphone vibre légèrement, le personnage saute, et une étiquette « Tiré au hasard ! » apparaît au-dessus de l'avatar. Cache `mgci-v215`.
+
+## Avatars : calmes au repos, ils sautent quand il y a du nouveau (23/10/2026)
+
+- Au repos : une respiration très légère et un clignement d'yeux. Plus de saut ni de bras qui salue en boucle.
+- `MDGPerso.saute()` fait sauter les avatars de la personne (en-tête de l'accueil `.acc-r.av`, profil `.cp-hero-av`, ou tout élément `data-mg-moi`). Il est appelé tout seul quand le total « propositions non lues + messages non lus + notifications non lues + commandes à traiter » augmente (événements `mdg:activite`, `mdg:negoce`, `mdg:dm`, `mdg:notifs`). Le point de départ est pris 6 s après l'ouverture, pour ne pas sauter au démarrage.
+- Le personnage remplit mieux le rond : cadrage 90 × 90 (`viewBox="5 8 90 90"`) au lieu de 100 × 100.
+- Vérifié : au repos, pas de saut ; une nouvelle proposition simulée → un saut ; même nombre → rien. Cache `mgci-v216`.

@@ -1266,3 +1266,9 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Contenu, rien d'inventé : nom et chef-lieu ; « Ce qui s'y récolte » = entrées de `v2/saisons.js` **qui nomment le district** (les périodes données pour tout le pays, comme le plantain ou le cajou, sont exclues pour ne pas laisser croire qu'ils poussent partout) ; photos de ces produits en tête ; annonces du district (`fil_public`, filtrées par `region_slug` dans `site/site.js`, `data-region`) ; meilleurs prix du district (`tableau_produits(p_region)`) ; lien vers le guide des grands marchés pour Abidjan, la Vallée du Bandama (Bouaké), le Sassandra-Marahoué (Daloa, annoncé) et la Comoé (Abengourou, annoncé).
 - Liens internes : dans tous les calendriers (pages produits, calendrier, districts), chaque nom de district mène à sa page ; accueil : « Les districts » à côté du calendrier. Contrôle automatique : 3 819 liens internes, aucun cassé.
 - Référencement : titres raccourcis (65 caractères au plus, sauf « Œufs de poule (alvéole de 30) ») et descriptions de 160 caractères au plus sur les 54 pages ; contrôle : un seul h1 par page, adresse canonique juste, `noindex` partout (jusqu'à l'ouverture).
+
+## 23/10/2026 — Application : plus de carte « Dernières annonces » vide
+
+- Demande du propriétaire : quand il n'y a aucune annonce (ou qu'il les a toutes effacées), la carte « Dernières annonces » de l'onglet Activité ne s'affiche plus du tout. Elle revient dès qu'une nouvelle annonce arrive.
+- `application.dc.html` : la carte est dans `<sc-if value="{{ accActOn }}">` ; textes « Rien de nouveau depuis votre dernier effacement » et « Aucune annonce pour l'instant » retirés. Si rien n'est en cours non plus, l'écran garde le seul message « Aucune activité ».
+- `sw.js` : cache `mgci-v231`.

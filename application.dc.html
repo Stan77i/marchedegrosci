@@ -195,10 +195,10 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
       <sc-for list="{{ ecListe }}" as="e" hint-placeholder-count="0"><div class="glis" onScroll="{{ e.glis }}"><button class="acc-ligne ec-ligne ec-{{ e.etat }}" onClick="{{ e.go }}" aria-label="{{ e.lab }}"><span class="ec-i ec-{{ e.k }} {{ e.anim }}" aria-hidden="true">{{ e.emo }}<sc-if value="{{ e.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ e.titre }}</b><small><span class="ec-tag">{{ e.tag }}</span>{{ e.sous }}</small></span><sc-if value="{{ e.vague }}" hint-placeholder-val="{{ false }}"><span class="ec-vague" aria-hidden="true"><i></i><i></i><i></i></span></sc-if></button><button type="button" class="glis-z" onClick="{{ e.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-for>
       <sc-if value="{{ ecVideOn }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ ecVideTxt }}</p></sc-if>
     </section></sc-if>
-    <section class="acc-carte"><div class="acc-ttl"><h2>Dernières annonces</h2><sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ actEff }}">Tout effacer</button></sc-if></div><p class="acc-sub">Ce qui vient d’arriver sur le marché : annonces et ventes conclues.<sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><span class="acc-astuce"> Glissez une ligne vers la gauche pour la retirer.</span></sc-if></p>
+    <!-- « Dernières annonces » : la carte n'existe que s'il y a au moins une annonce (demande du propriétaire, 23/10/2026) -->
+    <sc-if value="{{ accActOn }}" hint-placeholder-val="{{ false }}"><section class="acc-carte"><div class="acc-ttl"><h2>Dernières annonces</h2><sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ actEff }}">Tout effacer</button></sc-if></div><p class="acc-sub">Ce qui vient d’arriver sur le marché : annonces et ventes conclues.<sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><span class="acc-astuce"> Glissez une ligne vers la gauche pour la retirer.</span></sc-if></p>
       <sc-for list="{{ accActs }}" as="a" hint-placeholder-count="0"><div class="glis" onScroll="{{ a.glis }}"><button class="acc-ligne" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span><span class="acc-h">{{ a.h }}</span></button><button type="button" class="glis-z" onClick="{{ a.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-for>
-      <sc-if value="{{ accActVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ actVideTxt }}</p></sc-if>
-    </section>
+    </section></sc-if>
     </sc-if>
   </div>
 
@@ -1344,13 +1344,12 @@ class Component extends DCLogic {
       ecRepOn: !!ecRepE, ecRep: ecRepE ? Object.assign({}, ecRepE, { sous: ecRepE.tag + ecRepE.sous }) : { k: '', etat: '', emo: '', titre: '', sous: '', route: false, anim: '', lab: '', go: () => {}, glis: () => {}, ret: () => {} },
       ecEffOn: ecT.length + (ecD ? 1 : 0) > 1, ecEff: () => this.masquer(ecT.concat(ecD ? [ecD] : []).map(cleE), 'Activité en cours effacée'),
       actEffOn: acts.length > 1, actEff: () => this.masquer(acts.map(a => [a.cle]), 'Dernières annonces effacées'),
-      actVideTxt: Object.keys(MQ).some(k => k.startsWith('a:')) ? 'Rien de nouveau depuis votre dernier effacement.' : 'Aucune annonce pour l’instant.',
       ecListe: ecT.filter(x => !ecD || x.k !== ecD.k || x.id !== ecD.id).map(ecEl), ecVide: !ecT.length && !ecRepE,
       ecSous: !moiS ? 'Connectez-vous pour retrouver vos négociations, commandes et messages.' : nAf ? nAf + ' démarche' + (nAf > 1 ? 's attendent' : ' attend') + ' votre réponse.' : ecT.length ? 'Vos démarches en cours, pour reprendre en un geste.' : 'Vos négociations, commandes et messages en cours apparaîtront ici.',
       ecOn: !!moiS, ecVideOn: !!(moiS && !ecT.length && !ecRepE),   // « En cours » n'existe que pour une personne connectée
       ecVideTxt: moiS ? 'Rien en cours. Proposez un prix sur une annonce : la négociation s’affichera ici.' : 'Connectez-vous pour voir vos démarches.',
       accActs: acts, // J'ai / Je cherche : seulement sur l'onglet Marché (Activité et Alertes n'ont rien à publier)
-      accBasC: (S.accTab || 'marche') === 'marche' ? '' : 'cache', accBasH: String((S.accTab || 'marche') !== 'marche'), accActVide: !acts.length, accAlertes: al, accAlVide: !al.length && !nCd, accAlQqc: !!(al.length || nCd),
+      accBasC: (S.accTab || 'marche') === 'marche' ? '' : 'cache', accBasH: String((S.accTab || 'marche') !== 'marche'), accActOn: acts.length > 0, accAlertes: al, accAlVide: !al.length && !nCd, accAlQqc: !!(al.length || nCd),
       actRien: !acts.length && !ecT.length && !ecRepE, actQqc: !!(acts.length || ecT.length || ecRepE),
       actRienEl: h('div', { dangerouslySetInnerHTML: { __html: window.MDGSac ? MDGSac.vide('Aucune activité', moiS ? 'Vos négociations, commandes et messages apparaîtront ici.' : 'Connectez-vous : vos négociations, commandes et messages apparaîtront ici.', { t: 92 }) : '<p class="acc-vide">Aucune activité</p>' } }),
       alRienEl: h('div', { dangerouslySetInnerHTML: { __html: window.MDGSac ? MDGSac.vide('Aucune alerte', 'Tout est en ordre. Ce qui demande votre attention apparaîtra ici.', { t: 92 }) : '<p class="acc-vide">Aucune alerte</p>' } }), accAlRien: !!moiS && !al.length && nCd > 0,

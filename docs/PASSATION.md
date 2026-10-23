@@ -1232,3 +1232,4 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 
 ## Site public : guide « Transporter du vivrier en gros sans pertes » (23/10/2026)
 - `tools/site/guides/transporter-le-vivrier.html` : pertes (DG Économie 30-40 % après récolte ; CIRAD/Université Nangui Abrogoua 2019 : 10 à 43 % de pertes de tomate dues au seul transport, estimations des acteurs, citation revérifiée), emballage par produit (tomate en carton, 35 kg conseillés), chargement, chaleur, choix du transporteur, accord écrit (qui paie, qui perd), réception. Aucun prix de transport (sources trop anciennes ou trop locales). 7 guides en tout.
+- Typographie : espace insécable entre un nombre et « % », « kg », « °C », « km », « FCFA », « t », et dans « 3 000 » (`fine()` de `tools/site-public.js`) : plus de « 10 » en fin de ligne et « % » au début de la suivante.

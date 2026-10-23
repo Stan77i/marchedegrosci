@@ -89,7 +89,8 @@ const LOGO = mq.MDGMarque.ligne({ fond: 'vert', h: 26, cls: 'marque-nom' }).repl
 // version des fichiers du site : empreinte de leur contenu (le cache du navigateur suit tout seul)
 const crypto = require('crypto');
 const VERSION = crypto.createHash('md5').update(['site.css', 'site.js', 'garde.js', 'carte.js'].map(f => { try { return fs.readFileSync(path.join(SITE, f), 'utf8'); } catch (_) { return ''; } }).join('') + lire('app/admin-pc.js')).digest('hex').slice(0, 8);
-const fine = t => String(t).replace(/ ([:;!?»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
+const fine = t => String(t).replace(/ ([:;!?»])/g, '\u00a0$1').replace(/« /g, '«\u00a0')
+  .replace(/(\d) (%|kg|t\b|°C|km|FCFA|F\b|000)/g, '$1\u00a0$2').replace(/(\d) (000)/g, '$1\u00a0$2');  // « 10 % », « 3 000 », « 50 kg » : jamais coupés
 const remplir = (gab, v) => gab.replace(/\{\{(\w+)\}\}/g, (_, k) => { if (!(k in v)) throw new Error('gabarit : {{' + k + '}} inconnu'); return v[k]; });
 const VAL = { CARTE, LOGO, VERSION, ETAL, PROS, RAYONS, DATE, DONNEES: JSON.stringify(DONNEES).replace(/</g, '\\u003c'), NB_PRODUITS: String(produits.length), NB_PHOTOS: String(produits.filter(p => p.f).length) };
 // une page = _debut (avec sa tête propre) + _entete + son corps + _fin ; S = chemin vers site/, R = chemin vers la racine du dépôt

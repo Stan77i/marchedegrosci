@@ -90,10 +90,10 @@
     }
     var ligne = function (a, nuit) { return '<li>' + (photo(a.product_slug) || symb(a.sens, nuit)) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></li>'; };
     if (court) court.innerHTML = L.slice(0, 3).map(function (a) { return ligne(a, true); }).join('');
-    if (long) long.innerHTML = L.map(function (a) { return ligne(a, true); }).join('');
+    if (long) long.innerHTML = L.slice(0, 40).map(function (a) { return ligne(a, true); }).join('');
   }
   function lireFil() {
-    return rpc('fil_public', { p_limite: 60 }).then(function (L) { L = L || []; fil(L); points(L); })
+    return rpc('fil_public', { p_limite: 120 }).then(function (L) { L = L || []; fil(L); points(L); document.dispatchEvent(new CustomEvent('site:fil', { detail: L })); })
       .catch(function () { var c = $('filCourt'); if (c && /fil-vide/.test(c.innerHTML)) c.innerHTML = '<li class="fil-vide">Le fil ne répond pas pour l’instant.</li>'; });
   }
 
@@ -123,7 +123,7 @@
   }
 
   // ——— vers l'application ———
-  var APP = new URL(R + 'application.dc.html', location.href).href, RACINE = new URL(R, location.href).href;
+  var APP = new URL(R + 'application.dc.html', document.baseURI).href, RACINE = new URL(R || './', document.baseURI).href;
   var telephone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 768;
   function lien(hash, intention, support) { return APP + '?utm_source=site&utm_medium=' + (support || 'bouton') + (intention ? '&utm_campaign=' + encodeURIComponent(intention) : '') + (hash || '#/'); }
   function qr(hote, texte) { if (!hote || !window.qrcode) return; try { var q = qrcode(0, 'M'); q.addData(texte); q.make(); hote.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (_) {} }

@@ -16,7 +16,7 @@
   const km = (a, b) => { const R = 6371, dLa = (b[1] - a[1]) * D2R, dLo = (b[0] - a[0]) * D2R, x = Math.sin(dLa / 2) ** 2 + Math.cos(a[1] * D2R) * Math.cos(b[1] * D2R) * Math.sin(dLo / 2) ** 2; return Math.round(2 * R * Math.asin(Math.sqrt(x))); };
   const fmt = n => n == null ? '' : n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace('.', ',') + ' M' : n >= 1e4 ? Math.round(n / 1e3) + ' k' : Number(n).toLocaleString('fr-FR').replace(/ | /g, ' ');
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const abs = p => new URL(p, location.href).href;
+  const abs = p => new URL(p, document.baseURI).href;   // document.baseURI : l'adresse de la page, ou celle de <base> (site/carte/)
 
   // ——— chargement à la demande (le moteur ne pèse rien tant que la carte n'est pas ouverte) ———
   let libP = null, geoP = null;

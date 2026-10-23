@@ -41,7 +41,7 @@ html[data-theme=sombre] .rg-o{background:#25211B;border-color:rgba(243,239,228,.
 html[data-theme=sombre] .rg-o b.ok{box-shadow:inset 0 0 0 1.5px rgba(243,239,228,.25)}html[data-theme=sombre] .rg-o[aria-checked=true]{background:rgba(242,194,48,.1);border-color:rgba(242,194,48,.45)}
 html[data-theme=sombre] .rg-o[aria-checked=true] b.ok{background:#F2C230;color:#171512}
 /* sections ajoutées (22/10) : tous les réglages ici, plus dans Mon compte ni dans Notifications */
-.rg{max-height:calc(100dvh - 20px);overflow-y:auto;overscroll-behavior:contain}
+.rg{max-height:calc(100dvh - 20px);overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
 .rg-sw input{flex:none;appearance:none;-webkit-appearance:none;width:52px;height:32px;border-radius:16px;background:rgba(23,21,18,.18);position:relative;cursor:pointer;transition:background .2s;margin:0}
 .rg-sw input::after{content:"";position:absolute;left:3px;top:3px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .2s cubic-bezier(.22,1,.36,1)}
 .rg-sw input:checked{background:#10392B}.rg-sw input:checked::after{transform:translateX(20px)}.rg-sw input:disabled{opacity:.5}

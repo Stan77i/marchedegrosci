@@ -142,7 +142,7 @@
 .nx-h h2 small{display:block;margin-top:3px;font:400 13.5px/1.35 Jost,sans-serif;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nx-ib{flex:none;width:44px;height:44px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:rgba(23,21,18,.08);color:var(--ink);font-size:20px;line-height:1;cursor:pointer}.nx-back svg{display:block}
 .nx-ib:focus-visible,.nx button:focus-visible,.nx input:focus-visible,.nx textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-.nx-b{flex:1;overflow:auto;padding:16px 18px 20px;overscroll-behavior:contain}
+.nx-b{flex:1;overflow-x:hidden;overflow-y:auto;padding:16px 18px 20px;overscroll-behavior:contain}
 .nx-f{padding:12px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#EFE7D9}
 .nx-go{width:100%;min-height:54px;border:0;border-radius:999px;background:var(--acc);color:#F3EFE4;font:700 16px Jost,sans-serif;cursor:pointer}.nx-go[disabled]{background:#DDE6DE;color:#5C6B61;opacity:1;cursor:default}
 .nx-alt{min-height:48px;padding:0 18px;border:0;border-radius:999px;background:#EFE7D9;color:var(--ink);font:600 15px Jost,sans-serif;cursor:pointer}
@@ -226,7 +226,7 @@
 .nx-q input{width:140px;height:48px;padding:0 14px;border:1px solid rgba(23,21,18,.16);border-radius:14px;background:#FFFFFF;color:var(--ink);font:500 18px Jost,sans-serif}.nx-q span{color:var(--mute)}
 .nx-tot{display:flex;flex-direction:column;gap:6px;margin:14px 0 0}.nx-sum small{font-weight:400;color:var(--mute)}
 .nx-warn{margin:8px 0 0;padding:10px 12px;border-radius:14px;background:rgba(242,194,48,.2);color:#5F4500;font-size:13.5px;line-height:1.45}
-.nx-send{margin-top:16px}.nx-edf{max-height:min(60dvh,560px);overflow:auto;padding:2px}
+.nx-send{margin-top:16px}.nx-edf{max-height:min(60dvh,560px);overflow-x:hidden;overflow-y:auto;padding:2px}
 .nx-pend{margin:0 0 10px;padding:12px 14px;border-radius:16px;background:rgba(23,21,18,.05);font-size:14.5px;line-height:1.45}.nx-pend b{font-weight:700}
 .nx-confirm>b{color:var(--mute);font-size:14px;font-weight:600}.nx-big{margin:6px 0 2px;font:800 27px/1.1 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}.nx-dtot{font-size:15px;font-weight:600}
 .nx-confirm>p{margin:10px 0 12px;color:var(--mute);font-size:13.5px;line-height:1.5}

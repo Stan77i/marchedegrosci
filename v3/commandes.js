@@ -35,7 +35,7 @@
 
   // ——— les étapes, dans l'ordre (le transbordement n'apparaît que s'il a eu lieu) ———
   const ETAPES = [
-    ['confirmee', 'Commande confirmée'], ['preparation', 'Préparation'], ['chargement', 'Chargement confirmé'], ['transport', 'Transport en cours'],
+    ['confirmee', 'Commande confirmée'], ['preparation', 'Préparation'], ['chargement', 'Chargement confirmé'], ['transport', 'Le camion est parti'],
     ['transbordement', 'Transbordement'], ['arrivee', 'Chauffeur arrivé'], ['reception', 'Réception confirmée'], ['terminee', 'Commande terminée']];
   const LIB = Object.fromEntries(ETAPES);
   const EV = Object.assign({}, LIB, { creee: 'Commande proposée', refusee: 'Commande refusée', annulation_demandee: 'Annulation demandée',
@@ -61,7 +61,7 @@
   const CSS = `
 .cm-bg{position:fixed;inset:0;z-index:2147483000;background:rgba(10,24,18,.5);display:flex;align-items:flex-end;justify-content:center;animation:cmIn .2s ease-out}
 @keyframes cmIn{from{opacity:0}}
-.cm{position:relative;width:100%;max-width:560px;max-height:94dvh;overflow:auto;overscroll-behavior:contain;background:#F3EFE4;color:#171512;border-radius:24px 24px 0 0;padding:22px 18px calc(24px + env(safe-area-inset-bottom));font:400 15px/1.45 Jost,system-ui,sans-serif;color-scheme:light;animation:cmUp .28s cubic-bezier(.2,.8,.2,1)}
+.cm{position:relative;width:100%;max-width:560px;max-height:94dvh;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;background:#F3EFE4;color:#171512;border-radius:24px 24px 0 0;padding:22px 18px calc(24px + env(safe-area-inset-bottom));font:400 15px/1.45 Jost,system-ui,sans-serif;color-scheme:light;animation:cmUp .28s cubic-bezier(.2,.8,.2,1)}
 @keyframes cmUp{from{transform:translateY(40px)}}
 .cm h2{margin:0 52px 4px 0;font:600 24px/1.15 Jost,sans-serif;letter-spacing:-.01em}
 .cm h2 em{font:900 italic 1em Jost,sans-serif;color:#10392B;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%)}
@@ -128,9 +128,23 @@
 .cm-lien-l li span{flex:none;font:normal 15px/1.3 "Apple Color Emoji","Segoe UI Emoji",sans-serif}
 .cm-lien-e{display:inline-flex;align-self:flex-start;padding:4px 10px;border-radius:999px;background:rgba(23,21,18,.06);font:500 13px Jost,sans-serif;color:#4A4336}.cm-lien-e.on{background:rgba(108,197,140,.2);color:#1F6B40}
 .cm-lien-f{font-size:12.5px!important;color:#5E5546!important}.cm-lien small{font-size:13.5px;line-height:1.4;color:#4A4336}
-.cm-lien code{display:block;padding:8px 10px;border-radius:10px;background:#FFFDF8;font:500 12.5px/1.35 ui-monospace,Menlo,monospace;word-break:break-all;color:#10392B}
+.cm-lien code{display:block;padding:8px 10px;border-radius:10px;background:#FFFDF8;font:500 12.5px/1.35 Jost,sans-serif;word-break:break-all;color:#10392B}
+.cm-sch{margin:2px 0 0;padding:12px 10px 10px;border-radius:14px;background:#FFFDF8;list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;position:relative}
+.cm-sch li{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;font:400 12.5px/1.3 Jost,sans-serif;color:#3B342A;min-width:0}
+.cm-sch li:not(:last-child)::after{content:'';position:absolute;top:24px;left:calc(50% + 30px);right:calc(-50% + 30px);border-top:2px dashed rgba(16,57,43,.28)}
+.cm-sch li b{font:600 13px/1.2 Jost,sans-serif;color:#10392B}
+.cm-sch .ic{position:relative;width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:#10392B;color:#F2C230}
+.cm-sch .ic svg{width:26px;height:26px}
+.cm-sch .ic i{position:absolute;top:-6px;left:-6px;width:20px;height:20px;border-radius:50%;background:#F2C230;color:#171512;font:600 11.5px/20px Jost,sans-serif;font-style:normal}
+.cm-sch li:last-child .ic{background:#F2C230;color:#10392B}.cm-sch li:last-child .ic i{background:#10392B;color:#F2C230}
+.cm-sch-t{font:600 12px/1 Jost,sans-serif;letter-spacing:.04em;color:#5E5546;margin:4px 0 -2px}
+.cm-ou{display:flex;align-items:center;gap:10px;font:500 12.5px Jost,sans-serif;color:#5E5546}.cm-ou::before,.cm-ou::after{content:'';flex:1;border-top:1px solid rgba(23,21,18,.14)}
+.cm-code{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:#10392B;color:#F3EFE4}
+.cm-code span{flex:1;min-width:0;font:400 12.5px/1.35 Jost,sans-serif;color:rgba(243,239,228,.78)}.cm-code span em{font-style:normal;color:#F3EFE4;word-break:break-all}
+.cm-code strong{flex:none;font:600 24px/1 Jost,sans-serif;letter-spacing:.12em;color:#F2C230;font-variant-numeric:tabular-nums}
+.cm-lien .cm-code button{flex:none;min-height:40px;padding:0 12px;border-color:rgba(243,239,228,.4);color:#F3EFE4}
 .cm-lien button{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid #10392B;background:none;color:#10392B;font:600 14.5px Jost,sans-serif;cursor:pointer}
-.cm-lien button.p{background:#10392B;color:#FFFDF8}.cm-lien-a{display:flex;gap:8px;flex-wrap:wrap}.cm-lien-a button{flex:1}
+.cm-lien button.p{background:#10392B;color:#FFFDF8}.cm-lien-a{display:flex;gap:8px;flex-wrap:wrap}.cm-lien-a button{flex:1 1 auto}.cm-lien-a button.p{flex-basis:100%}
 .cm-info b{font-weight:600}
 .cm-dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 12px;padding:14px;border-radius:18px;background:#FFFDF8}
 .cm-dl dt{color:#5E5546;font-size:13.5px}.cm-dl dd{margin:0;text-align:right;font-weight:600}
@@ -229,7 +243,7 @@
 .cm-f3 dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 14px;width:calc(100% - 118px);margin:0}
 .cm-f3 dt{color:rgba(243,239,228,.62);font:400 12.5px/1.3 Jost,sans-serif}.cm-f3 dd{margin:3px 0 0;font:500 15.5px/1.25 Jost,sans-serif;color:#F3EFE4;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .cm-f3 dd.t{color:#F2C230;font-weight:600}
-.cm-prod{position:absolute;right:-26px;top:4px;width:150px;height:150px;pointer-events:none;animation:cmProd .8s .25s cubic-bezier(.22,1,.36,1) both}
+.cm-prod{position:absolute;right:-12px;top:4px;width:150px;height:150px;pointer-events:none;animation:cmProd .8s .25s cubic-bezier(.22,1,.36,1) both}
 .cm-prod img,.cm-prod svg{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 16px 18px rgba(0,0,0,.35));animation:cmFlotte 5s 1.2s ease-in-out infinite}
 @keyframes cmProd{from{transform:translateX(30px) rotate(6deg);opacity:0}}
 @keyframes cmFlotte{50%{transform:translateY(-5px) rotate(-1.5deg)}}
@@ -239,7 +253,7 @@
 .cm-pers>div{flex:1;min-width:0}
 .cm-pers button{flex:none;display:grid;place-items:center;width:46px;height:46px;border:0;border-radius:50%;background:#F2C230;color:#10392B;cursor:pointer;transition:transform .15s}
 .cm-pers button:active{transform:scale(.94)}.cm-pers button:focus-visible{outline:2px solid #F3EFE4;outline-offset:2px}
-@media (max-width:360px){.cm-f3 dl{width:calc(100% - 96px)}.cm-prod{width:124px;height:124px;right:-22px}}
+@media (max-width:360px){.cm-f3 dl{width:calc(100% - 96px)}.cm-prod{width:124px;height:124px;right:-10px}}
 @media (prefers-reduced-motion:reduce){.cm-plan *,.cm-fiche,.cm-fiche *{animation:none!important}}`;
   function css() { if (document.getElementById('cmCss')) return; const s = document.createElement('style'); s.id = 'cmCss'; s.textContent = CSS; document.head.appendChild(s); }
 
@@ -436,8 +450,12 @@
       case 'arrivee': if (!V) return ['Le chauffeur est <em>arrivé</em>', 'Vérifiez la quantité, la qualité et le papier du vendeur, puis donnez-lui le code de réception. Un problème : refusez avec des photos.']; break;
     }
     switch (c.etape) {
-      case 'confirmee': return V ? ['Préparez la <em>marchandise</em>', (MOTM ? 'Glissez le mot secret (ci-dessous) dans la marchandise. ' : '') + 'Touchez « En préparation », puis « Chargement confirmé » quand le camion est chargé.'] : ['Le vendeur prépare votre <em>marchandise</em>', 'Vous serez prévenu au chargement.'];
+      case 'confirmee': return V ? ['Préparez la <em>marchandise</em>', (MOTM ? 'Glissez le mot secret (ci-dessous) dans la marchandise. ' : '') + 'Touchez « En préparation », puis « Chargement confirmé » quand le camion est chargé' + (c.mode_transport !== 'reseau' ? ', et « Le camion est parti » au départ.' : '.')] : ['Le vendeur prépare votre <em>marchandise</em>', 'Vous serez prévenu au chargement.'];
       case 'preparation': return V ? ['Marchandise en <em>préparation</em>', 'Confirmez le chargement quand le camion est chargé.'] : ['Marchandise en <em>préparation</em>', 'Prochaine étape : le chargement.'];
+      case 'chargement': if (c.mode_transport !== 'reseau') return (V || c.role === c.mode_transport)
+        ? ['Marchandise <em>chargée</em>', 'Touchez « Le camion est parti » quand il démarre. Si le chauffeur a ouvert le lien de suivi, le départ se détecte tout seul.']
+        : ['Marchandise <em>chargée</em>', 'Le départ du camion sera signalé ici. ' + (MOTM && !V ? 'À l’arrivée, tapez le mot secret du vendeur pour confirmer la réception.' : '')];
+        return ['Commande <em>en cours</em>', ''];
       case 'transport': case 'transbordement': return V ? ['Transport <em>en cours</em>', MOTM ? 'À l’arrivée, l’acheteur tape votre mot secret pour confirmer la réception.' : 'L’acheteur confirmera l’arrivée et la réception.'] : ['Votre marchandise est <em>en route</em>', MOTM ? 'À l’arrivée, vérifiez la marchandise et cherchez le papier du vendeur : tapez son mot secret pour confirmer la réception.' : 'Signalez l’arrivée du chauffeur, puis confirmez la réception après avoir vérifié.'];
       case 'arrivee': return V ? ['Le chauffeur est <em>arrivé</em>', MOTM ? 'L’acheteur vérifie la marchandise, puis tape votre mot secret.' : 'L’acheteur vérifie la marchandise.'] : ['Le chauffeur est <em>arrivé</em>', MOTM ? 'Vérifiez la quantité et la qualité, retrouvez le papier du vendeur, puis tapez son mot secret pour confirmer la réception. Un problème : refusez avec des photos.' : 'Vérifiez la marchandise et le papier du vendeur avant de confirmer la réception. Un problème : refusez avec des photos.'];
       default: return ['Commande <em>en cours</em>', ''];
@@ -453,7 +471,10 @@
         const K = c.validation === 'code';
         if (c.role === 'vendeur' && c.etape === 'confirmee') { b('preparation', 'En préparation', 'p'); if (!K) b('chargement', 'Chargement confirmé'); }
         if (c.role === 'vendeur' && c.etape === 'preparation' && !K) b('chargement', 'Chargement confirmé', 'p');
-        if (c.role === 'acheteur' && ['transport', 'transbordement'].includes(c.etape)) { b('arrivee', 'Le chauffeur est arrivé', K ? '' : 'p'); if (!K) b('reception', 'Réception confirmée'); }
+        // schéma 65 : avec son propre transporteur, « Chargée » attend « Le camion est parti » (vendeur, ou celui qui transporte)
+        const PARTI = !K && c.etape === 'chargement' && c.mode_transport !== 'reseau' && (c.role === 'vendeur' || c.role === c.mode_transport);
+        if (PARTI) b('transport', '🚚 Le camion est parti', 'p');
+        if (c.role === 'acheteur' && (['transport', 'transbordement'].includes(c.etape) || (!K && c.etape === 'chargement'))) { b('arrivee', 'Le chauffeur est arrivé', K || c.etape === 'chargement' ? '' : 'p'); if (!K) b('reception', 'Réception confirmée'); }
         if (c.role === 'acheteur' && c.etape === 'arrivee' && !K) b('reception', 'Réception confirmée', 'p');
         if (['transport', 'transbordement'].includes(c.etape)) b('transbordement', 'Signaler un transbordement', 'm');
         // commande confirmée : seul le vendeur peut demander l'annulation (l'acheteur peut l'accepter), avant le chargement
@@ -848,7 +869,8 @@
       case 'non': return confirmer(c, { titre: 'Refuser la commande', ok: 'Refuser', note: 'Pourquoi ? (facultatif)', fait: 'Commande refusée',
         fn: v => R('commande_repondre', { p_id: c.id, p_oui: false, p_note: v.note || null }) });
       case 'preparation': return av('preparation', 'Marchandise en préparation', { gps: false });
-      case 'chargement': return av('chargement', 'Chargement confirmé', { texte: 'Confirmez seulement quand la marchandise est dans le camion. Le transport commence alors.' });
+      case 'chargement': return av('chargement', 'Chargement confirmé', { texte: c.mode_transport === 'reseau' ? 'Confirmez seulement quand la marchandise est dans le camion. Le transport commence alors.' : 'Confirmez seulement quand la marchandise est dans le camion. Ensuite, touchez « Le camion est parti » au départ (ou laissez le lien de suivi du chauffeur le détecter).' });
+      case 'transport': return av('transport', 'Le camion est parti', { texte: 'Touchez quand le camion démarre avec la marchandise. ' + (c.role === 'vendeur' ? 'L’acheteur' : 'Le vendeur') + ' est prévenu.', fait: 'Départ signalé : le camion est en route' });
       case 'transbordement': return av('transbordement', 'Signaler un transbordement', { lieu: 'Où la marchandise change-t-elle de véhicule ?', lieuRequis: true });
       case 'arrivee': return av('arrivee', 'Le chauffeur est arrivé');
       case 'reception': return c.validation === 'declaration' && c.mode_transport !== 'reseau'
@@ -906,29 +928,47 @@
   // ——— le lien de suivi pour son propre chauffeur (schéma 48) ———
   const ago = t => { const m = Math.round((Date.now() - Date.parse(t)) / 60000); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
   const lienURL = j => new URL('suivi.html?j=' + j, location.href).href;
+  const SV = {
+    tel: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10.5 18.5h3"/><path d="M9.5 9.5l2 2 3.5-4"/></svg>',
+    pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg>',
+    camion: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.5h11v9h-11z"/><path d="M13.5 9.5h4l3 3v3h-7"/><circle cx="6.5" cy="17" r="1.8"/><circle cx="17" cy="17" r="1.8"/></svg>'
+  };
+  // le schéma, pour celui qui envoie le lien ou dicte le code
+  const schema = code => `<p class="cm-sch-t">Pour le chauffeur, c’est tout simple</p><ol class="cm-sch" aria-label="Comment marche le suivi">
+      <li><span class="ic">${SV.tel}<i>1</i></span><b>Il ouvre le lien</b>${code ? 'ou tape le code' : 'dans son message'}</li>
+      <li><span class="ic">${SV.pin}<i>2</i></span><b>Il accepte</b>la position, une seule fois</li>
+      <li><span class="ic">${SV.camion}<i>3</i></span><b>Vous suivez</b>le camion ici, en direct</li></ol>`;
+  const pageSuivi = () => new URL('suivi.html', location.href).href.replace(/^https?:\/\//, '');
   function blocLien(c) {
     if (c.mode_transport === 'reseau' || !['a_confirmer', 'en_cours'].includes(c.etat)) return '';
     const L = lien[c.id], moi = c.role === c.mode_transport, qui = c.mode_transport === 'vendeur' ? 'le vendeur' : 'l’acheteur', autre = c.mode_transport === 'vendeur' ? 'l’acheteur' : 'le vendeur';
-    const etat = L && L.vu_le ? `<span class="cm-lien-e on">🟢 Le chauffeur partage sa position · ${esc(ago(L.vu_le))}</span>` : L ? '<span class="cm-lien-e">⏳ Le chauffeur n’a pas encore ouvert le lien</span>' : '';
+    const etat = L && L.vu_le ? `<span class="cm-lien-e on">🟢 Le chauffeur partage sa position · ${esc(ago(L.vu_le))}</span>`
+      : L && L.ouvert_le ? `<span class="cm-lien-e">👀 Le chauffeur a ouvert le lien · ${esc(ago(L.ouvert_le))} · en attente de sa position</span>`
+      : L ? '<span class="cm-lien-e">⏳ Le chauffeur n’a pas encore ouvert le lien</span>' : '';
     if (!moi) return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">🛡️</span><b>Suivi de la livraison</b></div>
       ${L ? etat : `<small>Nous avons conseillé à ${qui} de donner un lien de suivi à son chauffeur. Dès qu’il l’ouvre, vous voyez le camion avancer ici.</small>`}</div>`;
     const pourquoi = `<ul class="cm-lien-l"><li><span aria-hidden="true">📍</span>${autre === 'l’acheteur' ? 'L’acheteur' : 'Le vendeur'} voit le camion avancer : moins d’appels, plus de confiance.</li>
       <li><span aria-hidden="true">🔒</span>Sécurité : en cas de retard ou d’incident, la dernière position est connue.</li>
-      <li><span aria-hidden="true">📲</span>Sans compte : le chauffeur ouvre le lien et touche « Partager ma position ».</li></ul>`;
+      <li><span aria-hidden="true">📲</span>Sans compte, sans application, sans code à retenir pour le chauffeur.</li></ul>`;
     if (!L || !L.jeton) return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">🛡️</span><b>Donnez un lien de suivi à votre chauffeur</b><span class="cm-tag mais">Recommandé</span></div>
-      ${pourquoi}<button type="button" class="p" data-lien>📍 Créer le lien de suivi</button><small class="cm-lien-f">Facultatif, mais vivement conseillé pour votre sécurité et celle de ${autre}.</small><p class="cm-err" data-liene role="alert"></p></div>`;
-    return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">📍</span><b>Lien de suivi prêt</b></div>
-      <small>Envoyez-le à votre chauffeur avant le départ. Il l’ouvre pendant le trajet.</small><code>${esc(lienURL(L.jeton))}</code>${etat}
-      <div class="cm-lien-a"><button type="button" class="p" data-lps>📲 Envoyer au chauffeur</button><button type="button" data-lpc>Copier</button></div></div>`;
+      ${pourquoi}${schema(false)}<button type="button" class="p" data-lien>📍 Créer le lien de suivi</button><small class="cm-lien-f">Facultatif, mais vivement conseillé pour votre sécurité et celle ${autre === 'le vendeur' ? 'du vendeur' : 'de l’acheteur'}.</small><p class="cm-err" data-liene role="alert"></p></div>`;
+    return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">📍</span><b>Suivi prêt pour votre chauffeur</b></div>
+      ${etat}${schema(!!L.code)}
+      <small>Envoyez-lui le lien avant le départ, par WhatsApp ou SMS.</small>
+      <div class="cm-lien-a"><button type="button" class="p" data-lps>📲 Envoyer au chauffeur</button><button type="button" data-lpc>Copier le lien</button></div>
+      ${L.code ? `<div class="cm-ou">ou, au téléphone</div>
+      <div class="cm-code"><span>Il ouvre <em>${esc(pageSuivi())}</em> et tape ce code :</span><strong aria-label="Code ${esc(L.code.split('').join(' '))}">${esc(L.code)}</strong><button type="button" data-lcc aria-label="Copier le code">Copier</button></div>` : ''}</div>`;
   }
   function lierLien(c, box) {
     const cr = box.querySelector('[data-lien]');
     if (cr) cr.onclick = async () => { cr.disabled = true; try { await N().rpc('suivi_lien_creer', { p_cmd: c.id }); lien[c.id] = await N().rpc('suivi_lien_etat', { p_cmd: c.id }).catch(() => null); peindre(); }
       catch (x) { const e = box.querySelector('[data-liene]'); if (e) e.textContent = erreurTxt(x); cr.disabled = false; } };
     const L = lien[c.id]; if (!L || !L.jeton) return;
-    const url = lienURL(L.jeton), txt = 'Marché de Gros · livraison ' + (c.produit || '') + ' : ouvrez ce lien pendant le trajet pour partager votre position. ' + url;
+    const url = lienURL(L.jeton), txt = 'Marché de Gros · livraison ' + (c.produit || '') + ' : ouvrez ce lien au départ et acceptez la position, le suivi démarre tout seul. ' + url + (L.code ? '\nSi le lien ne s’ouvre pas : allez sur ' + pageSuivi() + ' et tapez le code ' + L.code + '.' : '');
     const ps = box.querySelector('[data-lps]'), pc = box.querySelector('[data-lpc]');
     if (ps) ps.onclick = async () => { if (navigator.share) { try { await navigator.share({ title: 'Suivi de livraison', text: txt }); return; } catch (_) { return; } } open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank'); };
+    const cc = box.querySelector('[data-lcc]');
+    if (cc) cc.onclick = async () => { try { await navigator.clipboard.writeText(L.code); toast('Code copié', { type: 'ok', sous: 'Donnez-le à votre chauffeur : ' + L.code }); } catch (_) { toast('Code : ' + L.code, { type: 'info' }); } };
     if (pc) pc.onclick = async () => { try { await navigator.clipboard.writeText(url); toast('Lien copié', { type: 'ok', sous: 'Collez-le dans un message à votre chauffeur.' }); } catch (_) { toast('Copie impossible', { type: 'erreur', sous: url }); } };
   }
 

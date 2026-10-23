@@ -16,6 +16,7 @@
 @font-face { font-family: Jost; font-weight: 800; font-style: italic; font-display: swap; src: url(fonts/jost-latin-800-italic.woff2) format('woff2'); }
 :root { --vert: #10392B; --mais: #F2C230; --creme: #F4EEE3; --encre: #171512; --mute: #5E5546; color-scheme: light; }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 body { margin: 0; min-height: 100dvh; background: var(--creme); color: var(--encre); font: 400 16px/1.45 Jost, system-ui, sans-serif; display: flex; flex-direction: column; }
 header { background: var(--vert); color: #F5F0E6; padding: calc(18px + env(safe-area-inset-top)) 20px 22px; border-radius: 0 0 28px 28px; }
 .logo { font: 600 18px/1 Jost, sans-serif; letter-spacing: -.01em; }
@@ -41,6 +42,10 @@ button:focus-visible { outline: 3px solid var(--mais); outline-offset: 2px; }
 .etat.on .point { background: #2F8C55; animation: pouls 1.6s ease-out infinite; }
 .etat.ko .point { background: #C2452F; }
 @keyframes pouls { 0% { box-shadow: 0 0 0 0 rgba(47, 140, 85, .55); } 70%, 100% { box-shadow: 0 0 0 12px rgba(47, 140, 85, 0); } }
+.code label { display: block; } .code label b { display: block; font-weight: 600; font-size: 18px; } .code label small { display: block; color: var(--mute); margin: 4px 0 12px; }
+.code input { width: 100%; min-height: 60px; border: 1.5px solid rgba(23, 21, 18, .2); border-radius: 18px; background: #fff; padding: 0 16px; font: 600 28px/1 Jost, sans-serif; letter-spacing: .14em; text-align: center; text-transform: uppercase; color: var(--encre); }
+.code input:focus { outline: 3px solid var(--mais); outline-offset: 1px; border-color: var(--vert); }
+.code .err { min-height: 20px; margin: 8px 0; color: #A33A26; font-size: 14px; }
 .note { margin: 0; font-size: 14px; color: var(--mute); }
 @media (prefers-reduced-motion: reduce) { .etat.on .point { animation: none; } }
 </style>
@@ -52,6 +57,12 @@ button:focus-visible { outline: 3px solid var(--mais); outline-offset: 2px; }
   <p class="sous" id="sous">Un instant…</p>
 </header>
 <main>
+  <form class="carte code" id="code" hidden autocomplete="off">
+    <label for="codeT"><b>Tapez le code de suivi</b><small>Le vendeur ou l’acheteur vous l’a donné : 6 lettres et chiffres, par exemple K7P-492.</small></label>
+    <input id="codeT" inputmode="text" autocapitalize="characters" spellcheck="false" maxlength="9" placeholder="K7P-492" aria-describedby="codeE">
+    <p class="err" id="codeE" role="alert"></p>
+    <button class="go" type="submit">Continuer</button>
+  </form>
   <div class="carte" id="infos" hidden></div>
   <div class="etat" id="etat" role="status" aria-live="polite"><span class="point" aria-hidden="true"></span><span id="etatT">Chargement du lien…</span></div>
   <button class="go" id="go" hidden>Partager ma position pendant le trajet</button>
@@ -62,7 +73,7 @@ button:focus-visible { outline: 3px solid var(--mais); outline-offset: 2px; }
 (function () {
   'use strict';
   const URL0 = 'https://catmsypctymgkjkfzdkt.supabase.co', KEY = 'sb_publishable_KC2au-t8dqasp5ez9Lq6XQ_JvbTtVQ5';
-  const jeton = (new URLSearchParams(location.search).get('j') || '').replace(/[^0-9a-f]/gi, '').slice(0, 64);
+  let jeton = (new URLSearchParams(location.search).get('j') || '').replace(/[^0-9a-f]/gi, '').slice(0, 64);
   const $ = id => document.getElementById(id);
   const rpc = async (f, args) => { const r = await fetch(URL0 + '/rest/v1/rpc/' + f, { method: 'POST', headers: { apikey: KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(args) });
     if (!r.ok) throw new Error('serveur ' + r.status); return r.json(); };
@@ -73,7 +84,7 @@ button:focus-visible { outline: 3px solid var(--mais); outline-offset: 2px; }
   let suivi = null, verrou = null, envoye = 0, dernier = 0, minuteur = null;
 
   async function charger() {
-    if (!jeton) { $('sous').textContent = 'Lien incomplet'; etat('Ce lien est incomplet. Demandez au vendeur ou à l’acheteur de vous le renvoyer.', 'ko'); return; }
+    if (!jeton) { demanderCode(); return; }
     let i = null; try { i = await rpc('suivi_lien_infos', { p_jeton: jeton }); } catch (_) { etat('Pas de connexion au serveur. Vérifiez internet puis rechargez la page.', 'ko'); return; }
     if (!i) { $('sous').textContent = 'Lien expiré'; etat('Ce lien n’est plus valable : la livraison est terminée ou le lien a expiré.', 'ko'); return; }
     $('sous').textContent = 'Commande ' + i.numero;
@@ -81,8 +92,26 @@ button:focus-visible { outline: 3px solid var(--mais); outline-offset: 2px; }
       <div class="ligne"><span class="ico" aria-hidden="true">🚚</span><span><b>${esc(i.depart || 'Départ à préciser')} → ${esc(i.arrivee || 'Livraison à préciser')}</b><small>Trajet</small></span></div>`;
     $('infos').hidden = false;
     if (i.etat !== 'en_cours' && i.etat !== 'a_confirmer') { etat('Cette commande n’est plus en cours.', 'ko'); return; }
-    etat('Touchez le bouton quand vous partez : votre position s’affichera pour le vendeur et l’acheteur.');
-    $('go').hidden = false; $('note').hidden = false;
+    rpc('suivi_lien_ouvert', { p_jeton: jeton }).catch(() => {});   // l'application affiche « Le chauffeur a ouvert le lien »
+    $('note').hidden = false; $('go').hidden = false;
+    partager();   // le suivi démarre tout de suite : le téléphone demande seulement l'autorisation de la position
+  }
+  // sans lien : le chauffeur tape le code court dicté par le vendeur ou l'acheteur
+  function demanderCode() {
+    $('sous').textContent = 'Avec un code'; $('etat').hidden = true; $('code').hidden = false;
+    const t = $('codeT'), err = $('codeE');
+    t.oninput = () => { const v = t.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); t.value = v.length > 3 ? v.slice(0, 3) + '-' + v.slice(3) : v; err.textContent = ''; };
+    $('code').onsubmit = async ev => {
+      ev.preventDefault(); const v = t.value.replace(/[^A-Z0-9]/g, '');
+      if (v.length !== 6) { err.textContent = 'Le code a 6 lettres et chiffres.'; t.focus(); return; }
+      const b = $('code').querySelector('button'); b.disabled = true;
+      let j = null; try { j = await rpc('suivi_code_jeton', { p_code: v }); } catch (_) { err.textContent = 'Pas de connexion. Vérifiez internet puis réessayez.'; b.disabled = false; return; }
+      b.disabled = false;
+      if (!j) { err.textContent = 'Ce code ne marche pas : vérifiez-le, ou la livraison est peut-être terminée.'; return; }
+      jeton = String(j); try { history.replaceState(null, '', '?j=' + jeton); } catch (_) {}
+      $('code').hidden = true; $('etat').hidden = false; etat('Chargement…'); charger();
+    };
+    setTimeout(() => t.focus(), 300);
   }
   async function envoyer(p) {
     const t = Date.now(); if (t - dernier < 15000) return; dernier = t;
@@ -94,7 +123,7 @@ button:focus-visible { outline: 3px solid var(--mais); outline-offset: 2px; }
   }
   async function partager() {
     if (!navigator.geolocation) { etat('Ce téléphone ne donne pas sa position à cette page.', 'ko'); return; }
-    $('go').disabled = true; etat('Autorisez la position quand le téléphone le demande…');
+    $('go').disabled = true; etat('Le suivi démarre : autorisez la position quand le téléphone le demande.');
     suivi = navigator.geolocation.watchPosition(p => { $('go').hidden = true; $('stop').hidden = false; envoyer(p); },
       e => { $('go').disabled = false; etat(e.code === 1 ? 'Position refusée. Réglages du téléphone → Confidentialité → Service de localisation → autorisez le navigateur, puis réessayez.' : 'Position introuvable pour l’instant. Restez à découvert et réessayez.', 'ko'); },
       { enableHighAccuracy: true, maximumAge: 10000, timeout: 30000 });
@@ -106,7 +135,8 @@ button:focus-visible { outline: 3px solid var(--mais); outline-offset: 2px; }
     try { verrou && verrou.release(); } catch (_) {} verrou = null;
     $('stop').hidden = true; $('go').hidden = false; $('go').disabled = false;
   }
-  $('go').onclick = partager;
+  $('go').onclick = () => { if (suivi != null) arreter(); partager(); };
+  document.addEventListener('pointerdown', async () => { if (suivi != null && !verrou && 'wakeLock' in navigator) { try { verrou = await navigator.wakeLock.request('screen'); } catch (_) {} } });
   $('stop').onclick = () => { arreter(); etat('Partage arrêté. Touchez le bouton pour reprendre.'); };
   document.addEventListener('visibilitychange', async () => { if (!document.hidden && suivi != null && !verrou && 'wakeLock' in navigator) { try { verrou = await navigator.wakeLock.request('screen'); } catch (_) {} } });
   charger();

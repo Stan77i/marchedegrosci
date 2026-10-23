@@ -22,7 +22,7 @@
   const CSS = `
 .pm-bg{position:fixed;inset:0;z-index:2147483100;display:flex;align-items:flex-end;justify-content:center;background:rgba(8,7,5,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:pmFond .25s ease both}
 @keyframes pmFond{from{opacity:0}}
-.pm{position:relative;width:100%;max-width:520px;max-height:92dvh;overflow:auto;overscroll-behavior:contain;box-sizing:border-box;padding:10px 20px calc(20px + env(safe-area-inset-bottom));border-radius:28px 28px 0 0;background:#171512;color:#F3EFE4;font:400 15px/1.45 Jost,system-ui,sans-serif;box-shadow:0 -20px 60px rgba(0,0,0,.45);animation:pmMonte .45s cubic-bezier(.22,1,.36,1) both}
+.pm{position:relative;width:100%;max-width:520px;max-height:92dvh;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;padding:10px 20px calc(20px + env(safe-area-inset-bottom));border-radius:28px 28px 0 0;background:#171512;color:#F3EFE4;font:400 15px/1.45 Jost,system-ui,sans-serif;box-shadow:0 -20px 60px rgba(0,0,0,.45);animation:pmMonte .45s cubic-bezier(.22,1,.36,1) both}
 @keyframes pmMonte{from{transform:translateY(60px);opacity:.4}}
 .pm-poi{display:block;width:40px;height:4px;margin:0 auto 14px;border-radius:2px;background:rgba(243,239,228,.22)}
 .pm-x{position:absolute;right:14px;top:14px;width:40px;height:40px;border:0;border-radius:50%;background:rgba(243,239,228,.08);color:#F3EFE4;font:400 20px/1 Jost,sans-serif;cursor:pointer}

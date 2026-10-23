@@ -21,19 +21,19 @@ var adm=false;try{adm=localStorage.getItem("mdg-site:admin")==="1"}catch(e){}
 if(!adm){try{sessionStorage.removeItem("mdg-app")}catch(e){}location.replace("maintenance.html"+(location.hash||""));return}
 if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.getItem("mdg-app")!=="1")location.replace("index-v3.html"+h)}catch(e){}})();</script>
 <script>/* service worker : vérifie les mises à jour à chaque retour sur l'application ; quand une nouvelle version prend la main, la page se recharge (tout de suite si elle vient de s'ouvrir, sinon au prochain retour, jamais pendant une saisie) */if('serviceWorker' in navigator){(function(){var sw=navigator.serviceWorker,avant=!!sw.controller,t0=Date.now(),attente=false;sw.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(attente)location.reload();else r.update().catch(function(){})}})}).catch(function(){});sw.addEventListener('controllerchange',function(){if(!avant||attente)return;if(Date.now()-t0<6000)location.reload();else attente=true})})()}</script>
-<script src="v3/nuage.js?v=20261028d"></script>
+<script src="v3/nuage.js?v=20261031a"></script>
 <script src="app/admin-pc.js?v=20261026a" data-ici="mobile"></script>
 <script src="v3/avatar.js?v=20261023f"></script>
 <script src="app/icones.js?v=20261025a"></script>
 <script src="app/effets.js?v=20261024i"></script>
 <script src="app/marque.js?v=20261023v"></script>
 <script src="app/sac.js?v=20261027e"></script>
-<script src="app/garanties.js?v=20261026b"></script>
+<script src="app/garanties.js?v=20261031a"></script>
 <script src="app/toast.js?v=20261027e"></script>
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261030c','v3/astuces.js?v=20261030c','app/scene.js?v=20261028d','v3/porte.js?v=20261028c','v3/sons.js?v=20261027g','v3/negoce.js?v=20261027f','v3/compte.js?v=20261027f','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261027f','v3/statuts.js?v=20261023a','v3/messages.js?v=20261027c','v3/aide.js?v=20261030c','v3/alertes.js?v=20261023f','v3/releve.js?v=20261026a','v3/commandes.js?v=20261030c','v3/tableau.js?v=20261029d','v3/chauffeur.js?v=20261030c','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261027f','v3/appro.js?v=20261027f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261025g','v3/identite.js?v=20261027h'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261031c','v3/astuces.js?v=20261031c','app/scene.js?v=20261028d','v3/porte.js?v=20261028c','v3/sons.js?v=20261031a','v3/negoce.js?v=20261031a','v3/compte.js?v=20261031a','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261031a','v3/statuts.js?v=20261023a','v3/messages.js?v=20261031a','v3/aide.js?v=20261031c','v3/alertes.js?v=20261031a','v3/releve.js?v=20261031a','v3/commandes.js?v=20261031c','v3/tableau.js?v=20261029d','v3/chauffeur.js?v=20261030c','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261031a','v3/racheter.js?v=20261031a','v3/appro.js?v=20261031a','v3/groupes.js?v=20261031a','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261025g','v3/identite.js?v=20261031a'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -47,18 +47,18 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
-<script src="app/theme.js?v=20261029g"></script>
+<script src="app/theme.js?v=20261031a"></script>
 <script src="app/nuit.js?v=20261029c" defer></script>
 <script src="app/stable.js?v=20261025f" defer></script>
 <script src="app/vibre.js?v=20261025a" defer></script>
-<script src="app/prixmoment.js?v=20261030b" defer></script>
+<script src="app/prixmoment.js?v=20261031a" defer></script>
 <script src="app/demo-orbite.js?v=20261029g" defer></script>
 <script src="app/activite.js?v=20261025j" defer></script>
 <link rel="preload" href="fonts/jost-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261030a">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261031a">
 <link rel="stylesheet" href="css/sombre.css?v=20261027f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261027f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261027f">
@@ -868,7 +868,7 @@ class Component extends DCLogic {
     this.onVV = () => { const ae = document.activeElement, typing = ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName) && ae.type !== 'file' && ae.type !== 'date', vv = window.visualViewport, h = typing && vv && vv.height < window.innerHeight - 60 ? Math.round(vv.height) : 0; if (h !== this.state.kbH) this.setState({ kbH: h }); if (window.scrollY || window.scrollX) window.scrollTo(0, 0); };
     this.onFocus = () => setTimeout(this.onVV, 320); this.onBlur = () => setTimeout(this.onVV, 80);
     if (window.visualViewport) { visualViewport.addEventListener('resize', this.onVV); visualViewport.addEventListener('scroll', this.onVV); }
-    this.onAnyScroll = e => { const t = e.target; if (t && t.nodeType === 1 && t.scrollLeft && !/overflow-x:\s*auto/.test(t.getAttribute('style') || '') && !/(auto|scroll)/.test(getComputedStyle(t).overflowX)) t.scrollLeft = 0; };  // ne ramène que les débordements involontaires ; une rangée faite pour défiler (overflow-x: auto, même dans une feuille de style) reste libre
+    this.onAnyScroll = e => { const t = e.target; if (!t || t.nodeType !== 1 || !t.scrollLeft || /overflow-x:\s*auto/.test(t.getAttribute('style') || '')) return; const cs = getComputedStyle(t); if (!/(auto|scroll)/.test(cs.overflowX) || (/(auto|scroll)/.test(cs.overflowY) && t.scrollHeight > t.clientHeight + 1)) t.scrollLeft = 0; };  // ramène les débordements involontaires (une zone qui défile de haut en bas ne glisse jamais de côté) ; une rangée faite pour défiler (overflow-x: auto, même dans une feuille de style) reste libre
     document.addEventListener('scroll', this.onAnyScroll, true);
     this.noZoom = e => e.preventDefault();
     ['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.addEventListener(t, this.noZoom, { passive: false }));
@@ -883,7 +883,7 @@ class Component extends DCLogic {
         // zones qui défilent : celles de l'application (style écrit) ET les fenêtres ajoutées par-dessus (connexion, Mon espace, négociation…)
         const st = (el.getAttribute('style') || '') + (/(auto|scroll)/.test(cs.overflowY) ? ';overflow-y:auto' : '') + (/(auto|scroll)/.test(cs.overflowX) ? ';overflow-x:auto' : '');
         if (vert && /overflow-y:\s*auto/.test(st) && el.scrollHeight > el.clientHeight + 1) { if ((dy > 0 && el.scrollTop <= 0) || (dy < 0 && el.scrollTop + el.clientHeight >= el.scrollHeight - 1)) e.preventDefault(); return; }
-        if (!vert && /overflow-x:\s*auto/.test(st) && el.scrollWidth > el.clientWidth + 1) { if ((dx > 0 && el.scrollLeft <= 0) || (dx < 0 && el.scrollLeft + el.clientWidth >= el.scrollWidth - 1)) e.preventDefault(); return; }
+        if (!vert && /overflow-x:\s*auto/.test(st) && el.scrollWidth > el.clientWidth + 1 && !(/(auto|scroll)/.test(cs.overflowY) && el.scrollHeight > el.clientHeight + 1)) { if ((dx > 0 && el.scrollLeft <= 0) || (dx < 0 && el.scrollLeft + el.clientWidth >= el.scrollWidth - 1)) e.preventDefault(); return; }
       }
       e.preventDefault();
     };
@@ -1051,7 +1051,7 @@ class Component extends DCLogic {
     const lab = t => '<label style="display:block;margin:0 0 6px;font:500 13.5px Jost,sans-serif;color:#E9E1D2">' + t + '</label>';
     const prods = this.cats.map(c => '<optgroup label="' + e(c.name) + '">' + M.products.filter(p => p.categorySlug === c.slug).map(p => '<option value="' + e(p.slug) + '">' + e(p.name) + '</option>').join('') + '</optgroup>').join('');
     const bg = document.createElement('div'); bg.style.cssText = 'position:fixed;inset:0;z-index:9300;background:rgba(10,9,7,.6);display:flex;align-items:flex-end;justify-content:center;padding:12px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)';
-    bg.innerHTML = '<form role="dialog" aria-modal="true" aria-label="Marquer une forte demande" style="width:100%;max-width:440px;max-height:calc(100dvh - 24px);overflow:auto;background:#1d1a15;color:#F5F0E6;border-radius:26px;padding:20px 18px 18px;font-family:Jost,sans-serif;box-shadow:0 30px 80px rgba(0,0,0,.5)">'
+    bg.innerHTML = '<form role="dialog" aria-modal="true" aria-label="Marquer une forte demande" style="width:100%;max-width:440px;max-height:calc(100dvh - 24px);overflow-x:hidden;overflow-y:auto;background:#1d1a15;color:#F5F0E6;border-radius:26px;padding:20px 18px 18px;font-family:Jost,sans-serif;box-shadow:0 30px 80px rgba(0,0,0,.5)">'
       + '<div style="display:flex;align-items:center;gap:10px;margin:0 0 14px"><span style="font-size:26px">🔥</span><b style="flex:1;font:900 italic 24px/1.1 \'Jost\',sans-serif;letter-spacing:-.02em">Forte demande</b><button type="button" data-x aria-label="Fermer" style="width:40px;height:40px;border:0;border-radius:50%;background:rgba(245,240,230,.08);color:#F5F0E6;font-size:20px">×</button></div>'
       + '<p style="margin:0 0 14px;color:#B9AD98;font-size:14px;line-height:1.45">La zone apparaît sur la carte de tous les membres, avec une onde rouge, jusqu\u2019à la date choisie.</p>'
       + lab('Produit') + '<select name="p" aria-label="Produit" style="' + fld + '"><option value="">Tous produits</option>' + prods + '</select>'

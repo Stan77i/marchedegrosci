@@ -110,7 +110,7 @@
 .cp.sur-hero.defile .cp-top{background:rgba(244,238,227,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 1px 0 var(--line)}
 .cp.sur-hero.defile .cp-top::before{background:rgba(23,21,18,.16)}
 .cp.sur-hero.defile .cp-x{background:rgba(23,21,18,.07);color:var(--ink)}
-.cp-main{flex:1;min-height:0;overflow:auto;padding:4px 16px calc(36px + env(safe-area-inset-bottom));overscroll-behavior:contain;scroll-padding-top:72px}
+.cp-main{flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;padding:4px 16px calc(36px + env(safe-area-inset-bottom));overscroll-behavior:contain;scroll-padding-top:72px}
 @media (min-width:760px){.cp-main{padding:4px 28px 40px}}
 .cp.sur-hero .cp-main{padding-top:0}
 .cp-main>h2,.cp-pg>h2,.cp-w>h2{margin:2px 4px 4px;font:600 26px/1.08 Jost,sans-serif;letter-spacing:-.015em;letter-spacing:-.005em}

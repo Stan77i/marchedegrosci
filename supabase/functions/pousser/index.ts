@@ -26,6 +26,7 @@
 // 14. par la base (déclencheur public.push_code_demande, schéma 51) quand le chauffeur demande le code, avec { code_demande_id }.
 //  7 bis (schéma 57) : refus de la marchandise après réception → le vendeur et le chauffeur inscrit sont prévenus ; clôture → « Commande clôturée ».
 // 15. par la base (déclencheur public.push_litige_msg, schéma 58) pour un message de la discussion à trois, avec { litige_msg_id }.
+// v19 (23/10/2026) : « Le camion est parti » (schéma 65), chargement sans « transport en cours ».
 // v18 (22/10/2026) : titres sans emoji, phrases sans tiret long, conseil « Suivez la livraison » à la place des transporteurs du réseau (en pause, schéma 62).
 // Annonces du marché (schema-43) : achat groupé ouvert, besoin pro, nouvelle offre ou demande → tous les comptes qui ont activé
 // les notifications, sauf ceux qui les ont coupées ; au plus 10 par personne et par jour (push_diffusion_cible).
@@ -166,7 +167,8 @@ Deno.serve(async (req) => {
         confirmee: ["Commande confirmée", `${produit} · ${qui} a confirmé`],
         refusee: ["Commande refusée", `${produit} · ${qui} a refusé`],
         preparation: ["Marchandise en préparation", produit],
-        chargement: ["Chargement confirmé, transport en cours", produit],
+        chargement: ["Chargement confirmé", produit],
+        transport: e.par ? [`${qui} : le camion est parti`, `${produit} · en route vers la livraison`] : ["Le camion est parti", `${produit} · départ détecté par le lien de suivi du chauffeur`],
         transbordement: ["Transbordement", `${produit}${e.lieu ? " · " + e.lieu : ""}`],
         arrivee: ["Le chauffeur est arrivé", produit],
         reception: ["Réception confirmée, commande terminée", produit],

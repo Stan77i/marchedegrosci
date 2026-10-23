@@ -41,7 +41,7 @@
   // ——— feuille commune (sombre, depuis le bas) ———
   const CSS = `.rp-bg{position:fixed;inset:0;z-index:9300;background:rgba(10,9,7,.6);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:rpIn .2s ease both}
 @media (min-width:720px){.rp-bg{align-items:center;padding:24px}}
-.rp{position:relative;width:100%;max-width:520px;max-height:min(90dvh,820px);overflow:auto;background:#F4EEE3;color:#171512;border-radius:28px 28px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));font:400 15px/1.5 Jost,system-ui,sans-serif;box-shadow:0 -10px 50px rgba(0,0,0,.5);animation:rpUp .36s cubic-bezier(.22,1,.36,1) both;overscroll-behavior:contain}
+.rp{position:relative;width:100%;max-width:520px;max-height:min(90dvh,820px);overflow-x:hidden;overflow-y:auto;background:#F4EEE3;color:#171512;border-radius:28px 28px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));font:400 15px/1.5 Jost,system-ui,sans-serif;box-shadow:0 -10px 50px rgba(0,0,0,.5);animation:rpUp .36s cubic-bezier(.22,1,.36,1) both;overscroll-behavior:contain}
 @media (min-width:720px){.rp{border-radius:28px}}
 .rp h2{margin:0 44px 4px 0;font:600 23px/1.1 Jost,sans-serif;letter-spacing:-.015em}.rp>p{margin:0 0 16px;color:#655C4D;font-size:14px}
 .rp-x{position:absolute;right:14px;top:14px;width:42px;height:42px;border:0;border-radius:50%;background:rgba(23,21,18,.08);color:#171512;font-size:0;cursor:pointer}

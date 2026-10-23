@@ -101,7 +101,7 @@
 .gr-ligne:focus-visible{outline:2px solid #10392B;outline-offset:2px}
 .gr-fond{position:fixed;inset:0;z-index:9300;background:rgba(8,7,5,.55);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:grFond .25s ease both}
 @keyframes grFond{from{opacity:0}}
-.gr-f{width:100%;max-width:480px;max-height:calc(100dvh - 24px);overflow:auto;background:#F3EFE4;color:#171512;border-radius:28px 28px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,0,0,.35);animation:grMonte .42s cubic-bezier(.22,1,.36,1) both}
+.gr-f{width:100%;max-width:480px;max-height:calc(100dvh - 24px);overflow-x:hidden;overflow-y:auto;background:#F3EFE4;color:#171512;border-radius:28px 28px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,0,0,.35);animation:grMonte .42s cubic-bezier(.22,1,.36,1) both}
 @keyframes grMonte{from{transform:translateY(100%)}}
 .gr-poig{width:40px;height:4px;border-radius:2px;background:rgba(23,21,18,.18);margin:0 auto 10px}
 .gr-hd{display:flex;align-items:flex-start;gap:12px}

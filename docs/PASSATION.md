@@ -908,3 +908,36 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Tutoriels, guide, aide et Espace chauffeur réécrits : les codes et l'inscription concernent le transporteur du réseau ; son propre transporteur n'a rien à faire.
 - Pas touché : la fonction Edge `pousser` (v18). Ses rappels de codes ne partent que pour les commandes « avec codes » (donc le réseau). Un rappel du mot secret en notification pourra être ajouté plus tard (v19).
 - Cache `mgci-v200`.
+
+## Écrans stables : plus rien ne glisse de côté (23/10/2026) + PDF « l'application et son modèle économique »
+- **Signalé par le propriétaire** (capture de « Suivre la commande » décalée vers la gauche) : certaines fenêtres bougeaient à gauche et à droite en défilant ou en tirant.
+- **Cause mesurée** : les fenêtres posées par les modules (`.cm`, `.al`, `.ap`, `.gr`, `.pz`, `.rc`, `.rl`, `.rp`, `.snp`, `.pm`, `.gr-f`, `.ng`, `.ng-form`, `.nx-b`, `.nx-edf`, `.cp-main`…) avaient `overflow:auto`, donc elles défilaient aussi de côté dès qu'un élément dépassait. Dans la commande, l'image du produit (`.cm-prod`, `right:-26px`) dépassait de 8 px : la fenêtre glissait de 8 px.
+- **Corrections** : `overflow-x:hidden;overflow-y:auto` sur toutes ces fenêtres (et `.dm-b`, `.idv-main`, `.rg`, `.tv-corps`) ; `.cm-prod` ramené dans la fiche (`right:-12px` / `-10px`) ; garde-fou dans `application.dc.html` : une zone qui défile de haut en bas n'est jamais déplacée de côté (`onAnyScroll` la remet à 0, le geste du doigt `tM` ne l'autorise pas). Les rangées faites pour glisser (filtres, photos, puces) restent libres.
+- **Vérifié** (Playwright, gestes du doigt simulés) : avant, la fenêtre de commande glissait de 8 px ; après, 0 px de côté, le défilement vertical marche (654 px), la rangée de filtres de Prix glisse toujours. Audit de tous les écrans à 390 et 360 px : plus aucune zone ne défile dans les deux sens.
+- Faute corrigée : « votre sécurité et celle de le vendeur » → « du vendeur ».
+- **PDF** `docs/Marche-de-Gros-application-et-modele-economique.pdf` (11 pages) : l'application, puis le modèle économique (commission 3,5 % sur la vente, 6,9 % sur le transport du réseau ; payé seulement quand un achat est conclu), exemples chiffrés, grille de calcul (exemples, pas des prévisions), contournement, chiffres réels du 23/10 (4 comptes, 2 commandes, 63 000 F inscrits non encaissés), questions pour les professionnels.
+- Cache `mgci-v201`.
+
+## Lien de suivi : démarre dès l'ouverture, « le chauffeur a ouvert le lien », code court avec schéma (23/10/2026) — schéma 64
+- Demande du propriétaire : le suivi doit être simple, sans code à retenir ni compte pour le chauffeur ; un code en secours, « avec un schéma d'explication, propre ».
+- **Serveur** (`supabase/schema-64-suivi-code.sql`, appliqué et vérifié le 23/10, test dans une transaction annulée) :
+  - `suivi_liens.code` (ex. `8DR-3T8`, 6 caractères parmi 31, sans 0/O/1/I/L, index unique) et `suivi_liens.ouvert_le` ; colonnes ajoutées, rien supprimé ; les liens actifs ont reçu un code ;
+  - `suivi_lien_creer` donne un code à chaque lien ; `suivi_lien_etat` renvoie `ouvert_le` et `code` (le code seulement à celui qui transporte, comme le jeton) ;
+  - `suivi_code_jeton(p_code)` (anon) : code → jeton, majuscules/espaces/tiret ignorés, seulement lien actif et commande en cours ;
+  - `suivi_lien_ouvert(p_jeton)` (anon) : note la première ouverture.
+- **Page du chauffeur** (`suivi.html`) : sans `?j=`, elle demande le code (saisie formatée K7P-492) ; avec le lien ou le code, elle note l'ouverture et **lance le partage tout de suite** (le téléphone demande seulement l'autorisation). Le bouton reste pour relancer après un refus. `[hidden]` forcé (la ligne d'état restait visible).
+- **Application** (`v3/commandes.js`, `blocLien`) : schéma en 3 étapes (1 il ouvre le lien ou tape le code, 2 il accepte la position, 3 vous suivez le camion ici) ; « Envoyer au chauffeur » (le message contient aussi l'adresse et le code de secours), « Copier le lien », puis « ou, au téléphone : il ouvre <adresse>/suivi.html et tape ce code » avec Copier ; état « 👀 Le chauffeur a ouvert le lien · il y a 2 min » avant la première position.
+- Testé (Playwright) : code faux refusé, code tapé en minuscules accepté, ouverture notée, position envoyée sans toucher de bouton ; aucun débordement de la fenêtre.
+- Cache `mgci-v202`.
+
+## « Le camion est parti » : une étape à part, signalée par le vendeur ou détectée par le lien (23/10/2026) — schéma 65, pousser v19
+- Règle du propriétaire : simple. Le chauffeur ouvre le lien (le code ne sert qu'en secours). S'il ne l'utilise pas, c'est le vendeur (ou celui qui s'occupe du transport) qui indique les étapes : « Chargement confirmé », puis « Le camion est parti ».
+- **Serveur** (`supabase/schema-65-camion-parti.sql`, appliqué et vérifié le 23/10, tests dans des transactions annulées) :
+  - `commande_avancer` : avec son propre transporteur, « chargement » reste à l'étape `chargement` (avant : passage automatique à `transport`) ; nouvelle étape `transport` = « Le camion est parti », par le vendeur ou par celui qui transporte (`r = mode_transport`), seulement depuis `chargement` ; l'arrivée et la réception sont acceptées dès `chargement` (si personne n'a signalé le départ, rien ne bloque). Réseau inchangé.
+  - `commande_reception_mot` : acceptée dès `chargement`.
+  - `suivi_lien_position` : départ **détecté** quand une position du lien est à 500 m ou plus du premier point reçu après le chargement → `transport`, journal « systeme / gps / Départ détecté par le lien de suivi du chauffeur ». Vérifié : 220 m → rien, 670 m → départ.
+  - `push_commande` : le départ (personne ou détection) est notifié ; seul le passage automatique (`preuve = 'auto'`, réseau) reste muet.
+- **pousser v19** (redéployée, réponses vérifiées : 401 sans clé, 404 « étape introuvable » avec clé) : « Chargement confirmé » (sans « transport en cours ») ; « X : le camion est parti » / « Le camion est parti · départ détecté par le lien de suivi du chauffeur ».
+- **Application** (`v3/commandes.js`) : à « Chargée », bouton principal « 🚚 Le camion est parti » (vendeur ou transporteur) ; l'acheteur garde « Le chauffeur est arrivé » et « Réception confirmée » en secours (pas en principal) ; textes « que faire » ; étape `transport` affichée « Le camion est parti ». Aide, guide et tutoriel : « préparation, chargement, départ du camion, arrivée, réception ».
+- Anciennes versions de l'application : elles montrent « Chargée » sans bouton de départ ; l'acheteur peut toujours signaler l'arrivée et confirmer la réception. Aucune commande en cours au moment du changement.
+- Cache `mgci-v203`.

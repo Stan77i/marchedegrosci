@@ -50,7 +50,7 @@
 
   const CSS = `.rl-bg{position:fixed;inset:0;z-index:9300;background:rgba(10,9,7,.6);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
 @media (min-width:720px){.rl-bg{align-items:center;padding:24px}}
-.rl{position:relative;width:100%;max-width:520px;max-height:min(92dvh,860px);overflow:auto;overscroll-behavior:contain;background:#F4EEE3;color:#171512;border-radius:28px 28px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));font:400 15px/1.45 Jost,system-ui,sans-serif}
+.rl{position:relative;width:100%;max-width:520px;max-height:min(92dvh,860px);overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;background:#F4EEE3;color:#171512;border-radius:28px 28px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));font:400 15px/1.45 Jost,system-ui,sans-serif}
 @media (min-width:720px){.rl{border-radius:28px}}
 .rl h2{margin:0 52px 4px 0;font:600 24px/1.08 Jost,sans-serif;letter-spacing:-.015em}
 .rl h2 em{font:900 italic 1em Jost,sans-serif;color:#10392B;letter-spacing:-.02em;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%)}

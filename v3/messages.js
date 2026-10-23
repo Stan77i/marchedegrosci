@@ -70,7 +70,7 @@
 .dm-qui img{flex:none;border-radius:50%}.dm-qui span{min-width:0}.dm-qui b{display:block;font-weight:600;font-size:16.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dm-qui small{display:block;color:var(--mute);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dm-t{flex:1;min-width:0;margin:0 0 0 6px;font:600 21px/1.1 Jost,sans-serif;letter-spacing:-.015em}.dm-t small{display:block;margin-top:2px;font:400 12.5px Jost,sans-serif;color:var(--mute)}
-.dm-b{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:14px 14px 18px;-webkit-overflow-scrolling:touch}
+.dm-b{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:14px 14px 18px;-webkit-overflow-scrolling:touch}
 .dm-info{display:flex;align-items:center;justify-content:center;gap:7px;margin:2px auto 14px;padding:7px 12px;max-width:340px;border-radius:999px;background:rgba(23,21,18,.05);color:var(--mute);font-size:12.5px;text-align:center}
 .dm-garde{margin:-6px auto 14px;padding:9px 12px;max-width:380px;border-radius:14px;background:rgba(242,201,76,.22);color:#5B4300;font-size:12.5px;line-height:1.45;text-align:center}
 .dm-info svg{flex:none;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}

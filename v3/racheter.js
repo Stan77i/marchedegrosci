@@ -19,7 +19,7 @@
   const CSS = `
 .rc-bg{position:fixed;inset:0;z-index:2147483000;background:rgba(10,24,18,.5);display:flex;align-items:flex-end;justify-content:center;animation:rcIn .2s ease-out}
 @keyframes rcIn{from{opacity:0}}@keyframes rcUp{from{transform:translateY(40px);opacity:.4}}
-.rc{position:relative;width:100%;max-width:560px;max-height:94dvh;overflow:auto;overscroll-behavior:contain;background:#F3EFE4;color:#171512;border-radius:24px 24px 0 0;padding:20px 16px calc(24px + env(safe-area-inset-bottom));font:400 15px/1.45 Jost,system-ui,sans-serif;color-scheme:light;animation:rcUp .28s cubic-bezier(.2,.8,.2,1)}
+.rc{position:relative;width:100%;max-width:560px;max-height:94dvh;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;background:#F3EFE4;color:#171512;border-radius:24px 24px 0 0;padding:20px 16px calc(24px + env(safe-area-inset-bottom));font:400 15px/1.45 Jost,system-ui,sans-serif;color-scheme:light;animation:rcUp .28s cubic-bezier(.2,.8,.2,1)}
 .rc-h{display:flex;align-items:flex-start;gap:10px;margin:0 0 6px}
 .rc-h h2{flex:1;margin:0;font:600 23px/1.15 Jost,sans-serif;letter-spacing:-.015em}.rc-h h2:focus{outline:none}
 .rc-h h2 em{font-weight:900;font-style:italic;background:linear-gradient(transparent 58%,#F2C230 58%);padding:0 2px}

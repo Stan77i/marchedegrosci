@@ -6,7 +6,7 @@
 ## 1. L'état au moment de la reprise
 
 - **Toutes les PR sont fusionnées** (jusqu'à la PR #230). Aucune PR ouverte, aucun travail en cours sur une branche.
-- `main` : cache du service worker `mgci-v227`.
+- `main` : cache du service worker `mgci-v228` (PR #232).
 - Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **81** appliqués (80 `fil_public`, 81 `site_mesures` / `mesurer` / `mesures_resume`). Mêmes schémas sur le projet de test.
 
 ## 2. Ce qui a été fait (session du 23/10/2026)
@@ -24,7 +24,7 @@
 - Contenu en ligne (caché) :
   - accueil : étal de vraies photos, « Je vends / Je cherche », fil « En ce moment », tableau des prix en direct, rayons du marché, carte légère, étapes, confiance, pros, guides, QR code ;
   - `site/carte/` : la carte MapLibre de l'application en plein écran + panneau (filtres, annonces) ;
-  - 12 pages produits `site/produits/<id>/` (direct + calendrier des récoltes **seulement sourcé**, `v2/saisons.js`) ;
+  - 25 pages produits `site/produits/<id>/` (direct + calendrier des récoltes **seulement sourcé**, `v2/saisons.js`) ;
   - 5 guides `site/guides/<id>/` (contenu dans `tools/site/guides/*.html`, chiffres sourcés depuis `strategie/sources/donnees-marche.json`) ;
   - `site/a-propos/` (« ni le marché de gros de Bouaké, ni l'OCPV, ni l'État ») ;
   - typographie française automatique (espace insécable avant « : ; ! ? »).
@@ -49,7 +49,7 @@
    - retirer le `noindex` et le voile (`_debut.html`, `site/garde.js`, le script `nuage.js` de `_fin.html`) ;
    - faire mener `index.html` (ordinateur) vers `site/` au lieu de `maintenance.html`, garder le téléphone vers l'application ;
    - placer le point caché de l'administrateur sur le nouveau site ;
-   - créer `site/sitemap.xml` et une page 404 ;
+   - `site/sitemap.xml` et `404.html` existent déjà ;
    - inscrire le site sur **Google Search Console** et **Bing Webmaster Tools** avec le compte du propriétaire (propriété « préfixe d'URL » `https://stan77i.github.io/marchedegrosci/`), soumettre le plan du site.
 4. **Liste de retrait de l'ancien site** (`PORTAGE-SITE.md`, partie 5) : le propriétaire a dit « je te reviens » ; rien n'est supprimé sans son accord.
 5. Plus tard : nom de domaine (seule dépense possible, facultative), liens Play Store / App Store quand l'application y sera, partenariats (OCPV / e-Grenier, Chambre d'agriculture, coopératives, médias tech).

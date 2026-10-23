@@ -135,4 +135,15 @@ GUIDES.forEach(g => {
 });
 ecrire('a-propos/index.html', page(fs.readFileSync(path.join(GAB, 'a-propos.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '../', R: '../../' })));
 ecrire('guides/index.html', page(fs.readFileSync(path.join(GAB, 'guides.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '../', R: '../../', LISTE_GUIDES: GUIDES.map(g => carteGuide(g, '')).join('') })));
+// ——— le plan du site (site/sitemap.xml), pour Google Search Console et Bing le jour de l'ouverture ———
+// Pas de robots.txt possible (GitHub Pages : il serait à la racine de stan77i.github.io) : le plan se soumet à la main dans les deux consoles.
+// Tant que les pages sont en noindex, ce fichier ne fait rien ; ne pas le soumettre avant l'ouverture décidée par le propriétaire.
+{
+  const B = 'https://stan77i.github.io/marchedegrosci/site/';
+  const U = [[B, ''], [B + 'carte/', ''], [B + 'guides/', ''], [B + 'a-propos/', '']]
+    .concat(PP.map(v => [B + 'produits/' + v.SLUG + '/', '']))
+    .concat(GUIDES.map(g => [B + 'guides/' + g.slug + '/', g.maj || g.publie]));
+  ecrire('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    + U.map(([u, d]) => '  <url><loc>' + u + '</loc>' + (d ? '<lastmod>' + d + '</lastmod>' : '') + '</url>').join('\n') + '\n</urlset>\n');
+}
 console.log('site public : ' + PP.length + ' pages produits, ' + GUIDES.length + ' guides, ' + produits.length + ' produits, ' + DONNEES.produits.length + ' avec photo, carte ' + W + '×' + H + ', ' + Object.keys(lieux).length + ' lieux');

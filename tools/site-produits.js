@@ -10,7 +10,8 @@
 const path = require('path');
 
 // les produits qui ont leur page (les plus échangés en gros ; photo obligatoire)
-const LISTE = ['tomate', 'igname', 'banane-plantain', 'manioc', 'oignon', 'mais-grain', 'riz-local', 'attieke', 'piment-frais', 'aubergine', 'gombo', 'mangue'];
+const LISTE = ['tomate', 'igname', 'banane-plantain', 'manioc', 'oignon', 'mais-grain', 'riz-local', 'attieke', 'piment-frais', 'aubergine', 'gombo', 'mangue',
+  'noix-de-cajou', 'arachide-decortiquee', 'haricot-niebe', 'patate-douce', 'ananas', 'avocat', 'banane-douce', 'chou', 'poivron', 'gari', 'huile-de-palme-rouge', 'poulet-de-chair', 'oeufs-de-poule-alveole-de-30'];
 const BASE = 'https://stan77i.github.io/marchedegrosci/site/';
 const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 const INI = 'JFMAMJJASOND';

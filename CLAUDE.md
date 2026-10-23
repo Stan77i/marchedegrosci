@@ -48,6 +48,13 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
   - serveur : `python3 -m http.server 8765` lancé depuis le dépôt ;
   - émuler un iPhone, sinon la page de maintenance s'affiche.
 
+## Le site (`index-v3.html`)
+
+- **Avant de toucher au site, lire `PORTAGE-SITE.md`.** On y trouve l'état du site (en maintenance, ouvert seulement à l'admin), la décision du propriétaire (le site doit faire la même chose que l'application, et ce qui ne sert à rien est retiré), la méthode conseillée (un seul code) et la liste de ce qu'il faut porter et retirer.
+- **Chaque nouveauté de l'application qui n'est pas dans un module commun ajoute une ligne à `PORTAGE-SITE.md`, partie 4, dans la même PR.** Une ligne portée sur le site est retirée.
+- L'inventaire (partie 7) se refait tout seul (`tools/inventaire-site.js`, tâche `.github/workflows/rapport-site.yml`). Ne pas l'écrire à la main.
+- Rien n'est retiré du site sans que le propriétaire ait validé la liste de la partie 5.
+
 ## Supabase
 
 - Appliquer moi-même les changements avec le MCP (`execute_sql` / `apply_migration`), et garder un fichier `supabase/schema-NN-<sujet>.sql` dans le dépôt.

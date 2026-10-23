@@ -1137,3 +1137,8 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Inclut aussi le lot « 32 lois » (commit arrivé après la fusion de la PR #211). Cache `mgci-v218`.
 - Agrandis à la demande du propriétaire : onglets d'Acheter 28 px, pastilles 26 px (36 px dans la liste de la carte), caddie au trait crème sur les surfaces toujours sombres (carte du prix de l'accueil, carte du réseau). Correction : le dessin restait aplati (hauteur en % dans une grille) → `aspect-ratio: 1`.
 - Cartes de chiffres de l'accueil : pastille 58 px, panier et caddie 42 px, icône « Mes annonces » 30 px ; plus de balancement en boucle.
+
+## Rapport pour porter l'application sur le site (23/10/2026) — `PORTAGE-SITE.md`
+- `PORTAGE-SITE.md` (19/10, dépassé) réécrit : état du site, décision du propriétaire (« le site fait la même chose que l'application, on retire ce qui ne sert à rien »), méthode conseillée « un seul code » (l'application en mise en page large sur ordinateur), tableau de tout ce que l'application a et pas le site, liste de ce qu'on peut retirer (à valider : outil `tweaks` + Babel chargé deux fois ≈ 3 Mo, seul WebGL du site `v3/scene-ivt.js`, héros et en-tête IVT, GSAP/Lenis, petites cartes d3, captures à la racine ; anciens rapports à ranger).
+- Inventaire automatique (partie 7) : `tools/inventaire-site.js` (sans dépendance ; suit aussi les `import()`), relancé par `.github/workflows/rapport-site.yml` à chaque fusion qui touche les pages, `app/`, `v2/`, `v3/`, `css/`. Mesuré aujourd'hui : application 86 fichiers / 3,2 Mo, site 108 fichiers / 5,5 Mo, 22 modules communs, 37 propres à l'application, 43 propres au site, 0 orphelin.
+- `CLAUDE.md` : nouvelle section « Le site ».

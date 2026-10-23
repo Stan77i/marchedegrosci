@@ -87,7 +87,7 @@
 .rp-rep-c p{margin:0 0 6px;font-size:13px;color:#4A4336}.rp-rep-c ul{list-style:none;margin:0;padding:0;font-size:13px;color:#4A4336}.rp-rep-c li{padding:3px 0;border-top:1px solid #ECE6D6}.rp-rep-c li b{color:#171512}
 .rp-fiable{display:inline-flex;align-items:center;min-height:20px;padding:0 8px;border-radius:10px;background:#10392B;color:#F2C230;font:700 11px/1 Jost,sans-serif;letter-spacing:.04em}
 .rp-rep-n{margin:8px 0 0;font-size:12.5px;color:#5E5546}.rp-rep-ens{color:#10392B;font-weight:600;font-size:13.5px}
-.rp-av-r{display:block;margin:2px 0 0 34px;font-size:12px;color:#5E5546}
+.rp-av-r{display:block;margin:2px 0 0 34px;font-size:12px;color:#5E5546}.rp-av-v{flex:none;padding:2px 7px;border-radius:999px;background:rgba(16,57,43,.1);color:#10392B;font-size:11px;font-weight:700}
 @media (max-width:330px){.rp-rep{grid-template-columns:1fr}}
 .rp-sec{margin:18px 0 0}.rp-sec h3{margin:0 0 8px;font:600 13px Jost,sans-serif;letter-spacing:0;color:#655C4D;}
 .rp-bio{margin:0;color:#2A251E;font-size:15px;line-height:1.55;white-space:pre-wrap}
@@ -221,7 +221,9 @@
     const repP = N().rpc('reputation_publique', { p_uid: uid }, auth).catch(() => null);
     const [liste, pp] = await Promise.all([N().rpc('avis_de2', { p_cible: uid }, auth).catch(() => N().rpc('avis_de', { p_cible: uid }, auth)).catch(() => []), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null)]);
     if (!bg.isConnected) return;
-    const nb = (liste || []).length, moy = nb ? liste.reduce((s, a) => s + a.note, 0) / nb : 0, rep = [5, 4, 3, 2, 1].map(k => liste.filter(a => a.note === k).length);
+    // schéma 77 : un avis par personne — seul le plus récent de chaque auteur compte dans la note (« compte » absent = ancien serveur : tout compte)
+    const comptes = (liste || []).filter(a => a.compte !== false);
+    const nb = comptes.length, moy = nb ? comptes.reduce((s, a) => s + a.note, 0) / nb : 0, rep = [5, 4, 3, 2, 1].map(k => comptes.filter(a => a.note === k).length);
     // compte officiel (l'administrateur) : « Marché de Gros », sans étoiles ni avis (supabase/schema-20)
     const off = !!((pp && pp.officiel) || (window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(uid)));
     bg.querySelector('[data-sc]').innerHTML = off ? 'Compte officiel du Marché de Gros' : nb ? etoiles(moy, nb, 14) + ' ' + moy.toFixed(1).replace('.', ',') + ' · ' + nb + ' avis' : 'Pas encore noté';
@@ -255,7 +257,7 @@
     repP.then(r => { const z = bg.querySelector('[data-rep]'); if (z) z.innerHTML = blocReputation(r, moi); });
     if (window.MDGStatut && bg.querySelector('[data-st]')) { const majSt = () => { const z = bg.querySelector('[data-st]'); if (!bg.isConnected || !z) return removeEventListener('mdg:rep', majSt); z.innerHTML = MDGStatut.detail(uid) || '<div class="rp-vide">Pas encore de statut : ce membre commence sur le Marché de Gros.</div>'; }; addEventListener('mdg:rep', majSt); }
     bg.querySelector('[data-corps]').innerHTML = off ? (moi ? '' : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire au Marché de Gros</button>` : ''}</div>`) : ((nb ? `<div class="rp-score"><strong>${moy.toFixed(1).replace('.', ',')}</strong><span>${etoiles(moy, nb, 15)}${nb} avis</span><div class="rp-barres">${rep.map((c, i) => `<div><em style="font-style:normal">${5 - i}</em><i><b style="width:${nb ? c / nb * 100 : 0}%"></b></i></div>`).join('')}</div></div>
-      <div class="rp-av">${liste.map(a => `<article><header>${avatar(a.auteur, a.avatar, a.auteur, 26)}<b>${esc(a.auteur)}</b>${etoiles(a.note, 1, 11)}<small>${quand(a.quand)}</small></header>${a.role ? `<span class="rp-av-r">comme ${a.role === 'vendeur' ? 'vendeur' : 'acheteur'}${a.produit ? ' · ' + esc(a.produit) : ''}</span>` : ''}${a.texte ? `<p>${esc(a.texte)}</p>` : ''}</article>`).join('')}</div>`
+      <div class="rp-av">${liste.map(a => `<article><header>${avatar(a.auteur, a.avatar, a.auteur, 26)}<b>${esc(a.auteur)}</b>${a.verifie ? '<span class="rp-av-v" title="Identité vérifiée par l’équipe">✓ vérifié</span>' : ''}${etoiles(a.note, 1, 11)}<small>${quand(a.quand)}</small></header>${a.role ? `<span class="rp-av-r">comme ${a.role === 'vendeur' ? 'vendeur' : 'acheteur'}${a.produit ? ' · ' + esc(a.produit) : ''}</span>` : ''}${a.texte ? `<p>${esc(a.texte)}</p>` : ''}</article>`).join('')}</div>`
       : `<div class="rp-vide">${moi ? 'Vous n’avez pas encore d’avis. Ils arrivent quand vos partenaires vous notent après une commande terminée.' : 'Pas encore d’avis. Les avis se donnent après une commande terminée, depuis Mes commandes.'}</div>`)
       + (moi ? `<button type="button" class="rp-go" data-modif>Modifier mon profil public</button>` : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire</button>` : ''}</div>`));
     const b = bg.querySelector('[data-noter]'); if (b) b.onclick = () => { bg.fermer(); noter(uid, o.nom, () => profil(uid, o)); };

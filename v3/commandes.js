@@ -61,7 +61,7 @@
   const CSS = `
 .cm-bg{position:fixed;inset:0;z-index:2147483000;background:rgba(10,24,18,.5);display:flex;align-items:flex-end;justify-content:center;animation:cmIn .2s ease-out}
 @keyframes cmIn{from{opacity:0}}
-.cm{position:relative;width:100%;max-width:560px;max-height:94dvh;overflow:auto;overscroll-behavior:contain;background:#F3EFE4;color:#171512;border-radius:24px 24px 0 0;padding:22px 18px calc(24px + env(safe-area-inset-bottom));font:400 15px/1.45 Jost,system-ui,sans-serif;color-scheme:light;animation:cmUp .28s cubic-bezier(.2,.8,.2,1)}
+.cm{position:relative;width:100%;max-width:560px;max-height:94dvh;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;background:#F3EFE4;color:#171512;border-radius:24px 24px 0 0;padding:22px 18px calc(24px + env(safe-area-inset-bottom));font:400 15px/1.45 Jost,system-ui,sans-serif;color-scheme:light;animation:cmUp .28s cubic-bezier(.2,.8,.2,1)}
 @keyframes cmUp{from{transform:translateY(40px)}}
 .cm h2{margin:0 52px 4px 0;font:600 24px/1.15 Jost,sans-serif;letter-spacing:-.01em}
 .cm h2 em{font:900 italic 1em Jost,sans-serif;color:#10392B;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%)}
@@ -229,7 +229,7 @@
 .cm-f3 dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 14px;width:calc(100% - 118px);margin:0}
 .cm-f3 dt{color:rgba(243,239,228,.62);font:400 12.5px/1.3 Jost,sans-serif}.cm-f3 dd{margin:3px 0 0;font:500 15.5px/1.25 Jost,sans-serif;color:#F3EFE4;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .cm-f3 dd.t{color:#F2C230;font-weight:600}
-.cm-prod{position:absolute;right:-26px;top:4px;width:150px;height:150px;pointer-events:none;animation:cmProd .8s .25s cubic-bezier(.22,1,.36,1) both}
+.cm-prod{position:absolute;right:-12px;top:4px;width:150px;height:150px;pointer-events:none;animation:cmProd .8s .25s cubic-bezier(.22,1,.36,1) both}
 .cm-prod img,.cm-prod svg{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 16px 18px rgba(0,0,0,.35));animation:cmFlotte 5s 1.2s ease-in-out infinite}
 @keyframes cmProd{from{transform:translateX(30px) rotate(6deg);opacity:0}}
 @keyframes cmFlotte{50%{transform:translateY(-5px) rotate(-1.5deg)}}
@@ -239,7 +239,7 @@
 .cm-pers>div{flex:1;min-width:0}
 .cm-pers button{flex:none;display:grid;place-items:center;width:46px;height:46px;border:0;border-radius:50%;background:#F2C230;color:#10392B;cursor:pointer;transition:transform .15s}
 .cm-pers button:active{transform:scale(.94)}.cm-pers button:focus-visible{outline:2px solid #F3EFE4;outline-offset:2px}
-@media (max-width:360px){.cm-f3 dl{width:calc(100% - 96px)}.cm-prod{width:124px;height:124px;right:-22px}}
+@media (max-width:360px){.cm-f3 dl{width:calc(100% - 96px)}.cm-prod{width:124px;height:124px;right:-10px}}
 @media (prefers-reduced-motion:reduce){.cm-plan *,.cm-fiche,.cm-fiche *{animation:none!important}}`;
   function css() { if (document.getElementById('cmCss')) return; const s = document.createElement('style'); s.id = 'cmCss'; s.textContent = CSS; document.head.appendChild(s); }
 
@@ -916,7 +916,7 @@
       <li><span aria-hidden="true">🔒</span>Sécurité : en cas de retard ou d’incident, la dernière position est connue.</li>
       <li><span aria-hidden="true">📲</span>Sans compte : le chauffeur ouvre le lien et touche « Partager ma position ».</li></ul>`;
     if (!L || !L.jeton) return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">🛡️</span><b>Donnez un lien de suivi à votre chauffeur</b><span class="cm-tag mais">Recommandé</span></div>
-      ${pourquoi}<button type="button" class="p" data-lien>📍 Créer le lien de suivi</button><small class="cm-lien-f">Facultatif, mais vivement conseillé pour votre sécurité et celle de ${autre}.</small><p class="cm-err" data-liene role="alert"></p></div>`;
+      ${pourquoi}<button type="button" class="p" data-lien>📍 Créer le lien de suivi</button><small class="cm-lien-f">Facultatif, mais vivement conseillé pour votre sécurité et celle ${autre === 'le vendeur' ? 'du vendeur' : 'de l’acheteur'}.</small><p class="cm-err" data-liene role="alert"></p></div>`;
     return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">📍</span><b>Lien de suivi prêt</b></div>
       <small>Envoyez-le à votre chauffeur avant le départ. Il l’ouvre pendant le trajet.</small><code>${esc(lienURL(L.jeton))}</code>${etat}
       <div class="cm-lien-a"><button type="button" class="p" data-lps>📲 Envoyer au chauffeur</button><button type="button" data-lpc>Copier</button></div></div>`;

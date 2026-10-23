@@ -908,3 +908,12 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Tutoriels, guide, aide et Espace chauffeur réécrits : les codes et l'inscription concernent le transporteur du réseau ; son propre transporteur n'a rien à faire.
 - Pas touché : la fonction Edge `pousser` (v18). Ses rappels de codes ne partent que pour les commandes « avec codes » (donc le réseau). Un rappel du mot secret en notification pourra être ajouté plus tard (v19).
 - Cache `mgci-v200`.
+
+## Écrans stables : plus rien ne glisse de côté (23/10/2026) + PDF « l'application et son modèle économique »
+- **Signalé par le propriétaire** (capture de « Suivre la commande » décalée vers la gauche) : certaines fenêtres bougeaient à gauche et à droite en défilant ou en tirant.
+- **Cause mesurée** : les fenêtres posées par les modules (`.cm`, `.al`, `.ap`, `.gr`, `.pz`, `.rc`, `.rl`, `.rp`, `.snp`, `.pm`, `.gr-f`, `.ng`, `.ng-form`, `.nx-b`, `.nx-edf`, `.cp-main`…) avaient `overflow:auto`, donc elles défilaient aussi de côté dès qu'un élément dépassait. Dans la commande, l'image du produit (`.cm-prod`, `right:-26px`) dépassait de 8 px : la fenêtre glissait de 8 px.
+- **Corrections** : `overflow-x:hidden;overflow-y:auto` sur toutes ces fenêtres (et `.dm-b`, `.idv-main`, `.rg`, `.tv-corps`) ; `.cm-prod` ramené dans la fiche (`right:-12px` / `-10px`) ; garde-fou dans `application.dc.html` : une zone qui défile de haut en bas n'est jamais déplacée de côté (`onAnyScroll` la remet à 0, le geste du doigt `tM` ne l'autorise pas). Les rangées faites pour glisser (filtres, photos, puces) restent libres.
+- **Vérifié** (Playwright, gestes du doigt simulés) : avant, la fenêtre de commande glissait de 8 px ; après, 0 px de côté, le défilement vertical marche (654 px), la rangée de filtres de Prix glisse toujours. Audit de tous les écrans à 390 et 360 px : plus aucune zone ne défile dans les deux sens.
+- Faute corrigée : « votre sécurité et celle de le vendeur » → « du vendeur ».
+- **PDF** `docs/Marche-de-Gros-application-et-modele-economique.pdf` (11 pages) : l'application, puis le modèle économique (commission 3,5 % sur la vente, 6,9 % sur le transport du réseau ; payé seulement quand un achat est conclu), exemples chiffrés, grille de calcul (exemples, pas des prévisions), contournement, chiffres réels du 23/10 (4 comptes, 2 commandes, 63 000 F inscrits non encaissés), questions pour les professionnels.
+- Cache `mgci-v201`.

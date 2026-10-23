@@ -247,7 +247,7 @@
   /* ——— fenêtre de connexion (site et application) ——— */
   const CSS = `.ng-bg{position:fixed;inset:0;z-index:9000;background:rgba(10,9,7,.6);display:flex;align-items:flex-end;justify-content:center;padding:16px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:ngIn .25s ease both}
 @media (min-width:640px){.ng-bg{align-items:center}}
-.ng{font-variant-numeric:lining-nums;width:100%;max-width:420px;max-height:calc(100dvh - 32px);overflow:auto;background:#1d1a15;color:#F5F0E6;border-radius:28px;padding:24px 22px 22px;box-shadow:0 30px 80px rgba(0,0,0,.5);font-family:Jost,system-ui,sans-serif;animation:ngUp .35s cubic-bezier(.22,1,.36,1) both}
+.ng{font-variant-numeric:lining-nums;width:100%;max-width:420px;max-height:calc(100dvh - 32px);overflow-x:hidden;overflow-y:auto;background:#1d1a15;color:#F5F0E6;border-radius:28px;padding:24px 22px 22px;box-shadow:0 30px 80px rgba(0,0,0,.5);font-family:Jost,system-ui,sans-serif;animation:ngUp .35s cubic-bezier(.22,1,.36,1) both}
 .ng h2{margin:0 0 6px;font:600 23px/1.1 Jost,sans-serif;letter-spacing:-.015em}.ng p{margin:0 0 16px;color:#B9AD98;font-size:14.5px;line-height:1.5}
 .ng-tabs{display:flex;gap:6px;margin:0 0 18px;padding:4px;border-radius:999px;background:rgba(245,240,230,.06)}
 .ng-tabs button{flex:1;min-height:42px;border:0;border-radius:999px;background:none;color:#B9AD98;font:600 14px Jost,sans-serif;cursor:pointer}.ng-tabs button[aria-selected=true]{background:#F5F0E6;color:#171512}
@@ -289,7 +289,7 @@
 .ng-scene{position:relative;overflow:hidden;background:#0B231A}
 .ng-scene::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:76px;background:linear-gradient(180deg,rgba(21,19,15,0),rgba(21,19,15,.78) 58%,#15130F);pointer-events:none;z-index:2}
 .ng-scene .pt-txt{z-index:3}
-.ng-form{overflow:auto;padding:4px 24px calc(24px + env(safe-area-inset-bottom));overscroll-behavior:contain}
+.ng-form{overflow-x:hidden;overflow-y:auto;padding:4px 24px calc(24px + env(safe-area-inset-bottom));overscroll-behavior:contain}
 .ng--porte .ng-x{position:absolute;top:14px;right:14px;float:none;width:38px;height:38px;margin:0;z-index:4;display:grid;place-items:center;border-radius:50%;background:rgba(10,9,7,.46);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(245,240,230,.16);color:#F5F0E6;font:400 20px/1 Jost,sans-serif;transition:background .2s}
 .ng--porte .ng-x:hover{background:rgba(10,9,7,.66)}.ng--porte .ng-x:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
 .ng--porte h2{margin:0 0 22px;padding:0;font:500 clamp(25px,7.2vw,30px)/1.12 Jost,sans-serif;letter-spacing:-.022em;color:#F5F0E6;text-wrap:balance}

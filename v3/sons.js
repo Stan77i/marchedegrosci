@@ -107,7 +107,7 @@
      (👂 pour écouter, un interrupteur pour l'activer), et le volume entre 🔈 et 🔊 */
   const PCSS = `.snp-bg{position:fixed;inset:0;z-index:9300;background:rgba(8,7,5,.62);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:snpIn .2s ease both}
 @media (min-width:720px){.snp-bg{align-items:center;padding:24px}}
-.snp{outline:none;position:relative;width:100%;max-width:520px;max-height:92dvh;overflow:auto;box-sizing:border-box;padding:12px 16px calc(24px + env(safe-area-inset-bottom));background:#F4EEE3;color:#171512;border-radius:28px 28px 0 0;font:400 15px/1.45 Jost,system-ui,sans-serif;box-shadow:0 -10px 60px rgba(0,0,0,.5);animation:snpUp .32s cubic-bezier(.22,1,.36,1) both}
+.snp{outline:none;position:relative;width:100%;max-width:520px;max-height:92dvh;overflow-x:hidden;overflow-y:auto;box-sizing:border-box;padding:12px 16px calc(24px + env(safe-area-inset-bottom));background:#F4EEE3;color:#171512;border-radius:28px 28px 0 0;font:400 15px/1.45 Jost,system-ui,sans-serif;box-shadow:0 -10px 60px rgba(0,0,0,.5);animation:snpUp .32s cubic-bezier(.22,1,.36,1) both}
 @media (min-width:720px){.snp{border-radius:28px;padding-bottom:24px}.snp::before{visibility:hidden}}
 .snp::before{content:"";display:block;width:38px;height:5px;margin:0 auto 10px;border-radius:3px;background:rgba(23,21,18,.16)}
 .snp-x{position:absolute;right:14px;top:16px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(23,21,18,.07);color:#171512;cursor:pointer}

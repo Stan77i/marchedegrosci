@@ -231,7 +231,7 @@
 .idv-ib[hidden]{visibility:hidden}
 .idv-ib:focus-visible,.idv button:focus-visible,.idv input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 .idv-pas{display:flex;gap:5px;justify-content:center;padding:0 0 6px}.idv-pas i{width:22px;height:4px;border-radius:2px;background:rgba(23,21,18,.14)}.idv-pas i.on{background:var(--acc)}
-.idv-main{flex:1;overflow-y:auto;padding:8px 20px calc(26px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+.idv-main{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 20px calc(26px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
 .idv h2{margin:4px 0 0;font:600 25px/1.08 Jost,sans-serif;letter-spacing:-.015em}
 .idv p{margin:0;color:var(--mute);line-height:1.5}
 .idv-card{background:var(--card);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.04)}

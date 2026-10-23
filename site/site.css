@@ -423,3 +423,13 @@ html.garde body { overflow: hidden; }
 .cal-now li a:hover { text-decoration: underline; }
 .cal-now li small { font-size: 13px; color: rgba(243, 239, 228, .7); }
 .cal-now li.plein small { color: #6CC58C; } .cal-now li.fin small { color: var(--mais); }
+
+/* fil : chaque annonce est un lien vers l'application */
+.fil-l a.fil-a { display: flex; align-items: inherit; gap: 10px; min-width: 0; flex: 1; color: inherit; text-decoration: none; border-radius: inherit; }
+.fil-l a.fil-a:hover span { text-decoration: underline; text-decoration-color: var(--mais); text-underline-offset: 3px; }
+.fil-l a.fil-a:focus-visible { outline: 2px solid var(--mais); outline-offset: 3px; }
+.fil-long li > a.fil-a > div { display: grid; gap: 2px; min-width: 0; }
+.fil-vide .lien, .tb-attente .lien { font-weight: 600; }
+.rayons-cta { margin-top: 28px; color: var(--texte-2); font-size: 17px; }
+.tel-cache { margin-top: 10px; font-size: 14px; }
+.etal .fil-vide .lien, .reseau .fil-vide .lien { color: var(--mais); text-decoration-color: currentColor; }

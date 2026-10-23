@@ -767,3 +767,9 @@ html[data-theme=sombre] .nbul.d, html[data-theme=sombre] [aria-pressed="true"] >
 @media (prefers-reduced-motion: reduce) { .nbul { animation: none; } }
 .px-filtres button > .nbul { font-size: 12.5px; opacity: 1; }
 .tv-sec h3 .nbul { color: #F3EFE4; background: rgba(243, 239, 228, .14); font-weight: 700; }
+/* onglets d'Acheter : chaque onglet prend la largeur de son contenu, le nombre reste dans le fond de l'onglet choisi */
+.aseg > button > .aseg-s { margin: 0; }
+.aseg > button > .nbul { margin-left: 0; }
+.aseg > button > .aseg-s { flex: none; }
+@media (max-width: 359px) { .aseg > button { padding: 2px 8px !important; } .aseg > button > .aseg-s { display: none !important; } }
+html:not([data-theme=sombre]) .aseg > button[aria-pressed="true"] > .aseg-s.d { background-image: var(--sym-d-nuit); }

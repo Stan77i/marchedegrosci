@@ -72,12 +72,53 @@ Règles :
 - Les boutons de la carte forment **une colonne à droite** ; le zoom est en bas de la colonne.
 - Pas d'information technique permanente (« en ligne ») : seulement quand quelque chose ne va pas (« hors connexion »).
 
-## 8. Interdits (anti-« design généré »)
+## 8. Les lois anti-« design généré par IA » et anti-amateur
 
-- Texte en dégradé, quadrillage « papier millimétré » en fond, liseré coloré sur un seul côté d'une carte, cartes dans des cartes, halos colorés, icône dans un carré arrondi au-dessus de chaque titre.
-- Une deuxième police, le violet ou le bleu comme couleur de marque, des emojis à la place d'icônes dans les boutons d'action.
-- Le mot « PAYÉ » (aucun paiement n'est branché).
-- La tomate en sac : elle est montrée **en carton**.
+Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-floor.md` et son détecteur), les 21 signes recensés par Paralect (paralect.com/blog/signs-of-ai-slop-in-design), les 16 signes mesurés par Adrian Krebs sur 1 590 sites (adriankrebs.ch/blog/design-slop), les règles UX d'`ui-ux-pro-max`. À relire avant chaque travail de design ; une case cochée doit l'être sur l'écran rendu, pas dans l'intention.
+
+**Couleur et matière**
+1. Pas de dégradé violet ou bleu, pas de violet « tech » comme couleur de marque (notre violet `--vous` ne sert qu'à « votre position »).
+2. Pas de texte en dégradé. On souligne par la graisse ou la taille.
+3. Pas de halo coloré (ombre sans décalage), pas de néon, pas de quadrillage en fond (un quadrillage n'a sa place que sur une carte).
+4. Pas de verre dépoli décoratif. Le flou seulement pour un élément posé sur du contenu (boutons de la carte, menus).
+5. Pas de gris clair sur fond clair : texte ≥ 4,5:1, gros texte ≥ 3:1. Sur fond coloré, le texte secondaire prend une teinte de ce fond, pas du gris.
+6. Pas de bordure colorée sur un seul côté d'une carte (« liseré latéral »). Réservé à un vrai statut, et jamais à plus de 1 px.
+
+**Mise en page**
+7. Pas de cartes dans des cartes, pas de bordure autour de chaque bloc : on groupe d'abord par l'espace et les titres.
+8. Pas de sur-titre en petites capitales au-dessus d'un titre (« eyebrow »). Le titre parle seul.
+9. Pas de numéros d'étape (« ÉTAPE 1 », « 01 ») quand ce n'est pas une vraie suite à faire dans l'ordre.
+10. Pas de rangée de gros chiffres décorative (« hero-metric ») ni de chiffres qui répètent ce qui est déjà écrit à côté.
+11. Pas de grille de cartes identiques « icône + titre + texte » comme structure d'écran.
+12. Pas d'écran surchargé : pour chaque élément, se demander ce que la personne en fait. Rien → on retire.
+13. Pas le même rayon et la même ombre sur tout : un bouton, une carte et un champ ne se ressemblent pas.
+14. Pas de modale pour une tâche qui n'a besoin ni d'interrompre ni de protéger.
+
+**Typographie et texte**
+15. Une seule police (Jost). Pas de police « système » ni de monospace en costume « technique ».
+16. Pas de capitales espacées pour des titres ou des phrases ; seulement de très courtes étiquettes.
+17. Le mot mis en valeur (la voix du logo) : une fois par écran au plus, et sur le mot qui compte.
+18. Les nombres en chiffres (« 3 signalements », pas « trois »). Unités au pluriel à partir de 2.
+19. Des titres courts qui commencent par ce que la personne fait ; les boutons nomment leur action ; les erreurs disent le problème et la solution.
+20. Peu de tirets cadratins (—) dans les phrases : c'est la signature d'un texte généré. Préférer « : », « , » ou deux phrases.
+
+**Icônes, images, preuves**
+21. Pas d'emoji à la place d'une icône dans l'interface (boutons, listes, onglets). Les icônes sont dessinées (`app/icones.js`), d'un seul trait. Exception assumée et à revoir : 🧺 (offre) et 🛒 (demande), symboles connus des membres.
+22. Pas de pastilles « NOUVEAU », de points colorés ou de « EN DIRECT » qui ne changent rien à ce que la personne fait.
+23. Pas d'image de remplacement laissée en place, pas de dessin « métaphore » expliqué par une étiquette : montrer le vrai produit.
+24. Aucune preuve invérifiable : pas de faux avis, de faux chiffres, de faux logos (règle du projet : rien d'inventé).
+
+**Mouvement**
+25. Rien ne bouge en boucle sans raison : pas de point qui clignote, de reflet qui balaie, de bouton qui rebondit en permanence. On anime ce qui change, une fois, en moins de 300 ms à peu près.
+26. Pas d'apparition animée sur chaque bloc au défilement. Le contenu est là tout de suite.
+27. `prefers-reduced-motion` respecté : l'état change, le déplacement disparaît.
+
+**Finitions qui trahissent l'amateur**
+28. Les surfaces du navigateur sont à nos couleurs : sélection de texte (maïs), curseur de saisie, cases et curseurs (`accent-color`), anneau de focus.
+29. Chiffres alignés (`tabular-nums`) dans les prix et les quantités.
+30. Tous les états existent : vide, chargement, erreur, hors connexion, désactivé.
+31. Cibles tactiles de 44 px au moins ; rien ne déborde sur le côté à 320 px de large.
+32. Le mot « PAYÉ » est interdit (aucun paiement n'est branché) ; la tomate est montrée en carton.
 
 ## 9. Vérifier
 

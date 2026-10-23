@@ -92,4 +92,5 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - **Vérification du numéro par SMS/WhatsApp** : quand il y aura un budget.
 - Limite de connexion Supabase Auth : 20 par 5 minutes et par IP (réglée par le propriétaire).
 - En attente : réglage « Voix » (fichiers audio fr_P1.zip) ; rappel du mot secret en notification (fonction `pousser`).
+- **Remotion** (outil pour fabriquer des vidéos) : laissé de côté le 23/10/2026. Pas dans l'application ni sur le site (inutile et trop lourd). Possible plus tard pour des vidéos de présentation ; gratuit jusqu'à 3 personnes, licence payante à partir de 4.
 - Les autres décisions sont dans `docs/PASSATION.md`, section 5.

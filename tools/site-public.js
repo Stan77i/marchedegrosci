@@ -89,6 +89,7 @@ const LOGO = mq.MDGMarque.ligne({ fond: 'vert', h: 26, cls: 'marque-nom' }).repl
 // version des fichiers du site : empreinte de leur contenu (le cache du navigateur suit tout seul)
 const crypto = require('crypto');
 const VERSION = crypto.createHash('md5').update(['site.css', 'site.js', 'garde.js', 'carte.js'].map(f => { try { return fs.readFileSync(path.join(SITE, f), 'utf8'); } catch (_) { return ''; } }).join('') + lire('app/admin-pc.js')).digest('hex').slice(0, 8);
+const fine = t => String(t).replace(/ ([:;!?»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
 const remplir = (gab, v) => gab.replace(/\{\{(\w+)\}\}/g, (_, k) => { if (!(k in v)) throw new Error('gabarit : {{' + k + '}} inconnu'); return v[k]; });
 const VAL = { CARTE, LOGO, VERSION, ETAL, PROS, RAYONS, DATE, DONNEES: JSON.stringify(DONNEES).replace(/</g, '\\u003c'), NB_PRODUITS: String(produits.length), NB_PHOTOS: String(produits.filter(p => p.f).length) };
 // une page = _debut (avec sa tête propre) + _entete + son corps + _fin ; S = chemin vers site/, R = chemin vers la racine du dépôt
@@ -97,6 +98,15 @@ function page(gab, v) {
   const m = gab.split(/<!--@tete-->|<!--@corps-->/); if (m.length !== 3) throw new Error('gabarit sans <!--@tete--> / <!--@corps-->');
   return remplir(partiel('debut').replace('{{TETE}}', m[1].trim()) + partiel('entete') + m[2] + partiel('fin'), v);
 }
+const GG = fs.readFileSync(path.join(GAB, 'guide.html'), 'utf8'), GD = path.join(GAB, 'guides');
+const ACTION = { offre: ['#/publier?sens=offre', 'Publiez votre offre : les acheteurs du réseau vous écrivent. Gratuit.'], demande: ['#/publier?sens=demande', 'Publiez ce que vous cherchez : les vendeurs vous font leur prix. Gratuit.'], appro: ['#/appro', 'Publiez vos besoins de la semaine : plusieurs vendeurs vous répondent.'] };
+const GUIDES = fs.readdirSync(GD).filter(f => f.endsWith('.html')).sort().map(f => {
+  const t = fs.readFileSync(path.join(GD, f), 'utf8'), m = /<!--@meta (\{[\s\S]*?\}) -->/.exec(t); if (!m) throw new Error('guide sans @meta : ' + f);
+  return Object.assign(JSON.parse(m[1]), { slug: f.replace(/\.html$/, ''), corps: t.slice(m.index + m[0].length).trim() });
+});
+const dateTxt = iso => new Date(iso + 'T12:00:00Z').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+const carteGuide = (g, pre) => `<li><a href="${pre}${g.slug}/"><img src="${pre === '' ? '../' : ''}img/${g.photo}-160.webp" alt="" width="160" height="160" loading="lazy"><span><b>${fine(esc(g.h1))}</b><small>${fine(esc(g.resume))}</small></span></a></li>`;
+VAL.GUIDES_ACCUEIL = GUIDES.map(g => carteGuide(g, 'guides/')).join('');
 const COMMUN = { BASE: '', SCRIPTS_PAGE: '' };
 ecrire('index.html', page(fs.readFileSync(path.join(GAB, 'index.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '', R: '../' })));
 // la carte du réseau : <base> à la racine du dépôt, pour que la carte de l'application (app/carte-gl.js) trouve ses fichiers
@@ -107,4 +117,19 @@ ecrire('carte/index.html', page(fs.readFileSync(path.join(GAB, 'carte.html'), 'u
 const PP = require('./site-produits.js')({ produits, CAT, NOM, esc, lire, vm, photo: sl => fs.existsSync(path.join(SITE, img(sl, 480))) });
 const GP = fs.readFileSync(path.join(GAB, 'produit.html'), 'utf8');
 PP.forEach(v => ecrire('produits/' + v.SLUG + '/index.html', page(GP, Object.assign({}, VAL, COMMUN, v, { S: '../../', R: '../../../' }))));
-console.log('site public : ' + PP.length + ' pages produits, ' + produits.length + ' produits, ' + DONNEES.produits.length + ' avec photo, carte ' + W + '×' + H + ', ' + Object.keys(lieux).length + ' lieux');
+// ——— les guides (site/guides/<id>/) : contenu écrit à la main dans tools/site/guides/<id>.html, chiffres sourcés ———
+GUIDES.forEach(g => {
+  const canon = 'https://stan77i.github.io/marchedegrosci/site/guides/' + g.slug + '/', mots = g.corps.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+  const ld = { '@context': 'https://schema.org', '@graph': [
+    { '@type': 'Article', headline: g.h1, description: g.description, inLanguage: 'fr-CI', datePublished: g.publie, dateModified: g.maj || g.publie, image: 'https://stan77i.github.io/marchedegrosci/site/img/' + g.photo + '-480.webp', mainEntityOfPage: canon,
+      author: { '@type': 'Organization', name: 'Marché de Gros CI', url: 'https://stan77i.github.io/marchedegrosci/site/' }, publisher: { '@id': 'https://stan77i.github.io/marchedegrosci/#org' } },
+    { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Marché de Gros CI', item: 'https://stan77i.github.io/marchedegrosci/site/' }, { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://stan77i.github.io/marchedegrosci/site/guides/' }, { '@type': 'ListItem', position: 3, name: g.h1, item: canon }] }] };
+  const act = ACTION[g.sens] || ACTION.offre;
+  ecrire('guides/' + g.slug + '/index.html', page(GG, Object.assign({}, VAL, COMMUN, { S: '../../', R: '../../../',
+    TITRE: esc(g.titre), H1: fine(esc(g.h1)), DESCRIPTION: esc(g.description), RESUME: fine(esc(g.resume)), POUR: esc(g.pour), CANON: canon, OG_IMAGE: 'https://stan77i.github.io/marchedegrosci/site/img/' + g.photo + '-480.webp',
+    DATE_ISO: g.publie, DATE_TXT: dateTxt(g.publie), MINUTES: String(Math.max(2, Math.round(mots / 200))), PHOTO: g.photo, SLUG: g.slug, CORPS: g.corps.replace(/>([^<]+)</g, (m, t) => '>' + fine(t) + '<'),
+    JSONLD: JSON.stringify(ld).replace(/</g, '\\u003c'), CTA: esc(g.cta), CTA_APP: act[0], CTA_TEXTE: esc(act[1]),
+    AUTRES: GUIDES.filter(x => x.slug !== g.slug).map(x => `<a href="../${x.slug}/">${fine(esc(x.h1))}</a>`).join('') })));
+});
+ecrire('guides/index.html', page(fs.readFileSync(path.join(GAB, 'guides.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '../', R: '../../', LISTE_GUIDES: GUIDES.map(g => carteGuide(g, '')).join('') })));
+console.log('site public : ' + PP.length + ' pages produits, ' + GUIDES.length + ' guides, ' + produits.length + ' produits, ' + DONNEES.produits.length + ' avec photo, carte ' + W + '×' + H + ', ' + Object.keys(lieux).length + ' lieux');

@@ -32,9 +32,6 @@
   - typographie française automatique (espace insécable avant « : ; ! ? » et entre un nombre et son unité) ;
   - `site/sitemap.xml` (54 adresses) et `404.html` ; liens internes vérifiés (3 819, aucun cassé) ; titres ≤ 65 caractères et descriptions ≤ 160 pour Google.
 
-### Dossier pour Claude Design (`claude-design/`)
-- Copies simples pour modifier le design avec Claude Design : `application/` (styles, écrans découpés, styles des fenêtres, dessins, captures iPhone clair et sombre) et `site/` (styles, gabarits, captures), plus les `.zip`. Refaites par `tools/claude-design.py` et la tâche `claude-design.yml` ; captures par `tools/claude-design-captures.js` ; retour par `tools/claude-design-retour.py`. Mode d'emploi : `CLAUDE.md`, partie « Claude Design ».
-
 ### Dernières corrections de l'application
 - Calendrier des récoltes : sources FAO, Nitidae (plantain), RONGEAD (oignon) ajoutées (`v2/saisons.js`, `A.CAL`) ; cadran de « L'année du marché » : un anneau par produit.
 - Onglet Activité : la carte « Dernières annonces » n'existe que s'il y a au moins une annonce (PR #240).

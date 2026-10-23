@@ -1,8 +1,0 @@
-/* Copie de la constante SWCSS de v3/negoce.js (ligne 93). */
-.sw{position:relative;overflow:hidden;border-radius:18px}.sw.is-act{background:linear-gradient(90deg,#5a2318,#c2452f)}.sw:not(.is-act)>.sw-del{visibility:hidden}.sw+.sw{margin-top:8px}
-.sw>.sw-del{position:absolute;top:0;right:0;bottom:0;width:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0;border:0;background:none;color:#fff;font:600 14px Jost,system-ui,sans-serif;cursor:pointer}
-.sw>.sw-del svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.sw>.sw-row{position:relative;z-index:1;margin:0!important;background-color:#FFFDF8!important;transition:transform .34s cubic-bezier(.22,1,.36,1);touch-action:pan-y;will-change:transform}
-.sw.is-drag>.sw-row{transition:none}.sw.is-out{animation:swOut .34s cubic-bezier(.4,0,1,1) forwards}
-@keyframes swOut{to{height:0;opacity:0;margin-top:0}}
-@media (prefers-reduced-motion:reduce){.sw>.sw-row{transition:none}.sw.is-out{animation-duration:.01s}}

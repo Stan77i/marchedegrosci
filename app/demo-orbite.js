@@ -32,13 +32,13 @@
   background:rgba(23,21,18,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#F3EFE4;font:400 14px/1.4 Jost,system-ui,sans-serif;
   box-shadow:0 18px 40px rgba(0,0,0,.45),inset 0 0 0 1px rgba(242,194,48,.35);opacity:0;transform:translateY(-14px);transition:opacity .3s,transform .4s cubic-bezier(.22,1,.36,1)}
 .dm-carte.on{opacity:1;transform:none}
-.dm-h{display:flex;align-items:center;gap:10px}
+.dm-hd{display:flex;align-items:center;gap:10px}
 .dm-k{flex:none;display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:10px;background:#F2C230;color:#171512;font:700 11px/1.4 Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase}
 .dm-k i{width:6px;height:6px;border-radius:50%;background:#171512;animation:dmRec 1.2s ease-in-out infinite}
 @keyframes dmRec{50%{opacity:.25}}
 .dm-n{color:#B9AD98;font:500 12px Jost,sans-serif}
 .dm-passer{margin-left:auto;min-height:36px;padding:0 12px;border:0;border-radius:18px;background:rgba(243,239,228,.1);color:#F3EFE4;font:600 13px Jost,sans-serif;cursor:pointer}
-.dm-t{margin:8px 0 2px;font:600 16.5px/1.25 Jost,sans-serif}.dm-t em{font-style:italic;font-weight:900;color:#F2C230}
+.dm-ti{margin:8px 0 2px;font:600 16.5px/1.25 Jost,sans-serif}.dm-ti em{font-style:italic;font-weight:900;color:#F2C230}
 .dm-x{margin:0;color:#CFC4B1;font-size:13.5px}
 .dm-bar{height:3px;margin-top:10px;border-radius:2px;background:rgba(243,239,228,.12);overflow:hidden}.dm-bar i{display:block;height:100%;width:100%;background:#F2C230;transform-origin:left;transform:scaleX(0);transition:transform .5s cubic-bezier(.22,1,.36,1)}
 .dm-tap{position:fixed;z-index:2147483250;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;border:2.5px solid #FFFDF8;background:rgba(255,253,248,.18);box-shadow:0 4px 14px rgba(0,0,0,.35);pointer-events:none;animation:dmTap .9s cubic-bezier(.22,1,.36,1) both}
@@ -55,7 +55,7 @@ html.dm-on .dm-sw{background:rgba(242,194,48,.16);border-color:rgba(242,194,48,.
 html.dm-cache .dm-sw{display:none}
 html[data-theme=clair] .dm-sw{color:#171512;border-color:rgba(23,21,18,.14);background:rgba(23,21,18,.05)}html[data-theme=clair] .dm-sw .pi{background:rgba(23,21,18,.2)}html[data-theme=clair] .dm-sw .pi::after{background:#fff}
 @media (prefers-reduced-motion:reduce){.dm-tap,.dm-anneau,.dm-k i{animation:none!important}.dm-carte{transition:none}}`;
-  function css() { if (document.getElementById('dmCss')) return; const s = document.createElement('style'); s.id = 'dmCss'; s.textContent = CSS; document.head.appendChild(s); }
+  function css() { if (document.getElementById('demoCss')) return; const s = document.createElement('style'); s.id = 'demoCss'; s.textContent = CSS; document.head.appendChild(s); }
   css();   // le switch « Démo » est dans la page dès le départ
 
   // les étapes : [titre, texte]
@@ -72,7 +72,7 @@ html[data-theme=clair] .dm-sw{color:#171512;border-color:rgba(23,21,18,.14);back
     if (!carte) return;
     const [t, x] = ETAPES[i];
     carte.querySelector('.dm-n').textContent = (i + 1) + ' / ' + ETAPES.length;
-    carte.querySelector('.dm-t').innerHTML = t; carte.querySelector('.dm-x').textContent = x;
+    carte.querySelector('.dm-ti').innerHTML = t; carte.querySelector('.dm-x').textContent = x;
     carte.querySelector('.dm-bar i').style.transform = 'scaleX(' + ((i + 1) / ETAPES.length) + ')';
   }
   function entourer(el) { if (anneau) anneau.classList.remove('dm-anneau'); anneau = el || null; if (anneau) { anneau.classList.add('dm-anneau'); try { anneau.scrollIntoView({ block: 'nearest', behavior: REDUIT() ? 'auto' : 'smooth' }); } catch (_) {} } }
@@ -90,7 +90,7 @@ html[data-theme=clair] .dm-sw{color:#171512;border-color:rgba(23,21,18,.14);back
     actif = true; tours = 0; exemple = false; noterVu(); document.documentElement.classList.add('dm-on');
     try { px.scrollIntoView({ block: 'center', behavior: REDUIT() ? 'auto' : 'smooth' }); } catch (_) {}
     carte = document.createElement('div'); carte.className = 'dm-carte'; carte.setAttribute('role', 'status'); carte.setAttribute('aria-live', 'polite');
-    carte.innerHTML = `<div class="dm-h"><span class="dm-k"><i></i>Démo</span><span class="dm-n"></span><button type="button" class="dm-passer">Passer</button></div><p class="dm-t"></p><p class="dm-x"></p><div class="dm-bar"><i></i></div>`;
+    carte.innerHTML = `<div class="dm-hd"><span class="dm-k"><i></i>Démo</span><span class="dm-n"></span><button type="button" class="dm-passer">Passer</button></div><p class="dm-ti"></p><p class="dm-x"></p><div class="dm-bar"><i></i></div>`;
     document.body.appendChild(carte); requestAnimationFrame(() => carte && carte.classList.add('on'));
     carte.querySelector('.dm-passer').onclick = e => { e.stopPropagation(); arreter(); };
     // la personne touche l'écran (hors de la carte) : elle reprend la main

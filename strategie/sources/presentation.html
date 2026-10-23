@@ -1,0 +1,86 @@
+<div class="couv">
+  <div class="logo">marché<span class="g">de Gros</span></div>
+  <div>
+    <h1>Présentation du <em>projet</em></h1>
+    <p>Le marché de gros des produits vivriers de Côte d'Ivoire, dans le téléphone. Vendeurs et acheteurs se trouvent, comparent les prix, négocient et suivent la livraison au même endroit.</p>
+  </div>
+  <p class="petit" style="color:#C9C1AC">Mis à jour le {{date}}. Chiffres de la base mesurés le {{date_base}}. Aucun chiffre n'est inventé : chaque donnée du marché ivoirien porte un renvoi vers sa source, en fin de document.</p>
+</div>
+
+<section>
+  <h2>En une page</h2>
+  <p><b>Ce que c'est.</b> Une application mobile, en français, qui met en relation les vendeurs (producteurs, coopératives, grossistes, intermédiaires) et les acheteurs (grossistes, restaurants, cantines, revendeurs) de produits vivriers en gros, partout en Côte d'Ivoire.</p>
+  <p><b>Pourquoi.</b> Aujourd'hui, l'acheteur et le vendeur se trouvent surtout par le bouche-à-oreille et par une chaîne d'intermédiaires. Les prix sont mal connus d'une région à l'autre et le transport se fait sans suivi. Le document « Le problème et notre solution » donne les chiffres.</p>
+  <p><b>Comment il gagne de l'argent.</b> Une commission seulement quand un achat est conclu : {{commission_vente}} du prix de la marchandise, et {{commission_transport}} du transport quand il est fait par un transporteur du réseau Marché de Gros. L'inscription, les annonces et la négociation sont gratuites.</p>
+  <div class="chiffres">
+    <div><b>{{produits}}</b><span>produits au catalogue, en {{familles}} familles</span></div>
+    <div><b>{{regions}}</b><span>régions et districts couverts</span></div>
+    <div><b>{{membres}}</b><span>membres inscrits (phase de test, au {{date_base}})</span></div>
+    <div><b>{{annonces_actives}}</b><span>annonces actives ({{offres_actives}} offres, {{demandes_actives}} demandes)</span></div>
+    <div><b>{{commandes_terminees}}</b><span>commande(s) terminée(s)</span></div>
+    <div><b>0 F</b><span>encaissé : aucun paiement n'est encore branché</span></div>
+  </div>
+  <div class="note">L'application est construite et en phase de test. Les chiffres d'activité ci-dessus sont ceux des premiers essais : ils ne mesurent pas encore un marché. Ils se mettent à jour à chaque nouvelle édition de ce document.</div>
+</section>
+
+<section>
+  <h2>Pour qui</h2>
+  <table>
+    <tr><th style="width:28%">Qui</th><th>Ce qu'il y trouve</th></tr>
+    <tr><td><b>Producteurs et coopératives</b></td><td>Des acheteurs au-delà de leur zone, le prix du moment ailleurs dans le pays, une vente suivie jusqu'à la réception.</td></tr>
+    <tr><td><b>Grossistes et intermédiaires</b></td><td>Publier ce qu'ils ont, ou ce qu'ils cherchent, et comparer les prix de toutes les régions sans se déplacer. Le rôle d'intermédiaire est prévu (« Je suis intermédiaire »).</td></tr>
+    <tr><td><b>Restaurants, cantines, commerces</b></td><td>L'approvisionnement pro : un besoin détaillé (volume, qualité, conditionnement, livraison), des réponses de vendeurs à comparer. Les achats groupés pour obtenir un prix de gros. « Racheter » pour les achats réguliers.</td></tr>
+    <tr><td><b>Transporteurs</b></td><td>Un réseau de transporteurs Marché de Gros, aujourd'hui en pause. Le chauffeur choisi par un membre, lui, n'a rien à installer : il suit un simple lien.</td></tr>
+  </table>
+
+  <h3>Le catalogue</h3>
+  <p>{{produits}} produits répartis en {{familles}} familles : {{familles_liste}}. {{produits_photo}} produits ont déjà leur photo.</p>
+</section>
+
+<section>
+  <h2>Comment ça marche</h2>
+  <table>
+    <tr><th style="width:22%">Étape</th><th>Dans l'application</th></tr>
+    <tr><td><b>1. Publier</b></td><td>« J'ai » (à vendre) ou « Je cherche » (à acheter), avec la quantité, le lieu et le prix. {{annonces_gratuites}} annonces gratuites, puis une vérification d'identité, elle aussi gratuite.</td></tr>
+    <tr><td><b>2. Comparer</b></td><td>La roue des produits et l'onglet Prix montrent les meilleurs prix du moment, et les prix par zone.</td></tr>
+    <tr><td><b>3. Négocier</b></td><td>Propositions et contre-propositions dans l'application. Aucun numéro de téléphone n'est visible.</td></tr>
+    <tr><td><b>4. Commander</b></td><td>L'accord devient une commande : prix, quantité et transport sont figés.</td></tr>
+    <tr><td><b>5. Livrer</b></td><td>Chargement, départ du camion, arrivée : chaque étape a son heure. Le camion est suivi en direct par un simple lien envoyé au chauffeur.</td></tr>
+    <tr><td><b>6. Réceptionner</b></td><td>L'acheteur tape le mot secret glissé par le vendeur dans la marchandise. Sans réclamation après 24 h, la vente est définitive.</td></tr>
+  </table>
+  <h3>La confiance</h3>
+  <ul>
+    <li>Identité vérifiée par l'équipe, badges « vérifié » et « fiable », avis comptés une seule fois par personne.</li>
+    <li>Refus de marchandise seulement avec preuves (mot secret, photos), et litige à trois avec l'équipe.</li>
+    <li>Les numéros, liens et contacts sont filtrés dans les messages : tout se passe dans l'application.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Le modèle économique</h2>
+  <table>
+    <tr><th>Commission</th><th>Taux</th><th>Sur quoi</th><th>Quand</th></tr>
+    <tr><td>Vente</td><td><b>{{commission_vente}}</b></td><td>Le prix de la marchandise, retenu sur la part du vendeur</td><td>Quand la vente est définitive</td></tr>
+    <tr><td>Transport</td><td><b>{{commission_transport}}</b></td><td>Le prix du transporteur du réseau Marché de Gros</td><td>À la fin du transport</td></tr>
+  </table>
+  <p>Pas d'abonnement, pas de publicité, pas de frais d'inscription. Rien n'est dû sans achat conclu, ni en cas d'annulation avant chargement ou de refus prouvé.</p>
+  <div class="note">Aucun paiement n'est encore branché. Les commissions sont calculées et inscrites dans un registre que personne ne peut modifier, mais rien n'est encaissé. Le paiement bloqué jusqu'à la réception (séquestre) est construit côté serveur. Il attend un partenaire de paiement agréé (Wave, Orange Money, MTN MoMo, Moov Money ou un agrégateur) et la validation du cadre légal BCEAO.</div>
+  <p class="petit">Le détail chiffré (exemples, grille de calcul, questions pour les professionnels) est dans <i>docs/Marche-de-Gros-application-et-modele-economique.pdf</i>.</p>
+</section>
+
+<section>
+  <h2>Où on en est, et la suite</h2>
+  <h3>Prêt</h3>
+  <ul>
+    <li>L'application mobile complète : annonces, prix, négociation, commandes, suivi de livraison, réception, litiges, réputation, identité, approvisionnement pro, achats groupés, relevés en PDF, notifications.</li>
+    <li>L'espace administrateur : commandes, litiges, identités, commissions.</li>
+    <li>Coûts actuels : 0 F (Supabase en plan gratuit, hébergement GitHub Pages gratuit).</li>
+  </ul>
+  <h3>À faire, dans l'ordre</h3>
+  <ol>
+    <li><b>Remplir le marché</b> : premiers vendeurs et acheteurs réels, région par région (voir le plan marketing).</li>
+    <li><b>Brancher le paiement</b> : choisir le partenaire et valider le statut légal.</li>
+    <li><b>Vérifier les numéros</b> par SMS ou WhatsApp, quand un budget existe.</li>
+    <li><b>Relancer le réseau de transporteurs</b>, la deuxième source de revenu.</li>
+  </ol>
+</section>

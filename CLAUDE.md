@@ -2,6 +2,19 @@
 
 Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a été fait est dans `docs/PASSATION.md` : le lire avant de toucher au code.
 
+## Règle n° 1 : tenir ce fichier à jour
+
+- **Dès que le propriétaire donne une nouvelle règle, une préférence ou une décision durable, l'ajouter ici tout de suite**, dans la même PR que le travail en cours, ou dans une petite PR à part. Ne pas attendre qu'il le demande.
+- Une règle qui change : remplacer l'ancienne, ne pas garder les deux.
+- Une décision en attente qui est tranchée : la retirer de « Décisions en attente » et l'écrire comme règle.
+
+## Les PDF de stratégie (`strategie/`)
+
+- Pitch, présentation, problème et solution, marketing : les **modèles** sont dans `strategie/sources/*.html`, les **PDF** dans `strategie/`. Le mode d'emploi est dans `strategie/README.md`.
+- Les chiffres se mettent à jour tout seuls : catalogue et photos lus dans le dépôt, activité lue dans la base (`stats_publiques()`, schéma 79), chiffres du marché dans `strategie/sources/donnees-marche.json`.
+- **Quand une fonction, un prix, une commission, une règle ou l'état du projet change, mettre aussi à jour le texte des modèles concernés**, puis refaire les PDF : `CHROMIUM=/opt/pw-browsers/chromium node strategie/sources/construire.js`.
+- Chiffres du marché : seulement avec une source ouverte et vérifiée (lien, année, citation). Jamais de chiffre inventé, jamais de prévision présentée comme un fait.
+
 ## Le propriétaire
 
 - Répondre **en français simple et court**. Le propriétaire n'est pas développeur.

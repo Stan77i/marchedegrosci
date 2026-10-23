@@ -1091,3 +1091,10 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Profil** (`v3/compte.js`) : le gros encadré « Terminez la vérification » devient une seule ligne qu'on touche. Le bouton en double dans « Vos statuts » disparaît quand la ligne est là.
 - **Avatars** : nouveau fichier `v3/personnages.js`, chargé avant `v3/avatar.js`. 21 produits (tomate, igname, sac de riz, plantain…), 10 yeux, 9 bouches, 12 couvre-chefs (dont le panier sur la tête), lunettes, moustaches, 10 objets en main (mégaphone, balance, calculatrice…), chaussures, 12 fonds, 6 motifs (étal, wax, kente…) : plus de 55 milliards de combinaisons. Code `mg:b=…` (moins de 70 caractères, limite 200). Avec `anime: true` : respire, cligne, saute ; saut à chaque changement dans le choix. Rien ne bouge si le téléphone demande moins d'animations. Onglet « Personnage » par défaut dans « Mon avatar », bouton dé « Un autre personnage au hasard », aperçu collé en haut sur téléphone.
 - Vérifié dans Chromium (iPhone 13) avec des données simulées (réseau Supabase coupé). Cache `mgci-v214`.
+
+## Avatars : bras attachés, vrai dé (23/10/2026)
+
+- **Bras qui se décrochaient** : l'animation tournait autour d'un mauvais point (`transform-box: fill-box` avec une origine en coordonnées du dessin). Maintenant `view-box`, et les bras partent de l'intérieur du corps, dessinés derrière lui. L'objet en main reste devant.
+- **Ombre noire** pendant l'animation : l'animation remettait l'opacité à 1 ; elle reste à 0,2.
+- **« Au hasard » ne marchait pas** : `data-mgd` est vide, donc `d.mgd` valait `''` (faux). On teste `'mgd' in d` (même correction pour l'ancien `data-dice`).
+- **Le dé** : le gros bouton jaune est remplacé par un dé dessiné (face blanche, épaisseur, points verts, le 1 en rouge) posé dans la carte d'aperçu, à droite. Au toucher : il roule, montre une nouvelle face, le téléphone vibre légèrement, le personnage saute, et une étiquette « Tiré au hasard ! » apparaît au-dessus de l'avatar. Cache `mgci-v215`.

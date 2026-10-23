@@ -352,8 +352,17 @@ label.cp-r{cursor:pointer}
 .avx-rang{display:flex;gap:4px;overflow-x:auto;margin:0 -16px;padding:2px 16px 6px;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}.avx-rang::-webkit-scrollbar{display:none}
 .avx-rang .avx-pick{flex:0 0 76px;scroll-snap-align:start}.avx-rang .avx-pick span{display:block;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .avx-zv{display:block;width:58px;height:58px;border-radius:50%;overflow:hidden;transition:box-shadow var(--ux-d2,200ms)}.avx-zv svg{display:block;transform:scale(2.1);transform-origin:var(--ox) var(--oy)}.avx-pick .avx-zv svg{box-shadow:none!important}.avx-pick[aria-pressed=true] .avx-zv{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--ink)}
-.avx-de{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;margin:0 0 8px;border:0;border-radius:999px;background:#F2C230;color:#171512;font:700 16px Jost,sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(242,194,48,.35)}.avx-de span{font-size:22px;transition:transform .4s cubic-bezier(.3,1.6,.5,1)}.avx-de:active span{transform:rotate(200deg) scale(1.15)}
-@media (max-width:639px){.avx-pv{position:sticky;top:-1px;z-index:3;grid-template-columns:auto minmax(0,1fr);justify-items:start;align-items:center;column-gap:16px;row-gap:6px;padding:12px 16px}.avx-big{grid-row:span 2;width:108px;height:108px}.avx-big svg,.avx-big img{width:100%;height:100%}.avx-nom{align-self:end;text-align:left}.avx-mini{align-self:start;justify-content:flex-start;border-top:0;padding-top:0}}
+.avx-pv{position:relative}
+.avx-de{display:none;justify-items:center;gap:2px;padding:0;border:0;background:none;color:var(--mute);font:600 12px/1.2 Jost,sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent}.avx-pv.avec-de .avx-de{display:grid}
+.avx-de3d{display:block;width:58px;height:58px;filter:drop-shadow(0 6px 8px rgba(23,21,18,.18));transition:transform .15s}.avx-de3d svg{display:block}
+.avx-de:active .avx-de3d{transform:scale(.9)}.avx-de:focus-visible{outline:2px solid #F2C230;outline-offset:4px;border-radius:14px}
+.avx-de.roule .avx-de3d{animation:avxRoule .8s cubic-bezier(.3,1.3,.5,1)}
+@keyframes avxRoule{0%{transform:rotate(0)}35%{transform:translateY(-16px) rotate(220deg) scale(1.1)}65%{transform:translateY(0) rotate(380deg) scale(.94)}100%{transform:rotate(360deg)}}
+.avx-pop{position:absolute;z-index:5;left:50%;top:-10px;padding:7px 14px;border-radius:999px;background:#10392B;color:#F2C230;font:700 13.5px/1 Jost,sans-serif;white-space:nowrap;box-shadow:0 8px 20px rgba(16,57,43,.3);opacity:0;transform:translate(-50%,6px) scale(.85);pointer-events:none}
+.avx-pop.on{animation:avxPop 1.7s cubic-bezier(.22,1,.36,1) both}
+@keyframes avxPop{0%{opacity:0;transform:translate(-50%,6px) scale(.85)}14%{opacity:1;transform:translate(-50%,0) scale(1.04)}22%{transform:translate(-50%,0) scale(1)}80%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-8px)}}
+@media (prefers-reduced-motion:reduce){.avx-de.roule .avx-de3d,.avx-pop.on{animation:none}.avx-pop.on{opacity:1;transform:translate(-50%,0)}}
+@media (max-width:639px){.avx-pv{position:sticky;top:-1px;z-index:3;grid-template-columns:auto minmax(0,1fr);justify-items:start;align-items:center;column-gap:16px;row-gap:6px;padding:12px 16px}.avx-big{grid-row:span 2;width:108px;height:108px}.avx-big svg,.avx-big img{width:100%;height:100%}.avx-nom{align-self:end;text-align:left}.avx-mini{align-self:start;justify-content:flex-start;border-top:0;padding-top:0}.avx-pv.avec-de{grid-template-columns:auto minmax(0,1fr) auto}.avx-de{grid-column:3;grid-row:1 / span 2;align-self:center}.avx-pop{top:4px;left:70px}}
 @media (min-width:760px){.avx-act{bottom:-40px;margin:24px -28px -40px;padding:16px 28px 22px}}
 @keyframes avxIn{from{opacity:.4;transform:scale(.96)}}
 @media (prefers-reduced-motion:reduce){.cp-bg,.cp,.cp-panel{animation:none}.avx-big>*,.avx-p{animation:none}.avx-pick svg{transition:none}}`;
@@ -871,7 +880,11 @@ label.cp-r{cursor:pointer}
     const S = 240; // côté du cadre de recadrage (px CSS)
     const codeNow = () => mode === 'mg' && PG ? PG.code(g) : mode === 'v1' ? M.code(o) : mode === 'ini' ? 'ini:f=' + fi : cur.mode === 'ph' && !ph.img ? M.code(Object.assign({}, cur, { f: fi })) : '';
     const rnd = n => Math.floor(Math.random() * n);
-    const html = () => '<div class="avx"><aside class="avx-pv"><div class="avx-big"></div><b class="avx-nom">' + esc(nom) + '</b><div class="avx-mini" aria-hidden="true"><span><i class="m36"></i><small>Négociation</small></span><span><i class="m24"></i><small>Annonce</small></span></div></aside>'
+    // le dé : une face dessinée (points verts, le 1 en rouge), avec son épaisseur
+    const de = n => { const p = { 1: [[24, 24]], 2: [[15, 15], [33, 33]], 3: [[14, 14], [24, 24], [34, 34]], 4: [[15, 15], [33, 15], [15, 33], [33, 33]], 5: [[15, 15], [33, 15], [24, 24], [15, 33], [33, 33]], 6: [[15, 14], [33, 14], [15, 24], [33, 24], [15, 34], [33, 34]] }[n];
+      return '<svg viewBox="0 0 52 52" width="58" height="58" aria-hidden="true"><defs><linearGradient id="avxDe" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#E9E1D0"/></linearGradient></defs><rect x="5" y="6.5" width="44" height="44" rx="11" fill="#BFB49B"/><rect x="2" y="2" width="44" height="44" rx="11" fill="url(#avxDe)" stroke="rgba(23,21,18,.1)"/><rect x="7" y="4.6" width="34" height="6" rx="3" fill="#fff" opacity=".8"/>'
+        + p.map(([x, y]) => '<circle cx="' + x + '" cy="' + y + '" r="' + (n === 1 ? 5.6 : 4) + '" fill="' + (n === 1 ? '#E2412F' : '#10392B') + '"/><circle cx="' + (x - 1.2) + '" cy="' + (y - 1.2) + '" r="1.1" fill="#fff" opacity=".35"/>').join('') + '</svg>'; };
+    const html = () => '<div class="avx"><aside class="avx-pv"><div class="avx-big"></div><b class="avx-nom">' + esc(nom) + '</b><div class="avx-mini" aria-hidden="true"><span><i class="m36"></i><small>Négociation</small></span><span><i class="m24"></i><small>Annonce</small></span></div>' + (PG ? '<button type="button" class="avx-de" data-mgd aria-label="Tirer un personnage au hasard"><span class="avx-de3d">' + de(5) + '</span><small>Au hasard</small></button><span class="avx-pop" aria-live="polite"></span>' : '') + '</aside>'
       + '<div class="avx-c"><div class="avx-mode" role="tablist" aria-label="Type d’avatar">' + (PG ? [['mg', 'Personnage']] : []).concat(cur.mode === 'v1' || !PG ? [['v1', 'Portrait']] : [], [['ph', 'Photo'], ['ini', 'Initiales']]).map(([k, t]) => '<button type="button" role="tab" data-mode="' + k + '" aria-selected="' + (mode === k) + '">' + t + '</button>').join('') + '</div><div class="avx-p"></div></div></div>';
     const zone = embarque || (cadre('<div class="cp-main" style="grid-column:1 / -1"><h2>Mon avatar</h2><p>Il apparaît sur votre profil, à côté de vos annonces et dans vos négociations.</p><div class="cp-avw"></div><div class="cp-row avx-act"><button type="button" class="cp-go" data-ok>Enregistrer</button><button type="button" class="cp-alt" data-no>Annuler</button><span class="cp-msg" role="status"></span></div></div>', 'Mon avatar'), bg.querySelector('.cp-avw'));
     zone.innerHTML = html();
@@ -884,6 +897,7 @@ label.cp-r{cursor:pointer}
     const dots = (L, key, sel, lab) => '<div class="cp-dots">' + L.map((col, i) => '<button type="button" class="cp-dot" data-' + key + '="' + i + '" style="background:' + col + '" aria-label="' + lab + ' ' + (i + 1) + '" aria-pressed="' + (sel === i) + '"></button>').join('') + '</div>';
     function panneau() {
       zone.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.mode === mode)));
+      const pv = zone.querySelector('.avx-pv'); if (pv) pv.classList.toggle('avec-de', mode === 'mg' && !!PG);
       if (mode === 'mg' && PG) {
         // garder la position de chaque rangée qui défile, d'un affichage à l'autre
         const pos = {}; P.querySelectorAll('[data-rang]').forEach(r => { pos[r.dataset.rang] = r.scrollLeft; });
@@ -892,9 +906,7 @@ label.cp-r{cursor:pointer}
         const rang = (t, k, L) => '<div class="avx-sec"><span class="cp-l">' + t + '</span><div class="avx-rang" data-rang="' + k + '">' + L.map((n, i) => '<button type="button" class="avx-pick" data-mgk="' + k + '" data-mgv="' + i + '" aria-pressed="' + (g[k] === i) + '">' + (zoom[k] ? '<span class="avx-zv" style="--ox:' + V.x + '%;--oy:' + V.y + '%">' + vignette(k, i) + '</span>' : vignette(k, i)) + '<span>' + esc(n) + '</span></button>').join('') + '</div></div>';
         const pts = (t, k, L) => '<div class="avx-sec"><span class="cp-l">' + t + '</span><div class="cp-dots">' + L.map((col, i) => '<button type="button" class="cp-dot" data-mgk="' + k + '" data-mgv="' + i + '" style="background:' + col + '" aria-label="' + t + ' ' + (i + 1) + '" aria-pressed="' + (g[k] === i) + '"></button>').join('') + '</div></div>';
         const C = PG.CHOIX, K = PG.COULEURS;
-        P.innerHTML = '<button type="button" class="avx-de" data-mgd><span aria-hidden="true">🎲</span>Un autre personnage au hasard</button>'
-          + '<p class="avx-txt">Des milliards de combinaisons : composez le vôtre, il bouge et saute sur votre profil.</p>'
-          + rang('Personnage', 'b', C.b) + pts('Couleur', 'p', K.p(g.b))
+        P.innerHTML = rang('Personnage', 'b', C.b) + pts('Couleur', 'p', K.p(g.b))
           + rang('Yeux', 'y', C.y) + rang('Bouche', 'm', C.m)
           + '<div class="avx-sec"><span class="cp-l">Joues</span><div class="cp-seg"><button type="button" data-mgk="j" data-mgv="1" aria-pressed="' + (g.j === 1) + '">Rosées</button><button type="button" data-mgk="j" data-mgv="0" aria-pressed="' + (g.j === 0) + '">Sans</button></div></div>'
           + rang('Sur la tête', 'h', C.h) + pts('Couleur du chapeau', 'hc', K.hc)
@@ -948,12 +960,21 @@ label.cp-r{cursor:pointer}
       const zoom = z => { const c0 = S / 2, [k0] = borne(), ix = (c0 - ph.x) / k0, iy = (c0 - ph.y) / k0; ph.z = z; const [k1] = borne(); ph.x = c0 - ix * k1; ph.y = c0 - iy * k1; peindre(); ap(); };
       rg.oninput = () => zoom(+rg.value);
     }
+    // le dé roule, montre une nouvelle face, et une étiquette annonce le tirage
+    let tPop = 0;
+    function lancer(b) {
+      const f = 1 + rnd(6), d3 = b.querySelector('.avx-de3d'), pop = zone.querySelector('.avx-pop');
+      b.classList.remove('roule'); void b.offsetWidth; b.classList.add('roule');
+      setTimeout(() => { if (d3) d3.innerHTML = de(f); }, 260);
+      try { navigator.vibrate && navigator.vibrate(12); } catch (_) {}
+      if (pop) { pop.textContent = ['Tiré au hasard !', 'Nouveau personnage !', 'Et voilà !', 'Bien joué, le dé !'][rnd(4)]; pop.classList.remove('on'); void pop.offsetWidth; pop.classList.add('on'); clearTimeout(tPop); tPop = setTimeout(() => pop.classList.remove('on'), 1700); }
+    }
     zone.addEventListener('click', e => {
       const b = e.target.closest('button'); if (!b || !zone.contains(b)) return; const d = b.dataset;
       if (d.mode) { mode = d.mode; saut = mode === 'mg'; panneau(); return; }
-      if (d.mgd && PG) { g = PG.hasard(); saut = true; panneau(); return; }
+      if ('mgd' in d && PG) { g = PG.hasard(); saut = true; panneau(); lancer(b); return; }
       if (d.mgk && PG) { g[d.mgk] = +d.mgv; if (d.mgk === 'b') g.p = 0; g = PG.normal(g); saut = true; panneau(); return; }
-      if (d.dice) { const s = M.STYLES[rnd(M.STYLES.length)]; o = { mode: 'v1', c: s.id, t: rnd(M.TEINTS.length), k: rnd((s.tissu ? M.TISSUS : M.CHEVEUX).length), f: rnd(M.FONDS.length), a: M.DETAILS[rnd(M.DETAILS.length)].id }; panneau(); return; }
+      if ('dice' in d) { const s = M.STYLES[rnd(M.STYLES.length)]; o = { mode: 'v1', c: s.id, t: rnd(M.TEINTS.length), k: rnd((s.tissu ? M.TISSUS : M.CHEVEUX).length), f: rnd(M.FONDS.length), a: M.DETAILS[rnd(M.DETAILS.length)].id }; panneau(); return; }
       if (d.c) { const was = M.STYLES.find(x => x.id === o.c), now = M.STYLES.find(x => x.id === d.c); if (!!was.tissu !== !!now.tissu) o.k = 0; o.c = d.c; }
       else if (d.t) o.t = +d.t; else if (d.k) o.k = +d.k; else if (d.f) { o.f = +d.f; fi = o.f; } else if (d.fi) fi = +d.fi; else if ('a' in d) o.a = d.a; else return;
       panneau();

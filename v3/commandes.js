@@ -4,7 +4,9 @@
      1 Commande confirmée · 2 Préparation · 3 Chargement confirmé · 4 Transport en cours · (5 Transbordement)
      6 Chauffeur arrivé · 7 Réception confirmée · 8 Commande terminée
    Rien n'avance tout seul côté téléphone : l'écran montre ce que le serveur a enregistré, avec l'heure.
-   Validation « sans code » pour l'instant (vendeur et acheteur déclarent) ; les codes arrivent avec l'espace chauffeur.
+   Transport choisi par l'acheteur ou le vendeur (schéma 63) : le transporteur n'a rien à faire dans l'application — ni inscription,
+   ni code. Le vendeur glisse son mot secret dans la marchandise ; l'acheteur le tape pour confirmer la réception (commande_reception_mot).
+   Les codes (prise en charge, réception, code transporteur) sont réservés au transporteur du réseau Marché de Gros.
    Aucun paiement : la commission de 3,5 % est seulement calculée et montrée au vendeur (« non prélevée »).
    Pas de faux suivi en direct : sans position réelle, on montre la dernière étape et son heure, rien d'autre.
    API : MDGCommandes.ouvrir(id?) · MDGCommandes.depuisAccord(nego) · MDGCommandes.creer(nego) */
@@ -336,7 +338,7 @@
   function fermer() { oublierCarte(); if (!bg) return; bg.remove(); bg = null; if (retourFocus && retourFocus.focus) try { retourFocus.focus({ preventScroll: true }); } catch (_) {} retourFocus = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); }
   const clavier = e => { if (e.key === 'Escape') fermer(); };
   const horsLigne = e => navigator.onLine === false || /Failed to fetch|NetworkError|Load failed|network|ERR_INTERNET/i.test(String((e && e.message) || e || ''));
-  const erreurTxt = e => { if (horsLigne(e)) return 'Pas de connexion : rien n’a été enregistré. Réessayez quand le réseau revient.'; const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : m || 'Réessayez dans un instant.'; };
+  const erreurTxt = e => { if (horsLigne(e)) return 'Pas de connexion : rien n’a été enregistré. Réessayez quand le réseau revient.'; const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : (m.replace(/^[A-Z_]{4,} : /, '') || 'Réessayez dans un instant.'); };
 
   const seq = {};           // commande → séquestre (commande_sequestre, schémas 57-58)
   const disc = {};          // commande → discussion à trois pendant un litige (litige_messages_lire, schéma 58)
@@ -427,17 +429,17 @@
     if (c.etat === 'terminee') return ['Commande <em>terminée</em>', 'Merci !'];
     if (c.annulation === 'autre') return [`${lui} demande l’<em>annulation</em>`, 'Acceptez ou refusez.'];
     if (c.annulation === 'moi') return ['Annulation <em>demandée</em>', `En attente de la réponse de ${lui}.`];
-    const V = c.role === 'vendeur';
+    const V = c.role === 'vendeur', MOTM = c.validation === 'declaration' && c.mode_transport !== 'reseau';   // son propre transporteur : le mot secret
     if (c.validation === 'code') switch (c.etape) {
       case 'confirmee': case 'preparation': if (V) return ['Préparez la <em>marchandise</em>', 'Quand elle est dans le camion, donnez au chauffeur le code de prise en charge (ci-dessous).']; break;
       case 'transport': case 'transbordement': if (!V) return ['Votre marchandise est <em>en route</em>', 'À l’arrivée, vérifiez la marchandise, puis donnez au chauffeur le code de réception (ci-dessous).']; break;
       case 'arrivee': if (!V) return ['Le chauffeur est <em>arrivé</em>', 'Vérifiez la quantité, la qualité et le papier du vendeur, puis donnez-lui le code de réception. Un problème : refusez avec des photos.']; break;
     }
     switch (c.etape) {
-      case 'confirmee': return V ? ['Préparez la <em>marchandise</em>', 'Touchez « En préparation », puis « Chargement confirmé » quand le camion est chargé.'] : ['Le vendeur prépare votre <em>marchandise</em>', 'Vous serez prévenu au chargement.'];
+      case 'confirmee': return V ? ['Préparez la <em>marchandise</em>', (MOTM ? 'Glissez le mot secret (ci-dessous) dans la marchandise. ' : '') + 'Touchez « En préparation », puis « Chargement confirmé » quand le camion est chargé.'] : ['Le vendeur prépare votre <em>marchandise</em>', 'Vous serez prévenu au chargement.'];
       case 'preparation': return V ? ['Marchandise en <em>préparation</em>', 'Confirmez le chargement quand le camion est chargé.'] : ['Marchandise en <em>préparation</em>', 'Prochaine étape : le chargement.'];
-      case 'transport': case 'transbordement': return V ? ['Transport <em>en cours</em>', 'L’acheteur confirmera l’arrivée et la réception.'] : ['Votre marchandise est <em>en route</em>', 'Signalez l’arrivée du chauffeur, puis confirmez la réception après avoir vérifié.'];
-      case 'arrivee': return V ? ['Le chauffeur est <em>arrivé</em>', 'L’acheteur vérifie la marchandise.'] : ['Le chauffeur est <em>arrivé</em>', 'Vérifiez la marchandise et le papier du vendeur avant de confirmer la réception. Un problème : refusez avec des photos.'];
+      case 'transport': case 'transbordement': return V ? ['Transport <em>en cours</em>', MOTM ? 'À l’arrivée, l’acheteur tape votre mot secret pour confirmer la réception.' : 'L’acheteur confirmera l’arrivée et la réception.'] : ['Votre marchandise est <em>en route</em>', MOTM ? 'À l’arrivée, vérifiez la marchandise et cherchez le papier du vendeur : tapez son mot secret pour confirmer la réception.' : 'Signalez l’arrivée du chauffeur, puis confirmez la réception après avoir vérifié.'];
+      case 'arrivee': return V ? ['Le chauffeur est <em>arrivé</em>', MOTM ? 'L’acheteur vérifie la marchandise, puis tape votre mot secret.' : 'L’acheteur vérifie la marchandise.'] : ['Le chauffeur est <em>arrivé</em>', MOTM ? 'Vérifiez la quantité et la qualité, retrouvez le papier du vendeur, puis tapez son mot secret pour confirmer la réception. Un problème : refusez avec des photos.' : 'Vérifiez la marchandise et le papier du vendeur avant de confirmer la réception. Un problème : refusez avec des photos.'];
       default: return ['Commande <em>en cours</em>', ''];
     }
   }
@@ -488,7 +490,7 @@
       ${c.etat === 'terminee' && c.role === 'acheteur' && window.MDGRacheter ? `<div class="cm-act"><button type="button" class="p" data-racheter>Racheter · prix du jour</button></div>` : ''}
       ${blocMot(c)}${blocRefus(c)}${blocDisc(c)}${blocSequestre(c)}${c.etat === 'litige' || seq[c.id] && seq[c.id].refus ? blocWa(c) : ''}
       ${blocAvis(c)}
-      ${c.validation === 'declaration' && ['a_confirmer', 'en_cours'].includes(c.etat) ? `<p class="cm-info"><b>Validation sans code.</b> Le vendeur déclare le chargement, l’acheteur l’arrivée et la réception. Je recommande que le chauffeur crée un compte gratuit sur le Marché de Gros : avec les codes, personne ne peut déclarer une livraison à votre place.</p>` : ''}
+      ${c.validation === 'declaration' && c.mode_transport !== 'reseau' && ['a_confirmer', 'en_cours'].includes(c.etat) ? `<p class="cm-info"><b>Réception avec le mot secret du vendeur.</b> Le vendeur glisse un mot secret dans la marchandise ; à l’arrivée, l’acheteur le retrouve et le tape pour confirmer la réception. Le transporteur n’a rien à faire dans l’application.</p>` : ''}
       ${blocCode(c)}
       ${blocTransport(c)}${blocLien(c)}
       <ol class="cm-et">${etapes}</ol>
@@ -552,7 +554,7 @@
     const avant = c.etat === 'en_cours' && ['confirmee', 'preparation'].includes(c.etape);
     return `<section class="cm-mot${avant ? ' fort' : ''}" aria-label="Mot secret à glisser dans la marchandise"><span aria-hidden="true">📝</span><span>
       <small>Mot secret à glisser dans la marchandise</small><b>${esc(S.mot)}</b>
-      <small>${avant ? 'Écrivez-le sur un papier et mettez-le dans le colis avant le chargement. À l’arrivée, l’acheteur le retrouve et le photographie : c’est la preuve que c’est bien votre marchandise. Ne le donnez à personne, ni par message.' : 'Il est dans la marchandise. Ne le donnez à personne.'}</small></span></section>`;
+      <small>${avant ? 'Écrivez-le sur un papier et mettez-le dans le colis avant le chargement. À l’arrivée, l’acheteur le retrouve et le tape pour confirmer la réception : c’est la preuve que c’est bien votre marchandise qui est arrivée. Ne le donnez à personne, ni par message.' : 'Il est dans la marchandise. Ne le donnez à personne.'}</small></span></section>`;
   }
   // la discussion à trois (acheteur, vendeur, Marché de Gros) pendant un litige
   const ROLE_D = { acheteur: 'Acheteur', vendeur: 'Vendeur', admin: 'Marché de Gros' };
@@ -740,18 +742,21 @@
     const n = box.querySelector('[data-code-nv]'); if (n) n.onclick = () => { if (confirm('Créer un nouveau code ? L’ancien ne marchera plus.')) go(n); };
   }
 
-  // ——— le transport : qui conduit, sa réponse ; l'acheteur ou le vendeur qui choisit tape le code du chauffeur ———
+  // ——— le transport du réseau : qui conduit, sa réponse (son propre transporteur n'apparaît pas ici : pas de code, schéma 63) ———
   function blocTransport(c) {
     const T = transport[c.id]; if (!T || c.etat === 'annulee') return '';
-    const m = T.mission && T.mission.statut !== 'retiree' ? T.mission : null, qui = c.mode_transport === 'acheteur' ? 'l’acheteur' : 'le vendeur';
+    const m = T.mission && T.mission.statut !== 'retiree' ? T.mission : null;
+    // son propre transporteur (schéma 63) : rien à choisir ni à taper ici ; on n'affiche une mission que si elle existait déjà
+    if (c.mode_transport !== 'reseau' && !m) return '';
+    const choisir = T.peut_choisir && c.mode_transport === 'reseau', qui = c.mode_transport === 'acheteur' ? 'l’acheteur' : 'le vendeur';
     const etat = !m ? '' : m.statut === 'proposee' ? 'En attente de la réponse du chauffeur' : m.statut === 'acceptee' ? 'A accepté la mission' + (m.avec_application ? '' : ' (inscrit par l’équipe, sans l’application)') : 'A refusé la mission : choisissez un autre transporteur.';
-    const vide = c.mode_transport === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié.' : T.peut_choisir ? 'Demandez son code au chauffeur (exemple : T-4K7P) et tapez-le ici. Il reçoit la mission dans son Espace chauffeur.' : 'En attente du choix de ' + qui + '.';
+    const vide = c.mode_transport === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié.' : 'En attente du choix de ' + qui + '.';
     return `<h3 class="cm-h3">Transport</h3><div class="cm-dl" style="grid-template-columns:1fr;gap:6px">
       ${m ? `<b style="font-weight:600">${esc(m.nom)} · ${esc(m.vehicule)}${m.immatriculation ? ' · ' + esc(m.immatriculation) : ''}</b>
         <span><span class="cm-tag ${m.verifie ? '' : 'mais'}">${m.verifie ? 'Vérifié par l’équipe' : 'Pas encore vérifié par l’équipe'}</span></span>
         <small style="color:${m.statut === 'refusee' ? '#8A2414' : '#5E5546'}">${esc(etat)}</small>
         ${m.statut === 'acceptee' ? (T.prix_transport != null ? `<span><b style="font-weight:600">Prix du transport : ${F(T.prix_transport)}</b> <small style="color:#5E5546">fixé par le chauffeur</small></span>` : '<small style="color:#5E5546">Le chauffeur n’a pas encore indiqué son prix.</small>') : ''}` : `<small style="color:#5E5546">${esc(vide)}</small>`}
-      ${T.peut_choisir ? `<form class="cm-f" data-trf style="display:flex;gap:8px;margin-top:6px"><input type="text" data-code maxlength="8" placeholder="T-4K7P" aria-label="Code du transporteur" autocapitalize="characters" autocomplete="off" style="flex:1;min-width:0;text-transform:uppercase"><button type="submit" style="min-height:48px;padding:0 18px;border-radius:24px;border:0;background:#10392B;color:#F3EFE4;font:600 15px Jost,sans-serif;cursor:pointer">${m ? 'Changer' : 'Choisir'}</button></form>
+      ${choisir ? `<form class="cm-f" data-trf style="display:flex;gap:8px;margin-top:6px"><input type="text" data-code maxlength="8" placeholder="T-4K7P" aria-label="Code du transporteur" autocapitalize="characters" autocomplete="off" style="flex:1;min-width:0;text-transform:uppercase"><button type="submit" style="min-height:48px;padding:0 18px;border-radius:24px;border:0;background:#10392B;color:#F3EFE4;font:600 15px Jost,sans-serif;cursor:pointer">${m ? 'Changer' : 'Choisir'}</button></form>
         ${m && m.statut !== 'refusee' ? '<button type="button" data-trx style="all:unset;cursor:pointer;color:#10392B;text-decoration:underline;min-height:44px;display:inline-flex;align-items:center">Retirer ce transporteur</button>' : ''}<p class="cm-err" data-tre role="alert" style="margin:0"></p>` : ''}
     </div>`;
   }
@@ -796,6 +801,11 @@
     box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
       <h2>${o.titre}</h2><p class="cm-sous">${esc(c.produit || '')} · ${esc(c.partenaire_nom)}</p>
       <form class="cm-f" novalidate>
+        ${o.mot ? `<label class="t" for="cmM">Mot secret du vendeur</label>
+        <p class="cm-note" style="margin:-2px 0 8px;font-size:13.5px">Il est écrit sur le papier que le vendeur a glissé dans la marchandise (par exemple « MANGUE 47 »).</p>
+        <input type="text" id="cmM" maxlength="40" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="MANGUE 47" style="font:700 22px Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase">
+        <label class="cm-ck"><input type="checkbox" id="cmS"> Je ne trouve pas le papier du vendeur</label>
+        <p class="cm-info" data-sans hidden>Sans le mot, la réception est notée « sans le mot secret du vendeur », visible du vendeur et de l’équipe. Si la marchandise ne va pas, ne confirmez pas : <b>refusez-la avec des photos</b>.</p>` : ''}
         ${o.lieu ? `<label class="t" for="cmL">${o.lieu}</label><input type="text" id="cmL" maxlength="120" autocomplete="off">` : ''}
         ${o.note ? `<label class="t" for="cmN">${o.note}</label><textarea id="cmN" maxlength="300"></textarea>` : ''}
         ${o.gps ? `<label class="cm-ck"><input type="checkbox" id="cmG"> Joindre ma position actuelle (une seule fois)</label>` : ''}
@@ -806,17 +816,19 @@
     box.querySelector('[data-x]').onclick = fermer;
     box.querySelector('[data-ann]').onclick = () => peindre();
     const f = box.querySelector('form'), err = f.querySelector('.cm-err');
+    const Sm = f.querySelector('#cmS'); if (Sm) Sm.onchange = () => { f.querySelector('[data-sans]').hidden = !Sm.checked; f.querySelector('#cmM').disabled = Sm.checked; };
     f.onsubmit = async e => {
       e.preventDefault();
-      const L = f.querySelector('#cmL'), Nt = f.querySelector('#cmN'), G = f.querySelector('#cmG');
-      const lieu = L ? L.value.trim() : null, note = Nt ? Nt.value.trim() : null;
+      const L = f.querySelector('#cmL'), Nt = f.querySelector('#cmN'), G = f.querySelector('#cmG'), M = f.querySelector('#cmM');
+      const lieu = L ? L.value.trim() : null, note = Nt ? Nt.value.trim() : null, mot = M ? M.value.trim() : null, sansMot = !!(Sm && Sm.checked);
+      if (o.mot && !sansMot && !mot) { err.textContent = 'Tapez le mot secret écrit sur le papier du vendeur.'; M.focus(); return; }
       if (o.lieuRequis && !lieu) { err.textContent = 'Indiquez le lieu.'; L.focus(); return; }
       if (o.noteRequise && !note) { err.textContent = 'Expliquez en quelques mots.'; Nt.focus(); return; }
       if (N().texteRefus) { const r = N().texteRefus((lieu || '') + ' ' + (note || '')); if (r) { err.textContent = r; return; } }
       const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = '';
       try {
         const pos = await position(G && G.checked);
-        await o.fn({ lieu, note, pos });
+        await o.fn({ lieu, note, pos, mot, sansMot });
         await lireListe(); await lireJournal(c.id);
         if (o.fait) toast(o.fait, { type: 'ok' });
         if (window.MDGSons && MDGSons.signal) try { MDGSons.signal('accord'); } catch (_) {}
@@ -839,7 +851,11 @@
       case 'chargement': return av('chargement', 'Chargement confirmé', { texte: 'Confirmez seulement quand la marchandise est dans le camion. Le transport commence alors.' });
       case 'transbordement': return av('transbordement', 'Signaler un transbordement', { lieu: 'Où la marchandise change-t-elle de véhicule ?', lieuRequis: true });
       case 'arrivee': return av('arrivee', 'Le chauffeur est arrivé');
-      case 'reception': return av('reception', 'Réception confirmée', { texte: 'Confirmez seulement après avoir vérifié la quantité et la qualité. La commande sera terminée.', fait: 'Réception confirmée : commande terminée' });
+      case 'reception': return c.validation === 'declaration' && c.mode_transport !== 'reseau'
+        ? confirmer(c, { titre: 'Confirmer la <em>réception</em>', ok: 'Confirmer la réception', etape: 'reception', mot: true, gps: true, note: 'Un mot (facultatif)', fait: 'Réception confirmée : commande terminée',
+            texte: 'Confirmez seulement après avoir vérifié la quantité et la qualité. La commande sera terminée.',
+            fn: v => R('commande_reception_mot', { p_id: c.id, p_mot: v.sansMot ? null : v.mot, p_sans_mot: v.sansMot, p_lat: v.pos ? v.pos[0] : null, p_lon: v.pos ? v.pos[1] : null, p_note: v.note || null }) })
+        : av('reception', 'Réception confirmée', { texte: 'Confirmez seulement après avoir vérifié la quantité et la qualité. La commande sera terminée.', fait: 'Réception confirmée : commande terminée' });
       case 'annuler': return confirmer(c, { titre: c.etat === 'a_confirmer' ? 'Retirer la commande' : 'Demander l’annulation', ok: c.etat === 'a_confirmer' ? 'Retirer' : 'Demander', note: 'Pourquoi ? (facultatif)',
         texte: c.etat === 'a_confirmer' ? '' : 'L’acheteur doit accepter l’annulation. Le stock reviendra sur l’annonce.',
         fait: c.etat === 'a_confirmer' ? 'Commande retirée' : 'Demande d’annulation envoyée', fn: v => R('commande_annuler', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
@@ -928,12 +944,9 @@
       <form class="cm-f" novalidate>
         <label class="t">Qui transporte la marchandise ?</label>
         ${tr.info ? `<p class="cm-info">🚚 ${esc(tr.info)}</p>` : ''}
-        ${tr.modes.map(k => `<label class="cm-opt"><input type="radio" name="mode" value="${k}"${k === tr.defaut ? ' checked' : ''}><span><b>${tr.lib[k] || MODES[k]}</b><small>${k === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié.' : k === 'acheteur' ? 'L’acheteur envoie son camion ou son chauffeur. Il peut lui donner un lien de suivi.' : 'Le vendeur livre avec son camion ou son chauffeur. Il peut lui donner un lien de suivi.'}</small></span></label>`).join('')}
+        ${tr.modes.map(k => `<label class="cm-opt"><input type="radio" name="mode" value="${k}"${k === tr.defaut ? ' checked' : ''}><span><b>${tr.lib[k] || MODES[k]}</b><small>${k === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié, avec les codes de prise en charge et de réception.' : k === 'acheteur' ? 'L’acheteur envoie son camion ou son chauffeur. Rien à installer pour le chauffeur ; un lien de suivi est possible.' : 'Le vendeur livre avec son camion ou son chauffeur. Rien à installer pour le chauffeur ; un lien de suivi est possible.'}</small></span></label>`).join('')}
         ${tr.bientot ? `<label class="cm-opt cm-off" aria-disabled="true"><input type="radio" name="mode" value="reseau" disabled><span><b>${MODES.reseau} <span class="cm-tag">Bientôt</span></b><small>Pas encore disponible : le réseau de transporteurs se construit. Pour l’instant, l’acheteur ou le vendeur s’occupe du transport.</small></span></label>` : ''}
-        <label class="t">Comment valider le chargement et la réception ?</label>
-        <label class="cm-opt"><input type="radio" name="val" value="code" checked><span><b>Avec codes — le chauffeur a l’application</b><small><span class="cm-tag mais">Recommandé</span> Le chauffeur tape le code du vendeur au chargement, puis celui de l’acheteur à la réception. Personne ne peut valider à votre place.</small></span></label>
-        <label class="cm-opt"><input type="radio" name="val" value="declaration"><span><b>Sans code — nous validons nous-mêmes</b><small>Pour un chauffeur sans l’application : le vendeur déclare le chargement, l’acheteur l’arrivée et la réception.</small></span></label>
-        <p class="cm-info">Je recommande que le chauffeur crée un compte gratuit sur le Marché de Gros : avec les codes, personne ne pourra déclarer une livraison à votre place.</p>
+        <p class="cm-info" data-regle>🔐 <b>Votre transporteur n’a rien à faire dans l’application</b> : ni inscription, ni code. Le vendeur glisse un <b>mot secret</b> dans la marchandise ; à la réception, l’acheteur le tape pour confirmer.</p>
         <label class="t" for="cmLv">Lieu de livraison <small style="font-weight:400;color:#5E5546">(facultatif)</small></label>
         <input type="text" id="cmLv" maxlength="120" placeholder="Ville, quartier, marché…" autocomplete="off">
         <p class="cm-err" role="alert"></p>
@@ -944,7 +957,7 @@
     const f = box.querySelector('form'), err = f.querySelector('.cm-err');
     f.onsubmit = async e => {
       e.preventDefault();
-      const mode = (f.querySelector('[name=mode]:checked') || {}).value, lieu = f.querySelector('#cmLv').value.trim(), val = (f.querySelector('[name=val]:checked') || {}).value || 'declaration';
+      const mode = (f.querySelector('[name=mode]:checked') || {}).value, lieu = f.querySelector('#cmLv').value.trim(), val = mode === 'reseau' ? 'code' : 'declaration';   // le serveur décide aussi (schéma 63)
       if (!mode) { err.textContent = 'Choisissez qui transporte.'; return; }
       if (lieu && N().texteRefus) { const r = N().texteRefus(lieu); if (r) { err.textContent = r; return; } }
       const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = '';

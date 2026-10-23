@@ -1,0 +1,134 @@
+<div class="couv">
+  <div class="logo">marché<span class="g">de Gros</span></div>
+  <div>
+    <h1>Le problème, <em>et notre solution</em></h1>
+    <p>La Côte d'Ivoire produit beaucoup de vivrier, mais il se vend mal : des pertes, des prix inconnus d'une région à l'autre, un transport cher, et des villes qui achètent de plus en plus.</p>
+  </div>
+  <p class="petit" style="color:#C9C1AC">Mis à jour le {{date}}. Chaque chiffre du marché porte un numéro qui renvoie à sa source, en fin de document. Les chiffres de l'application viennent de la base, mesurés le {{date_base}}.</p>
+</div>
+
+<section>
+  <h2>Un secteur énorme</h2>
+  <div class="chiffres">
+    <div><b>{{m:prod-totale|court}}</b><span>de produits vivriers récoltés en 2024</span></div>
+    <div><b>{{m:emploi-agri|court}}</b><span>des emplois sont dans l'agriculture</span></div>
+    <div><b>{{m:pib-agri|court}}</b><span>la part de l'agriculture dans l'économie</span></div>
+  </div>
+  <table>
+    <tr><th>Production 2024</th><th>Volume</th></tr>
+    <tr><td>Manioc</td><td>{{m:manioc}}</td></tr>
+    <tr><td>Igname</td><td>{{m:igname}}</td></tr>
+    <tr><td>Banane plantain</td><td>{{m:plantain}}</td></tr>
+    <tr><td>Riz</td><td>{{m:riz-paddy}}</td></tr>
+    <tr><td>Maïs</td><td>{{m:mais}}</td></tr>
+    <tr><td>Légumes (production maraîchère)</td><td>{{m:legumes}}</td></tr>
+  </table>
+  <p>Ces volumes passent presque tous par des marchés de gros, des intermédiaires et des camions, avant d'arriver chez les commerçants, les restaurants et les familles. C'est ce passage que le Marché de Gros veut rendre plus simple.</p>
+</section>
+
+<section>
+  <h2>Problème 1 : une grande partie de la récolte se perd</h2>
+  <div class="chiffres">
+    <div><b>{{m:pertes|court}}</b><span>des récoltes vivrières perdues après la récolte (estimation officielle)</span></div>
+    <div><b>{{m:pertes-plantain-legumes|court}}</b><span>de pertes selon les produits</span></div>
+    <div><b>{{m:pertes-tomate-transport|court}}</b><span>de la tomate perdue pendant le seul transport</span></div>
+  </div>
+  <p>Un produit qui attend un acheteur s'abîme. Une tomate ou une banane plantain qui ne trouve pas preneur à temps est perdue pour le producteur.</p>
+  <h3>Notre réponse</h3>
+  <ul>
+    <li>Le vendeur publie son stock <b>avant</b> qu'il s'abîme, et le montre à des acheteurs de tout le pays, pas seulement à ceux de son marché.</li>
+    <li>L'acheteur publie ce qu'il cherche (« Je cherche »), et le vendeur voit tout de suite où est la demande.</li>
+    <li>Les alertes préviennent quand un produit suivi est publié.</li>
+  </ul>
+  <p class="petit">L'application ne remplace ni le stockage ni les routes. Elle réduit le temps entre la récolte et la vente.</p>
+</section>
+
+<section>
+  <h2>Problème 2 : le prix change énormément d'une région à l'autre</h2>
+  <div class="chiffres">
+    <div><b>{{m:prix-plantain-ocpv|court}}</b><span>la banane plantain dans une zone de production, puis à Abidjan, la même semaine</span></div>
+    <div><b>{{m:prix-plantain-2015|court}}</b><span>la banane plantain en zone de production, puis dans des villes éloignées</span></div>
+    <div><b>{{m:transport-igname|court}}</b><span>la part du transport dans le coût de l'igname kponan</span></div>
+  </div>
+  <p>Le producteur connaît mal le prix payé ailleurs, et l'acheteur ne sait pas où acheter moins cher. Celui qui a l'information garde la marge. Le transport, lui, pèse lourd dans le prix final.</p>
+  <h3>Notre réponse</h3>
+  <ul>
+    <li><b>Les prix du moment, partout</b> : la roue des produits, le tableau du marché (meilleure offre, meilleur budget) et les prix par zone, alimentés par les annonces et les ventes terminées.</li>
+    <li><b>La négociation dans l'application</b>, prix contre prix, sans passer par une chaîne d'intermédiaires. Le rôle d'intermédiaire reste prévu pour ceux qui l'exercent.</li>
+    <li><b>Le transport clair</b> : compris ou non dans le prix, il se négocie, et le camion est suivi par un simple lien.</li>
+  </ul>
+  <p class="petit">Les prix de l'OCPV sont des prix sur les marchés de consommation, pas des prix payés au producteur. Les écarts de 2015 viennent d'une étude plus ancienne. Ces chiffres montrent l'ordre de grandeur des écarts, pas une marge précise.</p>
+</section>
+
+<section>
+  <h2>Problème 3 : les villes achètent de plus en plus, et importent</h2>
+  <div class="chiffres">
+    <div><b>{{m:abidjan|court}}</b><span>dans le District d'Abidjan au recensement</span></div>
+    <div><b>{{m:urbain|court}}</b><span>des Ivoiriens vivent en ville</span></div>
+    <div><b>{{m:flux-abidjan-2030|court}}</b><span>de vivriers à faire venir vers Abidjan d'ici 2030 (projection)</span></div>
+  </div>
+  <ul>
+    <li>Le pays importe encore {{m:import-riz}} de riz. La production locale couvre {{m:couverture-cereales}} des besoins en céréales.</li>
+    <li>Les importations alimentaires ont coûté {{m:import-alim}}.</li>
+    <li>Les cantines scolaires publiques : {{m:cantines}}. Le PAM soutient {{m:pam}}, avec une priorité aux produits locaux.</li>
+  </ul>
+  <h3>Notre réponse</h3>
+  <ul>
+    <li><b>L'approvisionnement pro</b> pour les restaurants, cantines et commerces : un besoin détaillé, des réponses à comparer.</li>
+    <li><b>Les achats groupés</b> pour obtenir un prix de gros à plusieurs, et <b>« Racheter »</b> pour les achats réguliers.</li>
+    <li>Rendre le vivrier local plus facile à trouver et à acheter en gros que l'importé.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Le terrain est prêt pour une solution mobile</h2>
+  <div class="chiffres">
+    <div><b>{{m:momo|court}}</b><span>abonnements mobile money actifs (Wave non compté)</span></div>
+    <div><b>{{m:internet-mobile|court}}</b><span>abonnements internet mobile actifs</span></div>
+    <div><b>{{m:comptes|court}}</b><span>des adultes ont un compte (banque ou mobile money)</span></div>
+  </div>
+  <p>Le téléphone et le mobile money font déjà partie du commerce. Une application de marché de gros peut s'appuyer dessus, et un paiement par mobile money (le séquestre, déjà construit) pourra y être branché.</p>
+  <p class="petit">Les abonnements ne sont pas des personnes : une personne peut en avoir plusieurs. Utilisateurs d'internet, en personnes : {{m:internet-pop}}.</p>
+</section>
+
+<section>
+  <h2>Problème → réponse de l'application</h2>
+  <table>
+    <tr><th style="width:30%">Problème</th><th>Ce que fait l'application</th><th style="width:16%">État</th></tr>
+    <tr><td>Le vendeur ne trouve pas d'acheteur à temps</td><td>Annonces « J'ai » et « Je cherche » visibles dans tout le pays, alertes produit</td><td>En place</td></tr>
+    <tr><td>Les prix sont inconnus d'une zone à l'autre</td><td>Roue des produits, tableau du marché, prix par zone</td><td>En place</td></tr>
+    <tr><td>Trop d'intermédiaires, négociation opaque</td><td>Négociation directe dans l'application, numéros cachés</td><td>En place</td></tr>
+    <tr><td>Le transport sans suivi</td><td>Étapes horodatées, camion suivi par un lien, code de secours</td><td>En place</td></tr>
+    <tr><td>La peur d'être trompé</td><td>Identité vérifiée, réputation, mot secret à la réception, refus avec preuves, litige à trois</td><td>En place</td></tr>
+    <tr><td>Les acheteurs pros achètent souvent et en volume</td><td>Approvisionnement pro, achats groupés, « Racheter »</td><td>En place</td></tr>
+    <tr><td>Le paiement à la livraison est risqué</td><td>Argent bloqué jusqu'à la réception (séquestre)</td><td>Construit, pas branché</td></tr>
+    <tr><td>Trouver un transporteur fiable</td><td>Réseau de transporteurs Marché de Gros</td><td>En pause</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2>Ce qui existe déjà</h2>
+  <table>
+    <tr><th style="width:22%">Acteur</th><th>Ce qu'on sait (sources citées)</th></tr>
+    <tr><td><b>Djoli</b></td><td>Plateforme d'approvisionnement des restaurants, basée à Abidjan. Son investisseur, Ring Capital, avance : {{m:djoli}} (zone géographique non précisée).</td></tr>
+    <tr><td><b>Soutramarket</b></td><td>Place de marché agricole (particuliers et professionnels), avec livraison à Abidjan. Création : {{m:soutra}}.</td></tr>
+    <tr><td><b>OCPV</b></td><td>L'office public publie des bulletins de prix des produits vivriers. C'est une information utile, mais pas une place de marché.</td></tr>
+  </table>
+  <h3>Notre différence</h3>
+  <ul>
+    <li><b>Un marché ouvert</b> : n'importe quel vendeur et n'importe quel acheteur, dans tout le pays, et pas seulement la livraison en ville.</li>
+    <li><b>Le prix fait par le marché</b> : les vendeurs et les acheteurs publient leurs prix, et tout le monde les voit.</li>
+    <li><b>Gratuit jusqu'à la vente</b> : {{commission_vente}} seulement quand un achat est conclu.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Ce qui reste à prouver</h2>
+  <ul>
+    <li>L'application est construite et en phase de test : {{membres}} membres, {{annonces_actives}} annonces actives et {{commandes_terminees}} commande(s) terminée(s) au {{date_base}}. Il reste à prouver que des vendeurs et des acheteurs réels l'adoptent.</li>
+    <li>Aucune mesure ne montre encore que l'application réduit les pertes ou les écarts de prix. Il faudra le mesurer sur les premiers produits et trajets.</li>
+    <li>Le paiement n'est pas branché : rien n'est encaissé.</li>
+  </ul>
+  <h2 style="margin-top:8mm">Sources</h2>
+  {{sources}}
+</section>

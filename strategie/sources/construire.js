@@ -52,10 +52,10 @@ function remplir(html, V, marche) {
   html = html.replace(/\{\{m:([a-z0-9_-]+)(?:\|([a-z]+))?\}\}/g, (_, id, mode) => {
     const f = marche.find(x => x.id === id); if (!f) throw new Error('chiffre du marché inconnu : ' + id);
     let n = citees.indexOf(f) + 1; if (!n) { citees.push(f); n = citees.length; }
-    return (mode === 'libelle' ? esc(f.libelle) : esc(f.chiffre)) + '<sup class="ref">' + n + '</sup>';
+    return (mode === 'libelle' ? esc(f.libelle) : mode === 'court' ? esc(f.court || f.chiffre) : esc(f.chiffre)) + '<sup class="ref">' + n + '</sup>';
   });
   html = html.replace(/\{\{sources\}\}/g, () => citees.length ? '<ol class="sources">' + citees.map(f =>
-    `<li>${esc(f.libelle)} : ${esc(f.chiffre)} (${esc(f.annee)}). ${esc(f.source)}. <span class="url">${esc(f.url)}</span></li>`).join('') + '</ol>' : '');
+    `<li><b>${esc(f.chiffre)}</b> (${esc(f.annee)}) : ${esc(f.source)}. <span class="url">${esc(f.url)}</span></li>`).join('') + '</ol>' : '');
   html = html.replace(/\{\{([a-z_]+)\}\}/g, (_, k) => { if (k === 'date') return '{{date}}'; if (!(k in V)) throw new Error('valeur inconnue : ' + k); return esc(V[k]); });
   return html;
 }

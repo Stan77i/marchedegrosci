@@ -77,3 +77,8 @@ tr{break-inside:avoid}
 .diapo .etapes b{display:block;font-size:12pt;color:var(--vert);margin-bottom:1mm}
 .diapo .etapes span{font-size:10pt;color:var(--doux)}
 .diapo{counter-reset:d}.diapo .d{counter-increment:d}.diapo .pied .n::after{content:counter(d)}
+.diapo .sources{column-count:2;column-gap:8mm;font-size:6.4pt;line-height:1.35}
+.diapo .big{font-size:26pt;white-space:nowrap}
+.chiffres b{white-space:nowrap}
+.diapo .sources li{font-size:6.8pt;line-height:1.35;margin-bottom:1mm}
+.diapo .sources{margin-top:2mm}.diapo .sources li{font-size:7.8pt}.diapo p.petit{font-size:9pt}

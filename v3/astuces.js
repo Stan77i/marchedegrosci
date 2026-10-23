@@ -8,7 +8,7 @@
      la création d'une commande, le choix du chauffeur, un code, l'Espace chauffeur. Une seule fois chacun.
    • Réglages → « Aide pour débuter » : tout couper, ou revoir un tutoriel. Rien ne part au serveur : tout reste sur ce téléphone.
    Mouvement réduit (réglage du téléphone) : pas de déplacement, seulement la bulle.
-   API : MDGAstuces.actif() · regler(oui) · tour(id, force) · revoir() · TOURS */
+   API : MDGAstuces.actif() · regler(oui) · tour(id, force) · revoir() · frequence(f?) · TOURS */
 (function () {
   'use strict';
   if (window.MDGAstuces) return;
@@ -352,10 +352,18 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
   // le menu ouvert une fois : c'est compris, plus besoin du signe
   document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.acc-mq')) noter('menu', 99); }, true);
 
+  // fréquence (Réglages → Aide pour débuter) : « une » = chaque astuce, tutoriel et démo une seule fois ; « semaine » = tout revient
+  // une fois par semaine ; « toujours » = tout revient à chaque ouverture de l'application. Appliquée une fois, au chargement.
+  const KFREQ = 'mdg-aide:freq', KDEP = 'mdg-aide:depuis', FREQS = ['une', 'semaine', 'toujours'];
+  const frequence = f => { if (f == null) { const v = lire(KFREQ, 'une'); return FREQS.includes(v) ? v : 'une'; } if (FREQS.includes(f)) { ecrire(KFREQ, f); ecrire(KDEP, Date.now()); } return f; };
+  (function appliquerFrequence() {
+    const f = frequence(), d = +lire(KDEP, 0) || 0, t = Date.now(); if (f === 'une') return;
+    if (f === 'toujours' || t - d > 7 * 864e5) { ecrire(KVU, {}); try { localStorage.removeItem('mdg-demo:orbite'); } catch (_) {} ecrire(KDEP, t); }
+  })();
   function regler(oui) { ecrire(KOFF, !oui); if (!oui) bulleFermer(); }
   function revoir() { ecrire(KVU, {}); regler(true); }
 
-  window.MDGAstuces = { actif, regler, revoir, tour, TOURS, pointer };
+  window.MDGAstuces = { actif, regler, revoir, tour, TOURS, pointer, frequence };
   const go = () => { surveiller(); guetter(); addEventListener('hashchange', () => setTimeout(guetter, 300)); if (!ADMIN) setTimeout(signe, 4500); };
   if (document.readyState === 'loading') addEventListener('DOMContentLoaded', go); else go();
 })();

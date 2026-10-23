@@ -880,3 +880,13 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Une fois automatiquement** : la première fois que l'accueil est libre (astuces actives, aucune bulle, fenêtre ou guide ouvert, pas de toucher depuis 4 s). Clé `mdg-demo:orbite` sur le téléphone.
 - **Tutoriel en cartes** « La roue et les prix » ajouté aux astuces (`v3/astuces.js`, `TOURS.placer`) ; dans Réglages → Aide pour débuter, un bouton « ▶ Voir la démo : la roue et les prix » (`app/theme.js`) ramène à l'accueil et lance la démo.
 - Cache `mgci-v197` (le fichier est ajouté au service worker).
+
+## Les astuces, tutoriels et démos se règlent dans les Réglages (23/10/2026)
+- Demande du propriétaire : tout ce qui apparaît à l'écran pour aider (astuces, tutoriels, démo) doit s'activer dans les paramètres, avec une fréquence.
+- Réglages → **Aide pour débuter** :
+  - « Astuces et tutoriels » (déjà là) : tout couper coupe aussi la démo automatique ; les choix ci-dessous ne s'affichent que si c'est activé.
+  - **Fréquence** : « Une fois » (par défaut : chaque astuce, tutoriel et démo une seule fois) · « Chaque semaine » (tout revient une fois par semaine) · « À chaque ouverture ». `MDGAstuces.frequence()`, clés `mdg-aide:freq` et `mdg-aide:depuis` ; appliquée au chargement de `v3/astuces.js` (remet à zéro les astuces vues et la démo `mdg-demo:orbite`).
+  - **Démo de la roue au démarrage** (oui par défaut, clé `mdg-demo:auto`).
+  - **Bouton « Démo » sur l'accueil** (oui par défaut, clé `mdg-demo:bouton`, classe `html.dm-cache`) : caché, la démo reste lançable depuis les Réglages.
+  - « ▶ Voir la démo » et « Revoir un tutoriel » restent en dessous.
+- Tout reste sur le téléphone. Cache `mgci-v198`.

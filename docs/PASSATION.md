@@ -1127,3 +1127,11 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
   - « 3 signalements » en chiffres.
 - Reste à décider avec le propriétaire : 🧺 et 🛒 (offre, demande) sont encore des emojis, utilisés partout (environ 60 fois) ; 69 tirets cadratins dans les textes.
 - Cache `mgci-v218`.
+
+## Panier et caddie dessinés, tirets (23/10/2026)
+
+- **🧺 et 🛒 remplacés par des dessins** : `css/symboles.css` (nouveau, chargé par `application.dc.html`, `index-v3.html`, `admin.html`) définit `--sym-o` (panier de produits : tomate, maïs, feuille, dans un panier tressé) et `--sym-d` (caddie vert et maïs ; trait crème de nuit, sauf sur le bouton « Je cherche », toujours jaune). Utilisés par les pastilles `.od`, les boutons J'ai / Je cherche (`.duo2 .emo`), les cartes de chiffres (`.acc-emo`), les onglets d'Acheter (`.aseg-s`), les amas de la carte (`.cgl-s`), et les modules `v3/compte.js`, `v3/nuage.js`, `v3/reputation.js`, `app/carte-gl.js` (à la place de `content:"🧺"`). Les pastilles ne se balancent plus en boucle (entrée animée seulement).
+- Aussi en icônes dessinées : la bande « tendance » (🔥 📈 ✅ 🤝 🛒) et le panneau des sons (🎶 🤝 💬 ⏳ 🧺 ✅ 👂 🔈 🔊).
+- Restent volontairement : les emojis de produits servant d'image quand un produit n'a pas de photo, et la carte simple (Canvas, sans relief) qui dessine encore 🧺 🛒 en texte.
+- **Tirets** : ceux qui séparaient deux informations (« Ville — Région », titre de partage, carte, relevé, commande) deviennent « · » ou disparaissent. Les « — » qui marquent une valeur vide restent (convention typographique).
+- Inclut aussi le lot « 32 lois » (commit arrivé après la fusion de la PR #211). Cache `mgci-v218`.

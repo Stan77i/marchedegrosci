@@ -100,10 +100,10 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 17. Le mot mis en valeur (la voix du logo) : une fois par écran au plus, et sur le mot qui compte.
 18. Les nombres en chiffres (« 3 signalements », pas « trois »). Unités au pluriel à partir de 2.
 19. Des titres courts qui commencent par ce que la personne fait ; les boutons nomment leur action ; les erreurs disent le problème et la solution.
-20. Peu de tirets cadratins (—) dans les phrases : c'est la signature d'un texte généré. Préférer « : », « , » ou deux phrases.
+20. Pas de tiret cadratin (—) pour couper une phrase ou séparer deux informations : « · » entre deux informations, « : » pour expliquer. Le « — » seul reste permis pour une valeur vide (case d'un tableau) : c'est la signature d'un texte généré. Préférer « : », « , » ou deux phrases.
 
 **Icônes, images, preuves**
-21. Pas d'emoji à la place d'une icône dans l'interface (boutons, listes, onglets). Les icônes sont dessinées (`app/icones.js`), d'un seul trait. Exception assumée et à revoir : 🧺 (offre) et 🛒 (demande), symboles connus des membres.
+21. Pas d'emoji à la place d'une icône dans l'interface (boutons, listes, onglets). Les icônes sont dessinées (`app/icones.js`), d'un seul trait. Offre et demande ont leurs symboles dessinés (`css/symboles.css`) : un **panier de produits** (offre) et un **caddie** (demande), via `var(--sym-o)` et `var(--sym-d)` ; le caddie a un trait crème de nuit.
 22. Pas de pastilles « NOUVEAU », de points colorés ou de « EN DIRECT » qui ne changent rien à ce que la personne fait.
 23. Pas d'image de remplacement laissée en place, pas de dessin « métaphore » expliqué par une étiquette : montrer le vrai produit.
 24. Aucune preuve invérifiable : pas de faux avis, de faux chiffres, de faux logos (règle du projet : rien d'inventé).

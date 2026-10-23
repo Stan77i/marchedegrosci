@@ -407,10 +407,19 @@ html.garde body { overflow: hidden; }
 .pied-l a:hover { text-decoration: underline; text-decoration-color: var(--mais); text-underline-offset: 4px; }
 
 /* ——— calendrier des récoltes (site/saisons/) ——— */
-.cal-p { margin: 36px 0 0; }
+.cal-p { margin-top: 36px; }
 .cal-p h2 { display: flex; align-items: center; gap: 14px; margin: 0 0 4px; font-size: 26px; }
 .cal-p h2 img { width: 64px; height: 64px; object-fit: contain; }
 .cal-p h2 a { color: inherit; text-decoration: underline; text-decoration-color: var(--mais); text-underline-offset: 5px; text-decoration-thickness: 2px; }
-.cal-src-t { margin: 48px 0 10px; font-size: 22px; }
-.cal-src { margin: 0; padding-left: 20px; display: grid; gap: 6px; color: var(--texte-3); font-size: 15px; }
-.cal-maj { margin: 20px 0 0; color: var(--texte-3); font-size: 15px; }
+.cal-src-t { margin-top: 48px; margin-bottom: 10px; font-size: 22px; }
+.cal-src { padding-left: 20px; display: grid; gap: 6px; color: var(--texte-3); font-size: 15px; }
+.cal-maj { margin-top: 20px; color: var(--texte-3); font-size: 15px; }
+.cal-now { margin-top: 8px; margin-bottom: 12px; padding: 22px 24px; border-radius: 20px; background: var(--vert); color: #F3EFE4; }
+.cal-now h2 { margin: 0 0 14px; font-size: 22px; color: #F3EFE4; }
+.cal-now h2 span { color: var(--mais); }
+.cal-now ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.cal-now li { display: inline-flex; align-items: baseline; gap: 8px; padding: 8px 14px; border-radius: 999px; background: rgba(243, 239, 228, .1); }
+.cal-now li a { color: #F3EFE4; font-weight: 600; text-decoration: none; }
+.cal-now li a:hover { text-decoration: underline; }
+.cal-now li small { font-size: 13px; color: rgba(243, 239, 228, .7); }
+.cal-now li.plein small { color: #6CC58C; } .cal-now li.fin small { color: var(--mais); }

@@ -11,7 +11,7 @@ const path = require('path');
 
 // les produits qui ont leur page (les plus échangés en gros ; photo obligatoire)
 const LISTE = ['tomate', 'igname', 'banane-plantain', 'manioc', 'oignon', 'mais-grain', 'riz-local', 'attieke', 'piment-frais', 'aubergine', 'gombo', 'mangue',
-  'noix-de-cajou', 'arachide-decortiquee', 'haricot-niebe', 'patate-douce', 'ananas', 'avocat', 'banane-douce', 'chou', 'poivron', 'gari', 'huile-de-palme-rouge', 'poulet-de-chair', 'oeufs-de-poule-alveole-de-30'];
+  'noix-de-cajou', 'arachide-decortiquee', 'haricot-niebe', 'patate-douce', 'ananas', 'avocat', 'banane-douce', 'chou', 'poivron', 'gari', 'huile-de-palme-rouge', 'poulet-de-chair', 'oeufs-de-poule-alveole-de-30', 'concombre', 'soja'];
 const BASE = 'https://stan77i.github.io/marchedegrosci/site/';
 const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 const INI = 'JFMAMJJASOND';
@@ -78,7 +78,8 @@ function calendrier({ NOM, esc, lire, vm, photo }) {
     const nom = NOM[sl], lien = LISTE.includes(sl) ? `../produits/${sl}/` : '';
     const img = photo(sl) ? `<img src="../img/${sl}-160.webp" alt="" width="80" height="80" loading="lazy">` : '';
     const titre = lien ? `<a href="${lien}">${esc(nom)}</a>` : esc(nom);
-    return `<section class="cal-p" aria-labelledby="cal-${sl}"><h2 id="cal-${sl}">${img}<span>${titre}</span></h2>
+    const mo = {}; E.filter(e => e.product === sl).forEach(e => Object.entries(e.months).forEach(([m, l]) => { if (!mo[m] || l === 'plein') mo[m] = l; }));
+    return `<section class="cal-p" aria-labelledby="cal-${sl}" data-mois='${JSON.stringify(mo)}' data-nom="${esc(nom)}"${lien ? ` data-lien="${lien}"` : ''}><h2 id="cal-${sl}">${img}<span>${titre}</span></h2>
       ${E.filter(e => e.product === sl).map(e => ligneMois(e, nom, L, esc)).join('')}</section>`;
   }).join('');
   const srcs = [...new Set(E.map(e => e.source))].map(id => `<li><a href="${esc(SRC[id].url)}" rel="noopener" target="_blank">${esc(SRC[id].label)}</a></li>`).join('');

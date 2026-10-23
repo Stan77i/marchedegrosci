@@ -1249,3 +1249,7 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Zones FAO → districts : `zone:sud-fao` (zones guinéenne + soudano-guinéenne 1) et `zone:centre-nord-fao` (soudano-guinéenne 2 + soudanaise) dans `meta.zones`.
 - Application : lignes ajoutées à `A.CAL` (6e case = 1). Cadran « L'année du marché » : **un anneau par produit** (`anParProduit()`, niveau le plus fort du mois), 24 anneaux, même taille ; le nombre de récoltes en cours et la barre des mois comptent les produits. `marche-app.js?v=20261102b`, cache `mgci-v230`.
 - Site : la page « Calendrier des récoltes » passe de 12 à 24 produits ; les pages produits tomate, gombo, piment, aubergine, chou, poivron, arachide, manioc, niébé affichent leur calendrier.
+
+## Site public : « En ce moment » sur le calendrier, 2 pages produits (23/10/2026)
+- `site/saisons/` : bloc « En ce moment, en <mois> » en tête : les produits en récolte ce mois-ci (lus dans la page même, attribut `data-mois` de chaque produit, petit script dans le gabarit), avec lien vers leur page. Correction : les blocs du calendrier s'alignent sur le titre (marges latérales auto gardées).
+- Pages produits concombre et soja (calendrier FAO, photo) : **27 pages produits**.

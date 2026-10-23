@@ -454,7 +454,7 @@
    - La mettre seulement sur les formulaires du site, sans l'activer dans Supabase, ne protège presque rien : un robot s'adresse directement au serveur.
    - Conseil donné : l'activer partout en mode invisible. Le propriétaire reste libre de choisir ; lui reposer la question au moment de le faire.
    - Il faudra un compte Cloudflare gratuit. La clé secrète se saisit dans Supabase par le propriétaire, **jamais dans le front** ; seule la clé du site va dans les pages.
-6. **Photos de produits manquantes** : 43 produits sur 170 n'ont pas d'image. Liste dans `docs/IMAGES.md`, section « Produits sans photo ».
+6. **Photos de produits manquantes** : 30 produits sur 175 n’ont pas d’image (après l’import des photos du site IVT). Liste dans `docs/IMAGES.md`, section « Produits sans photo ».
 
 ## 6. À vérifier par lui sur un vrai téléphone
 
@@ -1053,3 +1053,13 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Application** : inchangée ; sans heure, « actif il y a… » et le badge « Actif aujourd'hui » ne s'affichent simplement pas.
 - Laissés volontairement : l'identifiant de l'admin (nécessaire pour écrire au Marché de Gros ; `est_admin_id` sert aussi au filtre des textes, retirer son accès casserait les publications) ; le mode « test » des notifications (n'envoie qu'au téléphone de la personne elle-même).
 - Vérifié sur la base réelle (transaction annulée) : sans compte → heures vides, note et ventes inchangées ; membre connecté → heures données.
+
+## Produits et photos du site IVT (23/10/2026)
+
+- Source : dépôt `Stan77i/ivt-boutique` (32 produits, `assets/img/produits/`).
+- 13 produits du marché reçoivent leur photo, et 5 produits sont ajoutés au catalogue (`v2/data.js`) : oignon violet, papaye ronde, papaye solo, piment sent bon, patate douce blanche. Le détail est dans `docs/IMAGES.md`.
+- Les teintes des nouvelles photos sont dans `A.SACK` (`app/marche-app.js`).
+- Tomate : un carton à la place du sac (photo IVT) ; la démo dit « le carton » ; l'unité « carton » est ajoutée.
+- Les photos déjà présentes sont gardées. Les fiches IVT (prix, origine, conditionnement) ne sont pas reprises : le catalogue du marché n'a pas ces champs.
+- Vérifié dans Chromium (iPhone simulé) : fiches tomate, oignon violet et papaye ronde, roue de l'accueil. Toutes les images se chargent et la console ne montre aucune erreur.
+- Cache `mgci-v212`.

@@ -105,7 +105,14 @@
 
   const SCSS = `.pt--sac .ps-fond{position:absolute;inset:0;width:100%;height:100%;display:block}
 .pt--sac .ps-halo{opacity:.55;transform-box:fill-box;transform-origin:50% 100%;transition:opacity .7s,transform .9s cubic-bezier(.22,1,.36,1);animation:psSouffle 5s ease-in-out infinite}
-.pt--sac .ps-sac{position:absolute;left:50%;bottom:8px;line-height:0;transform:translateX(-50%);transition:transform .55s cubic-bezier(.22,1,.36,1)}
+.pt--sac .ps-scene{overflow:hidden}
+.pt--sac .ps-scene .mk{--mk-tint:#F2C230;transition:filter .7s}
+.pt[data-etat=saisie] .ps-scene .mk{filter:brightness(1.08)}
+.pt[data-etat=envoi] .ps-scene .mk,.pt[data-etat=ok] .ps-scene .mk{filter:brightness(1.18) saturate(1.1)}
+.pt[data-etat=erreur] .ps-scene .mk{filter:brightness(.7) saturate(.6)}
+.pt[data-etat=ferme] .ps-scene .mk{filter:brightness(.55) saturate(.4)}
+/* le sac devant les étals : une ombre chaude le pose au sol */
+.pt--sac .ps-sac{position:absolute;left:50%;bottom:6px;line-height:0;transform:translateX(-50%);transition:transform .55s cubic-bezier(.22,1,.36,1);filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
 .pt--sac .ps-sac svg{display:block}
 .pt--sac .ps-sac.chg svg{animation:psPose .4s cubic-bezier(.22,1,.36,1) both}
 @keyframes psPose{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
@@ -119,10 +126,12 @@
   function monterSvg(el) {
     if (!document.getElementById('psSacCss')) { const st = document.createElement('style'); st.id = 'psSacCss'; st.textContent = SCSS; document.head.appendChild(st); }
     el.classList.add('pt', 'pt--sac'); el.dataset.mode = 'in'; el.dataset.etat = 'repos';
-    el.innerHTML = `<svg class="ps-fond" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+    // la scène du marché (app/scene.js) : les étals, les passants qui traversent ; sinon, la lumière seule
+    if (window.MDGScene) MDGScene.css();
+    el.innerHTML = (window.MDGScene ? `<div class="ps-fond ps-scene">${MDGScene.svg('ps')}</div>` : `<svg class="ps-fond" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
       <defs><radialGradient id="psH" cx="50%" cy="100%" r="62%"><stop offset="0" stop-color="#F2C230" stop-opacity=".4"/><stop offset=".55" stop-color="#E9A35E" stop-opacity=".14"/><stop offset="1" stop-color="#E07A3F" stop-opacity="0"/></radialGradient></defs>
-      <ellipse class="ps-halo" cx="200" cy="134" rx="200" ry="104" fill="url(#psH)"/><path d="M0 123.5H400" stroke="rgba(245,240,230,.16)"/></svg>
-      <div class="ps-sac"></div><p class="pt-sr">Le sac du Marché de Gros vous attend à l'entrée.</p>`;
+      <ellipse class="ps-halo" cx="200" cy="134" rx="200" ry="104" fill="url(#psH)"/><path d="M0 123.5H400" stroke="rgba(245,240,230,.16)"/></svg>`) +
+      `<div class="ps-sac"></div><p class="pt-sr">Le marché de gros au crépuscule : les étals, les passants, et le sac du Marché de Gros qui vous attend à l'entrée.</p>`;
     const hote = el.querySelector('.ps-sac'); let h = '';
     const poser = humeur => { if (h === humeur || !window.MDGSac) return; h = humeur; hote.innerHTML = MDGSac.svg(humeur, { t: 94 }); hote.classList.remove('chg'); void hote.offsetWidth; hote.classList.add('chg'); };
     poser('vide');
@@ -229,6 +238,10 @@
 .mf-cadre{position:absolute;left:-100%;width:300%;aspect-ratio:400/132;top:var(--mf-y,64%);transform:translateY(-85.3%);
   -webkit-mask:linear-gradient(to bottom,transparent 0%,#000 22%,#000 80%,transparent 100%);mask:linear-gradient(to bottom,transparent 0%,#000 22%,#000 80%,transparent 100%)}
 .mf-flou{position:absolute;inset:0;filter:blur(5px) saturate(.95);opacity:.6;transform:translateZ(0)}
+.mf-cadre{--mk-tint:var(--orb-tint,#F2C230)}
+/* le verre dépoli : la scène floutée derrière, et devant, nets mais discrets, les passants du marché */
+.mf-pass{position:absolute;inset:0;opacity:.55;-webkit-mask:linear-gradient(to bottom,transparent 10%,#000 45%);mask:linear-gradient(to bottom,transparent 10%,#000 45%)}
+.mf-pass .mk{position:absolute;inset:0;height:100%}
 .mf-flou .ps *{animation:none!important;transition:none!important}
 .mf-net{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .mf-bk{position:absolute;inset:0}
@@ -244,7 +257,8 @@
       this.setAttribute('aria-hidden', 'true');
       const flux = (d, dur, t, r) => `<circle r="${r}" fill="url(#mfG)" opacity="0"><animateMotion dur="${dur}s" begin="${t}s" repeatCount="indefinite" path="${d}"/><animate attributeName="opacity" values="0;1;0" dur="${dur}s" begin="${t}s" repeatCount="indefinite"/></circle>`;
       const g = 'M70 118Q135 97 200 97', dr = 'M330 118Q265 97 200 97';
-      this.innerHTML = `<div class="mf-cadre"><div class="mf-flou pt" data-etat="saisie">${scene('mf')}</div>
+      const SC = window.MDGScene; if (SC) SC.css();
+      this.innerHTML = `<div class="mf-cadre"><div class="mf-flou pt" data-etat="saisie">${SC ? SC.svg('mf', { passants: 'non' }) : scene('mf')}</div>${SC ? `<div class="mf-pass">${SC.svg('mp', { passants: 'seuls' })}</div>` : ''}
         <svg class="mf-net" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice"><defs><radialGradient id="mfG"><stop offset="0" stop-color="#FFF6DE"/><stop offset=".4" stop-color="#FCE6B8" stop-opacity=".6"/><stop offset="1" stop-color="#FCE6B8" stop-opacity="0"/></radialGradient></defs>
         ${flux(g, 4.2, -.4, 3.2)}${flux(g, 4.2, -2.5, 2.4)}${flux(dr, 4.8, -1.3, 3.2)}${flux(dr, 4.8, -3.6, 2.4)}</svg></div>
         <div class="mf-bk">${BOKEH.map(([x, y, sz, c, o, d], i) => `<i style="left:${x}%;top:${y}%;width:${sz}px;height:${sz}px;--c:${c};--o:${o};--d:${d}s;--t:${-(i * 1.7) % d}s;--x:${(i % 2 ? 1 : -1) * (6 + i % 4 * 4)}px"></i>`).join('')}</div>`;

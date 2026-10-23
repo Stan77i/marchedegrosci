@@ -187,12 +187,12 @@
   const ANIM = `<style>.mga{transform-box:view-box;transform-origin:50px 94px;animation:mgVie 7s ease-in-out infinite}
 .mgo{transform-box:view-box;transform-origin:50px 95px;animation:mgOmbre 7s ease-in-out infinite}
 .mge{transform-box:fill-box;transform-origin:center;animation:mgCligne 4.6s infinite}
-.mgb{transform-box:fill-box;transform-origin:0 0;animation:mgBras 2.8s ease-in-out infinite}
+.mgb{transform-box:view-box;animation:mgBras 2.8s ease-in-out infinite}
 .mgs{transform-box:view-box;transform-origin:50px 94px;animation:mgHop .75s cubic-bezier(.3,1.5,.5,1) 1,mgVie 7s .75s ease-in-out infinite}
 @keyframes mgVie{0%,100%{transform:translateY(0)}18%{transform:translateY(-1.4px)}36%{transform:translateY(0)}54%{transform:translateY(-1.4px)}68%{transform:translateY(0) scale(1.06,.93)}75%{transform:translateY(-13px) scale(.95,1.06)}82%{transform:translateY(0) scale(1.05,.94)}87%{transform:translateY(0) scale(1)}}
-@keyframes mgOmbre{0%,68%,87%,100%{transform:scale(1);opacity:1}75%{transform:scale(.6);opacity:.5}}
+@keyframes mgOmbre{0%,68%,87%,100%{transform:scale(1);opacity:.2}75%{transform:scale(.6);opacity:.1}}
 @keyframes mgCligne{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
-@keyframes mgBras{0%,100%{transform:rotate(0)}50%{transform:rotate(-12deg)}}
+@keyframes mgBras{0%,100%{transform:rotate(0)}50%{transform:rotate(14deg)}}
 @keyframes mgHop{0%{transform:translateY(0) scale(1.08,.9)}45%{transform:translateY(-16px) scale(.94,1.07)}80%{transform:translateY(0) scale(1.05,.94)}100%{transform:translateY(0) scale(1)}}
 @media (prefers-reduced-motion:reduce){.mga,.mgo,.mge,.mgb,.mgs{animation:none!important}}</style>`;
 
@@ -207,9 +207,12 @@
     const pieds = `<path d="M${px - 8} ${bas - 3}v6m16-6v6" stroke="${LIMB}" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="${px - 10}" cy="${bas + 4}" rx="5.4" ry="2.8" fill="${SOULIERS[o.c]}" stroke="${LIMB}" stroke-width=".8"/><ellipse cx="${px + 10}" cy="${bas + 4}" rx="5.4" ry="2.8" fill="${SOULIERS[o.c]}" stroke="${LIMB}" stroke-width=".8"/>`;
     // bras : le gauche salue, le droit tient l'objet (ou pend)
     const [cg, cd] = C.cote, obj = OBJETS[o.i], tient = o.i > 0, ox = Math.min(cd + 7, 78);   // l'objet reste dans le cercle
-    const brasG = `<g class="${an ? 'mgb' : ''}" style="transform-origin:${cg + 2}px 64px"><path d="M${cg + 2} 64q-6 4-9 10" stroke="${LIMB}" stroke-width="2.6" stroke-linecap="round" fill="none"/><circle cx="${cg - 7}" cy="74.4" r="2.5" fill="${LIMB}"/></g>`;
-    const brasD = tient ? `<path d="M${cd - 2} 64Q${ox - 2} 62 ${ox} 56" stroke="${LIMB}" stroke-width="2.6" stroke-linecap="round" fill="none"/><g transform="translate(${ox} 51) scale(1.3)">${obj.d(LIMB)}</g>${o.i === 9 ? '' : `<circle cx="${ox}" cy="56.4" r="2.5" fill="${LIMB}"/>`}`
-      : `<path d="M${cd - 2} 64q6 4 9 10" stroke="${LIMB}" stroke-width="2.6" stroke-linecap="round" fill="none"/><circle cx="${cd + 7}" cy="74.4" r="2.5" fill="${LIMB}"/>`;
+    // les bras partent de l'intérieur du corps et sont dessinés derrière lui : ils restent attachés
+    const eg = cg + 6, ed = cd - 6;
+    const brasG = `<g class="${an ? 'mgb' : ''}" style="transform-origin:${eg}px 64px"><path d="M${eg} 64Q${cg - 3} 66 ${cg - 7} 74" stroke="${LIMB}" stroke-width="2.6" stroke-linecap="round" fill="none"/><circle cx="${cg - 7}" cy="74.4" r="2.5" fill="${LIMB}"/></g>`;
+    const brasD = tient ? `<path d="M${ed} 64Q${ox - 2} 64 ${ox} 56" stroke="${LIMB}" stroke-width="2.6" stroke-linecap="round" fill="none"/>`
+      : `<path d="M${ed} 64Q${cd + 3} 66 ${cd + 7} 74" stroke="${LIMB}" stroke-width="2.6" stroke-linecap="round" fill="none"/><circle cx="${cd + 7}" cy="74.4" r="2.5" fill="${LIMB}"/>`;
+    const main = tient ? `<g transform="translate(${ox} 51) scale(1.3)">${obj.d(LIMB)}</g>${o.i === 9 ? '' : `<circle cx="${ox}" cy="56.4" r="2.5" fill="${LIMB}"/>`}` : '';
     // visage
     const Y = YEUX[o.y], cache = o.l === 2;
     const yeux = cache ? '' : `<g class="${an && !Y.ferme ? 'mge' : ''}">${Y.d(fx - 8, fy, 0)}${Y.d(fx + 8, fy, 1)}</g>`;
@@ -224,7 +227,7 @@
       + `<defs><clipPath id="pc${id}"><circle cx="50" cy="50" r="50"/></clipPath><radialGradient id="pg${id}" cx=".36" cy=".3" r=".85"><stop offset="0" stop-color="${L}"/><stop offset=".55" stop-color="${M}"/><stop offset="1" stop-color="${S}"/></radialGradient></defs>`
       + `<g clip-path="url(#pc${id})"><rect width="100" height="100" fill="${F}"/>${MOTIFS[o.g].d()}`
       + `<ellipse class="${an ? 'mgo' : ''}" cx="${px}" cy="${bas + 6}" rx="19" ry="3.4" fill="#000" opacity=".2"${del}/>`
-      + `<g class="${an ? (opt.saut ? 'mgs' : 'mga') : ''}"${del}>${pieds}${C.corps(c)}${C.haut(c)}${visage}${tete}${brasG}${brasD}</g></g>`
+      + `<g class="${an ? (opt.saut ? 'mgs' : 'mga') : ''}"${del}>${pieds}${brasG}${brasD}${C.corps(c)}${C.haut(c)}${visage}${tete}${main}</g></g>`
       + `<circle cx="50" cy="50" r="49.5" fill="none" stroke="#fff" stroke-opacity=".12"/></svg>`;
   }
 

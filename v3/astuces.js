@@ -48,7 +48,7 @@
     commande: { t: 'Créer la commande', cartes: [
       ['🚚', 'Qui transporte ?', 'Le *vendeur* livre, ou l’*acheteur* s’en charge. Le transporteur du réseau Marché de Gros arrive *bientôt*.'],
       ['🔐', 'Votre transporteur, sans code', 'Avec votre propre camion ou chauffeur : *rien à installer, aucun code*. Le vendeur glisse un *mot secret* dans la marchandise ; à la réception, l’acheteur le tape pour confirmer.'],
-      ['👍', 'L’autre partie confirme', 'Puis chaque étape s’affiche avec son heure : préparation, chargement, transport, arrivée, réception.'],
+      ['👍', 'L’autre partie confirme', 'Puis chaque étape s’affiche avec son heure : préparation, chargement, départ du camion, arrivée, réception.'],
       ['🚫', 'Confirmée = engagée', 'Une fois la commande confirmée, l’*acheteur ne peut plus l’annuler*. Seul le vendeur peut demander l’annulation, avant le chargement.']] },
     transport: { t: 'Le transporteur du réseau', cartes: [
       ['🛡️', 'Un transporteur recommandé', 'Avec le *transporteur du réseau Marché de Gros*, l’équipe confie la mission à un chauffeur qu’elle a vérifié. Avec votre propre transporteur, rien de tout cela : pas de code.'],

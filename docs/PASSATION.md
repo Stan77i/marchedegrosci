@@ -929,3 +929,15 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Application** (`v3/commandes.js`, `blocLien`) : schéma en 3 étapes (1 il ouvre le lien ou tape le code, 2 il accepte la position, 3 vous suivez le camion ici) ; « Envoyer au chauffeur » (le message contient aussi l'adresse et le code de secours), « Copier le lien », puis « ou, au téléphone : il ouvre <adresse>/suivi.html et tape ce code » avec Copier ; état « 👀 Le chauffeur a ouvert le lien · il y a 2 min » avant la première position.
 - Testé (Playwright) : code faux refusé, code tapé en minuscules accepté, ouverture notée, position envoyée sans toucher de bouton ; aucun débordement de la fenêtre.
 - Cache `mgci-v202`.
+
+## « Le camion est parti » : une étape à part, signalée par le vendeur ou détectée par le lien (23/10/2026) — schéma 65, pousser v19
+- Règle du propriétaire : simple. Le chauffeur ouvre le lien (le code ne sert qu'en secours). S'il ne l'utilise pas, c'est le vendeur (ou celui qui s'occupe du transport) qui indique les étapes : « Chargement confirmé », puis « Le camion est parti ».
+- **Serveur** (`supabase/schema-65-camion-parti.sql`, appliqué et vérifié le 23/10, tests dans des transactions annulées) :
+  - `commande_avancer` : avec son propre transporteur, « chargement » reste à l'étape `chargement` (avant : passage automatique à `transport`) ; nouvelle étape `transport` = « Le camion est parti », par le vendeur ou par celui qui transporte (`r = mode_transport`), seulement depuis `chargement` ; l'arrivée et la réception sont acceptées dès `chargement` (si personne n'a signalé le départ, rien ne bloque). Réseau inchangé.
+  - `commande_reception_mot` : acceptée dès `chargement`.
+  - `suivi_lien_position` : départ **détecté** quand une position du lien est à 500 m ou plus du premier point reçu après le chargement → `transport`, journal « systeme / gps / Départ détecté par le lien de suivi du chauffeur ». Vérifié : 220 m → rien, 670 m → départ.
+  - `push_commande` : le départ (personne ou détection) est notifié ; seul le passage automatique (`preuve = 'auto'`, réseau) reste muet.
+- **pousser v19** (redéployée, réponses vérifiées : 401 sans clé, 404 « étape introuvable » avec clé) : « Chargement confirmé » (sans « transport en cours ») ; « X : le camion est parti » / « Le camion est parti · départ détecté par le lien de suivi du chauffeur ».
+- **Application** (`v3/commandes.js`) : à « Chargée », bouton principal « 🚚 Le camion est parti » (vendeur ou transporteur) ; l'acheteur garde « Le chauffeur est arrivé » et « Réception confirmée » en secours (pas en principal) ; textes « que faire » ; étape `transport` affichée « Le camion est parti ». Aide, guide et tutoriel : « préparation, chargement, départ du camion, arrivée, réception ».
+- Anciennes versions de l'application : elles montrent « Chargée » sans bouton de départ ; l'acheteur peut toujours signaler l'arrivée et confirmer la réception. Aucune commande en cours au moment du changement.
+- Cache `mgci-v203`.

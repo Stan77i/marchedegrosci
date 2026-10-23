@@ -46,6 +46,14 @@
 - **Le site doit faire la même chose que l'application**, avec le même design (`DESIGN.md`, les 32 lois anti-« design généré »), et se mettre à jour en même temps qu'elle.
 - **Tout ce qui ne sert à rien sur le site est retiré** : pages inutiles, WebGL décoratif, outils de développement. La liste est en partie 5. **Rien n'est supprimé avant la validation du propriétaire** : il coche la liste.
 
+### Nouvelle décision (23/10/2026) : le site vitrine
+
+- Un **nouveau site public** : il montre en direct, sur une carte du réseau plus complète que celle de l'application, les annonces, les demandes et les commandes (« Aya cherche du maïs à Gagnoa »). Il sert au marketing, au SEO et à la communication.
+- Un clic sur une annonce : création du compte, puis invitation à prendre l'application (magasins d'applications plus tard ; code QR ou ouverture sur téléphone en attendant).
+- **L'ancien site (`index-v3.html`) reste, invisible pour le public** : l'administrateur y entre toujours par le point caché et voit l'ancien et le nouveau. Rien n'est supprimé.
+- Prénom ou initiale, ville, produit, quantité seulement : jamais de numéro ni de nom complet.
+- Le détail (pages, carte, textes) suivra le prompt du propriétaire.
+
 ## 3. La méthode conseillée : un seul code
 
 Recopier chaque écran de l'application dans le site, c'est faire tout le travail deux fois, et les deux finiront par diverger. Le conseil est de **faire du site l'application elle-même, en grand** :

@@ -941,3 +941,9 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Application** (`v3/commandes.js`) : à « Chargée », bouton principal « 🚚 Le camion est parti » (vendeur ou transporteur) ; l'acheteur garde « Le chauffeur est arrivé » et « Réception confirmée » en secours (pas en principal) ; textes « que faire » ; étape `transport` affichée « Le camion est parti ». Aide, guide et tutoriel : « préparation, chargement, départ du camion, arrivée, réception ».
 - Anciennes versions de l'application : elles montrent « Chargée » sans bouton de départ ; l'acheteur peut toujours signaler l'arrivée et confirmer la réception. Aucune commande en cours au moment du changement.
 - Cache `mgci-v203`.
+
+## Index par produit sur les offres et les demandes (23/10/2026) — schéma 69
+- Trouvé par le test de charge (projet de test, 100 000 offres, 50 000 demandes) : `tableau_marche` et `prix_zones` filtrent par `product_slug`, mais aucun index n'existait sur cette colonne. Sous une rafale de 100 ouvertures, 3 erreurs 500 (délai dépassé dans `tableau_marche`) ; avec l'index, 0 erreur et p95 7,7 s → 3,9 s.
+- **Serveur** (`supabase/schema-69-index-produit.sql`, appliqué le 23/10) : `offres_produit` et `demandes_produit` sur `(product_slug)`. Ajout seulement.
+- Mesuré sur le test, machine au repos, 100 000 offres : `tableau_marche('mais')` 122 ms → 24 ms ; `prix_zones('mais')` 149 ms → 5 ms. (Sous charge pendant la simulation : 1 187 ms → 36 ms et 253 ms → 8,4 ms.)
+- Vérifié sur la base réelle : réponses identiques avant et après pour les 6 produits présents (`tableau_marche` à l'identique ; `prix_zones` identique hors le champ `calcule_le`, l'heure du calcul).

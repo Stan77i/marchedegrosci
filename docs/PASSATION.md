@@ -999,3 +999,12 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Correction** (`app/demo-orbite.js` seulement) : la démo a ses propres noms : feuille `demoCss`, classes `dm-hd` et `dm-ti` (au lieu de `dm-h` et `dm-t`, qui existent aussi dans la messagerie). La messagerie n'est pas modifiée.
 - Vérifié (Playwright, iPhone) : avant, fenêtre à 844–1 688 px (hors écran) ; après, 0–844 px, en-tête stylé ; la démo de l'accueil s'affiche comme avant (titre, taille 16,5 px, carte visible) ; aucune erreur.
 - `demo-orbite.js?v=20261031a`, cache `mgci-v207`.
+
+## Petits boutons réparés après le test des boutons (23/10/2026)
+- Trouvés par le test automatique (1 079 clics, 74 écrans, 5 profils) ; vérifiés avant/après dans le navigateur (iPhone simulé).
+- **Mon compte** (`v3/compte.js`) : l'écouteur de défilement s'exécutait après la fermeture de la fenêtre → `TypeError … querySelector` à chaque sortie (Relevés, Commandes, Déconnexion…). Garde `if (!bg) return;`. Avant : 1 erreur sur 3 sorties ; après : 0.
+- **Mon compte et Sécurité, ligne du numéro** : c'était un bouton sans action ; les lignes `info` sont maintenant un simple bloc de texte (`div`).
+- **Carte en relief, « Me localiser »** (`app/carte-gl.js`) : position refusée ou indisponible → plus rien ne se passait ; maintenant le même message que la carte simple (« Position refusée : choisissez votre région », « Localisation indisponible… »).
+- **Alertes produits, « Suivre »** (`v3/alertes.js`) : grisé tant qu'aucun produit n'est choisi (avant : le bouton ne faisait rien).
+- Restent volontairement « Bientôt » : transport par le réseau, litiges WhatsApp, séquestre, bande d'accueil.
+- `compte.js?v=20261031b`, `carte-gl.js?v=20261031a`, `alertes.js?v=20261031b`, cache `mgci-v208`.

@@ -134,6 +134,11 @@ GUIDES.forEach(g => {
     JSONLD: JSON.stringify(ld).replace(/</g, '\\u003c'), CTA: esc(g.cta), CTA_APP: act[0], CTA_TEXTE: esc(act[1]),
     AUTRES: GUIDES.filter(x => x.slug !== g.slug).map(x => `<a href="../${x.slug}/">${fine(esc(x.h1))}</a>`).join('') })));
 });
+// ——— le calendrier des récoltes (site/saisons/) : seulement les périodes sourcées de v2/saisons.js ———
+{
+  const C = require('./site-produits.js').calendrier({ NOM, esc, lire, vm, photo: sl => fs.existsSync(path.join(SITE, img(sl, 160))) });
+  ecrire('saisons/index.html', page(fs.readFileSync(path.join(GAB, 'saisons.html'), 'utf8'), Object.assign({}, VAL, COMMUN, C, { S: '../', R: '../../', MAJ_CAL_TXT: dateTxt(C.MAJ_CAL) })));
+}
 ecrire('a-propos/index.html', page(fs.readFileSync(path.join(GAB, 'a-propos.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '../', R: '../../' })));
 ecrire('guides/index.html', page(fs.readFileSync(path.join(GAB, 'guides.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '../', R: '../../', LISTE_GUIDES: GUIDES.map(g => carteGuide(g, '')).join('') })));
 // ——— le plan du site (site/sitemap.xml), pour Google Search Console et Bing le jour de l'ouverture ———
@@ -141,7 +146,7 @@ ecrire('guides/index.html', page(fs.readFileSync(path.join(GAB, 'guides.html'), 
 // Tant que les pages sont en noindex, ce fichier ne fait rien ; ne pas le soumettre avant l'ouverture décidée par le propriétaire.
 {
   const B = 'https://stan77i.github.io/marchedegrosci/site/';
-  const U = [[B, ''], [B + 'carte/', ''], [B + 'guides/', ''], [B + 'a-propos/', '']]
+  const U = [[B, ''], [B + 'carte/', ''], [B + 'guides/', ''], [B + 'a-propos/', ''], [B + 'saisons/', '']]
     .concat(PP.map(v => [B + 'produits/' + v.SLUG + '/', '']))
     .concat(GUIDES.map(g => [B + 'guides/' + g.slug + '/', g.maj || g.publie]));
   ecrire('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'

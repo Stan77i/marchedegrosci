@@ -3,7 +3,9 @@
    Il montre l'échelle des prix publiés pour ce produit (du moins cher au plus cher, dans la même unité), qui a publié le meilleur,
    le meilleur budget côté acheteurs, et invite à placer le sien : « Proposez moins de 12 500 F : vous passez en tête ».
    Rien n'est inventé : uniquement les annonces affichées sur l'accueil. Le Marché de Gros ne fixe aucun prix.
-   API : MDGPrixMoment.ouvrir({ nom, img, art, offres:[{prix,nom,lieu,at,qte,unite,moi,neg}], demandes:[…], placer(kind), negocier(kind, i) }) */
+   Couleurs, comme partout dans l'application : vendeurs (offres) en vert ▼, acheteurs (demandes) en maïs ▲ — les boutons « J'ai à vendre » / « Je cherche ».
+   La bulle d'activité de l'orbite (« Très vendu », « Demandé il y a… », schéma 53) est reprise en tête, dans le même style.
+   API : MDGPrixMoment.ouvrir({ nom, img, art, activite:{ico,t,s,cls}, offres:[{prix,nom,lieu,at,qte,unite,moi,neg}], demandes:[…], placer(kind), negocier(kind, i) }) */
 (function () {
   'use strict';
   if (window.MDGPrixMoment) return;
@@ -27,39 +29,46 @@
 .pm-hd .im img{position:absolute;left:50%;bottom:2px;width:74px;height:74px;margin-left:-37px;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
 .pm-hd small{display:block;font:600 11px/1.2 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#B9AD98}
 .pm-hd h2{margin:4px 0 0;font:600 23px/1.12 Jost,sans-serif;letter-spacing:-.015em}.pm-hd h2 em{font-style:italic;font-weight:900;color:#F2C230}
+.pm-ac{display:flex;align-items:center;gap:10px;margin:-6px 0 16px;padding:8px 12px 8px 8px;border-radius:16px;background:rgba(243,239,228,.05);box-shadow:inset 0 0 0 1px rgba(243,239,228,.12);animation:pmLi .5s .1s cubic-bezier(.22,1,.36,1) both}
+.pm-ac i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:16px;background:rgba(243,239,228,.08)}
+.pm-ac b{display:block;font:700 14px/1.15 Jost,sans-serif;color:#F3EFE4}.pm-ac small{display:block;font-size:12px;line-height:1.3;color:#CFC4B1}
+.pm-ac.vente{box-shadow:inset 0 0 0 1px rgba(159,220,178,.4)}.pm-ac.vente i{background:rgba(159,220,178,.16)}.pm-ac.vente b{color:#9FDCB2}
+.pm-ac.demande{box-shadow:inset 0 0 0 1px rgba(242,194,48,.4)}.pm-ac.demande i{background:rgba(242,194,48,.16)}.pm-ac.demande b{color:#F2C230}
 .pm-ech{position:relative;list-style:none;margin:0;padding:0 0 0 28px}
-.pm-ech::before{content:"";position:absolute;left:9px;top:14px;bottom:14px;width:2px;border-radius:1px;background:linear-gradient(#F2C230,rgba(243,239,228,.14))}
+.pm-ech::before{content:"";position:absolute;left:9px;top:14px;bottom:14px;width:2px;border-radius:1px;background:linear-gradient(#9FDCB2,rgba(243,239,228,.14))}
 .pm-ech li{position:relative;margin:0 0 8px;animation:pmLi .5s calc(var(--i,0) * 70ms + 150ms) cubic-bezier(.22,1,.36,1) both}
 @keyframes pmLi{from{opacity:0;transform:translateX(-10px)}}
 .pm-ech li::before{content:"";position:absolute;left:-23px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:#171512;box-shadow:inset 0 0 0 2px rgba(243,239,228,.3)}
-.pm-ech li.top::before{background:#F2C230;box-shadow:0 0 0 4px rgba(242,194,48,.18)}
+.pm-ech li.top::before{background:#9FDCB2;box-shadow:0 0 0 4px rgba(159,220,178,.18)}
 .pm-r{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px 12px;padding:10px 12px;border-radius:16px;background:rgba(243,239,228,.05)}
 .pm-r .p{font:700 17px/1.15 Jost,sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
 .pm-r .q{min-width:0;color:#B9AD98;font-size:13px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pm-r .e{font:600 12.5px Jost,sans-serif;color:#F3A08C;white-space:nowrap}
-.pm-ech li.top .pm-r{grid-template-columns:auto 1fr;padding:14px;background:rgba(242,194,48,.1);box-shadow:inset 0 0 0 1.5px rgba(242,194,48,.55)}
+.pm-r .e{font:600 12.5px Jost,sans-serif;color:#CFC4B1;white-space:nowrap}
+.pm-ech li.top .pm-r{grid-template-columns:auto 1fr;padding:14px;background:rgba(159,220,178,.08);box-shadow:inset 0 0 0 1.5px rgba(159,220,178,.5)}
 .pm-ech li.top .p{font:900 italic 26px/1 Jost,sans-serif;letter-spacing:-.02em;color:#F3EFE4}.pm-ech li.top .p i{font-size:.6em;color:#F2C230}
-.pm-tag{justify-self:end;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:12px;background:#F2C230;color:#171512;font:700 12px Jost,sans-serif;white-space:nowrap}
+.pm-tag{justify-self:end;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:12px;background:#9FDCB2;color:#0E2A1F;font:700 12px Jost,sans-serif;white-space:nowrap}
 .pm-qui{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:10px;border-top:1px solid rgba(243,239,228,.1)}
 .pm-qui .av{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#2E5B47;color:#F3EFE4;font:600 14px Jost,sans-serif}
 .pm-qui b{display:block;font:600 15px/1.2 Jost,sans-serif}.pm-qui small{display:block;color:#B9AD98;font-size:12.5px}
-.pm-moi{display:inline-block;margin-left:6px;padding:0 7px;border-radius:9px;background:rgba(159,220,178,.18);color:#9FDCB2;font:600 11.5px/1.6 Jost,sans-serif}
+.pm-moi{display:inline-block;margin-left:6px;padding:0 7px;border-radius:9px;background:rgba(243,239,228,.14);color:#F3EFE4;font:600 11.5px/1.6 Jost,sans-serif}
 /* « Votre prix ? » : la place libre, en pointillé, avec le triangle qui indique où se mettre */
-.pm-vous{position:relative;margin:4px 0 0 28px;padding:12px 14px;border-radius:16px;border:1.5px dashed rgba(242,194,48,.55);color:#F3EFE4;animation:pmLi .5s calc(var(--i,0) * 70ms + 150ms) cubic-bezier(.22,1,.36,1) both}
-.pm-vous::before{content:"";position:absolute;left:-24px;top:50%;margin-top:-6px;border:6px solid transparent;border-left:9px solid #F2C230;animation:pmPointe 1.4s ease-in-out infinite}
+.pm-vous{position:relative;margin:4px 0 0 28px;padding:12px 14px;border-radius:16px;border:1.5px dashed rgba(159,220,178,.6);color:#F3EFE4;animation:pmLi .5s calc(var(--i,0) * 70ms + 150ms) cubic-bezier(.22,1,.36,1) both}
+.pm-vous::before{content:"";position:absolute;left:-24px;top:50%;margin-top:-6px;border:6px solid transparent;border-left:9px solid #9FDCB2;animation:pmPointe 1.4s ease-in-out infinite}
 @keyframes pmPointe{50%{transform:translateX(4px)}}
 .pm-vous b{display:flex;align-items:center;gap:8px;font:600 15px/1.3 Jost,sans-serif}.pm-vous small{display:block;margin-top:3px;color:#CFC4B1;font-size:13px;line-height:1.4}
 .pm-vous b .tri{display:inline-block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent}
-.pm-vous b .tri.bas{border-top:8px solid #F2C230}.pm-vous b .tri.haut{border-bottom:8px solid #9FDCB2}
+.pm-vous b .tri.bas{border-top:8px solid #9FDCB2}.pm-vous b .tri.haut{border-bottom:8px solid #F2C230}
+.pm-vous.a{border-color:rgba(242,194,48,.6)}.pm-vous.a::before{border-left-color:#F2C230}
 .pm-sep{display:flex;align-items:center;gap:10px;margin:16px 0 10px;color:#B9AD98;font:600 11px/1 Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase}.pm-sep::after{content:"";flex:1;height:1px;background:rgba(243,239,228,.1)}
-.pm-d .pm-r .p{color:#9FDCB2}
-.pm-ech.pm-d li.top .pm-r{grid-template-columns:auto 1fr;padding:12px 14px;background:rgba(159,220,178,.08);box-shadow:inset 0 0 0 1.5px rgba(159,220,178,.45)}
-.pm-ech.pm-d li.top .p{font:700 18px/1.15 Jost,sans-serif;font-style:normal;letter-spacing:0;color:#9FDCB2}
-.pm-ech.pm-d li.top::before{background:#9FDCB2;box-shadow:0 0 0 4px rgba(159,220,178,.16)}
-.pm-ech.pm-d::before{background:linear-gradient(#9FDCB2,rgba(243,239,228,.14))}
+.pm-d .pm-r .p{color:#F2C230}
+.pm-ech.pm-d li.top .pm-r{grid-template-columns:auto 1fr;padding:12px 14px;background:rgba(242,194,48,.08);box-shadow:inset 0 0 0 1.5px rgba(242,194,48,.5)}
+.pm-ech.pm-d li.top .p{font:700 18px/1.15 Jost,sans-serif;font-style:normal;letter-spacing:0;color:#F2C230}
+.pm-ech.pm-d li.top::before{background:#F2C230;box-shadow:0 0 0 4px rgba(242,194,48,.16)}
+.pm-ech.pm-d::before{background:linear-gradient(#F2C230,rgba(243,239,228,.14))}
 .pm-act{display:flex;flex-direction:column;gap:8px;margin-top:18px}
 .pm-act button{min-height:52px;border-radius:16px;font:600 16px Jost,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 16px}
 .pm-act .go{border:0;background:#F2C230;color:#171512;box-shadow:0 12px 28px -14px rgba(242,194,48,.75)}
+.pm-act .go.v{background:#9FDCB2;color:#0E2A1F;box-shadow:0 12px 28px -14px rgba(159,220,178,.7)}
 .pm-act .neg{border:1px solid rgba(243,239,228,.22);background:none;color:#F3EFE4}
 .pm-act .lien{min-height:44px;border:0;background:none;color:#CFC4B1;font-weight:500;font-size:14.5px}
 .pm-act button:active{transform:scale(.985)}
@@ -83,18 +92,19 @@
       <div class="pm-qui"><span class="av" aria-hidden="true">${esc(ini(x.nom))}</span><div><b>${esc(x.nom)}${x.moi ? '<span class="pm-moi">vous</span>' : ''}</b><small>${[x.lieu, x.qte ? nf(x.qte) + ' ' + esc(plur(x.qte, x.unite)) + ' disponible' + (x.qte > 1 ? 's' : '') : '', ilya(x.at)].filter(Boolean).join(' · ')}</small></div></div></div></li>`;
     const nO = O.length;
     const vous = best
-      ? `<div class="pm-vous" style="--i:${nO}"><b><span class="tri bas" aria-hidden="true"></span>Votre prix ?</b><small>Proposez moins de ${F(best.prix)} ${esc(art)} : votre offre passe en tête. Plus cher, elle se range à sa place dans l'échelle.</small></div>`
-      : bud ? `<div class="pm-vous" style="--i:1"><b><span class="tri haut" aria-hidden="true"></span>Votre budget ?</b><small>Proposez plus de ${F(bud.prix)} ${esc(art)} : votre demande passe en tête et les vendeurs vous voient d'abord.</small></div>`
+      ? `<div class="pm-vous v" style="--i:${nO}"><b><span class="tri bas" aria-hidden="true"></span>Votre prix ?</b><small>Proposez moins de ${F(best.prix)} ${esc(art)} : votre offre passe en tête. Plus cher, elle se range à sa place dans l'échelle.</small></div>`
+      : bud ? `<div class="pm-vous a" style="--i:1"><b><span class="tri haut" aria-hidden="true"></span>Votre budget ?</b><small>Proposez plus de ${F(bud.prix)} ${esc(art)} : votre demande passe en tête et les vendeurs vous voient d'abord.</small></div>`
       : `<div class="pm-vous" style="--i:0"><b><span class="tri bas" aria-hidden="true"></span>Aucun prix pour l'instant</b><small>Placez le premier : les acheteurs et les vendeurs de tout le pays le verront ici.</small></div>`;
     const qui = best ? best : bud;
     bg = document.createElement('div'); bg.className = 'pm-bg';
     bg.innerHTML = `<div class="pm" role="dialog" aria-modal="true" aria-labelledby="pmT"><span class="pm-poi" aria-hidden="true"></span><button type="button" class="pm-x" aria-label="Fermer">×</button>
       <div class="pm-hd">${o.img ? `<span class="im" aria-hidden="true"><img src="${esc(o.img)}" alt=""></span>` : ''}<div><small>${esc(o.nom)}${art ? ' · ' + esc(art) : ''}</small><h2 id="pmT">Ici, chacun <em>place son prix</em></h2></div></div>
+      ${o.activite ? `<div class="pm-ac ${esc(o.activite.cls || '')}" role="status"><i aria-hidden="true">${esc(o.activite.ico)}</i><span><b>${esc(o.activite.t)}</b><small>${esc(o.activite.s)}</small></span></div>` : ''}
       ${nO ? `<ol class="pm-ech" aria-label="Les prix des vendeurs, du moins cher au plus cher">${tete(best)}${O.slice(1).map((x, i) => ligne(x, i + 1, 'o')).join('')}</ol>` : ''}
       ${vous}
       ${D.length ? `<div class="pm-sep">Côté acheteurs</div><ol class="pm-ech pm-d" aria-label="Les budgets des acheteurs">${D.map((x, i) => `<li${i ? '' : ' class="top"'} style="--i:${nO + 1 + i}"><div class="pm-r"><span class="p">${i ? '' : '▲ '}jusqu'à ${F(x.prix)}</span><span class="q">${esc(x.nom)}${x.moi ? '<span class="pm-moi">vous</span>' : ''} · ${esc(x.lieu || '')}</span><span></span></div></li>`).join('')}</ol>` : ''}
       <div class="pm-act">
-        <button type="button" class="go" data-placer="${best || !bud ? 'offre' : 'demande'}">${best || !bud ? 'Placer mon prix' : 'Placer mon budget'}</button>
+        <button type="button" class="go${best || !bud ? ' v' : ''}" data-placer="${best || !bud ? 'offre' : 'demande'}">${best || !bud ? 'Placer mon prix' : 'Placer mon budget'}</button>
         ${qui && qui.neg && !qui.moi ? `<button type="button" class="neg" data-neg>${best ? 'Négocier avec ' : 'Proposer à '}${esc(String(qui.nom).split(/\s+/)[0])}</button>` : ''}
         ${best || !bud ? `<button type="button" class="lien" data-placer="demande">Vous achetez ? Placez votre budget</button>` : `<button type="button" class="lien" data-placer="offre">Vous vendez ? Placez votre prix</button>`}
       </div>

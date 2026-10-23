@@ -1,0 +1,48 @@
+# Refait le nouveau site public (dossier site/) avec tools/site-public.js quand ses gabarits, le catalogue, les photos ou la carte changent.
+# Gratuit (dépôt public). Décision du propriétaire du 23/10/2026 (docs/seo/PLAN.md).
+# Pas de passage programmé : la date « Mis à jour le » ne change que si le contenu change (dates honnêtes).
+# N'enregistre un commit que si une page a changé.
+name: Site public
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/site/**'
+      - 'tools/site-public.js'
+      - 'site/*.css'
+      - 'site/*.js'
+      - 'v2/data.js'
+      - 'v2/img/**'
+      - 'app/geo/**'
+      - 'app/marque.js'
+      - 'app/admin-pc.js'
+      - '.github/workflows/site-public.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: site-public
+  cancel-in-progress: false
+jobs:
+  fabriquer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Fabriquer les pages
+        run: node tools/site-public.js
+      - name: Enregistrer si une page a changé
+        run: |
+          if [ -n "$(git status --porcelain site)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add site
+            git commit -m "Site public refait automatiquement"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          else
+            echo "Rien n'a changé."
+          fi

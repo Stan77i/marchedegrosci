@@ -135,6 +135,14 @@ Rien n'est supprimé tant que le propriétaire n'a pas dit oui. Les fichiers res
 - Vérifier dans un vrai navigateur à 1280 px (site) et en iPhone émulé (application), en mode jour et en mode nuit.
 - Une PR par mise à jour ; le propriétaire fusionne.
 
+### Le nouveau site public (`site/`, en construction, caché)
+
+- Les pages `site/*.html` sont **fabriquées** par `tools/site-public.js` à partir des gabarits `tools/site/*.html` : modifier le gabarit, jamais la page fabriquée. La tâche `.github/workflows/site-public.yml` les refait après chaque fusion qui touche le gabarit, le catalogue, les photos ou la carte.
+- `site/site.css`, `site/site.js` et `site/garde.js` s'écrivent à la main ; leur `?v=` est une empreinte calculée par le générateur (relancer `node tools/site-public.js`).
+- Données en direct : `fil_public()` (schéma 80, anonyme) et `tableau_produits()` (schéma 59), avec la clé publique. Jamais de faux chiffre en attendant.
+- Caché : `noindex` + voile `#garde` (est_admin vérifié par le serveur). L'administrateur y passe par la barre « Application · Ancien site · SEO » (`app/admin-pc.js`).
+- Le service worker laisse passer `site/` (jamais l'application à la place d'une page du site).
+
 ## 7. Inventaire automatique
 
 <!-- INVENTAIRE:DEBUT -->

@@ -51,14 +51,14 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <script src="app/nuit.js?v=20261029c" defer></script>
 <script src="app/stable.js?v=20261025f" defer></script>
 <script src="app/vibre.js?v=20261025a" defer></script>
-<script src="app/prixmoment.js?v=20261029f" defer></script>
+<script src="app/prixmoment.js?v=20261030b" defer></script>
 <script src="app/demo-orbite.js?v=20261029g" defer></script>
 <script src="app/activite.js?v=20261025j" defer></script>
 <link rel="preload" href="fonts/jost-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261029d">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261030a">
 <link rel="stylesheet" href="css/sombre.css?v=20261027f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261027f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261027f">
@@ -142,7 +142,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
       </sc-for>
     </div>
     <div class="acc-flotte" style="position:absolute;left:50%;top:104px;width:250px;height:250px;margin-left:-125px;pointer-events:none">
-      <sc-if value="{{ tendOn }}" hint-placeholder-val="{{ false }}"><div class="acc-tend {{ tend.cls }}" role="status"><span class="acc-tend-i" aria-hidden="true">{{ tend.ico }}</span><span class="acc-tend-x"><b>{{ tend.t }}</b><small>{{ tend.s }}</small></span></div></sc-if>
+      <sc-if value="{{ tendOn }}" hint-placeholder-val="{{ false }}"><div class="acc-tend {{ tend.cls }}" role="status" style="animation-duration:{{ tend.dur }}"><span class="acc-tend-i" aria-hidden="true">{{ tend.ico }}</span><span class="acc-tend-x"><b>{{ tend.t }}</b><small>{{ tend.s }}</small></span></div></sc-if>
       <div class="acc-ombre" style="position:absolute;left:30px;right:30px;bottom:6px;height:26px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.6),transparent 70%)"></div>
       <sc-for list="{{ sacks }}" as="k" hint-placeholder-count="0"><img sc-camel-src="{{ k.src }}" alt="{{ k.alt }}" draggable="false" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:{{ k.op }};transform:{{ k.tf }};transition:{{ k.tr }}"></sc-for>
       <div style="position:absolute;inset:0;opacity:{{ jute.op }};transform:{{ jute.tf }};transition:opacity .4s,transform .55s cubic-bezier(.22,1,.36,1)">
@@ -1364,15 +1364,32 @@ class Component extends DCLogic {
     if (x.negociations > 0) return { ico: '🤝', t: x.negociations > 1 ? x.negociations + ' négociations en cours' : 'Négocié en ce moment', s: 'Des acheteurs et des vendeurs discutent le prix', cls: 'nego' };
     if (x.demandes > 0 && x.derniere_demande) return { ico: '🛒', t: 'Demandé ' + il(x.derniere_demande), s: x.demandes > 1 ? pl(x.demandes, 'demande') + ' en 2 semaines' : 'Quelqu’un le cherche', cls: 'demande' };
     return null; }
+  // les bulles « qui a placé ce prix » : le meilleur vendeur (vert) et le meilleur acheteur (maïs), dans la même file que la bulle d'activité
+  prixBulle(slug, cote) {
+    const L = this.prixListes(slug, this.offers(), this.demands()), v = cote === 'v';
+    const x = v ? L.of[0] : (L.of.length ? L.de : this.prixListes(slug, [], this.demands()).de)[0]; if (!x) return null;
+    const A = window.MDGApp, prix = A && A.fmt ? A.fmt(v ? x.price : x.budget) : String(v ? x.price : x.budget), moi = this.isMine(x);
+    const nom = moi ? 'Vous' : String(x.name || (v ? 'Un vendeur' : 'Un acheteur'));
+    const ini = moi ? '★' : nom.trim().split(/\s+/).slice(0, 2).map(w => w.charAt(0).toUpperCase()).join('');
+    const il = t => { const m = Math.max(0, Math.round((Date.now() - new Date(t)) / 6e4)); return !t || isNaN(m) ? '' : m < 60 ? 'il y a ' + (m || 1) + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
+    const u = String(x.unit || ''), q = x.qty ? A.fmt(x.qty) + ' ' + (x.qty > 1 && u && !/[sx]$|^(kg|t|l|L)$/.test(u) ? u + 's' : u) : '';
+    return { ico: ini, t: v ? nom + (moi ? ' vendez' : ' vend') + ' à ' + prix + ' F' : nom + (moi ? ' achetez' : ' achète') + ' jusqu’à ' + prix + ' F', s: [this.place(x), q, il(x.at)].filter(Boolean).join(' · '), cls: v ? 'px-v' : 'px-a', dur: '4.2s' };
+  }
   tendVeille() { const S = this.state, home = S.stack.length === 1 && S.ready && (S.accTab || 'marche') === 'marche' && !S.sheet && !S.menu && !document.hidden;
     if (!home || S.dragging) { if (!home) this._tendSlug = null; clearTimeout(this._tendT); if (S.tendS) this.setState({ tendS: null }); return; }
     this.tendCharger();
-    if (!this.tendData) { clearTimeout(this._tendR); this._tendR = setTimeout(() => this.tendVeille(), 1500); return; }   // modules pas encore chargés : on réessaie
+    if (!this.tendData && !this.offers().length && !this.demands().length) { clearTimeout(this._tendR); this._tendR = setTimeout(() => this.tendVeille(), 1500); return; }   // modules pas encore chargés : on réessaie
     const F = this.FAMS[S.fam], p = F && F.prods[Math.max(0, Math.min(F.prods.length - 1, Math.round(S.rot)))], slug = p && p.slug;
     if (!slug || slug === this._tendSlug) return;
     this._tendSlug = slug; clearTimeout(this._tendT); if (S.tendS) this.setState({ tendS: null });
-    this._tendT = setTimeout(() => { if (this._tendSlug !== slug) return; this.tendCharger(); const m = this.tendMsg(slug); if (!m) return;
-      this.setState({ tendS: slug, tendM: m }); this._tendT = setTimeout(() => { if (this.state.tendS === slug) this.setState({ tendS: null }); }, 5200); }, 650); }
+    // une bulle à la fois, dans l'ordre : qui vend le moins cher, qui achète le plus cher, puis l'activité (« Très vendu »…)
+    this._tendT = setTimeout(() => { if (this._tendSlug !== slug) return; this.tendCharger();
+      const file = [this.prixBulle(slug, 'v'), this.prixBulle(slug, 'a'), this.tendMsg(slug)].filter(Boolean); let k = 0;
+      const suite = () => { if (this._tendSlug !== slug || document.querySelector('.pm-bg')) return;
+        if (k >= file.length) { if (this.state.tendS === slug) this.setState({ tendS: null }); return; }
+        const m = Object.assign({ dur: '4.6s' }, file[k++]);
+        this.setState({ tendS: null }); setTimeout(() => { if (this._tendSlug !== slug || document.querySelector('.pm-bg')) return; this.setState({ tendS: slug, tendM: m }); this._tendT = setTimeout(suite, parseFloat(m.dur) * 1000); }, 80); };
+      suite(); }, 650); }
   // Accueil → Activité : retirer des éléments (sur ce téléphone seulement), avec « Annuler »
   masques() { try { return JSON.parse(localStorage.getItem('mdg-activite:masques')) || {}; } catch (_) { return {}; } }
   masquer(cles, texte) {
@@ -1438,7 +1455,7 @@ class Component extends DCLogic {
     const offres = L0.of.map(x => m(x, true)), demandes = L.de.map(x => m(x, false)), u = L0.uo || L.ud || '';
     // la bulle d'activité (« Très vendu »…) se retire : son information passe en tête du pop-up, dans le même style
     clearTimeout(this._tendT); if (this.state.tendS) this.setState({ tendS: null }); this.tendCharger();
-    MDGPrixMoment.ouvrir({ nom: P.name, img: P.sack ? P.thumb : null, art: L0.art(u), activite: this.tendMsg(slug), offres, demandes,
+    MDGPrixMoment.ouvrir({ nom: P.name, img: P.sack ? P.thumb : null, art: L0.art(u), cote: offres.length ? 'v' : 'a', activite: this.tendMsg(slug), offres, demandes,
       placer: k => { if (k === 'offre') { this.setVf({ slug, unit: u || this.state.vf && this.state.vf.unit }); this.push('vendre'); } else { this.setState(s => ({ df: Object.assign({}, s.df, { slug, unit: u || (s.df && s.df.unit) }) })); this.push('demande'); } },
       negocier: (k, i) => { const r = (k === 'offre' ? offres : demandes)[i]; if (r && r.x) { const c = this.card(r.x); if (c.canNeg) c.neg(); else this.openFiche(slug); } } });
   }
@@ -1757,7 +1774,7 @@ class Component extends DCLogic {
       markEl: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.ligne({ fond: 'clair', h: 24 }) } }) : 'Marché de Gros',
       act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, oAnim: ao ? 'mkLuciole 3.2s ease-in-out infinite' : 'none', dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }, this.prixMoment(act, O, D, inSeason(act.slug, cm), Math.min(aW, 390) - 48)), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
       openFicheAct: () => this.openFiche(act.slug), openPrix: () => this.prixPop(act.slug, O, D), demoGo: () => window.MDGDemo && MDGDemo.basculer(),
-      tendOn: !!(S.tendS && S.tendS === act.slug && S.tendM), tend: S.tendM || { ico: '', t: '', s: '', cls: '' },
+      tendOn: !!(S.tendS && S.tendS === act.slug && S.tendM), tend: S.tendM || { ico: '', t: '', s: '', cls: '', dur: '5.2s' },
       duoH: { jaiL: 'J\u2019ai ' + act.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + act.name.toLowerCase() + ' à acheter : publier une demande' }, duoF: { jaiL: 'J\u2019ai ' + FP.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + FP.name.toLowerCase() + ' à acheter : publier une demande' },
       openJai: () => this.openSheet('jai', top === 'fiche' ? S.slug : act.slug), openCherche: () => this.openSheet('cherche', top === 'fiche' ? S.slug : act.slug),
       fp, share: () => { const u = location.href, t = FP.name + ' — Marché de Gros de Côte d\u2019Ivoire'; if (navigator.share) navigator.share({ title: t, url: u }).catch(() => {}); else { try { navigator.clipboard.writeText(u); this.say('Lien copié'); } catch (_) {} } },

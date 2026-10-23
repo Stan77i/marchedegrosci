@@ -706,3 +706,8 @@ html[data-theme=sombre] .cd-genre{color:#10392B}
 @keyframes accTriB{0%,40%,100%{transform:none}70%{transform:translateY(3px)}}
 .acc-px-t .acc-px-tri{vertical-align:middle}
 @media (prefers-reduced-motion:reduce){.acc-px-tri s{animation:none}}
+/* les bulles « qui a placé ce prix » (24/10/2026) : initiales dans le rond, vert pour un vendeur, maïs pour un acheteur — même file que la bulle d'activité */
+.acc-tend.px-v,.acc-tend.px-a{max-width:280px}
+.acc-tend.px-v .acc-tend-i,.acc-tend.px-a .acc-tend-i{font:600 12px/1 Jost,sans-serif;letter-spacing:.02em}
+.acc-tend.px-v{box-shadow:0 10px 26px rgba(0,0,0,.4),inset 0 0 0 1px rgba(159,216,174,.45)}.acc-tend.px-v .acc-tend-i{background:#2E5B47;color:#F3EFE4}.acc-tend.px-v .acc-tend-x b{color:#9FD8AE}
+.acc-tend.px-a{box-shadow:0 10px 26px rgba(0,0,0,.4),inset 0 0 0 1px rgba(242,194,48,.45)}.acc-tend.px-a .acc-tend-i{background:#5A4A12;color:#F2C230}.acc-tend.px-a .acc-tend-x b{color:#F2C230}

@@ -1155,3 +1155,7 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - `app/sac.js` : la petite bulle verte en bas devient un **bandeau rouge en haut de l'écran**, partout : « Pas de connexion » et un bouton « Réessayer » (44 px). « Réessayer » envoie `mdg:reessayer` : les écrans ouverts relisent. Au retour du réseau : « De retour », en vert profond, puis le bandeau remonte (2,4 s). Nouvelle fonction `MDGSac.reseau(true/false)` pour qu'un écran signale lui-même une lecture ratée faute de réseau.
 - `v3/tableau.js` (Prix) : hors connexion, carte calme avec le sac qui dort, « Le tableau dort un peu · Il se met à jour tout seul dès que le réseau revient » ; relit tout seul au retour du réseau. Si des prix étaient déjà affichés, ils restent à l'écran. Une autre erreur (serveur) dit « Le tableau ne répond pas ».
 - Vérifié dans Chromium (iPhone 13, clair et sombre) : bandeau et carte affichés, retour en vert, aucune erreur JS. Cache `mgci-v220`.
+
+## Onglets d'Acheter et panneau de la carte (23/10/2026)
+- Onglets « Offres / Demandes / Tout » : chaque onglet prend la largeur de son contenu (flex au lieu de 3 colonnes égales) ; le nombre reste **dans** le fond de l'onglet choisi. Le caddie de l'onglet choisi passe au trait crème sur le fond noir (mode clair). Sous 360 px, le panier et le caddie se cachent (la couleur de la pastille suffit). Vérifié à 320, 375 et 390 px : rien ne déborde.
+- Carte du réseau : l'ombre noire au-dessus du panneau du bas est retirée. Cache `mgci-v221`.

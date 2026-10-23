@@ -1008,3 +1008,8 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Alertes produits, « Suivre »** (`v3/alertes.js`) : grisé tant qu'aucun produit n'est choisi (avant : le bouton ne faisait rien).
 - Restent volontairement « Bientôt » : transport par le réseau, litiges WhatsApp, séquestre, bande d'accueil.
 - `compte.js?v=20261031b`, `carte-gl.js?v=20261031a`, `alertes.js?v=20261031b`, cache `mgci-v208`.
+
+## Annonces : la date de publication et l'auteur ne se modifient plus (23/10/2026) — schéma 73
+- Faille trouvée à l'audit : un membre pouvait modifier `created_at` de ses offres et demandes (droit de modification sur toute la table) → remonter son annonce en tête des listes, ou la dater dans le futur. Même chose pour `id` et `user_id` (bloqués en partie par les règles, mais sans raison d'être modifiables).
+- **Serveur** (`supabase/schema-73-annonce-date.sql`, appliqué le 23/10) : droit de modification redonné colonne par colonne à `authenticated`, sans `created_at`, `id`, `user_id`. L'application ne les envoie jamais (`toRow` dans `v3/nuage.js`), les fonctions du serveur ne sont pas concernées.
+- Vérifié sur le test puis la base réelle (transaction annulée) : date → refusée, auteur → refusé ; prix, budget, retrait et envoi complet comme l'application (`on conflict (user_id, client_id)`) → acceptés.

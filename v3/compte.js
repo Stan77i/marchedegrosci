@@ -182,7 +182,7 @@ button.cp-idv:active{transform:scale(.985)}div.cp-idv{cursor:default}
 .cp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .cp-st{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:84px;padding:12px;border:0;border-radius:18px;background:var(--card);color:var(--ink);text-align:left;cursor:pointer;font:inherit;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.05)}
 .cp-st:active{transform:scale(.98)}
-.cp-st i:not(.n){display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 13px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.cp-st i:not(.n)::before{content:"🧺"}.cp-st i.d{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.cp-st i.d::before{content:"🛒"}.cp-st i.n{display:block;width:10px;height:10px;border-radius:50%;background:#6AAEF0}
+.cp-st i:not(.n){display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 13px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.cp-st i:not(.n)::before{content:"";display:block;width:74%;height:74%;background:var(--sym-o) center/contain no-repeat}.cp-st i.d{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.cp-st i.d::before{content:"";display:block;width:74%;height:74%;background:var(--sym-d) center/contain no-repeat}.cp-st i.n{display:block;width:10px;height:10px;border-radius:50%;background:#6AAEF0}
 .cp-st b{font:600 26px/1 Jost,sans-serif;letter-spacing:-.01em}
 .cp-st small{color:var(--mute);font-size:12.5px;line-height:1.2}
 /* activité : regroupée par jour ; une pastille ronde colorée par le sens, le montant à droite */
@@ -241,7 +241,7 @@ summary.cp-r{list-style:none}summary.cp-r::-webkit-details-marker{display:none}
 /* lignes d'annonces et de négociations (page Mon activité) */
 .cp-it{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:2px 12px;align-items:center}
 .cp-it .mk{grid-row:span 2;width:34px;height:34px;display:grid;place-items:center}
-.cp-it .mk i{display:inline-grid;place-items:center;flex:none;width:26px;height:26px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 15px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.cp-it .mk i::before{content:"🧺"}.cp-it .mk i.d{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.cp-it .mk i.d::before{content:"🛒"}
+.cp-it .mk i{display:inline-grid;place-items:center;flex:none;width:26px;height:26px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 15px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.cp-it .mk i::before{content:"";display:block;width:74%;height:74%;background:var(--sym-o) center/contain no-repeat}.cp-it .mk i.d{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.cp-it .mk i.d::before{content:"";display:block;width:74%;height:74%;background:var(--sym-d) center/contain no-repeat}
 .cp-it .mk svg{border-radius:50%}
 .cp-it b{font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cp-it small{grid-column:2;display:flex;align-items:center;flex-wrap:wrap;gap:6px;color:var(--mute);font-size:12.5px}
@@ -463,7 +463,7 @@ label.cp-r{cursor:pointer}
       const r = rs.value, L = r ? V.de(r) : V.toutes().sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
       const choisi = enAutre ? '__autre' : ville;
       vs.innerHTML = opt('', r ? 'Choisissez (chef-lieu : ' + (V.de(r)[0] || '') + ')' : 'Choisissez d’abord la région, ou une ville', !choisi)
-        + (r ? L.map(n => opt(n, n, n === choisi)).join('') : L.map(c => opt(c.nom, c.nom + ' — ' + nomR(c.region), c.nom === choisi)).join(''))
+        + (r ? L.map(n => opt(n, n, n === choisi)).join('') : L.map(c => opt(c.nom, c.nom + ' · ' + nomR(c.region), c.nom === choisi)).join(''))
         + opt('__autre', 'Autre localité (village, campement…)', choisi === '__autre');
       box.hidden = vs.value !== '__autre';
       if (!box.hidden) { const R = r || V.region(proche); pres.innerHTML = (R ? V.de(R) : []).map(n => opt(n, n, n === (proche || V.de(R)[0]))).join('') || opt('', 'Choisissez d’abord la région', true); pres.disabled = !R; inp.value = autre; }

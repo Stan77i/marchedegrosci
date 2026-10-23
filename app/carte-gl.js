@@ -99,7 +99,7 @@
 .cgl.jour .maplibregl-ctrl-attrib{background:rgba(255,255,255,.7)!important;color:#5d5444}
 .cgl-pill{position:relative;display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px 0 9px;border:0;border-radius:15px;background:#FAF4E9;color:#171512;font:700 13px Jost,sans-serif;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.35),0 0 0 1px rgba(23,21,18,.08);cursor:pointer;transform-origin:50% 100%;transition:transform .18s cubic-bezier(.22,1,.36,1),background .18s,color .18s}
 .cgl-pill::after{content:"";position:absolute;left:50%;bottom:-5px;width:10px;height:10px;margin-left:-5px;background:inherit;transform:rotate(45deg);border-radius:0 0 3px 0;box-shadow:2px 2px 3px rgba(0,0,0,.12)}
-.cgl-pill i{display:inline-grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 11px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.cgl-pill i::before{content:"🧺"}.cgl-pill i.d{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.cgl-pill i.d::before{content:"🛒"}
+.cgl-pill i{display:inline-grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 11px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.cgl-pill i::before{content:"";display:block;width:74%;height:74%;background:var(--sym-o) center/contain no-repeat}.cgl-pill i.d{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.cgl-pill i.d::before{content:"";display:block;width:74%;height:74%;background:var(--sym-d) center/contain no-repeat}
 .cgl-v{flex:none;display:inline-flex;color:#2C6CB0;margin-left:-2px}
 .cgl-pill small{font-weight:500;font-size:11px;color:#655C4D}.cgl-pill b{font-weight:700}
 .cgl-pill.d{background:#FFF6DA}.cgl-pill.approx{box-shadow:0 2px 10px rgba(0,0,0,.35),0 0 0 1.5px rgba(23,21,18,.25)}
@@ -107,7 +107,7 @@
 .cgl-pill.sel{background:#171512;color:#F5F0E6;transform:scale(1.12);z-index:4}.cgl-pill.sel small{color:#B9AD98}
 .cgl-m{position:absolute}
 .cgl-amas{display:flex;align-items:center;gap:8px;height:28px;padding:0 9px;border:0;border-radius:14px;background:rgba(23,21,18,.9);color:#F5F0E6;font:600 12.5px Jost,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.4),0 0 0 1px rgba(245,240,230,.16);cursor:pointer;transition:transform .18s cubic-bezier(.22,1,.36,1)}
-.cgl-amas span{display:inline-flex;align-items:center;gap:3px;font-size:13px}.cgl-amas b{font-weight:700}.cgl-amas:hover,.cgl-amas:focus-visible{transform:scale(1.08);outline:none}
+.cgl-amas span{display:inline-flex;align-items:center;gap:3px;font-size:13px}.cgl-s{display:inline-block;width:15px;height:15px;background:var(--sym-o) center/contain no-repeat}.cgl-s.d{background-image:var(--sym-d)}.cgl-amas b{font-weight:700}.cgl-amas:hover,.cgl-amas:focus-visible{transform:scale(1.08);outline:none}
 .cgl.jour .cgl-amas{background:rgba(255,253,248,.96);color:#171512;box-shadow:0 4px 14px rgba(80,60,30,.25),0 0 0 1px rgba(23,21,18,.08)}
 .cgl-feu{display:flex;align-items:center;gap:4px;height:22px;min-width:22px;padding:0 3px;border-radius:11px;background:rgba(23,21,18,.82);color:#F3A08C;font:600 11px Jost,sans-serif;white-space:nowrap;pointer-events:none;box-shadow:0 0 0 1.5px rgba(226,115,91,.75),0 3px 8px rgba(0,0,0,.35)}
 .cgl-feu b{font-weight:600;padding-left:5px}.cgl-feu span{font-size:12px;line-height:1;display:inline-block;animation:cglFeu 2.4s ease-in-out infinite;transform-origin:50% 90%}
@@ -284,7 +284,7 @@
           const nO = g.items.filter(x => x.kind === 'offre').length, nD = g.items.length - nO, ids = g.items.map(x => x.id);
           if (z < Z_VILLE) {
             el.className = 'cgl-amas';
-            el.innerHTML = (nO ? '<span>🧺<b>' + nO + '</b></span>' : '') + (nD ? '<span>🛒<b>' + nD + '</b></span>' : '');
+            el.innerHTML = (nO ? '<span><i class="cgl-s"></i><b>' + nO + '</b></span>' : '') + (nD ? '<span><i class="cgl-s d"></i><b>' + nD + '</b></span>' : '');
             el.setAttribute('aria-label', (nO ? nO + ' offre' + (nO > 1 ? 's' : '') : '') + (nO && nD ? ' et ' : '') + (nD ? nD + ' demande' + (nD > 1 ? 's' : '') : '') + ' près de ' + ((A.REG[g.region] || [])[2] || ''));
             el.addEventListener('click', e => { e.stopPropagation(); opt.onSelect && opt.onSelect(g.region); map.flyTo({ center: g.xy, zoom: 9, duration: MOTION() ? 1100 : 0, essential: true }); });
           } else {
@@ -296,7 +296,7 @@
             if (seul) el.innerHTML = '<i class="' + (x.kind === 'offre' ? '' : 'd') + '"></i>' + court(x) + (nV ? SCEAU : '');
             else { const prix = g.items.filter(y => y.kind === 'offre' && y.price).map(y => y.price), mini = prix.length ? Math.min(...prix) : null;
               el.innerHTML = (nO ? '<i></i>' : '') + (nD ? '<i class="d"></i>' : '') + '<b>' + g.items.length + '</b>' + (mini ? '<small>dès ' + fmt(mini) + ' F</small>' : '<small>annonces</small>') + (nV ? SCEAU : ''); }
-            el.setAttribute('aria-label', g.items.map(y => (y.kind === 'offre' ? 'Offre ' : 'Demande ') + y.product + ', ' + fmt(y.qty) + ' ' + y.unit).join(' ; ') + ' — ' + (g.ville || '') + (g.approx ? ' (position approchée : chef-lieu)' : '') + (nV ? (seul ? ' — identité vérifiée' : ' — dont ' + nV + ' vérifié' + (nV > 1 ? 's' : '')) : ''));
+            el.setAttribute('aria-label', g.items.map(y => (y.kind === 'offre' ? 'Offre ' : 'Demande ') + y.product + ', ' + fmt(y.qty) + ' ' + y.unit).join(' ; ') + ' · ' + (g.ville || '') + (g.approx ? ' (position approchée : chef-lieu)' : '') + (nV ? (seul ? ' · identité vérifiée' : ' · dont ' + nV + ' vérifié' + (nV > 1 ? 's' : '')) : ''));
             el.addEventListener('click', e => { e.stopPropagation(); choisir(ids, g.xy); });
           }
           const m = new ml.Marker({ element: enveloppe(el), anchor: 'bottom', offset: z < Z_VILLE ? [0, -6] : [0, -6] }).setLngLat(g.xy).addTo(map); m.getElement().style.zIndex = g.items.some(y => picked.includes(y.id)) ? 5 : 1; markers.push(m);

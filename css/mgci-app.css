@@ -711,3 +711,17 @@ html[data-theme=sombre] .cd-genre{color:#10392B}
 .acc-tend.px-v .acc-tend-i,.acc-tend.px-a .acc-tend-i{font:600 12px/1 Jost,sans-serif;letter-spacing:.02em}
 .acc-tend.px-v{box-shadow:0 10px 26px rgba(0,0,0,.4),inset 0 0 0 1px rgba(159,216,174,.45)}.acc-tend.px-v .acc-tend-i{background:#2E5B47;color:#F3EFE4}.acc-tend.px-v .acc-tend-x b{color:#9FD8AE}
 .acc-tend.px-a{box-shadow:0 10px 26px rgba(0,0,0,.4),inset 0 0 0 1px rgba(242,194,48,.45)}.acc-tend.px-a .acc-tend-i{background:#5A4A12;color:#F2C230}.acc-tend.px-a .acc-tend-x b{color:#F2C230}
+
+/* ——— 🧺 / 🛒 deviennent des dessins (css/symboles.css) : panier = offre, caddie = demande (23/10/2026) ———
+   Même forme et même couleur de pastille qu'avant (rond vert, carré maïs) ; l'entrée animée reste, mais plus de balancement en boucle. */
+.od, .acc-emo, .duo2 .emo { font-size: 0 !important; color: transparent; }
+.od::before, .acc-emo::before, .duo2 .emo::before { content: ""; display: block; width: 74%; height: 74%; background: var(--sym-o) center / contain no-repeat; }
+.od-d::before, .acc-emo.d::before, .duo2 .emo.d::before { background-image: var(--sym-d); }
+.acc-emo { width: 24px; height: 24px; display: grid; place-items: center; }
+.acc-emo::before { width: 100%; height: 100%; }
+.duo2 .emo::before { width: 66%; height: 66%; }
+.od { animation: odPose .55s cubic-bezier(.3, 1.6, .5, 1) both; }
+.od-d { animation: odRoule .6s cubic-bezier(.22, 1, .36, 1) both; }
+.acc-emo, .acc-emo.d { animation: none; }
+.aseg-s { width: 16px; height: 16px; margin: 0 5px -3px 0; background: var(--sym-o) center / contain no-repeat; }
+.aseg-s.d { background-image: var(--sym-d); }

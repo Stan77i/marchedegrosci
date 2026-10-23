@@ -24,6 +24,7 @@ html.mdg-garde body{overflow:hidden}#mdgGarde>div{max-width:380px;display:grid;g
 <script>/* service worker : vérifie les mises à jour à chaque retour sur l'application ; quand une nouvelle version prend la main, la page se recharge (tout de suite si elle vient de s'ouvrir, sinon au prochain retour, jamais pendant une saisie) */if('serviceWorker' in navigator){(function(){var sw=navigator.serviceWorker,avant=!!sw.controller,t0=Date.now(),attente=false;sw.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(attente)location.reload();else r.update().catch(function(){})}})}).catch(function(){});sw.addEventListener('controllerchange',function(){if(!avant||attente)return;if(Date.now()-t0<6000)location.reload();else attente=true})})()}</script>
 <!-- polices hébergées dans le projet (hors connexion) -->
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
+<link rel="stylesheet" href="css/symboles.css?v=20261101a">
 <link rel="stylesheet" href="css/styles.css?v=20261023f">
 <link rel="stylesheet" href="v3/acheter.css?v=20261009o">
 <link rel="stylesheet" href="v3/vendre.css?v=20261009o">
@@ -1291,7 +1292,7 @@ body.tzmode .tz{height:100svh}
 <script src="v3/marqueurs.js?v=20261010a"></script>
 <script src="v3/terre.js?v=20261011a"></script>
 <script src="v3/porte.js?v=20261028c"></script>
-<script src="v3/nuage.js?v=20261101a"></script>
+<script src="v3/nuage.js?v=20261102a"></script>
 <script>/* site en maintenance : le compte connecté doit être administrateur (le serveur décide : est_admin).
    Connexion réservée à l'admin : numéro + code secret, sans création de compte ni « code oublié » (demandé le 22/10/2026). */
 (function(){if(!document.documentElement.classList.contains('mdg-garde'))return;var N=window.MDGNuage,$=function(i){return document.getElementById(i)},P=$('mdgGardeP'),F=$('mdgGardeF'),E=$('mdgGardeE'),B=$('mdgGardeB');
@@ -1303,7 +1304,7 @@ function verifier(){if(!N||!N.session()){etat('Réservé à l’administrateur. 
 F.onsubmit=function(e){e.preventDefault();E.textContent='';if(!N)return;B.disabled=true;B.textContent='Vérification…';
   N.signIn($('mdgGardeTel').value,$('mdgGardeCode').value.trim()).then(function(){verifier()}).catch(function(x){E.textContent=(x&&x.message)||'Connexion impossible. Réessayez.'}).then(function(){B.disabled=false;B.textContent='Entrer'})};
 verifier()})();</script>
-<script src="v3/sons.js?v=20261031a"></script>
+<script src="v3/sons.js?v=20261102a"></script>
 <script src="app/stable.js?v=20261025f" defer></script>
 <script src="v3/negoce.js?v=20261101f"></script>
 <script src="v3/personnages.js?v=20261101d"></script>
@@ -1311,19 +1312,19 @@ verifier()})();</script>
 <script src="app/icones.js?v=20261025a"></script>
 <script src="app/marque.js?v=20261023v"></script>
 <script src="app/toast.js?v=20261024e"></script>
-<script src="v3/compte.js?v=20261101e"></script>
+<script src="v3/compte.js?v=20261102a"></script>
 <script src="v3/pousse.js?v=20261018u"></script>
-<script src="v3/reputation.js?v=20261101a"></script>
+<script src="v3/reputation.js?v=20261102a"></script>
 <script src="v3/statuts.js?v=20261023a"></script>
 <script src="v3/identite.js?v=20261101a"></script>
 <script src="v3/messages.js?v=20261031a"></script>
 <script src="v3/marche.js?v=20261011c"></script>
 <script src="v2/search.js"></script>
 <script src="v2/map.js"></script>
-<script src="v3/pages.js?v=20261017i"></script>
+<script src="v3/pages.js?v=20261102a"></script>
 <script src="v3/match.js?v=20261011n"></script>
-<script src="v3/acheter.js?v=20261011a"></script>
-<script src="v3/vendre.js?v=20261011n"></script>
+<script src="v3/acheter.js?v=20261102a"></script>
+<script src="v3/vendre.js?v=20261102a"></script>
 <script src="v3/scene-ivt.js?v=20261009o"></script>
 <script src="v3/hero-ivt.js?v=20261017i"></script>
 <script src="v3/annee.js?v=20261009z2"></script>

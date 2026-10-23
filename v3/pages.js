@@ -69,7 +69,7 @@
     // 2. pas encore de prix : regroupés par famille, en étiquettes ; chacune mène au produit (où l'on peut publier)
     const rest = M.categories.map(c => ({ c, ps: all.filter(x => x.P.type === 'aucun' && x.p.categorySlug === c.slug).map(x => x.p) })).filter(g => g.ps.length);
     const nRest = rest.reduce((a, g) => a + g.ps.length, 0);
-    view.innerHTML = '<div class="v3p">' + V3.head('prix', { label: 'Prix du marché — en-tête', kicker: 'Prix du marché', title: 'Ce que coûte le marché, quand on peut le savoir.', sub: 'Un prix du marché n’apparaît qu’avec au moins ' + S.obs + ' prix vendeurs venant de ' + S.vendeurs + ' vendeurs différents sur ' + S.jours + ' jours. Avant, il n’y a que des prix vendeurs, présentés comme tels.' })
+    view.innerHTML = '<div class="v3p">' + V3.head('prix', { label: 'Prix du marché, en-tête', kicker: 'Prix du marché', title: 'Ce que coûte le marché, quand on peut le savoir.', sub: 'Un prix du marché n’apparaît qu’avec au moins ' + S.obs + ' prix vendeurs venant de ' + S.vendeurs + ' vendeurs différents sur ' + S.jours + ' jours. Avant, il n’y a que des prix vendeurs, présentés comme tels.' })
       + '<section class="pp" data-tone="dark"><div class="pp-in">'
       + '<div class="pp-leg"><span><i class="pp-ic pp-ic--obs">' + MK.ICO.observe + '</i><b>Prix observé</b>calculé sur plusieurs vendeurs</span><span><i class="pp-ic pp-ic--decl">' + MK.ICO.vendeur + '</i><b>Prix vendeur</b>fixé par un seul vendeur</span></div>'
       + '<div class="pp-sec"><h2 class="pp-h">Ce qui a un prix aujourd’hui</h2><span class="pp-n">' + (now.length ? now.length + (now.length > 1 ? ' produits' : ' produit') : '') + '</span></div>'

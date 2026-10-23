@@ -197,7 +197,7 @@
   // ——— relevé de période ———
   function releveHTML() {
     const L = visibles(), V = L.filter(x => x.sens === 'vente'), A = L.filter(x => x.sens === 'achat'), som = l => l.reduce((s, x) => s + (+x.total || 0), 0);
-    return `<h1>marché de Gros</h1><p>Relevé de ${esc(moi())} — ${esc(libelle(etat.p, etat.d1, etat.d2))}${etat.sens !== 'tout' ? ' — ' + (etat.sens === 'vente' ? 'ventes' : 'achats') : ''}</p>
+    return `<h1>marché de Gros</h1><p>Relevé de ${esc(moi())} · ${esc(libelle(etat.p, etat.d1, etat.d2))}${etat.sens !== 'tout' ? ' · ' + (etat.sens === 'vente' ? 'ventes' : 'achats') : ''}</p>
       <p>${V.length} vente${V.length > 1 ? 's' : ''} : <b>${F(som(V))}</b> · ${A.length} achat${A.length > 1 ? 's' : ''} : <b>${F(som(A))}</b>${volumes(L).length ? ' · ' + volumes(L).map(vTxt).join(', ') : ''}</p>
       <table><thead><tr><th>Date</th><th>N°</th><th>Sens</th><th>Produit</th><th class="n">Quantité</th><th class="n">Prix unit.</th><th class="n">Total</th><th>Avec</th><th>Trajet</th><th>Livraison</th></tr></thead><tbody>
       ${L.map(x => `<tr><td>${new Date(x.conclu_le).toLocaleDateString('fr-FR')}</td><td class="num">${esc(x.numero)}</td><td>${x.sens === 'vente' ? 'Vente' : 'Achat'}</td><td>${esc(x.produit || '')}</td><td class="n">${x.quantite != null ? nf(x.quantite, 2) + ' ' + esc(x.unite || '') : ''}</td><td class="n">${x.prix_unitaire != null ? F(x.prix_unitaire) : ''}</td><td class="n">${x.total != null ? F(x.total) : ''}</td><td>${esc(x.partenaire_nom)}</td><td>${esc((x.depart || x.ville || '—') + ' → ' + (x.destination || '—'))}</td><td>${esc(x.commande_numero ? (ETAT_CMD[x.commande_etat] || '—') : '—')}</td></tr>`).join('')}

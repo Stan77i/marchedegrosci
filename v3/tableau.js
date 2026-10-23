@@ -68,6 +68,7 @@ mdg-tableau{display:block;padding:6px 16px 24px;font:400 15px/1.45 Jost,system-u
 .tb-monte{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:10px;background:#1F6B40;color:#fff;font:700 11.5px/1.6 Jost,sans-serif;animation:tbM 2.4s ease-out both}
 @keyframes tbM{0%{opacity:0;transform:translateY(6px)}15%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
 .tb-vide{padding:22px 16px;border-radius:18px;background:#FFFDF8;text-align:center;color:#5E5546}.tb-vide b{display:block;color:#171512;margin-bottom:4px}
+.tb-dort{display:grid;justify-items:center;gap:2px;padding:20px 18px 24px;font-size:15px;line-height:1.45}.tb-dort svg{margin-bottom:6px}.tb-dort b{font-size:18px}
 .tb-n{margin:14px 2px 0;font-size:12.5px;color:#5E5546}
 .tb-charge{height:72px;border-radius:18px;background:linear-gradient(90deg,rgba(128,118,96,.12),rgba(128,118,96,.22),rgba(128,118,96,.12));background-size:200% 100%;animation:tbC 1.2s linear infinite}@keyframes tbC{to{background-position:-200% 0}}
 html[data-theme=sombre] mdg-tableau{color:#F3EFE4}
@@ -122,11 +123,12 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
       this._t = setInterval(() => { if (!document.hidden && this.offsetParent !== null) this.charger(true); }, 30000);
       this._v = () => { if (!document.hidden && this.offsetParent !== null) this.charger(true); };
       document.addEventListener('visibilitychange', this._v);
+      this._r = () => this.charger(); addEventListener('online', this._r); addEventListener('mdg:reessayer', this._r);
       // l'onglet devient visible : on relit (au plus une fois toutes les 10 s)
       this._o = new IntersectionObserver(e => { if (e.some(x => x.isIntersecting) && Date.now() - (this._lu || 0) > 10000) this.charger(true); });
       this._o.observe(this);
     }
-    disconnectedCallback() { clearInterval(this._t); document.removeEventListener('visibilitychange', this._v); if (this._o) this._o.disconnect(); }
+    disconnectedCallback() { clearInterval(this._t); document.removeEventListener('visibilitychange', this._v); removeEventListener('online', this._r); removeEventListener('mdg:reessayer', this._r); if (this._o) this._o.disconnect(); }
     memo() { const s = this.st; ecrireS({ slug: s.slug, sens: s.sens, unite: s.unite, region: s.region }); }
     async charger(discret) {
       const n = N(); if (!n || !n.rpc) { setTimeout(() => this.charger(discret), 600); return; }
@@ -141,8 +143,19 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
           s.data = d; s.rangs = apres; s.monte = monte;
         } else s.produits = (await n.rpc('tableau_produits', { p_region: region }, false)) || [];
         s.err = null;
-      } catch (e) { if (!discret) s.err = 'Le tableau ne se charge pas pour l’instant. Vérifiez la connexion.'; }
+        if (window.MDGSac && MDGSac.reseau) MDGSac.reseau(true);
+      } catch (e) {
+        const hors = navigator.onLine === false || /Failed to fetch|NetworkError|Load failed|network|ERR_INTERNET/i.test(String((e && e.message) || e || ''));
+        if (hors && window.MDGSac && MDGSac.reseau) MDGSac.reseau(false);
+        if (!discret || (hors && !(s.slug ? s.data : s.produits))) s.err = hors ? 'hors' : 'Le tableau ne se charge pas pour l’instant. Réessayez dans un moment.';
+      }
       this.peindre();
+    }
+    // hors connexion (choix B) : le bandeau rouge est en haut de l'écran (app/sac.js) ; ici, une carte calme avec le sac qui dort
+    erreur() {
+      const s = this.st;
+      if (s.err !== 'hors') return `<div class="tb-vide"><b>Le tableau ne répond pas</b>${esc(s.err)}</div>`;
+      return `<div class="tb-vide tb-dort" role="status">${window.MDGSac ? MDGSac.svg('ferme', { t: 80 }) : ''}<b>Le tableau dort un peu</b>Il se met à jour tout seul dès que le réseau revient.</div>`;
     }
     choixZone() {
       return `<div class="tb-zone"><label for="tbZ">Zone</label><select id="tbZ" data-zone>
@@ -157,7 +170,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
       this.innerHTML = `<h2 class="tb-h">Le tableau du <em>marché</em></h2>
         <p class="tb-s">Les meilleurs prix du moment. Pour acheter, le moins cher est en haut ; pour vendre, le meilleur budget est en haut. Baissez votre prix : vous montez.</p>
         ${this.choixZone()}
-        ${s.err ? `<div class="tb-vide"><b>Pas de connexion</b>${esc(s.err)}</div>` : !P ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div><div class="tb-charge"></div></div>'
+        ${s.err ? this.erreur() : !P ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div><div class="tb-charge"></div></div>'
           : !P.length ? `<div class="tb-vide"><b>Aucune annonce${s.region ? ' dans cette zone' : ''} pour l’instant</b>Publiez la première avec « J’ai » ou « Je cherche » sur l’onglet Marché.</div>`
           : `<ul class="tb-l tb-pl${anim ? ' anim' : ''}">${P.map((p, i) => `<li style="--i:${Math.min(i, 10)}"><button type="button" class="tb-p" data-slug="${esc(p.slug)}" aria-label="${esc(p.lab || nomProduit(p.slug))} : voir le tableau">
               ${vignette(p.slug)}<span class="tb-tx"><b>${esc(p.lab || nomProduit(p.slug))}</b><small>${[p.n_offres ? nf(p.n_offres) + ' offre' + (p.n_offres > 1 ? 's' : '') : '', p.n_demandes ? nf(p.n_demandes) + ' demande' + (p.n_demandes > 1 ? 's' : '') : ''].filter(Boolean).join(' · ') || 'Aucune annonce'}</small></span>
@@ -203,7 +216,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
         <div class="tb-seg" role="group" aria-label="Je veux"><button type="button" class="a" data-sens="acheter" aria-pressed="${ach}">Acheter · ${nf(no)}</button><button type="button" class="v" data-sens="vendre" aria-pressed="${!ach}">Vendre · ${nf(nd)}</button></div>
         ${this.choixZone()}
         ${unites.length > 1 ? `<div class="tb-ch" role="group" aria-label="Unité">${unites.map(u => `<button type="button" data-u="${esc(u)}" aria-pressed="${u === s.unite}">Prix par ${esc(u || 'unité')} · ${nf(parU(u))}</button>`).join('')}</div>` : ''}
-        ${s.err ? `<div class="tb-vide"><b>Pas de connexion</b>${esc(s.err)}</div>` : !d ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div></div>'
+        ${s.err ? this.erreur() : !d ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div></div>'
           : !L.length ? `<div class="tb-vide"><b>${ach ? 'Aucune offre' : 'Aucune demande'}${s.region ? ' dans cette zone' : ''} pour l’instant</b>${ach ? 'Publiez une demande avec « Je cherche » : les vendeurs seront prévenus.' : 'Publiez votre offre avec « J’ai » : les acheteurs seront prévenus.'}</div>`
           : `<ul class="tb-l">${L.map(ligne).join('')}</ul>${coupe ? `<p class="tb-n tb-coupe">Les ${L.length} meilleures sur ${nf(parU(s.unite || ''))}. Choisissez une zone pour affiner.</p>` : ''}`}
         <p class="tb-n">Comment c’est classé : le prix d’abord (dans la même unité), puis le transport, la fiabilité, l’identité vérifiée et les commandes honorées. Mis à jour toutes les 30 secondes. Aucun numéro affiché : vous négociez dans l’application, le Marché de Gros est le seul intermédiaire.</p>`;

@@ -71,6 +71,7 @@ Règles :
 - Les filtres et la liste vivent dans le **panneau du bas**, visible même replié.
 - Les boutons de la carte forment **une colonne à droite** ; le zoom est en bas de la colonne.
 - Pas d'information technique permanente (« en ligne ») : seulement quand quelque chose ne va pas (« hors connexion »).
+- **Hors connexion** (choix du propriétaire, 23/10/2026) : un bandeau rouge `#C0442B` en haut de l'écran, partout, « Pas de connexion · Réessayer » (`app/sac.js`) ; au retour, « De retour » en vert profond, puis il remonte. Dans l'écran, une carte calme avec le sac qui dort (« … dort un peu, il se met à jour tout seul dès que le réseau revient »), jamais une deuxième alerte rouge.
 
 ## 8. Les lois anti-« design généré par IA » et anti-amateur
 

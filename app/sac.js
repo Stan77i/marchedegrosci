@@ -12,7 +12,7 @@
      ferme  — pas de réseau : ficelé, il dort                                                     (hors connexion, au revoir)
    API : MDGSac.svg(humeur, { t: taille en px, simple: true (petite taille : sans texture ni couture) })
          · MDGSac.vide(titre, texte, { t }) → bloc HTML d'état vide · charge(texte, { t }) · attente(hote, texte, { t, clair })
-   Hors connexion : une petite bulle en bas de l'écran avec le sac qui dort ; au retour du réseau, « De retour ». */
+   Hors connexion : un bandeau rouge en haut de l'écran, « Pas de connexion · Réessayer » ; au retour du réseau, « De retour ». */
 (function () {
   'use strict';
   if (window.MDGSac) return;
@@ -104,28 +104,46 @@
 .ms-voile{position:absolute;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;background:inherit;color:#F3EFE4;transition:opacity .4s}
 .ms-voile.clair{color:#171512}.ms-voile.part{opacity:0;pointer-events:none}
 .ms-attente{padding:28px 10px}.ms-attente span{font-size:14px;letter-spacing:.01em}
-.ms-hl{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:9500;transform:translate(-50%,140%);opacity:0;display:flex;align-items:center;gap:10px;
-  padding:8px 16px 8px 8px;border-radius:999px;background:#10392B;color:#F3EFE4;font:500 14px/1.3 Jost,system-ui,sans-serif;box-shadow:0 12px 32px rgba(0,0,0,.35);
-  transition:transform .45s cubic-bezier(.22,1,.36,1),opacity .3s;max-width:calc(100vw - 32px);pointer-events:none}
-.ms-hl.on{transform:translate(-50%,0);opacity:1}.ms-hl b{display:block;font-weight:600;color:#F2C230}.ms-hl small{display:block;font-size:12.5px;opacity:.8}
-@media (prefers-reduced-motion:reduce){.ms *{animation:none!important}.ms-plein .ms-t{display:none}.ms-hl{transition:opacity .2s}}`;
+.ms-hl{position:fixed;left:0;right:0;top:0;z-index:9500;transform:translateY(-110%);display:flex;align-items:center;gap:10px;
+  padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px 16px;background:#C0442B;color:#fff;font:600 15px/1.3 Jost,system-ui,sans-serif;
+  box-shadow:0 6px 18px rgba(23,21,18,.22);transition:transform .3s cubic-bezier(.22,1,.36,1),background-color .3s}
+.ms-hl.on{transform:none}.ms-hl.ok{background:#10392B}.ms-hl svg.wi{flex:none}
+.ms-hl button{margin-left:auto;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:rgba(255,255,255,.2);color:#fff;font:700 15px Jost,system-ui,sans-serif;
+  display:inline-flex;align-items:center;gap:7px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ms-hl button:active{background:rgba(255,255,255,.32)}.ms-hl button:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
+.ms-hl.ok b{color:#F2C230}
+@media (prefers-reduced-motion:reduce){.ms *{animation:none!important}.ms-plein .ms-t{display:none}.ms-hl{transition:none}}`;
   function css() { if (document.getElementById('msCss')) return; const s = document.createElement('style'); s.id = 'msCss'; s.textContent = CSS; (document.head || document.documentElement).appendChild(s); }
   css();
 
-  // hors connexion : le sac dort en bas de l'écran tant que le réseau manque
-  let bulle = null, tRetour = 0;
+  // hors connexion : un bandeau rouge en haut de l'écran, partout, tant que le réseau manque (choix B du propriétaire, 23/10/2026).
+  // « Réessayer » relance la lecture des écrans ouverts (évènement « mdg:reessayer ») ; au retour : « De retour », en vert, puis il remonte.
+  // Les écrans peuvent aussi le signaler eux-mêmes quand une lecture échoue faute de réseau : MDGSac.reseau(false / true).
+  const WI = '<svg class="wi" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M5 12.9a10 10 0 0 1 5.2-2.7M19 12.9a10 10 0 0 0-2-1.5M2 8.8a15 15 0 0 1 4.2-2.6M22 8.8A15 15 0 0 0 11 5"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>';
+  const REC = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg>';
+  let bulle = null, tRetour = 0, coupe = false;
   function horsLigne() {
     if (!document.body) return;
-    clearTimeout(tRetour);
-    if (!bulle) { bulle = document.createElement('div'); bulle.className = 'ms-hl'; bulle.setAttribute('role', 'status'); bulle.setAttribute('aria-live', 'polite'); document.body.appendChild(bulle); }
-    bulle.innerHTML = svg('ferme', { t: 36, simple: true }) + '<span><b>Pas de réseau</b><small>Vos annonces partiront dès son retour.</small></span>';
+    clearTimeout(tRetour); coupe = true;
+    if (!bulle) { bulle = document.createElement('div'); bulle.className = 'ms-hl'; bulle.setAttribute('role', 'alert'); document.body.appendChild(bulle); }
+    bulle.classList.remove('ok');
+    bulle.innerHTML = WI + '<b>Pas de connexion</b><button type="button">' + REC + 'Réessayer</button>';
+    bulle.querySelector('button').onclick = e => {
+      const b = e.currentTarget; b.disabled = true; setTimeout(() => { b.disabled = false; }, 1500);
+      dispatchEvent(new Event('mdg:reessayer'));
+      // personne ne relit (aucun écran ouvert qui lit en direct) : on se fie au navigateur
+      setTimeout(() => { if (coupe && navigator.onLine !== false && !document.querySelector('mdg-tableau')) enLigne(); }, 1200);
+    };
     requestAnimationFrame(() => bulle.classList.add('on'));
   }
   function enLigne() {
+    coupe = false;
     if (!bulle || !bulle.classList.contains('on')) return;
-    bulle.innerHTML = svg('plein', { t: 36, simple: true }) + '<span><b>De retour</b><small>Le réseau est revenu.</small></span>';
-    tRetour = setTimeout(() => bulle.classList.remove('on'), 2600);
+    bulle.classList.add('ok');
+    bulle.innerHTML = svg('plein', { t: 30, simple: true }) + '<span><b>De retour</b> · le réseau est revenu</span>';
+    clearTimeout(tRetour); tRetour = setTimeout(() => bulle.classList.remove('on'), 2400);
   }
+  const reseau = ok => { if (ok) { if (coupe) enLigne(); } else horsLigne(); };
   addEventListener('offline', horsLigne);
   addEventListener('online', enLigne);
   const depart = () => { if (navigator.onLine === false) horsLigne(); };
@@ -146,5 +164,5 @@
     if (matchMedia('(prefers-reduced-motion: reduce)').matches || !Element.prototype.animate) return;
     document.querySelectorAll('.acc-sac .ms-corps').forEach(c => c.animate([{ transform: 'none' }, { transform: 'scale(1.06,.93)', offset: .18 }, { transform: 'translateY(-5px) scale(.97,1.04)', offset: .45 }, { transform: 'translateY(0) scale(1.05,.95)', offset: .7 }, { transform: 'none' }], { duration: 620, easing: 'cubic-bezier(.3,1.4,.5,1)' }));
   }
-  window.MDGSac = { svg, vide, charge, attente, saluer };
+  window.MDGSac = { svg, vide, charge, attente, saluer, reseau };
 })();

@@ -1150,3 +1150,8 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 ## Compétences « founder-skills » (23/10/2026)
 - 15 compétences business (stratégie, marketing, prix, concurrents, procédures, cahier des charges) copiées de `ognjengt/founder-skills` (MIT, commit a45931c) dans `.claude/skills/`, avec leur `LICENSE`. Vérifiées avant : texte seulement, aucune clé, aucun script ; seule `prd-generator` peut lancer `npx md-to-pdf` pour sortir un PDF.
 - `FOUNDER_CONTEXT.md` : fiche du projet lue par ces compétences (tirée des textes de `strategie/sources/`). Règles d'usage dans `CLAUDE.md`. Aucun changement du front.
+
+## « Pas de connexion » : le bandeau rouge (choix B, 23/10/2026)
+- `app/sac.js` : la petite bulle verte en bas devient un **bandeau rouge en haut de l'écran**, partout : « Pas de connexion » et un bouton « Réessayer » (44 px). « Réessayer » envoie `mdg:reessayer` : les écrans ouverts relisent. Au retour du réseau : « De retour », en vert profond, puis le bandeau remonte (2,4 s). Nouvelle fonction `MDGSac.reseau(true/false)` pour qu'un écran signale lui-même une lecture ratée faute de réseau.
+- `v3/tableau.js` (Prix) : hors connexion, carte calme avec le sac qui dort, « Le tableau dort un peu · Il se met à jour tout seul dès que le réseau revient » ; relit tout seul au retour du réseau. Si des prix étaient déjà affichés, ils restent à l'écran. Une autre erreur (serveur) dit « Le tableau ne répond pas ».
+- Vérifié dans Chromium (iPhone 13, clair et sombre) : bandeau et carte affichés, retour en vert, aucune erreur JS. Cache `mgci-v220`.

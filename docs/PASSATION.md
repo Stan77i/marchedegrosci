@@ -953,3 +953,8 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Serveur** (`supabase/schema-66-signalements-auteur.sql`, appliqué le 23/10) : le téléphone ne peut plus écrire que `cible`, `cible_id`, `motif` ; l'auteur prend toujours `auth.uid()` (vide sans compte : un signalement sans compte ne compte pas pour le masquage, comme avant) ; la règle d'écriture refuse tout auteur différent du compte connecté. Aucun drop (`alter policy`, droits par colonne).
 - Vérifié sur le projet de test puis sur la base réelle (transaction annulée) : sans compte → accepté, auteur vide ; faux auteur → refusé ; connecté → auteur = le compte ; connecté avec l'auteur d'un autre → refusé. La base réelle n'avait aucun signalement ni annonce masquée (faille jamais utilisée).
 - Application inchangée (elle n'envoyait pas d'auteur). Reste à traiter (audit) : création de comptes sans preuve du numéro, qui permet de multiplier les comptes.
+
+## Zones de forte demande : de nouveau visibles sans compte (23/10/2026) — schéma 67
+- Bug trouvé par la simulation à 100 comptes : `GET /rest/v1/zones` sans compte renvoyait 401 (« permission denied for function est_admin ») à chaque fois. La règle de lecture appelait `est_admin()`, que le rôle anon ne peut pas exécuter : aucun visiteur sans compte ne voyait les zones de forte demande.
+- **Serveur** (`supabase/schema-67-zones-visibles.sql`, appliqué le 23/10) : la règle « zones visibles par tous » ne garde que `expire_le > now()` ; nouvelle règle « admin voit toutes les zones » (connecté + `est_admin()`) pour les zones expirées. Aucun drop.
+- Vérifié sur le projet de test puis sur la base réelle (transaction annulée, une zone valable et une expirée) : sans compte → 1 zone, membre → 1, admin → 2, aucune erreur.

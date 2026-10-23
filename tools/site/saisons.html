@@ -16,6 +16,7 @@
     <h1 id="t-cal">Calendrier des récoltes du vivrier en Côte d’Ivoire</h1>
     <p>Quand se récolte chaque produit, et où. {{NOTE_CAL}} Nous n’affichons que les périodes publiées par une source publique, citée sous chaque ligne : {{NB_CAL}} produits pour l’instant.</p>
   </div>
+  <div class="cal-now" id="calNow" hidden><h2 id="t-now">En ce moment, en <span id="calMois"></span></h2><ul id="calNowL"></ul></div>
   {{CALENDRIER}}
   <h2 class="cal-src-t">Les sources</h2>
   <ul class="cal-src">{{SOURCES_CAL}}</ul>
@@ -31,3 +32,10 @@
   <div class="appli-qr" id="qr" role="img" aria-label="Code QR vers l’application"></div>
 </section>
 </main>
+<script>/* « En ce moment » : les produits en récolte ce mois-ci, lus dans la page (aucune donnée de plus) */
+(function () { var m = new Date().getMonth() + 1, N = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'], L = { plein: 'pleine récolte', debut: 'ça commence', fin: 'ça se termine' }, h = '';
+  [].forEach.call(document.querySelectorAll('.cal-p'), function (s) { var o = {}; try { o = JSON.parse(s.getAttribute('data-mois')); } catch (_) {} var l = o[m]; if (!l) return;
+    var n = s.getAttribute('data-nom').replace(/[&<>"]/g, ''), a = s.getAttribute('data-lien');
+    h += '<li class="' + l + '">' + (a ? '<a href="' + a + '">' + n + '</a>' : '<a href="#' + s.getAttribute('aria-labelledby') + '">' + n + '</a>') + '<small>' + L[l] + '</small></li>'; });
+  if (!h) return; document.getElementById('calMois').textContent = N[m - 1]; document.getElementById('calNowL').innerHTML = h; document.getElementById('calNow').hidden = false; })();
+</script>

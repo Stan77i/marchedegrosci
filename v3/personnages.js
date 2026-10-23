@@ -184,17 +184,19 @@
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const hash = s => { let h = 7; for (const ch of String(s || '')) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
   let uid = 0;
-  const ANIM = `<style>.mga{transform-box:view-box;transform-origin:50px 94px;animation:mgVie 7s ease-in-out infinite}
-.mgo{transform-box:view-box;transform-origin:50px 95px;animation:mgOmbre 7s ease-in-out infinite}
-.mge{transform-box:fill-box;transform-origin:center;animation:mgCligne 4.6s infinite}
-.mgb{transform-box:view-box;animation:mgBras 2.8s ease-in-out infinite}
-.mgs{transform-box:view-box;transform-origin:50px 94px;animation:mgHop .75s cubic-bezier(.3,1.5,.5,1) 1,mgVie 7s .75s ease-in-out infinite}
-@keyframes mgVie{0%,100%{transform:translateY(0)}18%{transform:translateY(-1.4px)}36%{transform:translateY(0)}54%{transform:translateY(-1.4px)}68%{transform:translateY(0) scale(1.06,.93)}75%{transform:translateY(-13px) scale(.95,1.06)}82%{transform:translateY(0) scale(1.05,.94)}87%{transform:translateY(0) scale(1)}}
-@keyframes mgOmbre{0%,68%,87%,100%{transform:scale(1);opacity:.2}75%{transform:scale(.6);opacity:.1}}
-@keyframes mgCligne{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
-@keyframes mgBras{0%,100%{transform:rotate(0)}50%{transform:rotate(14deg)}}
-@keyframes mgHop{0%{transform:translateY(0) scale(1.08,.9)}45%{transform:translateY(-16px) scale(.94,1.07)}80%{transform:translateY(0) scale(1.05,.94)}100%{transform:translateY(0) scale(1)}}
-@media (prefers-reduced-motion:reduce){.mga,.mgo,.mge,.mgb,.mgs{animation:none!important}}</style>`;
+  // au repos : il respire et cligne des yeux, rien de plus. Il saute seulement quand il se passe quelque chose
+  // (classe « mg-saute » posée sur un parent par MDGPerso.saute(), ou { saut: true } à l'affichage).
+  const ANIM = `<style>.mga{transform-box:view-box;transform-origin:50px 94px;animation:mgVie 4.8s ease-in-out infinite}
+.mge{transform-box:fill-box;transform-origin:center;animation:mgCligne 5.2s infinite}
+.mgb{transform-box:view-box}.mgo{transform-box:view-box;transform-origin:50px 95px}
+.mgs,.mg-saute .mga{transform-box:view-box;transform-origin:50px 94px;animation:mgHop .8s cubic-bezier(.3,1.5,.5,1) 1,mgVie 4.8s .8s ease-in-out infinite}
+.mg-saute .mgb,.mgs .mgb{animation:mgBras .3s ease-in-out 4 alternate}.mg-saute .mgo{animation:mgOmbre .8s 1}
+@keyframes mgVie{0%,100%{transform:scale(1,1)}50%{transform:scale(1.012,.985)}}
+@keyframes mgOmbre{0%,100%{transform:scale(1);opacity:.2}45%{transform:scale(.6);opacity:.1}}
+@keyframes mgCligne{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
+@keyframes mgBras{from{transform:rotate(0)}to{transform:rotate(22deg)}}
+@keyframes mgHop{0%{transform:translateY(0) scale(1.08,.9)}45%{transform:translateY(-14px) scale(.94,1.07)}80%{transform:translateY(0) scale(1.05,.94)}100%{transform:translateY(0) scale(1)}}
+@media (prefers-reduced-motion:reduce){.mga,.mgo,.mge,.mgb,.mgs,.mg-saute .mga,.mg-saute .mgb,.mg-saute .mgo{animation:none!important}}</style>`;
 
   function svg(o0, opt = {}) {
     const o = normal(o0 || {}), C = CORPS[o.b], [M, S, X] = C.pal[o.p], size = opt.size || 40, id = opt.fixe ? 'u' : ++uid,   // fixe : image autonome (data:), le même dessin donne la même adresse
@@ -206,7 +208,7 @@
     // pieds et ombre
     const pieds = `<path d="M${px - 8} ${bas - 3}v6m16-6v6" stroke="${LIMB}" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="${px - 10}" cy="${bas + 4}" rx="5.4" ry="2.8" fill="${SOULIERS[o.c]}" stroke="${LIMB}" stroke-width=".8"/><ellipse cx="${px + 10}" cy="${bas + 4}" rx="5.4" ry="2.8" fill="${SOULIERS[o.c]}" stroke="${LIMB}" stroke-width=".8"/>`;
     // bras : le gauche salue, le droit tient l'objet (ou pend)
-    const [cg, cd] = C.cote, obj = OBJETS[o.i], tient = o.i > 0, ox = Math.min(cd + 7, 78);   // l'objet reste dans le cercle
+    const [cg, cd] = C.cote, obj = OBJETS[o.i], tient = o.i > 0, ox = Math.min(cd + 7, 76);   // l'objet reste dans le cercle
     // les bras partent de l'intérieur du corps et sont dessinés derrière lui : ils restent attachés
     const eg = cg + 6, ed = cd - 6;
     const brasG = `<g class="${an ? 'mgb' : ''}" style="transform-origin:${eg}px 64px"><path d="M${eg} 64Q${cg - 3} 66 ${cg - 7} 74" stroke="${LIMB}" stroke-width="2.6" stroke-linecap="round" fill="none"/><circle cx="${cg - 7}" cy="74.4" r="2.5" fill="${LIMB}"/></g>`;
@@ -223,17 +225,32 @@
     const tete = H.ecoute ? `<path d="M${fx - larg} ${fy + 4}C${fx - larg} ${fy - 30} ${fx + larg} ${fy - 30} ${fx + larg} ${fy + 4}" stroke="#222" stroke-width="2.8" fill="none"/><rect x="${fx - larg - 3.4}" y="${fy}" width="6.8" height="11" rx="3" fill="${k}"/><rect x="${fx + larg - 3.4}" y="${fy}" width="6.8" height="11" rx="3" fill="${k}"/>`
       : H.front ? `<g transform="translate(${fx} ${fy - 10})">${H.d(k, kf)}</g>` : o.h ? `<g transform="translate(${fx} ${C.top + 2})">${H.d(k, kf)}</g>` : '';
     const F = FONDS[o.f];
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="${size}" height="${size}" role="img" aria-label="${label}"><title>${label}</title>${an ? ANIM : ''}`
-      + `<defs><clipPath id="pc${id}"><circle cx="50" cy="50" r="50"/></clipPath><radialGradient id="pg${id}" cx=".36" cy=".3" r=".85"><stop offset="0" stop-color="${L}"/><stop offset=".55" stop-color="${M}"/><stop offset="1" stop-color="${S}"/></radialGradient></defs>`
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 8 90 90" width="${size}" height="${size}" role="img" aria-label="${label}"><title>${label}</title>${an ? ANIM : ''}`
+      + `<defs><clipPath id="pc${id}"><circle cx="50" cy="53" r="45"/></clipPath><radialGradient id="pg${id}" cx=".36" cy=".3" r=".85"><stop offset="0" stop-color="${L}"/><stop offset=".55" stop-color="${M}"/><stop offset="1" stop-color="${S}"/></radialGradient></defs>`
       + `<g clip-path="url(#pc${id})"><rect width="100" height="100" fill="${F}"/>${MOTIFS[o.g].d()}`
       + `<ellipse class="${an ? 'mgo' : ''}" cx="${px}" cy="${bas + 6}" rx="19" ry="3.4" fill="#000" opacity=".2"${del}/>`
       + `<g class="${an ? (opt.saut ? 'mgs' : 'mga') : ''}"${del}>${pieds}${brasG}${brasD}${C.corps(c)}${C.haut(c)}${visage}${tete}${main}</g></g>`
-      + `<circle cx="50" cy="50" r="49.5" fill="none" stroke="#fff" stroke-opacity=".12"/></svg>`;
+      + `<circle cx="50" cy="53" r="44.6" fill="none" stroke="#fff" stroke-opacity=".12"/></svg>`;
   }
 
   const noms = L => L.map(x => typeof x === 'string' ? x : x.nom);
-  const visage = b => { const C = CORPS[n(b, CORPS.length)]; return { x: C.fx, y: C.fy + 4 }; };   // pour zoomer une vignette sur le visage
-  window.MDGPerso = { svg, parse, code, hasard, normal, visage, CLES, ORDRE,
+  const visage = b => { const C = CORPS[n(b, CORPS.length)]; return { x: (C.fx - 5) / .9, y: (C.fy + 4 - 8) / .9 }; };   // pour zoomer une vignette sur le visage
+  // ——— il saute quand il y a du nouveau : proposition de prix, message, notification, commande à traiter ———
+  const CSS_SAUT = '.mg-saute>img,.mg-saute>span>img{animation:mgSautImg .8s cubic-bezier(.3,1.5,.5,1)}@keyframes mgSautImg{0%{transform:translateY(0) scale(1.06,.92)}45%{transform:translateY(-7px) scale(.96,1.05)}80%{transform:translateY(0) scale(1.03,.97)}100%{transform:none}}@media (prefers-reduced-motion:reduce){.mg-saute>img,.mg-saute>span>img{animation:none}}';
+  function saute(cible) {
+    if (!document.getElementById('mgSautCss')) { const st = document.createElement('style'); st.id = 'mgSautCss'; st.textContent = CSS_SAUT; document.head.appendChild(st); }
+    (cible ? [cible] : [...document.querySelectorAll('.acc-r.av, .cp-hero-av, [data-mg-moi]')]).forEach(el => {
+      el.classList.remove('mg-saute'); void el.getBoundingClientRect(); el.classList.add('mg-saute');
+      clearTimeout(el._mgT); el._mgT = setTimeout(() => el.classList.remove('mg-saute'), 1400); });
+  }
+  const compte = () => { let t = 0; const f = (m, k) => { try { const v = m && typeof m[k] === 'function' ? +m[k]() || 0 : 0; t += v; } catch (_) {} };
+    f(window.MDGNegoce, 'unread'); f(window.MDGMessages, 'unread'); f(window.MDGCompte, 'nonLues'); f(window.MDGActivite, 'aFaire'); return t; };
+  let avant = null, tV = 0;   // pendant le démarrage, les modules arrivent un par un : on attend avant de prendre le point de départ
+  const verifier = () => { if (avant === null) return; const t = compte(); if (t > avant) saute(); avant = t; };
+  ['mdg:activite', 'mdg:negoce', 'mdg:dm', 'mdg:notifs'].forEach(e => addEventListener(e, () => { clearTimeout(tV); tV = setTimeout(verifier, 400); }));
+  setTimeout(() => { avant = compte(); }, 6000);   // le point de départ : ce qui était déjà là ne le fait pas sauter
+
+  window.MDGPerso = { saute, svg, parse, code, hasard, normal, visage, CLES, ORDRE,
     CHOIX: { b: noms(CORPS), y: noms(YEUX), m: noms(BOUCHES), h: noms(CHAPEAUX), l: noms(LUNETTES), s: noms(POILS), i: noms(OBJETS) },
     COULEURS: { hc: COUL, c: SOULIERS, f: FONDS, g: noms(MOTIFS), p: b => CORPS[n(b, CORPS.length)].pal.map(x => x[0]) },
     combinaisons: () => CORPS.reduce((t, x) => t + x.pal.length, 0) * YEUX.length * BOUCHES.length * 2 * CHAPEAUX.length * COUL.length * LUNETTES.length * POILS.length * OBJETS.length * SOULIERS.length * FONDS.length * MOTIFS.length };

@@ -71,7 +71,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - Ne jamais écrire « PAYÉ ».
 - Photos de produits : `v2/img/produit-<identifiant>.webp`, carré 800 × 800, fond transparent. L'identifiant doit aussi figurer dans `A.SACK` (`app/marche-app.js`) avec la teinte du produit, sinon la photo ne s'affiche pas. La liste des produits sans photo est dans `docs/IMAGES.md`.
 - La tomate est montrée **en carton**, pas en sac.
-- Avatars : les **personnages du marché** (`v3/personnages.js`) : des produits avec un visage, dessinés en SVG, qui bougent et sautent. Pas de service extérieur. Les anciens portraits restent lisibles.
+- Avatars : les **personnages du marché** (`v3/personnages.js`) : des produits avec un visage, dessinés en SVG. Au repos, ils respirent et clignent des yeux seulement ; ils **sautent uniquement quand il y a du nouveau** (proposition de prix, message, notification, commande à traiter) ou quand on change son avatar. Pas de service extérieur. Les anciens portraits restent lisibles.
 - Couleurs de l'accord conclu : vert de la marque, plus de bleu.
 
 ## Commits et PR

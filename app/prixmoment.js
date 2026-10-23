@@ -5,7 +5,9 @@
    Rien n'est inventé : uniquement les annonces affichées sur l'accueil. Le Marché de Gros ne fixe aucun prix.
    Couleurs, comme partout dans l'application : vendeurs (offres) en vert ▼, acheteurs (demandes) en maïs ▲ — les boutons « J'ai à vendre » / « Je cherche ».
    La bulle d'activité de l'orbite (« Très vendu », « Demandé il y a… », schéma 53) est reprise en tête, dans le même style.
-   API : MDGPrixMoment.ouvrir({ nom, img, art, exemple (démo : bandeau « pas réels »), activite:{ico,t,s,cls}, offres:[{prix,nom,lieu,at,qte,unite,moi,neg}], demandes:[…], placer(kind), negocier(kind, i) }) */
+   Deux onglets (24/10/2026) : « ▼ Vendeurs » (leurs prix, placer mon prix de vente, négocier avec le moins cher) et « ▲ Acheteurs »
+   (leurs budgets, placer mon budget d'achat, proposer au plus offrant) ; une ligne rappelle l'autre côté.
+   API : MDGPrixMoment.ouvrir({ nom, img, art, cote ('v'|'a'), exemple (démo : bandeau « pas réels »), activite:{ico,t,s,cls}, offres:[{prix,nom,lieu,at,qte,unite,moi,neg}], demandes:[…], placer(kind), negocier(kind, i) }) */
 (function () {
   'use strict';
   if (window.MDGPrixMoment) return;
@@ -62,7 +64,18 @@
 .pm-sep{display:flex;align-items:center;gap:10px;margin:16px 0 10px;color:#B9AD98;font:600 11px/1 Jost,sans-serif;letter-spacing:.14em;text-transform:uppercase}.pm-sep::after{content:"";flex:1;height:1px;background:rgba(243,239,228,.1)}
 .pm-d .pm-r .p{color:#F2C230}
 .pm-ech.pm-d li.top .pm-r{grid-template-columns:auto 1fr;padding:12px 14px;background:rgba(242,194,48,.08);box-shadow:inset 0 0 0 1.5px rgba(242,194,48,.5)}
-.pm-ech.pm-d li.top .p{font:700 18px/1.15 Jost,sans-serif;font-style:normal;letter-spacing:0;color:#F2C230}
+.pm-ech.pm-d li.top .p{color:#F3EFE4}.pm-ech.pm-d li.top .p small{font:600 13px Jost,sans-serif;font-style:normal;letter-spacing:0;color:#F2C230}
+.pm-ech.pm-d .pm-tag{background:#F2C230;color:#171512}.pm-ech.pm-d .pm-qui .av{background:#5A4A12;color:#F2C230}
+.pm-tabs{display:flex;gap:4px;margin:0 0 16px;padding:4px;border-radius:16px;background:rgba(243,239,228,.06)}
+.pm-tabs button{flex:1;min-height:44px;border:0;border-radius:12px;background:none;color:#CFC4B1;font:600 14.5px Jost,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.pm-tabs button span{min-width:20px;padding:0 6px;border-radius:10px;background:rgba(243,239,228,.1);font-size:12px;line-height:20px}
+.pm-tabs .v[aria-selected=true]{background:#9FDCB2;color:#0E2A1F}.pm-tabs .a[aria-selected=true]{background:#F2C230;color:#171512}
+.pm-tabs [aria-selected=true] span{background:rgba(0,0,0,.12)}
+.pm-pan.in{animation:pmPan .35s cubic-bezier(.22,1,.36,1) both}@keyframes pmPan{from{opacity:0;transform:translateY(6px)}}
+.pm-vide{margin:0 0 8px;padding:12px 14px;border-radius:14px;background:rgba(243,239,228,.05);color:#CFC4B1;font-size:14px}
+.pm-rep{display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:10px 12px;border-radius:14px;background:rgba(243,239,228,.05);font-size:14px;color:#CFC4B1}
+.pm-rep b{color:#F3EFE4}.pm-rep.a{color:#F2C230}.pm-rep.v{color:#9FDCB2}
+.pm-rep button{margin-left:auto;min-height:36px;padding:0 10px;border:0;border-radius:18px;background:rgba(243,239,228,.08);color:#F3EFE4;font:600 13px Jost,sans-serif;cursor:pointer}
 .pm-ech.pm-d li.top::before{background:#F2C230;box-shadow:0 0 0 4px rgba(242,194,48,.16)}
 .pm-ech.pm-d::before{background:linear-gradient(#F2C230,rgba(243,239,228,.14))}
 .pm-act{display:flex;flex-direction:column;gap:8px;margin-top:18px}
@@ -74,7 +87,7 @@
 .pm-act button:active{transform:scale(.985)}
 .pm-ex{display:flex;align-items:center;gap:8px;margin:-6px 0 14px;padding:8px 12px;border-radius:12px;background:rgba(242,194,48,.14);color:#F2C230;font:600 13px/1.35 Jost,sans-serif}
 .pm-n{margin:14px 0 0;color:#8F846F;font-size:12.5px;line-height:1.5;text-align:center}
-@media (prefers-reduced-motion:reduce){.pm-bg,.pm,.pm-ech li,.pm-vous,.pm-vous::before{animation:none!important}}`;
+@media (prefers-reduced-motion:reduce){.pm-bg,.pm,.pm-ech li,.pm-vous,.pm-vous::before,.pm-pan.in{animation:none!important}}`;
   function css() { if (document.getElementById('pmCss')) return; const s = document.createElement('style'); s.id = 'pmCss'; s.textContent = CSS; document.head.appendChild(s); }
 
   let bg = null, retour = null;
@@ -83,39 +96,49 @@
 
   function ouvrir(o) {
     css(); fermer(); retour = document.activeElement;
-    const O = (o.offres || []).slice(0, 4), D = (o.demandes || []).slice(0, 2), best = O[0], bud = D[0];
-    const art = o.art || '';
-    const ligne = (x, i, cote) => {
-      const ec = i && best && cote === 'o' ? Math.round((x.prix - best.prix) / best.prix * 100) : 0;
-      return `<li style="--i:${i}"><div class="pm-r"><span class="p">${F(x.prix)}</span><span class="q">${esc(x.nom)}${x.moi ? '<span class="pm-moi">vous</span>' : ''} · ${esc(x.lieu || '')}</span>${ec > 0 ? `<span class="e">+${ec} %</span>` : '<span></span>'}</div></li>`;
+    // deux côtés, comme sur un vrai marché : les vendeurs placent un prix (le moins cher en tête), les acheteurs placent un budget (le plus haut en tête)
+    const O = (o.offres || []).slice(0, 4), D = (o.demandes || []).slice(0, 4), best = O[0], bud = D[0], art = o.art || '';
+    let cote = o.cote === 'a' || o.cote === 'v' ? o.cote : (O.length || !D.length ? 'v' : 'a');
+    const qteTxt = (x, v) => x.qte ? nf(x.qte) + ' ' + esc(plur(x.qte, x.unite)) + (v ? ' disponible' : ' recherché') + (x.qte > 1 ? 's' : '') : '';
+    const moi = x => x.moi ? '<span class="pm-moi">vous</span>' : '';
+    const tete = (x, v) => `<li class="top" style="--i:0"><div class="pm-r"><span class="p">${v ? '' : '<small>jusqu’à </small>'}${nf(x.prix)} <i>F</i></span><span class="pm-tag">${v ? '▼ Meilleur prix' : '▲ Meilleur budget'}</span>
+      <div class="pm-qui"><span class="av" aria-hidden="true">${esc(ini(x.nom))}</span><div><b>${esc(x.nom)}${moi(x)}</b><small>${[esc(x.lieu || ''), qteTxt(x, v), ilya(x.at)].filter(Boolean).join(' · ')}</small></div></div></div></li>`;
+    const ligne = (x, i, v, ref) => { const ec = ref ? Math.round((x.prix - ref.prix) / ref.prix * 100) : 0;
+      return `<li style="--i:${i}"><div class="pm-r"><span class="p">${F(x.prix)}</span><span class="q">${esc(x.nom)}${moi(x)} · ${esc(x.lieu || '')}</span>${ec ? `<span class="e">${ec > 0 ? '+' : '−'}${Math.abs(ec)} %</span>` : '<span></span>'}</div></li>`; };
+    // le nom sur le bouton : entier s'il est court (« Restaurant Chez Tanti »), sinon les deux premiers mots
+    const prenom = x => { const n = String(x.nom || '').trim(); return esc(n.length <= 22 ? n : n.split(/\s+/).slice(0, 2).join(' ')); };
+    const panneau = c => {
+      const v = c === 'v', L = v ? O : D, top = L[0], autre = v ? bud : best;
+      const ech = L.length ? `<ol class="pm-ech${v ? '' : ' pm-d'}" aria-label="${v ? 'Les prix des vendeurs, du moins cher au plus cher' : 'Les budgets des acheteurs, du plus haut au plus bas'}">${tete(top, v)}${L.slice(1).map((x, i) => ligne(x, i + 1, v, top)).join('')}</ol>`
+        : `<p class="pm-vide">${v ? 'Aucun vendeur pour l’instant.' : 'Aucun acheteur pour l’instant.'}</p>`;
+      const vous = v
+        ? `<div class="pm-vous v" style="--i:${L.length}"><b><span class="tri bas" aria-hidden="true"></span>Vous vendez ? Votre prix</b><small>${top ? `Proposez moins de ${F(top.prix)} ${esc(art)} : votre offre passe en tête. Plus cher, elle se range à sa place.` : 'Placez le premier prix de vente : les acheteurs de tout le pays le verront ici.'}</small></div>`
+        : `<div class="pm-vous a" style="--i:${L.length}"><b><span class="tri haut" aria-hidden="true"></span>Vous achetez ? Votre budget</b><small>${top ? `Proposez plus de ${F(top.prix)} ${esc(art)} : votre demande passe en tête, les vendeurs vous voient d’abord.` : 'Placez la première demande : les vendeurs seront prévenus.'}</small></div>`;
+      // l'autre côté, en une ligne : ce qui intéresse celui qui hésite
+      const repere = autre ? `<p class="pm-rep ${v ? 'a' : 'v'}">${v ? `▲ Un acheteur paie jusqu’à <b>${F(autre.prix)}</b>` : `▼ Le moins cher vend à <b>${F(autre.prix)}</b>`}<button type="button" data-voir="${v ? 'a' : 'v'}">Voir ›</button></p>` : '';
+      const neg = top && top.neg && !top.moi ? `<button type="button" class="neg" data-neg="${v ? 'offre' : 'demande'}">${v ? 'J’achète : négocier avec ' : 'Je vends : proposer à '}${prenom(top)}</button>` : '';
+      return `${ech}${vous}${repere}<div class="pm-act"><button type="button" class="go${v ? ' v' : ''}" data-placer="${v ? 'offre' : 'demande'}">${v ? 'Placer mon prix de vente' : 'Placer mon budget d’achat'}</button>${neg}</div>`;
     };
-    const tete = x => `<li class="top" style="--i:0"><div class="pm-r"><span class="p">${nf(x.prix)} <i>F</i></span><span class="pm-tag">▼ Meilleur prix</span>
-      <div class="pm-qui"><span class="av" aria-hidden="true">${esc(ini(x.nom))}</span><div><b>${esc(x.nom)}${x.moi ? '<span class="pm-moi">vous</span>' : ''}</b><small>${[x.lieu, x.qte ? nf(x.qte) + ' ' + esc(plur(x.qte, x.unite)) + ' disponible' + (x.qte > 1 ? 's' : '') : '', ilya(x.at)].filter(Boolean).join(' · ')}</small></div></div></div></li>`;
-    const nO = O.length;
-    const vous = best
-      ? `<div class="pm-vous v" style="--i:${nO}"><b><span class="tri bas" aria-hidden="true"></span>Votre prix ?</b><small>Proposez moins de ${F(best.prix)} ${esc(art)} : votre offre passe en tête. Plus cher, elle se range à sa place dans l'échelle.</small></div>`
-      : bud ? `<div class="pm-vous a" style="--i:1"><b><span class="tri haut" aria-hidden="true"></span>Votre budget ?</b><small>Proposez plus de ${F(bud.prix)} ${esc(art)} : votre demande passe en tête et les vendeurs vous voient d'abord.</small></div>`
-      : `<div class="pm-vous" style="--i:0"><b><span class="tri bas" aria-hidden="true"></span>Aucun prix pour l'instant</b><small>Placez le premier : les acheteurs et les vendeurs de tout le pays le verront ici.</small></div>`;
-    const qui = best ? best : bud;
     bg = document.createElement('div'); bg.className = 'pm-bg';
     bg.innerHTML = `<div class="pm" role="dialog" aria-modal="true" aria-labelledby="pmT"><span class="pm-poi" aria-hidden="true"></span><button type="button" class="pm-x" aria-label="Fermer">×</button>
       <div class="pm-hd">${o.img ? `<span class="im" aria-hidden="true"><img src="${esc(o.img)}" alt=""></span>` : ''}<div><small>${esc(o.nom)}${art ? ' · ' + esc(art) : ''}</small><h2 id="pmT">Ici, chacun <em>place son prix</em></h2></div></div>
       ${o.exemple ? '<p class="pm-ex">Exemple de démonstration : ces prix et ces noms ne sont pas réels.</p>' : ''}
       ${o.activite ? `<div class="pm-ac ${esc(o.activite.cls || '')}" role="status"><i aria-hidden="true">${esc(o.activite.ico)}</i><span><b>${esc(o.activite.t)}</b><small>${esc(o.activite.s)}</small></span></div>` : ''}
-      ${nO ? `<ol class="pm-ech" aria-label="Les prix des vendeurs, du moins cher au plus cher">${tete(best)}${O.slice(1).map((x, i) => ligne(x, i + 1, 'o')).join('')}</ol>` : ''}
-      ${vous}
-      ${D.length ? `<div class="pm-sep">Côté acheteurs</div><ol class="pm-ech pm-d" aria-label="Les budgets des acheteurs">${D.map((x, i) => `<li${i ? '' : ' class="top"'} style="--i:${nO + 1 + i}"><div class="pm-r"><span class="p">${i ? '' : '▲ '}jusqu'à ${F(x.prix)}</span><span class="q">${esc(x.nom)}${x.moi ? '<span class="pm-moi">vous</span>' : ''} · ${esc(x.lieu || '')}</span><span></span></div></li>`).join('')}</ol>` : ''}
-      <div class="pm-act">
-        <button type="button" class="go${best || !bud ? ' v' : ''}" data-placer="${best || !bud ? 'offre' : 'demande'}">${best || !bud ? 'Placer mon prix' : 'Placer mon budget'}</button>
-        ${qui && qui.neg && !qui.moi ? `<button type="button" class="neg" data-neg>${best ? 'Négocier avec ' : 'Proposer à '}${esc(String(qui.nom).split(/\s+/)[0])}</button>` : ''}
-        ${best || !bud ? `<button type="button" class="lien" data-placer="demande">Vous achetez ? Placez votre budget</button>` : `<button type="button" class="lien" data-placer="offre">Vous vendez ? Placez votre prix</button>`}
-      </div>
-      <p class="pm-n">Le Marché de Gros ne fixe aucun prix : ce sont les vendeurs et les acheteurs qui les placent. Celui qui baisse son prix monte dans l'échelle.</p></div>`;
+      <div class="pm-tabs" role="tablist" aria-label="Vendeurs ou acheteurs"><button type="button" role="tab" class="v" data-c="v">▼ Vendeurs <span>${O.length}</span></button><button type="button" role="tab" class="a" data-c="a">▲ Acheteurs <span>${D.length}</span></button></div>
+      <div class="pm-pan" role="tabpanel"></div>
+      <p class="pm-n">Le Marché de Gros ne fixe aucun prix : les vendeurs placent leur prix, les acheteurs leur budget. Le vendeur le moins cher et l’acheteur le plus généreux passent en tête.</p></div>`;
     document.body.appendChild(bg);
+    const pan = bg.querySelector('.pm-pan');
+    const montrer = c => { cote = c;
+      bg.querySelectorAll('.pm-tabs [data-c]').forEach(t => t.setAttribute('aria-selected', String(t.dataset.c === c)));
+      pan.innerHTML = panneau(c); pan.classList.remove('in'); void pan.offsetWidth; pan.classList.add('in');
+      pan.querySelectorAll('[data-placer]').forEach(b => b.onclick = () => { const k = b.dataset.placer; fermer(); o.placer && o.placer(k); });
+      const ng = pan.querySelector('[data-neg]'); if (ng) ng.onclick = () => { const k = ng.dataset.neg; fermer(); o.negocier && o.negocier(k, 0); };
+      const vr = pan.querySelector('[data-voir]'); if (vr) vr.onclick = () => montrer(vr.dataset.voir); };
+    bg.querySelectorAll('.pm-tabs [data-c]').forEach(t => t.onclick = () => montrer(t.dataset.c));
+    montrer(cote);
     bg.addEventListener('click', e => { if (e.target === bg) fermer(); });
     bg.querySelector('.pm-x').onclick = fermer;
-    bg.querySelectorAll('[data-placer]').forEach(b => b.onclick = () => { const k = b.dataset.placer; fermer(); o.placer && o.placer(k); });
-    const ng = bg.querySelector('[data-neg]'); if (ng) ng.onclick = () => { fermer(); o.negocier && o.negocier(best ? 'offre' : 'demande', 0); };
     document.addEventListener('keydown', clavier);
     try { bg.querySelector('.pm-x').focus({ preventScroll: true }); } catch (_) {}
     if (navigator.vibrate && MOUV()) try { navigator.vibrate(8); } catch (_) {}

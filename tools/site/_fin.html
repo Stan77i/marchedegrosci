@@ -1,0 +1,24 @@
+<footer class="pied">
+  <p><b>Marché de Gros CI</b> est une application privée et indépendante du vivrier en gros. Ce n’est ni le marché de gros de Bouaké, ni l’OCPV, ni un service de l’État.</p>
+  <p>Aucun paiement ne passe encore par l’application. Mis à jour le {{DATE}}.</p>
+</footer>
+
+<!-- le panneau « Prenez votre téléphone » : sur ordinateur, chaque bouton d'action ouvre l'application sur le téléphone, à la bonne page -->
+<dialog class="tel" id="tel" aria-labelledby="t-tel">
+  <form method="dialog"><button class="fermer" aria-label="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></form>
+  <h2 id="t-tel">Continuez sur votre téléphone</h2>
+  <p id="telTexte">Scannez ce code : l’application s’ouvre au bon endroit. Elle vous demandera votre numéro pour créer votre compte, gratuitement.</p>
+  <div class="tel-qr" id="telQr"></div>
+  <p class="tel-lien" id="telLien"></p>
+</dialog>
+
+<div id="garde" role="dialog" aria-modal="true" aria-labelledby="gardeT"><div><b id="gardeT">Espace administrateur</b><p id="gardeP">Vérification…</p><form id="gardeF" hidden novalidate><label>Numéro<input id="gardeTel" type="tel" inputmode="numeric" autocomplete="username" placeholder="07 01 02 03 04" maxlength="16"></label><label>Code secret<input id="gardeCode" type="password" inputmode="numeric" autocomplete="current-password" placeholder="6 chiffres" maxlength="6"></label><span id="gardeE" role="alert"></span><button type="submit" id="gardeB">Entrer</button></form><a href="{{R}}maintenance.html">Retour</a></div></div>
+
+<script id="donnees" type="application/json">{{DONNEES}}</script>
+<script src="{{R}}vendor/qrcode-generator-1.4.4.js"></script>
+<script src="{{R}}v3/nuage.js?v=20261102a"></script>
+<script src="{{S}}garde.js?v={{VERSION}}"></script>
+<script src="{{S}}site.js?v={{VERSION}}"></script>
+<script src="{{R}}app/admin-pc.js?v={{VERSION}}" data-ici="seo"></script>
+</body>
+</html>

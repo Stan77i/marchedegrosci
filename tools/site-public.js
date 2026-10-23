@@ -76,7 +76,9 @@ const parCat = CAT.map(c => ({ c, p: produits.filter(p => p.c === c.slug && p.f)
 // les étagères : 4 familles choisies en photos ; les autres en une ligne
 const ETAGERES = ['cereales-et-riz-local', 'tubercules-et-feculents', 'legumes-et-fruits', 'poissons'];
 const etg = ETAGERES.map(k => parCat.find(g => g.c.slug === k)).filter(Boolean), reste = parCat.filter(g => !ETAGERES.includes(g.c.slug));
-const RAYONS = etg.map(g => `<div class="etagere"><h3>${esc(g.c.name)}</h3><ul>${g.p.slice(0, 10).map(p => `<li><a href="../application.dc.html#/produits/${esc(p.s)}" data-app="#/produits/${esc(p.s)}" data-intention="produit"><span class="plateau"><img src="${img(p.s, 160)}" alt="${esc(p.n)} en gros" width="160" height="160" loading="lazy" decoding="async"></span><span class="nom">${esc(p.n)}</span></a></li>`).join('')}</ul></div>`).join('')
+const AVEC_PAGE = new Set(require('./site-produits.js').LISTE);
+const lienProduit = sl => AVEC_PAGE.has(sl) ? `href="produits/${sl}/"` : `href="../application.dc.html#/produits/${sl}" data-app="#/produits/${sl}" data-intention="produit"`;
+const RAYONS = etg.map(g => `<div class="etagere"><h3>${esc(g.c.name)}</h3><ul>${g.p.slice(0, 10).map(p => `<li><a ${lienProduit(p.s)}><span class="plateau"><img src="${img(p.s, 160)}" alt="${esc(p.n)} en gros" width="160" height="160" loading="lazy" decoding="async"></span><span class="nom">${esc(p.n)}</span></a></li>`).join('')}</ul></div>`).join('')
   + `<p class="autres-rayons"><b>Aussi au marché :</b> ${reste.map(g => esc(g.c.name.toLowerCase())).join(' · ')}. En tout, ${produits.length} produits dans l’application.</p>`;
 const DATE = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Africa/Abidjan' });
 const DONNEES = { produits: produits.filter(p => p.f).map(p => [p.s, p.n]), villes };
@@ -89,5 +91,16 @@ const crypto = require('crypto');
 const VERSION = crypto.createHash('md5').update(['site.css', 'site.js', 'garde.js'].map(f => { try { return fs.readFileSync(path.join(SITE, f), 'utf8'); } catch (_) { return ''; } }).join('') + lire('app/admin-pc.js')).digest('hex').slice(0, 8);
 const remplir = (gab, v) => gab.replace(/\{\{(\w+)\}\}/g, (_, k) => { if (!(k in v)) throw new Error('gabarit : {{' + k + '}} inconnu'); return v[k]; });
 const VAL = { CARTE, LOGO, VERSION, ETAL, PROS, RAYONS, DATE, DONNEES: JSON.stringify(DONNEES).replace(/</g, '\\u003c'), NB_PRODUITS: String(produits.length), NB_PHOTOS: String(produits.filter(p => p.f).length) };
-fs.readdirSync(GAB).filter(f => f.endsWith('.html')).forEach(f => ecrire(f, remplir(fs.readFileSync(path.join(GAB, f), 'utf8'), VAL)));
-console.log('site public : ' + produits.length + ' produits, ' + DONNEES.produits.length + ' avec photo, carte ' + W + '×' + H + ', ' + Object.keys(lieux).length + ' lieux');
+// une page = _debut (avec sa tête propre) + _entete + son corps + _fin ; S = chemin vers site/, R = chemin vers la racine du dépôt
+const partiel = n => fs.readFileSync(path.join(GAB, '_' + n + '.html'), 'utf8');
+function page(gab, v) {
+  const m = gab.split(/<!--@tete-->|<!--@corps-->/); if (m.length !== 3) throw new Error('gabarit sans <!--@tete--> / <!--@corps-->');
+  return remplir(partiel('debut').replace('{{TETE}}', m[1].trim()) + partiel('entete') + m[2] + partiel('fin'), v);
+}
+ecrire('index.html', page(fs.readFileSync(path.join(GAB, 'index.html'), 'utf8'), Object.assign({}, VAL, { S: '', R: '../' })));
+
+// ——— les pages produits (site/produits/<id>/) ———
+const PP = require('./site-produits.js')({ produits, CAT, NOM, esc, lire, vm, photo: sl => fs.existsSync(path.join(SITE, img(sl, 480))) });
+const GP = fs.readFileSync(path.join(GAB, 'produit.html'), 'utf8');
+PP.forEach(v => ecrire('produits/' + v.SLUG + '/index.html', page(GP, Object.assign({}, VAL, v, { S: '../../', R: '../../../' }))));
+console.log('site public : ' + PP.length + ' pages produits, ' + produits.length + ' produits, ' + DONNEES.produits.length + ' avec photo, carte ' + W + '×' + H + ', ' + Object.keys(lieux).length + ' lieux');

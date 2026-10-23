@@ -1,13 +1,6 @@
-<!doctype html>
-<html lang="fr-CI">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<!-- Page fabriquée par tools/site-public.js depuis tools/site/index.html : modifier le gabarit, pas ce fichier. -->
+<!--@tete-->
 <title>Vivrier en gros en Côte d’Ivoire : vendre, acheter, comparer les prix · Marché de Gros CI</title>
 <meta name="description" content="Marché de Gros CI, l’application du vivrier en gros en Côte d’Ivoire : publiez votre récolte ou votre besoin, comparez les prix du moment, négociez sans montrer votre numéro et suivez la livraison. Gratuit.">
-<!-- EN CONSTRUCTION : caché au public et à Google jusqu'à la décision du propriétaire (docs/seo/PLAN.md) -->
-<meta name="robots" content="noindex, nofollow">
 <link rel="canonical" href="https://stan77i.github.io/marchedegrosci/site/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_CI">
@@ -17,34 +10,7 @@
 <meta property="og:url" content="https://stan77i.github.io/marchedegrosci/site/">
 <meta property="og:image" content="https://stan77i.github.io/marchedegrosci/logo/partage-reseaux-1200.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#10392B">
-<link rel="icon" type="image/svg+xml" href="../icons/v2/favicon.svg">
-<link rel="icon" type="image/png" sizes="32x32" href="../icons/v2/favicon-32.png">
-<link rel="apple-touch-icon" href="../icons/v2/apple-touch-icon.png">
-<link rel="preload" href="../fonts/jost-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../css/fonts.css">
-<link rel="stylesheet" href="../css/symboles.css">
-<link rel="stylesheet" href="site.css?v={{VERSION}}">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://stan77i.github.io/marchedegrosci/#org","name":"Marché de Gros CI","alternateName":"MGCI","url":"https://stan77i.github.io/marchedegrosci/site/","logo":"https://stan77i.github.io/marchedegrosci/logo/marque-1024.png","description":"Application privée et indépendante du vivrier en gros en Côte d’Ivoire.","areaServed":{"@type":"Country","name":"Côte d’Ivoire"}},{"@type":"WebSite","@id":"https://stan77i.github.io/marchedegrosci/#site","url":"https://stan77i.github.io/marchedegrosci/site/","name":"Marché de Gros CI","inLanguage":"fr-CI","publisher":{"@id":"https://stan77i.github.io/marchedegrosci/#org"}}]}</script>
-<script>/* EN CONSTRUCTION (23/10/2026) : seul l'administrateur entre ; les autres vont à la page de maintenance.
-   Le voile #garde reste posé jusqu'à ce que le serveur confirme est_admin. Pour ouvrir au public : retirer ce bloc, le voile et sa vérification, et le noindex. */
-(function(){try{var ok=localStorage.getItem('mdg-site:admin')==='1';if(/[?&]admin=1/.test(location.search)){sessionStorage.setItem('mdg-site:essai','1');ok=true}else if(sessionStorage.getItem('mdg-site:essai')==='1')ok=true;
-if(!ok){location.replace('../maintenance.html');return}document.documentElement.classList.add('garde')}catch(e){location.replace('../maintenance.html')}})();</script>
-</head>
-<body>
-<a class="saut" href="#contenu">Aller au contenu</a>
-
-<header class="tete">
-  <a class="marque" href="./" aria-label="Marché de Gros CI, accueil">{{LOGO}}<span>CI</span></a>
-  <nav aria-label="Navigation principale">
-    <a href="#prix">Les prix</a>
-    <a href="#reseau">Le réseau</a>
-    <a href="#confiance">La confiance</a>
-    <a href="#pros">Pour les pros</a>
-  </nav>
-  <a class="bt bt-mais" href="#appli" data-app="#/">Prendre l’application</a>
-</header>
-
+<!--@corps-->
 <main id="contenu">
 
 <!-- 1. L'étal : la promesse et les deux portes à gauche ; à droite, un vrai étal de sacs, cartons et cagettes (photos des produits) -->
@@ -53,12 +19,12 @@ if(!ok){location.replace('../maintenance.html');return}document.documentElement.
     <h1 id="t-etal">Le vivrier ivoirien en gros, dans votre <em>téléphone</em>.</h1>
     <p class="etal-sous">Vendeurs et acheteurs de toute la Côte d’Ivoire se trouvent, comparent les prix, négocient et suivent la livraison au même endroit. Gratuit, et votre numéro reste caché.</p>
     <div class="portes">
-      <a class="porte porte-o" href="../application.dc.html#/vendre" data-app="#/publier?sens=offre" data-intention="vendre">
+      <a class="porte porte-o" href="{{R}}application.dc.html#/vendre" data-app="#/publier?sens=offre" data-intention="vendre">
         <i class="sym sym-o" aria-hidden="true"></i>
         <span><b>J’ai à vendre</b><small>Récolte, stock, arrivage : les acheteurs vous écrivent.</small></span>
         <svg class="fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
-      <a class="porte porte-d" href="../application.dc.html#/demande" data-app="#/publier?sens=demande" data-intention="acheter">
+      <a class="porte porte-d" href="{{R}}application.dc.html#/demande" data-app="#/publier?sens=demande" data-intention="acheter">
         <i class="sym sym-d" aria-hidden="true"></i>
         <span><b>Je cherche</b><small>Produit, quantité, ville : les vendeurs vous répondent.</small></span>
         <svg class="fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -171,27 +137,3 @@ if(!ok){location.replace('../maintenance.html');return}document.documentElement.
 
 </main>
 
-<footer class="pied">
-  <p><b>Marché de Gros CI</b> est une application privée et indépendante du vivrier en gros. Ce n’est ni le marché de gros de Bouaké, ni l’OCPV, ni un service de l’État.</p>
-  <p>Aucun paiement ne passe encore par l’application. Mis à jour le {{DATE}}.</p>
-</footer>
-
-<!-- le panneau « Prenez votre téléphone » : sur ordinateur, chaque bouton d'action ouvre l'application sur le téléphone, à la bonne page -->
-<dialog class="tel" id="tel" aria-labelledby="t-tel">
-  <form method="dialog"><button class="fermer" aria-label="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></form>
-  <h2 id="t-tel">Continuez sur votre téléphone</h2>
-  <p id="telTexte">Scannez ce code : l’application s’ouvre au bon endroit. Elle vous demandera votre numéro pour créer votre compte, gratuitement.</p>
-  <div class="tel-qr" id="telQr"></div>
-  <p class="tel-lien" id="telLien"></p>
-</dialog>
-
-<div id="garde" role="dialog" aria-modal="true" aria-labelledby="gardeT"><div><b id="gardeT">Espace administrateur</b><p id="gardeP">Vérification…</p><form id="gardeF" hidden novalidate><label>Numéro<input id="gardeTel" type="tel" inputmode="numeric" autocomplete="username" placeholder="07 01 02 03 04" maxlength="16"></label><label>Code secret<input id="gardeCode" type="password" inputmode="numeric" autocomplete="current-password" placeholder="6 chiffres" maxlength="6"></label><span id="gardeE" role="alert"></span><button type="submit" id="gardeB">Entrer</button></form><a href="../maintenance.html">Retour</a></div></div>
-
-<script id="donnees" type="application/json">{{DONNEES}}</script>
-<script src="../vendor/qrcode-generator-1.4.4.js"></script>
-<script src="../v3/nuage.js?v=20261102a"></script>
-<script src="garde.js?v={{VERSION}}"></script>
-<script src="site.js?v={{VERSION}}"></script>
-<script src="../app/admin-pc.js?v={{VERSION}}" data-ici="seo"></script>
-</body>
-</html>

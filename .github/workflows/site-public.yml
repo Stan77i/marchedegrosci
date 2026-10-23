@@ -10,6 +10,8 @@ on:
       - 'tools/site/**'
       - 'tools/site-public.js'
       - 'tools/site-images.py'
+      - 'tools/site-produits.js'
+      - 'v2/saisons.js'
       - 'site/*.css'
       - 'site/*.js'
       - 'v2/data.js'

@@ -9,6 +9,8 @@
   'use strict';
   var URL0 = 'https://catmsypctymgkjkfzdkt.supabase.co', KEY = 'sb_publishable_KC2au-t8dqasp5ez9Lq6XQ_JvbTtVQ5';
   var $ = function (i) { return document.getElementById(i); };
+  // S : chemin vers la racine du site (« » pour l'accueil, « ../../ » pour une page produit) ; R : la racine du dépôt
+  var S = document.documentElement.getAttribute('data-s') || '', R = S + '../';
   var D = {}; try { D = JSON.parse($('donnees').textContent); } catch (_) {}
   var NOMS = {}; (D.produits || []).forEach(function (p) { NOMS[p[0]] = p[1]; });
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
@@ -38,8 +40,7 @@
     var prod = (NOMS[a.product_slug] || a.produit || 'produit').toLowerCase();
     return '<b>' + esc(qui) + '</b> ' + verbe + ' ' + esc(q) + esc(prod);
   }
-  var photo = function (slug, cls) { return NOMS[slug] ? '<img class="' + (cls || 'ph') + '" src="img/' + esc(slug) + '-160.webp" alt="" width="40" height="40" loading="lazy">' : ''; };
-  var photo = function (slug, cls) { return NOMS[slug] ? '<img class="' + (cls || 'ph') + '" src="img/' + esc(slug) + '-160.webp" alt="" width="40" height="40" loading="lazy">' : ''; };
+  var photo = function (slug, cls) { return NOMS[slug] ? '<img class="' + (cls || 'ph') + '" src="' + S + 'img/' + esc(slug) + '-160.webp" alt="" width="40" height="40" loading="lazy">' : ''; };
   var symb = function (sens, nuit) { return '<i class="sym ' + (sens === 'offre' ? 'sym-o' : 'sym-d' + (nuit ? ' nuit' : '')) + '" aria-hidden="true"></i>'; };
 
   // ——— le fil et la carte ———
@@ -73,8 +74,15 @@
       el.title = (x.o ? x.o + ' offre' + (x.o > 1 ? 's' : '') : '') + (x.o && x.d ? ' · ' : '') + (x.d ? x.d + ' demande' + (x.d > 1 ? 's' : '') : '');
     });
   }
+  // page produit : <main data-produit="tomate">
+  var PROD = (document.querySelector('[data-produit]') || { getAttribute: function () { return ''; } }).getAttribute('data-produit');
   function fil(L) {
-    var court = $('filCourt'), long = $('filLong');
+    var court = $('filCourt'), long = $('filLong'), pf = $('filProduit');
+    if (pf) {
+      var LP = L.filter(function (a) { return a.product_slug === PROD; });
+      pf.innerHTML = LP.length ? LP.map(function (a) { return '<li>' + symb(a.sens) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></li>'; }).join('')
+        : '<li class="fil-vide">Aucune annonce active pour ce produit en ce moment. La première peut être la vôtre : elle sera vue par tout le réseau.</li>';
+    }
     if (!L.length) {
       if (court) court.innerHTML = '<li class="fil-vide">Aucune annonce pour l’instant : la première peut être la vôtre.</li>';
       if (long) long.innerHTML = '<li class="fil-vide">Aucune annonce active pour l’instant.</li>';
@@ -92,23 +100,30 @@
   // ——— le tableau ———
   var prix = function (v, u) { return v == null ? '<span class="tb-prix vide">Pas encore</span>' : '<span class="tb-prix">' + nf(v) + ' F<small>par ' + esc(u || 'unité') + '</small></span>'; };
   function tableau() {
-    var corps = $('tbCorps'); if (!corps) return;
+    var corps = $('tbCorps'), pp = $('prixProduit'); if (!corps && !pp) return;
     rpc('tableau_produits', { p_region: null }).then(function (L) {
+      if (pp) {
+        var r = (L || []).filter(function (x) { return x.slug === PROD; })[0];
+        pp.innerHTML = !r ? '<p class="tb-attente">Aucun prix publié pour ce produit en ce moment.</p>'
+          : '<div class="pp"><span>Vendeur le moins cher</span>' + prix(r.meilleure_offre, r.unite_offre) + (r.n_offres ? '<span class="nbul o">' + symb('offre') + r.n_offres + ' offre' + (r.n_offres > 1 ? 's' : '') + '</span>' : '') + '</div>'
+          + '<div class="pp"><span>Meilleur budget d’acheteur</span>' + prix(r.meilleure_demande, r.unite_demande) + (r.n_demandes ? '<span class="nbul d">' + symb('demande') + r.n_demandes + ' demande' + (r.n_demandes > 1 ? 's' : '') + '</span>' : '') + '</div>';
+      }
+      if (!corps) return;
       L = (L || []).slice(0, 8);
       if (!L.length) { corps.innerHTML = '<p class="tb-attente">Aucun prix publié pour l’instant. Les premiers vendeurs et acheteurs apparaîtront ici.</p>'; return; }
       corps.innerHTML = L.map(function (r) {
-        var nom = NOMS[r.slug] || r.lab, img = NOMS[r.slug] ? '<img src="img/' + esc(r.slug) + '-160.webp" alt="' + esc(nom) + '" width="56" height="56" loading="lazy">' : '<span style="width:56px"></span>';
+        var nom = NOMS[r.slug] || r.lab, img = NOMS[r.slug] ? '<img src="' + S + 'img/' + esc(r.slug) + '-160.webp" alt="' + esc(nom) + '" width="56" height="56" loading="lazy">' : '<span style="width:56px"></span>';
         var achat = r.n_offres > 0;
         return '<div class="tb-ligne" role="row"><span class="tb-p" role="cell">' + img + esc(nom) + '</span>'
           + '<span role="cell">' + prix(r.meilleure_offre, r.unite_offre) + '</span><span role="cell">' + prix(r.meilleure_demande, r.unite_demande) + '</span>'
           + '<span class="tb-n" role="cell">' + (r.n_offres ? '<span class="nbul o">' + symb('offre') + r.n_offres + '</span>' : '') + (r.n_demandes ? '<span class="nbul d">' + symb('demande') + r.n_demandes + '</span>' : '') + '</span>'
-          + '<span role="cell"><a class="tb-go" href="../application.dc.html#/produits/' + esc(r.slug) + '" data-app="' + (achat ? '#/produits/' + esc(r.slug) : '#/vendre?produit=' + esc(r.slug)) + '" data-intention="' + (achat ? 'acheter' : 'vendre') + '">' + (achat ? 'Acheter' : 'Vendre') + '</a></span></div>';
+          + '<span role="cell"><a class="tb-go" href="' + R + 'application.dc.html#/produits/' + esc(r.slug) + '" data-app="' + (achat ? '#/produits/' + esc(r.slug) : '#/vendre?produit=' + esc(r.slug)) + '" data-intention="' + (achat ? 'acheter' : 'vendre') + '">' + (achat ? 'Acheter' : 'Vendre') + '</a></span></div>';
       }).join('');
-    }).catch(function () { corps.innerHTML = '<p class="tb-attente">Le tableau ne répond pas pour l’instant. Réessayez dans un moment.</p>'; });
+    }).catch(function () { [corps, pp].forEach(function (c) { if (c) c.innerHTML = '<p class="tb-attente">Les prix ne répondent pas pour l’instant. Réessayez dans un moment.</p>'; }); });
   }
 
   // ——— vers l'application ———
-  var APP = new URL('../application.dc.html', location.href).href, RACINE = new URL('../', location.href).href;
+  var APP = new URL(R + 'application.dc.html', location.href).href, RACINE = new URL(R, location.href).href;
   var telephone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 768;
   function lien(hash, intention, support) { return APP + '?utm_source=site&utm_medium=' + (support || 'bouton') + (intention ? '&utm_campaign=' + encodeURIComponent(intention) : '') + (hash || '#/'); }
   function qr(hote, texte) { if (!hote || !window.qrcode) return; try { var q = qrcode(0, 'M'); q.addData(texte); q.make(); hote.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (_) {} }
@@ -125,7 +140,7 @@
 
   function demarrer() {
     villes(); tableau();
-    fetch('donnees/lieux.json').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
+    fetch(S + 'donnees/lieux.json').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
       .then(function (l) { LIEUX = l; return lireFil(); });
     setInterval(function () { if (!document.hidden) lireFil(); }, 120000);
     addEventListener('resize', function () { if (calque && svg) calque.style.height = svg.getBoundingClientRect().height + 'px'; });

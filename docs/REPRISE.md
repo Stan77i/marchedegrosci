@@ -6,7 +6,7 @@
 ## 1. L'état au moment de la reprise
 
 - **Toutes les PR sont fusionnées** (jusqu'à la PR #230). Aucune PR ouverte, aucun travail en cours sur une branche.
-- `main` : cache du service worker `mgci-v228` (PR #232, fusionnée).
+- `main` : cache du service worker `mgci-v229`.
 - Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **81** appliqués (80 `fil_public`, 81 `site_mesures` / `mesurer` / `mesures_resume`). Mêmes schémas sur le projet de test.
 
 ## 2. Ce qui a été fait (session du 23/10/2026)

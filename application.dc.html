@@ -67,7 +67,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/categories-app.css?v=20261101e">
 <link rel="stylesheet" href="v3/ux.css?v=20261023f">
 <script src="v2/data.js?v=20261031a"></script>
-<script src="app/marche-app.js?v=20261101f"></script>
+<script src="app/marche-app.js?v=20261102a"></script>
 <script src="app/villes.js"></script>
 <style>html,body{margin:0;height:100%;position:fixed;inset:0;width:100%;overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}input,select,textarea{font-size:16px!important;min-width:0;max-width:100%}label{min-width:0}[data-pg],[data-screen-label="Application"]{overflow:clip!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"]{overflow-x:hidden!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"],[style*="overflow-x:auto"]{overscroll-behavior:none;-webkit-overflow-scrolling:touch}[style*="overflow-x:auto"]{overflow-y:hidden!important;touch-action:pan-x}*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}img,svg,a{-webkit-user-drag:none}textarea{resize:none}button{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}html,body{background:#0d0c0a;font-variant-numeric:lining-nums;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box;scrollbar-width:none}a{color:var(--terre)}a:hover{color:var(--terre);opacity:.85}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}:where(a,button,input,select,textarea):focus-visible{outline:2px solid var(--terre);outline-offset:2px}button:active{transform:scale(.97);transition:transform 120ms cubic-bezier(.2,.8,.2,1)}.ux-pip::before{content:'';position:absolute;inset:-8px 0}@media (prefers-reduced-motion:reduce){button:active{transform:none}}
 @keyframes mkWave{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.3);opacity:0}}
@@ -1234,7 +1234,7 @@ class Component extends DCLogic {
   openFiche(slug) { this.push('fiche', { slug }); }
   // « L'année du marché » : cadran annuel (un anneau par culture sourcée, un secteur par mois ; css/annee-app.css)
   anDial(month, now, anim) {
-    const A = window.MDGApp, rows = A.CAL, cx = 170, cy = 170, r0 = 68, step = 7.8, W = 5.8, rOut = r0 + (rows.length - 1) * step;
+    const A = window.MDGApp, rows = A.CAL, cx = 170, cy = 170, r0 = 68, step = Math.min(7.8, 85.8 / Math.max(1, rows.length - 1)), W = step * .74, rOut = r0 + (rows.length - 1) * step;  // le cadran garde la même taille quand des cultures s'ajoutent
     const COL = { plein: '#6CC58C', debut: '#B5DEC1', fin: '#F2C230' };
     const am = m => (m - 1) / 12 * Math.PI * 2 - Math.PI / 2, pt = (r, a) => [(cx + r * Math.cos(a)).toFixed(1), (cy + r * Math.sin(a)).toFixed(1)];
     const arc = (r, a0, a1) => { const [x0, y0] = pt(r, a0), [x1, y1] = pt(r, a1); return `M${x0} ${y0}A${r} ${r} 0 0 1 ${x1} ${y1}`; };

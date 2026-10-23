@@ -3,7 +3,7 @@
 // Intensités qualitatives seulement : debut / plein / fin. Aucun tonnage, aucun prix.
 export const SAISONS = {
   meta: {
-    updated: '2026-10-04',
+    updated: '2026-10-23',
     note: 'Calendrier indicatif : il varie selon les pluies et les régions.',
     zonesNote: 'Nord (une saison des pluies) et Centre-Sud (deux saisons) : rattachement des districts simplifié par le site, à valider avec les agents terrain.',
     zones: { nord: ['savanes', 'denguele', 'zanzan', 'woroba'], 'centre-sud': ['vallee-du-bandama', 'lacs', 'yamoussoukro', 'lagunes', 'comoe', 'goh-djiboua', 'bas-sassandra', 'sassandra-marahoue', 'montagnes'] },
@@ -16,6 +16,8 @@ export const SAISONS = {
       { id: 'aip-mangue', label: 'AIP, campagne mangue 2026', url: 'https://www.aip.ci/332817/cote-divoire-aip-filiere-mangue-le-prix-bord-champ-maintenu-a-2-450-fcfa-la-caisse-pour-la-campagne-2026/' },
       { id: 'hortifresh-mangue', label: 'Guide de production de la mangue (HortiFresh, 2022)', url: 'https://www.hortifresh.org/wp-content/uploads/MangoProduction_2022_online.pdf' },
       { id: 'aip-niakara', label: 'AIP, mangue de Niakara (avr. 2026)', url: 'https://www.aip.ci/348621/cote-divoire-aip-filiere-mangue-un-calendrier-de-commercialisation-juge-defavorable-aux-zones-precoces-de-niakara/' },
+      { id: 'nitidae-plantain', label: 'Nitidae (ex-RONGEAD), étude des marchés de gros en Côte d\u2019Ivoire', url: 'https://www.nitidae.org/files/7913458e/etude_complete_de_prefaisabilite_pour_evaluer_la_pertinence_de_la_mise_en_place_d_un_ou_des_marche_s_de_gros_en_cote_d_ivoire.pdf' },
+      { id: 'rongead-oignon', label: 'RONGEAD, diagnostic de la filière oignon (2014)', url: 'https://www.nitidae.org/files/6042e3b6/diagnostic_de_la_filiere_oignon_en_cote_d_ivoire_rongead_2014_vf.pdf' },
       { id: 'cajou-2026', label: 'Conseil coton-anacarde, campagne cajou 2026 (KOACI)', url: 'https://www.koaci.com/article/2026/02/17/cote-divoire/economie/cote-divoire-noix-de-cajou-brute-les-differents-prix-planchers-obligatoires-fixes-et-les-dispositions-presentees_194450.html' },
       { id: 'ccc-calendrier', label: 'Conseil café-cacao, nouveau calendrier (Africa Radio)', url: 'https://www.africaradio.com/actualite-116217-cote-d-ivoire-68-unites-mobilisees-pour-la-nouvelle-campagne-cafe-cacao' },
       { id: 'aip-daloa', label: 'AIP, lancement à Daloa', url: 'https://www.aip.ci/cote-divoire-aip-la-campagne-cafe-cacao-2026-2027-lancee-a-daloa-sous-le-signe-du-respect-des-prix-et-de-la-tracabilite/' },
@@ -37,6 +39,10 @@ export const SAISONS = {
     { product: 'mangue', regions: ['savanes', 'denguele'], months: { 3: 'debut', 4: 'plein', 5: 'plein', 6: 'fin' }, note: 'ouverture fin mars (28 mars en 2026)', source: 'aip-mangue' },
     { product: 'mangue', regions: ['savanes', 'denguele'], months: { 4: 'plein', 5: 'plein', 6: 'fin' }, note: 'Kent : mi-avril à début juin', source: 'hortifresh-mangue' },
     { product: 'mangue', regions: ['vallee-du-bandama'], months: { 3: 'debut', 4: 'plein' }, note: 'zones précoces : Niakara, Tafiré', source: 'aip-niakara' },
+    // banane plantain : « La pleine période de récolte (période d'abondance) s'étend de fin novembre/début décembre à fin février/mars. » (vérifié le 23/10/2026)
+    { product: 'banane-plantain', regions: [], months: { 11: 'debut', 12: 'plein', 1: 'plein', 2: 'plein', 3: 'fin' }, note: 'période d’abondance, fin novembre à février-mars', source: 'nitidae-plantain' },
+    // oignon : « Les productions autour des villes d'Odienné, Korhogo, Ferké, Bouaké ou encore Bouna […] sur la période de février à juin. » (vérifié le 23/10/2026)
+    { product: 'oignon', regions: ['denguele', 'savanes', 'vallee-du-bandama', 'zanzan'], months: { 2: 'plein', 3: 'plein', 4: 'plein', 5: 'plein', 6: 'plein' }, note: 'Odienné, Korhogo, Ferké, Bouaké, Bouna', source: 'rongead-oignon' },
     { product: 'noix-de-cajou', regions: [], months: { 2: 'debut', 3: 'debut' }, note: 'campagne ouverte le 9 février 2026', source: 'cajou-2026' },
     { product: 'cacao-en-feves', regions: [], months: { 9: 'plein', 10: 'plein', 11: 'plein', 12: 'plein', 1: 'plein', 2: 'plein' }, note: 'grande campagne : 1er septembre au 28 février', source: 'ccc-calendrier' },
     { product: 'cacao-en-feves', regions: ['sassandra-marahoue'], months: { 9: 'plein', 10: 'plein', 11: 'plein', 12: 'plein', 1: 'plein', 2: 'plein' }, source: 'aip-daloa' },

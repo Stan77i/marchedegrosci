@@ -285,7 +285,7 @@
   function feuille(titre = 'Vérifier mon identité') {
     style(); fermer();
     bg = document.createElement('div'); bg.className = 'idv-bg';
-    bg.innerHTML = `<div class="idv" role="dialog" aria-modal="true" aria-label="${esc(titre)}"><header class="idv-top"><button type="button" class="idv-ib" data-ret aria-label="Retour" hidden>${IC('retour', 22)}</button><b>${esc(titre)}</b><button type="button" class="idv-ib" data-x aria-label="Fermer">×</button></header><div class="idv-pas" aria-hidden="true"></div><div class="idv-main" aria-live="polite"></div></div>`;
+    bg.innerHTML = `<div class="idv" role="dialog" aria-modal="true" aria-label="${esc(titre)}"><header class="idv-top"><button type="button" class="idv-ib" data-ret aria-label="Retour" hidden>${IC('retour', 22)}</button><b>${esc(titre)}</b><button type="button" class="idv-ib" data-x aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header><div class="idv-pas" aria-hidden="true"></div><div class="idv-main" aria-live="polite"></div></div>`;
     document.body.appendChild(bg);
     rendre = N() && N().piege ? N().piege(bg) : null;
     bg.querySelector('[data-x]').onclick = fermer;
@@ -353,7 +353,7 @@
     };
     const photos = () => {
       const box = q('[data-ph]');
-      box.innerHTML = st.photos.map((b, i) => `<div class="idv-pv"><img src="${URL.createObjectURL(b)}" alt="Preuve ${i + 1}"><button type="button" data-rm="${i}" aria-label="Retirer la photo ${i + 1}">×</button></div>`).join('')
+      box.innerHTML = st.photos.map((b, i) => `<div class="idv-pv"><img src="${URL.createObjectURL(b)}" alt="Preuve ${i + 1}"><button type="button" data-rm="${i}" aria-label="Retirer la photo ${i + 1}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`).join('')
         + (st.photos.length < 3 ? `<label class="idv-pv idv-pv-add">${IC('photo', 24)}<span>${st.photos.length ? 'Ajouter' : 'Ajouter une photo'}</span><input type="file" accept="image/*" aria-label="Ajouter une photo de preuve"></label>` : '');
       box.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { st.photos.splice(+b.dataset.rm, 1); photos(); maj(); });
       const inp = box.querySelector('input[type=file]');

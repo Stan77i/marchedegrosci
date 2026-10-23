@@ -107,7 +107,7 @@
     bg.addEventListener('click', e => { if (e.target === bg || e.target.closest('[data-pzx]')) fermer(); });
     document.addEventListener('keydown', clavier);
     const box = bg.querySelector('.pz');
-    const tete = '<div class="pz-h"><h2 tabindex="-1">' + esc(nom || 'Produit') + ', <em>par zone</em></h2><button class="pz-x" data-pzx aria-label="Fermer">×</button></div>' +
+    const tete = '<div class="pz-h"><h2 tabindex="-1">' + esc(nom || 'Produit') + ', <em>par zone</em></h2><button class="pz-x" data-pzx aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>' +
       '<p class="pz-lead">Ce que demandent les vendeurs, zone par zone, sur 90 jours. Un prix demandé n’est pas un prix garanti : il se discute.</p>';
     box.innerHTML = tete + (window.MDGSac ? MDGSac.charge('Calcul des prix…') : '<p>Calcul des prix…</p>');
     box.querySelector('h2').focus();

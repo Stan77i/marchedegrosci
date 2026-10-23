@@ -68,10 +68,11 @@
       if (/gradient/.test(cs.backgroundImage) && !/url\(/.test(cs.backgroundImage)) {
         const cols = (cs.backgroundImage.match(/rgba?\([^)]+\)/g) || []).map(lire).filter(c => c && c.a > .3);
         if (cols.length && cols.every(c => hsl(c).l > .62)) { poser(el, 'background-image', 'none'); if (!nb) poser(el, 'background-color', fond(cols[0]) || 'rgba(40,36,30,1)'); eff = 'neutre'; }
+        else if (cols.some(c => !neutre(c) && hsl(c).l < .62)) eff = 'garde';   // dégradé vif (pastille maïs…) : le dessin posé dessus garde sa couleur
       }
 
       // mot en valeur souligné de maïs : en mode nuit, le mot passe en maïs et le surlignage s'adoucit (comme l'accueil)
-      const surligne = /242,\s*194,\s*48/.test(cs.backgroundImage);
+      const surligne = /242,\s*194,\s*48/.test(cs.backgroundImage) && !/radial-gradient/.test(cs.backgroundImage);   // pas les pastilles rondes en dégradé
       if (surligne) { poser(el, 'color', '#F2C230'); poser(el, 'background-image', cs.backgroundImage.replace(/rgba?\(242,\s*194,\s*48(,\s*[\d.]+)?\)/g, 'rgba(242, 194, 48, 0.22)')); }
       else if (eff !== 'garde') { const nt = texte(lire(cs.color)); if (nt) poser(el, 'color', nt); }
       ['border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color'].forEach(p => { if (parseFloat(cs[p.replace('-color', '-width')]) > 0) { const nbd = bord(lire(cs.getPropertyValue(p))); if (nbd) poser(el, p, nbd); } });

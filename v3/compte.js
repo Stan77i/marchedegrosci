@@ -124,8 +124,8 @@
 .cp-hero>*{position:relative}
 .cp-hero-av{position:relative;width:104px;height:104px;margin:0 auto;border-radius:50%;padding:6px;background:rgba(255,255,255,.18);box-shadow:0 18px 40px rgba(40,12,2,.35)}
 .cp-hero-av>svg,.cp-hero-av>img{display:block;width:92px;height:92px;border-radius:50%}
-.cp-hero-cam{position:absolute;right:-4px;bottom:2px;width:40px;height:40px;display:grid;place-items:center;border:3px solid #10392B;border-radius:50%;background:#FFFDF8;color:#10392B;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.25)}
-.cp-hero-cam svg{width:18px;height:18px}
+.cp-hero-cam{position:absolute;right:-2px;bottom:-2px;width:36px;height:36px;padding:0;margin:0;-webkit-appearance:none;appearance:none;display:grid;place-items:center;border:0;border-radius:50%;background:#F2C230;color:#171512;cursor:pointer;box-shadow:0 0 0 3px #143F30,0 4px 10px rgba(0,0,0,.3)}
+.cp-hero-cam svg{display:block;width:18px;height:18px}.cp-hero-cam:active{transform:scale(.94)}
 .cp-hero h2 em{font:800 italic 1em Jost,sans-serif;color:#F2C230;letter-spacing:-.015em}
 .cp-hero h2{margin:14px 0 0;font:600 24px/1.1 Jost,sans-serif;letter-spacing:-.01em;overflow-wrap:anywhere}
 .cp-hero p{margin:6px 0 0;color:rgba(255,255,255,.82);font-size:14px}
@@ -358,7 +358,7 @@ label.cp-r{cursor:pointer}
     bg = document.createElement('div'); bg.className = 'cp-bg';
     // toujours une barre du haut : la croix y a sa place et ne chevauche jamais le contenu qui défile
     const tete = /^\s*<header class="cp-top"/.test(html) ? '' : '<header class="cp-top"><span></span><span class="cp-top-t"></span><span></span></header>';
-    bg.innerHTML = `<div class="cp" role="dialog" aria-modal="true" aria-label="${esc(label)}"><button type="button" class="cp-x" aria-label="Fermer">×</button>${tete}${html}</div>`;
+    bg.innerHTML = `<div class="cp" role="dialog" aria-modal="true" aria-label="${esc(label)}"><button type="button" class="cp-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button>${tete}${html}</div>`;
     document.body.appendChild(bg);
     const r = N() && N().piege ? N().piege(bg) : null; if (!rendre) rendre = r;
     bg.addEventListener('click', e => { if (e.target === bg) fermer(); });
@@ -513,7 +513,7 @@ label.cp-r{cursor:pointer}
             <label class="cp-st-logo${logo ? ' plein' : ''}">${logo ? `<img src="${esc(imgStruct(logo))}" alt="Logo">` : `${IC('photo', 22)}<span>Ajouter</span>`}<input type="file" accept="image/*" data-logo aria-label="${logo ? 'Changer le logo' : 'Ajouter le logo'}"></label>
             ${logo ? '<button type="button" class="cp-alt" data-logo-x>Retirer le logo</button>' : ''}</div></div>
           <div class="cp-st-up"><span class="cp-l">Preuves que la structure existe <i>· facultatif, 4 au plus</i></span>
-            <div class="cp-st-pv">${preuves.map((c, i) => `<div><img src="${esc(imgStruct(c))}" alt="Preuve ${i + 1}"><button type="button" class="cp-st-x" data-pv-x="${i}" aria-label="Retirer la preuve ${i + 1}">×</button></div>`).join('')}${preuves.length < 4 ? `<label class="cp-st-add">${IC('photo', 20)}<span>Ajouter</span><input type="file" accept="image/*" data-pv aria-label="Ajouter une preuve"></label>` : ''}</div>
+            <div class="cp-st-pv">${preuves.map((c, i) => `<div><img src="${esc(imgStruct(c))}" alt="Preuve ${i + 1}"><button type="button" class="cp-st-x" data-pv-x="${i}" aria-label="Retirer la preuve ${i + 1}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`).join('')}${preuves.length < 4 ? `<label class="cp-st-add">${IC('photo', 20)}<span>Ajouter</span><input type="file" accept="image/*" data-pv aria-label="Ajouter une preuve"></label>` : ''}</div>
             <p class="cp-st-aide">Une enseigne, un entrepôt, un agrément, une parcelle : ce qui montre que votre structure existe vraiment. Les membres les voient sur votre profil.</p></div>
           <p class="cp-msg" data-st-msg role="status"></p></div>` : ''}`;
       const n = root.querySelector('#cp-stnom'); if (n) n.oninput = () => { nom = n.value; };
@@ -562,7 +562,7 @@ label.cp-r{cursor:pointer}
       el.innerHTML = boite(`${refus}<p><b>Faire vérifier « ${esc(d.nom)} »</b>Envoyez la photo d’un document officiel : ${d.type === 'cooperative' ? 'agrément de la coopérative (OHADA), récépissé ou extrait du registre' : 'autorisation de la mairie, carte de délégué ou de gestionnaire du marché, registre du commerce'}. Seule l’équipe le verra.</p>
         <form class="cp-bdg-f" novalidate>
           <div><label class="cp-l" for="cp-fn">Votre fonction</label><input class="cp-in" id="cp-fn" list="cp-fns" maxlength="60" autocomplete="organization-title" placeholder="ex. ${d.type === 'cooperative' ? 'Président' : 'Délégué du marché'}"><datalist id="cp-fns">${(d.type === 'cooperative' ? ['Président', 'Présidente', 'Secrétaire général', 'Trésorier', 'Gérant'] : ['Délégué du marché', 'Présidente des commerçantes', 'Gestionnaire du marché', 'Chef de marché']).map(x => `<option value="${x}">`).join('')}</datalist></div>
-          <div><span class="cp-l">Document officiel <i>· 1 à 3 photos</i></span><div class="cp-st-pv">${docs.map((x, i) => `<div><img src="${x.apercu}" alt="Page ${i + 1}"><button type="button" class="cp-st-x" data-dx="${i}" aria-label="Retirer la page ${i + 1}">×</button></div>`).join('')}${docs.length < 3 ? `<label class="cp-st-add">${IC('photo', 20)}<span>Ajouter</span><input type="file" accept="image/*" data-dd aria-label="Ajouter une photo du document"></label>` : ''}</div></div>
+          <div><span class="cp-l">Document officiel <i>· 1 à 3 photos</i></span><div class="cp-st-pv">${docs.map((x, i) => `<div><img src="${x.apercu}" alt="Page ${i + 1}"><button type="button" class="cp-st-x" data-dx="${i}" aria-label="Retirer la page ${i + 1}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`).join('')}${docs.length < 3 ? `<label class="cp-st-add">${IC('photo', 20)}<span>Ajouter</span><input type="file" accept="image/*" data-dd aria-label="Ajouter une photo du document"></label>` : ''}</div></div>
           <button type="submit" class="cp-go plein">Envoyer pour vérification</button><p class="cp-msg" role="status" data-bm>${esc(msg || '')}</p></form>`);
       const f = el.querySelector('form'), fn = el.querySelector('#cp-fn'), m = t => { el.querySelector('[data-bm]').textContent = t || ''; };
       fn.value = el.dataset.fn || ''; fn.oninput = () => { el.dataset.fn = fn.value; };

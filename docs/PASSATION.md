@@ -1223,3 +1223,7 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 
 ## Rapport de reprise (23/10/2026) — `docs/REPRISE.md`
 - Le propriétaire vide la discussion : `docs/REPRISE.md` résume l'état (tout fusionné jusqu'à #230, schémas 80-81, cache `mgci-v227`), ce qui a été fait, ce qui reste (retours sur le site caché, contenu, ouverture au public et Search Console, liste de retrait de l'ancien site) et les pièges. `CLAUDE.md` y renvoie.
+
+## Site public : 13 pages produits de plus, plan du site (23/10/2026)
+- `tools/site-produits.js` (`LISTE`) : noix de cajou (calendrier sourcé), arachide décortiquée, haricot niébé, patate douce, ananas, avocat, banane douce, chou, poivron, gari, huile de palme rouge, poulet de chair, œufs (alvéole de 30). **25 pages produits** en tout ; les voisins renvoient vers ces pages au lieu de l'application.
+- `site/sitemap.xml` fabriqué par `tools/site-public.js` (accueil, carte, guides, qui sommes-nous, produits, guides avec leur date). Pas de `robots.txt` possible sur GitHub Pages (il serait à la racine de `stan77i.github.io`) : le plan se soumet à la main dans Search Console et Bing, **seulement le jour de l'ouverture**.

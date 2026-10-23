@@ -139,6 +139,13 @@ GUIDES.forEach(g => {
   const C = require('./site-produits.js').calendrier({ NOM, esc, lire, vm, photo: sl => fs.existsSync(path.join(SITE, img(sl, 160))) });
   ecrire('saisons/index.html', page(fs.readFileSync(path.join(GAB, 'saisons.html'), 'utf8'), Object.assign({}, VAL, COMMUN, C, { S: '../', R: '../../', MAJ_CAL_TXT: dateTxt(C.MAJ_CAL) })));
 }
+// ——— les districts (site/regions/) ———
+const RG = require('./site-regions.js')({ NOM, esc, lire, vm, photo: sl => fs.existsSync(path.join(SITE, img(sl, 160))) });
+{
+  const GR = fs.readFileSync(path.join(GAB, 'region.html'), 'utf8');
+  RG.pages.forEach(p => ecrire('regions/' + p.r + '/index.html', page(GR, Object.assign({}, VAL, COMMUN, p.v, { S: '../../', R: '../../../' }))));
+  ecrire('regions/index.html', page(fs.readFileSync(path.join(GAB, 'regions.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '../', R: '../../', SOMMAIRE: RG.sommaire })));
+}
 ecrire('a-propos/index.html', page(fs.readFileSync(path.join(GAB, 'a-propos.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '../', R: '../../' })));
 ecrire('guides/index.html', page(fs.readFileSync(path.join(GAB, 'guides.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '../', R: '../../', LISTE_GUIDES: GUIDES.map(g => carteGuide(g, '')).join('') })));
 // ——— le plan du site (site/sitemap.xml), pour Google Search Console et Bing le jour de l'ouverture ———
@@ -146,8 +153,9 @@ ecrire('guides/index.html', page(fs.readFileSync(path.join(GAB, 'guides.html'), 
 // Tant que les pages sont en noindex, ce fichier ne fait rien ; ne pas le soumettre avant l'ouverture décidée par le propriétaire.
 {
   const B = 'https://stan77i.github.io/marchedegrosci/site/';
-  const U = [[B, ''], [B + 'carte/', ''], [B + 'guides/', ''], [B + 'a-propos/', ''], [B + 'saisons/', '']]
+  const U = [[B, ''], [B + 'carte/', ''], [B + 'guides/', ''], [B + 'a-propos/', ''], [B + 'saisons/', ''], [B + 'regions/', '']]
     .concat(PP.map(v => [B + 'produits/' + v.SLUG + '/', '']))
+    .concat(RG.pages.map(p => [B + 'regions/' + p.r + '/', '']))
     .concat(GUIDES.map(g => [B + 'guides/' + g.slug + '/', g.maj || g.publie]));
   ecrire('sitemap.xml', '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
     + U.map(([u, d]) => '  <url><loc>' + u + '</loc>' + (d ? '<lastmod>' + d + '</lastmod>' : '') + '</url>').join('\n') + '\n</urlset>\n');

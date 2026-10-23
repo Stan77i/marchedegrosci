@@ -88,3 +88,4 @@ function calendrier({ NOM, esc, lire, vm, photo }) {
 module.exports = fabriquer;
 module.exports.calendrier = calendrier;
 module.exports.LISTE = LISTE;
+module.exports.outils = { lireSaisons, ligneMois, LEGENDE, MOIS };

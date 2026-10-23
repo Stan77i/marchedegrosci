@@ -26,6 +26,7 @@
   - `site/carte/` : la carte MapLibre de l'application en plein écran + panneau (filtres, annonces) ;
   - 25 pages produits `site/produits/<id>/` (direct + calendrier des récoltes **seulement sourcé**, `v2/saisons.js`) ;
   - 5 guides `site/guides/<id>/` (contenu dans `tools/site/guides/*.html`, chiffres sourcés depuis `strategie/sources/donnees-marche.json`) ;
+  - `site/regions/` : une page par district (récoltes sourcées du district, annonces et prix du district en direct) ;
   - `site/saisons/` : calendrier des récoltes (seulement les périodes sourcées de `v2/saisons.js`) ;
   - `site/a-propos/` (« ni le marché de gros de Bouaké, ni l'OCPV, ni l'État ») ;
   - typographie française automatique (espace insécable avant « : ; ! ? »).

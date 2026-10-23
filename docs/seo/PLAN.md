@@ -11,7 +11,14 @@
 - Un clic sur une annonce : création du compte, puis l'application (Play Store / App Store plus tard ; QR code ou ouverture sur téléphone en attendant).
 - L'ancien site reste, invisible au public.
 
-## 1. État réel (résumé)
+## 0. Avancement (mis à jour le 23/10/2026, après la PR #240)
+
+- **Fait (caché, `noindex`)** : P0 en entier ; P1 n° 6 (7 guides), n° 7 (27 pages produits avec prix en direct et calendrier des récoltes sourcé ; les prix officiels de l'OCPV ne sont pas encore cités), n° 8 (mesure, schéma 81) ; P2 n° 10 (guide des grands marchés de gros, 14 pages de districts) ; P3 en partie (calendrier des récoltes, guide du transport). `sitemap.xml` (54 adresses) et `404.html` prêts.
+- **Reste, côté propriétaire** : regarder le site caché et donner ses retours ; décider l'ouverture (P1 n° 9) ; Search Console et Bing ; partenariats (P2 n° 11) ; affiches et QR codes (P2 n° 12, la mesure est prête).
+- **Reste, côté technique** : audit de sécurité avant l'ouverture ; prix officiels OCPV cités ; résumé des prix de la semaine ; tests de conversion après l'ouverture.
+- La partie 1 ci-dessous décrit l'état **avant** les travaux : la garder pour l'historique.
+
+## 1. État réel (résumé, avant les travaux)
 
 - Hébergement : GitHub Pages gratuit, `stan77i.github.io/marchedegrosci/`, sans nom de domaine. Pas de `robots.txt` lisible (racine du domaine non contrôlée), pas de `sitemap.xml`, pas de `404.html`.
 - **Google ne peut presque rien lire** : l'ancien site n'existe qu'en JavaScript (React + Babel dans la page, 6,4 Mo, 45 tâches longues, CLS 0,52) ; l'application, sans JavaScript, n'est que du gabarit ; toutes les « pages » sont des `#/…` (une seule adresse pour Google) ; la page de maintenance est en `noindex`.
@@ -72,4 +79,4 @@
 
 ## 6. Indicateurs à suivre (quand la mesure existera)
 
-Pages vues depuis la recherche, clics sur « Je vends / Je cherche / Achat groupé », ouvertures de l'application depuis le site, inscriptions attribuées au site, annonces publiées par ces nouveaux comptes, pages indexées (Search Console). Rien n'est mesuré aujourd'hui.
+Pages vues depuis la recherche, clics sur « Je vends / Je cherche / Achat groupé », ouvertures de l'application depuis le site, inscriptions attribuées au site, annonces publiées par ces nouveaux comptes, pages indexées (Search Console). La mesure existe depuis le schéma 81 (écran « Visites » de `admin.html`) ; Search Console viendra à l'ouverture.

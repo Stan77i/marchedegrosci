@@ -1272,3 +1272,10 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Demande du propriétaire : quand il n'y a aucune annonce (ou qu'il les a toutes effacées), la carte « Dernières annonces » de l'onglet Activité ne s'affiche plus du tout. Elle revient dès qu'une nouvelle annonce arrive.
 - `application.dc.html` : la carte est dans `<sc-if value="{{ accActOn }}">` ; textes « Rien de nouveau depuis votre dernier effacement » et « Aucune annonce pour l'instant » retirés. Si rien n'est en cours non plus, l'écran garde le seul message « Aucune activité ».
 - `sw.js` : cache `mgci-v231`.
+
+## 23/10/2026 — Rapport de passation et documents à jour
+
+- Nouvelle règle du propriétaire, écrite dans `CLAUDE.md` : chaque PR fait son rapport de passation et met à jour tous les documents concernés.
+- `docs/REPRISE.md` : état après la PR #240 (27 produits, 7 guides, 14 districts, plan du site de 54 adresses, cache `mgci-v231`), ce qui reste.
+- `docs/seo/PLAN.md` : nouvelle partie 0 « Avancement » (ce qui est fait, ce qui reste côté propriétaire et côté technique).
+- Où en est le site : contenu presque complet, caché. Reste : retours du propriétaire, audit de sécurité, ouverture (sa décision), Search Console et Bing ; en option, prix officiels OCPV cités et résumé des prix de la semaine.

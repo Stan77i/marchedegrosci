@@ -971,3 +971,14 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Vérifié sur le projet de test (comparaison avec une copie de l'ancienne fonction) : 7 produits réels et générés, plus un cas fabriqué à 3 unités avec ex æquo à la 50e place → mêmes annonces, même classement, totaux exacts ; gros produit 1 852 805 → 37 960 octets, 1 055–3 054 ms → 102 ms. Base réelle : réponses identiques avant/après pour les 6 produits (toute la Côte d'Ivoire et Abidjan), hors le nouveau champ `totaux`. Navigateur (Playwright, iPhone) : 50 lignes, note affichée, totaux justes ; sans `totaux` (ancien serveur), comptage comme avant ; aucune erreur.
 - Anciennes versions de l'application : elles comptent la liste reçue, donc au plus 50 par unité (seulement quand un produit dépasse 50 annonces dans une unité).
 - Cache `mgci-v204`.
+
+## Code de suivi du chauffeur : essais limités, tirage sûr (23/10/2026) — schéma 71
+- Faille trouvée à l'audit : `suivi_code_jeton` (ouverte à tous, sans compte) n'avait aucune limite d'essais ; en essayant des codes à la chaîne on pouvait tomber sur un lien actif (adresse de livraison, envoi de fausses positions). `_suivi_code` utilisait `random()` (non cryptographique).
+- **Serveur** (`supabase/schema-71-suivi-code-essais.sql`, appliqué le 23/10) :
+  - au plus **10 codes faux par adresse internet et par quart d'heure**, et 500 pour tout le monde (attaque venue de nombreuses adresses) ; un code juste ne compte pas ; au-delà : `TROP_ESSAIS : Trop de codes essayés…` ;
+  - l'adresse vient de l'en-tête `x-forwarded-for` transmis par Supabase (vérifié par un vrai appel HTTP sur le projet de test : le compteur va bien dans la case de l'adresse, pas dans « inconnue ») ;
+  - compteurs dans `suivi_code_essais` (RLS, aucun accès direct) : **taille fixe**, 4 096 cases au plus (adresse hachée sur 12 bits) + le total, réutilisées à chaque quart d'heure → aucun nettoyage à prévoir ;
+  - `_suivi_code` tire avec `gen_random_bytes` (octets ≥ 248 rejetés pour un tirage égal sur 31 caractères). Codes existants inchangés.
+- **Page du chauffeur** (`suivi.html`) : l'erreur du serveur est lue ; « Trop de codes essayés. Réessayez dans quelques minutes, ou demandez le lien au vendeur. » au lieu de « Pas de connexion ».
+- Vérifié : test (10 faux refusés, 11e bloqué même avec le bon code, autre adresse + bon code en minuscules → jeton ; 3 000 codes tirés : 31 caractères, 541 à 621 fois chacun pour 580 attendus) ; base réelle (transaction annulée, aucun compteur resté) ; navigateur iPhone : les 3 messages (trop d'essais, code faux, pas de réseau).
+- Cache `mgci-v205`.

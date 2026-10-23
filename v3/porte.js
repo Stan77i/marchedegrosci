@@ -123,7 +123,7 @@
 .pt[data-etat=ferme] .ps-halo{opacity:.14;animation:none}
 @media (prefers-reduced-motion:reduce){.pt--sac .ps-halo,.pt--sac .ps-sac{transition:none;animation:none}.pt--sac .ps-sac.chg svg{animation:none}}`;
   const HUMEUR = { repos: 'vide', saisie: 'vide', envoi: 'charge', ok: 'plein', erreur: 'triste', ferme: 'ferme' };
-  function monterSvg(el) {
+  function monterSvg(el, large) {
     if (!document.getElementById('psSacCss')) { const st = document.createElement('style'); st.id = 'psSacCss'; st.textContent = SCSS; document.head.appendChild(st); }
     el.classList.add('pt', 'pt--sac'); el.dataset.mode = 'in'; el.dataset.etat = 'repos';
     // le marché (app/scene.js) s'exprime seul : pas de sac ici, il vient dire bienvenue une fois la connexion réussie (entrer())
@@ -132,6 +132,8 @@
       <defs><radialGradient id="psH" cx="50%" cy="100%" r="62%"><stop offset="0" stop-color="#F2C230" stop-opacity=".4"/><stop offset=".55" stop-color="#E9A35E" stop-opacity=".14"/><stop offset="1" stop-color="#E07A3F" stop-opacity="0"/></radialGradient></defs>
       <ellipse class="ps-halo" cx="200" cy="134" rx="200" ry="104" fill="url(#psH)"/><path d="M0 123.5H400" stroke="rgba(245,240,230,.16)"/></svg>`) +
       `<p class="pt-sr">Un marché de gros le soir : des étals éclairés, des vendeuses, et des passants qui traversent la rue.</p>`;
+    // grand écran : la colonne est haute ; on garde tout le marché, calé en bas, et le ciel continue au-dessus
+    if (large) { el.classList.add('ps-large'); el.querySelector('.mk')?.setAttribute('preserveAspectRatio', 'xMidYMax meet'); }
     return {
       etat(n) { if (n in HUMEUR) el.dataset.etat = n; },
       mode(m) { el.dataset.mode = m; },
@@ -141,7 +143,7 @@
 
   function monter(el, opt = {}) {
     const compact = !!opt.compact;
-    if (compact && document.documentElement.hasAttribute('data-app')) return monterSvg(el);  // l'application sur téléphone ; le site garde ses points partout
+    if (document.documentElement.hasAttribute('data-app')) return monterSvg(el, !compact);  // l'application : le marché à toutes les tailles ; le site garde ses points
     el.classList.add('pt');
     el.innerHTML = `<canvas class="pt-cv" aria-hidden="true"></canvas><div class="pt-txt" aria-hidden="true"><span class="pt-k"><i></i><em></em></span><p class="pt-m"></p></div><p class="pt-sr">Deux mondes, un même marché : le Marché de Gros relie ceux qui produisent et ceux qui cherchent, partout en Côte d'Ivoire.</p>`;
     const cv = el.querySelector('canvas'), ctx = cv.getContext('2d'), tx = el.querySelector('.pt-txt'), k = el.querySelector('.pt-k em'), ki = el.querySelector('.pt-k i'), m = el.querySelector('.pt-m');

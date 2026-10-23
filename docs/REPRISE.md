@@ -54,7 +54,26 @@
 4. **Liste de retrait de l'ancien site** (`PORTAGE-SITE.md`, partie 5) : le propriétaire a dit « je te reviens » ; rien n'est supprimé sans son accord.
 5. Plus tard : nom de domaine (seule dépense possible, facultative), liens Play Store / App Store quand l'application y sera, partenariats (OCPV / e-Grenier, Chambre d'agriculture, coopératives, médias tech).
 
-## 4. Pièges connus
+## 4. Les compétences : s'en servir sans cesse, dès qu'elles sont utiles
+
+**Règle du propriétaire (23/10/2026) : toutes ces compétences doivent être utilisées chaque fois qu'une tâche en a besoin, sans attendre qu'il le demande.** Elles sont enregistrées dans le dépôt (`.claude/skills/`) : chaque nouvelle session qui ouvre le dépôt les a automatiquement. Les appeler avec l'outil Skill (ou `/nom`).
+
+**Design et interface** (toute tâche d'écran, de page, de texte d'interface ou d'animation, voir aussi `CLAUDE.md`) :
+- `marche-de-gros-design` : la référence du design du projet (`DESIGN.md`, les 32 lois de la section 8) ;
+- `impeccable` : direction de design, `audit`, `critique`, `polish`, `layout`… et son détecteur anti-« design généré » (`.claude/skills/impeccable/scripts/impeccable detect --json <fichiers>`) ; il lit `PRODUCT.md` ;
+- `ui-ux-pro-max` : règles UX, accessibilité, couleurs, typographie (`python3 .claude/skills/ui-ux-pro-max/scripts/search.py "<sujet>" --domain ux`) ;
+- `playwright-cli` : vérifier dans un vrai navigateur (iPhone émulé, clair et sombre).
+
+**Business, marketing et SEO** (`founder-skills`, lisent `FOUNDER_CONTEXT.md`) :
+- stratégie : `strategic-planning`, `go-to-market-plan`, `pricing-strategist`, `competitor-intel` ;
+- marketing et textes : `marketing-ideas`, `brand-copywriter`, `viral-hook-creator`, `lead-magnet-generator`, `cro-optimization` (transformer les visiteurs du site en inscrits) ;
+- réseaux et prospection : `linkedin-writer`, `x-writer`, `outreach-specialist`, `product-hunt-launch-plan` ;
+- organisation : `sop-creator` (procédures), `prd-generator` (cahier des charges).
+- Toujours : en français, actions gratuites seulement, aucun chiffre sans source, jamais dire qu'un paiement a été encaissé.
+
+**Fournies par l'environnement Claude Code** (pas dans le dépôt, disponibles selon la session) : `supabase` et `supabase-postgres-best-practices` (avant tout changement de base), `dataviz` (graphiques, tableaux de chiffres), `artifact-design` (pages publiées), les compétences de sécurité (`security-review`, `code-review`). Si l'une manque, le dire au propriétaire plutôt que de s'en passer en silence.
+
+## 5. Pièges connus
 
 - **Le propriétaire fusionne vite** : vérifier qu'une PR est ouverte avant d'y ajouter un commit ; sinon nouvelle branche et nouvelle PR. Toujours `git fetch` + rebase sur `origin/main` avant de pousser (conflits fréquents dans `docs/PASSATION.md` : garder les deux textes).
 - La tâche « Site public » refait les pages après chaque fusion : relancer `node tools/site-public.js` avant de committer pour éviter les écarts.

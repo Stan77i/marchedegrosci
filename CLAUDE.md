@@ -4,6 +4,8 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 
 **Reprise après une discussion vidée : lire d'abord `docs/REPRISE.md`** (état exact, ce qui est fait, ce qui reste, pièges connus).
 
+**Compétences : s'en servir sans cesse, dès qu'une tâche en a besoin** (règle du propriétaire, 23/10/2026). Les 19 compétences du dépôt (`.claude/skills/` : design, UX, navigateur, business, marketing, SEO) et leur usage sont listés dans `docs/REPRISE.md`, partie 4.
+
 ## Règle n° 1 : tenir ce fichier à jour
 
 - **Dès que le propriétaire donne une nouvelle règle, une préférence ou une décision durable, l'ajouter ici tout de suite**, dans la même PR que le travail en cours, ou dans une petite PR à part. Ne pas attendre qu'il le demande.

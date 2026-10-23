@@ -1,123 +1,217 @@
-/* ═════════ Marché de Gros CI — la scène du marché : un marché de gros au crépuscule, dans les couleurs de la marque ═════════
-   Demandé par le propriétaire le 23/10/2026 : « un marché, des gens qui passent devant (femmes avec bagages, camion, hommes…),
-   comme un vrai marché de gros, passage en fondu, en harmonie avec le sac ; une fois connecté, on retrouve ce marché derrière
-   le sélectionneur orbital, en verre dépoli, marié au défilement des produits ».
-   Un seul dessin (SVG 400 × 132, dessiné ici, aucune image empruntée), deux usages :
-     • la porte d'entrée (v3/porte.js) : la scène nette, les passants traversent devant les étals, le sac (app/sac.js) devant ;
-     • l'accueil (<mdg-marche>, v3/porte.js) : la même scène floutée derrière la roue, les passants nets mais discrets par-dessus.
-   Couleurs : nuit (#171512), vert forêt (#10392B), maïs (#F2C230), crème (#F3EFE4), jute. La lumière chaude des étals suit
-   la teinte du produit affiché (variable CSS --mk-tint, posée par l'accueil : tomate rouge, aubergine violette…).
-   Pourquoi pas WebGL : une vingtaine de formes et cinq silhouettes en déplacement ; le CSS suffit, sans batterie ni bibliothèque,
-   et rien n'échoue sur un petit téléphone. Mouvement réduit : tout est immobile.
-   API : MDGScene.svg(k, { passants: 'oui' | 'non' | 'seuls' }) → markup SVG · MDGScene.css() → pose la feuille de style */
+/* ═════════ Marché de Gros CI — la scène du marché, à l'entrée (connexion) ═════════
+   Demandé par le propriétaire (23/10/2026) : « laisse le marché bien s'exprimer tranquillement ; pas de sac, pas d'écriture ;
+   des personnages qui s'expriment, bien propres, un vrai dessin, expressif, beau, réaliste ». Le sac n'arrive qu'après une
+   connexion réussie, pour dire bienvenue (v3/porte.js, entrer()). Le fond de l'accueil n'utilise PAS cette scène.
+   Un dessin vectoriel (SVG 400 × 190), écrit ici, aucune image empruntée :
+     • le soir sur un marché de gros : ciel vert nuit qui chauffe à l'horizon, hangars et un grand fromager au fond,
+       passants lointains, deux étals éclairés (bâche terre cuite, bâche verte), vendeuses et vendeur, tas de tomates,
+       oignons, régimes de plantain, sacs de jute ouverts (maïs, riz, haricots), ampoules ;
+     • devant, des gens passent en marchant vraiment (jambes, bras, léger balancement), chacun à son pas :
+       une femme portant une bassine de tomates sur la tête, un homme poussant une brouette de sacs, un jeune homme un sac
+       sur l'épaule, une femme tenant son enfant par la main ; derrière eux, un camion de vivriers bâché passe lentement.
+   Couleurs de la marque : vert forêt #10392B, maïs #F2C230, crème #F3EFE4, terre cuite, jute.
+   Pourquoi pas WebGL / three.js : le dessin tient en formes simples ; le CSS anime sans bibliothèque ni batterie, sur tout téléphone.
+   Mouvement réduit : tout est immobile, les passants posés dans la rue.
+   Piège : ne JAMAIS poser `transform-box` sur tout le dessin — les attributs SVG transform="…" partiraient de travers.
+   API : MDGScene.svg(k) → markup SVG · MDGScene.css() → pose la feuille de style */
 (function () {
   'use strict';
   if (window.MDGScene) return;
 
-  // ——— un étal : deux poteaux, une table, un auvent à rayures vert et crème, une guirlande d'ampoules, des caisses de produits ———
-  function etal(x, k, produits) {
-    const b = [];
-    // ampoules : une guirlande qui pend entre les deux poteaux
-    const amp = [0, 1, 2, 3, 4].map(i => `<circle class="mk-amp" style="--i:${i}" cx="${x + 14 + i * 20}" cy="${74 + Math.sin((i + .5) / 5 * Math.PI) * 5}" r="1.7"/>`).join('');
-    b.push(`<path d="M${x + 6} 70Q${x + 55} 86 ${x + 104} 70" fill="none" stroke="#3B2E1C" stroke-width=".8"/>${amp}`);
-    b.push(`<rect x="${x + 5}" y="70" width="3" height="42" fill="#3B2E1C"/><rect x="${x + 102}" y="70" width="3" height="42" fill="#3B2E1C"/>`);
-    // la table et ses planches
-    b.push(`<rect x="${x}" y="96" width="110" height="16" rx="1.5" fill="#4E3A26"/><path d="M${x} 102H${x + 110}M${x} 107H${x + 110}" stroke="rgba(23,21,18,.35)" stroke-width=".8"/>`);
-    // l'auvent : fond vert, rayures crème, bord festonné
-    b.push(`<rect x="${x - 4}" y="60" width="118" height="12" fill="#10392B"/>`);
-    for (let i = 0; i < 5; i++) b.push(`<rect x="${x - 4 + 13 + i * 24}" y="60" width="10" height="12" fill="#F3EFE4" fill-opacity=".9"/>`);
-    b.push(`<path d="M${x - 4} 72${[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => `q7.4 5 14.75 0`).join('')}" fill="#10392B"/>`);
-    b.push(`<path d="M${x - 4} 60h118" stroke="#F2C230" stroke-width="1.2"/>`);
-    // les caisses de produits posées sur la table
-    produits.forEach((p, i) => b.push(caisse(x + 6 + i * 36, 84, p)));
-    return `<g class="mk-etal">${b.join('')}</g>`;
+  const PEAU = ['#6A4127', '#57351F', '#7A4D2E'], OMBRE = 'rgba(20,12,6,.28)';
+
+  // ——— morceaux de corps (coordonnées locales : pieds en y = 0, le personnage regarde vers la droite) ———
+  // une jambe : cuisse + mollet + pied d'un seul tenant ; pivot en haut (la hanche), animée par .mk-j
+  const jambe = (x, haut, couleur, peau, cls, pied) => `<g class="mk-j ${cls}"><path d="M${x - 2.7} ${haut}h5.4l-.5 ${-haut - 3.2}h-4.4z" fill="${couleur}"/>` +
+    `<path d="M${x - 2.2} -3.4h4.2l.2 1.6h${pied || 3.4}q1.6 0 1.6 1.8h-${(pied || 3.4) + 6}z" fill="${peau === 'pied' ? '#2A1D14' : peau}"/></g>`;
+  // un bras qui se balance : pivot à l'épaule ; .mk-b
+  const bras = (x, y, long, peau, manche, cls) => `<g class="mk-b ${cls}"><path d="M${x - 1.8} ${y}h3.6l-.4 ${long}h-2.8z" fill="${peau}"/>` +
+    (manche ? `<path d="M${x - 2.4} ${y - .5}h4.8l-.3 ${long * .38}h-4.2z" fill="${manche}"/>` : '') + `<circle cx="${x}" cy="${y + long + .4}" r="1.9" fill="${peau}"/></g>`;
+  // une tête de profil (vers la droite) : visage, nez, oreille, cou
+  const tete = (y, peau, cou) => `<path d="M-1.8 ${y + 4}h3.6v${cou || 4}h-3.6z" fill="${peau}"/><ellipse cx="0" cy="${y}" rx="4.5" ry="5.3" fill="${peau}"/>` +
+    `<path d="M4.1 ${y - .6}l1.6 2-1.4.6z" fill="${peau}"/><ellipse cx="-.9" cy="${y + .4}" rx="1" ry="1.4" fill="${OMBRE}"/><circle cx="2.6" cy="${y - 1.2}" r=".55" fill="#1A120C"/>`;
+
+  // ——— les passants ———
+  // femme, bassine de tomates sur la tête ; pagne terre cuite à motifs maïs, foulard rouge, corsage maïs
+  function femmeBassine() {
+    const p = PEAU[0];
+    return jambe(-1.5, -40, p, 'pied', 'mk-j1', 3) + jambe(1.5, -40, p, 'pied', 'mk-j2', 3) +
+      `<g class="mk-corps">` +
+      bras(-2.5, -57, 17, '#5A3620', '#E2A92A', 'mk-b1') +
+      `<path d="M-8.6 -42.5Q-10.4 -22 -7.8 -8.6H7.8Q10.6 -22 8.8 -42.5Z" fill="#B5523B"/>` +
+      `<path d="M-9.4 -34H9.8M-9 -24.5H9.6M-8.3 -15H8.8" stroke="#F2C230" stroke-width="1.6" stroke-dasharray="2.2 2.4"/><path d="M-9.3 -29H9.7M-8.6 -19.8H9.2" stroke="#10392B" stroke-width="1.1"/>` +
+      `<path d="M-7.4 -42.5L-6.6 -57.5Q0 -61.2 6.8 -57.4L7.6 -42.5Z" fill="#E9B23A"/><path d="M-5 -52l2 2m3 -3l2 2m-6 5l2 2m3 -2l2 2" stroke="rgba(120,70,0,.35)" stroke-width=".9"/>` +
+      tete(-66, p) +
+      `<path d="M-5.1 -66.6Q-5.6 -74.2 0 -74.4Q5.8 -74.2 5 -66.4Q.4 -69.6 -5.1 -66.6Z" fill="#C2402A"/><path d="M-5 -68.8q-3.4 1.8 -2.2 5" stroke="#C2402A" stroke-width="2" fill="none" stroke-linecap="round"/>` +
+      // le bras levé qui tient la bassine
+      `<path d="M5.6 -58.4L9 -66.2L9.8 -76.4" stroke="${p}" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 -58.6l3.1 -5.4" stroke="#E2A92A" stroke-width="4.4" stroke-linecap="round"/>` +
+      // la bassine émaillée et ses tomates
+      `<path d="M-7.2 -74.4L-10.6 -80.4H10.6L7.2 -74.4Z" fill="#D8D2C2"/><path d="M-9.4 -78.4H9.4" stroke="#2F6B4F" stroke-width="1.4"/><ellipse cx="0" cy="-80.4" rx="10.8" ry="1.7" fill="#EFEADF"/>` +
+      [[-7, -82.6], [-3.4, -83.6], [.4, -83.2], [4.2, -83.6], [7.4, -82.4], [-5, -86.4], [-1.2, -87.2], [2.8, -86.8], [.8, -90.2]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.35" fill="#D23B25"/><circle cx="${x - .7}" cy="${y - .7}" r=".7" fill="#F2876B"/>`).join('') +
+      `</g>`;
   }
-  // une caisse de bois avec son contenu : tomate, aubergine, maïs, mangue, plantain, oignon
-  function caisse(x, y, p) {
-    const C = { tomate: ['#D9472B', 'c'], aubergine: ['#5B3A6E', 'e'], mais: ['#F2C230', 'm'], mangue: ['#F0A43A', 'e'], plantain: ['#D9C45C', 'b'], oignon: ['#C9A0C4', 'c'], orange: ['#F2893B', 'c'], chou: ['#8FB36A', 'c'] };
-    const [col, forme] = C[p] || C.tomate; const items = [];
-    for (let i = 0; i < 4; i++) { const cx = x + 5 + i * 6.5, cy = y + 6 - (i % 2) * 2.2;
-      // pas de transform SVG ici : la feuille de style pose transform-box sur tout le dessin, une rotation d'attribut partirait de travers
-      items.push(forme === 'c' ? `<circle cx="${cx}" cy="${cy}" r="3.1" fill="${col}"/>` : forme === 'e' ? `<ellipse cx="${cx}" cy="${cy}" rx="2.7" ry="3.7" fill="${col}"/>` : forme === 'm' ? `<ellipse cx="${cx}" cy="${cy}" rx="2.3" ry="4" fill="${col}"/><path d="M${cx - 2} ${cy + 3}q-2 3 0 5" stroke="#5E9E4A" stroke-width="1.2" fill="none"/>` : `<path d="M${cx - 3} ${cy + 1}q3 -5 6 0" stroke="${col}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`); }
-    return `<g><rect x="${x}" y="${y + 2}" width="30" height="11" rx="1" fill="#6B5035"/><path d="M${x} ${y + 6}h30M${x} ${y + 9.5}h30" stroke="rgba(23,21,18,.3)" stroke-width=".7"/>${items.join('')}<rect x="${x}" y="${y + 2}" width="30" height="3" fill="#7A5C3D"/></g>`;
+  // homme qui pousse une brouette de sacs de jute ; bleu de travail, casquette
+  function brouette() {
+    const p = PEAU[1];
+    return jambe(-2, -40, '#2E3E58', '#2A1D14', 'mk-j1', 3.6) + jambe(1.2, -40, '#34476A', '#2A1D14', 'mk-j2', 3.6) +
+      `<g class="mk-corps">` +
+      `<path d="M-6.2 -40.5L-4.2 -60.2Q2 -63.6 7.2 -59L6.4 -40.5Z" fill="#E7DCC4"/><path d="M-6.2 -40.5h12.6v2.6h-12.6z" fill="#3B2A1C"/>` +
+      tete(-66.4, p, 3.6).replace('cx="0" cy="-66.4"', 'cx=".6" cy="-66.4"') +
+      `<path d="M-4.4 -68.6Q-3.6 -73.6 1.4 -73.4Q5.8 -73 5.2 -68.6Z" fill="#10392B"/><path d="M3.6 -69.4h5.2q.8 0 .6 .9h-6z" fill="#0B2A1F"/>` +
+      // les bras tendus vers les poignées
+      `<path d="M4.4 -57.6L10.6 -47.6L15.4 -40.2" stroke="${p}" stroke-width="3.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 -58l3.6 5.8" stroke="#E7DCC4" stroke-width="4.4" stroke-linecap="round"/>` +
+      // la brouette : poignées, bac, sacs, roue qui tourne, pied
+      `<path d="M14 -40.6L28 -34.4" stroke="#3E4A44" stroke-width="2.2" stroke-linecap="round"/>` +
+      `<path d="M24.6 -39L52 -42.8L47 -24.2L28.4 -22.6Z" fill="#4C5E55"/><path d="M27 -36.4L50.8 -39.8" stroke="#6B7F75" stroke-width="1.2"/>` +
+      `<ellipse cx="34" cy="-43.4" rx="7.2" ry="5" fill="#A88A5E"/><ellipse cx="44.2" cy="-45" rx="7" ry="4.8" fill="#B99C72"/><ellipse cx="39" cy="-50.4" rx="6.4" ry="4.4" fill="#9C8058"/>` +
+      `<path d="M30 -46.6q4 -1.4 8 0M40 -48.4q4 -1.4 8 0M35.4 -53.4q3.6 -1.4 7.2 0" stroke="rgba(59,42,20,.4)" stroke-width=".8" fill="none"/>` +
+      `<path d="M32 -23L30.4 -1.4" stroke="#3E4A44" stroke-width="1.8" stroke-linecap="round"/>` +
+      `<g class="mk-roue"><circle cx="47.4" cy="-7.2" r="7" fill="#1E1A15"/><circle cx="47.4" cy="-7.2" r="4.4" fill="none" stroke="#5A564E" stroke-width="1"/><path d="M47.4 -11.6v8.8M43 -7.2h8.8" stroke="#5A564E" stroke-width="1"/></g>` +
+      `</g>`;
+  }
+  // jeune homme, un sac de jute sur l'épaule ; t-shirt vert, pantalon clair
+  function sacEpaule() {
+    const p = PEAU[2];
+    return jambe(-1.6, -40, '#C9BBA0', '#2A1D14', 'mk-j1', 3.4) + jambe(1.6, -40, '#D6C9AE', '#2A1D14', 'mk-j2', 3.4) +
+      `<g class="mk-corps">` +
+      bras(-2.2, -57.4, 18, '#6B4227', '#1F5A43', 'mk-b1') +
+      `<path d="M-6.4 -40.5L-5.6 -59.6Q1 -63.4 6.6 -59.4L6.8 -40.5Z" fill="#1F5A43"/><path d="M-1 -60.6q2 2.2 4.2 0" stroke="#174535" stroke-width="1.2" fill="none"/>` +
+      tete(-66.6, p) + `<path d="M-4.6 -68.4Q-3.4 -73.4 1 -72.8Q4.8 -72.4 4.6 -69.6Q.8 -71.4 -4.6 -68.4Z" fill="#1A120C"/>` +
+      // le sac sur l'épaule et le bras qui le tient
+      `<path d="M-9.6 -66Q-6 -77.4 7.4 -73.2Q13.4 -70.4 9.4 -64.4Q1 -60.8 -9.6 -66Z" fill="#B99C72"/><path d="M-7.4 -67.6q7.6 -4.6 14.4 -2.4" stroke="rgba(59,42,20,.35)" stroke-width="1" fill="none"/><path d="M-9.6 -66l-2.6 1.4 2.4 1.8" fill="#9C8058"/>` +
+      `<path d="M5.2 -58.4L8.6 -63.6L6.2 -69" stroke="${p}" stroke-width="3.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `</g>`;
+  }
+  // femme qui tient son enfant par la main, un panier dans l'autre ; pagne vert à motifs, foulard maïs
+  function femmeEnfant() {
+    const p = PEAU[1], e = PEAU[2];
+    const enfant = `<g transform="translate(-14 0)">` + jambe(-1, -19, '#2E3E58', e, 'mk-j1', 2.2).replace(/h5\.4/, 'h3.6').replace(/h-4\.4z/, 'h-3z') +
+      jambe(1, -19, '#2E3E58', e, 'mk-j2', 2.2).replace(/h5\.4/, 'h3.6').replace(/h-4\.4z/, 'h-3z') +
+      `<g class="mk-corps"><path d="M-4.2 -19.6L-3.4 -30.6Q0 -32.8 3.6 -30.6L4.2 -19.6Z" fill="#F2C230"/>` +
+      `<path d="M-1.2 -33.4h2.4v3h-2.4z" fill="${e}"/><circle cx="0" cy="-36.4" r="3.6" fill="${e}"/><path d="M-3.4 -37.4q.6 -3.2 3.6 -3.2q3 0 3.2 2.6q-3.2 -1.2 -6.8 .6z" fill="#1A120C"/><circle cx="2" cy="-37" r=".45" fill="#1A120C"/>` +
+      `<path d="M2.6 -29.4L8.4 -31.6L13.4 -36.8" stroke="${e}" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></g>`;
+    return enfant + jambe(-1.5, -40, p, 'pied', 'mk-j1', 3) + jambe(1.5, -40, p, 'pied', 'mk-j2', 3) +
+      `<g class="mk-corps">` +
+      `<path d="M-8.6 -42.5Q-10.2 -22 -7.8 -8.6H7.8Q10.4 -22 8.8 -42.5Z" fill="#2F6B4F"/>` +
+      [-36, -27, -18].map(y => `<path d="M-9 ${y}h18.4" stroke="#F2C230" stroke-width="1.2" stroke-dasharray="1.2 2.6"/><path d="M-9.2 ${y + 4}h18.8" stroke="#F3EFE4" stroke-width=".8" stroke-opacity=".7"/>`).join('') +
+      `<path d="M-7.4 -42.5L-6.6 -57.5Q0 -61.2 6.8 -57.4L7.6 -42.5Z" fill="#F3EFE4"/><path d="M-6.8 -50h14" stroke="#2F6B4F" stroke-width="1.1"/>` +
+      tete(-66, p) +
+      `<path d="M-5.4 -66.4Q-6 -76.4 .4 -76.4Q6.4 -76 5.2 -66.6Q.4 -71.4 -5.4 -66.4Z" fill="#F2C230"/><path d="M-1 -76q2.4 -3.2 5.6 -1.4q-2.4 .2 -2.8 2.4z" fill="#E2A92A"/>` +
+      // le bras qui tient l'enfant (en arrière, vers lui) et le bras qui porte le panier
+      `<path d="M-3.4 -57.4L-6.6 -46L-10.6 -40" stroke="${p}" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `<path d="M5.2 -57.6L7.2 -47.6L8.4 -40.6" stroke="${p}" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
+      `<path d="M4.4 -39.4Q8.6 -45.6 12.8 -39.4" stroke="#8C6A3E" stroke-width="1.2" fill="none"/><path d="M3.6 -39.6h10l-1.6 8h-6.8z" fill="#A9824F"/><path d="M4.4 -36.4h8.6M5 -33.6h7.4" stroke="#7A5A33" stroke-width=".8"/>` +
+      `<circle cx="6.6" cy="-40.6" r="1.8" fill="#D23B25"/><circle cx="9.8" cy="-41" r="1.7" fill="#5B3A6E"/>` +
+      `</g>`;
+  }
+  // le camion de vivriers : cabine vert forêt, liseré maïs, bâche de jute, sacs à l'arrière, phares
+  function camion() {
+    return `<path d="M-58 -16h104v4h-104z" fill="#1A1611"/>` +
+      `<path d="M-58 -50Q-57 -58 -48 -58H20Q26 -58 26 -52V-16H-58Z" fill="#8C7350"/><path d="M-56 -50Q-55 -56 -48 -56H20" stroke="#A88A5E" stroke-width="1.2" fill="none"/>` +
+      [-46, -30, -14, 2, 16].map(x => `<path d="M${x} -57.6V-16.4" stroke="#6E5A3C" stroke-width="1"/>`).join('') +
+      `<path d="M-58 -40H26" stroke="#6E5A3C" stroke-width="1.2"/>` +
+      `<g><ellipse cx="-50" cy="-22" rx="6" ry="4" fill="#B99C72"/><ellipse cx="-50" cy="-30" rx="6" ry="4" fill="#A88A5E"/></g>` +
+      `<path d="M26 -46H44Q50 -46 53 -40L58 -29V-16H26Z" fill="#10392B"/><path d="M26 -30H58" stroke="#F2C230" stroke-width="2"/>` +
+      `<path d="M30 -43H43Q47 -43 49.4 -38.6L52 -33H30Z" fill="#2A4A3F"/><path d="M31 -42.4l9 9" stroke="rgba(243,239,228,.18)" stroke-width="2"/>` +
+      `<circle cx="38" cy="-37.6" r="2.6" fill="#1A120C"/><path d="M35.4 -34.6q2.6 -2.2 5.2 0v1.6h-5.2z" fill="#1A120C"/>` +
+      `<path d="M56 -24h3v5h-3z" fill="#FFE08A"/><path d="M59 -22.6L92 -30V-12Z" fill="#FFE08A" fill-opacity=".12"/>` +
+      [-40, 40].map(x => `<g class="mk-roue"><circle cx="${x}" cy="-7.4" r="7.6" fill="#141210"/><circle cx="${x}" cy="-7.4" r="3.6" fill="#4A463F"/><path d="M${x - 3.6} -7.4h7.2M${x} -11v7.2" stroke="#2A2722" stroke-width="1.2"/></g>`).join('');
   }
 
-  // ——— les passants : des silhouettes, dessinées une fois, qui traversent devant les étals ———
-  const INK = '#100E0A', RIM = 'rgba(243,239,228,.16)';
-  const S = {
-    // femme, bassine de tomates sur la tête, pagne
-    femmeBassine: `<g><ellipse cx="0" cy="-33" rx="7.5" ry="2.6" fill="#2A211A" stroke="${RIM}" stroke-width=".6"/><circle cx="-3" cy="-35.5" r="1.7" fill="#D9472B"/><circle cx="1" cy="-36" r="1.8" fill="#D9472B"/><circle cx="4.5" cy="-35.2" r="1.5" fill="#E2552F"/>
-      <circle cx="0" cy="-27" r="3.4" fill="${INK}"/><path d="M-3 -23q3 -2 6 0l2 9h-10z" fill="${INK}"/><path d="M-5 -14h10l2 14h-14z" fill="${INK}" stroke="${RIM}" stroke-width=".6"/><path d="M-4.5 -22l-2 -8M4.5 -22l2 -8" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>
-      <path class="mk-jambe" d="M-2.5 0v-3M2.5 0v-3" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/></g>`,
-    // homme avec un pousse-pousse chargé de sacs
-    pousse: `<g><circle cx="-9" cy="-26" r="3.2" fill="${INK}"/><path d="M-12 -22q3 -2 6 0l1 11h-8z" fill="${INK}"/><path d="M-11 -11l-2 11M-7 -11l0 11" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/><path d="M-7 -18l9 -1" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/>
-      <path d="M1 -20h20l2 10h-22z" fill="#2A211A" stroke="${RIM}" stroke-width=".6"/><ellipse cx="7" cy="-22" rx="5" ry="3.2" fill="#8C7350"/><ellipse cx="15" cy="-23" rx="5" ry="3.2" fill="#A08560"/><ellipse cx="11" cy="-27" rx="4.5" ry="2.8" fill="#8C7350"/>
-      <circle class="mk-roue" cx="6" cy="-6" r="4.2" fill="none" stroke="${INK}" stroke-width="2"/><circle cx="6" cy="-6" r="1" fill="${INK}"/><circle class="mk-roue" cx="18" cy="-6" r="4.2" fill="none" stroke="${INK}" stroke-width="2"/><circle cx="18" cy="-6" r="1" fill="${INK}"/></g>`,
-    // camion de marché, bâché, phare allumé
-    camion: `<g><rect x="-34" y="-28" width="46" height="20" rx="1.5" fill="#1E1812" stroke="${RIM}" stroke-width=".7"/><path d="M-34 -28q23 -7 46 0" fill="#2A211A"/><path d="M12 -22h12q4 0 6 4l3 6v4h-21z" fill="#1E1812" stroke="${RIM}" stroke-width=".7"/><rect x="15" y="-20" width="9" height="6" rx="1" fill="#3A3024"/>
-      <rect x="-36" y="-9" width="70" height="3" fill="#1E1812"/><circle class="mk-roue" cx="-22" cy="-4" r="4.6" fill="${INK}"/><circle cx="-22" cy="-4" r="1.6" fill="#3A3024"/><circle class="mk-roue" cx="22" cy="-4" r="4.6" fill="${INK}"/><circle cx="22" cy="-4" r="1.6" fill="#3A3024"/>
-      <circle cx="32" cy="-11" r="1.5" fill="#FFE08A"/><path d="M33 -11l14 -3v6z" fill="#FFE08A" fill-opacity=".14"/></g>`,
-    // jeune homme, un sac de jute sur l'épaule
-    sacEpaule: `<g><ellipse cx="4" cy="-33" rx="8" ry="4" fill="#8C7350" transform="rotate(-18 4 -33)"/><circle cx="-2" cy="-27" r="3.3" fill="${INK}"/><path d="M-5 -23q3 -2 6 0l1.5 10h-9z" fill="${INK}"/><path d="M-5 -13l-1.5 13M0 -13l1 13" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/><path d="M1 -21l5 -9" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/></g>`,
-    // femme avec un sac à la main, un enfant à côté
-    femmeEnfant: `<g><circle cx="0" cy="-28" r="3.3" fill="${INK}"/><path d="M-3 -24q3 -2 6 0l2 9h-10z" fill="${INK}"/><path d="M-5 -15h10l1.5 15h-13z" fill="${INK}" stroke="${RIM}" stroke-width=".6"/><path d="M4 -22l5 9" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/><rect x="7" y="-13" width="7" height="9" rx="1" fill="#2A211A" stroke="${RIM}" stroke-width=".6"/>
-      <circle cx="-10" cy="-17" r="2.4" fill="${INK}"/><path d="M-12 -14q2 -1.5 4 0l1 7h-6z" fill="${INK}"/><path d="M-11 -7v7M-9 -7v7" stroke="${INK}" stroke-width="1.8" stroke-linecap="round"/><path d="M-7 -13l3 -5" stroke="${INK}" stroke-width="1.4" stroke-linecap="round"/></g>`
-  };
-  // chaque passant : la silhouette, sa durée de traversée, son retard, son sens, sa taille (le camion passe derrière, plus petit = plus loin)
+  // chaque passant : silhouette, durée de la traversée, retard, sens (1 = vers la droite), taille, ligne de sol, durée du pas
   const PASSANTS = [
-    ['camion', 34, -6, 1, .78, 116],
-    ['femmeBassine', 21, -3, 1, 1, 119],
-    ['pousse', 26, -14, -1, .95, 119],
-    ['sacEpaule', 17, -9, -1, 1, 119],
-    ['femmeEnfant', 29, -20, 1, .92, 119]
+    ['camion', camion, 46, -14, 1, .78, 160, 0],
+    ['femmeBassine', femmeBassine, 30, -6, 1, 1, 183, 1.15],
+    ['brouette', brouette, 38, -24, -1, 1, 184, 1.25],
+    ['sacEpaule', sacEpaule, 26, -16, -1, 1, 183, 1.05],
+    ['femmeEnfant', femmeEnfant, 36, -31, 1, .97, 184, 1.2]
   ];
-  function passants() {
-    return `<g class="mk-pass">${PASSANTS.map(([n, d, t, sens, s, y], i) => `<g class="mk-p" style="--d:${d}s;--t:${t}s;--y:${y}px;--s:${s}"><g class="mk-pi" style="transform:scaleX(${sens})">${S[n]}</g></g>`).join('')}</g>`;
+  const passants = () => PASSANTS.map(([n, f, d, t, sens, s, y, pas]) =>
+    `<g class="mk-p mk-${sens > 0 ? 'd' : 'g'}" style="--d:${d}s;--t:${t}s;--y:${y}px;--s:${s};--pas:${pas || 1}s">` +
+    `<ellipse class="mk-om" cx="0" cy="0" rx="${n === 'camion' ? 60 : n === 'brouette' ? 30 : 11}" ry="2.4" fill="rgba(0,0,0,.35)"/>` +
+    `<g transform="scale(${sens} 1)"><g class="mk-pas">${f()}</g></g></g>`).join('');
+
+  // ——— le décor ———
+  function etalTerreCuite() {
+    return `<g>` +
+      `<path d="M14 150V104M128 150V104" stroke="#3B2A1C" stroke-width="2.4"/>` +
+      `<path d="M6 102Q71 116 136 102L132 92Q71 103 10 92Z" fill="#B5523B"/><path d="M10 92Q71 103 132 92" stroke="#D07254" stroke-width="1.4" fill="none"/><path d="M6 102Q71 116 136 102" stroke="#8E3C2A" stroke-width="1.2" fill="none"/>` +
+      // la vendeuse, assise derrière la table
+      `<g transform="translate(52 0)"><path d="M-9 132Q-8 116 0 115Q8 116 9 132Z" fill="#2F6B4F"/><path d="M-8 124h16" stroke="#F2C230" stroke-width="1" stroke-dasharray="1.2 2"/>` +
+      `<path d="M-1.6 111h3.2v4h-3.2z" fill="${PEAU[0]}"/><ellipse cx="0" cy="107.4" rx="4.3" ry="5" fill="${PEAU[0]}"/><path d="M-4.8 107Q-5.2 99.6 0 99.4Q5.4 99.6 4.8 107Q0 103.6 -4.8 107Z" fill="#F2C230"/><path d="M2 99.6q3.6 -2.6 6 .4q-3 -.4 -4.4 2z" fill="#E2A92A"/></g>` +
+      `<path d="M8 132H134V150H8Z" fill="#4E3A26"/><path d="M8 138H134M8 144H134" stroke="rgba(20,12,6,.35)" stroke-width="1"/>` +
+      // tas de tomates, d'oignons, régime de plantain
+      [[26, 130], [32, 130], [38, 130], [29, 125.6], [35, 125.6], [32, 121.4]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.1" fill="#D23B25"/><circle cx="${x - .9}" cy="${y - .9}" r=".9" fill="#F2876B"/>`).join('') +
+      [[70, 130], [76, 130], [82, 130], [73, 125.6], [79, 125.6]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="3.1" ry="2.9" fill="#B9709A"/><path d="M${x} ${y - 2.8}v-1.6" stroke="#6B8A4A" stroke-width=".8"/>`).join('') +
+      `<path d="M98 131Q100 118 112 116Q122 116 124 131Z" fill="#C9B24A"/><path d="M100 128Q108 120 120 121M102 124Q110 117 118 117" stroke="#9C8A2E" stroke-width="1" fill="none"/><path d="M111 116v-4" stroke="#6B5A2E" stroke-width="2"/>` +
+      `<circle class="mk-amp" cx="71" cy="111" r="2.2"/><path d="M71 104v4.6" stroke="#3B2A1C" stroke-width=".8"/>` +
+      `</g>`;
+  }
+  function etalVert() {
+    return `<g>` +
+      `<path d="M272 150V102M386 150V102" stroke="#3B2A1C" stroke-width="2.4"/>` +
+      `<path d="M264 100Q329 113 394 100L390 90Q329 100 268 90Z" fill="#10392B"/><path d="M268 90Q329 100 390 90" stroke="#2F6B4F" stroke-width="1.4" fill="none"/><path d="M264 100Q329 113 394 100" stroke="#F2C230" stroke-width="1.1" fill="none"/>` +
+      // le vendeur, debout, qui sert
+      `<g transform="translate(352 0)"><path d="M-7 134L-6 116Q0 113 6.4 116L7 134Z" fill="#E7DCC4"/><path d="M-1.6 108.6h3.2v4h-3.2z" fill="${PEAU[1]}"/><ellipse cx="-.4" cy="105" rx="4.3" ry="5" fill="${PEAU[1]}"/>` +
+      `<path d="M-4.4 103.4Q-3.4 99 1 99.4Q4.4 99.8 4 102.6Q0 101 -4.4 103.4Z" fill="#1A120C"/><path d="M-4.8 119L-11 126" stroke="${PEAU[1]}" stroke-width="2.8" stroke-linecap="round"/></g>` +
+      `<path d="M266 134H392V150H266Z" fill="#4E3A26"/><path d="M266 140H392M266 145H392" stroke="rgba(20,12,6,.35)" stroke-width="1"/>` +
+      // sacs de jute ouverts : maïs, riz, haricots
+      [[286, '#F2C230', '#D9A81E'], [310, '#F3EFE4', '#D9D2C2'], [334, '#8C3A2A', '#6E2C20']].map(([x, c, c2]) =>
+        `<path d="M${x - 10} 134Q${x - 12} 120 ${x - 9} 117H${x + 9}Q${x + 12} 120 ${x + 10} 134Z" fill="#B99C72"/><path d="M${x - 9} 117Q${x} 113 ${x + 9} 117Q${x} 121 ${x - 9} 117Z" fill="${c}"/>` +
+        `<path d="M${x - 6} 117.6q3 -1 6 0M${x + 1} 116.4q3 -1 5 .4" stroke="${c2}" stroke-width=".9" fill="none"/><path d="M${x - 10} 120h20" stroke="#9C8058" stroke-width="1.4"/>`).join('') +
+      `<circle class="mk-amp" cx="318" cy="110" r="2.2" style="--i:1"/><path d="M318 103v4.6" stroke="#3B2A1C" stroke-width=".8"/>` +
+      `</g>`;
   }
 
-  function svg(k, o) {
-    o = o || {}; const mode = o.passants || 'oui';
-    if (mode === 'seuls') return `<svg class="mk mk-seuls" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">${passants()}</svg>`;
-    return `<svg class="mk" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+  function svg(k) {
+    return `<svg class="mk" viewBox="0 0 400 190" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
   <defs>
-    <linearGradient id="${k}ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E2A20"/><stop offset=".55" stop-color="#1A1912"/><stop offset="1" stop-color="#2A2018"/></linearGradient>
-    <radialGradient id="${k}lum" cx="50%" cy="100%" r="70%"><stop offset="0" stop-color="var(--mk-tint,#F2C230)" stop-opacity=".46"/><stop offset=".5" stop-color="var(--mk-tint,#F2C230)" stop-opacity=".14"/><stop offset="1" stop-color="var(--mk-tint,#F2C230)" stop-opacity="0"/></radialGradient>
-    <linearGradient id="${k}sol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B1711"/><stop offset="1" stop-color="#110E0A"/></linearGradient>
+    <linearGradient id="${k}ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B231A"/><stop offset=".5" stop-color="#173126"/><stop offset=".78" stop-color="#5A3A22"/><stop offset="1" stop-color="#8A5428"/></linearGradient>
+    <linearGradient id="${k}sol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A2B1C"/><stop offset="1" stop-color="#17110B"/></linearGradient>
+    <radialGradient id="${k}lum" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFD27A" stop-opacity=".5"/><stop offset="1" stop-color="#FFD27A" stop-opacity="0"/></radialGradient>
   </defs>
-  <rect width="400" height="132" fill="url(#${k}ciel)"/>
-  <ellipse class="mk-lum" cx="200" cy="118" rx="230" ry="96" fill="url(#${k}lum)"/>
-  <!-- au fond : les hangars du marché de gros, quelques fenêtres allumées -->
-  <g fill="#131009"><path d="M-10 70v-22l34 -9 34 9v22z"/><path d="M70 70v-18l44 -10 44 10v18z"/><path d="M270 70v-20l38 -9 38 9v20z"/><path d="M356 70v-16l30 -8 30 8v16z"/></g>
-  <g fill="#FFE08A" fill-opacity=".55"><rect x="12" y="56" width="4" height="3"/><rect x="24" y="56" width="4" height="3"/><rect x="100" y="58" width="4" height="3"/><rect x="128" y="58" width="4" height="3"/><rect x="296" y="56" width="4" height="3"/><rect x="330" y="56" width="4" height="3"/></g>
-  <path d="M-10 70H410" stroke="rgba(243,239,228,.08)"/>
-  <!-- le sol et les reflets chauds sous les étals -->
-  <rect y="112" width="400" height="20" fill="url(#${k}sol)"/>
-  <g fill="var(--mk-tint,#F2C230)" fill-opacity=".07"><ellipse cx="75" cy="116" rx="60" ry="5"/><ellipse cx="200" cy="117" rx="64" ry="5"/><ellipse cx="325" cy="116" rx="60" ry="5"/></g>
-  <!-- les étals -->
-  ${etal(20, k, ['tomate', 'aubergine', 'mais'])}${etal(145, k, ['mangue', 'tomate', 'plantain'])}${etal(270, k, ['oignon', 'chou', 'orange'])}
-  <!-- l'enseigne, sur l'étal de gauche (au milieu, le sac la cacherait à l'entrée) -->
-  <g><rect x="48" y="40" width="54" height="16" rx="3" fill="#10392B" stroke="#F2C230" stroke-width=".8"/><text x="75" y="47" text-anchor="middle" font-family="Jost,system-ui,sans-serif" font-weight="600" font-size="6.2" fill="#F3EFE4">marché</text><text x="75" y="53.6" text-anchor="middle" font-family="Jost,system-ui,sans-serif" font-weight="800" font-style="italic" font-size="6.4" fill="#F2C230">de Gros</text><path d="M69 40v-4M81 40v-4" stroke="#3B2E1C" stroke-width=".8"/></g>
-  ${mode === 'non' ? '' : passants()}
+  <rect width="400" height="150" fill="url(#${k}ciel)"/>
+  <g fill="#F3EFE4" class="mk-et"><circle cx="40" cy="14" r=".7"/><circle cx="118" cy="26" r=".5"/><circle cx="210" cy="10" r=".6"/><circle cx="300" cy="22" r=".5"/><circle cx="362" cy="12" r=".7"/></g>
+  <!-- au fond : un grand fromager, les hangars du marché, quelques fenêtres allumées -->
+  <path d="M188 120V82M188 92Q170 78 150 82M188 88Q206 70 228 76" stroke="#0E1A13" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+  <g fill="#0E1A13"><ellipse cx="156" cy="74" rx="20" ry="10"/><ellipse cx="186" cy="66" rx="24" ry="13"/><ellipse cx="222" cy="70" rx="20" ry="10"/><ellipse cx="204" cy="78" rx="16" ry="8"/></g>
+  <g fill="#120F0A"><path d="M-6 122V96l40 -12 40 12v26z"/><path d="M226 122V100l34 -10 34 10v22z"/><path d="M330 122V94l38 -11 38 11v28z"/></g>
+  <g fill="#FFD27A" fill-opacity=".6"><rect x="10" y="104" width="5" height="4"/><rect x="40" y="104" width="5" height="4"/><rect x="250" y="106" width="5" height="4"/><rect x="350" y="102" width="5" height="4"/><rect x="378" y="102" width="5" height="4"/></g>
+  <!-- des passants lointains, immobiles, dans la lumière du soir -->
+  <g fill="#1B1611" opacity=".85">${[[150, 2.2], [166, 2], [214, 2.3], [236, 1.9]].map(([x, s]) => `<g><circle cx="${x}" cy="${130 - s * 9}" r="${s * 1.1}"/><path d="M${x - s * 1.4} ${131 - s * 7.6}h${s * 2.8}l${s * .4} ${s * 7.6}h-${s * 3.6}z"/></g>`).join('')}</g>
+  <!-- le sol : terre battue, traces de roues -->
+  <rect y="146" width="400" height="44" fill="url(#${k}sol)"/>
+  <path d="M0 168Q200 160 400 170M0 178Q200 171 400 181" stroke="rgba(243,239,228,.05)" stroke-width="1.2" fill="none"/>
+  <ellipse cx="71" cy="140" rx="64" ry="22" fill="url(#${k}lum)"/><ellipse cx="329" cy="140" rx="64" ry="22" fill="url(#${k}lum)"/>
+  ${etalTerreCuite()}${etalVert()}
+  <g class="mk-pass">${passants()}</g>
 </svg>`;
   }
 
   const CSS = `.mk{display:block;width:100%;height:100%}
-.mk *{transform-box:fill-box}
-.mk-amp{fill:#FFE08A;animation:mkAmp 3.4s ease-in-out infinite;animation-delay:calc(var(--i) * -.7s)}
-@keyframes mkAmp{0%,100%{opacity:.55}50%{opacity:1}}
-.mk-lum{transform-origin:50% 100%;animation:mkLum 6s ease-in-out infinite}
-@keyframes mkLum{50%{opacity:.8}}
-/* les passants : chacun traverse en fondu, à sa vitesse, et recommence ; --s = taille (le camion est plus loin) */
-.mk-p{transform-box:view-box;transform-origin:0 0;animation:mkPasse var(--d) linear infinite;animation-delay:var(--t);opacity:0;will-change:transform}
-.mk-p .mk-pi{transform-box:view-box;transform-origin:0 0}
-@keyframes mkPasse{0%{transform:translate(-70px,var(--y)) scale(var(--s));opacity:0}7%{opacity:1}93%{opacity:1}100%{transform:translate(470px,var(--y)) scale(var(--s));opacity:0}}
-.mk-p:nth-child(3),.mk-p:nth-child(4){animation-name:mkPasseInv}
-@keyframes mkPasseInv{0%{transform:translate(470px,var(--y)) scale(var(--s));opacity:0}7%{opacity:1}93%{opacity:1}100%{transform:translate(-70px,var(--y)) scale(var(--s));opacity:0}}
-.mk-roue{transform-box:fill-box;transform-origin:center;animation:mkRoue 1.2s linear infinite}
+.mk-amp{fill:#FFE08A;filter:drop-shadow(0 0 3px #FFD27A);animation:mkAmp 3.6s ease-in-out infinite}
+@keyframes mkAmp{0%,100%{opacity:.8}50%{opacity:1}}
+.mk-et circle{animation:mkEt 5s ease-in-out infinite}.mk-et circle:nth-child(2n){animation-delay:-2.5s}
+@keyframes mkEt{50%{opacity:.25}}
+/* les passants traversent la rue, en fondu, chacun à son rythme */
+.mk-p{transform-box:view-box;transform-origin:0 0;opacity:0;animation:mkD var(--d) linear infinite;animation-delay:var(--t);will-change:transform,opacity}
+.mk-p.mk-g{animation-name:mkG}
+@keyframes mkD{0%{transform:translate(-80px,var(--y)) scale(var(--s));opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translate(480px,var(--y)) scale(var(--s));opacity:0}}
+@keyframes mkG{0%{transform:translate(480px,var(--y)) scale(var(--s));opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translate(-80px,var(--y)) scale(var(--s));opacity:0}}
+/* la marche : les jambes et les bras se balancent depuis la hanche et l'épaule, le corps monte et descend à chaque pas */
+.mk-j,.mk-b{transform-box:fill-box;transform-origin:50% 0}
+.mk-j1{animation:mkJ var(--pas) ease-in-out infinite alternate}
+.mk-j2{animation:mkJ var(--pas) ease-in-out infinite alternate-reverse}
+@keyframes mkJ{from{rotate:-17deg}to{rotate:17deg}}
+.mk-b1{animation:mkBr var(--pas) ease-in-out infinite alternate-reverse}
+@keyframes mkBr{from{rotate:-14deg}to{rotate:14deg}}
+.mk-corps{animation:mkPas calc(var(--pas) / 2) ease-in-out infinite alternate}
+@keyframes mkPas{from{transform:translateY(0)}to{transform:translateY(-1.1px)}}
+.mk-roue{transform-box:fill-box;transform-origin:center;animation:mkRoue 1.3s linear infinite}
 @keyframes mkRoue{to{rotate:360deg}}
-.mk-seuls{position:absolute;inset:0}
-@media (prefers-reduced-motion:reduce){.mk-amp,.mk-lum,.mk-roue{animation:none}.mk-p{animation:none;opacity:.9;transform:translate(var(--x0,120px),var(--y)) scale(var(--s))}.mk-p:nth-child(1){--x0:40px}.mk-p:nth-child(2){--x0:150px}.mk-p:nth-child(3){--x0:250px}.mk-p:nth-child(4){--x0:330px}.mk-p:nth-child(5){--x0:90px}}`;
-  function css() { if (document.getElementById('mkCss')) return; const st = document.createElement('style'); st.id = 'mkCss'; st.textContent = CSS; document.head.appendChild(st); }
+@media (prefers-reduced-motion:reduce){.mk *{animation:none!important}.mk-p{opacity:1;transform:translate(var(--x0,200px),var(--y)) scale(var(--s))}
+  .mk-p:nth-child(1){--x0:120px}.mk-p:nth-child(2){--x0:150px}.mk-p:nth-child(3){--x0:250px}.mk-p:nth-child(4){--x0:205px}.mk-p:nth-child(5){--x0:330px}}`;
+  function css() { if (document.getElementById('mkCss')) { document.getElementById('mkCss').textContent = CSS; return; } const st = document.createElement('style'); st.id = 'mkCss'; st.textContent = CSS; document.head.appendChild(st); }
 
   window.MDGScene = { svg, css };
 })();

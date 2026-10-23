@@ -284,7 +284,7 @@
 .ng-alt{width:100%;min-height:48px;margin:0 0 10px;border:1px solid rgba(245,240,230,.2);border-radius:999px;background:none;color:#F5F0E6;font:600 15px Jost,sans-serif;cursor:pointer}
 .ng-warn{padding:12px 14px;border-radius:16px;background:rgba(242,194,48,.12);color:#F3D2BC;font-size:13.5px;line-height:1.45;margin:0 0 14px}
 /* ——— la porte : scène + formulaire ——— */
-.ng--porte{position:relative;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:132px minmax(0,1fr);max-width:440px;max-height:calc(100dvh - 16px);padding:0;overflow:hidden}
+.ng--porte{position:relative;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:188px minmax(0,1fr);max-width:440px;max-height:calc(100dvh - 16px);padding:0;overflow:hidden}
 .ng-scene{position:relative;overflow:hidden;background:radial-gradient(90% 120% at 50% 100%,#2a2219 0%,#15120e 70%);border-bottom:1px solid rgba(245,240,230,.08)}
 .ng-form{position:relative;overflow:auto;padding:22px 22px calc(22px + env(safe-area-inset-bottom));overscroll-behavior:contain}
 @media (min-width:760px){.ng-bg:has(.ng--porte){padding:24px}.ng--porte{max-width:980px;grid-template-columns:minmax(0,1fr) 440px;grid-template-rows:minmax(0,1fr);height:min(660px,calc(100dvh - 48px))}.ng-scene{border-bottom:0;border-right:1px solid rgba(245,240,230,.08)}.ng-form{padding:40px 38px 32px}}

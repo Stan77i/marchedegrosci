@@ -993,6 +993,18 @@ class Component extends DCLogic {
   intention(h) {
     const brut = (h || location.hash || '').split('?'), r = (brut[0] || '').replace(/^#\/?/, '').split('/')[0], q = new URLSearchParams(brut[1] || '');
     try { const u = new URLSearchParams(location.search); if (u.get('utm_source') && !localStorage.getItem('mdg-app:source')) localStorage.setItem('mdg-app:source', JSON.stringify({ s: u.get('utm_source').slice(0, 40), m: (u.get('utm_medium') || '').slice(0, 40), c: (u.get('utm_campaign') || '').slice(0, 40), t: Date.now() })); } catch (_) {}
+    // mesure (schéma 81, sans donnée personnelle, jamais l'administrateur) : une ouverture venue du site ou d'un QR code ; puis, une fois, la connexion qui suit
+    try {
+      const u = new URLSearchParams(location.search), adm = localStorage.getItem('mdg-site:admin') === '1';
+      const envoie = (ev, x) => this.attendre(() => window.MDGNuage && MDGNuage.rpc, () => MDGNuage.rpc('mesurer', { p_evenement: ev, p_page: 'app/' + (r || 'accueil'), p_cible: null, p_source: x.s || null, p_support: x.m || null, p_campagne: x.c || null, p_appareil: matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 768 ? 'tel' : 'ordi' }, false).catch(() => {}));
+      if (!adm && u.get('utm_source')) envoie('ouverture_app', { s: u.get('utm_source'), m: u.get('utm_medium'), c: u.get('utm_campaign') });
+      const src = JSON.parse(localStorage.getItem('mdg-app:source') || 'null');
+      if (!adm && src && !localStorage.getItem('mdg-app:source-compte') && !this._mesCnx) {
+        this._mesCnx = true;
+        const cnx = () => { removeEventListener('mdg:connecte', cnx); try { localStorage.setItem('mdg-app:source-compte', '1'); } catch (_) {} envoie('connexion_app', src); };
+        addEventListener('mdg:connecte', cnx);
+      }
+    } catch (_) {}
     const M = window.MDG, slug = q.get('produit'), connu = !!slug && M.products.some(p => p.slug === slug);
     const sens = r === 'publier' ? (q.get('sens') === 'demande' ? 'cherche' : 'jai') : r === 'vendre' && connu ? 'jai' : r === 'demande' && connu ? 'cherche' : null;
     if (sens) {

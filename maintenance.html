@@ -94,7 +94,13 @@ p{margin:0 auto;max-width:440px;font:400 17px/1.5 Jost,sans-serif;color:var(--sa
   var $ = function (i) { return document.getElementById(i); };
   // l'adresse demandée (#/catalogue…) suit vers l'application
   var go = $('go'), h = location.hash && location.hash !== '#' ? location.hash : '', t = 0, n = 8;
-  go.href = 'application.dc.html?app=1' + h;
+  // la provenance (QR code, campagne) suit vers l'application, et la visite est comptée (schéma 81, sans donnée personnelle ; jamais l'administrateur)
+  var u = (location.search.match(/utm_[a-z]+=[^&]*/g) || []).join('&'), q = {}; u.split('&').forEach(function (x) { var k = x.split('='); if (k[1]) q[k[0]] = decodeURIComponent(k[1]); });
+  go.href = 'application.dc.html?app=1' + (u ? '&' + u : '') + h;
+  try { if (localStorage.getItem('mdg-site:admin') !== '1' && !sessionStorage.getItem('mdg-vu:maintenance')) { sessionStorage.setItem('mdg-vu:maintenance', '1');
+    var ref = ''; try { ref = document.referrer ? new URL(document.referrer).hostname.replace(/^www\./, '') : ''; } catch (_) {}
+    fetch('https://catmsypctymgkjkfzdkt.supabase.co/rest/v1/rpc/mesurer', { method: 'POST', keepalive: true, headers: { apikey: 'sb_publishable_KC2au-t8dqasp5ez9Lq6XQ_JvbTtVQ5', Authorization: 'Bearer sb_publishable_KC2au-t8dqasp5ez9Lq6XQ_JvbTtVQ5', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_evenement: 'vue', p_page: 'maintenance', p_source: q.utm_source || (ref && ref !== location.hostname ? ref : null), p_support: q.utm_medium || null, p_campagne: q.utm_campaign || null, p_appareil: matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 768 ? 'tel' : 'ordi' }) }).catch(function () {}); } } catch (_) {}
   function arreter() { clearInterval(t); t = 0; $('compte').textContent = ''; }
   // téléphone, ou administrateur reconnu sur ce navigateur : l'application peut s'ouvrir
   var tel = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 768, adm = false;

@@ -105,7 +105,14 @@
 
   const SCSS = `.pt--sac .ps-fond{position:absolute;inset:0;width:100%;height:100%;display:block}
 .pt--sac .ps-halo{opacity:.55;transform-box:fill-box;transform-origin:50% 100%;transition:opacity .7s,transform .9s cubic-bezier(.22,1,.36,1);animation:psSouffle 5s ease-in-out infinite}
-.pt--sac .ps-sac{position:absolute;left:50%;bottom:8px;line-height:0;transform:translateX(-50%);transition:transform .55s cubic-bezier(.22,1,.36,1)}
+.pt--sac .ps-scene{overflow:hidden}
+.pt--sac .ps-scene .mk{--mk-tint:#F2C230;transition:filter .7s}
+.pt[data-etat=saisie] .ps-scene .mk{filter:brightness(1.08)}
+.pt[data-etat=envoi] .ps-scene .mk,.pt[data-etat=ok] .ps-scene .mk{filter:brightness(1.18) saturate(1.1)}
+.pt[data-etat=erreur] .ps-scene .mk{filter:brightness(.7) saturate(.6)}
+.pt[data-etat=ferme] .ps-scene .mk{filter:brightness(.55) saturate(.4)}
+/* le sac devant les étals : une ombre chaude le pose au sol */
+.pt--sac .ps-sac{position:absolute;left:50%;bottom:6px;line-height:0;transform:translateX(-50%);transition:transform .55s cubic-bezier(.22,1,.36,1);filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
 .pt--sac .ps-sac svg{display:block}
 .pt--sac .ps-sac.chg svg{animation:psPose .4s cubic-bezier(.22,1,.36,1) both}
 @keyframes psPose{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}
@@ -116,18 +123,19 @@
 .pt[data-etat=ferme] .ps-halo{opacity:.14;animation:none}
 @media (prefers-reduced-motion:reduce){.pt--sac .ps-halo,.pt--sac .ps-sac{transition:none;animation:none}.pt--sac .ps-sac.chg svg{animation:none}}`;
   const HUMEUR = { repos: 'vide', saisie: 'vide', envoi: 'charge', ok: 'plein', erreur: 'triste', ferme: 'ferme' };
-  function monterSvg(el) {
+  function monterSvg(el, large) {
     if (!document.getElementById('psSacCss')) { const st = document.createElement('style'); st.id = 'psSacCss'; st.textContent = SCSS; document.head.appendChild(st); }
     el.classList.add('pt', 'pt--sac'); el.dataset.mode = 'in'; el.dataset.etat = 'repos';
-    el.innerHTML = `<svg class="ps-fond" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+    // le marché (app/scene.js) s'exprime seul : pas de sac ici, il vient dire bienvenue une fois la connexion réussie (entrer())
+    if (window.MDGScene) MDGScene.css();
+    el.innerHTML = (window.MDGScene ? `<div class="ps-fond ps-scene">${MDGScene.svg('ps')}</div>` : `<svg class="ps-fond" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
       <defs><radialGradient id="psH" cx="50%" cy="100%" r="62%"><stop offset="0" stop-color="#F2C230" stop-opacity=".4"/><stop offset=".55" stop-color="#E9A35E" stop-opacity=".14"/><stop offset="1" stop-color="#E07A3F" stop-opacity="0"/></radialGradient></defs>
-      <ellipse class="ps-halo" cx="200" cy="134" rx="200" ry="104" fill="url(#psH)"/><path d="M0 123.5H400" stroke="rgba(245,240,230,.16)"/></svg>
-      <div class="ps-sac"></div><p class="pt-sr">Le sac du Marché de Gros vous attend à l'entrée.</p>`;
-    const hote = el.querySelector('.ps-sac'); let h = '';
-    const poser = humeur => { if (h === humeur || !window.MDGSac) return; h = humeur; hote.innerHTML = MDGSac.svg(humeur, { t: 94 }); hote.classList.remove('chg'); void hote.offsetWidth; hote.classList.add('chg'); };
-    poser('vide');
+      <ellipse class="ps-halo" cx="200" cy="134" rx="200" ry="104" fill="url(#psH)"/><path d="M0 123.5H400" stroke="rgba(245,240,230,.16)"/></svg>`) +
+      `<p class="pt-sr">Un marché de gros le soir : des étals éclairés, des vendeuses, et des passants qui traversent la rue.</p>`;
+    // grand écran : la colonne est haute ; on garde tout le marché, calé en bas, et le ciel continue au-dessus
+    if (large) { el.classList.add('ps-large'); el.querySelector('.mk')?.setAttribute('preserveAspectRatio', 'xMidYMax meet'); }
     return {
-      etat(n) { if (!(n in HUMEUR)) return; el.dataset.etat = n; poser(HUMEUR[n]); },
+      etat(n) { if (n in HUMEUR) el.dataset.etat = n; },
       mode(m) { el.dataset.mode = m; },
       arreter() {}
     };
@@ -135,7 +143,7 @@
 
   function monter(el, opt = {}) {
     const compact = !!opt.compact;
-    if (compact && document.documentElement.hasAttribute('data-app')) return monterSvg(el);  // l'application sur téléphone ; le site garde ses points partout
+    if (document.documentElement.hasAttribute('data-app')) return monterSvg(el, !compact);  // l'application : le marché à toutes les tailles ; le site garde ses points
     el.classList.add('pt');
     el.innerHTML = `<canvas class="pt-cv" aria-hidden="true"></canvas><div class="pt-txt" aria-hidden="true"><span class="pt-k"><i></i><em></em></span><p class="pt-m"></p></div><p class="pt-sr">Deux mondes, un même marché : le Marché de Gros relie ceux qui produisent et ceux qui cherchent, partout en Côte d'Ivoire.</p>`;
     const cv = el.querySelector('canvas'), ctx = cv.getContext('2d'), tx = el.querySelector('.pt-txt'), k = el.querySelector('.pt-k em'), ki = el.querySelector('.pt-k i'), m = el.querySelector('.pt-m');
@@ -270,7 +278,7 @@
     ov.style.cssText = 'position:fixed;inset:0;z-index:10050;background:#10392B;overflow:hidden;opacity:0;display:grid;place-items:center';
     ov.innerHTML = `<div style="line-height:0;transform-origin:50% 29%;will-change:transform">${MDGSac.svg('plein', { t: 170 })}</div>
       <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#FFF6DE 0%,#FCE6B8 45%,#F2C230 100%);opacity:0"></div>
-      <p style="position:absolute;left:24px;right:24px;top:50%;margin:-24px 0 0;text-align:center;font:600 26px/1.2 Jost,sans-serif;letter-spacing:-.015em;color:#171512;opacity:0">Vous êtes dans le <em style="font:900 italic 1em Jost,sans-serif;color:#10392B;padding:0 .06em;background:linear-gradient(transparent 62%,rgba(242,194,48,.65) 62%,rgba(242,194,48,.65) 94%,transparent 94%)">marché</em>.</p>`;
+      <p style="position:absolute;left:24px;right:24px;top:50%;margin:-24px 0 0;text-align:center;font:600 26px/1.2 Jost,sans-serif;letter-spacing:-.015em;color:#171512;opacity:0">Bienvenue au <em style="font:900 italic 1em Jost,sans-serif;color:#10392B;padding:0 .06em;background:linear-gradient(transparent 62%,rgba(242,194,48,.65) 62%,rgba(242,194,48,.65) 94%,transparent 94%)">marché</em>.</p>`;
     document.body.appendChild(ov);
     const [sac, flash, txt] = ov.children, E = 'cubic-bezier(.22,1,.36,1)';
     ov.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 240, fill: 'forwards' }).onfinish = dessous;  // ce qui était dessous (la connexion) se ferme une fois couvert

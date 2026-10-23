@@ -1238,3 +1238,4 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - `site/saisons/` (gabarit `tools/site/saisons.html`) : toutes les périodes sourcées de `v2/saisons.js`, produit par produit (10 produits : igname, maïs frais et grain, riz, mil, sorgho, mangue, cajou, cacao, café), chaque ligne avec sa source, liste des sources, date de mise à jour. Lien dans le pied de page, ajoutée au `sitemap.xml`.
 - Le rendu d'une ligne du calendrier est commun aux pages produits et à cette page (`lireSaisons`, `ligneMois`, `calendrier` dans `tools/site-produits.js`) ; pages produits inchangées (vérifié par comparaison).
 - Ajouter un produit au calendrier = ajouter une entrée **sourcée** dans `v2/saisons.js` (elle apparaît aussi sur la carte de l'application).
+- Liens vers `site/saisons/` : sous le calendrier de chaque page produit (« Le calendrier de tous les produits ») et sur l'accueil, à côté de « Tous les guides ».

@@ -49,7 +49,8 @@ function fabriquer({ produits, CAT, NOM, esc, lire, vm, photo }) {
     const saisons = !E.length ? '' : `<section class="bloc saison" aria-labelledby="t-saison"><div class="bloc-tete"><h2 id="t-saison">Les récoltes ${esc(de(min))}</h2>
       <p>${esc(SA.meta.note)} Chaque ligne cite sa source.</p></div>
       ${E.map(e => ligneMois(e, nom, L, esc)).join('')}
-      ${LEGENDE}</section>`;
+      ${LEGENDE}
+      <p><a class="lien" href="../../saisons/">Le calendrier de tous les produits</a></p></section>`;
     // ——— les voisins (même famille) ———
     const vois = produits.filter(x => x.c === p.c && x.s !== sl && x.f).slice(0, 8);
     const voisins = vois.map(x => `<li><a ${LISTE.includes(x.s) ? `href="../${x.s}/"` : `href="../../../application.dc.html#/produits/${x.s}" data-app="#/produits/${x.s}" data-intention="produit"`}><img src="../../img/${x.s}-160.webp" alt="" width="160" height="160" loading="lazy"><span>${esc(x.n)}</span></a></li>`).join('');

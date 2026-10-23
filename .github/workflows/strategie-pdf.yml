@@ -1,0 +1,48 @@
+# Refait les PDF de strategie/ tout seuls (gratuit : dépôt public). Accord du propriétaire le 23/10/2026.
+# Quand : à chaque fusion qui touche les textes, le catalogue ou les photos ; chaque lundi (nouveaux chiffres de la base) ; ou à la main (onglet Actions).
+# Un PDF n'est refait que si son contenu change. La base est lue avec la clé publique de l'application : aucune clé secrète.
+name: PDF de stratégie
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'strategie/sources/**'
+      - 'v2/data.js'
+      - 'v2/img/**'
+      - 'app/marche-app.js'
+      - '.github/workflows/strategie-pdf.yml'
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: strategie-pdf
+  cancel-in-progress: false
+jobs:
+  pdf:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Navigateur
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Fabriquer les PDF
+        run: node strategie/sources/construire.js
+      - name: Enregistrer s'ils ont changé
+        run: |
+          if [ -n "$(git status --porcelain strategie)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add strategie
+            git commit -m "PDF de stratégie mis à jour automatiquement"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          else
+            echo "Rien n'a changé."
+          fi

@@ -22,4 +22,5 @@ Aucun chiffre n'est inventé.
 - **Les chiffres** se mettent à jour tout seuls à chaque nouvelle fabrication.
 - **Les textes** sont dans `sources/*.html`. Les valeurs entre `{{…}}` sont remplacées à la fabrication : `{{membres}}`, `{{produits}}`, `{{m:identifiant}}` pour un chiffre du marché, `{{sources}}` pour la liste des sources.
 - **Fabriquer les PDF** : `node strategie/sources/construire.js`, ou `CHROMIUM=/chemin/vers/chrome node …` si Playwright ne trouve pas de navigateur. Un PDF n'est refait que si son contenu a changé (`sources/empreintes.json`).
+- **Tout seul** : la tâche GitHub `.github/workflows/strategie-pdf.yml` refait les PDF chaque lundi matin (nouveaux chiffres de la base) et à chaque fusion qui touche les textes, le catalogue ou les photos. On peut aussi la lancer à la main : onglet **Actions** → « PDF de stratégie » → **Run workflow**.
 - Claude met à jour les modèles et refait les PDF à chaque changement important du projet : c'est une règle de `CLAUDE.md`.

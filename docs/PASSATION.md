@@ -1073,4 +1073,4 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
   - **Base** : `stats_publiques()`, schéma 79. Elle ne renvoie que des totaux, avec la clé publique de l'application ; elle a été testée en tant qu'anon.
   - **Marché** : 31 chiffres sourcés dans `donnees-marche.json` (lien, année, citation, vérifiés le 23/10/2026).
 - `CLAUDE.md` : nouvelle règle n° 1, tenir ce fichier à jour. Nouvelle règle : mettre à jour les modèles et refaire les PDF à chaque changement du projet.
-- La tâche automatique GitHub (PDF refaits chaque lundi et à chaque fusion) n'est pas créée : elle attend l'accord du propriétaire, car elle écrirait directement dans `main`.
+- Tâche automatique `.github/workflows/strategie-pdf.yml` (accord du propriétaire) : PDF refaits chaque lundi à 6 h 17 (heure d'Abidjan) et à chaque fusion concernée, enregistrés directement dans `main` par le robot GitHub.

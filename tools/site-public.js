@@ -88,7 +88,7 @@ const mq = { document: { readyState: 'complete', addEventListener() {}, querySel
 const LOGO = mq.MDGMarque.ligne({ fond: 'vert', h: 26, cls: 'marque-nom' }).replace(' role="img" aria-label="Marché de Gros"', ' aria-hidden="true"');
 // version des fichiers du site : empreinte de leur contenu (le cache du navigateur suit tout seul)
 const crypto = require('crypto');
-const VERSION = crypto.createHash('md5').update(['site.css', 'site.js', 'garde.js'].map(f => { try { return fs.readFileSync(path.join(SITE, f), 'utf8'); } catch (_) { return ''; } }).join('') + lire('app/admin-pc.js')).digest('hex').slice(0, 8);
+const VERSION = crypto.createHash('md5').update(['site.css', 'site.js', 'garde.js', 'carte.js'].map(f => { try { return fs.readFileSync(path.join(SITE, f), 'utf8'); } catch (_) { return ''; } }).join('') + lire('app/admin-pc.js')).digest('hex').slice(0, 8);
 const remplir = (gab, v) => gab.replace(/\{\{(\w+)\}\}/g, (_, k) => { if (!(k in v)) throw new Error('gabarit : {{' + k + '}} inconnu'); return v[k]; });
 const VAL = { CARTE, LOGO, VERSION, ETAL, PROS, RAYONS, DATE, DONNEES: JSON.stringify(DONNEES).replace(/</g, '\\u003c'), NB_PRODUITS: String(produits.length), NB_PHOTOS: String(produits.filter(p => p.f).length) };
 // une page = _debut (avec sa tête propre) + _entete + son corps + _fin ; S = chemin vers site/, R = chemin vers la racine du dépôt
@@ -97,10 +97,14 @@ function page(gab, v) {
   const m = gab.split(/<!--@tete-->|<!--@corps-->/); if (m.length !== 3) throw new Error('gabarit sans <!--@tete--> / <!--@corps-->');
   return remplir(partiel('debut').replace('{{TETE}}', m[1].trim()) + partiel('entete') + m[2] + partiel('fin'), v);
 }
-ecrire('index.html', page(fs.readFileSync(path.join(GAB, 'index.html'), 'utf8'), Object.assign({}, VAL, { S: '', R: '../' })));
+const COMMUN = { BASE: '', SCRIPTS_PAGE: '' };
+ecrire('index.html', page(fs.readFileSync(path.join(GAB, 'index.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '', R: '../' })));
+// la carte du réseau : <base> à la racine du dépôt, pour que la carte de l'application (app/carte-gl.js) trouve ses fichiers
+ecrire('carte/index.html', page(fs.readFileSync(path.join(GAB, 'carte.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: 'site/', R: '', BASE: '<base href="../../">\n',
+  SCRIPTS_PAGE: '<script src="app/icones.js?v=20261025a"></script>\n<script src="app/carte-gl.js?v=20261102b"></script>\n<script src="site/carte.js?v=' + VERSION + '"></script>\n' })));
 
 // ——— les pages produits (site/produits/<id>/) ———
 const PP = require('./site-produits.js')({ produits, CAT, NOM, esc, lire, vm, photo: sl => fs.existsSync(path.join(SITE, img(sl, 480))) });
 const GP = fs.readFileSync(path.join(GAB, 'produit.html'), 'utf8');
-PP.forEach(v => ecrire('produits/' + v.SLUG + '/index.html', page(GP, Object.assign({}, VAL, v, { S: '../../', R: '../../../' }))));
+PP.forEach(v => ecrire('produits/' + v.SLUG + '/index.html', page(GP, Object.assign({}, VAL, COMMUN, v, { S: '../../', R: '../../../' }))));
 console.log('site public : ' + PP.length + ' pages produits, ' + produits.length + ' produits, ' + DONNEES.produits.length + ' avec photo, carte ' + W + '×' + H + ', ' + Object.keys(lieux).length + ' lieux');

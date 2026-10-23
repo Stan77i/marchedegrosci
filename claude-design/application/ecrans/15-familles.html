@@ -1,0 +1,9 @@
+<!-- ═══ FAMILLES ═══ -->
+<div style="position:absolute;left:0;right:0;bottom:0;max-height:84%;display:flex;flex-direction:column;background:var(--nuit-2);color:var(--ivoire);border-radius:28px 28px 0 0;transform:{{ famTf }};transition:{{ sheetTr }};box-shadow:0 -10px 40px rgba(0,0,0,.4)">
+  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" onPointerCancel="{{ sUp }}" onLostPointerCapture="{{ sUp }}" style="height:28px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none"><span style="width:38px;height:5px;border-radius:3px;background:rgba(245,240,230,.25)"></span></div>
+  <div style="padding:0 20px 10px;font-size:24px" class="voix">Familles de <em>produits</em></div>
+  <div style="overflow-y:auto;padding:0 14px {{ botPad }};display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-rows:max-content;align-content:start;gap:10px">
+    <sc-for list="{{ famGrid }}" as="f" hint-placeholder-count="11"><button class="fam-tile" onClick="{{ f.go }}" aria-label="{{ f.lab }}" style="border:1.5px solid {{ f.bd }};border-radius:18px;padding:0;overflow:hidden;background:var(--encre);color:var(--ivoire);text-align:left;display:flex;flex-direction:column"><img sc-camel-src="{{ f.img }}" alt=""><span class="fam-pills"><sc-if value="{{ f.hasO }}" hint-placeholder-val="{{ true }}"><span class="fam-pill"><i></i>{{ f.o }}</span></sc-if><sc-if value="{{ f.hasD }}" hint-placeholder-val="{{ true }}"><span class="fam-pill d"><i></i>{{ f.d }}</span></sc-if><sc-if value="{{ f.hasNeuf }}" hint-placeholder-val="{{ false }}"><span class="fam-pill neuf">{{ f.neufL }}</span></sc-if></span><span style="padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:var(--t-base);font-weight:500;line-height:1.25">{{ f.name }}</span><span style="font-size:var(--t-sm);color:var(--sable)">{{ f.sub }}</span></span></button></sc-for>
+  </div>
+</div>
+

@@ -1,0 +1,41 @@
+<!--@tete-->
+<title>Calendrier des récoltes du vivrier en Côte d’Ivoire</title>
+<meta name="description" content="Quand se récoltent l’igname, le maïs, le riz, la mangue, le cajou et d’autres produits en Côte d’Ivoire, région par région. Chaque période cite sa source publique.">
+<link rel="canonical" href="https://stan77i.github.io/marchedegrosci/site/saisons/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_CI">
+<meta property="og:site_name" content="Marché de Gros CI">
+<meta property="og:title" content="Calendrier des récoltes du vivrier en Côte d’Ivoire">
+<meta property="og:url" content="https://stan77i.github.io/marchedegrosci/site/saisons/">
+<meta property="og:image" content="https://stan77i.github.io/marchedegrosci/site/img/igname-480.webp">
+<!--@corps-->
+<main id="contenu" class="pg-saisons">
+<nav class="ariane" aria-label="Fil d’Ariane"><a href="../">Marché de Gros CI</a><span aria-hidden="true">›</span><span aria-current="page">Calendrier des récoltes</span></nav>
+<section class="bloc saison" aria-labelledby="t-cal">
+  <div class="bloc-tete">
+    <h1 id="t-cal">Calendrier des récoltes du vivrier en Côte d’Ivoire</h1>
+    <p>Quand se récolte chaque produit, et où. {{NOTE_CAL}} Nous n’affichons que les périodes publiées par une source publique, citée sous chaque ligne : {{NB_CAL}} produits pour l’instant.</p>
+  </div>
+  <div class="cal-now" id="calNow" hidden><h2 id="t-now">En ce moment, en <span id="calMois"></span></h2><ul id="calNowL"></ul></div>
+  {{CALENDRIER}}
+  <h2 class="cal-src-t">Les sources</h2>
+  <ul class="cal-src">{{SOURCES_CAL}}</ul>
+  <p class="cal-maj">Calendrier mis à jour le {{MAJ_CAL_TXT}}. Un produit manque ? Il sera ajouté dès qu’une source publique fiable donne ses périodes.</p>
+</section>
+<section class="appli" id="appli" aria-labelledby="t-appli">
+  <div class="appli-texte">
+    <h2 id="t-appli">La récolte arrive ? Publiez-la dans l’<em>application</em></h2>
+    <p>Scannez ce code avec l’appareil photo de votre téléphone. L’application s’ouvre dans le navigateur ; pour la garder, choisissez « Ajouter à l’écran d’accueil ».</p>
+    <p class="appli-lien">Ou tapez : <b id="lienCourt">stan77i.github.io/marchedegrosci</b></p>
+    <p class="appli-store">Pas encore sur le Play Store ni l’App Store.</p>
+  </div>
+  <div class="appli-qr" id="qr" role="img" aria-label="Code QR vers l’application"></div>
+</section>
+</main>
+<script>/* « En ce moment » : les produits en récolte ce mois-ci, lus dans la page (aucune donnée de plus) */
+(function () { var m = new Date().getMonth() + 1, N = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'], L = { plein: 'pleine récolte', debut: 'ça commence', fin: 'ça se termine' }, h = '';
+  [].forEach.call(document.querySelectorAll('.cal-p'), function (s) { var o = {}; try { o = JSON.parse(s.getAttribute('data-mois')); } catch (_) {} var l = o[m]; if (!l) return;
+    var n = s.getAttribute('data-nom').replace(/[&<>"]/g, ''), a = s.getAttribute('data-lien');
+    h += '<li class="' + l + '">' + (a ? '<a href="' + a + '">' + n + '</a>' : '<a href="#' + s.getAttribute('aria-labelledby') + '">' + n + '</a>') + '<small>' + L[l] + '</small></li>'; });
+  if (!h) return; document.getElementById('calMois').textContent = N[m - 1]; document.getElementById('calNowL').innerHTML = h; document.getElementById('calNow').hidden = false; })();
+</script>

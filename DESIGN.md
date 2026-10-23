@@ -2,6 +2,7 @@
 
 La référence du design de l'application mobile (`application.dc.html`) et du site. À lire avant toute modification visible.
 Les valeurs viennent du code (`css/mgci-tokens.css`, `css/sombre.css`, `css/mgci-app.css`), mesurées le 23/10/2026. En cas de doute, le code fait foi, puis ce fichier est corrigé.
+Pour travailler le design avec **Claude Design** : dossier `claude-design/` (copies refaites automatiquement, voir `claude-design/LISEZ-MOI.md`).
 
 ## 1. L'esprit
 

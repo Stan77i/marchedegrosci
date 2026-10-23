@@ -1279,3 +1279,13 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - `docs/REPRISE.md` : état après la PR #240 (27 produits, 7 guides, 14 districts, plan du site de 54 adresses, cache `mgci-v231`), ce qui reste.
 - `docs/seo/PLAN.md` : nouvelle partie 0 « Avancement » (ce qui est fait, ce qui reste côté propriétaire et côté technique).
 - Où en est le site : contenu presque complet, caché. Reste : retours du propriétaire, audit de sécurité, ouverture (sa décision), Search Console et Bing ; en option, prix officiels OCPV cités et résumé des prix de la semaine.
+
+## 23/10/2026 — Dossier pour Claude Design
+
+- Demande du propriétaire : Claude Design avait du mal avec les fichiers de l'application (un seul fichier de 346 Ko, des styles cachés dans 30 modules). Nouveau dossier `claude-design/` :
+  - `application/` : `CONSIGNES.md` (règles du propriétaire, ce qu'il ne faut pas casser : `sc-if`, `sc-for`, `{{ }}`, `onClick`, `data-`), `DESIGN.md`, `PRODUCT.md`, `styles/` (les 9 feuilles de style de la page), `styles/fenetres/` (les styles de 33 fenêtres, extraits des constantes `CSS` des modules), `ecrans/` (20 morceaux de `application.dc.html` + `SOMMAIRE.md`), `dessins/` (icônes, logo, sac, personnages), `captures/` (12 écrans, iPhone, clair et sombre) ;
+  - `site/` : `CONSIGNES.md`, `DESIGN.md`, `styles/site.css`, `gabarits/` (dont les guides) + `SOMMAIRE.md`, `scripts/` (lecture), `captures/` (9 pages, ordinateur 1440 px) ;
+  - `application.zip`, `site.zip` (dates fixes : refaire donne exactement les mêmes fichiers), `LISEZ-MOI.md` (quoi dire à Claude Design), `origines.json`.
+- Outils : `tools/claude-design.py` (fabrique), `tools/claude-design-captures.js` (captures, données vides, voile du site levé pour la capture seulement), `tools/claude-design-retour.py` (reporte le travail rendu dans les vrais fichiers ; testé sur un faux retour : styles, écran, style de fenêtre, gabarit du site, tous reportés au bon endroit, puis annulés).
+- Tâche `.github/workflows/claude-design.yml` : refait le dossier après chaque fusion qui touche l'application, le site ou le design (sans les captures).
+- `CLAUDE.md` : nouvelle partie « Claude Design ». `DESIGN.md` et `docs/REPRISE.md` : renvoi vers le dossier.

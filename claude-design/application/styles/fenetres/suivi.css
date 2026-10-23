@@ -1,0 +1,28 @@
+/* Copie de la constante CSS de v3/suivi.js (ligne 54). */
+.sv{position:relative;height:340px;margin:0 -18px 10px;overflow:hidden;background:#EEF0EC}
+.sv .sv-carte{position:absolute;inset:0;width:100%;height:100%}
+.sv .maplibregl-ctrl-attrib.maplibregl-compact{min-height:24px;background:rgba(255,253,248,.85)}
+.sv .maplibregl-ctrl-bottom-right{bottom:84px}
+.sv-haut{position:absolute;left:12px;top:12px;right:12px;display:flex;pointer-events:none}
+.sv-puce{display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:0 14px 0 12px;border-radius:17px;background:#FFFDF8;color:#171512;font:600 13.5px Jost,sans-serif;box-shadow:0 2px 10px rgba(23,21,18,.16)}
+.sv-puce i{width:9px;height:9px;border-radius:50%;background:#2FA36B;box-shadow:0 0 0 0 rgba(47,163,107,.5)}
+.sv-puce.frais i{animation:svPouls 2s ease-out infinite}.sv-puce.vieux i{background:#B5AE9F}
+@keyframes svPouls{70%{box-shadow:0 0 0 8px rgba(47,163,107,0)}100%{box-shadow:0 0 0 0 rgba(47,163,107,0)}}
+.sv-bas{position:absolute;left:12px;right:12px;bottom:12px;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:#10392B;color:#F3EFE4;box-shadow:0 6px 18px rgba(16,57,43,.32)}
+.sv-bas b{display:block;font:800 22px/1.05 Jost,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.sv-bas small{display:block;color:rgba(243,239,228,.78);font-size:12.5px;margin-top:2px}
+.sv-bas .eta{margin-left:auto;text-align:right}.sv-bas .eta b{color:#F2C230}
+.sv-camion{width:30px;height:56px;filter:drop-shadow(0 3px 4px rgba(16,57,43,.4));transition:opacity .3s,filter .3s}
+.sv-camion.vieux{opacity:.5;filter:grayscale(1)}
+.sv-arrivee{display:flex;flex-direction:column;align-items:center;transform:translateY(-4px)}
+.sv-arrivee span{padding:4px 10px;border-radius:12px;background:#F2C230;color:#10392B;font:700 12px Jost,sans-serif;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.sv-arrivee i{width:3px;height:10px;background:#10392B}.sv-arrivee em{width:12px;height:12px;border-radius:50%;background:#10392B;border:3px solid #FFFDF8;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.sv.arrive .sv-arrivee em{animation:svOnde 1.6s ease-out infinite}
+@keyframes svOnde{0%{box-shadow:0 0 0 0 rgba(242,194,48,.75)}100%{box-shadow:0 0 0 18px rgba(242,194,48,0)}}
+.sv-bas .sac{width:44px;height:44px;flex:none}.sv-bas .sac svg{width:44px;height:44px}
+.sv.arrive .sv-bas .sac{animation:svSaut 1.1s ease-in-out 2}
+@keyframes svSaut{30%{transform:translateY(-10px) rotate(-6deg)}60%{transform:translateY(0)}75%{transform:translateY(-4px)}}
+.sv-depart{width:12px;height:12px;border-radius:50%;background:#FFFDF8;border:3px solid #9AA59F}
+.sv [hidden]{display:none!important}
+.sv-voile{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:16px;color:#5E5546;font-size:13.5px}
+@media (prefers-reduced-motion:reduce){.sv-puce.frais i,.sv.arrive .sv-arrivee em,.sv.arrive .sv-bas .sac{animation:none}}

@@ -1013,3 +1013,10 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Faille trouvée à l'audit : un membre pouvait modifier `created_at` de ses offres et demandes (droit de modification sur toute la table) → remonter son annonce en tête des listes, ou la dater dans le futur. Même chose pour `id` et `user_id` (bloqués en partie par les règles, mais sans raison d'être modifiables).
 - **Serveur** (`supabase/schema-73-annonce-date.sql`, appliqué le 23/10) : droit de modification redonné colonne par colonne à `authenticated`, sans `created_at`, `id`, `user_id`. L'application ne les envoie jamais (`toRow` dans `v3/nuage.js`), les fonctions du serveur ne sont pas concernées.
 - Vérifié sur le test puis la base réelle (transaction annulée) : date → refusée, auteur → refusé ; prix, budget, retrait et envoi complet comme l'application (`on conflict (user_id, client_id)`) → acceptés.
+
+## Photos du profil public : seulement celles du membre, dans le stockage de l'application (23/10/2026) — schéma 74
+- Faille trouvée à l'audit : `profils.photos` acceptait n'importe quel lien https, et `v3/reputation.js` l'affichait tel quel → chaque visiteur du profil chargeait une image d'un site extérieur (traçage des visiteurs, images hors modération).
+- **Serveur** (`supabase/schema-74-photos-profil.sql`, appliqué le 23/10) : déclencheur `profils_photos_propres` (avant écriture de `photos`) : ne garde que les chemins `<identifiant du compte>/<nom>.jpg` du membre lui-même (lettres, chiffres, `._-`), les 6 premiers valides ; liens extérieurs, chemins d'un autre compte et `../` retirés. Aucun profil réel n'avait de photo (rien retiré à personne).
+- **Application** (`v3/reputation.js`) : `photoUrl` ne construit qu'une adresse du stockage `activites` ; un lien (`https:`, `//…`) n'est jamais affiché.
+- Vérifié : test et base réelle (transaction annulée) — 11 entrées dont lien pisteur, `//cdn`, photo d'un autre compte, `../../x.jpg` → 6 photos valides gardées dans l'ordre ; navigateur : profil avec 2 photos + 2 liens extérieurs → 2 images du stockage, 0 requête vers un site extérieur.
+- `reputation.js?v=20261031b`, cache `mgci-v209`.

@@ -169,7 +169,8 @@
   const mois = t => t ? new Date(t).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : '';
   const actif = t => { if (!t) return ''; const m = (Date.now() - Date.parse(t)) / 6e4; return m < 10 ? 'actif à l’instant' : m < 60 ? 'actif il y a ' + Math.round(m) + ' min' : m < 1440 ? 'actif il y a ' + Math.round(m / 60) + ' h' : m < 2880 ? 'actif hier' : 'actif il y a ' + Math.round(m / 1440) + ' j'; };
   const fq = n => n == null ? '' : Number(n).toLocaleString('fr-FR').replace(/ | /g, ' ');
-  const photoUrl = p => /^https?:/.test(p) ? p : (N() && N().URL ? N().URL + '/storage/v1/object/public/activites/' + p : '');
+  // seulement le stockage de l'application (schéma 74) : jamais une image venue d'un autre site
+  const photoUrl = p => !p || /^[a-z]+:|^\/\//i.test(p) ? '' : (N() && N().URL ? N().URL + '/storage/v1/object/public/activites/' + p : '');
   // ——— la structure en tête du profil : logo, type, nom, réputation, preuves (agrandissables) ———
   const TYPE_ORG = { cooperative: 'Coopérative', groupement: 'Groupement', entreprise: 'Entreprise', marche: 'Marché' };
   function carteStructure(st, uid) {
@@ -237,7 +238,7 @@
       if (!off) haut += `<div class="rp-sec"><h3>Réputation sur les commandes</h3><div data-rep>${window.MDGSac ? MDGSac.charge('', { t: 44 }) : ''}</div></div>`;
       if (pp.bio) haut += `<div class="rp-sec"><h3>${pp.role === 'acheteur' ? 'Acheteur' : pp.role === 'vendeur' ? 'Vendeur' : pp.role === 'les_deux' ? 'Vendeur et acheteur' : 'Présentation'}${pp.ville || pp.region_slug ? ' · ' + esc(pp.ville || REGN(pp.region_slug)) : ''}</h3><p class="rp-bio">${esc(pp.bio)}</p></div>`;
       if (pp.activites) haut += `<div class="rp-sec"><h3>Ses activités</h3><div class="rp-tags">${pp.activites.split(/[,;·\n]/).map(x => x.trim()).filter(Boolean).slice(0, 12).map(x => `<span>${esc(x)}</span>`).join('')}</div></div>`;
-      if (pp.photos && pp.photos.length) haut += `<div class="rp-sec"><h3>En images</h3><div class="rp-ph">${pp.photos.map(p => `<img src="${esc(photoUrl(p))}" alt="" loading="lazy">`).join('')}</div></div>`;
+      if (pp.photos && pp.photos.filter(photoUrl).length) haut += `<div class="rp-sec"><h3>En images</h3><div class="rp-ph">${pp.photos.filter(photoUrl).map(p => `<img src="${esc(photoUrl(p))}" alt="" loading="lazy">`).join('')}</div></div>`;
       // ses annonces en ce moment (celles que ce téléphone connaît déjà)
       const L = N().list ? N().list('offres').filter(x => x._uid === uid).map(x => ['o', x]).concat(N().list('demandes').filter(x => x._uid === uid).map(x => ['d', x])) : [];
       if (L.length) haut += `<div class="rp-sec"><h3>En ce moment</h3><div class="rp-li">${L.slice(0, 8).map(([k, x]) => `<div><i class="${k}"></i><span>${esc(x.productLabel || x.productSlug)} · ${fq(x.quantity)} ${esc(x.unit || '')}</span><small>${esc(x.city || REGN(x.regionSlug))}</small></div>`).join('')}</div></div>`;
@@ -268,7 +269,7 @@
     c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); c.toBlob(b => b ? ok(b) : ko(new Error('Photo illisible')), 'image/jpeg', .74); }; im.src = r.result; }; r.readAsDataURL(file); });
   function modifier(pp, apres) {
     const s = N() && N().session(); if (!s) return;
-    let photos = (pp.photos || []).slice(0, 6);
+    let photos = (pp.photos || []).filter(photoUrl).slice(0, 6);
     const bg = feuille(`<h2>Mon profil public</h2><p>Ce que les autres membres voient en touchant votre nom : qui vous êtes, ce que vous faites, ce que vous avez.</p>
       <div class="rp-ed"><label for="rpBio">Présentation <i>600 caractères</i></label><textarea id="rpBio" maxlength="600" placeholder="ex. Coopérative de 40 producteurs d’igname à Bouaké. Livraison possible à Abidjan.">${esc(pp.bio || '')}</textarea>
       <label for="rpAct">Activités <i>séparées par des virgules</i></label><input id="rpAct" maxlength="200" placeholder="ex. Igname, manioc, transport, stockage" value="${esc(pp.activites || '')}">

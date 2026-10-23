@@ -1020,3 +1020,9 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Application** (`v3/reputation.js`) : `photoUrl` ne construit qu'une adresse du stockage `activites` ; un lien (`https:`, `//…`) n'est jamais affiché.
 - Vérifié : test et base réelle (transaction annulée) — 11 entrées dont lien pisteur, `//cdn`, photo d'un autre compte, `../../x.jpg` → 6 photos valides gardées dans l'ordre ; navigateur : profil avec 2 photos + 2 liens extérieurs → 2 images du stockage, 0 requête vers un site extérieur.
 - `reputation.js?v=20261031b`, cache `mgci-v209`.
+
+## Alertes « nouvelle annonce » : au plus 10 par membre et par jour (23/10/2026) — schéma 75
+- Faille trouvée à l'audit : chaque nouvelle offre ou demande prévient tous les abonnés du produit (`push_annonce` → `pousser`), sans plafond ; publier, retirer, republier en boucle inondait les téléphones des autres.
+- **Serveur** (`supabase/schema-75-notif-annonces.sql`, appliqué le 23/10) : compteur `push_annonce_jour` (membre, jour UTC ; RLS, aucun accès direct) ; au-delà de 10 annonces dans la journée, l'annonce est publiée normalement mais sans alerte. Le reste de `push_annonce` est identique.
+- Vérifié sur le test (transaction annulée, fausse adresse d'envoi dans le coffre, un abonné) : 12 annonces publiées → 10 envois préparés, compteur 12. Base réelle : fonction identique à celle testée (même empreinte), table protégée.
+- Reste lié : la création de comptes sans preuve du numéro (plusieurs comptes = plusieurs plafonds) ; 3 annonces gratuites par compte non vérifié limitent déjà l'effet.

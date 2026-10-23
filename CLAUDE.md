@@ -12,6 +12,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 
 - Pitch, présentation, problème et solution, marketing : les **modèles** sont dans `strategie/sources/*.html`, les **PDF** dans `strategie/`. Le mode d'emploi est dans `strategie/README.md`.
 - Les chiffres se mettent à jour tout seuls : catalogue et photos lus dans le dépôt, activité lue dans la base (`stats_publiques()`, schéma 79), chiffres du marché dans `strategie/sources/donnees-marche.json`.
+- Mise à jour automatique (accord du propriétaire, 23/10/2026) : `.github/workflows/strategie-pdf.yml` refait les PDF chaque lundi et à chaque fusion qui touche `strategie/sources/`, le catalogue ou les photos, puis les enregistre dans `main`.
 - **Quand une fonction, un prix, une commission, une règle ou l'état du projet change, mettre aussi à jour le texte des modèles concernés**, puis refaire les PDF : `CHROMIUM=/opt/pw-browsers/chromium node strategie/sources/construire.js`.
 - Chiffres du marché : seulement avec une source ouverte et vérifiée (lien, année, citation). Jamais de chiffre inventé, jamais de prévision présentée comme un fait.
 

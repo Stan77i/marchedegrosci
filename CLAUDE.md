@@ -96,6 +96,12 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - **Avant de toucher au design, relire les 32 lois anti-« design généré par IA » et anti-amateur** (`DESIGN.md`, section 8), puis vérifier l'écran rendu contre chacune.
 - Mode « Opérer » : la précision et la retenue d'abord. Quand une règle de `DESIGN.md` change, mettre `DESIGN.md` à jour dans la même PR.
 
+## Compétences business (founder-skills)
+
+- Installées le 23/10/2026 à la demande du propriétaire : 15 compétences de `ognjengt/founder-skills` (licence MIT) dans `.claude/skills/` : stratégie (`strategic-planning`, `go-to-market-plan`, `pricing-strategist`, `competitor-intel`), marketing (`marketing-ideas`, `brand-copywriter`, `viral-hook-creator`, `lead-magnet-generator`, `linkedin-writer`, `x-writer`, `outreach-specialist`, `cro-optimization`, `product-hunt-launch-plan`), organisation (`sop-creator`, `prd-generator`). Origine et mise à jour : `.claude/skills/FOUNDER-SKILLS-NOTICE.md`.
+- Elles lisent `FOUNDER_CONTEXT.md` (fiche du projet) : **le tenir à jour** quand le produit, les prix ou les commissions changent.
+- En s'en servant : répondre en français, ne proposer que des actions gratuites, aucun chiffre sans source vérifiée, jamais dire qu'un paiement ou une commission a été encaissé. Leurs résultats utiles nourrissent les modèles de `strategie/sources/`.
+
 ## Commits et PR
 
 - Fin des messages de commit :

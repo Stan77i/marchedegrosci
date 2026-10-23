@@ -1146,3 +1146,7 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 ## Pastilles de nombre (23/10/2026), oubliées par la fusion de la PR #213
 - **Pastilles de nombre** (`.nbul`) partout où un nombre suit un libellé : onglets d'Acheter, filtres de Prix (vert vendeurs, maïs budgets), titres de section, bouton « Préparer la sélection » de Racheter. Règle ajoutée dans DESIGN.md et CLAUDE.md.
 - Ce commit était arrivé sur la branche juste après la fusion de #213 : remis dans une PR à part. Cache `mgci-v219`.
+
+## Compétences « founder-skills » (23/10/2026)
+- 15 compétences business (stratégie, marketing, prix, concurrents, procédures, cahier des charges) copiées de `ognjengt/founder-skills` (MIT, commit a45931c) dans `.claude/skills/`, avec leur `LICENSE`. Vérifiées avant : texte seulement, aucune clé, aucun script ; seule `prd-generator` peut lancer `npx md-to-pdf` pour sortir un PDF.
+- `FOUNDER_CONTEXT.md` : fiche du projet lue par ces compétences (tirée des textes de `strategie/sources/`). Règles d'usage dans `CLAUDE.md`. Aucun changement du front.

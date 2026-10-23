@@ -157,9 +157,9 @@ _Partie mise à jour automatiquement par `tools/inventaire-site.js` (tâche GitH
 | `application.dc.html` | Application mobile (la priorité). S’ouvre sur téléphone ; sur ordinateur, seulement pour l’administrateur. | 59 | 2,8 Mo |
 | `index-v3.html` | Site pour ordinateur. Aujourd’hui caché derrière la maintenance, ouvert seulement à l’administrateur. | 64 | 4,6 Mo |
 | `index.html` | Aiguillage : téléphone → application, ordinateur → maintenance (ou site pour l’administrateur). | 0 | 2 ko |
-| `maintenance.html` | Page « site en maintenance » avec QR code vers l’application. | 3 | 81 ko |
+| `maintenance.html` | Page « site en maintenance » avec QR code vers l’application. | 3 | 83 ko |
 | `suivi.html` | Lien de suivi envoyé au chauffeur (sans compte). | 0 | 12 ko |
-| `admin.html` | Tableau de bord de l’administrateur. | 12 | 387 ko |
+| `admin.html` | Tableau de bord de l’administrateur. | 13 | 393 ko |
 
 ### Modules communs à l’application et au site (22)
 

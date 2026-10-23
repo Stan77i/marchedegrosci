@@ -402,3 +402,6 @@ html.garde body { overflow: hidden; }
   .gd-corps { grid-template-columns: 1fr; gap: 32px; }
   .gd-action { position: static; }
 }
+.pied-l { display: flex; flex-wrap: wrap; gap: 6px 22px; }
+.pied-l a { color: var(--ivoire); text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.pied-l a:hover { text-decoration: underline; text-decoration-color: var(--mais); text-underline-offset: 4px; }

@@ -96,10 +96,12 @@ const VAL = { CARTE, LOGO, VERSION, ETAL, PROS, RAYONS, DATE, DONNEES: JSON.stri
 const partiel = n => fs.readFileSync(path.join(GAB, '_' + n + '.html'), 'utf8');
 function page(gab, v) {
   const m = gab.split(/<!--@tete-->|<!--@corps-->/); if (m.length !== 3) throw new Error('gabarit sans <!--@tete--> / <!--@corps-->');
-  return remplir(partiel('debut').replace('{{TETE}}', m[1].trim()) + partiel('entete') + m[2] + partiel('fin'), v);
+  const html = remplir(partiel('debut').replace('{{TETE}}', m[1].trim()) + partiel('entete') + m[2] + partiel('fin'), v);
+  // typographie française sur tout le texte visible (hors <script>, <style> et attributs) : espace insécable avant « : ; ! ? »
+  return html.split(/(<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>)/).map((bout, i) => i % 2 ? bout : bout.replace(/>([^<]+)</g, (x, t) => '>' + fine(t) + '<')).join('');
 }
 const GG = fs.readFileSync(path.join(GAB, 'guide.html'), 'utf8'), GD = path.join(GAB, 'guides');
-const ACTION = { offre: ['#/publier?sens=offre', 'Publiez votre offre : les acheteurs du réseau vous écrivent. Gratuit.'], demande: ['#/publier?sens=demande', 'Publiez ce que vous cherchez : les vendeurs vous font leur prix. Gratuit.'], appro: ['#/appro', 'Publiez vos besoins de la semaine : plusieurs vendeurs vous répondent.'] };
+const ACTION = { offre: ['#/publier?sens=offre', 'Publiez votre offre : les acheteurs du réseau vous écrivent. Gratuit.'], demande: ['#/publier?sens=demande', 'Publiez ce que vous cherchez : les vendeurs vous font leur prix. Gratuit.'], appro: ['#/appro', 'Publiez vos besoins de la semaine : plusieurs vendeurs vous répondent.'], groupes: ['#/groupes', 'Rejoignez un achat groupé ouvert, ou ouvrez-en un sur votre offre.'] };
 const GUIDES = fs.readdirSync(GD).filter(f => f.endsWith('.html')).sort().map(f => {
   const t = fs.readFileSync(path.join(GD, f), 'utf8'), m = /<!--@meta (\{[\s\S]*?\}) -->/.exec(t); if (!m) throw new Error('guide sans @meta : ' + f);
   return Object.assign(JSON.parse(m[1]), { slug: f.replace(/\.html$/, ''), corps: t.slice(m.index + m[0].length).trim() });
@@ -131,5 +133,6 @@ GUIDES.forEach(g => {
     JSONLD: JSON.stringify(ld).replace(/</g, '\\u003c'), CTA: esc(g.cta), CTA_APP: act[0], CTA_TEXTE: esc(act[1]),
     AUTRES: GUIDES.filter(x => x.slug !== g.slug).map(x => `<a href="../${x.slug}/">${fine(esc(x.h1))}</a>`).join('') })));
 });
+ecrire('a-propos/index.html', page(fs.readFileSync(path.join(GAB, 'a-propos.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '../', R: '../../' })));
 ecrire('guides/index.html', page(fs.readFileSync(path.join(GAB, 'guides.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '../', R: '../../', LISTE_GUIDES: GUIDES.map(g => carteGuide(g, '')).join('') })));
 console.log('site public : ' + PP.length + ' pages produits, ' + GUIDES.length + ' guides, ' + produits.length + ' produits, ' + DONNEES.produits.length + ' avec photo, carte ' + W + '×' + H + ', ' + Object.keys(lieux).length + ' lieux');

@@ -76,8 +76,10 @@
   async function recover(tel, cle, code) {
     const t = tel10(tel); if (!t) throw new Error('Numéro à 10 chiffres, par exemple 07 01 02 03 04.');
     if (!/^\d{6}$/.test(code)) throw new Error('Le nouveau code secret fait 6 chiffres.');
-    const neuve = await rpc('reinitialiser_code', { tel: t, cle: String(cle || '').toUpperCase().replace(/[^A-Z0-9]/g, ''), nouveau: code }, false)
-      .catch(e => { throw /reinitialiser_code|schema cache|404/i.test(e.message + e.status) ? new Error('La récupération n’est pas encore activée. Appelez le Marché de Gros.') : e; });
+    // schéma 72 : la porte « secours_reinitialiser » compte les essais ratés ; un code de secours faux renvoie une réponse vide
+    const neuve = await rpc('secours_reinitialiser', { tel: t, cle: String(cle || '').toUpperCase().replace(/[^A-Z0-9]/g, ''), nouveau: code }, false)
+      .catch(e => { throw /secours_reinitialiser|schema cache|404/i.test(e.message + e.status) ? new Error('La récupération n’est pas encore activée. Appelez le Marché de Gros.') : e; });
+    if (!neuve) throw new Error('Numéro ou code de secours incorrect.');
     const s = await signIn(t, code); s.secours = neuve; return s;
   }
   async function isAdmin() { if (!session()) return false; try { const a = !!(await rpc('est_admin')); W(K.a, a); return a; } catch (_) { return !!J(K.a, false); } }

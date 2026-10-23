@@ -982,3 +982,14 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Page du chauffeur** (`suivi.html`) : l'erreur du serveur est lue ; « Trop de codes essayés. Réessayez dans quelques minutes, ou demandez le lien au vendeur. » au lieu de « Pas de connexion ».
 - Vérifié : test (10 faux refusés, 11e bloqué même avec le bon code, autre adresse + bon code en minuscules → jeton ; 3 000 codes tirés : 31 caractères, 541 à 621 fois chacun pour 580 attendus) ; base réelle (transaction annulée, aucun compteur resté) ; navigateur iPhone : les 3 messages (trop d'essais, code faux, pas de réseau).
 - Cache `mgci-v205`.
+
+## Code de secours : les essais ratés sont enfin comptés (23/10/2026) — schéma 72
+- Faille trouvée à l'audit : `reinitialiser_code` notait l'échec dans `secours_essais` puis levait une erreur, ce qui annulait la note (0 ligne en base) : la limite de 5 essais par heure ne servait à rien, le serveur calculait du bcrypt sans fin, et le temps de réponse révélait quels numéros ont un compte.
+- **Serveur** (`supabase/schema-72-secours-essais.sql`, appliqué le 23/10) : `reinitialiser_code` n'est **pas** réécrite (elle contient une suppression des sessions que l'outil Supabase refuse de rejouer sans confirmation). Nouvelle porte `secours_reinitialiser(tel, cle, nouveau)` :
+  - limites : 5 échecs par numéro et par heure (comptés pour de vrai), 20 par adresse internet et par heure (`secours_ip_essais`, taille fixe, 4 096 cases + le total), 300 par heure pour tout le monde ;
+  - code de secours faux : échec noté, réponse vide (sans erreur, donc la note reste) ; code juste : appel de `reinitialiser_code` comme avant ;
+  - même temps de réponse avec ou sans compte (calcul leurre).
+- **Application** (`v3/nuage.js`, `recover`) : appelle `secours_reinitialiser` ; réponse vide → « Numéro ou code de secours incorrect. »
+- **Étape restante après la fusion** : l'ancienne `reinitialiser_code` est encore ouverte aux téléphones pour que l'application déjà en ligne garde « Code oublié ». Une fois cette version en ligne, lancer `revoke execute on function public.reinitialiser_code(text, text, text) from public, anon, authenticated;` (dernière ligne du schéma 72, vérifiée sur le test et la base réelle).
+- Vérifié : test (ancienne fonction refusée, 5 faux → réponse vide, 6e bloqué même avec le bon code, 5 échecs notés, une heure plus tard bon code → nouvelle clé et mot de passe changé, 21 ms sans compte / 20 ms avec ; vrai appel HTTP : échec bien noté, ancienne fonction → 401) ; base réelle (transaction annulée, rien n'est resté) ; navigateur iPhone : « Numéro ou code de secours incorrect. » sous le champ.
+- `nuage.js?v=20261031b` (application, index-v3, admin), cache `mgci-v206`.

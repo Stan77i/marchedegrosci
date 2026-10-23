@@ -1083,3 +1083,11 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Pastille appareil photo du profil** : plus petite, maïs, posée proprement sur l'anneau (`v3/compte.js`).
 - **Mode nuit des fenêtres** (`app/nuit.js`) : un dessin posé sur une pastille en dégradé vif garde sa couleur, et les pastilles rondes ne sont plus prises pour un mot surligné (l'icône des tutoriels était délavée).
 - Vérifié dans Chromium (iPhone 13), en clair et en sombre, avec une session simulée et le réseau Supabase coupé. Cache `mgci-v213`.
+
+## Design : accord, commande, profil, avatars (23/10/2026)
+
+- **Accord conclu** (`v3/negoce.js`) : un reçu net (quantité, prix, total en grand), coche animée, bouton « Suivre la commande » avec icône, lien « Écrire au vendeur ». Le bleu de l'accord (règle des prix, étiquettes) devient le vert de la marque.
+- **Suivi de commande** (`v3/commandes.js`) : la première étape s'allume « À confirmer » tant que l'autre n'a pas confirmé ; la vraie photo du partenaire ; la carte d'état est claire avec un liseré maïs (au lieu d'un deuxième bloc vert).
+- **Profil** (`v3/compte.js`) : le gros encadré « Terminez la vérification » devient une seule ligne qu'on touche. Le bouton en double dans « Vos statuts » disparaît quand la ligne est là.
+- **Avatars** : nouveau fichier `v3/personnages.js`, chargé avant `v3/avatar.js`. 21 produits (tomate, igname, sac de riz, plantain…), 10 yeux, 9 bouches, 12 couvre-chefs (dont le panier sur la tête), lunettes, moustaches, 10 objets en main (mégaphone, balance, calculatrice…), chaussures, 12 fonds, 6 motifs (étal, wax, kente…) : plus de 55 milliards de combinaisons. Code `mg:b=…` (moins de 70 caractères, limite 200). Avec `anime: true` : respire, cligne, saute ; saut à chaque changement dans le choix. Rien ne bouge si le téléphone demande moins d'animations. Onglet « Personnage » par défaut dans « Mon avatar », bouton dé « Un autre personnage au hasard », aperçu collé en haut sur téléphone.
+- Vérifié dans Chromium (iPhone 13) avec des données simulées (réseau Supabase coupé). Cache `mgci-v214`.

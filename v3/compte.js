@@ -135,12 +135,12 @@
 .cp-hero-tags span.cp-adm{background:#F2C230;color:#10392B;height:30px;padding:0 12px 0 4px;border-radius:15px;font-size:13px}.cp-adm svg{border-radius:50%;box-shadow:0 0 0 1.5px #10392B}
 .cp-off-p{max-width:300px;margin-left:auto;margin-right:auto;line-height:1.4}
 .cp-hero-tags span.idok{background:#fff;color:var(--blue)}
-.cp-idv{display:flex;flex-direction:column;gap:10px;margin:0 0 14px;padding:16px;border-radius:20px;background:var(--warn-bg);box-shadow:inset 0 0 0 1.5px rgba(138,100,0,.28);color:var(--ink)}
-.cp-idv.bleu{background:var(--blue-bg);box-shadow:inset 0 0 0 1.5px rgba(44,108,176,.28)}.cp-idv.ko{background:var(--bad-bg);box-shadow:inset 0 0 0 1.5px rgba(192,68,43,.3)}
-.cp-idv-t{display:flex;gap:12px;align-items:flex-start}.cp-idv-t>span{flex:none;color:var(--warn)}.cp-idv.bleu .cp-idv-t>span{color:var(--blue)}.cp-idv.ko .cp-idv-t>span{color:var(--bad)}
-.cp-idv b{display:block;font:600 16.5px/1.25 Jost,sans-serif}.cp-idv p{margin:4px 0 0;color:var(--mute);font-size:14px;line-height:1.45}
-.cp-idv-j{display:flex;gap:5px}.cp-idv-j i{flex:1;height:6px;border-radius:3px;background:rgba(23,21,18,.12)}.cp-idv-j i.on{background:var(--warn)}
-.cp-idv button{min-height:48px;border:0;border-radius:24px;background:var(--ink);color:#F5F0E6;font:600 15.5px Jost,sans-serif;cursor:pointer}
+.cp-idv{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 14px;padding:12px 14px;border:0;border-radius:18px;background:#FFFDF8;box-shadow:0 4px 14px rgba(23,21,18,.06),inset 0 0 0 1px rgba(23,21,18,.07);color:var(--ink);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button.cp-idv:active{transform:scale(.985)}div.cp-idv{cursor:default}
+.cp-idv-i{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:rgba(44,108,176,.1);color:var(--blue)}.cp-idv.ko .cp-idv-i{background:var(--bad-bg);color:var(--bad)}
+.cp-idv-x{flex:1;min-width:0}.cp-idv b{display:block;font:600 15.5px/1.25 Jost,sans-serif}.cp-idv small{display:block;margin-top:2px;color:var(--mute);font-size:13px;line-height:1.35}
+.cp-idv-j{flex:none;display:flex;gap:3px}.cp-idv-j i{width:7px;height:7px;border-radius:50%;background:rgba(23,21,18,.14)}.cp-idv-j i.on{background:var(--warn)}
+.cp-idv-c{flex:none;color:var(--mute);display:flex}
 .cp-hero-act{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}
 .cp-hero-act button{position:relative;display:flex;align-items:center;justify-content:center;gap:9px;min-height:50px;padding:0 12px;border:1px solid rgba(255,255,255,.22);border-radius:18px;background:rgba(255,255,255,.14);color:#fff;font:600 15px Jost,sans-serif;cursor:pointer;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 .cp-hero-act button:active{background:rgba(255,255,255,.22)}
@@ -347,7 +347,13 @@ label.cp-r{cursor:pointer}
 .avx-zoom input{width:100%;accent-color:var(--ink);min-height:44px}
 .avx-crop .cp-help{text-align:center}.avx-crop .cp-row{justify-content:center}
 .avx-file{display:inline-flex;align-items:center}
-.avx-act{position:sticky;bottom:calc(-36px - env(safe-area-inset-bottom));margin:22px -16px calc(-36px - env(safe-area-inset-bottom));padding:14px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 26%)}
+.avx-act{position:sticky;z-index:4;bottom:calc(-36px - env(safe-area-inset-bottom));margin:22px -16px calc(-36px - env(safe-area-inset-bottom));padding:12px 16px calc(14px + env(safe-area-inset-bottom));background:var(--bg);box-shadow:0 -12px 24px -14px rgba(23,21,18,.35)}
+.avx-act .cp-go{flex:1}
+.avx-rang{display:flex;gap:4px;overflow-x:auto;margin:0 -16px;padding:2px 16px 6px;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch}.avx-rang::-webkit-scrollbar{display:none}
+.avx-rang .avx-pick{flex:0 0 76px;scroll-snap-align:start}.avx-rang .avx-pick span{display:block;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avx-zv{display:block;width:58px;height:58px;border-radius:50%;overflow:hidden;transition:box-shadow var(--ux-d2,200ms)}.avx-zv svg{display:block;transform:scale(2.1);transform-origin:var(--ox) var(--oy)}.avx-pick .avx-zv svg{box-shadow:none!important}.avx-pick[aria-pressed=true] .avx-zv{box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--ink)}
+.avx-de{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:52px;margin:0 0 8px;border:0;border-radius:999px;background:#F2C230;color:#171512;font:700 16px Jost,sans-serif;cursor:pointer;box-shadow:0 6px 16px rgba(242,194,48,.35)}.avx-de span{font-size:22px;transition:transform .4s cubic-bezier(.3,1.6,.5,1)}.avx-de:active span{transform:rotate(200deg) scale(1.15)}
+@media (max-width:639px){.avx-pv{position:sticky;top:-1px;z-index:3;grid-template-columns:auto minmax(0,1fr);justify-items:start;align-items:center;column-gap:16px;row-gap:6px;padding:12px 16px}.avx-big{grid-row:span 2;width:108px;height:108px}.avx-big svg,.avx-big img{width:100%;height:100%}.avx-nom{align-self:end;text-align:left}.avx-mini{align-self:start;justify-content:flex-start;border-top:0;padding-top:0}}
 @media (min-width:760px){.avx-act{bottom:-40px;margin:24px -28px -40px;padding:16px 28px 22px}}
 @keyframes avxIn{from{opacity:.4;transform:scale(.96)}}
 @media (prefers-reduced-motion:reduce){.cp-bg,.cp,.cp-panel{animation:none}.avx-big>*,.avx-p{animation:none}.avx-pick svg{transition:none}}`;
@@ -626,19 +632,20 @@ label.cp-r{cursor:pointer}
       // la vérification d'identité, bien en vue tant qu'elle n'est pas faite : 3 annonces gratuites, puis elle est demandée pour publier
       const idBandeau = (() => {
         if (!ID || !idC || idC.exempt || off0 || idS === 'verifie') return '';
-        const T = (cls, ico, t, txt, btn, extra) => `<section class="cp-idv ${cls}" aria-label="Vérification d’identité"><div class="cp-idv-t"><span aria-hidden="true">${ico}</span><div><b>${t}</b><p>${txt}</p></div></div>${extra || ''}${btn ? `<button type="button" data-idv>${btn}</button>` : ''}</section>`;
-        if (idC.banni) return T('ko', IC('fermer', 26), 'Ce compte est banni', 'Il ne peut plus publier, négocier ni écrire sur le Marché de Gros.', 'En savoir plus');
-        if (idS === 'en_attente') return T('bleu', IC('horloge', 26), 'Vérification en cours', 'L’équipe examine votre dossier. Le badge apparaîtra ici dès qu’elle aura validé.', '');
-        if (idS === 'verification_manuelle') return T('', IC('photo', 26), 'Des photos sont à refaire', 'L’équipe n’a pas pu terminer la vérification de votre identité.', 'Renvoyer mes photos');
-        if (idS === 'expire') return T('ko', IC('horloge', 26), 'Votre pièce d’identité a expiré', 'Le badge « Identité vérifiée » est retiré. Refaites la vérification avec une pièce en cours de validité.', 'Refaire la vérification');
-        if (idS === 'refuse') return T('ko', IC('fermer', 26), 'Vérification refusée', 'Lisez le motif donné par l’équipe, puis refaites une demande.', 'Voir le motif');
-        const n = idC.gratuites || 3, r = ID.gratuitesRestantes(idC), u = Math.min(n, idC.annonces || 0);
-        const jauge = `<div class="cp-idv-j" role="img" aria-label="${u} annonce${u > 1 ? 's' : ''} gratuite${u > 1 ? 's' : ''} utilisée${u > 1 ? 's' : ''} sur ${n}">${Array.from({ length: n }, (_, i) => `<i${i < u ? ' class="on"' : ''}></i>`).join('')}</div>`;
-        return T('', ID.badge(26), idS === 'brouillon' ? 'Terminez la vérification de votre identité' : 'Faites vérifier votre identité',
-          r === null ? 'Le badge « Identité vérifiée » rassure vos acheteurs et vos vendeurs. C’est gratuit et cela prend quelques minutes.'
-            : r === 0 ? `Vos ${n} annonces gratuites sont utilisées. Pour publier les suivantes, la vérification est obligatoire. C’est gratuit et cela protège tout le monde.`
-            : `Il vous reste ${r} annonce${r > 1 ? 's' : ''} gratuite${r > 1 ? 's' : ''} sur ${n}. Ensuite, la vérification sera obligatoire pour publier. C’est gratuit, et le badge rassure vos acheteurs.`,
-          idS === 'brouillon' ? 'Reprendre ma vérification' : 'Vérifier mon identité', r === null ? '' : jauge);
+        // une seule ligne, discrète : on touche pour ouvrir la vérification (23/10/2026)
+        const CHV = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+        const T = (cls, ico, t, txt, btn, extra) => btn
+          ? `<button type="button" class="cp-idv ${cls}" data-idv aria-label="${esc(t + ' : ' + txt)}"><span class="cp-idv-i" aria-hidden="true">${ico}</span><span class="cp-idv-x"><b>${t}</b><small>${txt}</small></span>${extra || ''}<span class="cp-idv-c">${CHV}</span></button>`
+          : `<div class="cp-idv ${cls}" role="status"><span class="cp-idv-i" aria-hidden="true">${ico}</span><span class="cp-idv-x"><b>${t}</b><small>${txt}</small></span></div>`;
+        if (idC.banni) return T('ko', IC('fermer', 22), 'Compte banni', 'Il ne peut plus publier, négocier ni écrire.', 1);
+        if (idS === 'en_attente') return T('bleu', IC('horloge', 22), 'Vérification en cours', 'L’équipe examine votre dossier.', '');
+        if (idS === 'verification_manuelle') return T('', IC('photo', 22), 'Photos à refaire', 'Touchez pour les renvoyer.', 1);
+        if (idS === 'expire') return T('ko', IC('horloge', 22), 'Pièce d’identité expirée', 'Refaites la vérification.', 1);
+        if (idS === 'refuse') return T('ko', IC('fermer', 22), 'Vérification refusée', 'Voir le motif.', 1);
+        const r = ID.gratuitesRestantes(idC);
+        return T('', ID.badge(22), idS === 'brouillon' ? 'Terminer ma vérification' : 'Vérifier mon identité',
+          r === null ? 'Gratuit · le badge rassure vos partenaires' : r === 0 ? 'Obligatoire pour publier · gratuit' : `${r} annonce${r > 1 ? 's' : ''} gratuite${r > 1 ? 's' : ''} restante${r > 1 ? 's' : ''} · gratuit`,
+          1);
       })();
       // l'activité : ce qui s'est vraiment passé, du plus récent au plus ancien, regroupé par jour
       const montant = t => { const m = /(\d[\d  .]*)\s*F(?:\s*\/\s*([\p{L}]+))?/u.exec(t || ''); return m ? `${m[1].trim()} F${m[2] ? `<em>/ ${esc(m[2])}</em>` : ''}` : ''; };
@@ -659,11 +666,11 @@ label.cp-r{cursor:pointer}
       const stBloc = !SG || off0 ? '' : (() => { const gag = SG.liste(u.id), but = SG.progres(u.id), v = idS === 'verifie';
         return `<div class="cp-sh"><h3>Vos statuts</h3><small>Ils se gagnent, ils ne s’achètent pas</small></div>
           <div class="cp-grp cp-statuts">${gag.length || v ? `<div class="cp-st-l">${SG.puces(u.id, { max: 9, t: 18 })}</div>` : '<p class="cp-vide">Pas encore de statut. Votre identité vérifiée, vos ventes conclues et vos réponses rapides en font gagner, et les autres membres les voient partout : annonces, carte, messages.</p>'}
-          ${!v && ID && !(idC && idC.exempt) ? '<button type="button" class="cp-st-go" data-idv2>' + (ID.badge ? ID.badge(16) : '') + 'Faire vérifier mon identité</button>' : ''}
+          ${!v && ID && !(idC && idC.exempt) && !idBandeau ? '<button type="button" class="cp-st-go" data-idv2>' + (ID.badge ? ID.badge(16) : '') + 'Faire vérifier mon identité</button>' : ''}
           ${but.map(x => `<div class="st-but"><b>${x.t}</b><small>${x.fait} sur ${x.total} ${x.txt}</small><div class="st-jauge" role="img" aria-label="${x.fait} sur ${x.total}"><i style="width:${Math.min(100, x.fait / x.total * 100)}%"></i></div></div>`).join('')}</div>`; })();
       main.innerHTML = `<div class="cp-pg">
         <section class="cp-hero" aria-label="Mon identité">
-          <div class="cp-hero-av">${off0 && window.MDGMarque ? MDGMarque.dg(114, { fond: 'vert', rond: true }) : (A() ? A().svg(p.avatar, { size: 114, nom: nom || '?', seed: u.id }) : '') + `<button type="button" class="cp-hero-cam" data-av aria-label="Changer mon avatar">${IC('photo', 18)}</button>`}</div>
+          <div class="cp-hero-av">${off0 && window.MDGMarque ? MDGMarque.dg(114, { fond: 'vert', rond: true }) : (A() ? A().svg(p.avatar, { size: 114, nom: nom || '?', seed: u.id, anime: true }) : '') + `<button type="button" class="cp-hero-cam" data-av aria-label="Changer mon avatar">${IC('photo', 18)}</button>`}</div>
           ${off0 ? `<h2>marché <em>de Gros</em></h2>
           <p class="cp-off-p">${esc(N().fmtTel(u.tel))} · visible par vous seul. Les membres voient « Marché de Gros », jamais votre nom ni votre numéro.</p>
           <div class="cp-hero-tags"><span class="cp-adm">${window.MDGMarque ? MDGMarque.dg(16, { fond: 'vert', rond: true }) : ''}Administrateur · Officiel</span></div>` : `<h2>${nom ? 'Bonjour, <em>' + esc(p.pseudo || p.prenom || nom) + '</em>' : '<em>Bienvenue</em>'}${idS === 'verifie' ? ' ' + ID.badge(22) : ''}</h2>
@@ -855,27 +862,46 @@ label.cp-r{cursor:pointer}
   /* ——— choisir son avatar : portrait dessiné, photo (recadrée ici, envoyée dans avatars/<id>.jpg) ou initiales ——— */
   function choisirAvatar(apres, embarque) {
     const u = me(), M = A(), nom = nomAffiche(profil) || '?', cur = M.parse(profil && profil.avatar);
-    let mode = cur.mode === 'v1' || cur.mode === 'ph' ? cur.mode : (profil && profil.avatar ? 'ini' : 'v1');
+    const PG = window.MDGPerso;   // les personnages du marché (v3/personnages.js)
+    let mode = cur.mode === 'v1' || cur.mode === 'ph' || cur.mode === 'mg' ? cur.mode : (profil && profil.avatar ? 'ini' : PG ? 'mg' : 'v1');
+    let g = cur.mode === 'mg' && PG ? PG.normal(cur) : PG ? PG.hasard() : null, saut = false;
     let o = cur.mode === 'v1' ? cur : M.parse('v1:c=foulard;t=1;k=0;f=' + Math.max(0, cur.f >= 0 ? cur.f : 1));
     let fi = cur.f >= 0 ? cur.f : 1;
     const ph = { img: null, z: 1, x: 0, y: 0, url: '' }; // photo en cours de cadrage
     const S = 240; // côté du cadre de recadrage (px CSS)
-    const codeNow = () => mode === 'v1' ? M.code(o) : mode === 'ini' ? 'ini:f=' + fi : cur.mode === 'ph' && !ph.img ? M.code(Object.assign({}, cur, { f: fi })) : '';
+    const codeNow = () => mode === 'mg' && PG ? PG.code(g) : mode === 'v1' ? M.code(o) : mode === 'ini' ? 'ini:f=' + fi : cur.mode === 'ph' && !ph.img ? M.code(Object.assign({}, cur, { f: fi })) : '';
     const rnd = n => Math.floor(Math.random() * n);
     const html = () => '<div class="avx"><aside class="avx-pv"><div class="avx-big"></div><b class="avx-nom">' + esc(nom) + '</b><div class="avx-mini" aria-hidden="true"><span><i class="m36"></i><small>Négociation</small></span><span><i class="m24"></i><small>Annonce</small></span></div></aside>'
-      + '<div class="avx-c"><div class="avx-mode" role="tablist" aria-label="Type d’avatar">' + [['v1', 'Portrait'], ['ph', 'Photo'], ['ini', 'Initiales']].map(([k, t]) => '<button type="button" role="tab" data-mode="' + k + '" aria-selected="' + (mode === k) + '">' + t + '</button>').join('') + '</div><div class="avx-p"></div></div></div>';
+      + '<div class="avx-c"><div class="avx-mode" role="tablist" aria-label="Type d’avatar">' + (PG ? [['mg', 'Personnage']] : []).concat(cur.mode === 'v1' || !PG ? [['v1', 'Portrait']] : [], [['ph', 'Photo'], ['ini', 'Initiales']]).map(([k, t]) => '<button type="button" role="tab" data-mode="' + k + '" aria-selected="' + (mode === k) + '">' + t + '</button>').join('') + '</div><div class="avx-p"></div></div></div>';
     const zone = embarque || (cadre('<div class="cp-main" style="grid-column:1 / -1"><h2>Mon avatar</h2><p>Il apparaît sur votre profil, à côté de vos annonces et dans vos négociations.</p><div class="cp-avw"></div><div class="cp-row avx-act"><button type="button" class="cp-go" data-ok>Enregistrer</button><button type="button" class="cp-alt" data-no>Annuler</button><span class="cp-msg" role="status"></span></div></div>', 'Mon avatar'), bg.querySelector('.cp-avw'));
     zone.innerHTML = html();
     const P = zone.querySelector('.avx-p'), big = zone.querySelector('.avx-big'), m36 = zone.querySelector('.m36'), m24 = zone.querySelector('.m24');
     function apercu() {
       if (mode === 'ph' && ph.img) { const d = rendu(144).toDataURL('image/jpeg', .8); big.innerHTML = '<img src="' + d + '" alt="" width="148" height="148">'; m36.innerHTML = '<img src="' + d + '" alt="" width="36" height="36">'; m24.innerHTML = '<img src="' + d + '" alt="" width="24" height="24">'; return; }
       const k = codeNow() || 'ini:f=' + fi;
-      big.innerHTML = M.svg(k, { size: 148, nom, seed: u.id }); m36.innerHTML = M.svg(k, { size: 36, nom, seed: u.id }); m24.innerHTML = M.svg(k, { size: 24, nom, seed: u.id });
+      big.innerHTML = M.svg(k, { size: 148, nom, seed: u.id, anime: true, saut }); saut = false; m36.innerHTML = M.svg(k, { size: 36, nom, seed: u.id }); m24.innerHTML = M.svg(k, { size: 24, nom, seed: u.id });
     }
     const dots = (L, key, sel, lab) => '<div class="cp-dots">' + L.map((col, i) => '<button type="button" class="cp-dot" data-' + key + '="' + i + '" style="background:' + col + '" aria-label="' + lab + ' ' + (i + 1) + '" aria-pressed="' + (sel === i) + '"></button>').join('') + '</div>';
     function panneau() {
       zone.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-selected', String(b.dataset.mode === mode)));
-      if (mode === 'v1') {
+      if (mode === 'mg' && PG) {
+        // garder la position de chaque rangée qui défile, d'un affichage à l'autre
+        const pos = {}; P.querySelectorAll('[data-rang]').forEach(r => { pos[r.dataset.rang] = r.scrollLeft; });
+        const vignette = (k, i) => M.svg(PG.code(Object.assign({}, g, { [k]: i }, k === 'b' ? { p: 0 } : {})), { size: 58, nom: '' });
+        const V = PG.visage(g.b), zoom = { y: 1, m: 1, l: 1, s: 1 };   // yeux, bouche, lunettes, moustache : vignette zoomée sur le visage
+        const rang = (t, k, L) => '<div class="avx-sec"><span class="cp-l">' + t + '</span><div class="avx-rang" data-rang="' + k + '">' + L.map((n, i) => '<button type="button" class="avx-pick" data-mgk="' + k + '" data-mgv="' + i + '" aria-pressed="' + (g[k] === i) + '">' + (zoom[k] ? '<span class="avx-zv" style="--ox:' + V.x + '%;--oy:' + V.y + '%">' + vignette(k, i) + '</span>' : vignette(k, i)) + '<span>' + esc(n) + '</span></button>').join('') + '</div></div>';
+        const pts = (t, k, L) => '<div class="avx-sec"><span class="cp-l">' + t + '</span><div class="cp-dots">' + L.map((col, i) => '<button type="button" class="cp-dot" data-mgk="' + k + '" data-mgv="' + i + '" style="background:' + col + '" aria-label="' + t + ' ' + (i + 1) + '" aria-pressed="' + (g[k] === i) + '"></button>').join('') + '</div></div>';
+        const C = PG.CHOIX, K = PG.COULEURS;
+        P.innerHTML = '<button type="button" class="avx-de" data-mgd><span aria-hidden="true">🎲</span>Un autre personnage au hasard</button>'
+          + '<p class="avx-txt">Des milliards de combinaisons : composez le vôtre, il bouge et saute sur votre profil.</p>'
+          + rang('Personnage', 'b', C.b) + pts('Couleur', 'p', K.p(g.b))
+          + rang('Yeux', 'y', C.y) + rang('Bouche', 'm', C.m)
+          + '<div class="avx-sec"><span class="cp-l">Joues</span><div class="cp-seg"><button type="button" data-mgk="j" data-mgv="1" aria-pressed="' + (g.j === 1) + '">Rosées</button><button type="button" data-mgk="j" data-mgv="0" aria-pressed="' + (g.j === 0) + '">Sans</button></div></div>'
+          + rang('Sur la tête', 'h', C.h) + pts('Couleur du chapeau', 'hc', K.hc)
+          + rang('Lunettes', 'l', C.l) + rang('Moustache', 's', C.s) + rang('Dans la main', 'i', C.i)
+          + pts('Chaussures', 'c', K.c) + pts('Fond', 'f', K.f) + rang('Motif du fond', 'g', K.g);
+        P.querySelectorAll('[data-rang]').forEach(r => { if (pos[r.dataset.rang] != null) r.scrollLeft = pos[r.dataset.rang]; else { const on = r.querySelector('[aria-pressed=true]'); if (on) r.scrollLeft = Math.max(0, on.offsetLeft - 16); } });
+      } else if (mode === 'v1') {
         const st = M.STYLES.find(x => x.id === o.c), cols = st && st.tissu ? M.TISSUS : M.CHEVEUX;
         P.innerHTML = '<div class="avx-sec"><div class="avx-h"><span class="cp-l">Coiffure</span><button type="button" class="avx-dice" data-dice>Au hasard</button></div><div class="avx-grid">' + M.STYLES.map(s => '<button type="button" class="avx-pick" data-c="' + s.id + '" aria-pressed="' + (o.c === s.id) + '">' + M.svg(M.code(Object.assign({}, o, { c: s.id, k: !!s.tissu === !!(st && st.tissu) ? o.k : 0 })), { size: 56, nom: s.nom }) + '<span>' + s.nom + '</span></button>').join('') + '</div></div>'
           + '<div class="avx-sec"><span class="cp-l">Teint</span>' + dots(M.TEINTS, 't', o.t, 'Teint') + '</div>'
@@ -924,7 +950,9 @@ label.cp-r{cursor:pointer}
     }
     zone.addEventListener('click', e => {
       const b = e.target.closest('button'); if (!b || !zone.contains(b)) return; const d = b.dataset;
-      if (d.mode) { mode = d.mode; panneau(); return; }
+      if (d.mode) { mode = d.mode; saut = mode === 'mg'; panneau(); return; }
+      if (d.mgd && PG) { g = PG.hasard(); saut = true; panneau(); return; }
+      if (d.mgk && PG) { g[d.mgk] = +d.mgv; if (d.mgk === 'b') g.p = 0; g = PG.normal(g); saut = true; panneau(); return; }
       if (d.dice) { const s = M.STYLES[rnd(M.STYLES.length)]; o = { mode: 'v1', c: s.id, t: rnd(M.TEINTS.length), k: rnd((s.tissu ? M.TISSUS : M.CHEVEUX).length), f: rnd(M.FONDS.length), a: M.DETAILS[rnd(M.DETAILS.length)].id }; panneau(); return; }
       if (d.c) { const was = M.STYLES.find(x => x.id === o.c), now = M.STYLES.find(x => x.id === d.c); if (!!was.tissu !== !!now.tissu) o.k = 0; o.c = d.c; }
       else if (d.t) o.t = +d.t; else if (d.k) o.k = +d.k; else if (d.f) { o.f = +d.f; fi = o.f; } else if (d.fi) fi = +d.fi; else if ('a' in d) o.a = d.a; else return;

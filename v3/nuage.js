@@ -320,6 +320,21 @@
 .ng--porte .ng-go:focus-visible{outline:2px solid #F5F0E6;outline-offset:3px}
 .ng--porte .ng-go[disabled]{opacity:.72}.ng--porte .ng-go[aria-busy=true]{opacity:1}
 .ng--porte .ng-note{margin:22px 0 0;padding-top:16px;border-top:1px solid rgba(245,240,230,.07);color:#7E7462;font-size:12.5px}
+/* le titre de la porte : le logo en phrase, posé en trois temps (la ligne d'appel monte, « marché » sort de son cache, « de Gros » s'écrit puis un reflet le traverse) */
+.ng--porte h2.ng-tt{display:flex;flex-direction:column;gap:2px;margin:0 0 24px}
+.ng-tt-a{font:500 17px/1.3 Jost,sans-serif;letter-spacing:.005em;color:#BDB29E}
+.ng-tt-b{display:block;font:600 clamp(34px,10.4vw,42px)/1.04 Jost,sans-serif;letter-spacing:-.028em;color:#F3EFE4;white-space:nowrap}
+.ng-tt-m{display:inline-block;overflow:hidden;vertical-align:bottom;padding:0 .02em .08em;margin:0 -.02em -.08em}.ng-tt-m>span{display:inline-block}
+.ng-tt-g{display:inline-block;padding:0 .12em .06em .02em;margin:0 -.12em -.06em 0;font-weight:800;font-style:italic;letter-spacing:-.02em;color:#F2C230;background:linear-gradient(100deg,#F2C230 0 42%,#FFEDB0 50%,#F2C230 58% 100%) 100% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.ng-tt.is-on .ng-tt-a{animation:ngTtA .55s .12s cubic-bezier(.22,1,.36,1) both}
+.ng-tt.is-on .ng-tt-m>span{animation:ngTtM .8s .26s cubic-bezier(.22,1,.36,1) both}
+.ng-tt.is-on .ng-tt-g{animation:ngTtG .7s .62s cubic-bezier(.65,0,.35,1) both,ngTtS 1.5s 1.45s cubic-bezier(.4,0,.2,1) both}
+@keyframes ngTtA{from{opacity:0;transform:translateY(8px);filter:blur(3px)}}
+@keyframes ngTtM{from{transform:translateY(105%)}}
+@keyframes ngTtG{from{clip-path:inset(-30% 100% -30% -10%);transform:translateX(-6px)}to{clip-path:inset(-30% -10% -30% -10%);transform:none}}
+@keyframes ngTtS{from{background-position:100% 0}to{background-position:0 0}}
+@media (min-width:760px){.ng-tt-a{font-size:18px}.ng-tt-b{font-size:48px}}
+@media (prefers-reduced-motion:reduce){.ng-tt.is-on .ng-tt-a,.ng-tt.is-on .ng-tt-m>span,.ng-tt.is-on .ng-tt-g{animation:none}}
 /* bureau : la scène à gauche, le formulaire à droite, sans trait entre les deux */
 @media (min-width:760px){
   .ng-bg:has(.ng--porte){padding:24px}
@@ -423,7 +438,11 @@
       $('.ng-tabs').hidden = m === 'sos'; $('.ng-id').hidden = m !== 'up'; $('.ng-c2').hidden = m === 'in'; $('.ng-cle').hidden = m !== 'sos'; $('.ng-oubli').hidden = m !== 'in';
       const SW = { in: ['Pas encore de compte ?', 'Créer un compte', 'up'], up: ['Déjà un compte ?', 'Se connecter', 'in'], sos: ['', 'Retour à la connexion', 'in'] }[m];
       $('.ng-sw span').textContent = SW[0]; $('.ng-sw button').textContent = SW[1]; $('.ng-sw button').onclick = () => setMode(SW[2]);
-      $('#ngT').textContent = TITRE[m]; $('.ng-lede').textContent = LEDE[m]; $('.ng-lede').hidden = !LEDE[m];
+      const t = $('#ngT'), dm = raison !== 'publie' && raison !== 'negocie' ? { in: 'Entrez dans le', up: 'Rejoignez le' }[m] : '';
+      t.classList.toggle('ng-tt', !!dm);
+      // le titre de la porte reprend le logo : « marché » crème, « de Gros » maïs, gras italique ; il se rejoue à chaque bascule
+      if (dm) { t.innerHTML = `<span class="ng-tt-a">${dm}</span><span class="ng-tt-b"><span class="ng-tt-m"><span>marché</span></span> <span class="ng-tt-g">de Gros</span></span>`; t.classList.remove('is-on'); void t.offsetWidth; t.classList.add('is-on'); }
+      else t.textContent = TITRE[m]; $('.ng-lede').textContent = LEDE[m]; $('.ng-lede').hidden = !LEDE[m];
       $('.ng-lc').innerHTML = (m === 'sos' ? 'Nouveau code secret' : m === 'up' ? 'Choisissez un code secret' : 'Code secret') + ' <i>6 chiffres</i>';
       $('#ngCode').autocomplete = m === 'in' ? 'current-password' : 'new-password'; go.querySelector('span').textContent = BTN[m]; glob('');
       ['ngCode', 'ngCode2', 'ngCle', 'ngPrenom', 'ngNom', 'ngPseudo'].forEach(id => champErr(id, '')); bg.querySelector('.ng-form').scrollTop = 0;

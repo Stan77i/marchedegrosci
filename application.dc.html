@@ -33,7 +33,7 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261027f','v3/astuces.js?v=20261027f','app/scene.js?v=20261028d','v3/porte.js?v=20261028c','v3/sons.js?v=20261027g','v3/negoce.js?v=20261027f','v3/compte.js?v=20261027f','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261027f','v3/statuts.js?v=20261023a','v3/messages.js?v=20261027c','v3/aide.js?v=20261027f','v3/alertes.js?v=20261023f','v3/releve.js?v=20261026a','v3/commandes.js?v=20261029a','v3/tableau.js?v=20261029b','v3/chauffeur.js?v=20261026t','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261027f','v3/appro.js?v=20261027f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261025g','v3/identite.js?v=20261027h'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261027f','v3/astuces.js?v=20261029f','app/scene.js?v=20261028d','v3/porte.js?v=20261028c','v3/sons.js?v=20261027g','v3/negoce.js?v=20261027f','v3/compte.js?v=20261027f','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261027f','v3/statuts.js?v=20261023a','v3/messages.js?v=20261027c','v3/aide.js?v=20261027f','v3/alertes.js?v=20261023f','v3/releve.js?v=20261026a','v3/commandes.js?v=20261029a','v3/tableau.js?v=20261029d','v3/chauffeur.js?v=20261026t','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261023f','v3/racheter.js?v=20261027f','v3/appro.js?v=20261027f','v3/groupes.js?v=20261023f','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261025g','v3/identite.js?v=20261027h'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -47,17 +47,18 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
-<script src="app/theme.js?v=20261027f"></script>
+<script src="app/theme.js?v=20261029f"></script>
 <script src="app/nuit.js?v=20261029c" defer></script>
 <script src="app/stable.js?v=20261025f" defer></script>
 <script src="app/vibre.js?v=20261025a" defer></script>
-<script src="app/prixmoment.js?v=20261029c" defer></script>
+<script src="app/prixmoment.js?v=20261029f" defer></script>
+<script src="app/demo-orbite.js?v=20261029f" defer></script>
 <script src="app/activite.js?v=20261025j" defer></script>
 <link rel="preload" href="fonts/jost-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261023f">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261029c">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261029d">
 <link rel="stylesheet" href="css/sombre.css?v=20261027f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261027f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261027f">
@@ -123,6 +124,8 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
     </div>
   </div>
   <div onPointerDown="{{ wDown }}" onPointerMove="{{ wMove }}" onPointerUp="{{ wUp }}" onPointerCancel="{{ wUp }}" style="position:relative;height:{{ wheelH }};flex:none;touch-action:pan-y;user-select:none">
+    <!-- le switch « Démo » (app/demo-orbite.js) : la roue et le prix se montrent tout seuls -->
+    <button type="button" class="dm-sw" onPointerDown="{{ stop }}" onClick="{{ demoGo }}" aria-label="Démo : voir comment marchent la roue et les prix"><span class="pi" aria-hidden="true"></span>Démo</button>
     <button class="tv-ouvrir" onPointerDown="{{ stop }}" onClick="{{ openTout }}" aria-label="{{ toutL }}"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="3" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" opacity=".45"></rect></svg><span>Tout</span></button>
     <div style="position:absolute;left:50%;top:0;width:390px;height:388px;margin-left:-195px;transform:scale({{ wheelSc }});transform-origin:50% 0">
     <svg width="390" height="388" viewBox="0 0 390 388" style="position:absolute;left:50%;top:0;margin-left:-195px;pointer-events:none;overflow:visible">
@@ -1433,7 +1436,9 @@ class Component extends DCLogic {
     const P = this.prod(slug), L0 = this.prixListes(slug, O, D), L = L0.of.length ? L0 : this.prixListes(slug, [], D);
     const m = (x, off) => ({ prix: off ? x.price : x.budget, nom: x.name, lieu: this.place(x), at: x.at, qte: x.qty, unite: x.unit, moi: this.isMine(x), neg: !!(x.remote && x.rid), x });
     const offres = L0.of.map(x => m(x, true)), demandes = L.de.map(x => m(x, false)), u = L0.uo || L.ud || '';
-    MDGPrixMoment.ouvrir({ nom: P.name, img: P.sack ? P.thumb : null, art: L0.art(u), offres, demandes,
+    // la bulle d'activité (« Très vendu »…) se retire : son information passe en tête du pop-up, dans le même style
+    clearTimeout(this._tendT); if (this.state.tendS) this.setState({ tendS: null }); this.tendCharger();
+    MDGPrixMoment.ouvrir({ nom: P.name, img: P.sack ? P.thumb : null, art: L0.art(u), activite: this.tendMsg(slug), offres, demandes,
       placer: k => { if (k === 'offre') { this.setVf({ slug, unit: u || this.state.vf && this.state.vf.unit }); this.push('vendre'); } else { this.setState(s => ({ df: Object.assign({}, s.df, { slug, unit: u || (s.df && s.df.unit) }) })); this.push('demande'); } },
       negocier: (k, i) => { const r = (k === 'offre' ? offres : demandes)[i]; if (r && r.x) { const c = this.card(r.x); if (c.canNeg) c.neg(); else this.openFiche(slug); } } });
   }
@@ -1751,7 +1756,7 @@ class Component extends DCLogic {
       ...this.accueil({ h, mine, moiS, moiP, moiC, moiN }),
       markEl: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.ligne({ fond: 'clair', h: 24 }) } }) : 'Marché de Gros',
       act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, oAnim: ao ? 'mkLuciole 3.2s ease-in-out infinite' : 'none', dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }, this.prixMoment(act, O, D, inSeason(act.slug, cm), Math.min(aW, 390) - 48)), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
-      openFicheAct: () => this.openFiche(act.slug), openPrix: () => this.prixPop(act.slug, O, D),
+      openFicheAct: () => this.openFiche(act.slug), openPrix: () => this.prixPop(act.slug, O, D), demoGo: () => window.MDGDemo && MDGDemo.basculer(),
       tendOn: !!(S.tendS && S.tendS === act.slug && S.tendM), tend: S.tendM || { ico: '', t: '', s: '', cls: '' },
       duoH: { jaiL: 'J\u2019ai ' + act.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + act.name.toLowerCase() + ' à acheter : publier une demande' }, duoF: { jaiL: 'J\u2019ai ' + FP.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + FP.name.toLowerCase() + ' à acheter : publier une demande' },
       openJai: () => this.openSheet('jai', top === 'fiche' ? S.slug : act.slug), openCherche: () => this.openSheet('cherche', top === 'fiche' ? S.slug : act.slug),

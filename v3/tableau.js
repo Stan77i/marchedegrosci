@@ -7,6 +7,7 @@
    • On ne compare que des prix dans la même unité (kg, sac, régime…) ; filtre par zone (région).
    • Le seul intermédiaire, c'est le Marché de Gros : aucun numéro, aucun contact. « Acheter » / « Vendre » ouvre la négociation
      dans l'application (connexion demandée si besoin). Lecture publique, sans compte.
+   • Couleurs (23/10/2026), comme les boutons « J'ai à vendre » (vert) / « Je cherche » (maïs) : les offres et « Acheter » en vert, les demandes et « Vendre » en maïs.
    • Relu toutes les 30 s quand l'onglet est visible : une annonce qui monte est signalée « ↑ monte ». */
 (function () {
   'use strict';
@@ -45,11 +46,11 @@ mdg-tableau{display:block;padding:6px 16px 24px;font:400 15px/1.45 Jost,system-u
 .tb-p{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;width:100%;padding:12px 14px;border:0;border-radius:18px;background:#FFFDF8;text-align:left;font:inherit;color:inherit;cursor:pointer;box-shadow:0 1px 2px rgba(23,21,18,.05)}
 .tb-p b{font-weight:600;font-size:16px}.tb-p small{display:block;font-size:12.5px;color:#5E5546}
 .tb-p .px{text-align:right}.tb-p .px b{display:block;color:#10392B;font-size:16px}.tb-p .px small{white-space:nowrap}
-.tb-p .px .d b{color:#8A4B00}
+.tb-p .px .d b{color:#7A5A00}
 .tb-dos{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin:4px 0 6px -6px;padding:0 10px;border:0;border-radius:22px;background:none;color:#10392B;font:600 15px Jost,sans-serif;cursor:pointer}
 .tb-seg{display:flex;padding:3px;border-radius:16px;background:rgba(23,21,18,.07);margin:0 0 10px}
 .tb-seg button{flex:1;min-height:46px;border:0;border-radius:13px;background:none;color:#4B4436;font:600 15px Jost,sans-serif;cursor:pointer}
-.tb-seg button[aria-pressed=true].a{background:#10392B;color:#F3EFE4}.tb-seg button[aria-pressed=true].v{background:#B4471F;color:#FFF7F0}
+.tb-seg button[aria-pressed=true].a{background:#10392B;color:#F3EFE4}.tb-seg button[aria-pressed=true].v{background:#F2C230;color:#171512}
 .tb-ch{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 10px;padding:0 16px}.tb-ch::-webkit-scrollbar{display:none}
 .tb-ch button{flex:none;min-height:38px;padding:0 14px;border:1px solid rgba(23,21,18,.16);border-radius:19px;background:#FFFDF8;color:#3B342A;font:500 14px Jost,sans-serif;cursor:pointer}
 .tb-ch button[aria-pressed=true]{background:#171512;border-color:#171512;color:#FFFDF8}
@@ -57,13 +58,13 @@ mdg-tableau{display:block;padding:6px 16px 24px;font:400 15px/1.45 Jost,system-u
 .tb-r.top{box-shadow:inset 0 0 0 2px #F2C230}
 .tb-rg{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#EFE9DA;color:#4B4436;font:700 13px Jost,sans-serif}.tb-r.top .tb-rg{background:#F2C230;color:#10392B}
 .tb-l1{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
-.tb-prix{font:800 22px/1.1 Jost,sans-serif;color:#10392B}.tb-prix small{font:500 13px Jost,sans-serif;color:#5E5546}.tb-r.vd .tb-prix{color:#8A4B00}
+.tb-prix{font:800 22px/1.1 Jost,sans-serif;color:#10392B}.tb-prix small{font:500 13px Jost,sans-serif;color:#5E5546}.tb-r.vd .tb-prix{color:#7A5A00}
 .tb-nom{font-weight:600}.tb-b{display:inline-flex;align-items:center;gap:3px;margin-left:4px;padding:1px 7px;border-radius:10px;font:600 11.5px/1.6 Jost,sans-serif;background:rgba(16,57,43,.1);color:#10392B;vertical-align:1px}
 .tb-b.or{background:rgba(242,194,48,.35);color:#4A3700}.tb-b.of{background:#10392B;color:#F2C230}
 .tb-i{margin:3px 0 0;font-size:13px;color:#4B4436}.tb-i .x+.x::before{content:' · '}
 .tb-t{display:inline-block;margin:6px 6px 0 0;padding:2px 9px;border-radius:10px;background:#EFE9DA;font:500 12.5px Jost,sans-serif;color:#4B4436}.tb-t.v{background:rgba(108,197,140,.22);color:#1F6B40}
 .tb-ec{font-size:12.5px;color:#8A2414}.tb-ec.ok{color:#1F6B40;font-weight:600}
-.tb-go{grid-column:2;justify-self:start;margin-top:8px;min-height:44px;padding:0 22px;border:0;border-radius:22px;background:#10392B;color:#F3EFE4;font:600 15px Jost,sans-serif;cursor:pointer}.tb-r.vd .tb-go{background:#B4471F}
+.tb-go{grid-column:2;justify-self:start;margin-top:8px;min-height:44px;padding:0 22px;border:0;border-radius:22px;background:#10392B;color:#F3EFE4;font:600 15px Jost,sans-serif;cursor:pointer}.tb-r.vd .tb-go{background:#F2C230;color:#171512}
 .tb-monte{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:10px;background:#1F6B40;color:#fff;font:700 11.5px/1.6 Jost,sans-serif;animation:tbM 2.4s ease-out both}
 @keyframes tbM{0%{opacity:0;transform:translateY(6px)}15%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
 .tb-vide{padding:22px 16px;border-radius:18px;background:#FFFDF8;text-align:center;color:#5E5546}.tb-vide b{display:block;color:#171512;margin-bottom:4px}
@@ -74,9 +75,9 @@ html[data-theme=sombre] .tb-h{color:#F3EFE4}
 html[data-theme=sombre] .tb-vide{box-shadow:inset 0 0 0 1px rgba(243,239,228,.1)}html[data-theme=sombre] .tb-vide b{color:#F3EFE4}html[data-theme=sombre] .tb-vide{color:#CFC4B1}
 html[data-theme=sombre] .tb-seg{background:#1E1B16;box-shadow:inset 0 0 0 1px rgba(243,239,228,.1)}
 html[data-theme=sombre] .tb-seg button{color:#E8DFCC}
-html[data-theme=sombre] .tb-seg button[aria-pressed=true].a{background:#9FDCB2;color:#0E2A1F}html[data-theme=sombre] .tb-seg button[aria-pressed=true].v{background:#F3A08C;color:#3A1306}
-html[data-theme=sombre] .tb-go{background:#9FDCB2;color:#0E2A1F}html[data-theme=sombre] .tb-r.vd .tb-go{background:#F3A08C;color:#3A1306}
-html[data-theme=sombre] .tb-r.vd .tb-prix,html[data-theme=sombre] .tb-p .px .d b{color:#F3A08C}
+html[data-theme=sombre] .tb-seg button[aria-pressed=true].a{background:#9FDCB2;color:#0E2A1F}html[data-theme=sombre] .tb-seg button[aria-pressed=true].v{background:#F2C230;color:#171512}
+html[data-theme=sombre] .tb-go{background:#9FDCB2;color:#0E2A1F}html[data-theme=sombre] .tb-r.vd .tb-go{background:#F2C230;color:#171512}
+html[data-theme=sombre] .tb-r.vd .tb-prix,html[data-theme=sombre] .tb-p .px .d b{color:#F2C230}
 html[data-theme=sombre] .tb-ec{color:#F3A08C}html[data-theme=sombre] .tb-ec.ok{color:#9FDCB2}
 html[data-theme=sombre] .tb-b{background:rgba(159,220,178,.16);color:#9FDCB2}html[data-theme=sombre] .tb-b.or{background:rgba(242,194,48,.18);color:#F2C230}html[data-theme=sombre] .tb-b.of{background:#F2C230;color:#171512}
 html[data-theme=sombre] .tb-t.v{background:rgba(159,220,178,.16);color:#9FDCB2}
@@ -85,7 +86,7 @@ html[data-theme=sombre] .tb-charge{background:linear-gradient(90deg,#1E1B16,#2A2
 .tb-attente .tb-l,.tb-attente .tb-vide{opacity:.45;transition:opacity .15s}
 html[data-theme=sombre] .tb-p,html[data-theme=sombre] .tb-r,html[data-theme=sombre] .tb-vide,html[data-theme=sombre] .tb-zone select,html[data-theme=sombre] .tb-ch button{background:#1E1B16;color:#F3EFE4;border-color:rgba(243,239,228,.12)}
 html[data-theme=sombre] .tb-s,html[data-theme=sombre] .tb-p small,html[data-theme=sombre] .tb-i,html[data-theme=sombre] .tb-n,html[data-theme=sombre] .tb-zone label,html[data-theme=sombre] .tb-prix small{color:#CFC4B1}
-html[data-theme=sombre] .tb-h em,html[data-theme=sombre] .tb-prix,html[data-theme=sombre] .tb-p .px b,html[data-theme=sombre] .tb-dos{color:#F2C230}
+html[data-theme=sombre] .tb-h em,html[data-theme=sombre] .tb-dos{color:#F2C230}html[data-theme=sombre] .tb-prix,html[data-theme=sombre] .tb-p .px b{color:#9FDCB2}
 html[data-theme=sombre] .tb-rg,html[data-theme=sombre] .tb-t{background:#2A261F;color:#E8DFCC}html[data-theme=sombre] .tb-ch button[aria-pressed=true]{background:#F3EFE4;color:#171512}
 @media (prefers-reduced-motion:reduce){.tb-r,.tb-monte,.tb-charge{animation:none!important;transition:none!important}}
 /* la liste des produits : la vignette du produit (le sac sort de sa tuile), le nom, le meilleur prix ; elle s'installe en cascade */

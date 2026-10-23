@@ -699,8 +699,9 @@ html[data-theme=sombre] .cd-genre{color:#10392B}
 .acc-px:active{transform:scale(.97)}.acc-px:focus-visible{outline:2px solid #F2C230;outline-offset:4px;border-radius:16px}
 .acc-px-tri{display:inline-flex;flex-direction:column;gap:3px;margin-left:.3em;align-self:center}
 .acc-px-tri s{display:block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;text-decoration:none}
-.acc-px-tri s:first-child{border-bottom:7px solid #9FDCB2;animation:accTriH 2.2s ease-in-out infinite}
-.acc-px-tri s:last-child{border-top:7px solid #F2C230;animation:accTriB 2.2s ease-in-out infinite}
+/* même langage que tout le reste : ▲ maïs = les acheteurs montent leur budget, ▼ vert = les vendeurs baissent leur prix */
+.acc-px-tri s:first-child{border-bottom:7px solid #F2C230;animation:accTriH 2.2s ease-in-out infinite}
+.acc-px-tri s:last-child{border-top:7px solid #9FDCB2;animation:accTriB 2.2s ease-in-out infinite}
 @keyframes accTriH{0%,60%,100%{transform:none}30%{transform:translateY(-3px)}}
 @keyframes accTriB{0%,40%,100%{transform:none}70%{transform:translateY(3px)}}
 .acc-px-t .acc-px-tri{vertical-align:middle}

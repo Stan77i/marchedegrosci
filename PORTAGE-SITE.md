@@ -105,6 +105,7 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 - Croix de fermeture dessinées en SVG, flèche de retour lisible, surfaces du navigateur aux couleurs de la marque (sélection, curseur, cases).
 - Rien ne bouge en boucle sans raison ; les avatars sautent seulement quand il y a du nouveau.
 - La tomate est montrée **en carton**. Ne jamais écrire « PAYÉ ».
+- **Onglets** : pastille du nombre de produits sur « Prix », états vides « Aucune activité / Aucune alerte » avec le sac, pastilles panier / caddie « 2 offres · 1 demande » au tableau (`application.dc.html`, `v3/tableau.js`).
 - **Hors connexion** : bandeau rouge en haut « Pas de connexion · Réessayer » et carte du sac qui dort (`app/sac.js`, `v3/tableau.js`, application seulement). Le site doit charger `app/sac.js` pour l'avoir.
 
 ## 5. Ce qu'on peut retirer du site : à valider par le propriétaire

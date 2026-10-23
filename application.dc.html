@@ -35,7 +35,7 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261031c','v3/astuces.js?v=20261031c','app/scene.js?v=20261028d','v3/porte.js?v=20261028c','v3/sons.js?v=20261102a','v3/negoce.js?v=20261101f','v3/compte.js?v=20261102a','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261102a','v3/statuts.js?v=20261023a','v3/messages.js?v=20261031a','v3/aide.js?v=20261031c','v3/alertes.js?v=20261101a','v3/releve.js?v=20261102a','v3/commandes.js?v=20261102a','v3/tableau.js?v=20261102a','v3/chauffeur.js?v=20261030c','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261101a','v3/racheter.js?v=20261102a','v3/appro.js?v=20261101a','v3/groupes.js?v=20261101a','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261102b','v3/identite.js?v=20261101a'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261031c','v3/astuces.js?v=20261031c','app/scene.js?v=20261028d','v3/porte.js?v=20261028c','v3/sons.js?v=20261102a','v3/negoce.js?v=20261101f','v3/compte.js?v=20261102a','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261102a','v3/statuts.js?v=20261023a','v3/messages.js?v=20261031a','v3/aide.js?v=20261031c','v3/alertes.js?v=20261101a','v3/releve.js?v=20261102a','v3/commandes.js?v=20261102a','v3/tableau.js?v=20261102b','v3/chauffeur.js?v=20261030c','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261101a','v3/racheter.js?v=20261102a','v3/appro.js?v=20261101a','v3/groupes.js?v=20261101a','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261102b','v3/identite.js?v=20261101a'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -61,7 +61,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/symboles.css?v=20261102d">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261101e">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261102k">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261102l">
 <link rel="stylesheet" href="css/sombre.css?v=20261027f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261027f">
 <link rel="stylesheet" href="css/categories-app.css?v=20261101e">
@@ -187,6 +187,9 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   <div style="display:{{ accP }}"><mdg-tableau></mdg-tableau></div>
   <div style="display:{{ accA }}">
     <!-- « En cours » : seulement pour une personne connectée (demandé le 22/10/2026) -->
+    <!-- rien en cours et aucune annonce : un seul message, « Aucune activité » (demande du propriétaire, 23/10/2026) -->
+    <sc-if value="{{ actRien }}" hint-placeholder-val="{{ false }}"><section class="acc-carte acc-rien">{{ actRienEl }}</section></sc-if>
+    <sc-if value="{{ actQqc }}" hint-placeholder-val="{{ true }}">
     <sc-if value="{{ ecOn }}" hint-placeholder-val="{{ false }}"><section class="acc-carte acc-ec"><div class="acc-ttl"><h2>En <em>cours</em></h2><sc-if value="{{ ecEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ ecEff }}">Tout effacer</button></sc-if></div><p class="acc-sub">{{ ecSous }}</p>
       <sc-if value="{{ ecRepOn }}" hint-placeholder-val="{{ false }}"><div class="glis glis-rep" onScroll="{{ ecRep.glis }}"><button class="ec-rep ec-{{ ecRep.etat }}" onClick="{{ ecRep.go }}" aria-label="{{ ecRep.lab }}"><span class="ec-rep-h">Reprendre là où vous en étiez</span><span class="ec-l"><span class="ec-i ec-{{ ecRep.k }} {{ ecRep.anim }}" aria-hidden="true">{{ ecRep.emo }}<sc-if value="{{ ecRep.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ ecRep.titre }}</b><small>{{ ecRep.sous }}</small></span><span class="ec-go" aria-hidden="true">{{ accIco.suite }}</span></span></button><button type="button" class="glis-z" onClick="{{ ecRep.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-if>
       <sc-for list="{{ ecListe }}" as="e" hint-placeholder-count="0"><div class="glis" onScroll="{{ e.glis }}"><button class="acc-ligne ec-ligne ec-{{ e.etat }}" onClick="{{ e.go }}" aria-label="{{ e.lab }}"><span class="ec-i ec-{{ e.k }} {{ e.anim }}" aria-hidden="true">{{ e.emo }}<sc-if value="{{ e.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ e.titre }}</b><small><span class="ec-tag">{{ e.tag }}</span>{{ e.sous }}</small></span><sc-if value="{{ e.vague }}" hint-placeholder-val="{{ false }}"><span class="ec-vague" aria-hidden="true"><i></i><i></i><i></i></span></sc-if></button><button type="button" class="glis-z" onClick="{{ e.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-for>
@@ -196,6 +199,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
       <sc-for list="{{ accActs }}" as="a" hint-placeholder-count="0"><div class="glis" onScroll="{{ a.glis }}"><button class="acc-ligne" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span><span class="acc-h">{{ a.h }}</span></button><button type="button" class="glis-z" onClick="{{ a.ret }}" tabindex="-1"><span aria-hidden="true">🗑️</span>Retirer</button></div></sc-for>
       <sc-if value="{{ accActVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ actVideTxt }}</p></sc-if>
     </section>
+    </sc-if>
   </div>
 
   <div style="display:{{ accL }}">
@@ -203,9 +207,9 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
       <sc-for list="{{ codesL }}" as="c" hint-placeholder-count="0"><button class="acc-ligne cd-ligne {{ c.cls }}" onClick="{{ c.go }}" aria-label="{{ c.lab }}"><span class="cd-i" aria-hidden="true">🔐</span><span class="acc-tx"><b>{{ c.titre }}</b><small><span class="cd-genre">{{ c.genre }}</span>{{ c.quand }}</small></span><sc-if value="{{ c.aCode }}" hint-placeholder-val="{{ false }}"><span class="cd-code">{{ c.code }}<small>{{ c.exp }}</small></span></sc-if><sc-if value="{{ c.sansCode }}" hint-placeholder-val="{{ false }}"><span class="cd-voir">{{ c.voir }}</span></sc-if></button></sc-for>
       <p class="acc-sub cd-note">{{ codesNote }}</p>
     </section></sc-if>
-    <section class="acc-carte"><h2>Alertes</h2><p class="acc-sub">Ce qui demande votre attention.</p>
+    <section class="acc-carte"><sc-if value="{{ accAlQqc }}" hint-placeholder-val="{{ true }}"><h2>Alertes</h2><p class="acc-sub">Ce qui demande votre attention.</p></sc-if>
       <sc-for list="{{ accAlertes }}" as="a" hint-placeholder-count="0"><button class="acc-al {{ a.tint }}" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span>{{ accIco.suite }}</button></sc-for>
-      <sc-if value="{{ accAlVide }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">Rien à signaler. Tout est en ordre.</p></sc-if>
+      <sc-if value="{{ accAlVide }}" hint-placeholder-val="{{ false }}"><div class="acc-rien">{{ alRienEl }}</div></sc-if>
       <sc-if value="{{ accAlRien }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">Rien d’autre à signaler.</p></sc-if>
     </section>
   </div>
@@ -1280,7 +1284,9 @@ class Component extends DCLogic {
         anim: roule ? 'ec-roule' + (x.etat === 'moi' ? ' ec-appel' : '') : x.etat === 'moi' || x.etat === 'litige' ? 'ec-appel' : '', lab: x.titre + ' : ' + x.tag + sous, go: () => x.ouvrir(),
         glis: this.glisser([cleE(x)], x.titre + ' retiré de votre activité'), ret: () => this.masquer([cleE(x)], x.titre + ' retiré de votre activité') }; };
     const ecRepE = ecD ? ecEl(ecD) : null;
-    const ongs = [['marche', 'Marché'], ['prix', 'Prix'], ['activite', 'Activité'], ['alertes', 'Alertes']].map(([k, t]) => ({ t, sel: String(tab === k), cls: tab === k ? 'on' : '', hasN: (k === 'alertes' && nAl > 0) || (k === 'activite' && ecT.length > 0), n: k === 'activite' ? ecT.length : nAl, nC: k === 'activite' ? (nAf ? 'vif' : 'doux') : '',
+    // Prix : combien de produits ont une annonce en ce moment (comme les lignes du tableau du marché), dans une pastille (demande du propriétaire, 23/10/2026)
+    const nPx = new Set(this.offers().concat(this.demands()).map(x => x.slug)).size;
+    const ongs = [['marche', 'Marché'], ['prix', 'Prix'], ['activite', 'Activité'], ['alertes', 'Alertes']].map(([k, t]) => ({ t, sel: String(tab === k), cls: tab === k ? 'on' : '', hasN: (k === 'alertes' && nAl > 0) || (k === 'activite' && ecT.length > 0) || (k === 'prix' && nPx > 0), n: k === 'activite' ? ecT.length : k === 'prix' ? nPx : nAl, nC: k === 'activite' ? (nAf ? 'vif' : 'doux') : k === 'prix' ? 'info' : '',
       go: () => { this.setState({ accTab: k }); const sc = document.querySelector('[data-pg="home"] .acc-sc'); if (sc) sc.scrollTop = 0; if (k === 'activite') this.astuceGlisser(); } }));
     // la salutation : par son prénom quand on le connaît
     const prenom = moiS && moiP ? (moiP.pseudo || moiP.prenom || '') : '';
@@ -1326,7 +1332,10 @@ class Component extends DCLogic {
       ecOn: !!moiS, ecVideOn: !!(moiS && !ecT.length && !ecRepE),   // « En cours » n'existe que pour une personne connectée
       ecVideTxt: moiS ? 'Rien en cours. Proposez un prix sur une annonce : la négociation s’affichera ici.' : 'Connectez-vous pour voir vos démarches.',
       accActs: acts, // J'ai / Je cherche : seulement sur l'onglet Marché (Activité et Alertes n'ont rien à publier)
-      accBasC: (S.accTab || 'marche') === 'marche' ? '' : 'cache', accBasH: String((S.accTab || 'marche') !== 'marche'), accActVide: !acts.length, accAlertes: al, accAlVide: !!moiS && !al.length && !nCd, accAlRien: !!moiS && !al.length && nCd > 0,
+      accBasC: (S.accTab || 'marche') === 'marche' ? '' : 'cache', accBasH: String((S.accTab || 'marche') !== 'marche'), accActVide: !acts.length, accAlertes: al, accAlVide: !al.length && !nCd, accAlQqc: !!(al.length || nCd),
+      actRien: !acts.length && !ecT.length && !ecRepE, actQqc: !!(acts.length || ecT.length || ecRepE),
+      actRienEl: h('div', { dangerouslySetInnerHTML: { __html: window.MDGSac ? MDGSac.vide('Aucune activité', moiS ? 'Vos négociations, commandes et messages apparaîtront ici.' : 'Connectez-vous : vos négociations, commandes et messages apparaîtront ici.', { t: 92 }) : '<p class="acc-vide">Aucune activité</p>' } }),
+      alRienEl: h('div', { dangerouslySetInnerHTML: { __html: window.MDGSac ? MDGSac.vide('Aucune alerte', 'Tout est en ordre. Ce qui demande votre attention apparaîtra ici.', { t: 92 }) : '<p class="acc-vide">Aucune alerte</p>' } }), accAlRien: !!moiS && !al.length && nCd > 0,
       codesOn: nCd > 0, codesL, codesGarde: cdMoi ? 'Gardez bien ce code : vous aurez à le présenter au chauffeur. Donnez-le de vive voix, jamais par message.' : 'Demandez le code au bon moment, puis tapez-le dans votre Espace chauffeur.',
       codesNote: cdMoi ? 'Pour votre sécurité, le code n’est jamais enregistré dans le téléphone : touchez la ligne pour l’afficher au moment voulu. Un nouveau code remplace l’ancien.' : 'Le code fait 6 chiffres. 5 essais au plus.' };
   }

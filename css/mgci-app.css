@@ -776,3 +776,8 @@ html:not([data-theme=sombre]) .aseg > button[aria-pressed="true"] > .aseg-s.d { 
 /* carte du réseau, filtres du panneau : panier (offres) et caddie crème (demandes) au lieu du rond et du carré */
 .lg-s { flex: none; width: 24px; height: 24px; margin: -4px 0 -4px -2px; background: var(--sym-o) center / contain no-repeat; }
 .lg-s.d { background-image: var(--sym-d-nuit); }
+
+/* onglet Prix : le nombre de produits au tableau (information, pas une alerte) — 23/10/2026 */
+.acc-ong button .acc-n.info{background:#6CC58C;color:#0E3323}
+/* Activité / Alertes vides : un seul message avec le sac qui attend */
+.acc-rien .ms-etat{padding:26px 10px 22px}

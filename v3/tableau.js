@@ -102,6 +102,11 @@ html[data-theme=sombre] .tb-rg,html[data-theme=sombre] .tb-t{background:#2A261F;
 html[data-theme=sombre] .tb-v.ini b{color:oklch(.86 .08 var(--h))}
 .tb-p:hover .tb-v img,.tb-p:active .tb-v img{transform:translateY(-4px) scale(1.06) rotate(-2deg)}
 .tb-p .tb-tx b{display:block;font:600 17px/1.2 Jost,sans-serif;letter-spacing:-.005em}.tb-p .tb-tx small{margin-top:3px}
+/* le nombre d'offres / de demandes : une pastille avec le panier (offre) ou le caddie (demande), demandé le 23/10/2026 */
+.tb-pils{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}.tb-pil{display:inline-flex;align-items:center;gap:5px;min-height:26px;padding:0 10px 0 5px;border-radius:999px;font:700 13.5px/1 Jost,sans-serif;font-variant-numeric:tabular-nums;animation:tbPil .45s cubic-bezier(.3,1.6,.5,1) both}
+.tb-pil i{width:20px;height:20px;flex:none;background:var(--sym-o) center/contain no-repeat}.tb-pil.d i{background-image:var(--sym-d-jour,var(--sym-d))}
+.tb-pil.o{background:#6CC58C;color:#0E3323}.tb-pil.d{background:#F2C230;color:#171512}
+@keyframes tbPil{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}@media (prefers-reduced-motion:reduce){.tb-pil{animation:none}}
 .tb-p .px b{font:700 17px/1.2 Jost,sans-serif;font-variant-numeric:tabular-nums}.tb-p .px small{margin-top:2px}
 .tb-p .px>span+span{margin-top:6px}.tb-p .px>span{display:block}
 .tb-pl.anim>li{animation:tbIn .55s calc(var(--i,0) * 60ms) cubic-bezier(.22,1,.36,1) both}
@@ -173,7 +178,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
         ${s.err ? this.erreur() : !P ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div><div class="tb-charge"></div></div>'
           : !P.length ? `<div class="tb-vide"><b>Aucune annonce${s.region ? ' dans cette zone' : ''} pour l’instant</b>Publiez la première avec « J’ai » ou « Je cherche » sur l’onglet Marché.</div>`
           : `<ul class="tb-l tb-pl${anim ? ' anim' : ''}">${P.map((p, i) => `<li style="--i:${Math.min(i, 10)}"><button type="button" class="tb-p" data-slug="${esc(p.slug)}" aria-label="${esc(p.lab || nomProduit(p.slug))} : voir le tableau">
-              ${vignette(p.slug)}<span class="tb-tx"><b>${esc(p.lab || nomProduit(p.slug))}</b><small>${[p.n_offres ? nf(p.n_offres) + ' offre' + (p.n_offres > 1 ? 's' : '') : '', p.n_demandes ? nf(p.n_demandes) + ' demande' + (p.n_demandes > 1 ? 's' : '') : ''].filter(Boolean).join(' · ') || 'Aucune annonce'}</small></span>
+              ${vignette(p.slug)}<span class="tb-tx"><b>${esc(p.lab || nomProduit(p.slug))}</b><span class="tb-pils">${(p.n_offres ? `<span class="tb-pil o"><i aria-hidden="true"></i>${nf(p.n_offres)} offre${p.n_offres > 1 ? 's' : ''}</span>` : '') + (p.n_demandes ? `<span class="tb-pil d"><i aria-hidden="true"></i>${nf(p.n_demandes)} demande${p.n_demandes > 1 ? 's' : ''}</span>` : '') || '<small>Aucune annonce</small>'}</span></span>
               <span class="px">${p.meilleure_offre != null ? `<span><b>dès ${F(p.meilleure_offre)}</b><small>le ${esc(p.unite_offre || 'kg')} · pour acheter</small></span>` : ''}
                 ${p.meilleure_demande != null ? `<span class="d"><b>jusqu’à ${F(p.meilleure_demande)}</b><small>le ${esc(p.unite_demande || 'kg')} · pour vendre</small></span>` : ''}</span></button></li>`).join('')}</ul>`}
         <p class="tb-n">Le Marché de Gros est le seul intermédiaire : aucun numéro n’est affiché, tout se négocie dans l’application.</p>`;

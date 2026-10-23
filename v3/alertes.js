@@ -45,7 +45,7 @@
 .al-r button{min-height:40px;padding:0 14px;border:0;border-radius:999px;background:#EFE7D9;color:#171512;font:600 13px Jost,sans-serif;cursor:pointer}
 .al-vide{padding:22px 16px;border:1px dashed rgba(23,21,18,.16);border-radius:18px;text-align:center;color:#655C4D;font-size:14px}
 .al-add{display:flex;gap:8px;margin:0 0 14px}.al-add select{flex:1;min-width:0;height:48px;padding:0 12px;border:1px solid rgba(23,21,18,.16);border-radius:14px;background:#FFFFFF;color:#171512;font:500 15px Jost,sans-serif}
-.al-add button{flex:none;min-height:48px;padding:0 16px;border:0;border-radius:14px;background:#171512;color:#F5F0E6;font:700 14px Jost,sans-serif;cursor:pointer}`;
+.al-add button{flex:none;min-height:48px;padding:0 16px;border:0;border-radius:14px;background:#171512;color:#F5F0E6;font:700 14px Jost,sans-serif;cursor:pointer}.al-add button:disabled{opacity:.4;cursor:default}`;
   function feuille(html, label) {
     if (!document.getElementById('alCss')) { const st = document.createElement('style'); st.id = 'alCss'; st.textContent = CSS; document.head.appendChild(st); }
     const bg = document.createElement('div'); bg.className = 'al-bg';
@@ -80,11 +80,12 @@
     if (!N() || !N().session()) { N() && N().open('Connectez-vous pour choisir vos alertes produits.'); return; }
     const prods = (window.MDG && MDG.products || []).slice().sort((a, b) => a.name.localeCompare(b.name, 'fr'));
     const bg = feuille(`<h2>Alertes produits</h2><p>Choisissez les produits pour lesquels votre téléphone vous prévient : igname, tomate…</p>
-      <div class="al-add"><select aria-label="Produit à suivre"><option value="">Ajouter un produit…</option>${prods.map(p => `<option value="${esc(p.slug)}">${esc(p.name)}</option>`).join('')}</select><button type="button">Suivre</button></div>
+      <div class="al-add"><select aria-label="Produit à suivre"><option value="">Ajouter un produit…</option>${prods.map(p => `<option value="${esc(p.slug)}">${esc(p.name)}</option>`).join('')}</select><button type="button" disabled>Suivre</button></div>
       <div class="al-l" data-l></div><p class="al-note">${esc(pousseNote())}</p>`, 'Alertes produits');
     const dessiner = () => { const box = bg.querySelector('[data-l]'); if (!box) return;
       box.innerHTML = liste.length ? liste.map(a => `<div class="al-r"><span><b>${esc(nomDe(a.product_slug))}</b><small>${a.offres && a.demandes ? 'Offres et demandes' : a.offres ? 'Nouvelles offres' : 'Nouvelles demandes'}</small></span><button type="button" data-m="${esc(a.product_slug)}">Modifier</button></div>`).join('') : '<div class="al-vide">Aucune alerte pour l’instant.</div>';
       box.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { bg.fermer(); panneau(b.dataset.m); }); };
+    bg.querySelector('.al-add select').onchange = e => { bg.querySelector('.al-add button').disabled = !e.target.value; };   // « Suivre » grisé sans produit
     bg.querySelector('.al-add button').onclick = () => { const v = bg.querySelector('.al-add select').value; if (!v) return; bg.fermer(); panneau(v); };
     dessiner(); refresh().then(() => { if (bg.isConnected) dessiner(); });
   }

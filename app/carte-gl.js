@@ -347,9 +347,10 @@
           .catch(() => clearTimeout(t));
       }
       function localiser() {
-        if (!navigator.geolocation) return;
+        const dire = t => { try { window.MDGToast && MDGToast.dire(t, { type: 'info' }); } catch (_) {} };   // même message que la carte simple
+        if (!navigator.geolocation) { dire('Localisation indisponible : choisissez votre région'); return; }
         navigator.geolocation.getCurrentPosition(p => { gps = [p.coords.longitude, p.coords.latitude]; dessinerMoi(); map.flyTo({ center: gps, zoom: Math.max(map.getZoom(), 10), duration: MOTION() ? 1200 : 0 });
-          opt.onLocate && opt.onLocate(p.coords.latitude, p.coords.longitude); }, () => {}, { enableHighAccuracy: false, timeout: 9000, maximumAge: 600000 });
+          opt.onLocate && opt.onLocate(p.coords.latitude, p.coords.longitude); }, () => dire('Position refusée : choisissez votre région'), { enableHighAccuracy: false, timeout: 9000, maximumAge: 600000 });
       }
 
       // ——— calques de données : chaleur de la demande, liens offre ↔ demande ———

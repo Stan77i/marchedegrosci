@@ -379,7 +379,7 @@ label.cp-r{cursor:pointer}
   const ti = (n, ton, lg) => lg ? `<span class="cp-ti lg" data-ton="${ton}" aria-hidden="true">${IC(n, 24)}</span>` : `<span class="cp-ico" aria-hidden="true">${IC(n, 22)}</span>`;
   const CHEV = '<svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
   // une ligne : icône, titre (+ précision), valeur à droite, chevron
-  const ligne = o => `<${o.href ? `a href="${o.href}"` : 'button type="button"'} class="cp-r${o.cls ? ' ' + o.cls : ''}" ${o.attrs || ''}>${o.ico || ''}<span class="cp-r-t"><b>${o.t}</b>${o.s ? `<small>${o.s}</small>` : ''}</span>${o.v != null && o.v !== '' ? `<span class="cp-r-v${o.vf ? ' fort' : ''}">${o.v}</span>` : ''}${o.n ? `<span class="cp-n" aria-label="${o.n} nouveau${o.n > 1 ? 'x' : ''}">${o.n}</span>` : ''}${o.chev === false ? '' : CHEV}</${o.href ? 'a' : 'button'}>`;
+  const ligne = o => `<${o.href ? `a href="${o.href}"` : o.cls === 'info' ? 'div' : 'button type="button"'} class="cp-r${o.cls ? ' ' + o.cls : ''}" ${o.attrs || ''}>${o.ico || ''}<span class="cp-r-t"><b>${o.t}</b>${o.s ? `<small>${o.s}</small>` : ''}</span>${o.v != null && o.v !== '' ? `<span class="cp-r-v${o.vf ? ' fort' : ''}">${o.v}</span>` : ''}${o.n ? `<span class="cp-n" aria-label="${o.n} nouveau${o.n > 1 ? 'x' : ''}">${o.n}</span>` : ''}${o.chev === false ? '' : CHEV}</${o.href ? 'a' : o.cls === 'info' ? 'div' : 'button'}>`;
   const TITRES = { accueil: 'Mon compte', profil: 'Profil et avatar', activite: 'Mon activité', notifs: 'Notifications', prefs: 'Réglages', securite: 'Sécurité et compte' };
   const negosDe = () => { const u = me(), L = J('mdg-negoce:liste', []), vive = n => n.statut === 'ouverte' && n.dernier_par && n.expire_le && Date.parse(n.expire_le) > Date.now();
     return { vive, L, env: L.filter(n => vive(n) && n.dernier_par === u.id), rec: L.filter(n => vive(n) && n.dernier_par !== u.id), ok: L.filter(n => n.statut === 'conclue'), fin: L.filter(n => n.statut !== 'conclue' && !vive(n)) }; };
@@ -399,7 +399,8 @@ label.cp-r{cursor:pointer}
       const h = main.querySelector('h2'); if (h) h.setAttribute('tabindex', '-1');
     };
     // le titre de la page apparaît dans la barre quand le grand titre est passé
-    main.addEventListener('scroll', () => { const h = page === 'accueil'; top.classList.toggle('titre', main.scrollTop > (h ? 260 : 48)); bg.querySelector('.cp').classList.toggle('defile', h && main.scrollTop > 200); }, { passive: true });
+    main.addEventListener('scroll', () => { if (!bg) return;   // la fenêtre vient d'être fermée : plus rien à mettre à jour
+      const h = page === 'accueil'; top.classList.toggle('titre', main.scrollTop > (h ? 260 : 48)); bg.querySelector('.cp').classList.toggle('defile', h && main.scrollTop > 200); }, { passive: true });
     bg.aller = aller;
     aller(page);
     bg.rafraichir = () => { const y = main.scrollTop; aller(page); main.scrollTop = y; };

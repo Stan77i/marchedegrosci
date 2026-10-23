@@ -982,3 +982,54 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Page du chauffeur** (`suivi.html`) : l'erreur du serveur est lue ; « Trop de codes essayés. Réessayez dans quelques minutes, ou demandez le lien au vendeur. » au lieu de « Pas de connexion ».
 - Vérifié : test (10 faux refusés, 11e bloqué même avec le bon code, autre adresse + bon code en minuscules → jeton ; 3 000 codes tirés : 31 caractères, 541 à 621 fois chacun pour 580 attendus) ; base réelle (transaction annulée, aucun compteur resté) ; navigateur iPhone : les 3 messages (trop d'essais, code faux, pas de réseau).
 - Cache `mgci-v205`.
+
+## Code de secours : les essais ratés sont enfin comptés (23/10/2026) — schéma 72
+- Faille trouvée à l'audit : `reinitialiser_code` notait l'échec dans `secours_essais` puis levait une erreur, ce qui annulait la note (0 ligne en base) : la limite de 5 essais par heure ne servait à rien, le serveur calculait du bcrypt sans fin, et le temps de réponse révélait quels numéros ont un compte.
+- **Serveur** (`supabase/schema-72-secours-essais.sql`, appliqué le 23/10) : `reinitialiser_code` n'est **pas** réécrite (elle contient une suppression des sessions que l'outil Supabase refuse de rejouer sans confirmation). Nouvelle porte `secours_reinitialiser(tel, cle, nouveau)` :
+  - limites : 5 échecs par numéro et par heure (comptés pour de vrai), 20 par adresse internet et par heure (`secours_ip_essais`, taille fixe, 4 096 cases + le total), 300 par heure pour tout le monde ;
+  - code de secours faux : échec noté, réponse vide (sans erreur, donc la note reste) ; code juste : appel de `reinitialiser_code` comme avant ;
+  - même temps de réponse avec ou sans compte (calcul leurre).
+- **Application** (`v3/nuage.js`, `recover`) : appelle `secours_reinitialiser` ; réponse vide → « Numéro ou code de secours incorrect. »
+- **Étape restante après la fusion** : l'ancienne `reinitialiser_code` est encore ouverte aux téléphones pour que l'application déjà en ligne garde « Code oublié ». Une fois cette version en ligne, lancer `revoke execute on function public.reinitialiser_code(text, text, text) from public, anon, authenticated;` (dernière ligne du schéma 72, vérifiée sur le test et la base réelle).
+- Vérifié : test (ancienne fonction refusée, 5 faux → réponse vide, 6e bloqué même avec le bon code, 5 échecs notés, une heure plus tard bon code → nouvelle clé et mot de passe changé, 21 ms sans compte / 20 ms avec ; vrai appel HTTP : échec bien noté, ancienne fonction → 401) ; base réelle (transaction annulée, rien n'est resté) ; navigateur iPhone : « Numéro ou code de secours incorrect. » sous le champ.
+- `nuage.js?v=20261031b` (application, index-v3, admin), cache `mgci-v206`.
+
+## La messagerie s'ouvre de nouveau à l'écran (23/10/2026)
+- Bug trouvé par le test des boutons (1 079 clics, 74 écrans) : `app/demo-orbite.js` (la démo de l'accueil) créait au démarrage une feuille de style avec l'identifiant `dmCss` ; `v3/messages.js` n'ajoute ses styles que si `dmCss` n'existe pas → les styles de la messagerie n'étaient **jamais** chargés : la fenêtre était créée sous l'écran (haut à 844 px sur iPhone), invisible. Environ 14 boutons semblaient ne rien faire : Menu et Mon compte → Messages, Fiche produit → Écrire, Page vendeur → Écrire au vendeur, Admin → Message à tous, Aide → parler à une personne, la cloche, Alertes → Messages non lus, Négociation → Écrire / Continuer dans les messages, Mes commandes → Écrire, Profil public → Écrire, le toast « Voir ».
+- **Correction** (`app/demo-orbite.js` seulement) : la démo a ses propres noms : feuille `demoCss`, classes `dm-hd` et `dm-ti` (au lieu de `dm-h` et `dm-t`, qui existent aussi dans la messagerie). La messagerie n'est pas modifiée.
+- Vérifié (Playwright, iPhone) : avant, fenêtre à 844–1 688 px (hors écran) ; après, 0–844 px, en-tête stylé ; la démo de l'accueil s'affiche comme avant (titre, taille 16,5 px, carte visible) ; aucune erreur.
+- `demo-orbite.js?v=20261031a`, cache `mgci-v207`.
+
+## Petits boutons réparés après le test des boutons (23/10/2026)
+- Trouvés par le test automatique (1 079 clics, 74 écrans, 5 profils) ; vérifiés avant/après dans le navigateur (iPhone simulé).
+- **Mon compte** (`v3/compte.js`) : l'écouteur de défilement s'exécutait après la fermeture de la fenêtre → `TypeError … querySelector` à chaque sortie (Relevés, Commandes, Déconnexion…). Garde `if (!bg) return;`. Avant : 1 erreur sur 3 sorties ; après : 0.
+- **Mon compte et Sécurité, ligne du numéro** : c'était un bouton sans action ; les lignes `info` sont maintenant un simple bloc de texte (`div`).
+- **Carte en relief, « Me localiser »** (`app/carte-gl.js`) : position refusée ou indisponible → plus rien ne se passait ; maintenant le même message que la carte simple (« Position refusée : choisissez votre région », « Localisation indisponible… »).
+- **Alertes produits, « Suivre »** (`v3/alertes.js`) : grisé tant qu'aucun produit n'est choisi (avant : le bouton ne faisait rien).
+- Restent volontairement « Bientôt » : transport par le réseau, litiges WhatsApp, séquestre, bande d'accueil.
+- `compte.js?v=20261031b`, `carte-gl.js?v=20261031a`, `alertes.js?v=20261031b`, cache `mgci-v208`.
+
+## Annonces : la date de publication et l'auteur ne se modifient plus (23/10/2026) — schéma 73
+- Faille trouvée à l'audit : un membre pouvait modifier `created_at` de ses offres et demandes (droit de modification sur toute la table) → remonter son annonce en tête des listes, ou la dater dans le futur. Même chose pour `id` et `user_id` (bloqués en partie par les règles, mais sans raison d'être modifiables).
+- **Serveur** (`supabase/schema-73-annonce-date.sql`, appliqué le 23/10) : droit de modification redonné colonne par colonne à `authenticated`, sans `created_at`, `id`, `user_id`. L'application ne les envoie jamais (`toRow` dans `v3/nuage.js`), les fonctions du serveur ne sont pas concernées.
+- Vérifié sur le test puis la base réelle (transaction annulée) : date → refusée, auteur → refusé ; prix, budget, retrait et envoi complet comme l'application (`on conflict (user_id, client_id)`) → acceptés.
+
+## Photos du profil public : seulement celles du membre, dans le stockage de l'application (23/10/2026) — schéma 74
+- Faille trouvée à l'audit : `profils.photos` acceptait n'importe quel lien https, et `v3/reputation.js` l'affichait tel quel → chaque visiteur du profil chargeait une image d'un site extérieur (traçage des visiteurs, images hors modération).
+- **Serveur** (`supabase/schema-74-photos-profil.sql`, appliqué le 23/10) : déclencheur `profils_photos_propres` (avant écriture de `photos`) : ne garde que les chemins `<identifiant du compte>/<nom>.jpg` du membre lui-même (lettres, chiffres, `._-`), les 6 premiers valides ; liens extérieurs, chemins d'un autre compte et `../` retirés. Aucun profil réel n'avait de photo (rien retiré à personne).
+- **Application** (`v3/reputation.js`) : `photoUrl` ne construit qu'une adresse du stockage `activites` ; un lien (`https:`, `//…`) n'est jamais affiché.
+- Vérifié : test et base réelle (transaction annulée) — 11 entrées dont lien pisteur, `//cdn`, photo d'un autre compte, `../../x.jpg` → 6 photos valides gardées dans l'ordre ; navigateur : profil avec 2 photos + 2 liens extérieurs → 2 images du stockage, 0 requête vers un site extérieur.
+- `reputation.js?v=20261031b`, cache `mgci-v209`.
+
+## Alertes « nouvelle annonce » : au plus 10 par membre et par jour (23/10/2026) — schéma 75
+- Faille trouvée à l'audit : chaque nouvelle offre ou demande prévient tous les abonnés du produit (`push_annonce` → `pousser`), sans plafond ; publier, retirer, republier en boucle inondait les téléphones des autres.
+- **Serveur** (`supabase/schema-75-notif-annonces.sql`, appliqué le 23/10) : compteur `push_annonce_jour` (membre, jour UTC ; RLS, aucun accès direct) ; au-delà de 10 annonces dans la journée, l'annonce est publiée normalement mais sans alerte. Le reste de `push_annonce` est identique.
+- Vérifié sur le test (transaction annulée, fausse adresse d'envoi dans le coffre, un abonné) : 12 annonces publiées → 10 envois préparés, compteur 12. Base réelle : fonction identique à celle testée (même empreinte), table protégée.
+- Reste lié : la création de comptes sans preuve du numéro (plusieurs comptes = plusieurs plafonds) ; 3 annonces gratuites par compte non vérifié limitent déjà l'effet.
+
+## Annonces : le téléphone ne retélécharge plus tout quand rien n'a changé (23/10/2026) — schéma 76
+- Mesuré par le test de charge : toutes les 2 minutes, chaque téléphone ouvert retéléchargeait jusqu'à 500 offres et 500 demandes (≈ 506 Ko base pleine) même sans changement — premier poste de bande passante (5 Go/mois en gratuit).
+- **Serveur** (`supabase/schema-76-annonces-version.sql`, appliqué le 23/10) : colonne `maj_le` sur `offres` et `demandes` (index), toujours fixée par la base (déclencheurs `offres_maj_le` / `demandes_maj_le`, à l'insertion et à la modification, `clock_timestamp()` ; une date envoyée par le téléphone est ignorée) ; `annonces_version()` (anon) → « nb actives | dernière écriture » pour chaque table (47 caractères, 21 ms avec 100 000 offres).
+- **Application** (`v3/nuage.js`, `refresh`) : demande d'abord `annonces_version` ; si le résumé est le même que lors de la dernière lecture et que les listes sont en cache, elle ne retélécharge rien (les zones restent relues). Sinon, lecture complète comme avant, et le résumé est gardé (`mdg-nuage:version`).
+- Vérifié : test (sans changement → identique ; prix modifié, annonce retirée, nouvelle annonce → change ; date future envoyée par le téléphone → ignorée) ; base réelle (transaction annulée : anon lit le résumé, il change après une modification) ; navigateur : ouverture → résumé + listes ; rien de neuf → résumé seul ; publication → listes ; cache effacé → listes ; aucune erreur.
+- `nuage.js?v=20261031c`, cache `mgci-v210`.

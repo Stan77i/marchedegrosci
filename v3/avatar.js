@@ -4,7 +4,8 @@
    Code compact enregistré dans le profil (≤ 200 caractères) : « v1:c=foulard;t=2;k=0;f=1;a=boucles » ou « ini:f=3 ».
    Photo (12/10/2026) : « ph:u=<uid>;v=<version>;f=<fond> » → l'image publique avatars/<uid>.jpg (Supabase Storage, supabase/schema-5.sql) ;
    tant qu'elle charge ou si elle manque, les initiales restent dessous.
-   API : MDGAvatar.svg(code, { size, nom, seed }) · uri(code, opt) (pour une balise <img>) · STYLES · TEINTS · COULEURS · FONDS · parse · code */
+   Personnages du marché (23/10/2026) : « mg:b=…;p=… » → v3/personnages.js (tomate, igname, sac de riz…), animés avec { anime: true }.
+   API : MDGAvatar.svg(code, { size, nom, seed, anime, saut }) · uri(code, opt) (pour une balise <img>) · STYLES · TEINTS · COULEURS · FONDS · parse · code */
 (function () {
   'use strict';
   const TEINTS = ['#4A2E1F', '#5E3A26', '#7A4B2E', '#94603C', '#B47A50', '#D5A27A'];
@@ -23,6 +24,7 @@
   const parse = code => {
     const s = String(code || ''), m = /^(v1|ini):(.*)$/.exec(s), o = { mode: 'ini', c: 'court', t: 2, k: 0, f: -1, a: '', u: '', v: 0 };
     const ph = /^ph:(.*)$/.exec(s);
+    if (/^mg:/.test(s) && window.MDGPerso) return Object.assign(MDGPerso.parse(s), { mode: 'mg', f0: o.f });
     if (ph) { o.mode = 'ph'; ph[1].split(';').forEach(kv => { const [k, v] = kv.split('='); if (k === 'u' && /^[0-9a-f-]{36}$/i.test(v)) o.u = v; if (k === 'v') o.v = +v || 0; if (k === 'f') o.f = +v; }); if (!o.u) o.mode = 'ini'; return o; }
     if (!m) return o; o.mode = m[1];
     m[2].split(';').forEach(kv => { const [k, v] = kv.split('='); if (k in o) o[k] = /^-?\d+$/.test(v) ? +v : v; });
@@ -31,7 +33,7 @@
   };
   const BASE = 'https://catmsypctymgkjkfzdkt.supabase.co/storage/v1/object/public/avatars/';
   const photoUrl = o => BASE + o.u + '.jpg?v=' + (o.v || 0);
-  const code = o => o.mode === 'ph' ? 'ph:u=' + o.u + ';v=' + (o.v || 0) + ';f=' + (o.f >= 0 ? o.f : 0) : o.mode === 'ini' ? 'ini:f=' + (o.f >= 0 ? o.f : 0) : 'v1:c=' + o.c + ';t=' + o.t + ';k=' + o.k + ';f=' + o.f + (o.a ? ';a=' + o.a : '');
+  const code = o => o.mode === 'mg' && window.MDGPerso ? MDGPerso.code(o) : o.mode === 'ph' ? 'ph:u=' + o.u + ';v=' + (o.v || 0) + ';f=' + (o.f >= 0 ? o.f : 0) : o.mode === 'ini' ? 'ini:f=' + (o.f >= 0 ? o.f : 0) : 'v1:c=' + o.c + ';t=' + o.t + ';k=' + o.k + ';f=' + o.f + (o.a ? ';a=' + o.a : '');
   const hash = s => { let h = 7; for (const ch of String(s || '')) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   // seulement des mots avec des lettres : un numéro de téléphone donnait « 00 »
@@ -54,6 +56,7 @@
   let uid = 0;
   function svg(c0, opt = {}) {
     const o = parse(c0), size = opt.size || 40, label = opt.nom ? esc(opt.nom) : 'Avatar';
+    if (o.mode === 'mg') return MDGPerso.svg(o, Object.assign({}, opt, { nom: opt.nom || 'Avatar' }));   // les personnages du marché (v3/personnages.js)
     const fi = o.f >= 0 ? o.f % FONDS.length : hash(opt.seed || opt.nom) % FONDS.length, fond = FONDS[fi];
     const id = ++uid, head = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${size}" height="${size}" role="img" aria-label="${label}"><title>${label}</title><defs><clipPath id="avc${id}"><circle cx="32" cy="32" r="32"/></clipPath><radialGradient id="avl${id}" cx=".32" cy=".22" r=".9"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></radialGradient></defs><g clip-path="url(#avc${id})"><rect width="64" height="64" fill="${fond}"/><rect width="64" height="64" fill="url(#avl${id})"/>`;
     if (o.mode === 'ph') return head + `<text x="32" y="41.5" text-anchor="middle" font-family="Jost,system-ui,sans-serif" font-size="27" font-weight="600" fill="#F5F0E6">${esc(initiales(opt.nom))}</text><image href="${photoUrl(o)}" x="0" y="0" width="64" height="64" preserveAspectRatio="xMidYMid slice"/></g><circle cx="32" cy="32" r="31.5" fill="none" stroke="#fff" stroke-opacity=".1"/></svg>`;
@@ -72,7 +75,7 @@
       + (o.a === 'lunettes' ? `<g fill="none" stroke="#17110D" stroke-width="1.3"><circle cx="26.8" cy="31.6" r="3.8"/><circle cx="37.2" cy="31.6" r="3.8"/><path d="M30.6 31.4h2.8M23 31l-3.4-1M41 31l3.4-1"/></g>` : '')
       + `</g></g><circle cx="32" cy="32" r="31.5" fill="none" stroke="#fff" stroke-opacity=".1"/></svg>`;
   }
-  const uri = (c0, opt) => { const o = parse(c0); return o.mode === 'ph' ? photoUrl(o) : 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg(c0, opt)); };
+  const uri = (c0, opt) => { const o = parse(c0); return o.mode === 'ph' ? photoUrl(o) : 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg(c0, Object.assign({ fixe: true }, opt))); };
 
   window.MDGAvatar = { svg, uri, parse, code, photoUrl, initiales, STYLES, DETAILS, TEINTS, CHEVEUX, TISSUS, FONDS };
 })();

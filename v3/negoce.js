@@ -135,7 +135,7 @@
   /* ——— apparence ——— */
   const CSS = `.nx-bg{position:fixed;inset:0;z-index:8900;background:rgba(10,9,7,.62);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:nxIn .22s ease both}
 @media (min-width:720px){.nx-bg{align-items:center;padding:24px}}
-.nx{--v:#6CC58C;--a:#F2C94C;--ok:#6AAEF0;--ink:#171512;--mute:#655C4D;--line:rgba(23,21,18,.12);--acc:#10392B;position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:min(92dvh,820px);background:#F4EEE3;color:var(--ink);border-radius:28px 28px 0 0;box-shadow:0 30px 80px rgba(0,0,0,.5);font-family:Jost,system-ui,sans-serif;font-variant-numeric:lining-nums;animation:nxUp .38s cubic-bezier(.22,1,.36,1) both;overflow:hidden}
+.nx{--v:#6CC58C;--a:#F2C94C;--ok:#1F8A55;--ink:#171512;--mute:#655C4D;--line:rgba(23,21,18,.12);--acc:#10392B;position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:min(92dvh,820px);background:#F4EEE3;color:var(--ink);border-radius:28px 28px 0 0;box-shadow:0 30px 80px rgba(0,0,0,.5);font-family:Jost,system-ui,sans-serif;font-variant-numeric:lining-nums;animation:nxUp .38s cubic-bezier(.22,1,.36,1) both;overflow:hidden}
 @media (min-width:720px){.nx{border-radius:28px}}
 .nx-h{display:flex;align-items:center;gap:10px;padding:18px 18px 12px;border-bottom:1px solid var(--line)}
 .nx-h h2{flex:1;min-width:0;margin:0;font:600 21px/1.1 Jost,sans-serif;letter-spacing:-.015em}.nx-h h2 em{font:900 italic 1em Jost,sans-serif;color:#10392B;letter-spacing:-.02em;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
@@ -157,7 +157,7 @@
 .nx-rail .pin i{display:block;width:16px;height:16px}
 .nx-rail .pin.v i{border-radius:50%;background:var(--v)}.nx-rail .pin.a i{border-radius:3px;background:var(--a);width:15px;height:15px}
 .nx-rail .pin.off i{background:none;border:2px solid currentColor;opacity:.75}.nx-rail .pin.v.off{color:var(--v)}.nx-rail .pin.a.off{color:var(--a)}
-.nx-rail .pin.ok i{width:18px;height:18px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 6px rgba(106,174,240,.2)}
+.nx-rail .pin.ok i{width:18px;height:18px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px #fff,0 0 0 7px rgba(31,138,85,.22)}
 .nx-rail .pin b{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;font:600 13px/1 Jost,sans-serif}
 .nx-rail .pin.up b{bottom:22px}.nx-rail .pin.dn b{top:22px}
 .nx-rail .pin b small{display:block;margin-top:3px;font-weight:400;font-size:11.5px;color:var(--mute)}
@@ -197,7 +197,7 @@
 .nx-tk time{display:block;margin-top:6px;font-size:11.5px;color:var(--mute)}
 .nx-tk{align-self:flex-start;min-width:200px;max-width:86%;padding:12px 16px 12px;border-radius:18px;border:1px solid var(--line);background:#FFFDF8;color:var(--ink)}
 .nx-tk.me{background:#171512;color:#F5F0E6;border-color:transparent}.nx-tk.me .who,.nx-tk.me .qty,.nx-tk.me time,.nx-tk.me .amt small{color:rgba(245,240,230,.72)}
-.nx-tk.me .nx-tag{background:rgba(245,240,230,.12);color:#F5F0E6}.nx-tk.me .nx-tag.acc{background:rgba(242,194,48,.2);color:#F2C230}.nx-tk.me .nx-tag.ok{background:rgba(106,174,240,.22);color:#A9CEF5}.nx-tk.me .nx-tag.bad{background:rgba(226,115,91,.22);color:#F3A08C}
+.nx-tk.me .nx-tag{background:rgba(245,240,230,.12);color:#F5F0E6}.nx-tk.me .nx-tag.acc{background:rgba(242,194,48,.2);color:#F2C230}.nx-tk.me .nx-tag.ok{background:rgba(108,197,140,.22);color:#9BE0B4}.nx-tk.me .nx-tag.bad{background:rgba(226,115,91,.22);color:#F3A08C}
 .nx-tk.me{align-self:flex-end}
 .nx-tk .who{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mute)}
 .nx-tk .amt{margin:6px 0 2px;font:800 27px/1 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}.nx-tk .amt small{font:400 14px Jost,sans-serif;color:var(--mute)}
@@ -205,16 +205,29 @@
 .nx-tk.is-refus .amt{text-decoration:line-through;text-decoration-thickness:2px;opacity:.6}
 .nx-tk.is-accord{border-color:var(--ok);background:rgba(106,174,240,.08)}
 .nx-ev{align-self:center;padding:6px 12px;border-radius:999px;background:rgba(23,21,18,.06);color:var(--mute);font-size:12.5px;text-align:center}
-.nx-deal{margin:16px 0 0;padding:16px;border-radius:20px;background:rgba(106,174,240,.1);border:1px solid rgba(106,174,240,.45)}
-.nx-deal b{display:block;font:600 21px/1.15 Jost,sans-serif;letter-spacing:-.015em}.nx-deal p{margin:6px 0 12px;color:var(--mute);font-size:14px;line-height:1.5}
-.nx-deal a{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;margin:0 8px 0 0;border-radius:999px;background:var(--ink);color:#F5F0E6;font-weight:600;text-decoration:none}
+/* l'accord conclu : un reçu net (23/10/2026) */
+.nx-deal{margin:16px 0 0;padding:18px 18px 14px;border-radius:24px;background:#FFFDF8;border:1px solid rgba(23,21,18,.08);box-shadow:0 10px 30px rgba(23,21,18,.08);animation:nxDeal .45s cubic-bezier(.22,1,.36,1) both}
+@keyframes nxDeal{from{opacity:0;transform:translateY(8px) scale(.98)}}
+.nx-dh{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+.nx-dck{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#10392B;color:#F2C230;box-shadow:0 0 0 5px rgba(16,57,43,.08)}
+.nx-dck svg{display:block}.nx-dck path{stroke-dasharray:24;stroke-dashoffset:24;animation:nxCk .5s .25s ease-out forwards}@keyframes nxCk{to{stroke-dashoffset:0}}
+.nx-dh b{display:block;font:700 18px/1.2 Jost,sans-serif;color:#10392B}.nx-dh small{display:block;margin-top:2px;color:var(--mute);font-size:13px}
+.nx-dl{margin:0;padding:4px 14px;border-radius:16px;background:rgba(23,21,18,.035)}
+.nx-dl>div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:9px 0;font-size:14.5px}
+.nx-dl>div+div{border-top:1px solid rgba(23,21,18,.07)}.nx-dl span{color:var(--mute)}.nx-dl b{font-weight:600;font-variant-numeric:tabular-nums lining-nums;text-align:right}
+.nx-dl>.tot{border-top:1.5px dashed rgba(23,21,18,.18)!important;padding:12px 0 10px}.nx-dl>.tot span{color:var(--ink);font-weight:600}.nx-dl>.tot b{font:800 22px/1 Jost,sans-serif;letter-spacing:-.01em;color:#10392B}
+.nx-dnote{display:flex;gap:8px;align-items:flex-start;margin:12px 2px 0;color:var(--mute);font-size:13.5px;line-height:1.45}.nx-dnote svg{flex:none;margin-top:2px}
+.nx-deal .nx-warn{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;padding:10px 12px;border-radius:14px}
+.nx-deal .nx-go{margin:14px 0 0;display:flex;align-items:center;justify-content:center;gap:8px}
+.nx-dlink{display:flex!important;align-items:center;justify-content:center;gap:6px;width:100%;min-height:46px;margin:6px 0 0!important;padding:0!important;border-radius:999px;background:none!important;color:#10392B!important;font:600 15px Jost,sans-serif;text-decoration:none}
+.nx-dsafe{display:flex;align-items:center;justify-content:center;gap:6px;margin:4px 0 0;color:var(--mute);font-size:12px;text-align:center}
 .nx-act{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}.nx-act .nx-go{grid-column:1 / -1}
 .nx-comp{display:flex;gap:8px;align-items:flex-end}
 .nx-comp textarea{flex:1;min-height:48px;height:48px;margin:0;resize:none}
 .nx-comp .nx-ib{width:48px;height:48px;background:var(--acc);color:#F3EFE4}
 .nx-cp{display:flex;gap:8px;align-items:center;margin:0 0 10px}.nx-cp input{flex:1;min-width:0;height:48px;padding:0 14px;border:1px solid rgba(23,21,18,.16);border-radius:14px;background:#FFFFFF;color:var(--ink);font:500 18px Jost,sans-serif}
 .nx-tag{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:999px;font:600 12px/1.5 Jost,sans-serif;background:rgba(23,21,18,.08);color:var(--mute);white-space:nowrap}
-.nx-tag.ok{background:rgba(106,174,240,.16);color:#2C6CB0}.nx-tag.acc{background:rgba(16,57,43,.2);color:#10392B}.nx-tag.wait{background:rgba(242,201,76,.14);color:#8A6400}.nx-tag.bad{background:rgba(226,115,91,.16);color:#C0442B}
+.nx-tag.ok{background:rgba(31,138,85,.13);color:#17633D}.nx-tag.acc{background:rgba(16,57,43,.2);color:#10392B}.nx-tag.wait{background:rgba(242,201,76,.14);color:#8A6400}.nx-tag.bad{background:rgba(226,115,91,.16);color:#C0442B}
 .nx-row small .nx-tag{margin:0 4px 0 0}
 .nx-state{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;font-size:13.5px;color:var(--mute)}.nx-state .nx-tag{margin:0}
 .nx-dispo{margin:4px 0 0;font-size:13.5px;color:var(--mute)}
@@ -230,8 +243,8 @@
 .nx-pend{margin:0 0 10px;padding:12px 14px;border-radius:16px;background:rgba(23,21,18,.05);font-size:14.5px;line-height:1.45}.nx-pend b{font-weight:700}
 .nx-confirm>b{color:var(--mute);font-size:14px;font-weight:600}.nx-big{margin:6px 0 2px;font:800 27px/1.1 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}.nx-dtot{font-size:15px;font-weight:600}
 .nx-confirm>p{margin:10px 0 12px;color:var(--mute);font-size:13.5px;line-height:1.5}
-.nx-cond{margin:10px 0 0!important;padding:10px 12px;border-left:2px solid var(--ok);border-radius:0 12px 12px 0;background:rgba(106,174,240,.06);color:var(--ink)!important;font-size:14px;line-height:1.45}.nx-cond span{display:block;color:var(--mute);font-size:12px}
-.nx-deal .nx-tag{margin:0 0 8px}.nx-deal a.ghost{background:none;border:1px solid rgba(23,21,18,.3);color:var(--ink)}
+.nx-cond{margin:10px 0 0!important;padding:10px 12px;border-left:2px solid var(--ok);border-radius:0 12px 12px 0;background:rgba(31,138,85,.06);color:var(--ink)!important;font-size:14px;line-height:1.45}.nx-cond span{display:block;color:var(--mute);font-size:12px}
+
 .nx-stop{margin:8px 0 0;text-align:center}.nx-stop button{min-height:36px;border:0;background:none;color:#857A67;font:500 13px Jost,sans-serif;text-decoration:underline;cursor:pointer}
 .nx-in{color:var(--ink);font-weight:600}
 .nx-snd s{opacity:.6}
@@ -455,12 +468,17 @@
       return `<div class="nx-tk${cls} is-${iss || 'x'}"><div class="who">${mk(R[m.auteur_id])}${who} ${mine ? 'proposez' : 'propose'}<span class="nx-tag ${IS[1]}">${IS[0]}</span></div>
         <div class="amt">${fmt(m.prix)} <small>F / ${esc(u)}</small></div>${trTag(m.transport_inclus)}${m.quantite ? `<div class="qty">${fq(m.quantite)} ${esc(u)} · total ${fmt(m.prix * m.quantite)} F</div>` : ''}${m.texte ? `<div class="t">${esc(m.texte)}</div>` : ''}${when}</div>`;
     };
-    const deal = () => { const u = n.unite || 'unité', q = n.quantite_finale; return `<div class="nx-deal" role="status"><span class="nx-tag ok">Accord conclu le ${jour(n.conclu_le || n.updated_at)}</span>
-      <b>${q ? fq(q) + ' ' + esc(u) + ' × ' : ''}${fmt(n.prix_final)} F / ${esc(u)}</b>${trTag(n.transport_final)}${q ? `<div class="nx-dtot">Total convenu : ${fmt(n.prix_final * q)} F</div>` : ''}
+    const deal = () => { const u = n.unite || 'unité', q = n.quantite_finale, tr = n.transport_final;
+      const ic = (d, t) => `<svg width="${t || 16}" height="${t || 16}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+      const lien = window.MDGMessages ? `<a href="#" class="nx-dlink" data-deal-dm>${ic('<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>', 18)}Écrire ${autre(monRole(n)) === 'vendeur' ? 'au vendeur' : 'à l’acheteur'}</a>` : '';
+      return `<div class="nx-deal" role="status">
+      <div class="nx-dh"><span class="nx-dck">${ic('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 22).replace('stroke-width="2"', 'stroke-width="2.6"')}</span><div><b>Accord conclu</b><small>le ${jour(n.conclu_le || n.updated_at)}</small></div></div>
+      <div class="nx-dl">${q ? `<div><span>Quantité</span><b>${fq(q)} ${esc(u)}</b></div>` : ''}<div><span>Prix convenu</span><b>${fmt(n.prix_final)} F / ${esc(u)}</b></div>${tr === true || tr === false ? `<div><span>Transport</span><b>${tr ? 'Compris dans le prix' : 'Non compris'}</b></div>` : ''}${q ? `<div class="tot"><span>Total</span><b>${fmt(n.prix_final * q)} F</b></div>` : ''}</div>
       ${n.conditions_finales ? `<p class="nx-cond"><span>Conditions</span>${esc(n.conditions_finales)}</p>` : ''}
-      <p>Ces conditions sont figées. Convenez maintenant de la livraison et du paiement : rien n’est encore payé ni livré.</p>${window.MDGIdentite && MDGIdentite.gardePaiement ? `<p class="nx-warn">${MDGIdentite.gardePaiement(autreId(n), avDe(n, 40).nom || '')}</p>` : '<p>Voyez la marchandise avant de payer.</p>'}
-      ${window.MDGCommandes ? `<button type="button" class="nx-go" data-deal-cmd style="width:100%;margin:10px 0 4px">Suivre la commande</button>` : ''}
-      ${window.MDGMessages ? `<a href="#" data-deal-dm>Continuer dans les messages</a><p class="nx-cond"><span>Restez dans l’application</span>Gardez vos échanges ici : en cas de litige ou de vol, le Marché de Gros peut vérifier. Hors de l’application, personne ne peut vous aider.</p>` : ''}</div>`; };
+      <p class="nx-dnote">${ic('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>', 15)}Prix et quantité sont figés. Rien n’est encore payé ni livré.</p>
+      ${window.MDGIdentite && MDGIdentite.gardePaiement ? `<p class="nx-warn">${MDGIdentite.gardePaiement(autreId(n), avDe(n, 40).nom || '')}</p>` : '<p class="nx-dnote">Voyez la marchandise avant de payer.</p>'}
+      ${window.MDGCommandes ? `<button type="button" class="nx-go" data-deal-cmd>${ic('<path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>', 20)}Suivre la commande</button>` : ''}
+      ${lien}${lien ? `<p class="nx-dsafe">${ic('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>', 13)}Restez ici : en cas de litige, l’équipe peut vérifier vos échanges.</p>` : ''}</div>`; };
     const paint = anim => {
       if (!bg || !n) return;
       const lui = autre(monRole(n)), u = n.unite || 'unité', proprio = me() === n.proprio_id;

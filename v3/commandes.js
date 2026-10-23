@@ -110,9 +110,10 @@
 .cm-et li.fait{color:#171512}.cm-et li.fait .pt{background:#10392B;color:#F3EFE4}.cm-et li.fait::before{background:#10392B}
 .cm-et li.ici .pt{background:#F2C230;color:#10392B;box-shadow:0 0 0 5px rgba(242,194,48,.28)}
 .cm-et b{display:block;font-weight:600;line-height:28px}.cm-et small{display:block;font-size:12.5px;color:#5E5546;margin-top:-4px}
-.cm-st{margin:10px 0 12px;padding:14px;border-radius:18px;background:#10392B;color:#F3EFE4}
-.cm-st b{display:block;font:600 18px/1.25 Jost,sans-serif}.cm-st b em{font-style:italic;font-weight:900;color:#F2C230}
-.cm-st small{display:block;margin-top:4px;color:rgba(243,239,228,.8);font-size:13px}
+.cm-st{position:relative;margin:12px 0 12px;padding:14px 16px 14px 20px;border-radius:18px;background:#FFFDF8;color:#171512;box-shadow:0 6px 20px rgba(23,21,18,.07),inset 0 0 0 1px rgba(23,21,18,.06);overflow:hidden}
+.cm-st::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#F2C230}
+.cm-st b{display:block;font:600 18px/1.25 Jost,sans-serif}.cm-st b em{font-style:italic;font-weight:900;color:#10392B;background:linear-gradient(transparent 62%,rgba(242,194,48,.55) 62%)}
+.cm-st small{display:block;margin-top:4px;color:#6B6252;font-size:13px}
 .cm-tcode{margin:0 0 10px;padding:8px 12px;border-radius:12px;background:rgba(16,57,43,.08);color:#171512;font:400 13px/1.4 Jost,sans-serif}.cm-tcode b{display:inline;font:800 15px/1 Jost,sans-serif;letter-spacing:.06em;color:#10392B}.cm-garde b{display:inline;font:inherit;font-weight:800;letter-spacing:.04em}
 .cm-garde{margin:-2px 0 10px;padding:8px 12px;border-radius:12px;background:#F2C230;color:#171512;font:600 14px/1.35 Jost,sans-serif}
 .cm-act{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
@@ -318,14 +319,16 @@
   // la fiche : numéro, état, les quatre temps, d'où vers où, les chiffres, le produit, la personne en face
   function fiche(c, Jr) {
     const [lab, cl] = puce(c), k = tempsK(c), fini = tempsFini(c), mort = c.etat === 'annulee';
-    const pts = TEMPS.map((t, i) => { const s = mort ? 'off' : fini || i < k ? 'fait' : i === k ? 'ici' : '';
+    const k0 = c.etat === 'a_confirmer' ? 0 : k;   // en attente de confirmation : la première étape est « en cours »
+    const pts = TEMPS.map((t, i) => { const s = mort ? 'off' : fini || i < k0 ? 'fait' : i === k0 ? 'ici' : ''; if (i === 0 && c.etat === 'a_confirmer' && !mort) t = 'À confirmer';
       return `<li class="${s}"><span class="o">${s === 'fait' ? '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2.5 6.3l2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}</span>${t}</li>`; }).join('');
     const ev = n => (Jr || []).find(e => e.evenement === n);
     const fin = ev('reception') || ev('terminee'), la = ev('arrivee');
     const droite = mort ? 'Annulée' : fin ? 'Reçue le ' + jour(fin.at) : la ? 'Arrivé le ' + jour(la.at) : 'Livraison à venir';
     const img = imgProduit(c.produit);
     const autre = c.role === 'vendeur' ? 'Acheteur' : 'Vendeur';
-    const av = window.MDGAvatar ? MDGAvatar.svg('', { size: 44, nom: c.partenaire_nom || '?' }) : '';
+    const avC = c.partenaire_id && window.MDGCompte && MDGCompte.avatar ? MDGCompte.avatar(c.partenaire_id, { size: 44 }) : null;
+    const av = avC && avC.svg ? avC.svg : window.MDGAvatar ? MDGAvatar.svg('', { size: 44, nom: c.partenaire_nom || '?' }) : '';
     const TR = { reseau: 'Réseau Marché de Gros', acheteur: 'Par l’acheteur', vendeur: 'Par le vendeur' };
     return `<section class="cm-fiche" aria-label="Fiche de la commande"><span class="cm-poignee" aria-hidden="true"></span>
       <div class="cm-f1"><div><small>Commande</small><b>n° ${esc(c.numero || '—')}</b></div><span class="cm-puce ${cl}">${esc(lab)}</span></div>

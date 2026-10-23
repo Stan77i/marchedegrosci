@@ -1,11 +1,11 @@
 # Rapport de reprise : où en est le projet, et la suite
 
-> **À lire au début de la prochaine session, après `CLAUDE.md`.** Écrit le 23/10/2026, avant que le propriétaire ne vide la discussion.
+> **À lire au début de la prochaine session, après `CLAUDE.md`.** Mis à jour le 23/10/2026 (après la PR #240). À tenir à jour dans chaque PR.
 > Le détail de chaque changement est dans `docs/PASSATION.md` (sections datées du 23/10/2026). Le plan SEO complet est dans `docs/seo/PLAN.md`.
 
 ## 1. L'état au moment de la reprise
 
-- **Toutes les PR sont fusionnées** (jusqu'à la PR #230). Aucune PR ouverte, aucun travail en cours sur une branche.
+- **Toutes les PR sont fusionnées** (jusqu'à la PR #240). Aucune PR ouverte, aucun travail en cours sur une branche.
 - `main` : cache du service worker `mgci-v231`.
 - Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **81** appliqués (80 `fil_public`, 81 `site_mesures` / `mesurer` / `mesures_resume`). Mêmes schémas sur le projet de test.
 
@@ -24,12 +24,17 @@
 - Contenu en ligne (caché) :
   - accueil : étal de vraies photos, « Je vends / Je cherche », fil « En ce moment », tableau des prix en direct, rayons du marché, carte légère, étapes, confiance, pros, guides, QR code ;
   - `site/carte/` : la carte MapLibre de l'application en plein écran + panneau (filtres, annonces) ;
-  - 25 pages produits `site/produits/<id>/` (direct + calendrier des récoltes **seulement sourcé**, `v2/saisons.js`) ;
-  - 5 guides `site/guides/<id>/` (contenu dans `tools/site/guides/*.html`, chiffres sourcés depuis `strategie/sources/donnees-marche.json`) ;
-  - `site/regions/` : une page par district (récoltes sourcées du district, annonces et prix du district en direct) ;
+  - 27 pages produits `site/produits/<id>/` (direct + calendrier des récoltes **seulement sourcé**, `v2/saisons.js`) ;
+  - 7 guides `site/guides/<id>/` (contenu dans `tools/site/guides/*.html`, chiffres sourcés depuis `strategie/sources/donnees-marche.json`), dont « Les grands marchés de gros » et « Transporter le vivrier » ;
+  - `site/regions/` : une page par district (14 districts + sommaire) (récoltes sourcées du district, annonces et prix du district en direct) ;
   - `site/saisons/` : calendrier des récoltes (seulement les périodes sourcées de `v2/saisons.js`) ;
   - `site/a-propos/` (« ni le marché de gros de Bouaké, ni l'OCPV, ni l'État ») ;
-  - typographie française automatique (espace insécable avant « : ; ! ? »).
+  - typographie française automatique (espace insécable avant « : ; ! ? » et entre un nombre et son unité) ;
+  - `site/sitemap.xml` (54 adresses) et `404.html` ; liens internes vérifiés (3 819, aucun cassé) ; titres ≤ 65 caractères et descriptions ≤ 160 pour Google.
+
+### Dernières corrections de l'application
+- Calendrier des récoltes : sources FAO, Nitidae (plantain), RONGEAD (oignon) ajoutées (`v2/saisons.js`, `A.CAL`) ; cadran de « L'année du marché » : un anneau par produit.
+- Onglet Activité : la carte « Dernières annonces » n'existe que s'il y a au moins une annonce (PR #240).
 - Données en direct : `fil_public()` (prénom + initiale, ville, produit, quantité ; le compte admin s'affiche « Marché de Gros ») et `tableau_produits()`.
 
 ### La mesure (schéma 81)
@@ -44,8 +49,10 @@
 
 ## 3. Ce qui reste à faire (dans l'ordre conseillé)
 
+**Le site caché est presque complet côté contenu.** Ce qui bloque maintenant, ce sont les étapes 1 et 3, qui dépendent du propriétaire.
+
 1. **Retours du propriétaire sur le site caché** (il doit le regarder par « SEO ») : appliquer ses corrections.
-2. **Contenu** (toujours caché) : d'autres pages produits utiles (photo obligatoire, `LISTE` dans `tools/site-produits.js`) et guides (P2 de `docs/seo/concurrents.md` : fiches des grands marchés comme Gouro d'Adjamé ou Bouaké, **avec sources** ; saisons ; transport). Jamais de pages en série sans valeur propre.
+2. **Contenu** (toujours caché, facultatif) : prix officiels de l'OCPV cités sur les pages produits (date et lien, seulement si une source ouverte existe) ; résumé des prix de la semaine ; d'autres pages produits utiles (photo obligatoire, `LISTE` dans `tools/site-produits.js`) et guides (P2 de `docs/seo/concurrents.md` : fiches des grands marchés comme Gouro d'Adjamé ou Bouaké, **avec sources** ; saisons ; transport). Jamais de pages en série sans valeur propre.
 3. **Ouverture du site au public — décision du propriétaire seulement.** Le jour venu :
    - refaire l'**audit de sécurité** (règle de `CLAUDE.md` : avant l'ouverture au public) ;
    - retirer le `noindex` et le voile (`_debut.html`, `site/garde.js`, le script `nuage.js` de `_fin.html`) ;

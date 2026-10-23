@@ -124,14 +124,14 @@
 
   // chaque passant : silhouette, durée de la traversée, retard, sens (1 = vers la droite), taille, ligne de sol, durée du pas
   const PASSANTS = [
-    ['camion', camion, 14, -4, 1, .78, 160, 0],
+    ['camion', camion, 30, -16.2, 1, 1.45, 170, 0],   // à l'échelle des gens : un camion bâché fait 1,4 fois une personne (un peu en retrait)
     ['femmeBassine', femmeBassine, 30, -6, 1, 1, 183, 1.15],
     ['brouette', brouette, 38, -24, -1, 1, 184, 1.25],
     ['sacEpaule', sacEpaule, 26, -16, -1, 1, 183, 1.05],
     ['femmeEnfant', femmeEnfant, 36, -31, 1, .97, 184, 1.2]
   ];
   const passants = () => PASSANTS.map(([n, f, d, t, sens, s, y, pas]) =>
-    `<g class="mk-p mk-${sens > 0 ? 'd' : 'g'}" style="--d:${d}s;--t:${t}s;--y:${y}px;--s:${s};--pas:${pas || 1}s">` +
+    `<g class="mk-p mk-${sens > 0 ? 'd' : 'g'}${n === 'camion' ? ' mk-v' : ''}" style="--d:${d}s;--t:${t}s;--y:${y}px;--s:${s};--pas:${pas || 1}s">` +
     `<ellipse class="mk-om" cx="0" cy="0" rx="${n === 'camion' ? 60 : n === 'brouette' ? 30 : 11}" ry="2.4" fill="rgba(0,0,0,.35)"/>` +
     `<g transform="scale(${sens} 1)"><g class="mk-pas">${f()}</g></g></g>`).join('');
 
@@ -226,6 +226,9 @@
 /* les passants traversent la rue, en fondu, chacun à son rythme */
 .mk-p{transform-box:view-box;transform-origin:0 0;opacity:0;animation:mkD var(--d) linear infinite;animation-delay:var(--t);will-change:transform,opacity}
 .mk-p.mk-g{animation-name:mkG}
+.mk-p.mk-v{animation-name:mkV}
+/* le camion passe une fois par cycle de 30 s, vite (6 s pour traverser), juste après le paiement à l'étal de gauche */
+@keyframes mkV{0%{transform:translate(-170px,var(--y)) scale(var(--s));opacity:1}20%{transform:translate(580px,var(--y)) scale(var(--s));opacity:1}20.1%,100%{transform:translate(580px,var(--y)) scale(var(--s));opacity:0}}
 @keyframes mkD{0%{transform:translate(-80px,var(--y)) scale(var(--s));opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translate(480px,var(--y)) scale(var(--s));opacity:0}}
 @keyframes mkG{0%{transform:translate(480px,var(--y)) scale(var(--s));opacity:0}8%{opacity:1}92%{opacity:1}100%{transform:translate(-80px,var(--y)) scale(var(--s));opacity:0}}
 /* la marche : les jambes et les bras se balancent depuis la hanche et l'épaule, le corps monte et descend à chaque pas */
@@ -257,7 +260,7 @@
 .mk-argent{opacity:0;animation:mkArgent 30s ease-in-out infinite}
 @keyframes mkArgent{0%,36%{opacity:0;transform:translate(0,0)}38%{opacity:1;transform:translate(0,0)}44%{opacity:1;transform:translate(var(--dx),var(--dy))}47%,100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
 @media (prefers-reduced-motion:reduce){.mk *{animation:none!important}.mk-bu.mk-cg[style*="--n:1"],.mk-bu.mk-cd[style*="--n:1"]{opacity:1}.mk-tombe{opacity:1}.mk-p{opacity:1;transform:translate(var(--x0,200px),var(--y)) scale(var(--s))}
-  .mk-p:nth-child(1){--x0:120px}.mk-p:nth-child(2){--x0:150px}.mk-p:nth-child(3){--x0:250px}.mk-p:nth-child(4){--x0:205px}.mk-p:nth-child(5){--x0:330px}}`;
+  .mk-p:nth-child(1){--x0:-300px}.mk-p:nth-child(2){--x0:150px}.mk-p:nth-child(3){--x0:250px}.mk-p:nth-child(4){--x0:205px}.mk-p:nth-child(5){--x0:330px}}`;
   function css() { if (document.getElementById('mkCss')) { document.getElementById('mkCss').textContent = CSS; return; } const st = document.createElement('style'); st.id = 'mkCss'; st.textContent = CSS; document.head.appendChild(st); }
 
   window.MDGScene = { svg, css };

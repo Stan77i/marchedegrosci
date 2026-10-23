@@ -1142,3 +1142,7 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - `PORTAGE-SITE.md` (19/10, dépassé) réécrit : état du site, décision du propriétaire (« le site fait la même chose que l'application, on retire ce qui ne sert à rien »), méthode conseillée « un seul code » (l'application en mise en page large sur ordinateur), tableau de tout ce que l'application a et pas le site, liste de ce qu'on peut retirer (à valider : outil `tweaks` + Babel chargé deux fois ≈ 3 Mo, seul WebGL du site `v3/scene-ivt.js`, héros et en-tête IVT, GSAP/Lenis, petites cartes d3, captures à la racine ; anciens rapports à ranger).
 - Inventaire automatique (partie 7) : `tools/inventaire-site.js` (sans dépendance ; suit aussi les `import()`), relancé par `.github/workflows/rapport-site.yml` à chaque fusion qui touche les pages, `app/`, `v2/`, `v3/`, `css/`. Mesuré aujourd'hui : application 86 fichiers / 3,2 Mo, site 108 fichiers / 5,5 Mo, 22 modules communs, 37 propres à l'application, 43 propres au site, 0 orphelin.
 - `CLAUDE.md` : nouvelle section « Le site ».
+
+## Pastilles de nombre (23/10/2026), oubliées par la fusion de la PR #213
+- **Pastilles de nombre** (`.nbul`) partout où un nombre suit un libellé : onglets d'Acheter, filtres de Prix (vert vendeurs, maïs budgets), titres de section, bouton « Préparer la sélection » de Racheter. Règle ajoutée dans DESIGN.md et CLAUDE.md.
+- Ce commit était arrivé sur la branche juste après la fusion de #213 : remis dans une PR à part. Cache `mgci-v219`.

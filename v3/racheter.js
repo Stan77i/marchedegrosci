@@ -192,9 +192,9 @@
           <small>${nf(x.quantite)} ${esc(x.unite)} à ${F(x.prix_unitaire)} · ${esc(x.vendeur)} · ${jour(x.dernier)}${x.fois > 1 ? ' · acheté ' + x.fois + ' fois' : ''}</small>
           ${x.rappel && x.rappel.actif ? `<small>Rappel : ${x.rappel.frequence === 'quotidien' ? 'chaque jour' : 'chaque ' + JOURS[x.rappel.jour]} à ${x.rappel.heure} h</small>` : ''}</label>
           <button class="rc-b s" data-un="${i}" aria-label="Racheter ${esc(x.produit || '')}">Voir</button></div>`).join('')
-          + `<div class="rc-pied"><button class="rc-b" data-prep ${choix.size ? '' : 'disabled'}>Préparer la sélection${choix.size ? ' (' + choix.size + ')' : ''}</button></div>`
+          + `<div class="rc-pied"><button class="rc-b" data-prep ${choix.size ? '' : 'disabled'}>Préparer la sélection${choix.size ? '<span class="nbul">' + choix.size + '</span>' : ''}</button></div>`
           : '<div class="rc-vide">' + (window.MDGSac ? MDGSac.svg('vide') : '') + '<b>Pas encore d’achat terminé</b>Quand une commande sera terminée, vous pourrez la racheter d’ici en un geste.</div>');
-      box.querySelectorAll('[data-c]').forEach(c => c.onchange = () => { const i = +c.dataset.c; c.checked ? choix.add(i) : choix.delete(i); const b = box.querySelector('[data-prep]'); b.disabled = !choix.size; b.textContent = 'Préparer la sélection' + (choix.size ? ' (' + choix.size + ')' : ''); });
+      box.querySelectorAll('[data-c]').forEach(c => c.onchange = () => { const i = +c.dataset.c; c.checked ? choix.add(i) : choix.delete(i); const b = box.querySelector('[data-prep]'); b.disabled = !choix.size; b.innerHTML = 'Préparer la sélection' + (choix.size ? '<span class="nbul">' + choix.size + '</span>' : ''); });
       box.querySelectorAll('[data-un]').forEach(b => b.onclick = () => ouvrir(L[+b.dataset.un].commande_id));
       const p = box.querySelector('[data-prep]'); if (p) p.onclick = () => preparer([...choix].map(i => L[i]));
     };

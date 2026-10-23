@@ -116,6 +116,7 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 **Finitions qui trahissent l'amateur**
 28. Les surfaces du navigateur sont à nos couleurs : sélection de texte (maïs), curseur de saisie, cases et curseurs (`accent-color`), anneau de focus.
 29. Chiffres alignés (`tabular-nums`) dans les prix et les quantités.
+29 bis. Un nombre à côté d'un libellé (« Offres 6 », « Tout 8 », « Préparer la sélection 3 ») est **toujours dans une pastille** (`.nbul`) : neutre, vert pour les offres (`.o`), maïs pour les demandes (`.d`), maïs quand le bouton est choisi. Jamais un chiffre nu ni entre parenthèses.
 30. Tous les états existent : vide, chargement, erreur, hors connexion, désactivé.
 31. Cibles tactiles de 44 px au moins ; rien ne déborde sur le côté à 320 px de large.
 32. Le mot « PAYÉ » est interdit (aucun paiement n'est branché) ; la tomate est montrée en carton.

@@ -9,6 +9,7 @@ on:
     paths:
       - 'tools/site/**'
       - 'tools/site-public.js'
+      - 'tools/site-images.py'
       - 'site/*.css'
       - 'site/*.js'
       - 'v2/data.js'
@@ -32,6 +33,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Préparer les photos légères (site/img)
+        run: |
+          pip install --quiet pillow
+          python3 tools/site-images.py
       - name: Fabriquer les pages
         run: node tools/site-public.js
       - name: Enregistrer si une page a changé

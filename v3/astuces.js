@@ -33,6 +33,12 @@
 
   /* ——— les tutoriels : des phrases courtes, un geste par carte (ce que l'application fait vraiment, rien d'autre) ——— */
   const TOURS = {
+    placer: { t: 'La roue et les prix', cartes: [
+      ['🧺', 'La roue des produits', 'Glissez le doigt sur le *sac*, ou touchez les flèches : chaque produit a son sac et son *meilleur prix*.'],
+      ['💰', 'Le meilleur prix, en direct', 'Sous la roue : le prix le *moins cher* publié. Il change dès que quelqu’un place un meilleur prix. *Touchez-le.*'],
+      ['📊', 'L’échelle des prix', 'Du moins cher au plus cher : qui a publié, d’où, combien il en a. En *vert* les vendeurs, en *jaune* les acheteurs.'],
+      ['⬆️', 'Votre place', 'Proposez *moins* que le meilleur prix : vous passez en tête. Vous achetez ? Proposez un budget *plus haut*.'],
+      ['✍️', 'Placez votre prix', 'Touchez *« Placer mon prix »*, ou négociez avec le vendeur. Le bouton *Démo*, au-dessus de la roue, rejoue la démonstration.']] },
     negoce: { t: 'Proposer un prix', cartes: [
       ['🤝', 'Proposez votre prix', 'Écrivez votre *prix* et la *quantité*. L’autre personne reçoit votre proposition dans l’application.'],
       ['⏳', 'Elle a 48 heures pour répondre', 'Elle *accepte*, elle *refuse*, ou elle propose un autre prix. Vous pouvez retirer votre proposition tant qu’elle n’a pas répondu.'],

@@ -871,3 +871,12 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
   - une seule règle de couleurs partout, celle des boutons « J'ai à vendre » (vert) / « Je cherche » (maïs) : **vendeurs, offres, « Acheter » = vert ▼ ; acheteurs, demandes, « Vendre » = maïs ▲**. Appliquée au pop-up (échelle, « Meilleur prix », « Votre prix ? », bouton « Placer mon prix » vert, « Placer mon budget » maïs), aux triangles sous le prix, et à l'onglet Prix (`v3/tableau.js` : « dès … » en vert, « jusqu'à … » en maïs, le bouton « Vendre » maïs au lieu de terre cuite) ;
   - la bulle (« Très vendu », « Demandé il y a… », `tendMsg()`) se retire quand le pop-up s'ouvre, et son information est reprise en tête du pop-up, dans le même style (icône ronde, titre coloré vert pour une vente, maïs pour une demande).
 - Cache `mgci-v196`.
+
+## La démo de la roue et des prix, et son tutoriel (23/10/2026) — `app/demo-orbite.js`
+- Demande du propriétaire : un tutoriel sur le sélectionneur orbital, et un « switch démo » qui montre tout seul comment ça se fait.
+- **Le switch « Démo »** : en haut à gauche de la roue, en face de « Tout » (petit interrupteur qui passe au maïs pendant la démo).
+- **La démo pilote la vraie interface** (~20 s, 5 étapes, carte de commentaire en haut avec « Passer » et une barre d'avancement) : 1. la roue tourne deux fois (cercle de toucher sur la flèche), le prix défile ; 2. le prix est entouré, puis touché ; 3. le pop-up s'ouvre, l'échelle est entourée ; 4. « Votre prix ? » ; 5. « Placer mon prix ». À la fin, le pop-up se ferme, la roue revient au produit de départ, un message « À vous de placer votre prix ».
+- Toucher l'écran, « Passer » ou le switch arrête tout. Si le produit n'a pas de prix, la démo avance jusqu'à 3 produits ; sinon le pop-up s'ouvre avec un **exemple marqué** « Exemple de démonstration : ces prix et ces noms ne sont pas réels » (`exemple: true` dans `MDGPrixMoment.ouvrir`).
+- **Une fois automatiquement** : la première fois que l'accueil est libre (astuces actives, aucune bulle, fenêtre ou guide ouvert, pas de toucher depuis 4 s). Clé `mdg-demo:orbite` sur le téléphone.
+- **Tutoriel en cartes** « La roue et les prix » ajouté aux astuces (`v3/astuces.js`, `TOURS.placer`) ; dans Réglages → Aide pour débuter, un bouton « ▶ Voir la démo : la roue et les prix » (`app/theme.js`) ramène à l'accueil et lance la démo.
+- Cache `mgci-v197` (le fichier est ajouté au service worker).

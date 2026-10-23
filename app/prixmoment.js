@@ -5,7 +5,7 @@
    Rien n'est inventé : uniquement les annonces affichées sur l'accueil. Le Marché de Gros ne fixe aucun prix.
    Couleurs, comme partout dans l'application : vendeurs (offres) en vert ▼, acheteurs (demandes) en maïs ▲ — les boutons « J'ai à vendre » / « Je cherche ».
    La bulle d'activité de l'orbite (« Très vendu », « Demandé il y a… », schéma 53) est reprise en tête, dans le même style.
-   API : MDGPrixMoment.ouvrir({ nom, img, art, activite:{ico,t,s,cls}, offres:[{prix,nom,lieu,at,qte,unite,moi,neg}], demandes:[…], placer(kind), negocier(kind, i) }) */
+   API : MDGPrixMoment.ouvrir({ nom, img, art, exemple (démo : bandeau « pas réels »), activite:{ico,t,s,cls}, offres:[{prix,nom,lieu,at,qte,unite,moi,neg}], demandes:[…], placer(kind), negocier(kind, i) }) */
 (function () {
   'use strict';
   if (window.MDGPrixMoment) return;
@@ -72,6 +72,7 @@
 .pm-act .neg{border:1px solid rgba(243,239,228,.22);background:none;color:#F3EFE4}
 .pm-act .lien{min-height:44px;border:0;background:none;color:#CFC4B1;font-weight:500;font-size:14.5px}
 .pm-act button:active{transform:scale(.985)}
+.pm-ex{display:flex;align-items:center;gap:8px;margin:-6px 0 14px;padding:8px 12px;border-radius:12px;background:rgba(242,194,48,.14);color:#F2C230;font:600 13px/1.35 Jost,sans-serif}
 .pm-n{margin:14px 0 0;color:#8F846F;font-size:12.5px;line-height:1.5;text-align:center}
 @media (prefers-reduced-motion:reduce){.pm-bg,.pm,.pm-ech li,.pm-vous,.pm-vous::before{animation:none!important}}`;
   function css() { if (document.getElementById('pmCss')) return; const s = document.createElement('style'); s.id = 'pmCss'; s.textContent = CSS; document.head.appendChild(s); }
@@ -99,6 +100,7 @@
     bg = document.createElement('div'); bg.className = 'pm-bg';
     bg.innerHTML = `<div class="pm" role="dialog" aria-modal="true" aria-labelledby="pmT"><span class="pm-poi" aria-hidden="true"></span><button type="button" class="pm-x" aria-label="Fermer">×</button>
       <div class="pm-hd">${o.img ? `<span class="im" aria-hidden="true"><img src="${esc(o.img)}" alt=""></span>` : ''}<div><small>${esc(o.nom)}${art ? ' · ' + esc(art) : ''}</small><h2 id="pmT">Ici, chacun <em>place son prix</em></h2></div></div>
+      ${o.exemple ? '<p class="pm-ex">Exemple de démonstration : ces prix et ces noms ne sont pas réels.</p>' : ''}
       ${o.activite ? `<div class="pm-ac ${esc(o.activite.cls || '')}" role="status"><i aria-hidden="true">${esc(o.activite.ico)}</i><span><b>${esc(o.activite.t)}</b><small>${esc(o.activite.s)}</small></span></div>` : ''}
       ${nO ? `<ol class="pm-ech" aria-label="Les prix des vendeurs, du moins cher au plus cher">${tete(best)}${O.slice(1).map((x, i) => ligne(x, i + 1, 'o')).join('')}</ol>` : ''}
       ${vous}

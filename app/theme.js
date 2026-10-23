@@ -98,6 +98,7 @@ html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme
         </div>
         ${window.MDGAstuces ? `<p class="rg-sec">Aide pour débuter</p>
         <div class="rg-l">${sw('comment', 'Astuces et tutoriels', 'Petits signes animés sur l’accueil, et un court tutoriel la première fois qu’on fait une opération (négocier, commande, codes, chauffeur)', MDGAstuces.actif())}
+          ${window.MDGDemo ? '<button type="button" class="rg-demo" data-demo style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;margin:8px 0 4px;border:0;border-radius:14px;background:#F2C230;color:#171512;font:600 15px Jost,sans-serif;cursor:pointer">▶ Voir la démo : la roue et les prix</button>' : ''}
           <p class="rg-n" style="margin:4px 2px 0">Revoir un tutoriel :</p>
           <div class="rg-tours">${Object.keys(MDGAstuces.TOURS).map(k => `<button type="button" data-tour="${k}">${esc(MDGAstuces.TOURS[k].t)}</button>`).join('')}</div></div>` : ''}
         ${pr && connecte() && !(window.MDGStatut && MDGStatut.estOfficiel && N().session().user && MDGStatut.estOfficiel(N().session().user.id)) ? `<p class="rg-sec">Confidentialité</p>
@@ -111,6 +112,8 @@ html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme
         try { if (bp.dataset.pousse === 'on') { await P.activer(); dire('Notifications *activées*'); } else { await P.desactiver(); dire('Notifications *désactivées* sur ce téléphone'); } }
         catch (x) { dire(String(x && x.message) === 'REFUS' ? 'Autorisez les notifications dans les réglages du téléphone, puis réessayez.' : 'Impossible pour l’instant. Réessayez.'); }
         st.pousse = P ? await P.etat() : 'impossible'; peindre(); };
+      const dmo = bg.querySelector('[data-demo]'); if (dmo) dmo.onclick = () => { fermer(); if (location.hash && location.hash !== '#/') location.hash = '#/';
+        setTimeout(() => { const b = [...document.querySelectorAll('.acc-ong button')].find(x => x.textContent.trim().startsWith('Marché')); if (b) b.click(); setTimeout(() => MDGDemo.lancer(), 600); }, 350); };
       bg.querySelectorAll('[data-tour]').forEach(b => b.onclick = () => { const k = b.dataset.tour; fermer(); setTimeout(() => MDGAstuces.tour(k, true), 250); });
       const so = bg.querySelector('[data-sons]'); if (so) so.onclick = () => { fermer(); S.panneau(); };
       bg.querySelectorAll('[data-sw]').forEach(i => i.onchange = async () => {

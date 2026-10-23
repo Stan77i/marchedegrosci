@@ -1137,3 +1137,4 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Inclut aussi le lot « 32 lois » (commit arrivé après la fusion de la PR #211). Cache `mgci-v218`.
 - Agrandis à la demande du propriétaire : onglets d'Acheter 28 px, pastilles 26 px (36 px dans la liste de la carte), caddie au trait crème sur les surfaces toujours sombres (carte du prix de l'accueil, carte du réseau). Correction : le dessin restait aplati (hauteur en % dans une grille) → `aspect-ratio: 1`.
 - Cartes de chiffres de l'accueil : pastille 58 px, panier et caddie 42 px, icône « Mes annonces » 30 px ; plus de balancement en boucle.
+- **Pastilles de nombre** (`.nbul`) partout où un nombre suit un libellé : onglets d'Acheter, filtres de Prix (vert vendeurs, maïs budgets), titres de section, bouton « Préparer la sélection » de Racheter. Règle ajoutée dans DESIGN.md et CLAUDE.md.

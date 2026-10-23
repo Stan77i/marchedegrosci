@@ -22,6 +22,14 @@
   const TR_D = { acheteur: ['L’acheteur prend le transport', 'v'], vendeur: ['Le vendeur doit livrer', ''] };
   const pluriel = (q, u) => { u = String(u || ''); return q > 1 && u && !/[sx]$|^(kg|t|l|L)$/.test(u) ? u + 's' : u; };
   const nomProduit = slug => { const p = window.MDG && MDG.products && MDG.products.find(x => x.slug === slug); return p ? p.name : slug; };
+  // l'image du produit : le sac détouré quand il existe (comme sur l'orbite de l'accueil), sinon la photo de sa famille ; la teinte vient du produit
+  const visuel = slug => {
+    const A = window.MDGApp, p = window.MDG && MDG.products && MDG.products.find(x => x.slug === slug), cat = p && p.categorySlug;
+    if (A && A.SACK && A.SACK[slug] != null) return { src: (A.IMG || 'v2/img/') + 'produit-' + slug + '.webp', h: A.SACK[slug], sac: true };
+    // pas d'image propre à ce produit : son initiale sur la teinte de sa famille (la photo de famille tromperait : des poivrons pour la carotte)
+    return { src: null, h: (A && A.FAMHUE && A.FAMHUE[cat]) || 70, sac: false, l: (p ? p.name : slug).charAt(0).toUpperCase() };
+  };
+  const vignette = (slug, cls) => { const v = visuel(slug); return `<span class="tb-v${v.sac ? '' : ' ini'}${cls ? ' ' + cls : ''}" style="--h:${v.h}" aria-hidden="true">${v.src ? `<img src="${esc(v.src)}" alt="" loading="lazy" decoding="async">` : `<b>${esc(v.l)}</b>`}</span>`; };
   const ilya = t => { const m = Math.max(0, Math.round((Date.now() - Date.parse(t)) / 60000)); return m < 60 ? 'il y a ' + (m || 1) + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
   const KS = 'mdg-tableau';
   const lireS = () => { try { return JSON.parse(sessionStorage.getItem(KS)) || {}; } catch (_) { return {}; } };
@@ -79,7 +87,30 @@ html[data-theme=sombre] .tb-p,html[data-theme=sombre] .tb-r,html[data-theme=somb
 html[data-theme=sombre] .tb-s,html[data-theme=sombre] .tb-p small,html[data-theme=sombre] .tb-i,html[data-theme=sombre] .tb-n,html[data-theme=sombre] .tb-zone label,html[data-theme=sombre] .tb-prix small{color:#CFC4B1}
 html[data-theme=sombre] .tb-h em,html[data-theme=sombre] .tb-prix,html[data-theme=sombre] .tb-p .px b,html[data-theme=sombre] .tb-dos{color:#F2C230}
 html[data-theme=sombre] .tb-rg,html[data-theme=sombre] .tb-t{background:#2A261F;color:#E8DFCC}html[data-theme=sombre] .tb-ch button[aria-pressed=true]{background:#F3EFE4;color:#171512}
-@media (prefers-reduced-motion:reduce){.tb-r,.tb-monte,.tb-charge{animation:none!important;transition:none!important}}`;
+@media (prefers-reduced-motion:reduce){.tb-r,.tb-monte,.tb-charge{animation:none!important;transition:none!important}}
+/* la liste des produits : la vignette du produit (le sac sort de sa tuile), le nom, le meilleur prix ; elle s'installe en cascade */
+.tb-l.tb-pl{gap:10px}
+.tb-p{grid-template-columns:64px minmax(0,1fr) auto;gap:4px 14px;min-height:84px;padding:10px 16px 10px 10px;border-radius:22px;transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
+.tb-p:active{transform:scale(.985)}
+.tb-p:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
+.tb-v{position:relative;display:block;width:64px;height:64px;border-radius:20px;background:radial-gradient(120% 90% at 50% 100%,oklch(.9 .07 var(--h)) 0%,oklch(.965 .025 var(--h)) 70%)}
+.tb-v img{position:absolute;left:50%;bottom:3px;width:74px;height:74px;margin-left:-37px;object-fit:contain;filter:drop-shadow(0 6px 6px rgba(23,21,18,.22));transition:transform .35s cubic-bezier(.22,1.4,.36,1)}
+.tb-v.ini{display:grid;place-items:center}.tb-v.ini b{font:900 italic 30px/1 Jost,sans-serif;color:oklch(.42 .09 var(--h));letter-spacing:-.02em}
+.tb-pl.anim .tb-v.ini b{animation:tbSac .7s calc(var(--i,0) * 60ms + 120ms) cubic-bezier(.22,1.5,.36,1) both}
+html[data-theme=sombre] .tb-v.ini b{color:oklch(.86 .08 var(--h))}
+.tb-p:hover .tb-v img,.tb-p:active .tb-v img{transform:translateY(-4px) scale(1.06) rotate(-2deg)}
+.tb-p .tb-tx b{display:block;font:600 17px/1.2 Jost,sans-serif;letter-spacing:-.005em}.tb-p .tb-tx small{margin-top:3px}
+.tb-p .px b{font:700 17px/1.2 Jost,sans-serif;font-variant-numeric:tabular-nums}.tb-p .px small{margin-top:2px}
+.tb-p .px>span+span{margin-top:6px}.tb-p .px>span{display:block}
+.tb-pl.anim>li{animation:tbIn .55s calc(var(--i,0) * 60ms) cubic-bezier(.22,1,.36,1) both}
+.tb-pl.anim .tb-v img{animation:tbSac .7s calc(var(--i,0) * 60ms + 120ms) cubic-bezier(.22,1.5,.36,1) both}
+@keyframes tbIn{from{opacity:0;transform:translateY(14px)}}
+@keyframes tbSac{from{opacity:0;transform:translateY(10px) scale(.7) rotate(-8deg)}}
+.tb-hd{display:flex;align-items:center;gap:14px;margin:6px 0 4px}.tb-hd .tb-h{margin:0;flex:1;min-width:0}
+.tb-hd .tb-v{width:72px;height:72px;border-radius:22px;flex:none}.tb-hd .tb-v img{width:84px;height:84px;margin-left:-42px;animation:tbSac .7s .05s cubic-bezier(.22,1.5,.36,1) both}
+html[data-theme=sombre] .tb-v{background:radial-gradient(120% 90% at 50% 100%,oklch(.4 .08 var(--h)) 0%,oklch(.27 .035 var(--h)) 72%)}
+html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
+@media (prefers-reduced-motion:reduce){.tb-pl.anim>li,.tb-pl.anim .tb-v img,.tb-hd .tb-v img{animation:none!important}.tb-v img{transition:none}}`;
 
   class Tableau extends HTMLElement {
     connectedCallback() {
@@ -120,13 +151,15 @@ html[data-theme=sombre] .tb-rg,html[data-theme=sombre] .tb-t{background:#2A261F;
       const s = this.st;
       if (s.slug) return this.peindreProduit();
       const P = s.produits;
+      // la cascade ne se joue qu'à la première apparition de la liste (ou après un changement de zone), pas à chaque relecture de 30 s
+      const cle = 'l:' + (s.region || ''), anim = !!(P && P.length) && this._anim !== cle; if (anim) this._anim = cle;
       this.innerHTML = `<h2 class="tb-h">Le tableau du <em>marché</em></h2>
         <p class="tb-s">Les meilleurs prix du moment. Pour acheter, le moins cher est en haut ; pour vendre, le meilleur budget est en haut. Baissez votre prix : vous montez.</p>
         ${this.choixZone()}
         ${s.err ? `<div class="tb-vide"><b>Pas de connexion</b>${esc(s.err)}</div>` : !P ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div><div class="tb-charge"></div></div>'
           : !P.length ? `<div class="tb-vide"><b>Aucune annonce${s.region ? ' dans cette zone' : ''} pour l’instant</b>Publiez la première avec « J’ai » ou « Je cherche » sur l’onglet Marché.</div>`
-          : `<ul class="tb-l">${P.map(p => `<li><button type="button" class="tb-p" data-slug="${esc(p.slug)}" aria-label="${esc(p.lab || nomProduit(p.slug))} : voir le tableau">
-              <span><b>${esc(p.lab || nomProduit(p.slug))}</b><small>${p.n_offres ? nf(p.n_offres) + ' offre' + (p.n_offres > 1 ? 's' : '') : 'aucune offre'} · ${p.n_demandes ? nf(p.n_demandes) + ' demande' + (p.n_demandes > 1 ? 's' : '') : 'aucune demande'}</small></span>
+          : `<ul class="tb-l tb-pl${anim ? ' anim' : ''}">${P.map((p, i) => `<li style="--i:${Math.min(i, 10)}"><button type="button" class="tb-p" data-slug="${esc(p.slug)}" aria-label="${esc(p.lab || nomProduit(p.slug))} : voir le tableau">
+              ${vignette(p.slug)}<span class="tb-tx"><b>${esc(p.lab || nomProduit(p.slug))}</b><small>${[p.n_offres ? nf(p.n_offres) + ' offre' + (p.n_offres > 1 ? 's' : '') : '', p.n_demandes ? nf(p.n_demandes) + ' demande' + (p.n_demandes > 1 ? 's' : '') : ''].filter(Boolean).join(' · ') || 'Aucune annonce'}</small></span>
               <span class="px">${p.meilleure_offre != null ? `<span><b>dès ${F(p.meilleure_offre)}</b><small>le ${esc(p.unite_offre || 'kg')} · pour acheter</small></span>` : ''}
                 ${p.meilleure_demande != null ? `<span class="d"><b>jusqu’à ${F(p.meilleure_demande)}</b><small>le ${esc(p.unite_demande || 'kg')} · pour vendre</small></span>` : ''}</span></button></li>`).join('')}</ul>`}
         <p class="tb-n">Le Marché de Gros est le seul intermédiaire : aucun numéro n’est affiché, tout se négocie dans l’application.</p>`;
@@ -160,7 +193,7 @@ html[data-theme=sombre] .tb-rg,html[data-theme=sombre] .tb-t{background:#2A261F;
           <button type="button" class="tb-go" data-go="${esc(x.id)}">${ach ? 'Acheter' : 'Vendre'}</button></li>`;
       };
       this.innerHTML = `<button type="button" class="tb-dos" data-dos>‹ Tous les produits</button>
-        <h2 class="tb-h">${esc(lab)}</h2>
+        <div class="tb-hd"><h2 class="tb-h">${esc(lab)}</h2>${vignette(s.slug)}</div>
         <p class="tb-s">${ach ? 'Les vendeurs, du moins cher au plus cher. À prix égal, le transport compris passe devant.' : 'Les acheteurs, du meilleur budget au plus bas. Vous avez ce produit ? Vendez au meilleur prix.'}</p>
         <div class="tb-seg" role="group" aria-label="Je veux"><button type="button" class="a" data-sens="acheter" aria-pressed="${ach}">Acheter · ${no}</button><button type="button" class="v" data-sens="vendre" aria-pressed="${!ach}">Vendre · ${nd}</button></div>
         ${this.choixZone()}
@@ -175,7 +208,7 @@ html[data-theme=sombre] .tb-rg,html[data-theme=sombre] .tb-t{background:#2A261F;
       const s = this.st;
       const z = this.querySelector('[data-zone]'); if (z) z.onchange = async () => { s.region = z.value; s.rangs = {}; this.memo(); this.classList.add('tb-attente'); await this.charger(); this.classList.remove('tb-attente'); };
       this.querySelectorAll('[data-slug]').forEach(b => b.onclick = () => { s.slug = b.dataset.slug; s.data = null; s.sensChoisi = false; s.unite = null; s.rangs = {}; this.memo(); this.peindre(); this.charger(); this.scrollIntoView({ block: 'start', behavior: 'smooth' }); });
-      const dos = this.querySelector('[data-dos]'); if (dos) dos.onclick = () => { s.slug = null; s.data = null; this.memo(); this.peindre(); this.charger(); };
+      const dos = this.querySelector('[data-dos]'); if (dos) dos.onclick = () => { this._anim = null; s.slug = null; s.data = null; this.memo(); this.peindre(); this.charger(); };
       this.querySelectorAll('[data-sens]').forEach(b => b.onclick = () => { s.sens = b.dataset.sens; s.sensChoisi = true; s.unite = null; this.memo(); this.peindre(); });
       this.querySelectorAll('[data-u]').forEach(b => b.onclick = () => { s.unite = b.dataset.u; this.memo(); this.peindre(); });
       this.querySelectorAll('[data-go]').forEach(b => b.onclick = () => {

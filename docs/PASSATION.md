@@ -1184,3 +1184,9 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Piège trouvé : l'application avait déjà une méthode `quand()` (les dates) ; la mienne s'appelle `attendre()`.
 - Site : les boutons utilisent ces liens (« J'ai à vendre » → `#/publier?sens=offre`, « Je cherche » → `#/publier?sens=demande`, tableau « Vendre » → `#/vendre?produit=…`, pros → `#/appro` et `#/groupes`).
 - Vérifié (iPhone 13) : tomate 20 cartons préremplie, igname en « Je cherche », achats groupés ouverts, lien inconnu sans effet, aucune erreur. Cache `mgci-v224`.
+
+## Site public : les pages produits (23/10/2026)
+- 12 pages `site/produits/<id>/` (tomate, igname, plantain, manioc, oignon, maïs grain, riz local, attiéké, piment frais, aubergine, gombo, mangue), fabriquées par `tools/site-produits.js` + gabarit `tools/site/produit.html`. Chacune : fil d'Ariane (+ JSON-LD `BreadcrumbList`), grande photo, autres noms (catalogue), « Je vends / Je cherche » qui ouvrent l'application déjà remplie (`#/publier?sens=…&produit=…`), annonces et meilleurs prix du produit en direct, **calendrier des récoltes seulement quand une source publique le dit** (`v2/saisons.js` : igname, maïs, riz local, mangue… avec le lien de la source), étapes, produits voisins (liens internes).
+- Gabarits découpés : `_debut.html` (tête commune, noindex de construction, garde), `_entete.html`, `_fin.html` ; chaque page a `<!--@tete-->` (titre, description, canonical, Open Graph) et `<!--@corps-->`. `{{S}}` = chemin vers `site/`, `{{R}}` = racine du dépôt ; `site.js` et `garde.js` lisent `data-s` sur `<html>`.
+- Les étagères de l'accueil mènent aux pages produits quand elles existent.
+- Vérifié (1440 × 900 et iPhone 13) avec les vraies annonces : igname (2 lignes de calendrier sourcées, aucune annonce → message honnête), tomate (12 500 F par sac, 1 offre), rien ne déborde, aucune erreur.

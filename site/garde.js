@@ -12,7 +12,7 @@
   function refuse() {
     try { localStorage.removeItem('mdg-site:admin'); sessionStorage.removeItem('mdg-site:essai'); } catch (_) {}
     etat('Ce compte n’est pas administrateur. Le site est en maintenance : retour…');
-    setTimeout(function () { location.replace('../maintenance.html'); }, 2500);
+    setTimeout(function () { location.replace((document.documentElement.getAttribute('data-s') || '') + '../maintenance.html'); }, 2500);
   }
   function verifier() {
     if (!N || !N.session()) { etat('Réservé à l’administrateur. Entrez votre numéro et votre code secret.', true); return; }

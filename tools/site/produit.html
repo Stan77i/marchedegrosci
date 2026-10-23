@@ -1,0 +1,82 @@
+<!--@tete-->
+<title>{{TITRE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<link rel="canonical" href="{{CANON}}">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_CI">
+<meta property="og:site_name" content="Marché de Gros CI">
+<meta property="og:title" content="{{NOM}} en gros en Côte d’Ivoire">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:url" content="{{CANON}}">
+<meta property="og:image" content="{{OG_IMAGE}}">
+<script type="application/ld+json">{{JSONLD_FIL}}</script>
+<!--@corps-->
+<main id="contenu" class="pg-produit" data-produit="{{SLUG}}">
+
+<nav class="ariane" aria-label="Fil d’Ariane"><a href="../../">Marché de Gros CI</a><span aria-hidden="true">›</span><a href="../../#rayons">{{CATN}}</a><span aria-hidden="true">›</span><span aria-current="page">{{NOM}}</span></nav>
+
+<!-- 1. le produit : sa photo, son nom, les deux actions -->
+<section class="pr-tete" aria-labelledby="t-pr">
+  <div class="pr-l">
+    <h1 id="t-pr">{{NOM}} en gros en <em>Côte d’Ivoire</em></h1>
+    <p class="pr-sous">Vendeurs et acheteurs {{DE_NOM}} se trouvent dans l’application : chacun publie sa quantité, sa ville et son prix, et tout se négocie par écrit, sans numéro affiché.</p>
+    {{ALIAS}}
+    <div class="portes">
+      <a class="porte porte-o" href="../../../application.dc.html#/publier?sens=offre&amp;produit={{SLUG}}" data-app="#/publier?sens=offre&amp;produit={{SLUG}}" data-intention="vendre-{{SLUG}}">
+        <i class="sym sym-o" aria-hidden="true"></i>
+        <span><b>Je vends</b><small>Publiez votre offre {{DE_NOM}} : les acheteurs vous écrivent.</small></span>
+        <svg class="fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="porte porte-d" href="../../../application.dc.html#/publier?sens=demande&amp;produit={{SLUG}}" data-app="#/publier?sens=demande&amp;produit={{SLUG}}" data-intention="acheter-{{SLUG}}">
+        <i class="sym sym-d" aria-hidden="true"></i>
+        <span><b>Je cherche</b><small>Votre demande {{DE_NOM}} : les vendeurs vous font leur prix.</small></span>
+        <svg class="fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="pr-photo"><img src="../../img/{{SLUG}}-480.webp" alt="{{NOM}} en gros" width="480" height="480" fetchpriority="high"></div>
+</section>
+
+<!-- 2. en ce moment : les annonces et les meilleurs prix de ce produit (en direct) -->
+<section class="bloc pr-direct" aria-labelledby="t-direct">
+  <div class="bloc-tete">
+    <h2 id="t-direct">{{NOM}} : en ce moment sur le marché</h2>
+    <p>Les annonces publiées dans l’application, mises à jour toutes les deux minutes. Les prix sont ceux demandés par les vendeurs et proposés par les acheteurs : ce ne sont pas des prix conclus.</p>
+  </div>
+  <div class="pr-prix" id="prixProduit"><p class="tb-attente">Les prix se chargent…</p></div>
+  <ul class="fil-l pr-fil" id="filProduit"><li class="fil-vide">Les annonces arrivent…</li></ul>
+</section>
+
+{{SAISONS}}
+
+<!-- 3. comment ça marche, pour ce produit -->
+<section class="bloc route" aria-labelledby="t-route">
+  <div class="bloc-tete"><h2 id="t-route">{{NOM}} en gros : vendre ou acheter, pas à pas</h2></div>
+  <ol class="etapes">
+    <li><b>Publier</b><span>Votre offre ou votre demande : quantité, unité, ville, prix.</span></li>
+    <li><b>Comparer</b><span>Le tableau classe les vendeurs du moins cher au plus cher.</span></li>
+    <li><b>Négocier</b><span>Par écrit, dans l’application, sans numéro visible.</span></li>
+    <li><b>Commander</b><span>Le prix et la quantité sont figés.</span></li>
+    <li><b>Livrer</b><span>Le camion se suit par un simple lien.</span></li>
+    <li><b>Réceptionner</b><span>Un mot secret, et 24 h pour réclamer.</span></li>
+  </ol>
+</section>
+
+<!-- 4. les produits voisins -->
+<section class="bloc rayons" aria-labelledby="t-vois">
+  <div class="bloc-tete"><h2 id="t-vois">Dans le même rayon : {{CATN}}</h2></div>
+  <div class="etagere"><ul class="voisins">{{VOISINS}}</ul></div>
+</section>
+
+<!-- 5. prendre l'application -->
+<section class="appli" id="appli" aria-labelledby="t-appli">
+  <div class="appli-texte">
+    <h2 id="t-appli">Prenez l’application sur votre <em>téléphone</em></h2>
+    <p>Scannez ce code avec l’appareil photo de votre téléphone. L’application s’ouvre dans le navigateur ; pour la garder, choisissez « Ajouter à l’écran d’accueil ».</p>
+    <p class="appli-lien">Ou tapez : <b id="lienCourt">stan77i.github.io/marchedegrosci</b></p>
+    <p class="appli-store">Pas encore sur le Play Store ni l’App Store.</p>
+  </div>
+  <div class="appli-qr" id="qr" role="img" aria-label="Code QR vers l’application"></div>
+</section>
+
+</main>

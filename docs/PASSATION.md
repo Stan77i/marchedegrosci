@@ -917,3 +917,15 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Faute corrigée : « votre sécurité et celle de le vendeur » → « du vendeur ».
 - **PDF** `docs/Marche-de-Gros-application-et-modele-economique.pdf` (11 pages) : l'application, puis le modèle économique (commission 3,5 % sur la vente, 6,9 % sur le transport du réseau ; payé seulement quand un achat est conclu), exemples chiffrés, grille de calcul (exemples, pas des prévisions), contournement, chiffres réels du 23/10 (4 comptes, 2 commandes, 63 000 F inscrits non encaissés), questions pour les professionnels.
 - Cache `mgci-v201`.
+
+## Lien de suivi : démarre dès l'ouverture, « le chauffeur a ouvert le lien », code court avec schéma (23/10/2026) — schéma 64
+- Demande du propriétaire : le suivi doit être simple, sans code à retenir ni compte pour le chauffeur ; un code en secours, « avec un schéma d'explication, propre ».
+- **Serveur** (`supabase/schema-64-suivi-code.sql`, appliqué et vérifié le 23/10, test dans une transaction annulée) :
+  - `suivi_liens.code` (ex. `8DR-3T8`, 6 caractères parmi 31, sans 0/O/1/I/L, index unique) et `suivi_liens.ouvert_le` ; colonnes ajoutées, rien supprimé ; les liens actifs ont reçu un code ;
+  - `suivi_lien_creer` donne un code à chaque lien ; `suivi_lien_etat` renvoie `ouvert_le` et `code` (le code seulement à celui qui transporte, comme le jeton) ;
+  - `suivi_code_jeton(p_code)` (anon) : code → jeton, majuscules/espaces/tiret ignorés, seulement lien actif et commande en cours ;
+  - `suivi_lien_ouvert(p_jeton)` (anon) : note la première ouverture.
+- **Page du chauffeur** (`suivi.html`) : sans `?j=`, elle demande le code (saisie formatée K7P-492) ; avec le lien ou le code, elle note l'ouverture et **lance le partage tout de suite** (le téléphone demande seulement l'autorisation). Le bouton reste pour relancer après un refus. `[hidden]` forcé (la ligne d'état restait visible).
+- **Application** (`v3/commandes.js`, `blocLien`) : schéma en 3 étapes (1 il ouvre le lien ou tape le code, 2 il accepte la position, 3 vous suivez le camion ici) ; « Envoyer au chauffeur » (le message contient aussi l'adresse et le code de secours), « Copier le lien », puis « ou, au téléphone : il ouvre <adresse>/suivi.html et tape ce code » avec Copier ; état « 👀 Le chauffeur a ouvert le lien · il y a 2 min » avant la première position.
+- Testé (Playwright) : code faux refusé, code tapé en minuscules accepté, ouverture notée, position envoyée sans toucher de bouton ; aucun débordement de la fenêtre.
+- Cache `mgci-v202`.

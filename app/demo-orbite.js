@@ -110,8 +110,8 @@ html[data-theme=clair] .dm-sw{color:#171512;border-color:rgba(23,21,18,.14);back
       exemple = !aUnPrix();
       if (exemple && window.MDGPrixMoment) {
         const t = h => new Date(Date.now() - h * 3600e3).toISOString();
-        MDGPrixMoment.ouvrir({ exemple: true, nom: 'Tomate', img: 'v2/img/produit-tomate.webp', art: 'le sac',
-          offres: [{ prix: 12500, nom: 'Vendeuse A', lieu: 'Abidjan', at: t(2), qte: 40, unite: 'sac' }, { prix: 13000, nom: 'Vendeur B', lieu: 'Bouaké', at: t(5) }, { prix: 14000, nom: 'Coopérative C', lieu: 'Korhogo', at: t(20) }],
+        MDGPrixMoment.ouvrir({ exemple: true, nom: 'Tomate', img: 'v2/img/produit-tomate.webp', art: 'le carton',
+          offres: [{ prix: 12500, nom: 'Vendeuse A', lieu: 'Abidjan', at: t(2), qte: 40, unite: 'carton' }, { prix: 13000, nom: 'Vendeur B', lieu: 'Bouaké', at: t(5) }, { prix: 14000, nom: 'Coopérative C', lieu: 'Korhogo', at: t(20) }],
           demandes: [{ prix: 11000, nom: 'Acheteur D', lieu: 'Yopougon' }] });
       } else if (px) px.click();
       attendre(900, trois);

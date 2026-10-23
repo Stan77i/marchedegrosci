@@ -58,7 +58,7 @@
   --voix-accent: var(--logo-mais);   /* le mot qui compte : maïs sur fond sombre… */
   --voix-surligne: transparent;      /* …et, sur fond clair, vert surligné de maïs, comme le logo sur fond clair */
   --f-texte: Jost, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --t-2xs: 10.5px;
+  --t-2xs: 11.5px;
   --t-xs: 11.5px;          /* capitales espacées, mentions */
   --t-sm: 12.5px;          /* informations secondaires */
   --t-md: 13.5px;          /* lignes d'information */

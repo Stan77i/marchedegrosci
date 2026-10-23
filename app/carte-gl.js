@@ -117,12 +117,12 @@
 .cgl-moi::after{content:"";position:absolute;inset:-12px;border-radius:50%;border:2px solid rgba(176,149,240,.6);animation:cglOnde 2.4s ease-out infinite}
 @keyframes cglOnde{from{transform:scale(.4);opacity:1}to{transform:scale(1.6);opacity:0}}
 .cgl-dist{padding:4px 9px;border-radius:12px;background:rgba(23,21,18,.9);color:#E6DCFF;font:600 12px Jost,sans-serif;white-space:nowrap;box-shadow:0 0 0 1px rgba(176,149,240,.5)}
-.cgl-ui{position:absolute;right:10px;display:flex;flex-direction:row;gap:8px;z-index:2;transition:bottom .3s}@media (max-width:360px){.cgl-ui{gap:5px}.cgl-ui button{width:40px!important;height:40px!important}}
+.cgl-ui{position:absolute;right:10px;display:flex;flex-direction:column;gap:8px;z-index:2;transition:bottom .3s}.cgl-ui .cgl-z1{margin-top:8px;border-radius:22px 22px 0 0!important;border-bottom-color:transparent!important}.cgl-ui .cgl-z2{margin-top:-9px;border-radius:0 0 22px 22px!important;border-top:1px solid rgba(245,240,230,.14)!important}@media (max-height:640px){.cgl-ui{gap:5px}.cgl-ui button{width:40px!important;height:40px!important}}
 .cgl-ui button{width:44px;height:44px;border-radius:22px;border:1px solid rgba(245,240,230,.14);background:rgba(23,21,18,.78);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#F5F0E6;display:flex;align-items:center;justify-content:center;padding:0;font:700 11.5px Jost,sans-serif;cursor:pointer}
 .cgl-ui button[aria-pressed=true]{background:#F5F0E6;color:#171512}
 .cgl.jour .cgl-ui button{background:rgba(255,253,248,.92);color:#171512;border-color:rgba(23,21,18,.1);box-shadow:0 2px 8px rgba(80,60,30,.15)}.cgl.jour .cgl-ui button[aria-pressed=true]{background:#171512;color:#F5F0E6}
 .cgl-etat{position:absolute;left:10px;z-index:2;display:flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:13px;background:rgba(23,21,18,.72);color:#E6DCCB;font:500 11px Jost,sans-serif;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);pointer-events:none;transition:top .3s}
-.cgl-etat i{width:7px;height:7px;border-radius:50%;background:#6CC58C}.cgl-etat.hors i{background:#B9AD98}
+.cgl-etat:not(.hors){display:none}.cgl-etat i{width:7px;height:7px;border-radius:50%;background:#6CC58C}.cgl-etat.hors i{background:#B9AD98}
 .cgl.jour .cgl-etat{background:rgba(255,253,248,.9);color:#3b342a;box-shadow:0 2px 8px rgba(80,60,30,.15)}
 .cgl-echelle{position:absolute;left:12px;z-index:2;font:600 17px Jost,system-ui,sans-serif;color:#F5F0E6;text-shadow:0 1px 8px rgba(0,0,0,.8);pointer-events:none;transition:top .3s}
 .cgl.jour .cgl-echelle{color:#231f19;text-shadow:0 1px 6px rgba(255,255,255,.9)}
@@ -157,21 +157,23 @@
       // carte figée : vue du dessus, nord en haut ; on glisse et on zoome, on ne la tourne pas
       map.touchZoomRotate.disableRotation(); map.keyboard.disableRotation();
 
-      // ——— contrôles : zoomer, tout le pays, jour/nuit, chaleur (« me localiser » est dans la barre de l'application) ———
+      // ——— contrôles : me localiser, tout le pays, jour/nuit, chaleur, zoomer ———
       const ui = document.createElement('div'); ui.className = 'cgl-ui'; box.appendChild(ui);
       const ic = d => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
       const I = n => window.MDGIco ? window.MDGIco.svg(n, 20, 2) : ic('');   // même jeu d'icônes que l'application (app/icones.js)
       const btn = (html, lab, fn, press) => { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = html; b.setAttribute('aria-label', lab); b.title = lab; if (press != null) b.setAttribute('aria-pressed', String(press));
         b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); ui.appendChild(b); return b; };
-      btn(I('plus'), 'Zoomer', () => map.zoomIn());
-      btn(I('moins'), 'Dézoomer', () => map.zoomOut());
+      // une seule colonne à droite, au-dessus du panneau : se situer et l'affichage en haut, le zoom en bas (sous le pouce)
+      btn(I('localiser'), 'Me localiser', () => localiser());
       btn(I('pays'), 'Tout le pays', () => { opt.onSelect && opt.onSelect(''); home(); });
       const bJour = btn(I('jour'), 'Carte de jour', b => { theme = theme === 'jour' ? 'nuit' : 'jour'; SS('mdg-carte:theme', theme); b.setAttribute('aria-pressed', String(theme === 'jour')); ambiance(); }, theme === 'jour');
       const bChal = btn(I('chaleur'), 'Chaleur de la demande', b => { chaleur = !chaleur; SS('mdg-carte:chaleur', chaleur ? 'oui' : 'non'); b.setAttribute('aria-pressed', String(chaleur)); map.setLayoutProperty('chaleur', 'visibility', chaleur ? 'visible' : 'none'); }, chaleur);
+      const zp = btn(I('plus'), 'Zoomer', () => map.zoomIn()); zp.className = 'cgl-z1';
+      const zm = btn(I('moins'), 'Dézoomer', () => map.zoomOut()); zm.className = 'cgl-z2';
       const etat = document.createElement('div'); etat.className = 'cgl-etat'; box.appendChild(etat);
       const ech = document.createElement('div'); ech.className = 'cgl-echelle'; box.appendChild(ech);
       // en haut à gauche : où l'on regarde, et l'état du réseau ; en bas à droite, sur la mer : les boutons (ils ne cachent pas le pays)
-      const placer = () => { const i = ins(); etat.style.top = (i.t + 34) + 'px'; ech.style.top = (i.t + 4) + 'px'; ui.style.bottom = (i.b + 12) + 'px'; map.setPadding({ top: i.t + 30, bottom: i.b + 62, left: 0, right: 0 }); };
+      const placer = () => { const i = ins(); etat.style.top = (i.t + 34) + 'px'; ech.style.top = (i.t + 4) + 'px'; ui.style.bottom = (i.b + 12) + 'px'; map.setPadding({ top: i.t + 30, bottom: i.b + 20, left: 0, right: 52 }); };
       const dire = (en, txt) => { etat.className = 'cgl-etat' + (en ? '' : ' hors'); etat.innerHTML = '<i></i>' + esc(txt); };
 
       // ——— en ligne : relief (Terrarium) et rues, quartiers, bâtiments (OpenFreeMap) ; hors ligne : la carte embarquée seule ———

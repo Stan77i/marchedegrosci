@@ -120,7 +120,6 @@
 .cp-hero{position:relative;margin:0 -16px;padding:64px 20px 44px;color:#fff;text-align:center;overflow:hidden;
   background:radial-gradient(120% 80% at 85% 0%,rgba(242,194,48,.22),transparent 55%),radial-gradient(90% 70% at 0% 100%,rgba(4,20,14,.7),transparent 60%),linear-gradient(165deg,#1C5A43 0%,#10392B 50%,#0A261C 100%)}
 @media (min-width:760px){.cp-hero{margin:0 -28px}}
-.cp-hero::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);background-size:28px 28px;-webkit-mask-image:linear-gradient(180deg,#000,transparent 85%);mask-image:linear-gradient(180deg,#000,transparent 85%)}
 .cp-hero>*{position:relative}
 .cp-hero-av{position:relative;width:104px;height:104px;margin:0 auto;border-radius:50%;padding:6px;background:rgba(255,255,255,.18);box-shadow:0 18px 40px rgba(40,12,2,.35)}
 .cp-hero-av>svg,.cp-hero-av>img{display:block;width:92px;height:92px;border-radius:50%}

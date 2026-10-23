@@ -1158,4 +1158,7 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 
 ## Onglets d'Acheter et panneau de la carte (23/10/2026)
 - Onglets « Offres / Demandes / Tout » : chaque onglet prend la largeur de son contenu (flex au lieu de 3 colonnes égales) ; le nombre reste **dans** le fond de l'onglet choisi. Le caddie de l'onglet choisi passe au trait crème sur le fond noir (mode clair). Sous 360 px, le panier et le caddie se cachent (la couleur de la pastille suffit). Vérifié à 320, 375 et 390 px : rien ne déborde.
-- Carte du réseau : l'ombre noire au-dessus du panneau du bas est retirée. Cache `mgci-v221`.
+- Carte du réseau : l'ombre noire au-dessus du panneau du bas est retirée. Les filtres « Offres » et « Demandes » du panneau montrent le panier et le caddie dessinés (`.lg-s`, caddie crème sur le fond noir) au lieu d'un rond et d'un carré ; « Pour vous » et « Forte demande » gardent leur point. Cache `mgci-v221`.
+
+## Panier et caddie dans les filtres de la carte (23/10/2026), oubliés par la fusion de la PR #218
+- Les filtres « Offres » et « Demandes » du panneau de la carte du réseau montrent le panier et le caddie dessinés (`.lg-s`). Ce commit était arrivé sur la branche juste après la fusion de #218 : remis dans une PR à part. Cache `mgci-v222`.

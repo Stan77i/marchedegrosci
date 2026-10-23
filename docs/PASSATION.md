@@ -1233,3 +1233,8 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 ## Site public : guide « Transporter du vivrier en gros sans pertes » (23/10/2026)
 - `tools/site/guides/transporter-le-vivrier.html` : pertes (DG Économie 30-40 % après récolte ; CIRAD/Université Nangui Abrogoua 2019 : 10 à 43 % de pertes de tomate dues au seul transport, estimations des acteurs, citation revérifiée), emballage par produit (tomate en carton, 35 kg conseillés), chargement, chaleur, choix du transporteur, accord écrit (qui paie, qui perd), réception. Aucun prix de transport (sources trop anciennes ou trop locales). 7 guides en tout.
 - Typographie : espace insécable entre un nombre et « % », « kg », « °C », « km », « FCFA », « t », et dans « 3 000 » (`fine()` de `tools/site-public.js`) : plus de « 10 » en fin de ligne et « % » au début de la suivante.
+
+## Site public : page « Calendrier des récoltes » (23/10/2026)
+- `site/saisons/` (gabarit `tools/site/saisons.html`) : toutes les périodes sourcées de `v2/saisons.js`, produit par produit (10 produits : igname, maïs frais et grain, riz, mil, sorgho, mangue, cajou, cacao, café), chaque ligne avec sa source, liste des sources, date de mise à jour. Lien dans le pied de page, ajoutée au `sitemap.xml`.
+- Le rendu d'une ligne du calendrier est commun aux pages produits et à cette page (`lireSaisons`, `ligneMois`, `calendrier` dans `tools/site-produits.js`) ; pages produits inchangées (vérifié par comparaison).
+- Ajouter un produit au calendrier = ajouter une entrée **sourcée** dans `v2/saisons.js` (elle apparaît aussi sur la carte de l'application).

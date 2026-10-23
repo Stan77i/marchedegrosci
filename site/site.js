@@ -76,13 +76,15 @@
   }
   // page produit : <main data-produit="tomate">
   var PROD = (document.querySelector('[data-produit]') || { getAttribute: function () { return ''; } }).getAttribute('data-produit');
+  // page d'un district : <main data-region="savanes"> (annonces et prix du district seulement)
+  var REGION = (document.querySelector('[data-region]') || { getAttribute: function () { return ''; } }).getAttribute('data-region');
   function publier(h, intention, texte) { return '<a class="lien" href="' + R + 'application.dc.html' + h.replace(/&/g, '&amp;') + '" data-app="' + h.replace(/&/g, '&amp;') + '" data-intention="' + intention + '">' + texte + '</a>'; }
   function fil(L) {
     var court = $('filCourt'), long = $('filLong'), pf = $('filProduit');
     if (pf) {
-      var LP = L.filter(function (a) { return a.product_slug === PROD; });
-      pf.innerHTML = LP.length ? LP.map(function (a) { var h = '#/produits/' + esc(a.product_slug); return '<li><a class="fil-a" href="' + R + 'application.dc.html' + h + '" data-app="' + h + '" data-intention="annonce">' + symb(a.sens) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></a></li>'; }).join('')
-        : '<li class="fil-vide">Aucune annonce active pour ce produit en ce moment. ' + publier('#/publier?sens=offre&produit=' + encodeURIComponent(PROD), 'premiere-annonce', 'Publiez la première') + ' : tout le réseau la verra.</li>';
+      var LP = L.filter(function (a) { return REGION ? a.region_slug === REGION : a.product_slug === PROD; });
+      pf.innerHTML = LP.length ? LP.map(function (a) { var h = '#/produits/' + esc(a.product_slug); return '<li><a class="fil-a" href="' + R + 'application.dc.html' + h + '" data-app="' + h + '" data-intention="annonce">' + ((REGION && photo(a.product_slug)) || symb(a.sens)) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></a></li>'; }).join('')
+        : '<li class="fil-vide">Aucune annonce active ' + (REGION ? 'dans ce district' : 'pour ce produit') + ' en ce moment. ' + publier('#/publier?sens=offre' + (PROD ? '&produit=' + encodeURIComponent(PROD) : ''), 'premiere-annonce', 'Publiez la première') + ' : tout le réseau la verra.</li>';
     }
     if (!L.length) {
       if (court) court.innerHTML = '<li class="fil-vide">Aucune annonce pour l’instant. ' + publier('#/publier?sens=offre', 'premiere-annonce', 'Publiez la première') + ' : tout le réseau la verra.</li>';
@@ -103,7 +105,7 @@
   var prix = function (v, u) { return v == null ? '<span class="tb-prix vide">Pas encore</span>' : '<span class="tb-prix">' + nf(v) + ' F<small>par ' + esc(u || 'unité') + '</small></span>'; };
   function tableau() {
     var corps = $('tbCorps'), pp = $('prixProduit'); if (!corps && !pp) return;
-    rpc('tableau_produits', { p_region: null }).then(function (L) {
+    rpc('tableau_produits', { p_region: REGION || null }).then(function (L) {
       if (pp) {
         var r = (L || []).filter(function (x) { return x.slug === PROD; })[0];
         pp.innerHTML = !r ? '<p class="tb-attente">Aucun prix publié pour ce produit en ce moment. ' + publier('#/publier?sens=offre&produit=' + encodeURIComponent(PROD), 'premier-prix', 'Publier mon prix') + '</p>'

@@ -1260,3 +1260,9 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Fil ou tableau vides : un lien d'action (« Publiez la première », « Publier mon prix »), en maïs sur fond vert.
 - Bouton « Prendre l'application » de l'en-tête mesuré à part (`entete`) ; `href` des deux portes alignés sur leur `data-app` ; sous les rayons : « Votre produit n'est pas affiché ? … Je vends · Je cherche ».
 - Non repris : bandeau de confiance sous les portes (déjà dit sous le titre), nouveau titre de la section « appli » (faible impact).
+
+## Site public : une page par district (23/10/2026)
+- `site/regions/<district>/` (14 pages, `tools/site-regions.js`, gabarit `tools/site/region.html`) et le sommaire `site/regions/` (`tools/site/regions.html`). Lien « Les districts » dans le pied de page, pages dans le `sitemap.xml`.
+- Contenu, rien d'inventé : nom et chef-lieu ; « Ce qui s'y récolte » = entrées de `v2/saisons.js` **qui nomment le district** (les périodes données pour tout le pays, comme le plantain ou le cajou, sont exclues pour ne pas laisser croire qu'ils poussent partout) ; photos de ces produits en tête ; annonces du district (`fil_public`, filtrées par `region_slug` dans `site/site.js`, `data-region`) ; meilleurs prix du district (`tableau_produits(p_region)`) ; lien vers le guide des grands marchés pour Abidjan, la Vallée du Bandama (Bouaké), le Sassandra-Marahoué (Daloa, annoncé) et la Comoé (Abengourou, annoncé).
+- Liens internes : dans tous les calendriers (pages produits, calendrier, districts), chaque nom de district mène à sa page ; accueil : « Les districts » à côté du calendrier. Contrôle automatique : 3 819 liens internes, aucun cassé.
+- Référencement : titres raccourcis (65 caractères au plus, sauf « Œufs de poule (alvéole de 30) ») et descriptions de 160 caractères au plus sur les 54 pages ; contrôle : un seul h1 par page, adresse canonique juste, `noindex` partout (jusqu'à l'ouverture).

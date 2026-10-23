@@ -28,9 +28,10 @@ function lireSaisons(lire, vm) {
   return { SA, SRC, REGN, zones, ctx };
 }
 // une ligne du calendrier (un produit, une ou plusieurs régions, ses mois, sa source)
-function ligneMois(e, nom, { SRC, REGN, zones }, esc) {
-  const regs = [...new Set(e.regions.flatMap(zones))].map(r => REGN[r] || r);
-  return `<div class="mois-l"><div class="mois-t"><b>${esc(e.note ? e.note.charAt(0).toUpperCase() + e.note.slice(1) : nom)}</b>${regs.length ? `<span>${esc(regs.join(', '))}</span>` : ''}</div>
+// vers : chemin vers site/regions/ (les noms de districts deviennent des liens vers leur page) ; vide = texte simple
+function ligneMois(e, nom, { SRC, REGN, zones }, esc, vers) {
+  const ids = [...new Set(e.regions.flatMap(zones))], regs = ids.map(r => vers && REGN[r] ? `<a href="${vers}${r}/">${esc(REGN[r])}</a>` : esc(REGN[r] || r));
+  return `<div class="mois-l"><div class="mois-t"><b>${esc(e.note ? e.note.charAt(0).toUpperCase() + e.note.slice(1) : nom)}</b>${regs.length ? `<span>${regs.join(', ')}</span>` : ''}</div>
         <ol class="mois" aria-label="Mois de récolte">${INI.split('').map((c, i) => { const n = e.months[i + 1]; return `<li class="${n || ''}" title="${MOIS[i]}${n ? ' : ' + NIV[n] : ''}"><span aria-hidden="true">${c}</span><span class="vh">${MOIS[i]}${n ? ' : ' + NIV[n] : ''}</span></li>`; }).join('')}</ol>
         <p class="src">Source : <a href="${esc(SRC[e.source].url)}" rel="noopener" target="_blank">${esc(SRC[e.source].label)}</a></p></div>`;
 }
@@ -48,14 +49,14 @@ function fabriquer({ produits, CAT, NOM, esc, lire, vm, photo }) {
     const E = SA.entries.filter(e => e.product === sl && SRC[e.source]);
     const saisons = !E.length ? '' : `<section class="bloc saison" aria-labelledby="t-saison"><div class="bloc-tete"><h2 id="t-saison">Les récoltes ${esc(de(min))}</h2>
       <p>${esc(SA.meta.note)} Chaque ligne cite sa source.</p></div>
-      ${E.map(e => ligneMois(e, nom, L, esc)).join('')}
+      ${E.map(e => ligneMois(e, nom, L, esc, '../../regions/')).join('')}
       ${LEGENDE}
       <p><a class="lien" href="../../saisons/">Le calendrier de tous les produits</a></p></section>`;
     // ——— les voisins (même famille) ———
     const vois = produits.filter(x => x.c === p.c && x.s !== sl && x.f).slice(0, 8);
     const voisins = vois.map(x => `<li><a ${LISTE.includes(x.s) ? `href="../${x.s}/"` : `href="../../../application.dc.html#/produits/${x.s}" data-app="#/produits/${x.s}" data-intention="produit"`}><img src="../../img/${x.s}-160.webp" alt="" width="160" height="160" loading="lazy"><span>${esc(x.n)}</span></a></li>`).join('');
-    const titre = `${nom} en gros en Côte d’Ivoire : vendre, acheter, prix du moment · Marché de Gros CI`;
-    const desc = `Vendez ou achetez ${min} en gros partout en Côte d’Ivoire : annonces et meilleurs prix publiés en direct${E.length ? ', période de récolte (sources citées)' : ''}, négociation sans numéro affiché. Gratuit.`;
+    const titre = `${nom} en gros en Côte d’Ivoire : prix et annonces`;
+    const desc = `${nom} en gros en Côte d’Ivoire : annonces et meilleurs prix en direct${E.length ? ', calendrier des récoltes sourcé' : ''}. Négociation sans numéro affiché, gratuite.`;
     const canon = BASE + 'produits/' + sl + '/';
     const fil = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Marché de Gros CI', item: BASE },
@@ -80,7 +81,7 @@ function calendrier({ NOM, esc, lire, vm, photo }) {
     const titre = lien ? `<a href="${lien}">${esc(nom)}</a>` : esc(nom);
     const mo = {}; E.filter(e => e.product === sl).forEach(e => Object.entries(e.months).forEach(([m, l]) => { if (!mo[m] || l === 'plein') mo[m] = l; }));
     return `<section class="cal-p" aria-labelledby="cal-${sl}" data-mois='${JSON.stringify(mo)}' data-nom="${esc(nom)}"${lien ? ` data-lien="${lien}"` : ''}><h2 id="cal-${sl}">${img}<span>${titre}</span></h2>
-      ${E.filter(e => e.product === sl).map(e => ligneMois(e, nom, L, esc)).join('')}</section>`;
+      ${E.filter(e => e.product === sl).map(e => ligneMois(e, nom, L, esc, '../regions/')).join('')}</section>`;
   }).join('');
   const srcs = [...new Set(E.map(e => e.source))].map(id => `<li><a href="${esc(SRC[id].url)}" rel="noopener" target="_blank">${esc(SRC[id].label)}</a></li>`).join('');
   return { CALENDRIER: blocs + LEGENDE, NB_CAL: String(ordre.length), SOURCES_CAL: srcs, NOTE_CAL: esc(SA.meta.note), MAJ_CAL: SA.meta.updated };
@@ -88,3 +89,4 @@ function calendrier({ NOM, esc, lire, vm, photo }) {
 module.exports = fabriquer;
 module.exports.calendrier = calendrier;
 module.exports.LISTE = LISTE;
+module.exports.outils = { lireSaisons, ligneMois, LEGENDE, MOIS };

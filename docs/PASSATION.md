@@ -1113,3 +1113,17 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Carte du réseau** : en haut, seulement le titre et une rangée « produit / où êtes-vous » sans défilement ; les filtres (Offres, Demandes, « Pour vous », Forte demande) descendent dans le panneau du bas, visibles même replié, avec la forme des marqueurs (rond, carré) au lieu d'emojis ; les boutons de la carte (me localiser, tout le pays, jour/nuit, chaleur, zoom +/− joints) forment une colonne à droite ; « En ligne · relief » n'apparaît plus (seulement « Hors connexion ») ; titre du panneau sans lettres espacées.
 - **Audit (détecteur impeccable, 110 → 100 alertes, le reste surtout de fausses alertes des gabarits)** : texte minimum 11,5 px (`--t-2xs`, étiquettes « quand » de nuit, « En saison ») ; pastilles de nombre blanc sur `#C0442B` (contraste 4,9:1 au lieu de 3,1:1) ; quadrillage retiré du bandeau du profil ; liseré latéral retiré des conditions d'accord. Gardé volontairement : l'éclat du « de Gros » à la connexion (moment de marque, une fois).
 - Vérifié dans Chromium (iPhone 13), clair et sombre, sans erreur. Cache `mgci-v217`.
+
+## Lois anti-« design généré par IA » (23/10/2026)
+
+- **32 lois** réunies dans `DESIGN.md`, section 8 : le socle d'`impeccable`, les 21 signes de Paralect, les 16 signes mesurés par Adrian Krebs sur 1 590 sites, les règles UX d'`ui-ux-pro-max`. `CLAUDE.md` impose de les relire avant tout travail de design.
+- Appliquées dans l'application :
+  - « En cours » : icônes dessinées (négociation, camion, boîte, vérifié, messages) au lieu des emojis 🤝 🚚 📦 ✅ 💬, couleurs jour et nuit ;
+  - surfaces du navigateur aux couleurs de la marque : sélection maïs, curseur de saisie, cases et curseurs (`accent-color`), anneau de focus ;
+  - cartes de chiffres de l'accueil : reflet qui balayait en boucle et cercles décoratifs retirés ;
+  - sur-titres retirés (« Le catalogue du Marché de Gros », « Calendrier des récoltes ») ; « ÉTAPE 1… » retiré de Confiance (ce sont des principes, pas des étapes), « Étape 1 » en minuscules ailleurs ;
+  - page Prix : la rangée 8 / 6 / 3 répétait les nombres des filtres : retirée ;
+  - tampon « dès que possible » : il frissonne 2 fois et son point clignote quelques secondes, au lieu de bouger sans fin (le tampon lui-même, demandé le 21/10, est gardé) ;
+  - « 3 signalements » en chiffres.
+- Reste à décider avec le propriétaire : 🧺 et 🛒 (offre, demande) sont encore des emojis, utilisés partout (environ 60 fois) ; 69 tirets cadratins dans les textes.
+- Cache `mgci-v218`.

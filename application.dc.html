@@ -454,7 +454,6 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   <div class="ct">
     <!-- en-tête : le catalogue, ses chiffres vivants -->
     <header class="ct-tete">
-      <p class="ct-k">Le catalogue du Marché de Gros</p>
       <h1 class="ct-h">{{ catTitle }}<br><em>tout le vivrier.</em></h1>
       <div class="ct-chiffres">
         <div><b>{{ ctNb.prod }}</b><small>produits</small></div>
@@ -512,11 +511,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
     <header class="px-hero">
       <h1>Le juste prix, <em>en direct.</em></h1>
       <p>Ce que demandent les vendeurs, ce que proposent les acheteurs. Rien d’inventé : chaque prix vient d’une annonce publiée.</p>
-      <div class="px-chiffres">
-        <div><b>{{ px.nP }}</b><small>produits avec un prix</small></div>
-        <div class="o"><b>{{ px.nO }}</b><small>prix vendeurs</small></div>
-        <div class="d"><b>{{ px.nD }}</b><small>budgets acheteurs</small></div>
-      </div>
+      <!-- (23/10/2026) la rangée de chiffres répétait les nombres des filtres juste dessous : retirée -->
     </header>
     <div class="px-filtres" role="group" aria-label="Filtrer les prix">
       <sc-for list="{{ px.filtres }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.go }}" aria-pressed="{{ f.on }}">{{ f.t }}<span>{{ f.n }}</span></button></sc-for>
@@ -565,7 +560,6 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
   <div style="flex:none;padding-top:{{ topPad }}"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" class="an2-ib"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span style="flex:1;text-align:center;font-size:var(--t-lead);font-weight:600">L'année du marché</span><span style="width:44px"></span></div></div>
   <div class="an2-scroll">
     <div class="an2-hero">
-      <p class="an2-k">Calendrier des récoltes</p>
       <h1 class="an2-h">Ce qui se récolte, <em>mois après mois.</em></h1>
       {{ yearEl }}
       <div class="an2-leg" aria-hidden="true"><span><i style="background:#6CC58C"></i>Pleine récolte</span><span><i style="background:#B5DEC1"></i>Ça commence</span><span><i style="background:#F2C230"></i>Ça se termine</span></div>
@@ -813,7 +807,7 @@ const PAGES = ['fiche','acheter','vendre','demande','carte','categories','prix',
 const INFO = {
   'comment-ca-marche': ['Comment ça marche', 'Du producteur à l’acheteur, en direct. Le Marché de Gros est le seul intermédiaire.', [['chercher:vous', 'Vous cherchez', 'Avec les mots du marché : les noms locaux et les fautes légères sont compris. Ou faites tourner la roue.'], ['tableau:marche', 'Vous comparez les prix', 'Onglet « Prix » : pour acheter, le moins cher en haut ; pour vendre, le meilleur budget en haut. Baissez votre prix : vous montez.'], ['negoce:lien', 'Vous négociez ici', 'Proposez un prix dans l’application, votre numéro reste caché. Les échanges ne sont pas secrets : l’équipe peut les relire en cas de litige.'], ['camion:marche', 'La commande et la livraison', 'Qui transporte, où livrer. Le vendeur glisse son mot secret dans le colis. Une fois confirmée, l’acheteur ne peut plus annuler.'], ['cadenas:lien', 'Paiement à la livraison, bientôt sécurisé', 'Aujourd’hui : à la livraison. Bientôt, le séquestre : l’argent bloqué dès la confirmation, libéré quand l’acheteur valide, ou 24 h après la réception sans réclamation.'], ['signaler:aide', 'Un problème ?', 'Refusez avec le mot secret du vendeur et des photos. Sinon, on en parle à trois et l’équipe juge.']], 'Chercher un produit', 'acheter'],
   'aide-producteur': ['Aide producteur', 'Votre récolte, visible des acheteurs.', [['vendre:offre', 'Publiez en 2 minutes', 'Produit, photo, quantité, prix, lieu.'], ['agent:aide', 'Un agent peut vous aider', 'Un agent terrain peut publier l’offre pour vous, sous le nom de son compte.'], ['echanger:lien', 'Les acheteurs vous proposent un prix', 'Dans l’application. Votre numéro n’est pas affiché. Un bon prix vous fait monter dans l’onglet « Prix ».'], ['cle:aide', 'Votre mot secret dans le colis', 'Écrivez-le sur un papier et glissez-le dans la marchandise : l’acheteur ne peut pas refuser sans lui.'], ['cadenas:lien', 'Vous êtes payé', 'Aujourd’hui à la livraison. Bientôt par le séquestre : votre part, moins 3,5 %, dès que l’acheteur valide ou 24 h après la réception.']], 'Publier une offre', 'vendre'],
-  confiance: ['Confiance', 'Ce que nous affichons, et ce que nous n’affichons pas.', [['confiance', 'Aucune donnée inventée', 'Seules les publications réelles apparaissent : aucune offre, aucun producteur, aucun prix fictif.'], ['signaler:aide', 'Comptes et signalements', 'Publier demande un compte (numéro + code secret). Trois signalements de comptes différents masquent une annonce en attendant une vérification.'], ['avis:aide', 'Pas de faux avis', 'Aucune étoile, aucun avis, aucun chiffre de ventes n’est inventé.'], ['verifie:aide', 'Identité vérifiée', 'Le sceau « vérifié » n’apparaît qu’après un vrai contrôle de la pièce d’identité par l’équipe.'], ['oeil:aide', 'Rien n’est secret', 'Le Marché de Gros met en relation : l’équipe peut lire les négociations et les messages pour juger un litige. Votre numéro reste caché aux autres membres.']], 'Voir le prix du marché', 'prix']
+  confiance: ['Confiance', 'Ce que nous affichons, et ce que nous n’affichons pas.', [['confiance', 'Aucune donnée inventée', 'Seules les publications réelles apparaissent : aucune offre, aucun producteur, aucun prix fictif.'], ['signaler:aide', 'Comptes et signalements', 'Publier demande un compte (numéro + code secret). 3 signalements de comptes différents masquent une annonce en attendant une vérification.'], ['avis:aide', 'Pas de faux avis', 'Aucune étoile, aucun avis, aucun chiffre de ventes n’est inventé.'], ['verifie:aide', 'Identité vérifiée', 'Le sceau « vérifié » n’apparaît qu’après un vrai contrôle de la pièce d’identité par l’équipe.'], ['oeil:aide', 'Rien n’est secret', 'Le Marché de Gros met en relation : l’équipe peut lire les négociations et les messages pour juger un litige. Votre numéro reste caché aux autres membres.']], 'Voir le prix du marché', 'prix']
 };
 const HASH = { home: '#/', acheter: '#/catalogue', vendre: '#/vendre', demande: '#/demande', carte: '#/carte', categories: '#/categories', prix: '#/prix', annee: '#/annee', pubs: '#/mes-publications' };
 const T_OFF = 'translate3d(calc(100% + 60px),0,0)', T_IN = 'translate3d(0,0,0)', T_UNDER = 'translate3d(-26%,0,0)';
@@ -1251,8 +1245,8 @@ class Component extends DCLogic {
     const ecT = (moiS && AV ? AV.tout() : []).filter(x => !cacheE(x)), ecD0 = moiS && AV ? AV.dernier() : null, ecD = ecD0 && !cacheE(ecD0) ? ecD0 : null;
     const nAf = ecT.filter(x => x.etat === 'moi' || x.etat === 'litige').length;
     const cleE = x => ['e:' + x.k + ':' + x.id, Math.max(x.ts || 0, Date.now())];
-    const EMO = { nego: '🤝', cmd: '🚚', dm: '💬' };
-    const ecEl = x => { const roule = x.k === 'cmd' && !!x.route, emo = x.k === 'cmd' && !roule ? '📦' : x.k === 'nego' && x.etat === 'ok' ? '✅' : EMO[x.k] || '•';
+    const EMO = { nego: 'negoce', cmd: 'camion', dm: 'messages' };   // icônes dessinées (app/icones.js), pas d'emoji
+    const ecEl = x => { const roule = x.k === 'cmd' && !!x.route, emo = ico(x.k === 'cmd' && !roule ? 'boite' : x.k === 'nego' && x.etat === 'ok' ? 'verifie' : EMO[x.k] || 'activite', 22);
       const avec = x.avec ? (x.k === 'cmd' ? (x.role === 'vendeur' ? ' · pour ' : ' · de ') : x.k === 'nego' ? ' · avec ' : '') + x.avec : '';
       const sous = x.k === 'dm' ? (x.apercu ? ' · « ' + x.apercu + ' »' : '') : (x.prix ? ' · ' + x.prix : '') + (x.k === 'dm' ? '' : avec);
       return { k: x.k, etat: x.etat, emo, titre: x.titre, tag: x.tag, sous, route: roule, vague: x.etat === 'attente' && x.k !== 'dm',
@@ -1695,7 +1689,7 @@ class Component extends DCLogic {
 
     /* info */
     const IN = INFO[S.infoK] || INFO['comment-ca-marche'];
-    const info = { title: IN[0], lead: IN[1], steps: IN[2].map((s, i) => ({ ico: ico(s[0].split(':')[0], 26), n: 'ÉTAPE ' + (i + 1), t: s[1], x: s[2] })), cta: IN[3], go: () => this.push(IN[4]) };
+    const info = { title: IN[0], lead: IN[1], steps: IN[2].map((s, i) => ({ ico: ico(s[0].split(':')[0], 26), n: S.infoK === 'confiance' ? '' : 'Étape ' + (i + 1), t: s[1], x: s[2] })), cta: IN[3], go: () => this.push(IN[4]) };
 
     /* prix du marché : prix vendeurs (offres) et budgets acheteurs (demandes), dans l'unité la plus courante du produit, sur 90 jours */
     const px = (() => {

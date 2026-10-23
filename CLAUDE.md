@@ -2,6 +2,8 @@
 
 Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a été fait est dans `docs/PASSATION.md` : le lire avant de toucher au code.
 
+**Reprise après une discussion vidée : lire d'abord `docs/REPRISE.md`** (état exact, ce qui est fait, ce qui reste, pièges connus).
+
 ## Règle n° 1 : tenir ce fichier à jour
 
 - **Dès que le propriétaire donne une nouvelle règle, une préférence ou une décision durable, l'ajouter ici tout de suite**, dans la même PR que le travail en cours, ou dans une petite PR à part. Ne pas attendre qu'il le demande.

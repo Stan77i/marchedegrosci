@@ -1220,3 +1220,6 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - `site/a-propos/` : ce que fait le Marché de Gros CI, **ce qu'il n'est pas** (ni le marché de gros de Bouaké, ni l'OCPV, ni l'État), ses règles (rien d'inventé, numéro caché, peu de données), ce que ça coûte (commissions prévues, rien n'est prélevé), comment écrire à l'équipe. JSON-LD `AboutPage`.
 - Guides : « Acheter en gros à plusieurs : comment marche un achat groupé » (paliers, quantité de chacun, prix figé au seuil, confirmation par chacun, une commande par participant — d'après `v3/groupes.js`) et « Trouver un fournisseur ou un grossiste de vivrier fiable ». Bouton « Voir les achats groupés » (`#/groupes`).
 - Pied de page : Qui sommes-nous, Guides, La carte, Les prix. Espace insécable avant « : ; ! ? » sur tout le texte visible de toutes les pages (hors scripts).
+
+## Rapport de reprise (23/10/2026) — `docs/REPRISE.md`
+- Le propriétaire vide la discussion : `docs/REPRISE.md` résume l'état (tout fusionné jusqu'à #230, schémas 80-81, cache `mgci-v227`), ce qui a été fait, ce qui reste (retours sur le site caché, contenu, ouverture au public et Search Console, liste de retrait de l'ancien site) et les pièges. `CLAUDE.md` y renvoie.

@@ -449,6 +449,12 @@
 2. **« Je cherche » coupé sur les très petits écrans (280 px)** : raccourcir en « Cherche » sur ces écrans seulement ?
 3. **Photo de kplala** (feuilles de corète) : le fichier reçu était celui du corossol, il a été retiré. Attendre une vraie photo.
 4. **Cibles de 36 à 43 px** (filtres, unités) : les passer à 44 px, quitte à rendre les écrans moins denses ?
+5. **Vérification anti-robot (Cloudflare Turnstile), décision du 23/10/2026 : le propriétaire la veut sur le site web seulement, pas dans l'application web.** Rien n'est fait pour l'instant.
+   - Attention : la protection CAPTCHA de Supabase Auth est **globale au projet**. Si on l'active dans Supabase, l'application devra aussi envoyer un jeton à chaque connexion et inscription, sinon plus personne ne pourra s'y connecter.
+   - La mettre seulement sur les formulaires du site, sans l'activer dans Supabase, ne protège presque rien : un robot s'adresse directement au serveur.
+   - Conseil donné : l'activer partout en mode invisible. Le propriétaire reste libre de choisir ; lui reposer la question au moment de le faire.
+   - Il faudra un compte Cloudflare gratuit. La clé secrète se saisit dans Supabase par le propriétaire, **jamais dans le front** ; seule la clé du site va dans les pages.
+6. **Photos de produits manquantes** : 43 produits sur 170 n'ont pas d'image. Liste dans `docs/IMAGES.md`, section « Produits sans photo ».
 
 ## 6. À vérifier par lui sur un vrai téléphone
 

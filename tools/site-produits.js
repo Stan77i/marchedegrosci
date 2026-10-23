@@ -55,8 +55,8 @@ function fabriquer({ produits, CAT, NOM, esc, lire, vm, photo }) {
     // ——— les voisins (même famille) ———
     const vois = produits.filter(x => x.c === p.c && x.s !== sl && x.f).slice(0, 8);
     const voisins = vois.map(x => `<li><a ${LISTE.includes(x.s) ? `href="../${x.s}/"` : `href="../../../application.dc.html#/produits/${x.s}" data-app="#/produits/${x.s}" data-intention="produit"`}><img src="../../img/${x.s}-160.webp" alt="" width="160" height="160" loading="lazy"><span>${esc(x.n)}</span></a></li>`).join('');
-    const titre = `${nom} en gros en Côte d’Ivoire : vendre, acheter, prix du moment · Marché de Gros CI`;
-    const desc = `Vendez ou achetez ${min} en gros partout en Côte d’Ivoire : annonces et meilleurs prix publiés en direct${E.length ? ', période de récolte (sources citées)' : ''}, négociation sans numéro affiché. Gratuit.`;
+    const titre = `${nom} en gros en Côte d’Ivoire : prix et annonces`;
+    const desc = `${nom} en gros en Côte d’Ivoire : annonces et meilleurs prix en direct${E.length ? ', calendrier des récoltes sourcé' : ''}. Négociation sans numéro affiché, gratuite.`;
     const canon = BASE + 'produits/' + sl + '/';
     const fil = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Marché de Gros CI', item: BASE },

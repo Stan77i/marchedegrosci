@@ -29,8 +29,8 @@ function fabriquer({ NOM, esc, lire, vm, photo }) {
       return `<section class="cal-p" aria-labelledby="cal-${sl}" data-mois='${JSON.stringify(mo)}' data-nom="${esc(n)}"${lien ? ` data-lien="${lien}"` : ''}><h3 id="cal-${sl}">${im}<span>${lien ? `<a href="${lien}">${esc(n)}</a>` : esc(n)}</span></h3>
       ${ici.filter(e => e.product === sl).map(e => ligneMois(e, n, L, esc, '../')).join('')}</section>`;
     }).join('');
-    const titre = `Vivrier en gros ${dans} (${CHEF[r]}) : annonces, prix, récoltes · Marché de Gros CI`;
-    const desc = `Acheter ou vendre du vivrier en gros ${dans}, autour de ${CHEF[r]} : annonces et meilleurs prix publiés en direct, et ce qui s’y récolte selon des sources publiques.`;
+    const titre = CHEF[r] === nom ? `Vivrier en gros à ${CHEF[r]} : prix, annonces, récoltes` : `Vivrier en gros à ${CHEF[r]} (${nom}) : prix et annonces`;
+    const desc = `Vivrier en gros autour de ${CHEF[r]} : annonces et meilleurs prix du district en direct, et ce qui s’y récolte (sources citées).`;
     const canon = BASE + 'regions/' + r + '/';
     const fil = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Marché de Gros CI', item: BASE }, { '@type': 'ListItem', position: 2, name: 'Les districts', item: BASE + 'regions/' }, { '@type': 'ListItem', position: 3, name: nom, item: canon }] };

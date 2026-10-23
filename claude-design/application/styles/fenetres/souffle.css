@@ -1,0 +1,22 @@
+/* Copie de la constante CSS de v3/souffle.js (ligne 23). */
+mdg-souffle{position:relative;display:block;flex:1;min-width:0;height:100%;overflow:hidden;pointer-events:none}
+.sf-l{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.sf-nom{font:600 20px/1 Jost,system-ui,sans-serif;color:#10392B;justify-content:flex-start}
+.sf-nom>span{display:block;max-width:100%;padding:0 4px;box-sizing:border-box}
+.sf-nom svg{display:block;height:36px;width:auto;max-width:100%;margin:0}
+.sf-mq.sf-in span{animation:none;opacity:1;filter:none}
+.sf-mq.sf-in .mq-m{animation:sfIn .62s cubic-bezier(.22,1,.36,1) both}
+.sf-mq.sf-in .mq-g{animation:sfEcrit .7s .25s cubic-bezier(.65,0,.35,1) both}
+@keyframes sfEcrit{from{clip-path:inset(-20% 100% -20% 0)}to{clip-path:inset(-20% -5% -20% 0)}}
+.sf-ph{font:500 15px/1 Jost,system-ui,sans-serif;color:#3E382C;justify-content:flex-start;padding-left:2px}
+.sf-ph.sf-2{flex-wrap:wrap;align-content:center;white-space:normal;font-size:13.5px;line-height:1.22}
+.sf-ph.sf-3{font-size:12.5px}
+.sf-l span{display:inline-block;white-space:pre;opacity:0;will-change:transform,opacity,filter}
+.sf-in span{animation:sfIn .62s cubic-bezier(.22,1,.36,1) forwards;animation-delay:calc(var(--i) * 55ms)}
+.sf-out span{opacity:1;animation:sfOut .42s cubic-bezier(.4,0,1,1) forwards;animation-delay:calc(var(--i) * 30ms)}
+@keyframes sfIn{0%{opacity:0;transform:translateY(.55em);filter:blur(6px)}100%{opacity:1;transform:none;filter:blur(0)}}
+@keyframes sfOut{0%{opacity:1;transform:none;filter:blur(0)}100%{opacity:0;transform:translateY(-.45em);filter:blur(5px)}}
+@media (prefers-reduced-motion:reduce){.sf-mq.sf-in .mq-m,.sf-mq.sf-in .mq-g{animation:none}.sf-in span{animation:sfFade .4s ease forwards;animation-delay:0s}.sf-out span{animation:sfFadeOut .3s ease forwards;animation-delay:0s}}
+.sf-fin{animation:sfFin .6s cubic-bezier(.4,0,1,1) forwards}@keyframes sfFin{to{opacity:0;transform:translateY(-6px);filter:blur(4px)}}
+@media (prefers-reduced-motion:reduce){.sf-fin{animation:sfFadeOut .4s ease forwards}}
+@keyframes sfFade{to{opacity:1}}@keyframes sfFadeOut{from{opacity:1}to{opacity:0}}

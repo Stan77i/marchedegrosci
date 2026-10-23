@@ -1,0 +1,34 @@
+/* Copie de la constante CSS de v3/porte.js (ligne 72). */
+.ps{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ps *{transform-box:fill-box}
+.ps-halo{opacity:.55;transform-origin:50% 80%;transition:opacity .8s,transform .8s cubic-bezier(.22,1,.36,1)}
+.ps-battant{transform-origin:0 50%;transform:scaleX(1);transition:transform .9s cubic-bezier(.22,1,.36,1)}
+.ps-jour{opacity:.75;transition:opacity .6s}.ps-faisceau{opacity:.4;transition:opacity .6s}
+.ps-lien path{stroke-dasharray:1;stroke-dashoffset:.72;transition:stroke-dashoffset 1s cubic-bezier(.22,1,.36,1)}.ps-lien{opacity:.7;transition:opacity .6s}
+.ps-v,.ps-a{transition:transform 1.1s cubic-bezier(.22,1,.36,1)}
+.ps-r{opacity:0;transform-origin:50% 50%;transition:opacity .4s,transform .6s cubic-bezier(.22,1,.36,1)}
+.ps-v{animation:psPas 3.2s ease-in-out infinite}.ps-a{animation:psPas 3.2s ease-in-out -1.6s infinite}
+@keyframes psPas{50%{translate:0 -2px}}
+.ps-halo{animation:psSouffle 5s ease-in-out infinite}@keyframes psSouffle{50%{opacity:.7}}
+.ps-pousse{transform-origin:50% 100%;animation:psVent 4.2s ease-in-out infinite}@keyframes psVent{0%,100%{rotate:-4deg}50%{rotate:5deg}}
+.ps-jour{animation:psJour 6s ease-in-out infinite}@keyframes psJour{50%{filter:brightness(1.08)}}
+.ps-poussiere circle{animation:psMonte 4.6s linear infinite;opacity:0}@keyframes psMonte{0%{opacity:0;translate:0 0}20%{opacity:.8}100%{opacity:0;translate:3px -58px}}
+.ps-flux{opacity:.55;transition:opacity .6s}.pt[data-etat=saisie] .ps-flux{opacity:.85}.pt[data-etat=envoi] .ps-flux,.pt[data-etat=ok] .ps-flux{opacity:1}.pt[data-etat=erreur] .ps-flux{opacity:.15}
+.pt[data-mode=in] .ps-battant{transform:scaleX(.55)}
+.pt[data-mode=up] .ps-battant{transform:scaleX(.7)}
+.pt[data-mode=up] .ps-v{transform:translate(18px,-5.4px)}.pt[data-mode=up] .ps-a{transform:translate(-18px,-5.4px)}
+.pt[data-etat=saisie] .ps-battant{transform:scaleX(.22)}
+.pt[data-etat=saisie] .ps-lien path{stroke-dashoffset:.45}.pt[data-etat=saisie] .ps-lien{opacity:.85}
+.pt[data-etat=saisie] .ps-v{transform:translate(34px,-9.6px)}.pt[data-etat=saisie] .ps-a{transform:translate(-34px,-9.6px)}
+.pt[data-etat=envoi] .ps-battant{transform:scaleX(.08)}.pt[data-etat=envoi] .ps-jour{opacity:1}.pt[data-etat=envoi] .ps-faisceau{opacity:.9}
+.pt[data-etat=envoi] .ps-halo{transform:scale(1.12)}
+.pt[data-etat=envoi] .ps-lien path{stroke-dashoffset:.15}.pt[data-etat=envoi] .ps-lien{opacity:1}
+.pt[data-etat=envoi] .ps-v{transform:translate(70px,-16.5px)}.pt[data-etat=envoi] .ps-a{transform:translate(-70px,-16.5px)}
+.pt[data-etat=ok] .ps-battant{transform:scaleX(0)}.pt[data-etat=ok] .ps-jour,.pt[data-etat=ok] .ps-faisceau{opacity:1}
+.pt[data-etat=ok] .ps-halo{transform:scale(1.25);opacity:.9}
+.pt[data-etat=ok] .ps-lien path{stroke-dashoffset:0}.pt[data-etat=ok] .ps-lien{opacity:1}
+.pt[data-etat=ok] .ps-v{transform:translate(112px,-20.6px)}.pt[data-etat=ok] .ps-a{transform:translate(-112px,-20.6px)}
+.pt[data-etat=ok] .ps-r{opacity:1;transform:scale(1.5)}
+.pt[data-etat=ferme] .ps-jour{opacity:.28}.pt[data-etat=ferme] .ps-faisceau{opacity:.08}.pt[data-etat=ferme] .ps-halo{opacity:.18;animation:none}.pt[data-etat=ferme] .ps-lien{opacity:.3}
+.pt[data-etat=erreur] .ps-battant{transform:scaleX(.6)}.pt[data-etat=erreur] .ps-lien path{stroke-dashoffset:.85}.pt[data-etat=erreur] .ps-lien{opacity:.4}
+@media (prefers-reduced-motion:reduce){.ps *{animation:none!important;transition:none!important}}

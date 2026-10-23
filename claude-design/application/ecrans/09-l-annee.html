@@ -1,0 +1,51 @@
+<!-- ═══ L'ANNÉE ═══ -->
+<div data-pg="annee" data-screen-label="L'année du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" class="an2" style="position:absolute;inset:0;display:flex;flex-direction:column;transform:{{ tf.annee }};visibility:{{ vis.annee }};z-index:{{ zi.annee }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
+<sc-if value="{{ on.annee }}" hint-placeholder-val="{{ false }}">
+  <div style="flex:none;padding-top:{{ topPad }}"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" class="an2-ib"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span style="flex:1;text-align:center;font-size:var(--t-lead);font-weight:600">L'année du marché</span><span style="width:44px"></span></div></div>
+  <div class="an2-scroll">
+    <div class="an2-hero">
+      <h1 class="an2-h">Ce qui se récolte, <em>mois après mois.</em></h1>
+      {{ yearEl }}
+      <div class="an2-leg" aria-hidden="true"><span><i style="background:#6CC58C"></i>Pleine récolte</span><span><i style="background:#B5DEC1"></i>Ça commence</span><span><i style="background:#F2C230"></i>Ça se termine</span></div>
+    </div>
+    <div class="an2-nav">
+      <button onClick="{{ mPrev }}" aria-label="Mois précédent" class="an2-rd"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+      <div class="an2-mo" aria-live="polite"><span class="an2-mn">{{ mName }}</span><span class="an2-mk">{{ mKicker }}</span></div>
+      <button onClick="{{ mNext }}" aria-label="Mois suivant" class="an2-rd"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+    </div>
+    <div class="an2-strip" role="group" aria-label="Choisir un mois">
+      <sc-for list="{{ anStrip }}" as="b" hint-placeholder-count="12"><button onClick="{{ b.go }}" class="{{ b.cls }}" aria-label="{{ b.aria }}" aria-pressed="{{ b.cur }}"><span class="an2-bar" style="height:{{ b.h }}"><i style="height:{{ b.h2 }}"></i></span><small>{{ b.l }}</small></button></sc-for>
+    </div>
+    <p class="an2-res">{{ anResume }}</p>
+    <sc-for list="{{ mGroups }}" as="g" hint-placeholder-count="2">
+      <section class="an2-g">
+        <div class="an2-gh"><i style="background:{{ g.c }}"></i><div><h2>{{ g.label }}</h2><p>{{ g.sub }}</p></div></div>
+        <div class="an2-list">
+          <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
+            <div class="an2-it">
+              <button onClick="{{ it.toggle }}" class="an2-row" aria-expanded="{{ it.exp }}">
+                <img sc-camel-src="{{ it.thumb }}" alt="" style="object-fit:{{ it.fit }};border-radius:{{ it.rad }}">
+                <span class="an2-tx"><b>{{ it.name }}</b><small>{{ it.note }}</small>
+                  <sc-if value="{{ it.hasOD }}" hint-placeholder-val="{{ false }}"><span class="an2-od"><sc-if value="{{ it.hasO }}" hint-placeholder-val="{{ false }}"><em class="o">{{ it.oTxt }}</em></sc-if><sc-if value="{{ it.hasD }}" hint-placeholder-val="{{ false }}"><em class="d">{{ it.dTxt }}</em></sc-if></span></sc-if>
+                </span>
+                <span class="{{ it.tCls }}">{{ it.tTxt }}</span>
+                <svg class="an2-chev" style="transform:{{ it.chev }}" width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
+              </button>
+              <sc-if value="{{ it.open }}" hint-placeholder-val="{{ false }}">
+                <div class="an2-det">
+                  <span class="an2-dk">Ce produit dans l’année</span>
+                  <div class="an2-frise" role="img" aria-label="{{ it.fLeg }}"><sc-for list="{{ it.frise }}" as="f" hint-placeholder-count="12"><span class="{{ f.sel }}" title="{{ f.t }}"><span class="an2-fc"><i style="height:{{ f.h }};background:{{ f.c }}"></i></span><small>{{ f.l }}</small></span></sc-for></div>
+                  <p class="an2-fl">{{ it.fLeg }} Source : {{ it.src }}.</p>
+                  <button onClick="{{ it.fiche }}" class="an2-go">Voir la fiche, les prix et les annonces<svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-for>
+    <p class="an2-src">Calendrier indicatif : il varie selon les pluies et les régions. Chaque culture renvoie à une source publique (FAO GIEWS, FEWS NET, IDESSA, AIP, Conseil café-cacao, Conseil coton-anacarde). Les tendances de prix sont générales, jamais une promesse.</p>
+  </div>
+</sc-if>
+</div>
+

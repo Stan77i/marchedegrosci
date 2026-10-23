@@ -1,0 +1,77 @@
+<!--@tete-->
+<title>{{TITRE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<link rel="canonical" href="{{CANON}}">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_CI">
+<meta property="og:site_name" content="Marché de Gros CI">
+<meta property="og:title" content="Vivrier en gros : {{NOM}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:url" content="{{CANON}}">
+<meta property="og:image" content="https://stan77i.github.io/marchedegrosci/logo/partage-reseaux-1200.png">
+<script type="application/ld+json">{{JSONLD_FIL}}</script>
+<!--@corps-->
+<main id="contenu" class="pg-region" data-region="{{REGION}}">
+<nav class="ariane" aria-label="Fil d’Ariane"><a href="../../">Marché de Gros CI</a><span aria-hidden="true">›</span><a href="../">Les districts</a><span aria-hidden="true">›</span><span aria-current="page">{{NOM}}</span></nav>
+
+<section class="pr-tete rg-tete" aria-labelledby="t-rg">
+  <div class="pr-l">
+    <h1 id="t-rg">Vivrier en gros : <em>{{NOM}}</em></h1>
+    <p class="pr-sous">Vendeurs et acheteurs {{DANS}}, autour de {{CHEF}}, publient leurs offres et leurs demandes dans l’application. Tout se négocie par écrit, sans numéro affiché.</p>
+    {{MARCHE}}
+    <div class="portes">
+      <a class="porte porte-o" href="../../../application.dc.html#/publier?sens=offre" data-app="#/publier?sens=offre" data-intention="vendre-region">
+        <i class="sym sym-o" aria-hidden="true"></i>
+        <span><b>Je vends</b><small>Publiez votre offre : les acheteurs vous écrivent.</small></span>
+        <svg class="fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="porte porte-d" href="../../../application.dc.html#/publier?sens=demande" data-app="#/publier?sens=demande" data-intention="acheter-region">
+        <i class="sym sym-d" aria-hidden="true"></i>
+        <span><b>Je cherche</b><small>Votre demande : les vendeurs vous font leur prix.</small></span>
+        <svg class="fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="rg-etal-b"><p>Ce qui s’y récolte</p><ul class="rg-etal">{{ETAL}}</ul></div>
+</section>
+
+<section class="bloc tableau" id="prix" aria-labelledby="t-prix">
+  <div class="bloc-tete">
+    <h2 id="t-prix">Les prix publiés : {{NOM}}</h2>
+    <p>Les meilleurs prix des annonces actives du district, mis à jour en direct. Ce sont des prix demandés et proposés, pas des prix conclus.</p>
+  </div>
+  <div class="tb" role="table" aria-label="Meilleurs prix du district">
+    <div class="tb-ligne tb-entete" role="row"><span role="columnheader">Produit</span><span role="columnheader">Vendeur le moins cher</span><span role="columnheader">Meilleur budget</span><span role="columnheader">Annonces</span><span role="columnheader"><span class="vh">Action</span></span></div>
+    <div id="tbCorps" role="rowgroup"><p class="tb-attente">Le tableau se charge…</p></div>
+  </div>
+</section>
+
+<section class="bloc pr-direct" aria-labelledby="t-direct">
+  <div class="bloc-tete"><h2 id="t-direct">Les annonces du moment : {{NOM}}</h2></div>
+  <ul class="fil-l pr-fil" id="filProduit"><li class="fil-vide">Les annonces arrivent…</li></ul>
+</section>
+
+<section class="bloc saison" aria-labelledby="t-saison">
+  <div class="bloc-tete">
+    <h2 id="t-saison">Ce qui se récolte : {{NOM}}</h2>
+    <p>Les périodes publiées par des sources publiques, citées sous chaque ligne. Calendrier indicatif : il varie selon les pluies.</p>
+  </div>
+  {{RECOLTES}}
+  <p><a class="lien" href="../../saisons/">Le calendrier de tout le pays</a></p>
+</section>
+
+<section class="bloc rg-autres" aria-labelledby="t-autres">
+  <div class="bloc-tete"><h2 id="t-autres">Les autres districts</h2></div>
+  <nav class="rg-liens" aria-labelledby="t-autres">{{AUTRES}}</nav>
+</section>
+
+<section class="appli" id="appli" aria-labelledby="t-appli">
+  <div class="appli-texte">
+    <h2 id="t-appli">Prenez l’application sur votre <em>téléphone</em></h2>
+    <p>Scannez ce code avec l’appareil photo de votre téléphone. L’application s’ouvre dans le navigateur ; pour la garder, choisissez « Ajouter à l’écran d’accueil ».</p>
+    <p class="appli-lien">Ou tapez : <b id="lienCourt">stan77i.github.io/marchedegrosci</b></p>
+    <p class="appli-store">Pas encore sur le Play Store ni l’App Store.</p>
+  </div>
+  <div class="appli-qr" id="qr" role="img" aria-label="Code QR vers l’application"></div>
+</section>
+</main>

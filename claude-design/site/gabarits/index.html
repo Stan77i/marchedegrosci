@@ -1,0 +1,147 @@
+<!--@tete-->
+<title>Vivrier en gros en Côte d’Ivoire · Marché de Gros CI</title>
+<meta name="description" content="Publiez votre récolte ou votre besoin, comparez les prix du moment, négociez sans montrer votre numéro et suivez la livraison. Gratuit, partout en Côte d’Ivoire.">
+<link rel="canonical" href="https://stan77i.github.io/marchedegrosci/site/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_CI">
+<meta property="og:site_name" content="Marché de Gros CI">
+<meta property="og:title" content="Le vivrier ivoirien en gros, dans votre téléphone">
+<meta property="og:description" content="Vendeurs et acheteurs de toute la Côte d’Ivoire se trouvent, comparent les prix, négocient et suivent la livraison au même endroit.">
+<meta property="og:url" content="https://stan77i.github.io/marchedegrosci/site/">
+<meta property="og:image" content="https://stan77i.github.io/marchedegrosci/logo/partage-reseaux-1200.png">
+<meta name="twitter:card" content="summary_large_image">
+<!--@corps-->
+<main id="contenu">
+
+<!-- 1. L'étal : la promesse et les deux portes à gauche ; à droite, un vrai étal de sacs, cartons et cagettes (photos des produits) -->
+<section class="etal" aria-labelledby="t-etal">
+  <div class="etal-l">
+    <h1 id="t-etal">Le vivrier ivoirien en gros, dans votre <em>téléphone</em>.</h1>
+    <p class="etal-sous">Vendeurs et acheteurs de toute la Côte d’Ivoire se trouvent, comparent les prix, négocient et suivent la livraison au même endroit. Gratuit, et votre numéro reste caché.</p>
+    <div class="portes">
+      <a class="porte porte-o" href="{{R}}application.dc.html#/publier?sens=offre" data-app="#/publier?sens=offre" data-intention="vendre">
+        <i class="sym sym-o" aria-hidden="true"></i>
+        <span><b>J’ai à vendre</b><small>Récolte, stock, arrivage : les acheteurs vous écrivent.</small></span>
+        <svg class="fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="porte porte-d" href="{{R}}application.dc.html#/publier?sens=demande" data-app="#/publier?sens=demande" data-intention="acheter">
+        <i class="sym sym-d" aria-hidden="true"></i>
+        <span><b>Je cherche</b><small>Produit, quantité, ville : les vendeurs vous répondent.</small></span>
+        <svg class="fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+  <div class="etal-d" aria-hidden="true">{{ETAL}}</div>
+  <div class="fil" aria-live="polite">
+    <h2 class="fil-t">En ce moment sur le marché</h2>
+    <ul class="fil-l" id="filCourt"><li class="fil-vide">Les dernières annonces de l’application s’affichent ici.</li></ul>
+  </div>
+</section>
+
+<!-- 2. Le tableau du marché : les meilleurs prix publiés, en direct -->
+<section class="bloc tableau" id="prix" aria-labelledby="t-prix">
+  <div class="bloc-tete">
+    <h2 id="t-prix">Le tableau du marché</h2>
+    <p>Les meilleurs prix publiés en ce moment dans l’application. Ce sont des prix demandés par les vendeurs et des budgets proposés par les acheteurs, pas des prix conclus. Le Marché de Gros ne fixe aucun prix.</p>
+  </div>
+  <div class="tb" role="table" aria-label="Meilleurs prix du moment">
+    <div class="tb-ligne tb-entete" role="row"><span role="columnheader">Produit</span><span role="columnheader">Vendeur le moins cher</span><span role="columnheader">Meilleur budget</span><span role="columnheader">Annonces</span><span role="columnheader"><span class="vh">Action</span></span></div>
+    <div id="tbCorps" role="rowgroup"><p class="tb-attente">Le tableau se charge…</p></div>
+  </div>
+</section>
+
+<!-- 2 bis. Les rayons : chaque famille sur son étagère, avec les vraies photos -->
+<section class="bloc rayons" id="rayons" aria-labelledby="t-rayons">
+  <div class="bloc-tete">
+    <h2 id="t-rayons">Les rayons du marché</h2>
+    <p>{{NB_PRODUITS}} produits vivriers, des céréales au poisson. Touchez un produit pour voir ses vendeurs et ses acheteurs dans l’application.</p>
+  </div>
+  {{RAYONS}}
+  <p class="rayons-cta">Votre produit n’est pas affiché ? Il est sûrement dans l’application. <a class="lien" href="{{R}}application.dc.html#/publier?sens=offre" data-app="#/publier?sens=offre" data-intention="vendre-rayons">Je vends</a> · <a class="lien" href="{{R}}application.dc.html#/publier?sens=demande" data-app="#/publier?sens=demande" data-intention="acheter-rayons">Je cherche</a></p>
+</section>
+
+<!-- 3. Le réseau : la carte vivante et le fil des annonces -->
+<section class="reseau" id="reseau" aria-labelledby="t-reseau">
+  <div class="reseau-carte">
+    {{CARTE}}
+    <p class="reseau-legende"><span><i class="sym sym-o"></i>Offre</span><span><i class="sym sym-d nuit"></i>Demande</span></p>
+  </div>
+  <div class="reseau-fil">
+    <h2 id="t-reseau">Le réseau, en <em>direct</em></h2>
+    <p>Chaque annonce de l’application, à sa ville. Pour la sécurité de chacun, on montre seulement le prénom, la ville, le produit et la quantité.</p>
+    <ul class="fil-l fil-long" id="filLong"><li class="fil-vide">Les annonces arrivent…</li></ul>
+    <a class="bt bt-mais" href="carte/">Voir la carte complète</a>
+  </div>
+</section>
+
+<!-- 4. De l'annonce à la livraison : une vraie suite d'étapes -->
+<section class="bloc route" aria-labelledby="t-route">
+  <div class="bloc-tete"><h2 id="t-route">De l’annonce à la livraison</h2></div>
+  <ol class="etapes">
+    <li><b>Publier</b><span>Offre ou demande : produit, quantité, ville, prix.</span></li>
+    <li><b>Comparer</b><span>Les meilleurs prix du moment, par produit et par zone.</span></li>
+    <li><b>Négocier</b><span>Par écrit, dans l’application, sans numéro visible.</span></li>
+    <li><b>Commander</b><span>Le prix et la quantité sont figés.</span></li>
+    <li><b>Livrer</b><span>Le camion se suit par un simple lien.</span></li>
+    <li><b>Réceptionner</b><span>Un mot secret, et 24 h pour réclamer.</span></li>
+  </ol>
+</section>
+
+<!-- 5. La confiance -->
+<section class="bloc confiance" id="confiance" aria-labelledby="t-conf">
+  <div class="bloc-tete">
+    <h2 id="t-conf">Acheter et vendre sans se faire avoir</h2>
+    <p>Sur les groupes et au téléphone, on ne sait pas à qui on parle. Dans le Marché de Gros CI, chaque échange laisse une trace.</p>
+  </div>
+  <ul class="garanties">
+    <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><div><b>Votre numéro reste caché</b><span>On se parle dans l’application. Un numéro écrit dans un message est bloqué.</span></div></li>
+    <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12l9-9 9 9-9 9z"/><path d="M9 12l2 2 4-4"/></svg><div><b>Le prix est figé</b><span>Quand l’accord est trouvé, le prix et la quantité ne bougent plus.</span></div></li>
+    <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg><div><b>Le camion se suit</b><span>Le chauffeur n’installe rien : un lien suffit pour voir où en est la livraison.</span></div></li>
+    <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/></svg><div><b>Un mot secret à la réception</b><span>Le vendeur le glisse dans la marchandise : l’acheteur confirme qu’il a bien reçu.</span></div></li>
+    <li><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><div><b>24 h pour réclamer</b><span>Un souci ? On refuse avec des preuves, et l’équipe tranche.</span></div></li>
+    <li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.4"/><path d="M5.5 16.5c.8-1.6 2-2.4 3.5-2.4s2.7.8 3.5 2.4M15 10h3M15 13h3"/></svg><div><b>Identité vérifiée</b><span>Les membres vérifiés par l’équipe portent un badge.</span></div></li>
+  </ul>
+</section>
+
+<!-- 6. Pour les pros : approvisionnement et achats groupés -->
+<section class="bloc pros" id="pros" aria-labelledby="t-pros">
+  <div class="pros-g">
+  <div>
+  <div class="bloc-tete"><h2 id="t-pros">Restaurants, cantines, hôtels, commerces</h2></div>
+  <div class="pros-l">
+    <div>
+      <h3>Organiser l’approvisionnement</h3>
+      <p>Publiez vos besoins de la semaine en une fois. Plusieurs vendeurs vous répondent, et « Racheter » refait votre commande habituelle d’un geste.</p>
+      <a class="lien" href="#appli" data-app="#/appro" data-intention="pro">Organiser mon approvisionnement</a>
+    </div>
+    <div>
+      <h3>Acheter à plusieurs</h3>
+      <p>Un achat groupé réunit plusieurs acheteurs pour une grosse quantité : on partage le volume et le transport.</p>
+      <a class="lien" href="#appli" data-app="#/groupes" data-intention="groupe">Participer à un achat groupé</a>
+    </div>
+  </div>
+  </div>
+  <div class="pros-img" aria-hidden="true">{{PROS}}</div>
+  </div>
+</section>
+
+<!-- 6 bis. Les guides -->
+<section class="bloc gd-liste accueil-guides" aria-labelledby="t-guides">
+  <div class="bloc-tete"><h2 id="t-guides">Les guides du vivrier en gros</h2><p>Vendre sa récolte, approvisionner une cuisine, acheter sans se faire avoir : des réponses concrètes, avec leurs sources.</p></div>
+  <ul class="gd-cartes">{{GUIDES_ACCUEIL}}</ul>
+  <p><a class="lien" href="guides/">Tous les guides</a> · <a class="lien" href="saisons/">Le calendrier des récoltes</a> · <a class="lien" href="regions/">Les districts</a></p>
+</section>
+
+<!-- 7. Prendre l'application -->
+<section class="appli" id="appli" aria-labelledby="t-appli">
+  <div class="appli-texte">
+    <h2 id="t-appli">Prenez l’application sur votre <em>téléphone</em></h2>
+    <p>Scannez ce code avec l’appareil photo de votre téléphone. L’application s’ouvre dans le navigateur ; pour la garder, choisissez « Ajouter à l’écran d’accueil ».</p>
+    <p class="appli-lien">Ou tapez : <b id="lienCourt">stan77i.github.io/marchedegrosci</b></p>
+    <p class="appli-store">Pas encore sur le Play Store ni l’App Store.</p>
+  </div>
+  <div class="appli-qr" id="qr" role="img" aria-label="Code QR vers l’application"></div>
+</section>
+
+</main>
+

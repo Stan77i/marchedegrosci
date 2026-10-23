@@ -111,6 +111,13 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - **Avant de toucher au design, relire les 32 lois anti-« design généré par IA » et anti-amateur** (`DESIGN.md`, section 8), puis vérifier l'écran rendu contre chacune.
 - Mode « Opérer » : la précision et la retenue d'abord. Quand une règle de `DESIGN.md` change, mettre `DESIGN.md` à jour dans la même PR.
 
+## Claude Design (`claude-design/`)
+
+- Demande du propriétaire (23/10/2026) : un dossier simple pour que **Claude Design** modifie le design sans fouiller le dépôt. `claude-design/application/` (l'application) et `claude-design/site/` (le site caché), aussi en `.zip`. Mode d'emploi pour le propriétaire : `claude-design/LISEZ-MOI.md`.
+- Ce sont des **copies** : ne jamais les modifier à la main. Elles sont refaites par `python3 tools/claude-design.py` (textes des consignes dans `tools/claude-design/`) et par la tâche `.github/workflows/claude-design.yml` après chaque fusion.
+- **Après un changement visible** de l'application ou du site, refaire les captures dans la même PR : `node tools/claude-design-captures.js` (serveur local lancé), puis `python3 tools/claude-design.py`.
+- **Quand le propriétaire rapporte le travail de Claude Design** (fichiers ou .zip) : `python3 tools/claude-design-retour.py <dossier|zip>` montre ce qui change, `--appliquer` le reporte dans les vrais fichiers. Lire `CHANGEMENTS.md` et les maquettes, vérifier les règles du design, puis comme tout changement du front (`?v=`, `CACHE`, navigateur clair et sombre, captures, PR).
+
 ## Compétences business (founder-skills)
 
 - Installées le 23/10/2026 à la demande du propriétaire : 15 compétences de `ognjengt/founder-skills` (licence MIT) dans `.claude/skills/` : stratégie (`strategic-planning`, `go-to-market-plan`, `pricing-strategist`, `competitor-intel`), marketing (`marketing-ideas`, `brand-copywriter`, `viral-hook-creator`, `lead-magnet-generator`, `linkedin-writer`, `x-writer`, `outreach-specialist`, `cro-optimization`, `product-hunt-launch-plan`), organisation (`sop-creator`, `prd-generator`). Origine et mise à jour : `.claude/skills/FOUNDER-SKILLS-NOTICE.md`.

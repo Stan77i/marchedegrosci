@@ -1,0 +1,3 @@
+<!-- ═══ notification en haut : une annonce vient d'arriver ═══ -->
+<sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}"><button class="ui-toast" onClick="{{ toast.go }}" role="status" aria-live="polite" style="top:{{ toastTop }}">{{ toast.ico }}<span class="tx"><b>{{ toast.t }}</b><span>{{ toast.x }}</span></span><span style="flex:none;font-size:var(--t-sm);font-weight:600;color:var(--terre-clair)">Voir</span></button></sc-if>
+

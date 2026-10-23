@@ -1,0 +1,43 @@
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#171512">
+<script src="app/theme.js?v=20261031a"></script>
+<script src="app/nuit.js?v=20261101a" defer></script>
+<script src="app/stable.js?v=20261025f" defer></script>
+<script src="app/vibre.js?v=20261025a" defer></script>
+<script src="app/prixmoment.js?v=20261101a" defer></script>
+<script src="app/demo-orbite.js?v=20261101a" defer></script>
+<script src="app/activite.js?v=20261101a" defer></script>
+<link rel="preload" href="fonts/jost-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/fonts.css?v=20261023f">
+<link rel="stylesheet" href="css/symboles.css?v=20261102d">
+<link rel="stylesheet" href="css/mgci-tokens.css?v=20261101e">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261102l">
+<link rel="stylesheet" href="css/sombre.css?v=20261027f">
+<link rel="stylesheet" href="css/annee-app.css?v=20261027f">
+<link rel="stylesheet" href="css/categories-app.css?v=20261101e">
+<link rel="stylesheet" href="v3/ux.css?v=20261023f">
+<script src="v2/data.js?v=20261031a"></script>
+<script src="app/marche-app.js?v=20261102b"></script>
+<script src="app/villes.js"></script>
+<style>html,body{margin:0;height:100%;position:fixed;inset:0;width:100%;overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}input,select,textarea{font-size:16px!important;min-width:0;max-width:100%}label{min-width:0}[data-pg],[data-screen-label="Application"]{overflow:clip!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"]{overflow-x:hidden!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"],[style*="overflow-x:auto"]{overscroll-behavior:none;-webkit-overflow-scrolling:touch}[style*="overflow-x:auto"]{overflow-y:hidden!important;touch-action:pan-x}*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}img,svg,a{-webkit-user-drag:none}textarea{resize:none}button{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}html,body{background:#0d0c0a;font-variant-numeric:lining-nums;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box;scrollbar-width:none}a{color:var(--terre)}a:hover{color:var(--terre);opacity:.85}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}:where(a,button,input,select,textarea):focus-visible{outline:2px solid var(--terre);outline-offset:2px}button:active{transform:scale(.97);transition:transform 120ms cubic-bezier(.2,.8,.2,1)}.ux-pip::before{content:'';position:absolute;inset:-8px 0}@media (prefers-reduced-motion:reduce){button:active{transform:none}}
+@keyframes mkWave{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.3);opacity:0}}
+@keyframes mkBreath{0%,100%{transform:scale(.82)}50%{transform:scale(1.12)}}
+@keyframes mkFlow{to{stroke-dashoffset:-12}}
+@keyframes mkBlink{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes mkRise{0%{transform:scaleY(.25)}45%,70%{transform:scaleY(1)}100%{transform:scaleY(.25)}}
+@keyframes mkOrbit{to{transform:rotate(360deg)}}
+@keyframes mkDraw{0%{stroke-dashoffset:18}45%,75%{stroke-dashoffset:0}100%{stroke-dashoffset:-18}}
+@keyframes mkArc{to{stroke-dashoffset:0}}
+@keyframes mkLine{from{stroke-dashoffset:200}to{stroke-dashoffset:0}}
+@keyframes mkPop{0%{transform:scale(0);opacity:0}70%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
+@keyframes mkFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<div style="position:fixed;inset:0;display:flex;align-items:{{ shellAlign }};justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,var(--nuit-2),#0d0c0a 70%);font-family:Jost,system-ui,sans-serif">
+<div style="flex:none;padding:{{ shellPad }};border-radius:{{ shellRad }};background:#050504;transform:scale({{ scale }});transform-origin:center">
+<div data-screen-label="Application" style="position:relative;width:{{ W }};height:{{ H }};border-radius:{{ rad }};overflow:hidden;background:var(--encre);isolation:isolate">
+
+<div style="position:absolute;inset:0;isolation:isolate;z-index:0">

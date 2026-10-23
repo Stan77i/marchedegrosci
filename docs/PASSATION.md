@@ -1215,3 +1215,8 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Vérifié : les 4 envois interceptés sont exacts (maintenance par QR, page tomate depuis Facebook, clic « Je vends », ouverture de l'application) ; l'écran « Visites » s'affiche ; test SQL annulé (lecture refusée au public, évènement inconnu ignoré, texte piégé nettoyé, résumé réservé à l'admin).
 ## Décision : le nouveau site vitrine (23/10/2026)
 - Décision du propriétaire notée dans `CLAUDE.md` (section « Le site ») et `PORTAGE-SITE.md` (partie 2) : nouveau site public, vitrine vivante de l'application (carte du réseau avec annonces, demandes, commandes ; marketing et SEO) ; l'ancien site reste, visible par l'administrateur seulement. Aucun code changé.
+
+## Site public : « Qui sommes-nous », 2 guides de plus, typographie (23/10/2026)
+- `site/a-propos/` : ce que fait le Marché de Gros CI, **ce qu'il n'est pas** (ni le marché de gros de Bouaké, ni l'OCPV, ni l'État), ses règles (rien d'inventé, numéro caché, peu de données), ce que ça coûte (commissions prévues, rien n'est prélevé), comment écrire à l'équipe. JSON-LD `AboutPage`.
+- Guides : « Acheter en gros à plusieurs : comment marche un achat groupé » (paliers, quantité de chacun, prix figé au seuil, confirmation par chacun, une commande par participant — d'après `v3/groupes.js`) et « Trouver un fournisseur ou un grossiste de vivrier fiable ». Bouton « Voir les achats groupés » (`#/groupes`).
+- Pied de page : Qui sommes-nous, Guides, La carte, Les prix. Espace insécable avant « : ; ! ? » sur tout le texte visible de toutes les pages (hors scripts).

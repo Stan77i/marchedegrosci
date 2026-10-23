@@ -47,22 +47,22 @@
       ['👀', 'Rien n’est secret', 'La négociation reste dans l’application. En cas de litige, l’équipe du Marché de Gros peut la *relire*.']] },
     commande: { t: 'Créer la commande', cartes: [
       ['🚚', 'Qui transporte ?', 'Le *vendeur* livre, ou l’*acheteur* s’en charge. Le transporteur du réseau Marché de Gros arrive *bientôt*.'],
-      ['🔐', 'Avec codes : le plus sûr', 'Le chauffeur a l’application : il tape le code du *vendeur* au chargement, puis celui de l’*acheteur* à la réception. Personne ne peut valider à votre place.'],
+      ['🔐', 'Votre transporteur, sans code', 'Avec votre propre camion ou chauffeur : *rien à installer, aucun code*. Le vendeur glisse un *mot secret* dans la marchandise ; à la réception, l’acheteur le tape pour confirmer.'],
       ['👍', 'L’autre partie confirme', 'Puis chaque étape s’affiche avec son heure : préparation, chargement, transport, arrivée, réception.'],
       ['🚫', 'Confirmée = engagée', 'Une fois la commande confirmée, l’*acheteur ne peut plus l’annuler*. Seul le vendeur peut demander l’annulation, avant le chargement.']] },
-    transport: { t: 'Choisir le chauffeur', cartes: [
-      ['🪪', 'Chaque chauffeur a son code', 'Il le trouve dans son *Espace chauffeur*. Il ressemble à *T-4K7P*.'],
-      ['⌨️', 'Tapez son code ici', 'Demandez-lui son code, tapez-le, puis touchez *« Choisir »*. La mission arrive dans son application.'],
+    transport: { t: 'Le transporteur du réseau', cartes: [
+      ['🛡️', 'Un transporteur recommandé', 'Avec le *transporteur du réseau Marché de Gros*, l’équipe confie la mission à un chauffeur qu’elle a vérifié. Avec votre propre transporteur, rien de tout cela : pas de code.'],
+      ['🔐', 'Avec les codes', 'Le chauffeur du réseau tape le code du *vendeur* au chargement, puis celui de l’*acheteur* à la réception. Personne ne valide à votre place.'],
       ['💰', 'Il accepte et fixe son prix', 'Sa réponse et le prix du transport s’affichent dans la commande. Vous le payez à la livraison, avec la marchandise.'],
       ['🛡️', '« Vérifié par l’équipe »', 'Ce badge veut dire que l’équipe a contrôlé ce chauffeur. Sans lui, soyez prudent.']] },
-    codes: { t: 'Les codes', cartes: [
-      ['🔐', 'Votre code secret', 'Vendeur : le code de *prise en charge*. Acheteur : le code de *réception*. Il ne sert qu’une seule fois.'],
+    codes: { t: 'Les codes du réseau', cartes: [
+      ['🔐', 'Votre code secret', 'Seulement avec le *transporteur du réseau Marché de Gros*. Vendeur : le code de *prise en charge*. Acheteur : le code de *réception*. Il ne sert qu’une seule fois.'],
       ['🚚', 'Vérifiez d’abord le chauffeur', 'Exigez qu’il vous montre son *code transporteur* (T-4K7P) dans son application. S’il ne l’a pas, ce n’est pas le bon chauffeur.'],
       ['👀', 'Donnez-le au bon moment', 'Vendeur : quand la marchandise est *dans le camion*. Acheteur : *après avoir vérifié* la quantité et la qualité.'],
       ['🗣️', 'De vive voix seulement', 'Ne l’envoyez jamais par message ni par WhatsApp. Le chauffeur le tape dans son application : l’étape est validée. Vos codes sont aussi dans *Accueil → Alertes*.']] },
     chauffeur: { t: 'L’Espace chauffeur', cartes: [
-      ['🚛', 'Bienvenue, chauffeur', 'Inscrivez-vous, c’est *gratuit*. L’équipe du Marché de Gros vérifie votre profil.'],
-      ['🪪', 'Votre code transporteur', 'Donnez-le au vendeur ou à l’acheteur : il le tape pour vous confier la mission. Vous *acceptez* en fixant votre prix, ou vous refusez.'],
+      ['🚛', 'Bienvenue, chauffeur', 'Ici, les *transporteurs du réseau* que le Marché de Gros recommande. Inscrivez-vous, c’est *gratuit* : l’équipe vérifie votre profil et vous confie des missions.'],
+      ['🪪', 'Votre code transporteur', 'Montrez-le au vendeur et à l’acheteur : il prouve que vous êtes bien le transporteur du réseau. Vous *acceptez* la mission en fixant votre prix, ou vous refusez.'],
       ['📦', 'Au chargement', 'Montrez votre code transporteur au vendeur. Il vous dit son *code de prise en charge* : tapez-le. Besoin ? Touchez *« Demander le code »*.'],
       ['📍', 'À la livraison', 'Même chose avec l’acheteur : il vérifie la marchandise, puis vous dit le *code de réception*. Vous le tapez : la livraison est validée.'],
       ['💰', 'Votre prix, moins 6,9 %', 'C’est la commission du Marché de Gros. Si l’acheteur refuse la marchandise, dites honnêtement ce que vous avez vu : *votre transport reste dû*.']] },
@@ -70,7 +70,7 @@
     mot: { t: 'Le mot secret', insiste: 3, cartes: [
       ['📝', 'Votre mot secret', 'Il s’affiche en jaune dans votre commande, par exemple *MANGUE 47*.'],
       ['✍️', 'Sur un papier, dans le colis', 'Écrivez-le sur un papier et *glissez-le dans la marchandise* avant le chargement.'],
-      ['📸', 'C’est votre protection', 'Pour refuser la marchandise, l’acheteur *doit taper ce mot* et le photographier. Sans lui, il ne peut pas se faire rembourser.'],
+      ['📸', 'C’est votre protection', 'À la réception, l’acheteur *tape ce mot* pour confirmer qu’il a bien reçu votre marchandise. Pour la refuser, il doit aussi le taper et le photographier.'],
       ['🤐', 'Ne le donnez à personne', 'Ni par message, ni au téléphone. Il est *dans le colis*, c’est tout.']] },
     verifier: { t: 'Vérifier et libérer', insiste: 3, cartes: [
       ['🔍', 'Vérifiez la marchandise', 'Quantité, qualité, et le *papier du vendeur* glissé dans le colis.'],

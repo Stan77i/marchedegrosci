@@ -1,6 +1,6 @@
 /* ═════════ Marché de Gros CI — Espace chauffeur ═════════
    Pour les transporteurs : s'inscrire (gratuit), suivre la vérification par l'équipe, se dire disponible,
-   donner son code (T-4K7P) à l'acheteur ou au vendeur qui le choisit, accepter ou refuser une mission,
+   recevoir les missions du réseau Marché de Gros (son code T-4K7P prouve qui il est), accepter ou refuser une mission,
    puis signaler l'arrivée ou un transbordement. Serveur : supabase/schema-27-transporteurs.sql.
    Le chargement reste confirmé par le vendeur et la réception par l'acheteur (codes à venir).
    Le numéro du chauffeur n'est jamais montré aux membres ; le chauffeur ne voit pas leurs numéros.
@@ -171,7 +171,7 @@
     box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
       <h2>Espace <em>chauffeur</em></h2>
       <p class="cm-sous">${esc(moi.nom)} · ${esc(VLIB[moi.vehicule] || '')}${moi.immatriculation ? ' · ' + esc(moi.immatriculation) : ''}</p>
-      <div class="cm-st" role="status"><b>Votre code : <em style="letter-spacing:.06em">${esc(moi.code)}</em></b><small>Donnez-le à l’acheteur ou au vendeur qui vous choisit : il le tape dans sa commande, et la mission arrive ici.</small></div>
+      <div class="cm-st" role="status"><b>Votre code : <em style="letter-spacing:.06em">${esc(moi.code)}</em></b><small>Votre code de transporteur du réseau Marché de Gros. Montrez-le au vendeur et à l’acheteur au chargement et à la livraison : il prouve que c’est bien vous. Les missions du réseau arrivent ici.</small></div>
       <p class="cm-info" style="${cls === 'rouge' ? 'background:rgba(196,72,52,.14)' : ''}"><b>${esc(st)}.</b> ${esc(moi.motif && cls === 'rouge' ? 'Motif : ' + moi.motif : sous)}</p>
       ${moi.statut === 'verifie' ? `<label class="cm-ck" style="padding:10px 14px;border-radius:16px;background:#FFFDF8;margin:0 0 12px"><input type="checkbox" data-dispo${moi.disponible ? ' checked' : ''}> <span><b>Disponible pour des missions du réseau</b><small style="display:block;color:#5E5546;font-size:12.5px">L’équipe vous propose des missions dans vos régions.</small></span></label>` : ''}
       ${transferts.length ? `<h3 class="cm-h3">Marchandise à recevoir</h3><div class="cm-li">${transferts.map(t => `<div class="cm-r" style="cursor:default;grid-template-columns:1fr"><span>

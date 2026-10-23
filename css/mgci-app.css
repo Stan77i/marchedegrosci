@@ -773,3 +773,6 @@ html[data-theme=sombre] .nbul.d, html[data-theme=sombre] [aria-pressed="true"] >
 .aseg > button > .aseg-s { flex: none; }
 @media (max-width: 359px) { .aseg > button { padding: 2px 8px !important; } .aseg > button > .aseg-s { display: none !important; } }
 html:not([data-theme=sombre]) .aseg > button[aria-pressed="true"] > .aseg-s.d { background-image: var(--sym-d-nuit); }
+/* carte du réseau, filtres du panneau : panier (offres) et caddie crème (demandes) au lieu du rond et du carré */
+.lg-s { flex: none; width: 24px; height: 24px; margin: -4px 0 -4px -2px; background: var(--sym-o) center / contain no-repeat; }
+.lg-s.d { background-image: var(--sym-d-nuit); }

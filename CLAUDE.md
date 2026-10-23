@@ -34,6 +34,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 ## Façon de travailler
 
 - **Une PR par mise à jour. Ne jamais fusionner** : c'est le propriétaire qui fusionne. Quand une PR dépend d'une autre, indiquer l'ordre de fusion.
+- **Avant d'ajouter un commit à une PR existante, vérifier qu'elle est encore ouverte** (`gh api repos/Stan77i/marchedegrosci/pulls/<n> --jq .state,.merged`). Fusionnée ou fermée : nouvelle branche depuis `origin/main` et nouvelle PR. Le propriétaire fusionne vite : dans le doute, toujours une nouvelle PR.
 - Créer les PR avec `gh api repos/Stan77i/marchedegrosci/pulls --input fichier.json`, le JSON étant écrit par python dans le scratchpad.
 - Partir de `origin/main` à jour pour chaque nouvelle branche (`claude/<sujet>`).
 - **À chaque changement du front** :

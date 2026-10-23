@@ -12,7 +12,7 @@
   A.MOIS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
   A.LV = { plein: ['En pleine récolte', '#31543C', '#6CC58C'], debut: ['Ça commence', '#9dc2a7', '#9dc2a7'], fin: ['Ça se termine', '#dcb04f', '#D6A83E'] };
   A.RANK = { plein: 3, debut: 2, fin: 1 };
-  // calendrier repris de v2/saisons.js (entrées sourcées uniquement)
+  // calendrier repris de v2/saisons.js (entrées sourcées uniquement) ; 6e case = 1 : ligne par zone (FAO), regroupée par produit dans le cadran
   A.CAL = [
     ['igname', 'Igname précoce', { 8: 'debut', 9: 'plein', 10: 'plein' }, 'IDESSA', 'wacrou, kponan, assawa'],
     ['igname', 'Igname tardive', { 12: 'debut', 1: 'plein', 2: 'plein', 3: 'fin' }, 'IDESSA', 'krenglè, bêtê-bêtê, florido'],
@@ -26,6 +26,31 @@
     ['banane-plantain', 'Banane plantain', { 11: 'debut', 12: 'plein', 1: 'plein', 2: 'plein', 3: 'fin' }, 'Nitidae', 'période d’abondance'],
     ['oignon', 'Oignon (Nord et Centre)', { 2: 'plein', 3: 'plein', 4: 'plein', 5: 'plein', 6: 'plein' }, 'RONGEAD', 'Odienné, Korhogo, Bouaké'],
     ['noix-de-cajou', 'Noix de cajou', { 2: 'debut', 3: 'debut' }, 'Conseil coton-anacarde', 'campagne ouverte le 9 février 2026'],
+    ['tomate', 'Tomate (Sud)', { 6: 'debut', 7: 'plein', 8: 'plein', 9: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['tomate', 'Tomate (Centre, Nord)', { 7: 'debut', 8: 'plein', 9: 'plein', 10: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['gombo', 'Gombo (Sud)', { 5: 'debut', 6: 'plein', 7: 'plein', 8: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['gombo', 'Gombo (Centre, Nord)', { 6: 'debut', 7: 'plein', 8: 'plein', 9: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['piment-frais', 'Piment (Sud)', { 5: 'debut', 6: 'plein', 7: 'plein', 8: 'plein', 9: 'plein', 10: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['piment-frais', 'Piment (Centre, Nord)', { 6: 'debut', 7: 'plein', 8: 'plein', 9: 'plein', 10: 'plein', 11: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['aubergine', 'Aubergine (Sud)', { 5: 'debut', 6: 'plein', 7: 'plein', 8: 'plein', 9: 'plein', 10: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['aubergine', 'Aubergine (Centre, Nord)', { 6: 'debut', 7: 'plein', 8: 'plein', 9: 'plein', 10: 'plein', 11: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['poivron', 'Poivron (Sud)', { 5: 'debut', 6: 'plein', 7: 'plein', 8: 'plein', 9: 'plein', 10: 'plein', 11: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['poivron', 'Poivron (Centre, Nord)', { 6: 'debut', 7: 'plein', 8: 'plein', 9: 'plein', 10: 'plein', 11: 'plein', 12: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['chou', 'Chou (Sud)', { 6: 'debut', 7: 'plein', 8: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['chou', 'Chou (Centre, Nord)', { 7: 'debut', 8: 'plein', 9: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['concombre', 'Concombre (Sud)', { 5: 'debut', 6: 'plein', 7: 'plein', 8: 'plein', 9: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['concombre', 'Concombre (Centre, Nord)', { 6: 'debut', 7: 'plein', 8: 'plein', 9: 'plein', 10: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['carotte', 'Carotte (Sud)', { 6: 'debut', 7: 'plein', 8: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['carotte', 'Carotte (Centre, Nord)', { 7: 'debut', 8: 'plein', 9: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['laitue', 'Laitue (Sud)', { 5: 'debut', 6: 'plein', 7: 'plein', 8: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['laitue', 'Laitue (Centre, Nord)', { 6: 'debut', 7: 'plein', 8: 'plein', 9: 'fin' }, 'FAO', 'culture irriguée', 1],
+    ['arachide-en-coque', 'Arachide (Sud)', { 6: 'plein', 7: 'plein' }, 'FAO', 'calendrier FAO', 1],
+    ['arachide-en-coque', 'Arachide (Sud, 2e cycle)', { 12: 'plein' }, 'FAO', '2e cycle', 1],
+    ['arachide-en-coque', 'Arachide (Centre, Nord)', { 10: 'plein', 11: 'plein' }, 'FAO', 'calendrier FAO', 1],
+    ['manioc', 'Manioc (Sud)', { 1: 'debut', 2: 'plein', 3: 'plein', 4: 'plein', 5: 'fin' }, 'FAO', 'récolte étalée', 1],
+    ['manioc', 'Manioc (Centre)', { 12: 'debut', 1: 'plein', 2: 'plein', 3: 'fin' }, 'FAO', 'récolte étalée', 1],
+    ['haricot-niebe', 'Niébé (Nord)', { 9: 'plein', 10: 'plein' }, 'FAO', 'calendrier FAO', 1],
+    ['soja', 'Soja (Centre, Nord)', { 11: 'plein', 12: 'plein' }, 'FAO', 'calendrier FAO', 1],
     ['cacao-en-feves', 'Cacao', { 9: 'plein', 10: 'plein', 11: 'plein', 12: 'plein', 1: 'plein', 2: 'plein' }, 'Conseil café-cacao', 'grande campagne'],
     ['cafe-en-grains', 'Café', { 9: 'plein', 10: 'plein', 11: 'plein', 12: 'plein', 1: 'plein', 2: 'plein' }, 'Conseil café-cacao', 'même campagne que le cacao']
   ];

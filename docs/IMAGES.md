@@ -65,3 +65,73 @@ Page `#/annee` (`v3/annee.js`) : une photo par mois — juillet, août, octobre,
 ## Crédit photo
 
 Une ligne discrète sous l'image, par exemple « Photo : Marché de Gros CI ». Ne pas répéter le crédit. Auteurs et licences à confirmer avant mise en ligne.
+
+## Produits sans photo (relevé du 23/10/2026)
+
+43 produits sur 170 n'ont pas d'image. L'application affiche alors l'initiale du produit sur la couleur de sa famille.
+
+Pour en ajouter une :
+- fichier `v2/img/produit-<identifiant>.webp`, carré 800 × 800, fond transparent, comme les autres ;
+- ajouter aussi l'identifiant dans `A.SACK` (`app/marche-app.js`) avec la teinte du produit (0 à 360), sinon l'image ne s'affiche pas ;
+- augmenter `?v=` et `CACHE` dans `sw.js`.
+
+## Céréales et riz local (4)
+- Riz étuvé local — `produit-riz-etuve-local.webp`
+- Mil — `produit-mil.webp`
+- Sorgho — `produit-sorgho.webp`
+- Maïs frais (épis) — `produit-mais-frais-epis.webp`
+
+## Tubercules et féculents (3)
+- Placali — `produit-placali.webp`
+- Farine de plantain — `produit-farine-de-plantain.webp`
+- Patate douce jaune — `produit-patate-douce-jaune.webp`
+
+## Légumes et fruits (18)
+- Carotte — `produit-carotte.webp`
+- Laitue — `produit-laitue.webp`
+- Feuilles de manioc — `produit-feuilles-de-manioc.webp`
+- Épinard — `produit-epinard.webp`
+- Courge — `produit-courge.webp`
+- Haricot vert — `produit-haricot-vert.webp`
+- Aubergine blanche — `produit-aubergine-blanche.webp`
+- Aubergine violette — `produit-aubergine-violette.webp`
+- Piment vert — `produit-piment-vert.webp`
+- Piment Big Sun — `produit-piment-big-sun.webp`
+- Courgette verte — `produit-courgette-verte.webp`
+- Courgette obra — `produit-courgette-obra.webp`
+- Orange locale — `produit-orange-locale.webp`
+- Haricot vert du Burkina — `produit-haricot-vert-du-burkina.webp`
+- Haricot vert local — `produit-haricot-vert-local.webp`
+- Oignon blanc — `produit-oignon-blanc.webp`
+- Feuille d'oignon — `produit-feuille-d-oignon.webp`
+- Kplala (feuilles de corète) — `produit-kplala.webp`
+
+## Viande de brousse (1)
+- Gibier fumé — `produit-gibier-fume.webp`
+
+## Volaille (2)
+- Pigeon — `produit-pigeon.webp`
+- Poule pondeuse réformée — `produit-poule-pondeuse-reformee.webp`
+
+## Œufs (1)
+- Œufs de poule fermière — `produit-oeufs-de-poule-fermiere.webp`
+
+## Produits surgelés (4)
+- Viande de porc surgelée — `produit-viande-de-porc-surgelee.webp`
+- Frites surgelées — `produit-frites-surgelees.webp`
+- Crevettes surgelées — `produit-crevettes-surgelees.webp`
+- Dos de poisson (surgelé) — `produit-dos-de-poisson-surgele.webp`
+
+## Assaisonnements, épices, condiments (6)
+- Piment séché — `produit-piment-seche.webp`
+- Gingembre — `produit-gingembre.webp`
+- Gingembre en poudre — `produit-gingembre-en-poudre.webp`
+- Persil — `produit-persil.webp`
+- Poireau — `produit-poireau.webp`
+- Céleri — `produit-celeri.webp`
+
+## Autres produits vivriers (4)
+- Sucre local — `produit-sucre-local.webp`
+- Piment en pâte — `produit-piment-en-pate.webp`
+- Bissap (fleurs séchées) — `produit-bissap-fleurs-sechees.webp`
+- Champignons — `produit-champignons.webp`

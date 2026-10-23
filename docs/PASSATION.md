@@ -1289,3 +1289,8 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Outils : `tools/claude-design.py` (fabrique), `tools/claude-design-captures.js` (captures, données vides, voile du site levé pour la capture seulement), `tools/claude-design-retour.py` (reporte le travail rendu dans les vrais fichiers ; testé sur un faux retour : styles, écran, style de fenêtre, gabarit du site, tous reportés au bon endroit, puis annulés).
 - Tâche `.github/workflows/claude-design.yml` : refait le dossier après chaque fusion qui touche l'application, le site ou le design (sans les captures).
 - `CLAUDE.md` : nouvelle partie « Claude Design ». `DESIGN.md` et `docs/REPRISE.md` : renvoi vers le dossier.
+
+## 23/10/2026 — Retrait du dossier Claude Design
+
+- Demande du propriétaire : tout retirer. Supprimés : `claude-design/` (copies, captures, .zip), `tools/claude-design.py`, `tools/claude-design-captures.js`, `tools/claude-design-retour.py`, `tools/claude-design/`, la tâche `.github/workflows/claude-design.yml` ; renvois retirés de `DESIGN.md` et `docs/REPRISE.md` ; `CLAUDE.md` garde la décision (ne pas recréer).
+- Sécurité vérifiée : le dossier ne contenait que des copies de fichiers déjà publics (le dépôt est public), aucune clé secrète. L'« aperçu » qui levait la protection « ordinateur → maintenance » n'a jamais été fusionné ni publié ; sa branche de travail `claude/apercu-claude-design` est supprimée. La protection de l'application est inchangée.

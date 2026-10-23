@@ -947,3 +947,9 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - **Serveur** (`supabase/schema-69-index-produit.sql`, appliqué le 23/10) : `offres_produit` et `demandes_produit` sur `(product_slug)`. Ajout seulement.
 - Mesuré sur le test, machine au repos, 100 000 offres : `tableau_marche('mais')` 122 ms → 24 ms ; `prix_zones('mais')` 149 ms → 5 ms. (Sous charge pendant la simulation : 1 187 ms → 36 ms et 253 ms → 8,4 ms.)
 - Vérifié sur la base réelle : réponses identiques avant et après pour les 6 produits présents (`tableau_marche` à l'identique ; `prix_zones` identique hors le champ `calcule_le`, l'heure du calcul).
+
+## Signalements d'annonces : l'auteur est fixé par la base (23/10/2026) — schéma 66
+- Faille critique trouvée à l'audit de sécurité : la table `signalements` acceptait un `user_id` choisi par le téléphone, même sans compte. Trois signalements avec trois faux `user_id` masquaient n'importe quelle annonce (masquage automatique à 3 comptes différents), et le vendeur ne pouvait plus la remettre en ligne.
+- **Serveur** (`supabase/schema-66-signalements-auteur.sql`, appliqué le 23/10) : le téléphone ne peut plus écrire que `cible`, `cible_id`, `motif` ; l'auteur prend toujours `auth.uid()` (vide sans compte : un signalement sans compte ne compte pas pour le masquage, comme avant) ; la règle d'écriture refuse tout auteur différent du compte connecté. Aucun drop (`alter policy`, droits par colonne).
+- Vérifié sur le projet de test puis sur la base réelle (transaction annulée) : sans compte → accepté, auteur vide ; faux auteur → refusé ; connecté → auteur = le compte ; connecté avec l'auteur d'un autre → refusé. La base réelle n'avait aucun signalement ni annonce masquée (faille jamais utilisée).
+- Application inchangée (elle n'envoyait pas d'auteur). Reste à traiter (audit) : création de comptes sans preuve du numéro, qui permet de multiplier les comptes.

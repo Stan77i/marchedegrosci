@@ -13,7 +13,7 @@
   'use strict';
   const URL0 = 'https://catmsypctymgkjkfzdkt.supabase.co', KEY = 'sb_publishable_KC2au-t8dqasp5ez9Lq6XQ_JvbTtVQ5';
   const DOMAINE = 'tel.marchedegros.ci'; // le compte Supabase est une adresse construite à partir du numéro (aucun e-mail n'est envoyé)
-  const K = { e: 'mdg-nuage:empreinte', a: 'mdg-nuage:admin', s: 'mdg-nuage:session', o: 'mdg-nuage:offres', d: 'mdg-nuage:demandes', p: 'mdg-nuage:pousse', t: 'mdg-nuage:maj', vu: 'mdg-nuage:attente-vue' };
+  const K = { e: 'mdg-nuage:empreinte', a: 'mdg-nuage:admin', s: 'mdg-nuage:session', o: 'mdg-nuage:offres', d: 'mdg-nuage:demandes', p: 'mdg-nuage:pousse', t: 'mdg-nuage:maj', vu: 'mdg-nuage:attente-vue', v: 'mdg-nuage:version' };
   const KIND = { offres: 'offres', demandes: 'demandes' };
   const J = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } };
   const W = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (_) { return false; } };
@@ -163,16 +163,20 @@
     return cache.filter(x => x && x.productSlug !== undefined && !mine.has(x.client_id));
   }
   let busy = 0;
+  // zones de forte demande posées par l'administration (schema-11) : sans effet si la table n'existe pas encore
+  const lireZones = () => { api('/rest/v1/zones?select=*&expire_le=gt.' + encodeURIComponent(new Date().toISOString()) + '&order=created_at.desc&limit=100').then(z => { const avantZ = JSON.stringify(J('mdg-nuage:zones', [])); W('mdg-nuage:zones', z || []); if (JSON.stringify(z || []) !== avantZ) say('liste'); }).catch(() => {}); };
   async function refresh() {
     if (!navigator.onLine || busy & 1) return false; busy |= 1;
     try {
+      // schéma 76 : d'abord un petit résumé (quelques octets) ; si rien n'a changé depuis la dernière lecture, on ne retélécharge pas les listes
+      const v = await api('/rest/v1/rpc/annonces_version', { method: 'POST', body: {} }).catch(() => null);
+      if (v && v === J(K.v, null) && J(K.t, 0) && J(K.o, null) && J(K.d, null)) { lireZones(); return true; }
       const sel = '?select=*&status=eq.active&order=created_at.desc&limit=500';
       const [o, d] = await Promise.all([api('/rest/v1/offres' + sel), api('/rest/v1/demandes' + sel)]);
-      // zones de forte demande posées par l'administration (schema-11) : sans effet si la table n'existe pas encore
-      api('/rest/v1/zones?select=*&expire_le=gt.' + encodeURIComponent(new Date().toISOString()) + '&order=created_at.desc&limit=100').then(z => { const avantZ = JSON.stringify(J('mdg-nuage:zones', [])); W('mdg-nuage:zones', z || []); if (JSON.stringify(z || []) !== avantZ) say('liste'); }).catch(() => {});
+      lireZones();
       const sig = x => (x || []).map(r => r.id).join(','), was = sig(J(K.o, []).map(x => ({ id: x._rid }))) + '|' + sig(J(K.d, []).map(x => ({ id: x._rid })));
       const avant = new Set(J(K.o, []).concat(J(K.d, [])).map(x => x._rid)), premier = !J(K.t, 0);
-      W(K.o, (o || []).map(fromRow.offres)); W(K.d, (d || []).map(fromRow.demandes)); W(K.t, Date.now());
+      W(K.o, (o || []).map(fromRow.offres)); W(K.d, (d || []).map(fromRow.demandes)); W(K.t, Date.now()); if (v) W(K.v, v);
       if (!premier) { const neuves = { offres: list('offres').filter(x => !avant.has(x._rid)), demandes: list('demandes').filter(x => !avant.has(x._rid)) }; if (neuves.offres.length || neuves.demandes.length) dispatchEvent(new CustomEvent('mdg:nouvelles', { detail: neuves })); }
       if (was !== sig(o) + '|' + sig(d)) say('liste'); // ne prévenir que s'il y a du nouveau
       await stockDuServeur();

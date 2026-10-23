@@ -42,6 +42,8 @@
   A.write = (k, v) => { try { localStorage.setItem('mdg-v2:' + k, JSON.stringify(v)); dispatchEvent(new CustomEvent('mdg:change')); return true; } catch (_) { return false; } };
   A.digits = s => String(s || '').replace(/\D/g, '');
   A.tel10 = s => { let d = A.digits(s); if (d.length === 13 && d.startsWith('225')) d = d.slice(3); return d.length === 10 ? d : null; };
+  // l'unité au pluriel à partir de 2 : « 40 cartons », « 2 tonnes » (kg, t, l et les mots en s ou x ne bougent pas). Le prix reste « F / carton ».
+  A.unites = (q, u) => { u = String(u || ''); return +q >= 2 && u && !/[sxz]$|^(kg|g|t|l|L)$/.test(u) ? u + 's' : u; };
   A.fmt = n => Math.round(n).toLocaleString('fr-FR').replace(/\u202f/g, ' ');
   A.norm = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   A.ago = t => { const ms = typeof t === 'number' ? t : Date.parse(t); if (!ms) return ''; const m = Math.round((Date.now() - ms) / 60000); if (m < 1) return 'à l\u2019instant'; if (m < 60) return 'il y a ' + m + ' min'; const h = Math.round(m / 60); if (h < 24) return 'il y a ' + h + ' h'; return new Date(ms).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }); };

@@ -37,6 +37,7 @@ Règles :
 - La « voix » de la marque : le mot clé d'un titre en Jost 900 italique, en maïs sur fond sombre, souligné de maïs sur fond clair (`.voix em`, `<em>`). Une fois par écran, pas plus.
 - Échelle (`--t-*`) : 11,5 · 12,5 · 13,5 · 14 · 15 · 16 · 17 px pour l'interface ; titres de 18 à 32 px. **Rien en dessous de 11,5 px.**
 - Les chiffres (prix, quantités) en `font-variant-numeric: tabular-nums lining-nums`.
+- Les unités prennent le pluriel à partir de 2 : « 40 cartons », « 2 tonnes », « 60 kg ». Le prix reste au singulier : « 9 000 F / carton ». Utiliser `MDGApp.unites(q, u)`.
 - Lettres espacées (`letter-spacing` ≥ .1em) seulement pour de très courtes étiquettes en capitales (« STOCK »), jamais pour une phrase.
 
 ## 4. Espaces, rayons, ombres
@@ -50,6 +51,8 @@ Règles :
 - **Bouton principal** : pilule vert du logo, texte crème, 48–54 px de haut, pleine largeur dans les fenêtres. Un seul par écran.
 - **Bouton secondaire** : pilule claire ou lien texte vert. **Bouton maïs** : réservé à l'action phare d'un écran sombre (« Placer mon prix »).
 - **Bouton fermer** : rond de 40–44 px, croix **dessinée en SVG** (jamais le caractère « × »).
+- **Bouton retour** : chevron de 22 px dans une zone de 44 px, couleur du texte de la page (`color: inherit`), jamais blanc sur fond clair.
+- **Étiquette « quand »** (`.qd`) : un tampon penché, en capitales, couleur selon l'urgence. C'est un choix du propriétaire (21/10/2026) : le garder.
 - **Pastille de filtre** : 40 px de haut, forme du marqueur de la carte (rond = offre, carré = demande), nombre dans une petite bulle.
 - **Ligne d'activité** : icône carrée arrondie à gauche, titre gras, sous-titre, chevron. Une démarche = une ligne (un accord et sa commande ne s'affichent pas deux fois).
 - **Reçu** (accord, commande) : fond blanc chaud, lignes libellé / valeur, total en grand en vert du logo.

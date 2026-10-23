@@ -76,6 +76,17 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - Avatars : les **personnages du marché** (`v3/personnages.js`) : des produits avec un visage, dessinés en SVG. Au repos, ils respirent et clignent des yeux seulement ; ils **sautent uniquement quand il y a du nouveau** (proposition de prix, message, notification, commande à traiter) ou quand on change son avatar. Pas de service extérieur. Les anciens portraits restent lisibles.
 - Couleurs de l'accord conclu : vert de la marque, plus de bleu.
 
+## Design et UI/UX : les compétences à utiliser
+
+- **Toute tâche de design, d'interface ou d'expérience** (écran, composant, mise en page, couleur, texte d'interface, animation) commence par :
+  1. `marche-de-gros-design` : lire `DESIGN.md` (la référence du design du projet) ;
+  2. `impeccable` : vocabulaire de design, commandes `audit`, `critique`, `layout`, `polish`, `distill`… et son détecteur anti-« design généré » (`.claude/skills/impeccable/scripts/impeccable detect --json <fichiers>`) ;
+  3. `ui-ux-pro-max` : règles UX, accessibilité, typographie, couleurs (recherche : `python3 .claude/skills/ui-ux-pro-max/scripts/search.py "<sujet>" --domain ux`) ;
+  4. `playwright-cli` : vérifier dans un navigateur (sinon Playwright de `/opt/node-tools`), iPhone émulé, clair et sombre.
+- « Reverse-engineer any design system » = l'outil `skillui` (`npx skillui@1.3.4`), mode d'emploi dans `.claude/skills/marche-de-gros-design/SKILL.md`.
+- Les compétences sont dans `.claude/skills/` (licences Apache 2.0 et MIT, fichiers `LICENSE` gardés). Les mettre à jour depuis leurs dépôts : `pbakaus/impeccable`, `nextlevelbuilder/ui-ux-pro-max-skill`, `microsoft/playwright-cli`, `amaancoderx/npxskillui`.
+- Mode « Opérer » : la précision et la retenue d'abord. Quand une règle de `DESIGN.md` change, mettre `DESIGN.md` à jour dans la même PR.
+
 ## Commits et PR
 
 - Fin des messages de commit :

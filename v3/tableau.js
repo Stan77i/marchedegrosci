@@ -170,12 +170,16 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
       const s = this.st, d = s.data, lab = (d && d.lab) || nomProduit(s.slug), ach = s.sens === 'acheter';
       const tous = d ? (ach ? d.offres : d.demandes) || [] : null;
       const unites = tous ? [...new Set(tous.map(x => x.unite || ''))] : [];
-      const parU = u => (tous || []).filter(x => (x.unite || '') === u).length;
+      // vrais totaux par unité envoyés par le serveur (schéma 70 : au plus 50 annonces par unité dans la liste) ; sinon on compte la liste
+      const tot = d && d.totaux, totK = tot && tot[ach ? 'offres' : 'demandes'];
+      const somme = o => Object.keys(o || {}).reduce((t, k) => t + (+o[k] || 0), 0);
+      const parU = u => totK ? (+totK[u] || 0) : (tous || []).filter(x => (x.unite || '') === u).length;
       unites.sort((a, b) => parU(b) - parU(a));
       if (tous && (!s.unite || !unites.includes(s.unite))) s.unite = unites[0] || null;
       const L = (tous || []).filter(x => (x.unite || '') === (s.unite || ''));
       const meilleur = L.length && L[0].prix != null ? +L[0].prix : null;
-      const no = d ? (d.offres || []).length : 0, nd = d ? (d.demandes || []).length : 0;
+      const no = d ? (tot ? somme(tot.offres) : (d.offres || []).length) : 0, nd = d ? (tot ? somme(tot.demandes) : (d.demandes || []).length) : 0;
+      const coupe = L.length && parU(s.unite || '') > L.length;
       const ligne = (x, i) => {
         const T = ach ? TR_O[x.transport] : TR_D[x.transport], cle = (ach ? 'offres:' : 'demandes:') + x.id;
         const ec = meilleur && x.prix != null && i > 0 && +x.prix !== meilleur ? Math.round(Math.abs(+x.prix - meilleur) / meilleur * 100) : 0;
@@ -196,12 +200,12 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
       this.innerHTML = `<button type="button" class="tb-dos" data-dos>‹ Tous les produits</button>
         <div class="tb-hd"><h2 class="tb-h">${esc(lab)}</h2>${vignette(s.slug)}</div>
         <p class="tb-s">${ach ? 'Les vendeurs, du moins cher au plus cher. À prix égal, le transport compris passe devant.' : 'Les acheteurs, du meilleur budget au plus bas. Vous avez ce produit ? Vendez au meilleur prix.'}</p>
-        <div class="tb-seg" role="group" aria-label="Je veux"><button type="button" class="a" data-sens="acheter" aria-pressed="${ach}">Acheter · ${no}</button><button type="button" class="v" data-sens="vendre" aria-pressed="${!ach}">Vendre · ${nd}</button></div>
+        <div class="tb-seg" role="group" aria-label="Je veux"><button type="button" class="a" data-sens="acheter" aria-pressed="${ach}">Acheter · ${nf(no)}</button><button type="button" class="v" data-sens="vendre" aria-pressed="${!ach}">Vendre · ${nf(nd)}</button></div>
         ${this.choixZone()}
-        ${unites.length > 1 ? `<div class="tb-ch" role="group" aria-label="Unité">${unites.map(u => `<button type="button" data-u="${esc(u)}" aria-pressed="${u === s.unite}">Prix par ${esc(u || 'unité')} · ${parU(u)}</button>`).join('')}</div>` : ''}
+        ${unites.length > 1 ? `<div class="tb-ch" role="group" aria-label="Unité">${unites.map(u => `<button type="button" data-u="${esc(u)}" aria-pressed="${u === s.unite}">Prix par ${esc(u || 'unité')} · ${nf(parU(u))}</button>`).join('')}</div>` : ''}
         ${s.err ? `<div class="tb-vide"><b>Pas de connexion</b>${esc(s.err)}</div>` : !d ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div></div>'
           : !L.length ? `<div class="tb-vide"><b>${ach ? 'Aucune offre' : 'Aucune demande'}${s.region ? ' dans cette zone' : ''} pour l’instant</b>${ach ? 'Publiez une demande avec « Je cherche » : les vendeurs seront prévenus.' : 'Publiez votre offre avec « J’ai » : les acheteurs seront prévenus.'}</div>`
-          : `<ul class="tb-l">${L.map(ligne).join('')}</ul>`}
+          : `<ul class="tb-l">${L.map(ligne).join('')}</ul>${coupe ? `<p class="tb-n tb-coupe">Les ${L.length} meilleures sur ${nf(parU(s.unite || ''))}. Choisissez une zone pour affiner.</p>` : ''}`}
         <p class="tb-n">Comment c’est classé : le prix d’abord (dans la même unité), puis le transport, la fiabilité, l’identité vérifiée et les commandes honorées. Mis à jour toutes les 30 secondes. Aucun numéro affiché : vous négociez dans l’application, le Marché de Gros est le seul intermédiaire.</p>`;
       this.lier();
     }

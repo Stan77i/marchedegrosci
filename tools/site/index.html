@@ -47,25 +47,25 @@ if(!ok){location.replace('../maintenance.html');return}document.documentElement.
 
 <main id="contenu">
 
-<!-- 1. L'étal : la promesse, les deux portes et le sac du marché entre elles -->
+<!-- 1. L'étal : la promesse et les deux portes à gauche ; à droite, un vrai étal de sacs, cartons et cagettes (photos des produits) -->
 <section class="etal" aria-labelledby="t-etal">
-  <h1 id="t-etal">Le vivrier ivoirien en gros, dans votre <em>téléphone</em>.</h1>
-  <p class="etal-sous">Vendeurs et acheteurs de toute la Côte d’Ivoire se trouvent, comparent les prix, négocient et suivent la livraison au même endroit. Gratuit, et votre numéro reste caché.</p>
-  <div class="portes">
-    <a class="porte porte-o" href="../application.dc.html#/vendre" data-app="#/vendre" data-intention="vendre">
-      <i class="sym sym-o" aria-hidden="true"></i>
-      <b>J’ai à vendre</b>
-      <span>Récolte, stock, arrivage : publiez-le, les acheteurs vous écrivent.</span>
-      <em>Je vends</em>
-    </a>
-    <div class="sac" aria-hidden="true"><div class="sac-dessin" id="sac"></div></div>
-    <a class="porte porte-d" href="../application.dc.html#/demande" data-app="#/demande" data-intention="acheter">
-      <i class="sym sym-d" aria-hidden="true"></i>
-      <b>Je cherche</b>
-      <span>Dites le produit, la quantité et la ville : les vendeurs vous proposent leur prix.</span>
-      <em>Je cherche</em>
-    </a>
+  <div class="etal-l">
+    <h1 id="t-etal">Le vivrier ivoirien en gros, dans votre <em>téléphone</em>.</h1>
+    <p class="etal-sous">Vendeurs et acheteurs de toute la Côte d’Ivoire se trouvent, comparent les prix, négocient et suivent la livraison au même endroit. Gratuit, et votre numéro reste caché.</p>
+    <div class="portes">
+      <a class="porte porte-o" href="../application.dc.html#/vendre" data-app="#/vendre" data-intention="vendre">
+        <i class="sym sym-o" aria-hidden="true"></i>
+        <span><b>J’ai à vendre</b><small>Récolte, stock, arrivage : les acheteurs vous écrivent.</small></span>
+        <svg class="fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="porte porte-d" href="../application.dc.html#/demande" data-app="#/demande" data-intention="acheter">
+        <i class="sym sym-d" aria-hidden="true"></i>
+        <span><b>Je cherche</b><small>Produit, quantité, ville : les vendeurs vous répondent.</small></span>
+        <svg class="fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
   </div>
+  <div class="etal-d" aria-hidden="true">{{ETAL}}</div>
   <div class="fil" aria-live="polite">
     <h2 class="fil-t">En ce moment sur le marché</h2>
     <ul class="fil-l" id="filCourt"><li class="fil-vide">Les dernières annonces de l’application s’affichent ici.</li></ul>
@@ -82,8 +82,15 @@ if(!ok){location.replace('../maintenance.html');return}document.documentElement.
     <div class="tb-ligne tb-entete" role="row"><span role="columnheader">Produit</span><span role="columnheader">Vendeur le moins cher</span><span role="columnheader">Meilleur budget</span><span role="columnheader">Annonces</span><span role="columnheader"><span class="vh">Action</span></span></div>
     <div id="tbCorps" role="rowgroup"><p class="tb-attente">Le tableau se charge…</p></div>
   </div>
-  <p class="note">Rayons du marché : {{NB_PRODUITS}} produits vivriers, dont {{NB_PHOTOS}} avec leur photo.</p>
-  <ul class="rayons">{{RAYONS}}</ul>
+</section>
+
+<!-- 2 bis. Les rayons : chaque famille sur son étagère, avec les vraies photos -->
+<section class="bloc rayons" id="rayons" aria-labelledby="t-rayons">
+  <div class="bloc-tete">
+    <h2 id="t-rayons">Les rayons du marché</h2>
+    <p>{{NB_PRODUITS}} produits vivriers, des céréales au poisson. Touchez un produit pour voir ses vendeurs et ses acheteurs dans l’application.</p>
+  </div>
+  {{RAYONS}}
 </section>
 
 <!-- 3. Le réseau : la carte vivante et le fil des annonces -->
@@ -131,6 +138,8 @@ if(!ok){location.replace('../maintenance.html');return}document.documentElement.
 
 <!-- 6. Pour les pros : approvisionnement et achats groupés -->
 <section class="bloc pros" id="pros" aria-labelledby="t-pros">
+  <div class="pros-g">
+  <div>
   <div class="bloc-tete"><h2 id="t-pros">Restaurants, cantines, hôtels, commerces</h2></div>
   <div class="pros-l">
     <div>
@@ -143,6 +152,9 @@ if(!ok){location.replace('../maintenance.html');return}document.documentElement.
       <p>Un achat groupé réunit plusieurs acheteurs pour une grosse quantité : on partage le volume et le transport.</p>
       <a class="lien" href="#appli" data-app="#/" data-intention="groupe">Participer à un achat groupé</a>
     </div>
+  </div>
+  </div>
+  <div class="pros-img" aria-hidden="true">{{PROS}}</div>
   </div>
 </section>
 
@@ -177,7 +189,6 @@ if(!ok){location.replace('../maintenance.html');return}document.documentElement.
 
 <script id="donnees" type="application/json">{{DONNEES}}</script>
 <script src="../vendor/qrcode-generator-1.4.4.js"></script>
-<script src="../app/sac.js?v=20261102a"></script>
 <script src="../v3/nuage.js?v=20261102a"></script>
 <script src="garde.js?v={{VERSION}}"></script>
 <script src="site.js?v={{VERSION}}"></script>

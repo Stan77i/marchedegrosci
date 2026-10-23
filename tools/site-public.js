@@ -59,8 +59,25 @@ ecrire('donnees/lieux.json', JSON.stringify(lieux));
 const villes = geo.features.filter(f => f.properties.k === 'lieu' && f.properties.r === 1).map(f => { const [x, y] = proj(f.geometry.coordinates); return { n: f.properties.n, x: +x.toFixed(1), y: +y.toFixed(1) }; });
 
 // ——— le contenu statique (lu par Google) ———
+// l'étal du haut de page : de vrais sacs, cartons et cagettes, posés en trois rangs (positions en % de l'étal)
+const NOM = Object.fromEntries(produits.map(p => [p.s, p.n]));
+const img = (sl, t) => 'img/' + sl + '-' + t + '.webp';
+const ETAL_P = [
+  // [produit, gauche %, bas %, largeur %, profondeur 0 = fond]
+  ['riz-local', 3, 45, 29, 0], ['mais-grain', 24, 50, 28, 0], ['banane-plantain', 45, 52, 29, 0], ['oignon', 67, 47, 29, 0],
+  ['igname', -5, 19, 35, 1], ['manioc', 19, 23, 33, 1], ['ananas', 44, 25, 31, 1], ['aubergine', 66, 19, 35, 1],
+  ['tomate', 2, -2, 45, 2], ['mangue', 42, -1, 39, 2], ['attieke', 73, 2, 29, 2]
+].filter(e => NOM[e[0]] && fs.existsSync(path.join(SITE, img(e[0], 480))));
+const ETAL = '<div class="etal-sol"></div>' + ETAL_P.map((e, i) => `<img src="${img(e[0], 480)}" alt="" width="480" height="480" style="left:${e[1]}%;bottom:${e[2]}%;width:${e[3]}%;--d:${(e[4] * 4 + (i % 4)) * 70}ms" class="r${e[4]}"${i < 4 ? '' : ' decoding="async"'}>`).join('');
+const PROS_P = [['riz-local', 0, 18, 46], ['mangue', 40, 6, 46], ['tomate', 14, 0, 50]].filter(e => NOM[e[0]] && fs.existsSync(path.join(SITE, img(e[0], 480))));
+const PROS = PROS_P.map((e, i) => `<img src="${img(e[0], 480)}" alt="" width="480" height="480" loading="lazy" style="left:${e[1]}%;bottom:${e[2]}%;width:${e[3]}%;z-index:${i}">`).join('');
+
 const parCat = CAT.map(c => ({ c, p: produits.filter(p => p.c === c.slug && p.f) })).filter(g => g.p.length);
-const RAYONS = parCat.map(g => `<li><b>${esc(g.c.name)}</b><span>${g.p.slice(0, 9).map(p => esc(p.n)).join(' · ')}${g.p.length > 9 ? ' …' : ''}</span></li>`).join('');
+// les étagères : 4 familles choisies en photos ; les autres en une ligne
+const ETAGERES = ['cereales-et-riz-local', 'tubercules-et-feculents', 'legumes-et-fruits', 'poissons'];
+const etg = ETAGERES.map(k => parCat.find(g => g.c.slug === k)).filter(Boolean), reste = parCat.filter(g => !ETAGERES.includes(g.c.slug));
+const RAYONS = etg.map(g => `<div class="etagere"><h3>${esc(g.c.name)}</h3><ul>${g.p.slice(0, 10).map(p => `<li><a href="../application.dc.html#/produits/${esc(p.s)}" data-app="#/produits/${esc(p.s)}" data-intention="produit"><span class="plateau"><img src="${img(p.s, 160)}" alt="${esc(p.n)} en gros" width="160" height="160" loading="lazy" decoding="async"></span><span class="nom">${esc(p.n)}</span></a></li>`).join('')}</ul></div>`).join('')
+  + `<p class="autres-rayons"><b>Aussi au marché :</b> ${reste.map(g => esc(g.c.name.toLowerCase())).join(' · ')}. En tout, ${produits.length} produits dans l’application.</p>`;
 const DATE = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Africa/Abidjan' });
 const DONNEES = { produits: produits.filter(p => p.f).map(p => [p.s, p.n]), villes };
 
@@ -71,6 +88,6 @@ const LOGO = mq.MDGMarque.ligne({ fond: 'vert', h: 26, cls: 'marque-nom' }).repl
 const crypto = require('crypto');
 const VERSION = crypto.createHash('md5').update(['site.css', 'site.js', 'garde.js'].map(f => { try { return fs.readFileSync(path.join(SITE, f), 'utf8'); } catch (_) { return ''; } }).join('') + lire('app/admin-pc.js')).digest('hex').slice(0, 8);
 const remplir = (gab, v) => gab.replace(/\{\{(\w+)\}\}/g, (_, k) => { if (!(k in v)) throw new Error('gabarit : {{' + k + '}} inconnu'); return v[k]; });
-const VAL = { CARTE, LOGO, VERSION, RAYONS, DATE, DONNEES: JSON.stringify(DONNEES).replace(/</g, '\\u003c'), NB_PRODUITS: String(produits.length), NB_PHOTOS: String(produits.filter(p => p.f).length) };
+const VAL = { CARTE, LOGO, VERSION, ETAL, PROS, RAYONS, DATE, DONNEES: JSON.stringify(DONNEES).replace(/</g, '\\u003c'), NB_PRODUITS: String(produits.length), NB_PHOTOS: String(produits.filter(p => p.f).length) };
 fs.readdirSync(GAB).filter(f => f.endsWith('.html')).forEach(f => ecrire(f, remplir(fs.readFileSync(path.join(GAB, f), 'utf8'), VAL)));
 console.log('site public : ' + produits.length + ' produits, ' + DONNEES.produits.length + ' avec photo, carte ' + W + '×' + H + ', ' + Object.keys(lieux).length + ' lieux');

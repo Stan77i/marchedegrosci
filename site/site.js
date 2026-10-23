@@ -38,6 +38,8 @@
     var prod = (NOMS[a.product_slug] || a.produit || 'produit').toLowerCase();
     return '<b>' + esc(qui) + '</b> ' + verbe + ' ' + esc(q) + esc(prod);
   }
+  var photo = function (slug, cls) { return NOMS[slug] ? '<img class="' + (cls || 'ph') + '" src="img/' + esc(slug) + '-160.webp" alt="" width="40" height="40" loading="lazy">' : ''; };
+  var photo = function (slug, cls) { return NOMS[slug] ? '<img class="' + (cls || 'ph') + '" src="img/' + esc(slug) + '-160.webp" alt="" width="40" height="40" loading="lazy">' : ''; };
   var symb = function (sens, nuit) { return '<i class="sym ' + (sens === 'offre' ? 'sym-o' : 'sym-d' + (nuit ? ' nuit' : '')) + '" aria-hidden="true"></i>'; };
 
   // ——— le fil et la carte ———
@@ -61,13 +63,13 @@
   function points(L) {
     if (!calque) return;
     var g = {};
-    L.forEach(function (a) { var p = ou(a); if (!p) return; var k = p[0].toFixed(1) + ':' + p[1].toFixed(1); (g[k] = g[k] || { p: p, o: 0, d: 0 })[a.sens === 'offre' ? 'o' : 'd']++; });
+    L.forEach(function (a) { var p = ou(a); if (!p) return; var k = p[0].toFixed(1) + ':' + p[1].toFixed(1); var x = (g[k] = g[k] || { p: p, o: 0, d: 0, s: a.product_slug }); x[a.sens === 'offre' ? 'o' : 'd']++; if (!NOMS[x.s] && NOMS[a.product_slug]) x.s = a.product_slug; });
     calque.querySelectorAll('.pt').forEach(function (n) { if (!g[n.dataset.k]) n.remove(); });
     Object.keys(g).forEach(function (k, i) {
       var x = g[k], n = x.o + x.d, sens = x.o >= x.d ? 'offre' : 'demande';
       var el = calque.querySelector('.pt[data-k="' + k + '"]');
       if (!el) { el = document.createElement('span'); el.className = 'pt'; el.dataset.k = k; el.style.left = x.p[0] + '%'; el.style.top = x.p[1] + '%'; el.style.animationDelay = (vus[k] ? 0 : i * 60) + 'ms'; calque.appendChild(el); vus[k] = 1; }
-      el.innerHTML = symb(sens) + (n > 1 ? '<b>' + n + '</b>' : '');
+      el.className = 'pt' + (sens === 'demande' ? ' d' : ''); el.innerHTML = (photo(x.s, 'pp') || symb(sens)) + (n > 1 ? '<b>' + n + '</b>' : '');
       el.title = (x.o ? x.o + ' offre' + (x.o > 1 ? 's' : '') : '') + (x.o && x.d ? ' · ' : '') + (x.d ? x.d + ' demande' + (x.d > 1 ? 's' : '') : '');
     });
   }
@@ -78,7 +80,7 @@
       if (long) long.innerHTML = '<li class="fil-vide">Aucune annonce active pour l’instant.</li>';
       return;
     }
-    var ligne = function (a, nuit) { return '<li>' + symb(a.sens, nuit) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></li>'; };
+    var ligne = function (a, nuit) { return '<li>' + (photo(a.product_slug) || symb(a.sens, nuit)) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></li>'; };
     if (court) court.innerHTML = L.slice(0, 3).map(function (a) { return ligne(a, true); }).join('');
     if (long) long.innerHTML = L.map(function (a) { return ligne(a, true); }).join('');
   }
@@ -95,7 +97,7 @@
       L = (L || []).slice(0, 8);
       if (!L.length) { corps.innerHTML = '<p class="tb-attente">Aucun prix publié pour l’instant. Les premiers vendeurs et acheteurs apparaîtront ici.</p>'; return; }
       corps.innerHTML = L.map(function (r) {
-        var nom = NOMS[r.slug] || r.lab, img = NOMS[r.slug] ? '<img src="../v2/img/produit-' + esc(r.slug) + '.webp" alt="' + esc(nom) + '" width="52" height="52" loading="lazy">' : '<span style="width:52px"></span>';
+        var nom = NOMS[r.slug] || r.lab, img = NOMS[r.slug] ? '<img src="img/' + esc(r.slug) + '-160.webp" alt="' + esc(nom) + '" width="56" height="56" loading="lazy">' : '<span style="width:56px"></span>';
         var achat = r.n_offres > 0;
         return '<div class="tb-ligne" role="row"><span class="tb-p" role="cell">' + img + esc(nom) + '</span>'
           + '<span role="cell">' + prix(r.meilleure_offre, r.unite_offre) + '</span><span role="cell">' + prix(r.meilleure_demande, r.unite_demande) + '</span>'
@@ -121,11 +123,8 @@
   qr($('qr'), RACINE + '?utm_source=site&utm_medium=qr');
   var lc = $('lienCourt'); if (lc) lc.textContent = RACINE.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
-  // ——— le sac du marché : les produits tombent, il se remplit et saute, une fois ———
-  function sac() { var h = $('sac'); if (h && window.MDGSac && !h.firstChild) h.innerHTML = MDGSac.svg('plein', { t: 240 }); }
-
   function demarrer() {
-    sac(); villes(); tableau();
+    villes(); tableau();
     fetch('donnees/lieux.json').then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })
       .then(function (l) { LIEUX = l; return lireFil(); });
     setInterval(function () { if (!document.hidden) lireFil(); }, 120000);

@@ -27,7 +27,7 @@ function fabriquer({ NOM, esc, lire, vm, photo }) {
       const im = photo(sl) ? `<img src="../../img/${sl}-160.webp" alt="" width="64" height="64" loading="lazy">` : '';
       const mo = {}; ici.filter(e => e.product === sl).forEach(e => Object.entries(e.months).forEach(([m, l]) => { if (!mo[m] || l === 'plein') mo[m] = l; }));
       return `<section class="cal-p" aria-labelledby="cal-${sl}" data-mois='${JSON.stringify(mo)}' data-nom="${esc(n)}"${lien ? ` data-lien="${lien}"` : ''}><h3 id="cal-${sl}">${im}<span>${lien ? `<a href="${lien}">${esc(n)}</a>` : esc(n)}</span></h3>
-      ${ici.filter(e => e.product === sl).map(e => ligneMois(e, n, L, esc)).join('')}</section>`;
+      ${ici.filter(e => e.product === sl).map(e => ligneMois(e, n, L, esc, '../')).join('')}</section>`;
     }).join('');
     const titre = `Vivrier en gros ${dans} (${CHEF[r]}) : annonces, prix, récoltes · Marché de Gros CI`;
     const desc = `Acheter ou vendre du vivrier en gros ${dans}, autour de ${CHEF[r]} : annonces et meilleurs prix publiés en direct, et ce qui s’y récolte selon des sources publiques.`;

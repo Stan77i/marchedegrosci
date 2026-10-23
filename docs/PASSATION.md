@@ -1162,3 +1162,7 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 
 ## Panier et caddie dans les filtres de la carte (23/10/2026), oubliés par la fusion de la PR #218
 - Les filtres « Offres » et « Demandes » du panneau de la carte du réseau montrent le panier et le caddie dessinés (`.lg-s`). Ce commit était arrivé sur la branche juste après la fusion de #218 : remis dans une PR à part. Cache `mgci-v222`.
+
+## Audit SEO et plan d'acquisition (23/10/2026) — `docs/seo/`
+- Trois audits en lecture seule (site et SEO technique, application et données publiques, mots-clés et concurrents) et le plan priorisé P0 à P3 dans `docs/seo/PLAN.md`. Constat principal : Google ne peut presque rien lire aujourd'hui (tout en JavaScript, adresses en `#/`, maintenance en `noindex`).
+- Décision : le nouveau site (ordinateur) se construit caché, visible par l'administrateur seulement. Aucun code changé dans cette PR.

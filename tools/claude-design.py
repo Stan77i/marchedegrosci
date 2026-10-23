@@ -126,6 +126,56 @@ def application():
     ecrire('application/styles/fenetres/SOMMAIRE.md', '\n'.join(sommaire) + '\n')
 
 
+APERCU_SANS = ('vendor/babel.min.js', 'vendor/tesseract/')   # lourds et sans rapport avec le design
+
+
+def apercu():
+    """application/apercu/ : l'application qui s'ouvre telle quelle dans Claude Design.
+    Mêmes fichiers que le dépôt, sauf : application.dc.html sans le renvoi de l'ordinateur vers la maintenance,
+    sans service worker ni barre admin ; photos de produits réduites à 400 px."""
+    base = 'application/apercu/'
+    src = lire('application.dc.html')
+    vus, file = set(), ['application.dc.html']
+    motif = re.compile(r"""['"`(]\.?/?((?:app|v3|v2|vendor|css|fonts|icons)/[\w./%-]+\.(?:js|css|json|svg|png|woff2|webp|pbf|mp3|ogg|wav))""")
+    while file:
+        f = file.pop()
+        if f in vus:
+            continue
+        vus.add(f)
+        if f.endswith(('.js', '.css', '.html')):
+            for r in motif.findall(lire(f)):
+                r = r.replace('%20', ' ')
+                if r not in vus and os.path.isfile(os.path.join(R, r)) and not r.startswith(APERCU_SANS):
+                    file.append(r)
+    for d in ('vendor/glyphs', 'app/geo'):
+        for dp, _, fn in os.walk(os.path.join(R, d)):
+            for n in fn:
+                vus.add(os.path.relpath(os.path.join(dp, n), R).replace(os.sep, '/'))
+    vus.add('support.js')
+    from PIL import Image
+    for f in sorted(vus):
+        if f == 'application.dc.html':
+            continue
+        if f.startswith('v2/img/'):
+            continue
+        copier(f, base + f)
+    os.makedirs(os.path.join(D, base, 'v2/img'), exist_ok=True)
+    for n in sorted(os.listdir(os.path.join(R, 'v2/img'))):
+        if n.endswith('.webp'):
+            im = Image.open(os.path.join(R, 'v2/img', n))
+            if max(im.size) > 400:
+                im.thumbnail((400, 400))
+            im.save(os.path.join(D, base, 'v2/img', n), 'WEBP', quality=72, method=6)
+    # la page : sans le renvoi de l'ordinateur, sans service worker, sans barre admin
+    page = re.sub(r'<script>/\* sur ordinateur \(22/10/2026\).*?</script>\n', '', src, count=1, flags=re.S)
+    page = re.sub(r"<script>/\* service worker :.*?</script>\n", '', page, count=1, flags=re.S)
+    page = re.sub(r'<script src="app/admin-pc\.js[^"]*"[^>]*></script>\n', '', page, count=1)
+    assert page.count('maintenance.html') == 0 and 'serviceWorker' not in page, 'aperçu : renvoi ou service worker encore là'
+    e = '<!-- APERÇU pour Claude Design : copie de application.dc.html qui s’ouvre aussi sur ordinateur (sans renvoi vers la maintenance, sans service worker). Modifier ici, Claude Code reporte dans le vrai fichier. -->\n'
+    ecrire(base + 'application.dc.html', e + page)
+    ORIG[base + 'application.dc.html'] = {'src': 'application.dc.html', 'entete': e, 'morceaux': True}
+
+
 def site():
     vider('site')
     copier('tools/claude-design/site-CONSIGNES.md', 'site/CONSIGNES.md')
@@ -180,6 +230,7 @@ if __name__ == '__main__':
     os.makedirs(D, exist_ok=True)
     shutil.copyfile(os.path.join(T, 'LISEZ-MOI.md'), os.path.join(D, 'LISEZ-MOI.md'))
     application()
+    apercu()
     site()
     with open(os.path.join(D, 'origines.json'), 'w', encoding='utf-8') as f:
         json.dump(ORIG, f, ensure_ascii=False, indent=1, sort_keys=True)

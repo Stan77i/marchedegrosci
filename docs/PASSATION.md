@@ -1348,3 +1348,10 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
   - tirets longs « — » : 0 visible à l'écran (application et site caché, mesuré dans le navigateur) ; ceux du code sont dans des commentaires ou servent de valeur vide ;
   - mots creux (« révolutionnaire », « en quelques clics », « découvrez »…) : aucun dans le site ni dans l'application.
 - Front : `v3/negoce.js?v=20261124a`, `CACHE` `mgci-v235`.
+
+## 24/10/2026 — Audit antislop complet de l'application (mode « après »)
+
+- Rapport : `docs/anti-slop/audit-001-2026-10-24.md`. **Aucune correction faite** : le propriétaire choisit les numéros.
+- Méthode : navigateur (16 écrans sans compte, iPhone émulé, clair et sombre, 390 et 320 px, mesures automatiques) + relecture des 60 fichiers de l'application par 5 relecteurs, avec antislop et les 32 lois de `DESIGN.md`. Le serveur Supabase était bloqué par le réseau de la session : les écrans avec compte ou données n'ont été vus que dans le code.
+- Résultat : 26 constats HAUTS (6 phrases fausses sur le paiement, dont « Payé sous 24 h » dans la bande de l'accueil ; 14 textes illisibles mesurés entre 1,04:1 et 4,3:1 ; 5 entorses à la règle de stabilité ; 1 problème de clavier), 19 MOYENS, 14 BAS, 3 décisions de goût (accueil vivant, bleu « vérifié », « de Gros » en dégradé).
+- Bon partout : aucune erreur JS, aucun débordement à 320 px, aucun tiret long visible, mode « moins d'animations » presque partout respecté.

@@ -40,7 +40,7 @@ En une phrase : des pages statiques hébergées gratuitement sur GitHub Pages, q
 | Gabarits | balises `sc-if`, `sc-for` et `{{ … }}` dans `application.dc.html`, plus le script `type="text/x-dc"` (l. 811) qui contient la classe du composant et le calcul des écrans (`renderVals()`) |
 | Socle chargé au démarrage | `v3/nuage.js`, `app/admin-pc.js`, `v3/personnages.js`, `v3/avatar.js`, `app/icones.js`, `app/effets.js`, `app/marque.js`, `app/sac.js`, `app/garanties.js`, `app/toast.js`, `app/theme.js`, `v2/data.js` (catalogue), `app/marche-app.js`, `app/villes.js` |
 | Chargés après coup (`defer`) | `app/nuit.js`, `app/stable.js`, `app/vibre.js`, `app/prixmoment.js`, `app/demo-orbite.js`, `app/activite.js` |
-| Chargés à la demande (`window.MDGPlus`, l. 39) | guide, astuces, scène, porte, sons, négociation, compte, souffle, notifications, réputation, statuts, messages, aide, alertes, relevé, commandes, tableau, chauffeur, suivi, prix par zone, racheter, approvisionnement, groupes, carte (`app/carte-app.js`, `app/carte-gl.js`), identité |
+| Chargés à la demande (`window.MDGPlus`, l. 39) | guide, astuces, scène, porte, sons, négociation, compte, souffle, notifications, réputation, statuts, messages, aide, alertes, relevé, commandes, tableau, chauffeur, suivi, prix par zone, racheter, approvisionnement, groupes, carte (`app/carte-app.js`, `app/carte-gl.js`), identité, boutique (`v3/boutique.js`, schéma 86) |
 | Bibliothèques embarquées (`vendor/`) | React, MapLibre GL, Tesseract (lecture de la pièce d'identité dans le téléphone), qrcode-generator, d3, topojson, GSAP, Lenis, Lucide |
 | Police | Jost, fichiers `fonts/*.woff2` dans le dépôt (aucun appel à Google Fonts) |
 | Page chauffeur sans compte | `suivi.html` (appels `/rest/v1/rpc/suivi_lien_*` avec la clé publique) |
@@ -168,6 +168,7 @@ Les changements de base sont gardés dans `supabase/schema-*.sql` (81 fichiers, 
 | `marketing_reglage` | réglage des messages du marché | 0 |
 | `code_demandes` | demandes de remise à zéro du code | 0 |
 | `site_mesures` | mesure d'audience anonyme du site | 0 |
+| `boutiques`, `boutique_passages`, `boutique_sels` | boutiques des vendeurs, visites comptées une fois par visiteur et par jour, sel du jour (schéma 86, projet de test seulement) | 0 |
 
 ### 4.4 Politiques RLS principales
 
@@ -203,6 +204,7 @@ Stockage (buckets) :
 - **Achats récurrents, pros, groupés** : `recommande_preparer`, `mes_rappels`, `rappels_envoyer`, `besoin_creer3`, `besoins_liste`, `besoin_repondre`, `groupe_*`, `groupes_echeances`.
 - **Notifications** : `push_abonner`, `push_desabonner`, `notif_reglage_moi`, `push_config` (rôle service), `push_*` des déclencheurs, `marketing_tick`.
 - **Mesure du site** : `mesurer`, `mesures_resume` (admin).
+- **Boutiques** (schéma 86, projet de test seulement) : `boutique_publique`, `boutiques_de`, `boutiques_publiques`, `ma_boutique`, `boutique_activer`, `boutique_mesurer` ; outils internes `_boutique_*` (nom, adresse, état d'une offre, catalogue, boutique cachée).
 
 ### 4.6 Déclencheurs
 
@@ -210,7 +212,8 @@ Stockage (buckets) :
 
 - **Garde des annonces** (`offres`, `demandes`) : bannissement, 3 annonces gratuites puis identité vérifiée, 30 annonces actives au plus (`garde_publication`, `limite_annonces`), textes sans contacts, numéro jamais public, nom du compte, compte officiel, date de mise à jour, stock, négociations closes si l'annonce est retirée ; exigences d'une demande (`demande_exigences`).
 - **Garde des messages** (`messages`, `dm`) : textes, contrôle des sorties, bannis.
-- **Négociations** : figée une fois conclue, stock, transport, bannis.
+- **Négociations** : figée une fois conclue, stock, transport, bannis ; schéma 86 : verrou contre la survente (`negociations_verrou_stock`) et refus sur une offre en pause (`negociations_boutique_pause`, aussi sur `groupes_achat`).
+- **Annonces, schéma 86** : `offres_boutique` / `demandes_boutique` (quantité obligatoire, quantité de départ, retrait avec trace), `offres_boutique_retrait` / `demandes_boutique_retrait` (négociations fermées au retrait) ; profils : `profils_boutique_pseudo`, `profils_boutique_supprime`.
 - **Commandes** : synchronisation des commissions (vente et transport), séquestre, mot de réception, pause du réseau de transport. Les journaux (`commission_journal`, `commission_transport_journal`, `sequestre_journal`, `litige_messages`) ne peuvent plus être modifiés une fois écrits.
 - **Profils** : textes, photos et structure propres, nom repris sur les annonces, dossier d'identité à la suppression du compte.
 - **Signalements** : modération après un signalement (`apres_signalement`).

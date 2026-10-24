@@ -58,6 +58,7 @@ Règles :
 - **Pastille de filtre** : 40 px de haut, forme du marqueur de la carte (rond = offre, carré = demande), nombre dans une petite bulle.
 - **Ligne d'activité** : icône carrée arrondie à gauche, titre gras, sous-titre, chevron. Une démarche = une ligne (un accord et sa commande ne s'affichent pas deux fois).
 - **Reçu** (accord, commande) : fond blanc chaud, lignes libellé / valeur, total en grand en vert du logo.
+- **État d'une offre** (boutique, schéma 86) : une pastille d'une ligne à côté du nom, coupée par « … » si la place manque : « Disponible » (vert clair), « Stock faible » (maïs clair, 20 % ou moins du départ), « En pause » (sable), « Épuisé » (corail clair). La phrase complète (« Indisponible pour l'instant », « Tout est vendu ») va sur la ligne d'en dessous, où il y a la place.
 - **Ligne d'alerte discrète** (ex. vérification d'identité) : une seule ligne qu'on touche, pas un gros encadré.
 - **Avatars** : les personnages du marché (`v3/personnages.js`). Calmes au repos, ils sautent seulement quand il y a du nouveau.
 - **Confirmation** : `MDGDemande.oui(texte, { ok, danger })` et `MDGDemande.saisie(texte, { ok })` (`app/toast.js`), feuille de l'application avec mode nuit, Échap et focus. Jamais `confirm()` ni `prompt()` du navigateur.

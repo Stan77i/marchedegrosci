@@ -211,7 +211,11 @@
   async function profil(uid, o = {}) {
     if (!uid) return;
     const moi = N() && N().session() && N().session().user.id === uid;
-    const bg = feuille(`<div class="rp-tete">${avatar(uid, o.avatar, o.nom, 72, o.uri)}<span><b data-nom>${esc(o.nom || 'Membre')}</b><small data-sc>…</small><small data-dep></small></span></div><div data-org></div><div data-pp></div><div data-corps>${window.MDGSac ? MDGSac.charge('Le profil arrive…') : '<div class="rp-vide">Chargement du profil…</div>'}</div>`, 'Profil de ' + (o.nom || 'membre'));
+    const bg = feuille(`<div class="rp-tete">${avatar(uid, o.avatar, o.nom, 72, o.uri)}<span><b data-nom>${esc(o.nom || 'Membre')}</b><small data-sc>…</small><small data-dep></small></span></div><div data-org></div><div data-pp></div><div data-corps>${window.MDGSac ? MDGSac.charge('Le profil arrive…') : '<div class="rp-vide">Chargement du profil…</div>'}</div><div data-bq></div>`, 'Profil de ' + (o.nom || 'membre'));
+    // sa boutique (schéma 86) : un bouton en bas, seulement si elle est ouverte (rien ne bouge au-dessus)
+    if (window.MDGBoutique) MDGBoutique.adresseDe(uid).then(a => { const z = bg.querySelector('[data-bq]'); if (!z || !a || !bg.isConnected) return;
+      z.innerHTML = `<button type="button" class="rp-alt" style="width:100%;min-height:48px;margin-top:10px" data-bqv>${moi ? 'Voir ma boutique' : 'Voir sa boutique'}</button>`;
+      z.querySelector('[data-bqv]').onclick = () => { bg.fermer(); MDGBoutique.ouvrir(a); }; });
     const auth = !!N().session();
     // la structure qu'il représente (supabase/schema-23) : en tête du profil, avec ses preuves ; jamais pour le compte officiel
     if (!(window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(uid))) N().rpc('structure_publique', { p_uid: uid }, false).then(st => {

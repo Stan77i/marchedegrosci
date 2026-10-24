@@ -6,6 +6,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Chantier 4 (branche `claude/chantier-boutiques-p`, schéma 86 sur le projet de test seulement) : boutique par vendeur avec adresse (pseudo ou code court), lien, QR code à télécharger, aperçu de partage (pages `site/boutiques/`, noindex), visites en totaux ; pause d'une offre, retrait sans effacement, quantité obligatoire, verrou contre la survente ; page de maintenance avec le QR de la boutique.
 - Connexion : le titre alterne « marché de Gros » et « marché du pays » (3 s, puis 2 s, toutes les 10 s), validé en vidéo par le propriétaire ; le « court film » de connexion a été refusé et n'est pas fusionné.
 
 Audit antislop de l'application, stabilité, prix officiels et reprise de projet.

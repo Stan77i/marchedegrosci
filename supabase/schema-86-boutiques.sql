@@ -1,5 +1,5 @@
 -- Schéma 86 : boutiques des vendeurs (chantier 4, décisions 34 à 44 du 24/10/2026).
--- Appliqué d'abord sur le projet de TEST (yowdymdnoiubatxlwhfv). Production : seulement avec l'accord du propriétaire.
+-- Testé sur le projet de TEST (yowdymdnoiubatxlwhfv), puis appliqué en production le 24/10/2026 (vidéo des animations validée par le propriétaire).
 -- Rien n'est effacé : colonnes ajoutées « if not exists », fonctions « create or replace ».
 -- Ne touche ni nego_agir, ni stock_apres_accord, ni les tables et fonctions des chantiers fiabilité (84), badges (85) et ville seulement (87).
 

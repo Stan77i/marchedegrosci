@@ -2,7 +2,7 @@
    Demandé par le propriétaire le 22/10/2026 : la même philosophie que Binance P2P.
    • Onglet « Acheter » : les offres des vendeurs, du MOINS cher au plus cher. Onglet « Vendre » : les demandes des acheteurs,
      du budget le PLUS haut au plus bas. Celui qui baisse son prix (ou monte son budget) remonte tout seul.
-   • À prix égal : transport compris d'abord, puis le membre fiable, l'identité vérifiée, les commandes honorées, le plus récent.
+   • À prix égal : transport compris d'abord, puis le membre qui a un niveau (schéma 85), l'identité vérifiée, les commandes honorées, le plus récent.
      Le classement est fait par le serveur (supabase/schema-59-tableau-marche.sql : tableau_produits, tableau_marche).
    • On ne compare que des prix dans la même unité (kg, sac, régime…) ; filtre par zone (région).
    • Le seul intermédiaire, c'est le Marché de Gros : aucun numéro, aucun contact. « Acheter » / « Vendre » ouvre la négociation
@@ -19,8 +19,8 @@
   const REG = { abidjan: 'Abidjan', yamoussoukro: 'Yamoussoukro', 'bas-sassandra': 'Bas-Sassandra', comoe: 'Comoé', denguele: 'Denguélé', 'goh-djiboua': 'Gôh-Djiboua',
     lacs: 'Lacs', lagunes: 'Lagunes', montagnes: 'Montagnes', 'sassandra-marahoue': 'Sassandra-Marahoué', savanes: 'Savanes', 'vallee-du-bandama': 'Vallée du Bandama',
     woroba: 'Woroba', zanzan: 'Zanzan' };
-  const TR_O = { inclus: ['Transport compris', 'v'], hors_ville: ['Transport compris hors de sa ville', 'v'], non: ['Transport à part', ''] };
-  const TR_D = { acheteur: ['L’acheteur prend le transport', 'v'], vendeur: ['Le vendeur doit livrer', ''] };
+  const TR_O = { inclus: ['Transport compris', 'v'], hors_ville: ['Transport compris hors de sa ville', 'v'], non: ['Transport à votre charge', ''] };
+  const TR_D = { acheteur: ['Transport à la charge de l’acheteur', 'v'], vendeur: ['Le vendeur doit livrer', ''] };
   const pluriel = (q, u) => { u = String(u || ''); return q > 1 && u && !/[sx]$|^(kg|t|l|L)$/.test(u) ? u + 's' : u; };
   const nomProduit = slug => { const p = window.MDG && MDG.products && MDG.products.find(x => x.slug === slug); return p ? p.name : slug; };
   // l'image du produit : le sac détouré quand il existe (comme sur l'orbite de l'accueil), sinon la photo de sa famille ; la teinte vient du produit
@@ -199,7 +199,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
       const ligne = (x, i) => {
         const T = ach ? TR_O[x.transport] : TR_D[x.transport], cle = (ach ? 'offres:' : 'demandes:') + x.id;
         const ec = meilleur && x.prix != null && i > 0 && +x.prix !== meilleur ? Math.round(Math.abs(+x.prix - meilleur) / meilleur * 100) : 0;
-        const badges = (x.officiel ? '<span class="tb-b of">Officiel</span>' : '') + (x.verifie ? '<span class="tb-b" title="Identité vérifiée par l’équipe">✓ vérifié</span>' : '') + (x.fiable ? '<span class="tb-b or">★ fiable</span>' : '');
+        const badges = (x.officiel ? '<span class="tb-b of">Officiel</span>' : '') + (x.verifie ? '<span class="tb-b" title="Identité vérifiée par l’équipe">✓ vérifié</span>' : '') + (x.niveau ? '<span class="tb-b or">' + esc(x.niveau) + '</span>' : x.fiable ? '<span class="tb-b or">★ fiable</span>' : '');
         const lieu = [x.ville, x.region && REG[x.region]].filter(Boolean).filter((v, k, a) => a.indexOf(v) === k).join(', ');
         return `<li class="tb-r${i === 0 && x.prix != null ? ' top' : ''}${ach ? '' : ' vd'}">
           <span class="tb-rg" aria-label="Rang ${i + 1}">${i + 1}</span>

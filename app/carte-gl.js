@@ -101,6 +101,7 @@
 .cgl-pill::after{content:"";position:absolute;left:50%;bottom:-5px;width:10px;height:10px;margin-left:-5px;background:inherit;transform:rotate(45deg);border-radius:0 0 3px 0;box-shadow:2px 2px 3px rgba(0,0,0,.12)}
 .cgl-pill i{display:inline-grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 11px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.cgl-pill i::before{content:"";display:block;width:74%;height:74%;background:var(--sym-o) center/contain no-repeat}.cgl-pill i.d{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.cgl-pill i.d::before{content:"";display:block;width:74%;height:74%;background:var(--sym-d) center/contain no-repeat}
 .cgl-v{flex:none;display:inline-flex;color:#10392B;margin-left:-2px}
+.cgl-vs{flex:none;display:inline-flex;color:#10392B;margin-left:-2px}.cgl-vs svg{width:13px;height:13px}.cgl-pill.sel .cgl-vs{color:#A9E2BB}
 .cgl-pill small{font-weight:500;font-size:11px;color:#655C4D}.cgl-pill b{font-weight:700}
 .cgl-pill.d{background:#FFF6DA}.cgl-pill.approx{box-shadow:0 2px 10px rgba(0,0,0,.35),0 0 0 1.5px rgba(23,21,18,.25)}
 .cgl-pill:hover,.cgl-pill:focus-visible{transform:scale(1.06);z-index:3;outline:2px solid #10392B;outline-offset:2px;box-shadow:0 0 0 2px #FFFDF8}
@@ -293,10 +294,12 @@
             const verif = y => !!(y.uid && window.MDGStatut && MDGStatut.estVerifie(y.uid)), nV = g.items.filter(verif).length;
             const SCEAU = '<span class="cgl-v" title="Identité vérifiée"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.6l2.6 1.9 3.2-.2 1 3 2.6 1.9-1 3.1 1 3.1-2.6 1.9-1 3-3.2-.2L12 22.4l-2.6-1.9-3.2.2-1-3-2.6-1.9 1-3.1-1-3.1 2.6-1.9 1-3 3.2.2z"/><path d="m8 12.2 2.7 2.7L16.2 9.4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
             el.className = 'cgl-pill' + (seul && x.kind !== 'offre' ? ' d' : '') + (g.approx ? ' approx' : '') + (sel ? ' sel' : '');
-            if (seul) el.innerHTML = '<i class="' + (x.kind === 'offre' ? '' : 'd') + '"></i>' + court(x) + (nV ? SCEAU : '');
+            // « Vente uniquement à Guiglo » (schéma 87) : sur la bulle, seulement l'épingle (la bulle est déjà posée sur la ville) ; la phrase est dans le titre et pour les lecteurs d'écran
+            const VS = window.MDGVilleSeule, vsTxt = y => y.vs && VS ? VS.phrase(y.kind, y.city) : '';
+            if (seul) el.innerHTML = '<i class="' + (x.kind === 'offre' ? '' : 'd') + '"></i>' + court(x) + (nV ? SCEAU : '') + (vsTxt(x) ? '<span class="cgl-vs" title="' + esc(vsTxt(x)) + '">' + VS.PIN + '</span>' : '');
             else { const prix = g.items.filter(y => y.kind === 'offre' && y.price).map(y => y.price), mini = prix.length ? Math.min(...prix) : null;
               el.innerHTML = (nO ? '<i></i>' : '') + (nD ? '<i class="d"></i>' : '') + '<b>' + g.items.length + '</b>' + (mini ? '<small>dès ' + fmt(mini) + ' F</small>' : '<small>annonces</small>') + (nV ? SCEAU : ''); }
-            el.setAttribute('aria-label', g.items.map(y => (y.kind === 'offre' ? 'Offre ' : 'Demande ') + y.product + ', ' + fmt(y.qty) + ' ' + y.unit).join(' ; ') + ' · ' + (g.ville || '') + (g.approx ? ' (position approchée : chef-lieu)' : '') + (nV ? (seul ? ' · identité vérifiée' : ' · dont ' + nV + ' vérifié' + (nV > 1 ? 's' : '')) : ''));
+            el.setAttribute('aria-label', g.items.map(y => (y.kind === 'offre' ? 'Offre ' : 'Demande ') + y.product + ', ' + fmt(y.qty) + ' ' + y.unit + (vsTxt(y) ? ', ' + vsTxt(y).replace(/^./, c => c.toLowerCase()) : '')).join(' ; ') + ' · ' + (g.ville || '') + (g.approx ? ' (position approchée : chef-lieu)' : '') + (nV ? (seul ? ' · identité vérifiée' : ' · dont ' + nV + ' vérifié' + (nV > 1 ? 's' : '')) : ''));
             el.addEventListener('click', e => { e.stopPropagation(); choisir(ids, g.xy); });
           }
           const m = new ml.Marker({ element: enveloppe(el), anchor: 'bottom', offset: z < Z_VILLE ? [0, -6] : [0, -6] }).setLngLat(g.xy).addTo(map); m.getElement().style.zIndex = g.items.some(y => picked.includes(y.id)) ? 5 : 1; markers.push(m);

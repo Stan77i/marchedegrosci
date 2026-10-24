@@ -166,6 +166,7 @@
 .cm-opt.off{opacity:.6;cursor:default}
 .cm-f input[type=text],.cm-f textarea{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512}
 .cm-f textarea{min-height:76px;resize:vertical}
+.cm-motif{display:block;border:0;margin:0;padding:0;min-width:0}.cm-motif legend.t{display:block;margin:14px 0 2px;padding:0;font-weight:600}.cm-motif .cm-ck{margin:2px 0 0}
 .cm-ck{display:flex;gap:10px;align-items:center;min-height:44px;margin:10px 0 0;font-size:14px}.cm-ck input{width:20px;height:20px;accent-color:#10392B}
 .cm-err{color:#8A2414;font-size:13.5px;margin:8px 0 0;min-height:1em}
 .cm-note{margin:12px 2px 0;font-size:12.5px;color:#5E5546}
@@ -208,6 +209,7 @@
 .cm-wa{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:rgba(37,211,102,.1);font-size:13.5px}.cm-wa b{font-weight:600}.cm-wa a{color:#10392B;font-weight:600}
 .cm-f input[type=number]{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512}
 .cm-f select{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512;accent-color:#10392B}
+.cm-f input.cm-fige{background:#EFE8DA;color:#171512;font-weight:600;cursor:default}
 .cm-f select:focus-visible{outline:2px solid #10392B;outline-offset:2px}
 .cm-pick{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:16px;border:2px dashed rgba(16,57,43,.35);background:#FFFDF8;color:#10392B;font:600 15px Jost,sans-serif;cursor:pointer}
 .cm-pick input{position:absolute;width:1px;height:1px;opacity:0}
@@ -779,7 +781,7 @@
   }
 
   // la ligne « Transport » du détail (schéma 83) : la règle, les villes, le prix accepté ; pas de total quand le livreur est hors Marché de Gros
-  const REGLE = { inclus: 'Compris dans le prix', a_part: 'Le vendeur livre · transport à part', livreur_vendeur: 'Le vendeur organise son livreur', retrait: 'L’acheteur vient chercher', acheteur: 'Transporteur choisi par l’acheteur', mgci: 'Transporteur du réseau Marché de Gros' };
+  const REGLE = { inclus: 'Compris dans le prix', a_part: 'Le vendeur livre · transport à part', livreur_vendeur: 'Le vendeur organise son livreur', retrait: 'L’acheteur vient chercher', acheteur: 'Transport à la charge de l’acheteur', mgci: 'Transporteur du réseau Marché de Gros' };
   function ddTransport(c) {
     const T = transport[c.id] || {}, R = T.regle || c.transport_regle, px = T.prix_transport, hors = c.mode_transport !== 'reseau', gris = 'style="font-weight:400;color:#5E5546"';
     let h = `<dt>Transport</dt><dd>${esc(REGLE[R] || MODES[c.mode_transport] || '—')}`;
@@ -886,6 +888,11 @@
         <input type="text" id="cmM" maxlength="40" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="MANGUE 47" style="font:700 22px Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase">
         <label class="cm-ck"><input type="checkbox" id="cmS"> Je ne trouve pas le papier du vendeur</label>
         <p class="cm-info" data-sans hidden>Sans le mot, la réception est notée « sans le mot secret du vendeur », visible du vendeur et de l’équipe. Si la marchandise ne va pas, ne confirmez pas : <b>refusez-la avec des photos</b>.</p>` : ''}
+        ${o.motifs ? `<fieldset class="cm-motif"><legend class="t">Motif</legend>${MOTIFS.map(([k, t]) => `<label class="cm-ck"><input type="radio" name="cmMot" value="${k}"> ${t}</label>`).join('')}</fieldset>` : ''}
+        ${o.accord ? `<p class="cm-info" data-motif>Motif donné : …</p><fieldset class="cm-motif"><legend class="t">Êtes-vous d’accord avec ce motif ?</legend>
+          <label class="cm-ck"><input type="radio" name="cmAcc" value="1"> Oui, d’un commun accord</label>
+          <label class="cm-ck"><input type="radio" name="cmAcc" value="0"> J’accepte, mais je ne suis pas d’accord</label></fieldset>
+          <p class="cm-note" style="font-size:13.5px">D’un commun accord, l’annulation ne compte contre personne. Sinon, elle compte dans la fiabilité de l’autre partie, qui peut la contester.</p>` : ''}
         ${o.lieu ? `<label class="t" for="cmL">${o.lieu}</label><input type="text" id="cmL" maxlength="120" autocomplete="off">` : ''}
         ${o.note ? `<label class="t" for="cmN">${o.note}</label><textarea id="cmN" maxlength="300"></textarea>` : ''}
         ${o.gps ? `<label class="cm-ck"><input type="checkbox" id="cmG"> Joindre ma position actuelle (une seule fois)</label>` : ''}
@@ -901,6 +908,10 @@
       e.preventDefault();
       const L = f.querySelector('#cmL'), Nt = f.querySelector('#cmN'), G = f.querySelector('#cmG'), M = f.querySelector('#cmM');
       const lieu = L ? L.value.trim() : null, note = Nt ? Nt.value.trim() : null, mot = M ? M.value.trim() : null, sansMot = !!(Sm && Sm.checked);
+      const mo = f.querySelector('[name=cmMot]:checked'), motif = mo ? mo.value : null, ac = f.querySelector('[name=cmAcc]:checked'), accord = ac ? ac.value === '1' : null;
+      if (o.motifs && !motif) { err.textContent = 'Choisissez un motif.'; f.querySelector('[name=cmMot]').focus(); return; }
+      if (o.motifs && motif === 'autre' && !(note && note.length >= 3)) { err.textContent = 'Motif « Autre » : écrivez quelques mots.'; Nt.focus(); return; }
+      if (o.accord && accord == null) { err.textContent = 'Dites si vous êtes d’accord avec le motif.'; f.querySelector('[name=cmAcc]').focus(); return; }
       if (o.mot && !sansMot && !mot) { err.textContent = 'Tapez le mot secret écrit sur le papier du vendeur.'; M.focus(); return; }
       if (o.lieuRequis && !lieu) { err.textContent = 'Indiquez le lieu.'; L.focus(); return; }
       if (o.noteRequise && !note) { err.textContent = 'Expliquez en quelques mots.'; Nt.focus(); return; }
@@ -908,7 +919,7 @@
       const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = '';
       try {
         const pos = await position(G && G.checked);
-        await o.fn({ lieu, note, pos, mot, sansMot });
+        await o.fn({ lieu, note, pos, mot, sansMot, motif, accord });
         await lireListe(); await lireJournal(c.id);
         if (o.fait) toast(o.fait, { type: 'ok' });
         if (window.MDGSons && MDGSons.signal) try { MDGSons.signal('accord'); } catch (_) {}
@@ -916,7 +927,20 @@
       } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }
     };
     const premier = f.querySelector('input[type=text],textarea'); if (premier && matchMedia('(hover:hover)').matches) premier.focus();
+    // le motif donné par celui qui demande l'annulation (schéma 84), lu sur le serveur
+    const zm = f.querySelector('[data-motif]');
+    if (zm) N().rpc('commande_annulation_motif', { p_id: c.id }).then(m => { if (!zm.isConnected) return; const t = m && m.motif ? (MOTIF_NOM[m.motif] || m.motif) + (m.texte ? ' : « ' + m.texte + ' »' : '') : 'non précisé';
+      zm.innerHTML = 'Motif donné : <b>' + esc(t) + '</b>'; }).catch(() => { if (zm.isConnected) zm.textContent = 'Motif donné : non précisé'; });
   }
+  // motifs d'annulation (décision 11, schéma 84) ; « Autre » demande quelques mots
+  const MOTIFS = [['stock_epuise', 'Stock épuisé'], ['prix_change', 'Prix changé'], ['sans_reponse', 'L’autre partie ne répond pas'], ['erreur_saisie', 'Erreur de saisie'], ['panne_meteo', 'Panne ou météo'], ['autre', 'Autre']];
+  const MOTIF_NOM = Object.fromEntries(MOTIFS);
+  // appel des portes du schéma 84 ; serveur pas encore à jour : l'ancienne fonction, sans motif
+  const ancien = e => /schema cache|Could not find the function|PGRST202/i.test(String(e && e.message));
+  const annulerMotif = (c, oui, v) => N().rpc('commande_annuler_motif', { p_id: c.id, p_oui: oui, p_note: v.note || null, p_motif: v.motif || null, p_motif_texte: v.motif ? v.note || null : null, p_accord: v.accord == null ? null : v.accord })
+    .catch(e => ancien(e) ? N().rpc('commande_annuler', { p_id: c.id, p_oui: oui, p_note: v.note || null }) : Promise.reject(e));
+  const repondreMotif = (c, oui, v) => N().rpc('commande_repondre_motif', { p_id: c.id, p_oui: oui, p_note: v.note || null, p_motif: v.motif || null, p_motif_texte: v.motif ? v.note || null : null })
+    .catch(e => ancien(e) ? N().rpc('commande_repondre', { p_id: c.id, p_oui: oui, p_note: v.note || null }) : Promise.reject(e));
   function geste(c, g) {
     const R = (f, a) => N().rpc(f, a);
     const av = (etape, ok, extra) => confirmer(c, Object.assign({ titre: ok, ok, etape, gps: true, note: 'Un mot (facultatif)', fait: LIB[etape] || ok,
@@ -925,8 +949,8 @@
       case 'oui': return confirmer(c, { titre: 'Confirmer la <em>commande</em>', ok: 'Confirmer', note: 'Un mot (facultatif)', fait: 'Commande confirmée', etape: 'confirmee',
         texte: `Transport : ${esc(MODES[c.mode_transport] || '')}. Livraison : ${esc(c.lieu_livraison || 'à convenir')}.`,
         fn: v => R('commande_repondre', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
-      case 'non': return confirmer(c, { titre: 'Refuser la commande', ok: 'Refuser', note: 'Pourquoi ? (facultatif)', fait: 'Commande refusée',
-        fn: v => R('commande_repondre', { p_id: c.id, p_oui: false, p_note: v.note || null }) });
+      case 'non': return confirmer(c, { titre: 'Refuser la commande', ok: 'Refuser', motifs: true, note: 'Un mot (obligatoire pour « Autre »)', fait: 'Commande refusée',
+        texte: 'Avant confirmation, un refus ne compte pas dans votre fiabilité.', fn: v => repondreMotif(c, false, v) });
       case 'preparation': return av('preparation', 'Marchandise en préparation', { gps: false });
       case 'chargement': return av('chargement', 'Chargement confirmé', { texte: c.mode_transport === 'reseau' ? 'Confirmez seulement quand la marchandise est dans le camion. Le transport commence alors.' : 'Confirmez seulement quand la marchandise est dans le camion. Ensuite, touchez « Le camion est parti » au départ (ou laissez le lien de suivi du chauffeur le détecter).' });
       case 'transport': return av('transport', 'Le camion est parti', { texte: 'Touchez quand le camion démarre avec la marchandise. ' + (c.role === 'vendeur' ? 'L’acheteur' : 'Le vendeur') + ' est prévenu.', fait: 'Départ signalé : le camion est en route' });
@@ -937,13 +961,13 @@
             texte: 'Confirmez seulement après avoir vérifié la quantité et la qualité. La commande sera terminée.',
             fn: v => R('commande_reception_mot', { p_id: c.id, p_mot: v.sansMot ? null : v.mot, p_sans_mot: v.sansMot, p_lat: v.pos ? v.pos[0] : null, p_lon: v.pos ? v.pos[1] : null, p_note: v.note || null }) })
         : av('reception', 'Réception confirmée', { texte: 'Confirmez seulement après avoir vérifié la quantité et la qualité. La commande sera terminée.', fait: 'Réception confirmée : commande terminée' });
-      case 'annuler': return confirmer(c, { titre: c.etat === 'a_confirmer' ? 'Retirer la commande' : 'Demander l’annulation', ok: c.etat === 'a_confirmer' ? 'Retirer' : 'Demander', note: 'Pourquoi ? (facultatif)',
-        texte: c.etat === 'a_confirmer' ? '' : 'L’acheteur doit accepter l’annulation. Le stock reviendra sur l’annonce.',
-        fait: c.etat === 'a_confirmer' ? 'Commande retirée' : 'Demande d’annulation envoyée', fn: v => R('commande_annuler', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
-      case 'annul-oui': return confirmer(c, { titre: 'Accepter l’annulation', ok: 'Accepter', note: 'Un mot (facultatif)', fait: 'Commande annulée', texte: 'Le stock reviendra sur l’annonce.',
-        fn: v => R('commande_annuler', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
+      case 'annuler': return confirmer(c, { titre: c.etat === 'a_confirmer' ? 'Retirer la commande' : 'Demander l’annulation', ok: c.etat === 'a_confirmer' ? 'Retirer' : 'Demander', motifs: true, note: 'Un mot (obligatoire pour « Autre »)',
+        texte: c.etat === 'a_confirmer' ? 'Avant confirmation, un retrait ne compte pas dans votre fiabilité.' : 'L’acheteur doit accepter l’annulation. Le stock reviendra sur l’annonce. S’il n’est pas d’accord avec votre motif, l’annulation comptera dans votre fiabilité.',
+        fait: c.etat === 'a_confirmer' ? 'Commande retirée' : 'Demande d’annulation envoyée', fn: v => annulerMotif(c, true, v) });
+      case 'annul-oui': return confirmer(c, { titre: 'Accepter l’annulation', ok: 'Accepter', accord: true, note: 'Un mot (facultatif)', fait: 'Commande annulée', texte: 'Le stock reviendra sur l’annonce.',
+        fn: v => annulerMotif(c, true, v) });
       case 'annul-non': return confirmer(c, { titre: 'Refuser l’annulation', ok: 'Refuser', note: 'Un mot (facultatif)', fait: 'Annulation refusée',
-        fn: v => R('commande_annuler', { p_id: c.id, p_oui: false, p_note: v.note || null }) });
+        fn: v => annulerMotif(c, false, v) });
       case 'liberer': { const S = seq[c.id], A = S && S.actif;
         return confirmer(c, { titre: A ? 'Libérer le <em>paiement</em>' : 'Tout est <em>conforme</em>', ok: A ? 'Libérer le paiement' : 'Confirmer', fait: A ? 'Paiement libéré : chacun reçoit sa part' : 'Merci ! Commande clôturée',
           texte: A ? 'Confirmez seulement si la quantité et la qualité sont bonnes. Le vendeur et le transporteur reçoivent alors leur part. Cette action ne s’annule pas.' : 'Confirmez seulement si la quantité et la qualité sont bonnes. La commande sera clôturée : vous ne pourrez plus la refuser.',
@@ -972,6 +996,9 @@
     return Object.assign({}, t, { modes, defaut: modes.includes(t.defaut) ? t.defaut : modes[0], bientot: t.modes.includes('reseau') });
   }
   const annonceDe = n => { try { return (N().list(n.cible === 'offre' ? 'offres' : 'demandes') || []).find(x => x._rid === n.cible_id) || null; } catch (_) { return null; } };
+  // sa propre annonce (publiée depuis ce téléphone) : retrouvée par son numéro sur le serveur (mdg-nuage:pousse)
+  const mienne = n => { try { const k = n.cible === 'offre' ? 'offres' : 'demandes', p = JSON.parse(localStorage.getItem('mdg-nuage:pousse') || '{}'), cle = Object.keys(p).find(x => x.startsWith(k + ':') && p[x] === n.cible_id);
+    return cle ? (JSON.parse(localStorage.getItem('mdg-v2:' + k) || '[]').find(x => x.id === cle.slice(k.length + 1)) || null) : null; } catch (_) { return null; } };
   const moiVendeur = n => (n.cible === 'offre') === (me() === n.proprio_id);
   function choixTransport0(n, meme) {
     const a = annonceDe(n), t = a && a.transport, pt = n.transport_final === false && +n.prix_transport_final > 0 ? +n.prix_transport_final : 0;
@@ -986,7 +1013,7 @@
       info: 'Même ville : le vendeur organise la livraison. ' + frais };
     const hv = n.cible === 'offre' && t === 'hors_ville';
     return { modes: hv ? ['vendeur', 'acheteur', 'reseau'] : ['acheteur', 'vendeur', 'reseau'], defaut: hv ? 'vendeur' : 'acheteur', lib: {}, sous: {},
-      info: meme === false ? (hv ? 'Le vendeur livre hors de sa ville.' : 'Villes différentes, transport non compris dans l’accord : l’acheteur s’en charge, sauf accord avec le vendeur.') : '' };
+      info: meme === false ? (hv ? 'Le vendeur livre hors de sa ville.' : 'Villes différentes : le transport est à la charge de l’acheteur, sauf accord avec le vendeur.') : '' };
   }
   // le lien de suivi pour son propre chauffeur (schéma 48)
   const ago = t => { const m = Math.round((Date.now() - Date.parse(t)) / 60000); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
@@ -1043,7 +1070,10 @@
     const offre = n.cible === 'offre', a = annonceDe(n), villeAnn = (a && a.city) || n.ville || '';
     const VL = window.MDGVilles ? MDGVilles.toutes().map(x => x.nom).sort((x, y) => x.localeCompare(y, 'fr')) : [];
     const cle = v => window.MDGVilles ? MDGVilles.cle(v) : String(v || '').toLowerCase();
-    const optV = VL.length ? `<select id="cmVille" required><option value="">Choisir la ville</option>${VL.map(v => `<option${!offre && cle(v) === cle(villeAnn) ? ' selected' : ''}>${esc(v)}</option>`).join('')}</select>`
+    // schéma 87 : annonce « ville seulement » → la ville est imposée (pré-remplie et verrouillée), avec la phrase d'explication
+    const aVs = a || mienne(n), VS = window.MDGVilleSeule, villeSeule = !!(aVs && aVs.villeSeule && aVs.city && VS) ? aVs.city : '';
+    const optV = villeSeule ? `<input type="text" id="cmVille" value="${esc(villeSeule)}" readonly aria-readonly="true" aria-describedby="cmVs" class="cm-fige">`
+      : VL.length ? `<select id="cmVille" required><option value="">Choisir la ville</option>${VL.map(v => `<option${!offre && cle(v) === cle(villeAnn) ? ' selected' : ''}>${esc(v)}</option>`).join('')}</select>`
       : `<input type="text" id="cmVille" maxlength="80" autocomplete="off" placeholder="Ville" value="${offre ? '' : esc(villeAnn)}">`;
     const DESC = { reseau: 'L’équipe du Marché de Gros vous propose un transporteur vérifié. Son prix se convient à trois : lui, l’acheteur et le vendeur.',
       acheteur: 'L’acheteur envoie son camion ou son chauffeur. Rien à installer pour le chauffeur ; un lien de suivi est possible.',
@@ -1054,6 +1084,7 @@
       <form class="cm-f" novalidate>
         <label class="t" for="cmVille">${offre ? 'Ville de livraison' : 'Ville où se trouve la marchandise'}</label>
         ${optV}
+        ${villeSeule ? `<div id="cmVs" style="margin-top:8px">${VS.avertir(offre ? 'offre' : 'demande', villeSeule)}</div>` : ''}
         <p class="cm-note" style="margin:6px 0 0">${offre ? 'La marchandise part de ' + esc(villeAnn || 'la ville de l’annonce') + '.' : 'Livraison à ' + esc(villeAnn || 'la ville de la demande') + '.'}</p>
         <label class="t">Qui transporte la marchandise ?</label>
         <div data-modes></div>

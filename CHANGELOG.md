@@ -7,10 +7,18 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 ## 24/10/2026
 
 - Chantier 4 (branche `claude/chantier-boutiques-p`, schéma 86 sur le projet de test seulement) : boutique par vendeur avec adresse (pseudo ou code court), lien, QR code à télécharger, aperçu de partage (pages `site/boutiques/`, noindex), visites en totaux ; pause d'une offre, retrait sans effacement, quantité obligatoire, verrou contre la survente ; page de maintenance avec le QR de la boutique.
+
+- Transport : « Transport à votre charge » pour l'acheteur, « À la charge de l'acheteur » pour le vendeur, « À ma charge » dans une demande, partout (publication, annonces, tableau du marché, négociation, commande).
+
+
+- « Ville uniquement » : pour une localité tapée (« Guiglo » dans la région Abidjan), c'est la ville de rattachement de la région choisie qui compte (« Je vends uniquement à Abidjan »), dans l'application et sur le serveur (schéma 87b) ; la région choisie ne change plus toute seule.
+- Publication d'une offre : le choix « Non inclus » devient « Transport à part » (« son prix se négocie à part »), et l'annonce affiche « Transport à part » au lieu de « Transport à discuter ».
+- Niveaux de confiance (chantier 3) : Vendeur fiable, Bon, Excellent, Grand vendeur, mêmes paliers pour les acheteurs et « Acheteur en gros », calculés par le serveur (schéma 85, appliqué en production), écran « Mes niveaux », tableau de bord de l'administrateur.
 - Connexion : le titre alterne « marché de Gros » et « marché du pays » (3 s, puis 2 s, toutes les 10 s), validé en vidéo par le propriétaire ; le « court film » de connexion a été refusé et n'est pas fusionné.
 
 Audit antislop de l'application, stabilité, prix officiels et reprise de projet.
 
+- « Ville seulement » : vendre ou acheter uniquement dans sa ville (schéma 87, projet de test seulement) : interrupteur à la publication, pastille « Guiglo uniquement » partout où l'annonce apparaît, avertissement avant de négocier ou d'écrire, ville imposée à la commande, refus du serveur hors de la ville (branche `claude/ville-seulement`).
 - Audit antislop de l'application : rapport complet sans correction (a40b3ca, Stan77i/marchedegrosci#251), puis corrections par lots :
   - phrases justes sur le paiement, n° 1 à 6 (b9143f4, Stan77i/marchedegrosci#251) ;
   - textes lisibles, n° 7 à 20 (c345021, Stan77i/marchedegrosci#252) ;

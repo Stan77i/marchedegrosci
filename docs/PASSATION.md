@@ -1626,3 +1626,10 @@ Demande du propriétaire : « Vente uniquement à Guiglo », « Achat uniquement
   - commande : règle `acheteur` = « Transport à la charge de l'acheteur » ; villes différentes : « le transport est à la charge de l'acheteur, sauf accord avec le vendeur ».
 - « À part » garde son sens du chantier 1 (le vendeur livre, prix du transport ajouté et négocié). Aucune valeur enregistrée ne change.
 - `v3/negoce.js`, `v3/tableau.js`, `v3/commandes.js` en `?v=20261124tc` ; cache `mgci-v263`. Vu dans Chromium (iPhone 13, sombre) : formulaires J'ai et Je cherche, aucune erreur. Négociation et commande non vues (il faut un compte connecté).
+
+## 24/10/2026 · Ville et région toujours d'accord
+
+- Signalé par le propriétaire (capture) : région Abidjan, « Autre localité » = « Guiglo », et l'interrupteur affichait « Je vends uniquement à Guiglo ». La ville tapée n'était reconnue qu'en quittant le champ.
+- `application.dc.html` : `villeConflit(f)` repère une localité tapée qui est une ville connue d'une autre région. Sous le champ : « Guiglo est dans la région Montagnes, pas dans la région choisie. » et le bouton « Choisir Guiglo (Montagnes) » (ville et région corrigées d'un geste). `vsForm(f)` : l'interrupteur « uniquement à » reste « dans ma ville », grisé, tant que la ville et la région se contredisent. `refusTexte` bloque la publication dans ce cas, avec la même explication. Valable pour les trois formulaires (feuille J'ai / Je cherche, Vendre, Demander).
+- `v3/compte.js` (profil) : une ville connue tapée à la main est enregistrée avec sa vraie région, même sans quitter le champ. `?v=20261124vc`.
+- Vu dans Chromium (iPhone 13, sombre) : alerte affichée, interrupteur grisé, puis après le bouton : région Montagnes, « Je vends uniquement à Guiglo ». Aucune erreur. Contraste du texte 8,9:1 environ (passe), bouton blanc sur vert profond (passe). Cache `mgci-v264`.

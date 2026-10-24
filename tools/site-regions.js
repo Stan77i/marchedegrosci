@@ -35,7 +35,7 @@ function fabriquer({ NOM, esc, lire, vm, photo }) {
     const fil = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Marché de Gros CI', item: BASE }, { '@type': 'ListItem', position: 2, name: 'Les districts', item: BASE + 'regions/' }, { '@type': 'ListItem', position: 3, name: nom, item: canon }] };
     return { r, nom, nbProd: prods.length, v: {
-      REGION: r, NOM: esc(nom), CHEF: esc(CHEF[r]), DANS: esc(dans), TITRE: esc(titre), DESCRIPTION: esc(desc), CANON: canon, JSONLD_FIL: JSON.stringify(fil).replace(/</g, '\\u003c'),
+      REGION: r, NOM: esc(nom), CHEF: esc(CHEF[r]), DANS: esc(dans), DANS_MAJ: esc(dans.charAt(0).toUpperCase() + dans.slice(1)), TITRE: esc(titre), DESCRIPTION: esc(desc), CANON: canon, JSONLD_FIL: JSON.stringify(fil).replace(/</g, '\\u003c'),
       MARCHE: MARCHE[r] ? `<p class="pr-sous">On y trouve ${esc(MARCHE[r])} : voir <a href="../../guides/grands-marches-de-gros/">les grands marchés de gros du vivrier</a>.</p>` : '',
       RECOLTES: prods.length ? recoltes + LEGENDE : '<p>Aucune période de récolte sourcée pour ce district pour l’instant.</p>',
       NB_RECOLTES: String(prods.length),

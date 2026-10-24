@@ -6,8 +6,8 @@
 ## 1. L'état au moment de la reprise
 
 - **Toutes les PR sont fusionnées** (jusqu'à la PR #247). Aucune PR ouverte, aucun travail en cours. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
-- `main` : cache du service worker `mgci-v234` (`mgci-v243` après les PR de l'audit antislop).
-- Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **81** appliqués (80 `fil_public`, 81 `site_mesures` / `mesurer` / `mesures_resume`). Mêmes schémas sur le projet de test. Schéma 82 appliqué partout ; schéma 83 (chantier transport) sur le projet de test seulement.
+- `main` : cache du service worker `mgci-v254` après les PR du site (#259 à #263) ; numéros réservés : `mgci-v248` fiabilité, `v249` badges, `v250` boutiques, `v251` film de connexion.
+- Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **83** appliqués (82 commission transport réservée au service Marché de Gros ; 83a à 83e chantier transport, appliqués le 24/10/2026). Le projet de test a en plus le schéma 84 (fiabilité, en cours).
 
 ## 2. Ce qui a été fait (session du 23/10/2026)
 
@@ -60,7 +60,11 @@
 
 ## 3. Ce qui reste à faire (dans l'ordre conseillé)
 
-**0 ter. Les 4 chantiers (24/10/2026) : décisions validées** (`docs/audits/decisions-chantiers-2026-10-24.md`). C1 et C2 faits (schéma 82). **Chantier 1 (transport) construit** sur la branche `claude/chantier-transport` : schéma 83 (83a à 83d) appliqué et testé sur le projet de **test** seulement ; à appliquer en production par le propriétaire, dans l'ordre 83a, 83b, 83c, 83d, 83e (corrections de relecture du filtre des numéros), avant de fusionner l'écran. Le transporteur du réseau reste fermé (réglage `transport_reseau_ouvert` à `false`, `RESEAU_OUVERT = false`). Pour garder aussi l'alerte d'un numéro dans un litige, le propriétaire peut coller dans l'éditeur SQL : `alter table public.alertes drop constraint alertes_source_check; alter table public.alertes add constraint alertes_source_check check (source in ('dm', 'negociation', 'litige'));` Reste, dans l'ordre : fiabilité, badges, boutiques ; une PR par chantier.
+**0. À faire par le propriétaire** (liste et mode d'emploi : `docs/A-FAIRE-PROPRIETAIRE.md`) : autoriser le serveur `catmsypctymgkjkfzdkt.supabase.co` dans l'environnement Claude, puis un compte de test. Le rappeler au début d'une discussion ; ensuite, vérifier à l'écran les fenêtres avec compte et le point n° 59 de l'audit antislop (`docs/anti-slop/audit-001-2026-10-24.md`, terminé pour le reste).
+
+**0 bis. Audit antislop du site caché (24/10/2026) : le propriétaire choisit les numéros** dans `docs/anti-slop/audit-002-2026-10-24-site.md` (32 constats + décision D : l'eau en bleu sur la carte). Ne rien corriger sans son choix. Faits : n° 1 à 32. Décision D tranchée : l'eau reste bleue. L'audit du site est terminé.
+
+**0 ter. Les 4 chantiers (24/10/2026) : décisions validées** (`docs/audits/decisions-chantiers-2026-10-24.md`). C1 et C2 faits (schéma 82). **Chantier 1 (transport) construit** sur la branche `claude/chantier-transport` : schéma 83 (83a à 83e) testé sur le projet de test puis **appliqué en production** le 24/10/2026 (PR #267, fusionnée). Le transporteur du réseau reste fermé (réglage `transport_reseau_ouvert` à `false`, `RESEAU_OUVERT = false`). Pour garder aussi l'alerte d'un numéro dans un litige, le propriétaire peut coller dans l'éditeur SQL : `alter table public.alertes drop constraint alertes_source_check; alter table public.alertes add constraint alertes_source_check check (source in ('dm', 'negociation', 'litige'));` Reste, dans l'ordre : fiabilité, badges, boutiques ; une PR par chantier.
 
 **0. Audit antislop de l'application (24/10/2026) : le propriétaire choisit les numéros à corriger** dans `docs/anti-slop/audit-001-2026-10-24.md` (59 constats + 3 décisions A, B, C). Ne rien corriger sans son choix ; ensuite une PR par lot, et noter dans le fichier ce qui est fait. **Audit terminé** : tout est fait sauf 3 points laissés exprès (50, 54) ou à vérifier avec des données (59). Décisions A, B, C tranchées le 24/10/2026 et appliquées (accueil calmé, « vérifié » en vert, dégradé de « de Gros » gardé). Seul reste le n° 59, à vérifier quand le serveur sera joignable depuis la session.
 

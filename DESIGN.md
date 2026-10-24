@@ -28,6 +28,7 @@ Les valeurs viennent du code (`css/mgci-tokens.css`, `css/sombre.css`, `css/mgci
 
 Règles :
 - **Plus de bleu ni de violet pour décorer** (24/10/2026) : « transport compris » et le choix retenu sont en vert (`#1F8A55` en bordure, `#10392B` pour le tampon) ; les tuiles « vous » et « lien » du menu sont vert profond et encre chaude. Décision du propriétaire (24/10/2026) : le badge « vérifié » et les négociations sont en **vert profond** `#10392B` ; plus aucun bleu hors du lien « compatible » de la carte.
+- **Exception : l'eau des cartes reste bleue** (fleuves et lacs, `#4F7A8F` / `#3D6476` dans `site/site.css`), décision du propriétaire du 24/10/2026 : ici le bleu dit « eau », il ne décore pas.
 - **Une couleur = un sens.** Vert clair = offre, jaune = demande, vert profond = accord, corail = alerte. Ne pas réutiliser ces couleurs pour décorer.
 - Texte sur couleur : contraste 4,5:1 minimum (3:1 pour 18 px gras et plus). Blanc sur corail clair est interdit (3,1:1).
 - Mode nuit : `css/sombre.css` pour les pages, `app/nuit.js` traduit les fenêtres. Une fenêtre qui a ses propres couleurs sombres s'ajoute à la liste `DEJA` de `app/nuit.js`.
@@ -121,7 +122,7 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 27. `prefers-reduced-motion` respecté : l'état change, le déplacement disparaît.
 
 **Finitions qui trahissent l'amateur**
-28. Les surfaces du navigateur sont à nos couleurs : sélection de texte (maïs), curseur de saisie, cases et curseurs (`accent-color`), anneau de focus.
+28. Les surfaces du navigateur sont à nos couleurs : sélection de texte (maïs), curseur de saisie, cases et curseurs (`accent-color`), anneau de focus. L'anneau de focus est **vert `#10392B` sur fond clair** et maïs seulement sur fond vert ou noir (le maïs sur crème ne fait que 1,4 à 1,7:1).
 29. Chiffres alignés (`tabular-nums`) dans les prix et les quantités.
 29 bis. Un nombre à côté d'un libellé (« Offres 6 », « Tout 8 », « Préparer la sélection 3 ») est **toujours dans une pastille** (`.nbul`) : neutre, vert pour les offres (`.o`), maïs pour les demandes (`.d`), maïs quand le bouton est choisi. Jamais un chiffre nu ni entre parenthèses.
 30. Tous les états existent : vide, chargement, erreur, hors connexion, désactivé.

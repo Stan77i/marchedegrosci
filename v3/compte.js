@@ -511,13 +511,15 @@ label.cp-r{cursor:pointer}
   const STRUCT = { particulier: ['À mon compte', 'Je vends ou j’achète pour moi'], cooperative: ['Coopérative', 'Des producteurs regroupés'], groupement: ['Groupement', 'Association, GIE, groupe de femmes…'], entreprise: ['Entreprise', 'Industrie, négoce, transformation'], marche: ['Marché', 'Un marché et ses commerçants'] };
   const STRUCT_ICO = { particulier: 'compte', cooperative: 'confiance', groupement: 'service', entreprise: 'tableau', marche: 'vendre' };
   const imgStruct = c => c ? (/^(https?:|data:|blob:)/.test(c) ? c : N().URL + '/storage/v1/object/public/activites/' + c) : '';
-  const reduireImg = (file, cote = 1000) => new Promise((ok, ko) => { const u = URL.createObjectURL(file), im = new Image(); im.onerror = () => { URL.revokeObjectURL(u); ko(new Error('Image illisible. Essayez une autre photo.')); };
+  // webp : pour le stockage public « activites » (il accepte WebP) ; le téléphone qui ne sait pas l'écrire (Safari) garde le JPEG
+  const reduireImg = (file, cote = 1000, webp = false) => new Promise((ok, ko) => { const u = URL.createObjectURL(file), im = new Image(); im.onerror = () => { URL.revokeObjectURL(u); ko(new Error('Image illisible. Essayez une autre photo.')); };
     im.onload = () => { URL.revokeObjectURL(u); const k = Math.min(1, cote / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
-      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height); c.toBlob(b => b ? ok(b) : ko(new Error('Image illisible.')), 'image/jpeg', .8); }; im.src = u; });
+      const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height); const jpeg = () => c.toBlob(b => b ? ok(b) : ko(new Error('Image illisible.')), 'image/jpeg', .8);
+      if (webp) c.toBlob(w => w && w.type === 'image/webp' ? ok(w) : jpeg(), 'image/webp', .76); else jpeg(); }; im.src = u; });
   // le formulaire : 4 choix ; pour une structure, son nom, son logo et jusqu'à 4 preuves (facultatifs). Renvoie { val, verifier }.
   function formStructure(root, p) {
     let type = p.structure_type || '', logo = p.structure_logo || null, preuves = (p.structure_preuves || []).slice(0, 4), nom = p.structure_nom || '';
-    const envoyer = async (fichier, quoi) => { const u = me(); const blob = await reduireImg(fichier, quoi === 'logo' ? 600 : 1200), chemin = u.id + '/' + quoi + '-' + Date.now() + '.jpg'; await N().televerser('activites/' + chemin, blob); return chemin; };
+    const envoyer = async (fichier, quoi) => { const u = me(); const blob = await reduireImg(fichier, quoi === 'logo' ? 600 : 1200, true), chemin = u.id + '/' + quoi + '-' + Date.now() + (blob.type === 'image/webp' ? '.webp' : '.jpg'); await N().televerser('activites/' + chemin, blob); return chemin; };
     // les choix sont dessinés une fois ; toucher un choix change la sélection SUR PLACE (rien ne se redessine au-dessus,
     // le clavier ne s'ouvre pas tout seul) : la page ne monte ni ne descend
     const libNom = () => type === 'marche' ? 'Nom du marché' : 'Nom de la ' + (type === 'entreprise' ? 'société' : STRUCT[type][0].toLowerCase());

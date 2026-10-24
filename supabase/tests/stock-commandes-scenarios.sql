@@ -209,9 +209,10 @@ begin
   execute 'reset role';
   update public.commandes set etape = 'transport' where id = any(c);
   execute 'set local role authenticated';
-  -- 1. « Arrivée / livré » : refusé à l'acheteur (le vendeur transporte), accepté pour le vendeur
+  -- 1. « Arrivée » par l'acheteur, puis « livré » par le vendeur
   perform set_config('request.jwt.claims', json_build_object('sub', A, 'role', 'authenticated')::text, true);
-  begin perform public.commande_avancer(c[1], 'arrivee'); res := res || 'acheteur arrivee ACCEPTEE?!'; exception when others then res := res || 'acheteur arrivee: ' || left(sqlerrm, 70); end;
+  -- l'acheteur peut dire « arrivée » (demande du propriétaire) ; le vendeur déclare ensuite « livré » pour lancer le délai
+  begin perform public.commande_avancer(c[1], 'arrivee'); res := res || 'acheteur arrivee=ok'; exception when others then res := res || 'acheteur arrivee REFUSEE?!: ' || left(sqlerrm, 70); end;
   perform set_config('request.jwt.claims', json_build_object('sub', V, 'role', 'authenticated')::text, true);
   for i in 1..3 loop perform public.commande_avancer(c[i], 'arrivee'); end loop;
   execute 'reset role';
@@ -264,5 +265,54 @@ begin
   -- 8. journal dans l'ordre (horodatage clock_timestamp)
   select string_agg(evenement, ',') into x from public.commande_journal(c[2]) where evenement not like 'sq_%';
   res := res || ' | journal c2=' || x;
+  raise exception 'TEST: %', res;
+end $$;
+
+-- ══ Bloc D : l'acheteur dit « arrivée » ; le vendeur peut déclarer « livré » pour faire partir le délai ; avis → file des notifications ══
+do $$
+declare V uuid := 'ca27004f-17de-494a-8db8-8c85a7cbd65c'; A uuid := '657e5590-29cb-42dc-a512-ae0baa98c968';
+  oid uuid := gen_random_uuid(); n uuid[] := array[]::uuid[]; c uuid[] := array[]::uuid[]; i int; res text := ''; x text; j json;
+begin
+  -- abonnements fictifs (dans le bloc annulé) : sans abonnement, _notif_mettre ne met rien en file
+  insert into public.push_abonnements (endpoint, user_id, p256dh, auth) values ('https://test92.invalid/abonnement-v', V, repeat('k', 20), repeat('a', 8)), ('https://test92.invalid/abonnement-a', A, repeat('k', 20), repeat('a', 8));
+  insert into public.offres (id, user_id, client_id, product_slug, region_slug, city, quantity, unit, status)
+    values (oid, V, 'test92-o-d', 'igname', 'bouake', 'Bouaké', 1000, 'kg', 'active');
+  for i in 1..3 loop
+    n := n || gen_random_uuid();
+    insert into public.negociations (id, cible, cible_id, auteur_id, proprio_id, produit, ville, unite, quantite, statut)
+      values (n[i], 'offre', oid, A, V, 'Igname', 'Bouaké', 'kg', 100, 'ouverte');
+    update public.negociations set statut = 'conclue', prix_final = 300, quantite_finale = 100, transport_final = false, conclu_le = now() where id = n[i];
+  end loop;
+  execute 'set local role authenticated';
+  for i in 1..3 loop
+    perform set_config('request.jwt.claims', json_build_object('sub', A, 'role', 'authenticated')::text, true);
+    c := c || public.commande_creer2(n[i], 'vendeur', 'Adjamé', 'Abidjan', null);
+    perform set_config('request.jwt.claims', json_build_object('sub', V, 'role', 'authenticated')::text, true);
+    perform public.commande_repondre(c[i], true, null);
+  end loop;
+  execute 'reset role';
+  update public.commandes set etape = 'transport' where id = any(c[1:2]);
+  -- 1. l'acheteur déclare l'arrivée : pas de délai lancé ; le vendeur peut ensuite déclarer « livré » une fois
+  execute 'set local role authenticated';
+  perform set_config('request.jwt.claims', json_build_object('sub', A, 'role', 'authenticated')::text, true);
+  x := public.commande_avancer(c[1], 'arrivee'); res := res || 'acheteur arrivee=' || x;
+  begin perform public.commande_avancer(c[1], 'arrivee'); res := res || ' | 2e arrivee acheteur ACCEPTEE?!'; exception when others then res := res || ' | 2e arrivee acheteur: ' || sqlerrm; end;
+  execute 'reset role'; res := res || ' livre_le=' || coalesce((select livre_le::text from public.commandes where id = c[1]), 'null'); execute 'set local role authenticated';
+  perform set_config('request.jwt.claims', json_build_object('sub', V, 'role', 'authenticated')::text, true);
+  j := public.commande_delais(c[1]); res := res || ' | vendeur peut_declarer=' || (j->>'peut_declarer_arrivee');
+  perform public.commande_avancer(c[1], 'arrivee');
+  begin perform public.commande_avancer(c[1], 'arrivee'); res := res || ' | 2e livre ACCEPTE?!'; exception when others then res := res || ' | 2e livre vendeur: ' || sqlerrm; end;
+  -- 2. le vendeur déclare « livré » sur la 2e : délai lancé ; l'acheteur peut encore refuser (étape arrivée)
+  perform public.commande_avancer(c[2], 'arrivee');
+  execute 'reset role';
+  res := res || ' | c2 apres livre vendeur=' || (select etape || ' livre_le=' || (livre_le is not null) from public.commandes where id = c[2]);
+  -- 3. avis du système → file des notifications (catégorie commande)
+  update public.commandes set confirme_le = now() - interval '61 hours' where id = c[3];
+  update public.commandes set livre_le = now() - interval '13 hours' where id = c[2];
+  j := public.commandes_delais(); res := res || ' | delais=' || j::text;
+  perform public._cmd_alerte(c[1], 'mot_bloque', 'test');
+  select string_agg(f.type || '>' || case when f.user_id = V then 'V' else 'A' end || ' ' || f.url, ' ; ' order by f.id) into x
+    from public.notif_file f where f.objet_id in (c[1]::text, c[2]::text, c[3]::text);
+  res := res || ' | file=' || coalesce(x, 'vide');
   raise exception 'TEST: %', res;
 end $$;

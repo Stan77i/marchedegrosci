@@ -40,7 +40,7 @@
   // les étapes, dans l'ordre (le transbordement n'apparaît que s'il a eu lieu)
   const ETAPES = [
     ['confirmee', 'Commande confirmée'], ['preparation', 'Préparation'], ['chargement', 'Chargement confirmé'], ['transport', 'Le camion est parti'],
-    ['transbordement', 'Transbordement'], ['arrivee', 'Marchandise livrée'], ['reception', 'Réception confirmée'], ['terminee', 'Marchandise reçue']];
+    ['transbordement', 'Transbordement'], ['arrivee', 'Marchandise arrivée'], ['reception', 'Réception confirmée'], ['terminee', 'Marchandise reçue']];
   const LIB = Object.fromEntries(ETAPES);
   // schéma 92 : avis du système (rappels, retard, mot bloqué) ; « terminee » posé par l'équipe ou par un refus = clôture
   const EV92 = { rappel_chargement: 'Rappel : chargement attendu', retard_chargement: 'Délai de chargement dépassé', rappel_reception: 'Rappel : réception à vérifier',
@@ -492,11 +492,11 @@
         ? ['Marchandise <em>chargée</em>', 'Touchez « Le camion est parti » quand il démarre. Si le chauffeur a ouvert le lien de suivi, le départ se détecte tout seul.']
         : ['Marchandise <em>chargée</em>', 'Le départ du camion sera signalé ici. ' + (MOTM && !V ? 'À l’arrivée, tapez le mot secret du vendeur pour confirmer la réception.' : '')];
         return ['Commande <em>en cours</em>', ''];
-      case 'transport': case 'transbordement': return V ? ['Transport <em>en cours</em>', (c.mode_transport === 'vendeur' ? 'À l’arrivée, touchez « Marchandise livrée ». ' : '') + (MOTM ? 'L’acheteur tape ensuite votre mot secret pour confirmer la réception.' : 'L’acheteur confirmera la réception.')] : ['Votre marchandise est <em>en route</em>', MOTM ? 'À l’arrivée, vérifiez la marchandise et cherchez le papier du vendeur : tapez son mot secret pour confirmer la réception.' : 'À l’arrivée, vérifiez la marchandise, puis confirmez la réception.'];
+      case 'transport': case 'transbordement': return V ? ['Transport <em>en cours</em>', 'À l’arrivée, l’acheteur touche «\u00a0La marchandise est arrivée\u00a0»' + (MOTM ? ', puis tape votre mot secret. ' : ', puis confirme la réception. ') + 'S’il ne dit rien, touchez «\u00a0Marchandise livrée\u00a0».'] : ['Votre marchandise est <em>en route</em>', MOTM ? 'À l’arrivée, touchez «\u00a0La marchandise est arrivée\u00a0», vérifiez-la, puis tapez le mot secret du vendeur (sur le papier glissé dedans).' : 'À l’arrivée, touchez «\u00a0La marchandise est arrivée\u00a0», vérifiez-la, puis confirmez la réception.'];
       case 'arrivee': if (dl[c.id] && dl[c.id].reception_echeance) { const [t0, s0] = V ? ['Marchandise <em>livrée</em>', MOTM ? 'L’acheteur vérifie la marchandise, puis tape votre mot secret.' : 'L’acheteur vérifie la marchandise.']
           : ['Marchandise <em>livrée</em>', MOTM ? 'Vérifiez la quantité et la qualité, retrouvez le papier du vendeur, puis tapez son mot secret. Un problème : refusez avec des photos.' : 'Vérifiez la marchandise, puis confirmez la réception. Un problème : refusez avec des photos.'];
         return [t0, s0 + ` Échéance : ${quand(dl[c.id].reception_echeance)}. Sans réponse, l’équipe du Marché de Gros vérifie avec vous deux.`]; }
-        return V ? ['Le chauffeur est <em>arrivé</em>', MOTM ? 'L’acheteur vérifie la marchandise, puis tape votre mot secret.' : 'L’acheteur vérifie la marchandise.'] : ['Le chauffeur est <em>arrivé</em>', MOTM ? 'Vérifiez la quantité et la qualité, retrouvez le papier du vendeur, puis tapez son mot secret pour confirmer la réception. Un problème : refusez avec des photos. Après la réception, vous avez 1 h pour réclamer.' : 'Vérifiez la marchandise et le papier du vendeur avant de confirmer la réception. Un problème : refusez avec des photos. Après la réception, vous avez 1 h pour réclamer.'];
+        return V ? ['Marchandise <em>arrivée</em>', MOTM ? 'L’acheteur vérifie la marchandise, puis tape votre mot secret.' : 'L’acheteur vérifie la marchandise.'] : ['Marchandise <em>arrivée</em>', MOTM ? 'Vérifiez la quantité et la qualité, retrouvez le papier du vendeur, puis tapez son mot secret pour confirmer la réception. Un problème : refusez avec des photos. Après la réception, vous avez 1 h pour réclamer.' : 'Vérifiez la marchandise et le papier du vendeur avant de confirmer la réception. Un problème : refusez avec des photos. Après la réception, vous avez 1 h pour réclamer.'];
       default: return ['Commande <em>en cours</em>', ''];
     }
   }
@@ -515,9 +515,11 @@
         // schéma 65 : avec son propre transporteur, « Chargée » attend « Le camion est parti » (vendeur, ou celui qui transporte)
         const PARTI = !K && c.etape === 'chargement' && c.mode_transport !== 'reseau' && (c.role === 'vendeur' || c.role === c.mode_transport);
         if (PARTI) b('transport', TI('camion') + 'Le camion est parti', 'p');
-        // schéma 92 : seul celui qui transporte déclare « Marchandise livrée » ; l'acheteur, lui, confirme la réception
-        const DL = dl[c.id], TR = DL ? DL.je_transporte : c.role === c.mode_transport;
-        if (TR && c.role !== 'chauffeur' && !K && ['transport', 'transbordement'].includes(c.etape)) b('arrivee', TI('camion') + 'Marchandise livrée', 'p');
+        // schéma 92 : l'acheteur dit «\u00a0La marchandise est arrivée\u00a0» (le transporteur n'est souvent pas dans l'application) ;
+        // le vendeur peut aussi déclarer «\u00a0Marchandise livrée\u00a0», une fois, pour lancer le délai si l'acheteur se tait
+        const DL = dl[c.id];
+        if (c.role === 'acheteur' && (['transport', 'transbordement'].includes(c.etape) || (!K && c.etape === 'chargement'))) b('arrivee', 'La marchandise est arrivée', c.etape === 'chargement' ? '' : 'p');
+        if (c.role === 'vendeur' && (DL ? DL.peut_declarer_arrivee : ['transport', 'transbordement'].includes(c.etape)) && ['transport', 'transbordement', 'arrivee'].includes(c.etape)) b('arrivee', TI('camion') + 'Marchandise livrée', c.etape === 'arrivee' ? 'm' : '');
         if (c.role === 'acheteur' && !K && ['chargement', 'transport', 'transbordement'].includes(c.etape)) b('reception', 'Réception confirmée');
         if (c.role === 'acheteur' && DL && DL.peut_annuler_retard && ['confirmee', 'preparation'].includes(c.etape)) b('retard', 'Annuler : le vendeur n’a pas chargé à temps', 'm');
         if (c.role === 'acheteur' && c.etape === 'arrivee' && !K) b('reception', 'Réception confirmée', 'p');
@@ -1068,7 +1070,9 @@
       case 'chargement': return av('chargement', 'Chargement confirmé', { texte: c.mode_transport === 'reseau' ? 'Confirmez seulement quand la marchandise est dans le camion. Le transport commence alors.' : 'Confirmez seulement quand la marchandise est dans le camion. Ensuite, touchez « Le camion est parti » au départ (ou laissez le lien de suivi du chauffeur le détecter).' });
       case 'transport': return av('transport', 'Le camion est parti', { texte: 'Touchez quand le camion démarre avec la marchandise. ' + (c.role === 'vendeur' ? 'L’acheteur' : 'Le vendeur') + ' est prévenu.', fait: 'Départ signalé : le camion est en route' });
       case 'transbordement': return av('transbordement', 'Signaler un transbordement', { lieu: 'Où la marchandise change-t-elle de véhicule ?', lieuRequis: true });
-      case 'arrivee': return av('arrivee', 'Marchandise livrée', { texte: `Touchez quand la marchandise est déposée chez l’acheteur. Il vérifie, puis confirme la réception. Sans réponse de sa part dans les ${(dl[c.id] && dl[c.id].reception_heures) || 24} h, l’équipe du Marché de Gros regarde avec vous deux.`, fait: 'Livraison déclarée' });
+      case 'arrivee': return c.role === 'acheteur'
+        ? av('arrivee', 'La marchandise est arrivée', { texte: 'Touchez quand la marchandise est devant vous. Ensuite, vérifiez-la : confirmez la réception, ou refusez avec des photos.', fait: 'Marchandise arrivée : vérifiez-la' })
+        : av('arrivee', 'Marchandise livrée', { texte: `Touchez quand la marchandise est déposée chez l’acheteur et qu’il ne l’a pas encore dit. Il vérifie, puis confirme ou refuse. Sans réponse de sa part dans les ${(dl[c.id] && dl[c.id].reception_heures) || 24} h, l’équipe du Marché de Gros regarde avec vous deux.`, fait: 'Livraison déclarée' });
       case 'retard': return confirmer(c, { titre: 'Annuler la <em>commande</em>', ok: 'Annuler la commande', note: 'Un mot (facultatif)', fait: 'Commande annulée',
         texte: `Le vendeur n’a pas chargé dans les ${(dl[c.id] && dl[c.id].chargement_heures) || 72} h après la confirmation. L’annulation compte dans sa fiabilité, pas dans la vôtre. Le stock revient sur son annonce.`,
         fn: v => R('commande_annuler_retard', { p_id: c.id, p_note: v.note || null }) });

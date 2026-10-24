@@ -6,13 +6,15 @@
 --   • « Signaler un problème » dès la confirmation ; message « 1 h » au lieu de « 24 h » ; échéance de traitement du litige (72 h) ;
 --   • une seule redemande d'annulation par le vendeur : ensuite, l'équipe tranche ;
 --   • motif obligatoire même par les anciennes fonctions commande_repondre / commande_annuler (elles restent appelées par le téléphone) ;
---   • « Arrivée / livré » déclarée seulement par celui qui transporte ; 24 h (réglable) sans réception après : litige automatique
---     (règle prudente : personne n'est réputé avoir reçu ni livré, l'équipe regarde ; aucune faute imputée) ;
+--   • « La marchandise est arrivée » : l'acheteur le dit (le transporteur n'est souvent pas dans l'application) ;
+--     le vendeur ou le chauffeur peut aussi déclarer « livré », une fois, pour lancer le délai si l'acheteur se tait ;
+--     24 h (réglable) sans réception après une déclaration du vendeur : litige automatique
+--     (règle prudente, à confirmer par le propriétaire : personne n'est réputé fautif, l'équipe regarde) ;
 --   • mot secret : 5 essais (réglable), compteur commun réception et refus, blocage noté et visible par l'équipe ;
 --     une seule normalisation du mot (_mot_norme ; _mot_norm la reprend) ;
 --   • journal des commandes horodaté par clock_timestamp (ordre fiable dans une même transaction).
 --   • rappels, retard et mot bloqué notés dans commande_alertes (lue avec le journal) : commande_etapes refuse les étapes
---     inconnues ; ces avis ne partent donc pas encore en notification (voir plus bas).
+--     inconnues ; ces avis partent en notification par la file des notifications (schéma 92d).
 -- Tâche planifiée mdg-commandes-delais (*/15) : commandes_delais(). Testé sur le projet de test.
 
 -- 1. Journal trié de façon fiable
@@ -50,7 +52,7 @@ revoke all on function public._cmd_transporte(public.commandes, text) from publi
 
 -- 3 bis. Les avis du système (rappels, retard, mot bloqué) : une table à part, lue avec le journal.
 --   commande_etapes n'accepte que les étapes connues (contrainte commande_etapes_evenement_check) ; l'élargir demande de
---   remplacer la contrainte, ce qui attend l'accord du propriétaire. Conséquence : ces avis ne partent pas encore en notification.
+--   remplacer la contrainte : on garde la contrainte, et le schéma 92d envoie ces avis par la file des notifications.
 create table if not exists public.commande_alertes (
   id uuid primary key default gen_random_uuid(),
   commande_id uuid not null,
@@ -263,11 +265,14 @@ begin
     if c.etape not in ('transport', 'transbordement') then raise exception 'Le transbordement se signale pendant le transport.'; end if;
     if lieu is null then raise exception 'Indiquez le lieu du transbordement.'; end if;
   elsif p_etape = 'arrivee' then
-    if not public._cmd_transporte(c, r) then
-      raise exception 'C''est celui qui transporte qui déclare la livraison (%). Vous, confirmez la réception après avoir vérifié.',
-        case c.mode_transport when 'vendeur' then 'le vendeur' when 'acheteur' then 'l''acheteur' else 'le chauffeur' end;
+    -- l'acheteur dit « la marchandise est arrivée » (le transporteur n'est souvent pas dans l'application) ;
+    -- le vendeur ou le chauffeur peut aussi déclarer « livré », une fois, pour faire partir le délai si l'acheteur se tait
+    if r = 'acheteur' then
+      if c.etape not in ('chargement', 'transport', 'transbordement') then raise exception 'Étape déjà passée.'; end if;
+    else
+      if c.livre_le is not null then raise exception 'La livraison est déjà déclarée.'; end if;
+      if c.etape not in ('chargement', 'transport', 'transbordement', 'arrivee') then raise exception 'La marchandise doit d''abord être en route.'; end if;
     end if;
-    if c.etape not in ('chargement', 'transport', 'transbordement') then raise exception 'La marchandise doit d''abord être en route.'; end if;
   elsif p_etape = 'reception' then
     if r <> 'acheteur' then raise exception 'C''est l''acheteur qui confirme la réception.'; end if;
     if c.etape not in ('chargement', 'transport', 'transbordement', 'arrivee') then raise exception 'La marchandise doit d''abord être chargée.'; end if;
@@ -275,10 +280,10 @@ begin
     raise exception 'Étape inconnue.';
   end if;
   update public.commandes set etape = p_etape,
-    livre_le = case when p_etape = 'arrivee' then now() else livre_le end,
-    livre_par = case when p_etape = 'arrivee' then me else livre_par end where id = p_id;
+    livre_le = case when p_etape = 'arrivee' and r <> 'acheteur' then now() else livre_le end,
+    livre_par = case when p_etape = 'arrivee' and r <> 'acheteur' then me else livre_par end where id = p_id;
   perform public._cmd_journal(p_id, p_etape, me, r, pv, lieu, p_lat, p_lon,
-    case when p_etape = 'arrivee' then coalesce(nt, 'Livraison déclarée') else nt end);
+    case when p_etape = 'arrivee' then coalesce(nt, case when r = 'acheteur' then 'Marchandise arrivée' else 'Livraison déclarée' end) else nt end);
   if p_etape = 'chargement' and c.mode_transport = 'reseau' then
     update public.commandes set etape = 'transport' where id = p_id;
     perform public._cmd_journal(p_id, 'transport', null, 'systeme', 'auto');
@@ -452,6 +457,8 @@ begin
     'chargement_echeance', ech,
     'peut_annuler_retard', r = 'acheteur' and ech is not null and now() >= ech,
     'je_transporte', coalesce(public._cmd_transporte(c, r), false),
+    'peut_declarer_arrivee', c.etat = 'en_cours' and ((r = 'acheteur' and c.etape in ('chargement', 'transport', 'transbordement'))
+      or (r in ('vendeur', 'chauffeur') and c.livre_le is null and c.etape in ('chargement', 'transport', 'transbordement', 'arrivee'))),
     'livre_le', c.livre_le,
     'reception_echeance', case when c.etat = 'en_cours' and c.etape = 'arrivee' and c.livre_le is not null then c.livre_le + make_interval(hours => hrec) end,
     'mot_essais_restants', greatest(mx - coalesce(c.mot_essais, 0), 0),

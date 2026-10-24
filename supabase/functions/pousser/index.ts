@@ -269,7 +269,8 @@ Deno.serve(async (req) => {
         chargement: ["Chargement confirmé", produit],
         transport: e.par ? [`${qui} : le camion est parti`, `${produit} · en route vers la livraison`] : ["Le camion est parti", `${produit} · départ vu par le lien de suivi du chauffeur`],
         transbordement: ["Transbordement", `${produit}${e.lieu ? " · " + e.lieu : ""}`],
-        arrivee: ["Le chauffeur est arrivé", produit],
+        // schéma 92 : l'acheteur dit « arrivée » ; le vendeur (ou le chauffeur) peut déclarer « livré »
+        arrivee: e.par && e.par === k.acheteur_id ? ["La marchandise est arrivée", `${produit} · L'acheteur vérifie.`] : ["Livraison déclarée", `${produit} · Vérifiez, puis confirmez ou refusez.`],
         reception: ["Réception confirmée, commande terminée", produit],
         annulation_demandee: [`${qui} demande l'annulation`, `${produit}. Touchez pour répondre.`],
         annulation_refusee: ["Annulation refusée", produit],
@@ -560,6 +561,24 @@ Deno.serve(async (req) => {
               M(T45(`${lib} : la commande n'est pas créée`, "Votre commande n'est pas créée"), B80(`Vous êtes d'accord avec ${pm}${pm.endsWith(".") ? "" : "."} Créez la commande en un geste.`, "Vous êtes d'accord. Créez la commande en un geste."), "nego-" + l.objet_id),
             ][i(2)];
           }
+          // schéma 92d : avis du système sur une commande (commande_alertes → notif_file), écran : la commande
+          case "cmd_rappel_chargement": {
+            const h = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
+            return M(T45(`${lib} : chargez avant ${h}`, `Chargement attendu : ${lib}`, "Chargement attendu"),
+              B80("Sinon, l'acheteur pourra annuler. Touchez pour voir la commande.", "Sinon, l'acheteur pourra annuler."), "cmd-" + l.objet_id);
+          }
+          case "cmd_retard_chargement":
+            return d.role === "vendeur"
+              ? M(T45(`${lib} : délai de chargement passé`, "Délai de chargement passé"), B80("L'acheteur peut maintenant annuler. Chargez ou écrivez-lui.", "L'acheteur peut maintenant annuler."), "cmd-" + l.objet_id)
+              : M(T45(`${lib} : pas encore chargé`, "Pas encore chargé"), B80("Vous pouvez annuler la commande, ou signaler un problème.", "Vous pouvez annuler ou signaler un problème."), "cmd-" + l.objet_id);
+          case "cmd_rappel_reception": {
+            const h = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
+            return M(T45(`${lib} : le vendeur dit avoir livré`, "Livraison déclarée"),
+              B80(h ? `Vérifiez et confirmez la réception, ou refusez, avant ${h}.` : "", "Vérifiez, puis confirmez la réception ou refusez."), "cmd-" + l.objet_id);
+          }
+          case "cmd_mot_bloque":
+            return M(T45(`${lib} : mot secret bloqué`, "Mot secret bloqué"),
+              B80("Trop d'essais faux. L'équipe du Marché de Gros va regarder la commande.", "Trop d'essais faux. L'équipe va regarder."), "cmd-" + l.objet_id);
           case "stock_ancien": {
             const k = i(3), du = dateCourte(d.depuis);
             // formules sans accord : « Crevettes séchées », « Œufs » restent justes

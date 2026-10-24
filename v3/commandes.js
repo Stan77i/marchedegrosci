@@ -1197,16 +1197,14 @@
     vi.addEventListener(vi.tagName === 'SELECT' ? 'change' : 'input', () => { err.textContent = ''; modes(); });
     f.onsubmit = async e => {
       e.preventDefault();
-      const mode = (f.querySelector('[name=mode]:checked') || {}).value, lieu = f.querySelector('#cmLv').value.trim(), ville = vi.value.trim(), val = mode === 'reseau' ? 'code' : 'declaration';   // le serveur décide aussi (schémas 63 et 83)
+      const mode = (f.querySelector('[name=mode]:checked') || {}).value, lieu = f.querySelector('#cmLv').value.trim(), ville = vi.value.trim();   // le serveur décide du mode de validation (schémas 63 et 83)
       if (!ville) { err.textContent = offre ? 'Choisissez la ville de livraison.' : 'Choisissez la ville où se trouve la marchandise.'; vi.focus(); return; }
       if (!mode) { err.textContent = 'Choisissez qui transporte.'; return; }
       if (lieu && N().texteRefus) { const r = N().texteRefus(lieu); if (r) { err.textContent = r; return; } }
       const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = '';
       try {
-        let id;
-        try { id = await N().rpc('commande_creer2', { p_nego: n.id, p_mode: mode, p_lieu: lieu || null, p_ville_arrivee: offre ? ville : null, p_ville_depart: offre ? null : ville }); }
-        catch (x) { if (!/Could not find|schema cache|PGRST202/i.test((x && x.message) || '')) throw x;
-          id = await N().rpc('commande_creer', { p_nego: n.id, p_mode: mode, p_lieu: [ville, lieu].filter(Boolean).join(', ').slice(0, 120) || null, p_validation: val }); }
+        // schéma 93b : l'ancienne commande_creer n'est plus ouverte aux membres (elle contournait « ville seulement »)
+        const id = await N().rpc('commande_creer2', { p_nego: n.id, p_mode: mode, p_lieu: lieu || null, p_ville_arrivee: offre ? ville : null, p_ville_depart: offre ? null : ville });
         toast('Commande envoyée', { type: 'ok', sous: 'Elle démarre dès que l’autre partie la confirme.' });
         await lireListe(); await lireJournal(id); sel = id; vue = 'detail'; peindre();
       } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }

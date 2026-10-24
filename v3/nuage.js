@@ -192,19 +192,32 @@
   /* ——— mon stock : la quantité baisse sur le serveur à chaque vente conclue (schema-12) ; le téléphone la reprend ———
      Offres (J'ai) ET demandes (Je cherche) : 20 t demandées, 10 t convenues → il reste 10 t ; tout convenu → l'annonce sort du marché
      (offre « épuisée », demande « servie »). Appelé avant tout envoi : le téléphone ne renvoie jamais une ancienne quantité (schéma 52). */
+  // schéma 93 : la quantité vue sur le serveur (qServeur) repart avec chaque envoi ; sans elle, le serveur refuse de remonter le stock.
+  // Fin de vie de l'annonce (finLe) et annonce expirée (expiree) : pour « Prolonger 30 jours » dans Mes publications.
+  let colsFin = true;   // base sans les colonnes du schéma 93 : on lit comme avant
   async function stockDuServeur() {
-    const s = session(); if (!s) return;
+    const s = session(); if (!s) return false;
     try {
       const em = J(K.e, {}); let bouge = false;
       for (const k of ['offres', 'demandes']) {
-        const rows = await api('/rest/v1/' + KIND[k] + '?select=client_id,quantity,status&user_id=eq.' + s.user.id + '&limit=500', { auth: true }) || [];
+        const lire = c => api('/rest/v1/' + KIND[k] + '?select=client_id,quantity,status' + (c ? ',expire_le,expiree_le' : '') + '&user_id=eq.' + s.user.id + '&limit=500', { auth: true });
+        const rows = await lire(colsFin).catch(e => { if (colsFin && e.code === 'technique') { colsFin = false; return lire(false); } throw e; }) || [];
         const by = new Map(rows.map(r => [r.client_id, r])), champ = k === 'offres' ? 'epuise' : 'servie'; let b = false;
-        const L = J('mdg-v2:' + k, []).map(x => { const r = x && by.get(x.id); if (!r || r.status === 'masquee') return x; const q = num(r.quantity), ep = r.status === 'retiree' && !(q > 0);
-          if ((q == null || q === num(x.quantity)) && !!x[champ] === ep) return x; b = true; const y = Object.assign({}, x, { quantity: q == null ? x.quantity : q, [champ]: ep }); em[k + ':' + x.id] = hash(toRow[k](y)); return y; });
+        const L = J('mdg-v2:' + k, []).map(x => { const r = x && by.get(x.id); if (!r || r.status === 'masquee') return x; const q = num(r.quantity), ep = r.status === 'retiree' && !(q > 0) && !r.expiree_le;
+          const exp = r.status === 'retiree' && !!r.expiree_le, fin = r.expire_le || null;
+          if ((q == null || q === num(x.quantity)) && !!x[champ] === ep && x.qServeur === q && !!x.expiree === exp && (x.finLe || null) === fin) return x;
+          b = true; const y = Object.assign({}, x, { quantity: q == null ? x.quantity : q, [champ]: ep, qServeur: q, expiree: exp, finLe: fin }); em[k + ':' + x.id] = hash(toRow[k](y)); return y; });
         if (b) { W('mdg-v2:' + k, L); bouge = true; }
       }
       if (bouge) { W(K.e, em); say('mes'); }
-    } catch (_) {}
+      return true;
+    } catch (e) { if (!e || e.code !== 'auth') console.warn('[nuage] lecture du stock impossible', e && e.message); return false; }
+  }
+  // « Prolonger 30 jours » (schéma 93c) : l'annonce reste en ligne, ou revient si elle a expiré ; renvoie la nouvelle date de fin
+  async function prolonger(k, id) {
+    const fin = await rpc('annonce_prolonger', { p_cible: k === 'offres' ? 'offre' : 'demande', p_client_id: String(id) });
+    await stockDuServeur(); say('mes'); refresh();
+    return fin;
   }
 
   /* ——— mes annonces : envoyer celles qui attendent, retirer celles supprimées sur le téléphone ——— */
@@ -212,7 +225,8 @@
   async function sync() {
     if (!navigator.onLine || busy & 2 || !session()) return false; busy |= 2; let changed = false, refus = '';
     basculer(session().user.id);
-    await stockDuServeur();   // reprendre d'abord les quantités du serveur (ventes conclues) : jamais renvoyer une ancienne quantité
+    // reprendre d'abord les quantités du serveur (ventes conclues) : jamais renvoyer une ancienne quantité ; lecture impossible : on n'envoie rien
+    if (!(await stockDuServeur())) { busy &= ~2; return false; }
     try {
       const p = J(K.p, {}), em = J(K.e, {});
       for (const k of ['offres', 'demandes']) {
@@ -226,21 +240,28 @@
           const sans = (b, c) => { const x = Object.assign({}, b); delete x[c]; return x; };
           const essai = b => envoi(b).catch(e => { const m = (e && e.message) || '';
             if ('ville_seulement' in b && /ville_seulement/.test(m)) return essai(sans(b, 'ville_seulement'));
+            if ('quantite_vue' in b && (e.code === 'technique' || /quantite_vue/.test(m))) return essai(sans(b, 'quantite_vue'));
             if ('pause_le' in b && (e.code === 'technique' || /pause_le/.test(m))) return essai(sans(b, 'pause_le'));
             throw e; });
-          try { const r = await essai(row); if (r && r[0]) { p[key] = r[0].id; em[key] = h; changed = true; W(K.p, p); W(K.e, em);
-              // stock à zéro sur le téléphone : l'annonce sort du marché ; stock remis : elle revient (jamais une annonce masquée par l'administration)
-              if (k === 'offres') await api('/rest/v1/offres?id=eq.' + r[0].id + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: x.epuise || !(+x.quantity > 0) ? 'retiree' : 'active' }, prefer: 'return=minimal' }).catch(() => {}); } }
+          // quantité du serveur vue par ce téléphone (schéma 93a) : sans elle, une quantité plus haute n'est pas acceptée
+          const corps = x.qServeur != null ? Object.assign({}, row, { quantite_vue: x.qServeur }) : row;
+          try { const r = await essai(corps); if (r && r[0]) { p[key] = r[0].id; em[key] = h; changed = true; W(K.p, p); W(K.e, em);
+              // des ventes ont été conclues entre-temps : le serveur garde son stock, le téléphone le reprend et le dit
+              const qs = num(r[0].quantity);
+              if (qs != null && num(x.quantity) != null && qs < num(x.quantity)) { await stockDuServeur(); toast('Stock gardé à ' + qs + ' ' + (x.unit || '') + ' : des ventes ont été conclues entre-temps. Vérifiez-le dans Mes publications.'); }
+              // stock à zéro sur le téléphone : l'annonce sort du marché ; stock remis : elle revient (jamais une annonce masquée par l'administration, ni une annonce expirée : « Prolonger » la remet)
+              if (k === 'offres' && !x.expiree) await api('/rest/v1/offres?id=eq.' + r[0].id + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: x.epuise || !(+x.quantity > 0) ? 'retiree' : 'active' }, prefer: 'return=minimal' }).catch(() => {}); } }
           catch (e) { if (e.code === 'auth') throw e; console.warn('[nuage] envoi refusé', e.message); if (/Limite atteinte/.test(e.message)) toast(e.message);
+            // règles des annonces (schéma 93a) : la phrase, une fois par session et par annonce ; l'annonce reste sur le téléphone
+            else if (/^(ANNONCE_FIGEE|VILLE_INCONNUE|PRIX_REQUIS|QUANTITE_REQUISE|DOUBLON|PRODUIT_REQUIS) : /.test(e.message)) { const kt = 'mdg-nuage:regle:' + key; try { if (!sessionStorage.getItem(kt)) { sessionStorage.setItem(kt, '1'); toast((p[key] ? 'Annonce non mise à jour. ' : 'Annonce non publiée. ') + e.message.replace(/^[A-Z_]+ : /, '').replace(/^./, c => c.toUpperCase())); } } catch (_) {} }
             else if (e.code === 'texte') { const kt = 'mdg-nuage:texte:' + key; try { if (!sessionStorage.getItem(kt)) { sessionStorage.setItem(kt, '1'); toast('Annonce non publiée. ' + e.message + ' Modifiez-la dans Mon compte → Mon activité.'); } } catch (_) {} }
             else if (/COMPTE_BANNI/.test(e.message)) refus = 'banni'; else if (/VERIFICATION_REQUISE/.test(e.message) && refus !== 'banni') refus = 'limite'; }
         }
         for (const key of Object.keys(p)) {
           if (!key.startsWith(k + ':') || ids.has(key.slice(k.length + 1))) continue;
-          // retirée sur le téléphone : cachée sur le serveur, la ligne reste (schéma 86, décision 37 : plus d'effacement) ; base sans la colonne : ancien chemin
+          // retirée sur le téléphone : cachée sur le serveur, la ligne reste (schéma 86, décision 37 : jamais d'effacement ; schéma 93a : le serveur le refuse)
           try { const u = '/rest/v1/' + KIND[k] + '?id=eq.' + encodeURIComponent(p[key]);
-            try { await api(u + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: 'retiree', retiree_le: new Date().toISOString() }, prefer: 'return=minimal' }); }
-            catch (e2) { if (e2.code !== 'technique') throw e2; await api(u, { method: 'DELETE', auth: true }); }
+            await api(u + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: 'retiree', retiree_le: new Date().toISOString() }, prefer: 'return=minimal' });
             delete p[key]; delete em[key]; changed = true; W(K.p, p); W(K.e, em); }
           catch (e) { if (e.code === 'auth') throw e; if (e.status === 404) { delete p[key]; W(K.p, p); } }
         }
@@ -671,5 +692,5 @@ html.kb .cp,html.kb .nx{height:calc(var(--vvh,100dvh) - 8px)!important}}`;
     return '';
   }
 
-  window.MDGNuage = { texteRefus, URL: URL0, televerser, deposerPrive, effacerPrive, lienSigne, list, zones, zoneAjouter, zoneRetirer, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
+  window.MDGNuage = { prolonger, texteRefus, URL: URL0, televerser, deposerPrive, effacerPrive, lienSigne, list, zones, zoneAjouter, zoneRetirer, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
 })();

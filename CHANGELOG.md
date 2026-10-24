@@ -6,6 +6,9 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Transport : « Transport à votre charge » pour l'acheteur, « À la charge de l'acheteur » pour le vendeur, « À ma charge » dans une demande, partout (publication, annonces, tableau du marché, négociation, commande).
+
+
 - « Ville uniquement » : pour une localité tapée (« Guiglo » dans la région Abidjan), c'est la ville de rattachement de la région choisie qui compte (« Je vends uniquement à Abidjan »), dans l'application et sur le serveur (schéma 87b) ; la région choisie ne change plus toute seule.
 - Publication d'une offre : le choix « Non inclus » devient « Transport à part » (« son prix se négocie à part »), et l'annonce affiche « Transport à part » au lieu de « Transport à discuter ».
 - Niveaux de confiance (chantier 3) : Vendeur fiable, Bon, Excellent, Grand vendeur, mêmes paliers pour les acheteurs et « Acheteur en gros », calculés par le serveur (schéma 85, appliqué en production), écran « Mes niveaux », tableau de bord de l'administrateur.

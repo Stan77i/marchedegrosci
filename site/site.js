@@ -46,7 +46,7 @@
   function lieu(a) {
     if (!a.ville_seulement || !a.ville) return esc(a.ville || '');
     var nom = String(a.ville).replace(/\s*\(près de [^)]*\)\s*$/, ''), ph = (a.sens === 'offre' ? 'Vente' : 'Achat') + ' uniquement à ' + nom;
-    return '<span class="vseule" title="' + esc(ph) + '">' + PIN + '<span class="vseule-t" aria-hidden="true">' + esc(nom) + ' uniquement</span><span class="vh">' + esc(ph) + '</span></span>';
+    return '<span class="vseule" title="' + esc(ph) + '">' + PIN + '<span class="vseule-t" aria-hidden="true"><span class="vseule-n">' + esc(nom) + '</span><span class="vseule-u">&nbsp;uniquement</span></span><span class="vh">' + esc(ph) + '</span></span>';
   }
   window.MDGSiteLieu = lieu;
   var symb = function (sens, nuit) { return '<i class="sym ' + (sens === 'offre' ? 'sym-o' : 'sym-d' + (nuit ? ' nuit' : '')) + '" aria-hidden="true"></i>'; };

@@ -20,7 +20,7 @@
   const courte = c => nom(c) + ' uniquement';
   const PIN = '<svg class="vseule-i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
   // le contenu de la pastille (les deux textes : la classe « long » choisit lequel se voit)
-  const corps = (sens, c) => PIN + '<span class="vseule-t" aria-hidden="true">' + esc(courte(c)) + '</span><span class="vseule-l" aria-hidden="true">' + esc(phrase(sens, c)) + '</span><span class="vseule-sr">' + esc(phrase(sens, c)) + '</span>';
+  const corps = (sens, c) => PIN + '<span class="vseule-t" aria-hidden="true"><span class="vseule-n">' + esc(nom(c)) + '</span><span class="vseule-u">&nbsp;uniquement</span></span><span class="vseule-l" aria-hidden="true">' + esc(phrase(sens, c)) + '</span><span class="vseule-sr">' + esc(phrase(sens, c)) + '</span>';
   const pastille = (sens, c, o) => '<span class="vseule' + (o && o.long ? ' long' : '') + '" title="' + esc(phrase(sens, c)) + '">' + corps(sens, c) + '</span>';
   // ce qu'un membre d'une autre ville doit savoir avant d'écrire, de proposer ou de commander
   const avis = (sens, c) => offre(sens) ? 'Ce vendeur vend uniquement à ' + nom(c) + ' : la livraison se fait à ' + nom(c) + '.'
@@ -44,15 +44,20 @@
   }
 
   const CSS = `
-.vseule{position:relative;display:inline-flex;align-self:flex-start;align-items:center;gap:4px;box-sizing:border-box;max-width:min(168px,100%);min-width:0;height:24px;padding:0 9px 0 7px;border-radius:999px;background:#E2ECE4;color:#10392B;font:600 12.5px/1 Jost,sans-serif;white-space:nowrap;overflow:hidden;vertical-align:middle;flex:0 1 auto}
+.vseule{position:relative;display:inline-flex;align-self:flex-start;align-items:center;gap:3px;box-sizing:border-box;max-width:min(168px,100%);min-width:0;height:24px;padding:0 8px 0 6px;border-radius:999px;background:#E2ECE4;color:#10392B;font:600 12.5px/1 Jost,sans-serif;white-space:nowrap;overflow:hidden;vertical-align:middle;flex:0 1 auto}
 .vseule .vseule-i{flex:none}
 .vseule .vseule-t,.vseule .vseule-l{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vseule .vseule-t{display:flex;gap:0}
+.vseule .vseule-t .vseule-n{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vseule .vseule-t .vseule-u{display:block;flex:none;white-space:pre}
+html .vseule.vseule .vseule-t span.vseule-n,html .vseule.vseule .vseule-t span.vseule-u{min-height:0;padding:0;margin:0;background:none;border-radius:0;color:inherit}
 .vseule .vseule-l{display:none}
 .vseule.long{max-width:100%;height:28px;font-size:13.5px}
 .vseule.long .vseule-t{display:none}.vseule.long .vseule-l{display:block}
 .vseule .vseule-sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .an-infos span.vseule.vseule{display:inline-flex;min-height:26px;height:26px;padding:0 10px 0 8px;background:#E2ECE4;color:#10392B;font-size:var(--t-sm,13px);font-weight:600}
-.an-infos span.vseule.vseule .vseule-t,.an-infos span.vseule.vseule .vseule-l{display:block;min-height:0;padding:0;background:none;border-radius:0}
+.an-infos span.vseule.vseule .vseule-t{display:flex;gap:0;min-height:0;padding:0;background:none;border-radius:0}
+.an-infos span.vseule.vseule .vseule-l{display:block;min-height:0;padding:0;background:none;border-radius:0}
 .an-infos span.vseule.vseule .vseule-l{display:none}
 .an-infos span.vseule.vseule .vseule-sr{display:block;padding:0;min-height:0}
 .an-carte .an-infos > span.vseule.vseule{display:inline-flex;max-width:100%}

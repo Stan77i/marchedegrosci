@@ -522,5 +522,7 @@ html.garde body { overflow: hidden; }
 /* « Ville seulement » (schéma 87) : « [épingle] Guiglo uniquement », une ligne, largeur fixe, coupée par « … » ; vert de la marque */
 .vseule { display: inline-flex; align-items: center; gap: 4px; max-width: min(180px, 100%); min-width: 0; height: 24px; padding: 0 9px 0 7px; border-radius: 999px; background: #E2ECE4; color: var(--vert); font: 600 13px/1 Jost, system-ui, sans-serif; white-space: nowrap; overflow: hidden; vertical-align: middle; }
 .vseule .vseule-i { flex: none; }
-.vseule .vseule-t { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vseule .vseule-t { display: flex; min-width: 0; overflow: hidden; white-space: nowrap; }
+.vseule .vseule-n { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }   /* le nom de la ville se coupe, « uniquement » reste */
+.vseule .vseule-u { flex: none; white-space: pre; }
 :where(.etal, .reseau, .fil-long, .cr, .pr-tete) .vseule.vseule { background: #24342A; color: #A9E2BB; }

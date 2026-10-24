@@ -674,7 +674,7 @@ label.cp-r{cursor:pointer}
       if (SG && !SG.get(u.id)) addEventListener('mdg:rep', function f() { removeEventListener('mdg:rep', f); if (bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); });
       const stBloc = !SG || off0 ? '' : (() => { const gag = SG.liste(u.id), but = SG.progres(u.id), v = idS === 'verifie';
         return `<div class="cp-sh"><h3>Vos statuts</h3><small>Ils se gagnent, ils ne s’achètent pas</small></div>
-          <div class="cp-grp cp-statuts">${gag.length || v ? `<div class="cp-st-l">${SG.puces(u.id, { max: 9, t: 18 })}</div>` : '<p class="cp-vide">Pas encore de statut. Votre identité vérifiée, vos commandes terminées et vos réponses rapides en font gagner, et les autres membres les voient partout : annonces, carte, messages.</p>'}
+          <div class="cp-grp cp-statuts">${gag.length || v ? `<div class="cp-st-l">${SG.puces(u.id, { max: 9, t: 18 })}</div>` : '<p class="cp-vide">Pas encore de statut : faites vérifier votre identité et terminez vos commandes.</p>'}
           ${but.map(x => `<div class="st-but"><b>${x.t}</b><small>${x.fait} sur ${x.total} ${x.txt}</small><div class="st-jauge" role="img" aria-label="${x.fait} sur ${x.total}"><i style="width:${Math.min(100, x.fait / x.total * 100)}%"></i></div></div>`).join('')}</div>`; })();
       main.innerHTML = `<div class="cp-pg">
         <section class="cp-hero" aria-label="Mon identité">
@@ -695,6 +695,8 @@ label.cp-r{cursor:pointer}
           ${stBloc}
           <div class="cp-sh"><h3>Votre compte</h3><small>${esc(N().fmtTel(u.tel))}</small></div>
           <div class="cp-grp">
+            ${ID && !off0 ? (() => { const R = ID.RESUME[idS] || ID.RESUME.non_verifie, rg = idS === 'verifie' || !ID.gratuitesRestantes ? null : ID.gratuitesRestantes(idC);
+              return ligne({ ico: mono('verifie'), t: 'Identité', s: rg === 0 ? 'Obligatoire pour publier · gratuit' : rg ? `${rg} annonce${rg > 1 ? 's' : ''} gratuite${rg > 1 ? 's' : ''} restante${rg > 1 ? 's' : ''}` : R[1], v: R[0], vf: idS === 'verifie', attrs: 'data-idv' }); })() : ''}
             ${off0 ? '' : ligne({ ico: mono('compte'), t: 'Profil et avatar', s: nom ? '' : 'Prénom, rôle, lieu', attrs: 'data-go="profil"' })}
             ${window.MDGRep && !off0 ? ligne({ ico: mono('profil'), t: 'Mon profil public', s: 'Ce que les autres voient de vous', attrs: 'data-profpub' }) : ''}
             ${!off0 ? ligne({ ico: mono('publications'), t: 'Mes publications', s: off.length + dem.length ? 'Et mon stock' : 'Vos offres et demandes', n: off.length + dem.length || '', nl: (off.length + dem.length) + ' publication' + (off.length + dem.length > 1 ? 's' : ''), attrs: 'data-pubs' }) : ''}
@@ -708,8 +710,6 @@ label.cp-r{cursor:pointer}
             ${window.MDGRacheter && !off0 ? ligne({ ico: mono('echanger'), t: 'Racheter', s: 'Mes achats habituels, prix du jour, rappels', attrs: 'data-racheter' }) : ''}
             ${window.MDGAlertes && !off0 ? (() => { const nA = MDGAlertes.liste().length; return ligne({ ico: mono('alertes'), t: 'Alertes produits', s: nA ? nA + ' produit' + (nA > 1 ? 's' : '') + ' suivi' + (nA > 1 ? 's' : '') : 'Igname, tomate… : soyez prévenu', attrs: 'data-alertes' }); })() : ''}
             ${window.MDGChauffeur && !off0 ? (() => { const e = MDGChauffeur.etat(); return ligne({ ico: mono('distance'), t: 'Espace chauffeur', s: !e.inscrit ? 'Transporteur ? Inscrivez-vous, c’est gratuit' : e.propositions ? e.propositions + (e.propositions > 1 ? ' missions à accepter' : ' mission à accepter') : e.statut === 'verifie' ? 'Profil vérifié · vos missions' : e.statut === 'en_attente' ? 'Vérification en cours · vos missions' : 'Vos missions', n: e.propositions, attrs: 'data-chauffeur' }); })() : ''}
-            ${ID && !off0 ? (() => { const R = ID.RESUME[idS] || ID.RESUME.non_verifie, rg = idS === 'verifie' || !ID.gratuitesRestantes ? null : ID.gratuitesRestantes(idC);
-              return ligne({ ico: mono('verifie'), t: 'Identité', s: rg === 0 ? 'Obligatoire pour publier · gratuit' : rg ? `${rg} annonce${rg > 1 ? 's' : ''} gratuite${rg > 1 ? 's' : ''} restante${rg > 1 ? 's' : ''}` : R[1], v: R[0], vf: idS === 'verifie', attrs: 'data-idv' }); })() : ''}
             ${ligne({ ico: mono('cadenas'), t: 'Sécurité et code secret', attrs: 'data-go="securite"' })}
             ${adm ? (() => { const nI = +(J('mdg-admin:identites', {}).n) || 0; return ligne({ ico: mono('tableau'), t: 'Tableau de bord', s: nI ? nI + (nI > 1 ? ' dossiers' : ' dossier') + ' à examiner' : 'Administration', n: nI, href: nI ? 'admin.html#identites' : 'admin.html' }); })() : ''}
           </div>

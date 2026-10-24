@@ -201,7 +201,7 @@ returns int language plpgsql security definer set search_path = public as $$
 declare n int := 0; r record;
 begin
   for r in
-    select g.id, g.produit, g.unite, g.objectif, g.statut, p.user_id u, o.product_slug slug, public._groupe_total(g.id) total
+    select g.id, g.produit, g.unite, g.objectif, g.statut, g.date_limite, p.user_id u, o.product_slug slug, public._groupe_total(g.id) total
     from public.groupes_achat g join public.groupe_participants p on p.groupe_id = g.id and p.statut <> 'retire'
     left join public.offres o on o.id = g.offre_id
     where g.statut in ('ouvert', 'seuil_atteint') and g.date_limite between now() + interval '12 hours' and now() + interval '36 hours'
@@ -210,7 +210,7 @@ begin
     insert into public.notif_file (user_id, cat, type, cle, regroupe, objet_id, slug, libelle, url, donnees)
     values (r.u, 'groupe_suivi', 'groupe_veille', 'groupe_veille:' || r.id || ':' || r.u, 'groupe_veille:' || r.id, r.id::text, r.slug,
       coalesce(r.produit, 'Achat groupé'), 'application.dc.html#/?groupe=' || r.id,
-      jsonb_build_object('statut', r.statut, 'manque', greatest(0, coalesce(r.objectif, 0) - r.total), 'unite', r.unite))
+      jsonb_build_object('statut', r.statut, 'manque', greatest(0, coalesce(r.objectif, 0) - r.total), 'unite', r.unite, 'limite', r.date_limite))
     on conflict (cle) do nothing;
     if found then n := n + 1; end if;
   end loop;
@@ -316,6 +316,7 @@ language sql stable security definer set search_path = public as $$
   where coalesce((select max_jour from public.marketing_reglage where id = 1), 0) > 0
     and p.supprime_le is null and not public.est_banni(x.user_id)
     and public._notif_pref(x.user_id, 'conseils') and public._notif_com_jour(x.user_id) = 0
+    and not public._notif_calme()   -- pendant les heures calmes, personne : la clé du jour n'est pas gâchée
   limit 5000
 $$;
 revoke execute on function public.notif_cible_conseils() from public, anon, authenticated;

@@ -78,6 +78,8 @@ async function nomDe(uid: string) {
 // ce que la base doit savoir d'un envoi : sa catégorie et sa clé anti-doublon (une par personne et par événement)
 type Meta = { cat: string; cle?: string; type?: string; objet?: string; slug?: string };
 type Res = { telephones: number; envoyees: number; retires: number; raison?: string };
+// catégories transactionnelles (même liste que public.notif_categories, nature 'trans')
+const TRANS = new Set(["reponses", "negociation", "commande", "litige", "securite", "essai", "fiabilite", "niveaux", "groupe_suivi", "rappel"]);
 
 // envoie à tous les téléphones d'un compte, après l'accord de la base (préférences, plafonds, heures calmes, doublons) ;
 // retire les téléphones que le service de notification ne connaît plus et le note comme désactivation
@@ -86,8 +88,11 @@ async function envoyer(uid: string, charge: Record<string, unknown>, meta: Meta)
   const { data: p, error } = await sb.rpc("notif_preparer", {
     p_user: uid, p_cat: meta.cat, p_cle: meta.cle || null, p_type: meta.type || null, p_objet: meta.objet || null,
     p_slug: meta.slug || null, p_url: String(charge.url || ""), p_titre: title, p_corps: body });
-  if (error) return { telephones: 0, envoyees: 0, retires: 0, raison: "erreur : " + error.message };
-  const d = p as { envoyer: boolean; nid?: string; nature?: string; raison?: string };
+  // schéma 88a absent (fonction déployée trop tôt) : les échanges en cours partent quand même, comme avant (sans journal) ;
+  // le commercial attend le schéma. Toute autre erreur de la base : rien ne part.
+  const absent = !!error && (error.code === "PGRST202" || /notif_preparer/.test(String(error.message || "")));
+  if (error && !(absent && TRANS.has(meta.cat))) return { telephones: 0, envoyees: 0, retires: 0, raison: "erreur : " + error.message };
+  const d = (error ? { envoyer: true, nature: "trans" } : p) as { envoyer: boolean; nid?: string; nature?: string; raison?: string };
   if (!d?.envoyer) return { telephones: 0, envoyees: 0, retires: 0, raison: d?.raison || "refus" };
   const trans = d.nature !== "com";
   const opts = trans ? { TTL: 86400, urgency: "high" as const } : { TTL: 21600, urgency: (meta.cat === "conseils" ? "low" : "normal") as "low" | "normal" };
@@ -107,7 +112,7 @@ async function envoyer(uid: string, charge: Record<string, unknown>, meta: Meta)
       }
     }
   }
-  await sb.rpc("notif_resultat", { p_nid: d.nid, p_telephones: (subs || []).length, p_envoyees: ok });
+  if (d.nid) await sb.rpc("notif_resultat", { p_nid: d.nid, p_telephones: (subs || []).length, p_envoyees: ok });
   return { telephones: (subs || []).length, envoyees: ok, retires };
 }
 
@@ -417,7 +422,7 @@ Deno.serve(async (req) => {
         propose: [[[g.vendeur_id], `Achat groupé proposé : ${produit}`, "Un acheteur propose un groupe sur votre offre. Fixez vos conditions ou refusez."]],
         seuil_atteint: [
           [[g.vendeur_id], `${produit} : seuil atteint`, "Lancez la confirmation : chaque participant confirmera sa quantité."],
-          [parts.filter((u: string) => u !== g.vendeur_id), `${produit} : seuil atteint`, "Le vendeur va lancer la confirmation. Rien n'est commandé avant."],
+          [parts.filter((u: string) => u !== g.vendeur_id), `${produit} : seuil atteint`, "Le vendeur doit maintenant lancer la confirmation. Rien n'est commandé avant."],
         ],
         en_attente_confirmation: [[parts, `${produit} : confirmez votre part`, `Prix final ${F(g.prix_final)}. Rien n'est commandé sans votre confirmation.`]],
         confirme: [[[g.vendeur_id, ...parts], `${produit} : achat groupé confirmé`, "Les commandes sont créées. Suivez-les dans Mes commandes."]],
@@ -456,7 +461,12 @@ Deno.serve(async (req) => {
           return [{ title: `${lib} : groupe bientôt complet`, body: l.cat === "groupes" ? `Il manque ${manque}. Rejoignez le groupe si le prix vous va.` : `Il manque ${manque} pour atteindre l'objectif du groupe.`, tag: "groupe-" + l.objet_id, url: l.url }, meta];
         }
         if (l.type === "groupe_veille") {
-          return [{ title: `${lib} : date limite demain`, body: d.statut === "seuil_atteint" ? "Le seuil est atteint. Le vendeur lancera la confirmation." : `Il manque ${nf(d.manque as number)} ${u}. Touchez pour voir le groupe.`, tag: "groupe-" + l.objet_id, url: l.url }, meta];
+          // la vraie date limite (heure d'Abidjan = UTC) : « aujourd'hui » ou « demain » selon le jour réel, jamais au hasard
+          const lim = d.limite ? new Date(String(d.limite)) : null, jr = (x: Date) => x.toISOString().slice(0, 10);
+          const demain = new Date(Date.now() + 86400e3);
+          const quand = lim && !isNaN(+lim) ? (jr(lim) === jr(new Date()) ? "aujourd'hui" : jr(lim) === jr(demain) ? "demain" : "") : "";
+          const heure = lim && !isNaN(+lim) ? ` Fin à ${lim.getUTCHours()} h${lim.getUTCMinutes() ? " " + String(lim.getUTCMinutes()).padStart(2, "0") : ""}.` : "";
+          return [{ title: quand ? `${lib} : se termine ${quand}` : `${lib} : date limite proche`, body: d.statut === "seuil_atteint" ? `Seuil atteint. Le vendeur doit lancer la confirmation.` : `Il manque ${nf(d.manque as number)} ${u}.${heure}`, tag: "groupe-" + l.objet_id, url: l.url }, meta];
         }
         if (l.type === "renouveler") {
           const j = Number(d.jours || 0);

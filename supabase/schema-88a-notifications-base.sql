@@ -237,6 +237,8 @@ create or replace function public.notif_permission_retiree()
 returns boolean language plpgsql security definer set search_path = public as $$
 begin
   if auth.uid() is null then return false; end if;
+  -- seulement pour un compte qui a encore un téléphone abonné (sinon, rien à compter : pas de chiffre gonflé)
+  if not exists (select 1 from public.push_abonnements where user_id = auth.uid()) then return false; end if;
   if exists (select 1 from public.notif_desactivations where user_id = auth.uid() and origine = 'permission' and quand > now() - interval '1 day') then return false; end if;
   insert into public.notif_desactivations (user_id, origine) values (auth.uid(), 'permission');
   return true;

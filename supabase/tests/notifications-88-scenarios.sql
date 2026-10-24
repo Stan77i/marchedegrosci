@@ -241,3 +241,37 @@ begin
   reset role;
   raise exception 'TEST jours=% nb=% membre_refuse=% anon_refuse=% stats_cat_ok=%', r->0, json_array_length(r), ok_mb, ok_anon, (s->'categories') is not null;
 end $$;
+
+-- ───────── Bloc 6 (relecture du 24/10/2026) : permission retirée sans téléphone, conseils pendant les heures calmes, date limite
+-- de la veille. Projet de test ; tout est annulé par l'exception.
+do $$
+declare S uuid := 'ec35879a-1009-4b40-9c66-53a9b2595eb8'; B1 uuid := '9bdc3a6d-93b3-41f1-bbbd-984b1094f05f'; B2 uuid := 'af343de8-c7f9-4531-899e-624322b72a38';
+  res text := ''; o0 uuid; g uuid; h int := extract(hour from now() at time zone 'UTC'); n int; ok boolean;
+begin
+  update public.notif_regles set calme_debut = 0, calme_fin = 0 where id = 1;
+  update public.marketing_reglage set max_jour = 30 where id = 1;
+  perform set_config('request.jwt.claims', json_build_object('sub', B2, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  ok := public.notif_permission_retiree(); res := res || 'sans téléphone : ' || coalesce(ok::text, 'null');
+  reset role;
+  insert into public.push_abonnements (endpoint, user_id, p256dh, auth) values ('https://test.invalid/b2', B2, repeat('x', 24), repeat('y', 10));
+  insert into public.push_abonnements (endpoint, user_id, p256dh, auth) values ('https://test.invalid/b1', B1, repeat('x', 24), repeat('y', 10));
+  set local role authenticated;
+  ok := public.notif_permission_retiree(); res := res || ' | avec téléphone : ' || coalesce(ok::text, 'null');
+  ok := public.notif_permission_retiree(); res := res || ' | 2e fois : ' || coalesce(ok::text, 'null');
+  reset role;
+  select count(*) into n from public.notif_cible_conseils() c where c.user_id in (B1, B2); res := res || ' | conseils (jour) : ' || n;
+  update public.notif_regles set calme_debut = h, calme_fin = (h + 1) % 24 where id = 1;
+  select count(*) into n from public.notif_cible_conseils(); res := res || ' | conseils (calme) : ' || n;
+  update public.notif_regles set calme_debut = 0, calme_fin = 0 where id = 1;
+  insert into public.offres (user_id, client_id, product_slug, product_label, region_slug, city, quantity, unit, price, status)
+  values (S, gen_random_uuid()::text, 'tomate-t88', 'Tomate', 'region-t88', 'Ville T88', 1000, 'kg', 900, 'active') returning id into o0;
+  insert into public.groupes_achat (offre_id, vendeur_id, createur_id, produit, unite, zone, region_slug, objectif, min_participants, date_limite, prix_base, statut)
+  values (o0, S, B1, 'Tomate', 'kg', 'Ville T88', 'region-t88', 100, 2, now() + interval '20 hours', 900, 'ouvert') returning id into g;
+  insert into public.groupe_participants (groupe_id, user_id, quantite, prix_vu) values (g, B1, 10, 900);
+  n := public.notif_groupes_veille();
+  res := res || ' | veille : ' || n || ' ' || coalesce((select donnees::text from public.notif_file where cle = 'groupe_veille:' || g || ':' || B1), 'aucune ligne');
+  raise exception 'TEST %', res;
+end $$;
+-- Résultat (24/10/2026) : sans téléphone : false | avec téléphone : true | 2e fois : false | conseils (jour) : 2 | conseils (calme) : 0
+-- | veille : 1 {"unite": "kg", "limite": "2026-10-25T13:05:54.759364+00:00", "manque": 90, "statut": "ouvert"}

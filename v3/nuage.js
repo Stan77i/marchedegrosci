@@ -233,6 +233,7 @@
               if (k === 'offres') await api('/rest/v1/offres?id=eq.' + r[0].id + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: x.epuise || !(+x.quantity > 0) ? 'retiree' : 'active' }, prefer: 'return=minimal' }).catch(() => {}); } }
           catch (e) { if (e.code === 'auth') throw e; console.warn('[nuage] envoi refusé', e.message); if (/Limite atteinte/.test(e.message)) toast(e.message);
             else if (e.code === 'texte') { const kt = 'mdg-nuage:texte:' + key; try { if (!sessionStorage.getItem(kt)) { sessionStorage.setItem(kt, '1'); toast('Annonce non publiée. ' + e.message + ' Modifiez-la dans Mon compte → Mon activité.'); } } catch (_) {} }
+            else if (/^STOCK_(EPUISE|VIDE) : /.test(e.message)) { const ks = 'mdg-nuage:stock:' + key; try { if (!sessionStorage.getItem(ks)) { sessionStorage.setItem(ks, '1'); toast(e.message.replace(/^STOCK_[A-Z]+ : /, '')); } } catch (_) {} }   // schéma 92a
             else if (/COMPTE_BANNI/.test(e.message)) refus = 'banni'; else if (/VERIFICATION_REQUISE/.test(e.message) && refus !== 'banni') refus = 'limite'; }
         }
         for (const key of Object.keys(p)) {

@@ -19,6 +19,10 @@
     sq_depot: 'Fonds bloqués', sq_liberee: 'Conforme : clôturée par l’acheteur', sq_liberee_auto: 'Clôture automatique (1 h)', sq_refus: 'Marchandise refusée',
     sq_refus_chauffeur_confirme: 'Chauffeur confirme le refus', sq_refus_chauffeur_conteste: 'Chauffeur conteste le refus', sq_refus_vendeur_reconnu: 'Vendeur reconnaît',
     sq_refus_vendeur_conteste: 'Vendeur conteste', sq_refus_applique: 'Refus appliqué', sq_refus_admin: 'Décision de l’équipe', sq_solde: 'Séquestre soldé', sq_rembourse: 'Remboursement' };
+  // schéma 92 : avis du système et livraison déclarée par celui qui transporte
+  Object.assign(EV, { arrivee: 'Livraison déclarée', rappel_chargement: 'Rappel : chargement attendu', retard_chargement: 'Délai de chargement dépassé',
+    rappel_reception: 'Rappel : réception à vérifier', mot_bloque: 'Mot secret bloqué' });
+  const dt92 = t => t ? new Date(t).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
 
   const CSS = `.at-ph{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}.at-ph img{width:64px;height:64px;object-fit:cover;border-radius:10px;display:block}
 .at-l{border-radius:20px;overflow:hidden;background:var(--panel)}
@@ -107,6 +111,10 @@
           <div>${tag(ETAT[c.etat] || c.etat, c.etat === 'litige' ? 'r' : c.etat === 'en_cours' ? 'v' : '')} ${c.etape && c.etat === 'en_cours' ? tag(ETAPE[c.etape] || c.etape) : ''}
             <small>${e(MODE[c.mode_transport] || '')}${c.mission ? ' · ' + e(c.mission.nom) + ' (' + e(MST[c.mission.statut] || c.mission.statut) + ')' : ''}${c.mission && c.mission.prix != null ? ' · transport ' + H.fmt(c.mission.prix) + ' F' + (c.mode_transport === 'reseau' ? ' (commission 6,9 % : ' + H.fmt(Math.round(Math.round(c.mission.prix) * 0.069)) + ' F, non prélevée)' : ' (livreur hors service : aucune commission)') : ''} · ${H.ago(c.maj)}</small>
             ${c.etat === 'litige' && !c.refus ? `<small style="color:var(--bad-t)">Litige : « ${e(c.litige_motif || '')} »</small>` : ''}
+            ${c.litige_retard ? `<small style="color:var(--bad-t)">Litige à trancher : échéance dépassée (${e(dt92(c.litige_echeance))})</small>` : c.etat === 'litige' && c.litige_echeance ? `<small>À trancher avant le ${e(dt92(c.litige_echeance))}</small>` : ''}
+            ${c.chargement_retard ? `<small style="color:var(--bad-t)">Pas chargée à temps (échéance ${e(dt92(c.chargement_echeance))}) : l’acheteur peut annuler</small>` : ''}
+            ${c.mot_bloque ? `<small style="color:var(--bad-t)">Mot secret bloqué après trop d’essais faux</small>` : ''}
+            ${c.annulation_bloquee ? `<small style="color:var(--bad-t)">Annulation du vendeur refusée deux fois : à trancher</small>` : ''}
             ${c.refus ? `<small style="color:var(--bad-t)">Marchandise refusée : ${c.refus.quantite != null ? e(String(c.refus.quantite)) + ' ' + e(c.unite || '') : 'tout'} · « ${e(c.refus.motif || '')} »</small>
               <small>Chauffeur : ${c.refus.chauffeur === 'confirme' ? 'confirme' : c.refus.chauffeur === 'conteste' ? 'conteste' : 'pas de réponse'}${c.refus.chauffeur_suffit ? '' : ' (choisi par l’acheteur : ne suffit pas seul)'} · Vendeur : ${c.refus.vendeur === 'reconnu' ? 'reconnaît' : c.refus.vendeur === 'conteste' ? 'conteste' : 'pas de réponse'}</small>
               <span class="at-ph">${(c.refus.photos || []).map((x, i) => D.rfImg[c.id] && D.rfImg[c.id][i] ? `<a href="${e(D.rfImg[c.id][i])}" target="_blank" rel="noopener"><img src="${e(D.rfImg[c.id][i])}" alt="Photo ${i + 1} du refus"></a>` : '').join('')}</span>` : ''}
@@ -122,6 +130,8 @@
             ${c.etat === 'litige' ? `<button class="btn sm ghost" data-ds="${c.id}" aria-expanded="${!!D.disc[c.id]}">Discussion</button>` : ''}
             ${c.etat === 'litige' && c.refus ? `<button class="btn sm ghost" data-rfph="${c.id}">Photos (${(c.refus.photos || []).length})</button><button class="btn sm pri" data-rft="${c.id}" data-q="0">Rejeter le refus</button><button class="btn sm bad" data-rft="${c.id}" data-q="">Accepter le refus</button>` : ''}
             ${c.etat === 'litige' && !c.refus ? `<button class="btn sm pri" data-lit="${c.id}" data-iss="terminee">Clore : livrée</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee" data-fautif="vendeur">Annulée : faute du vendeur</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee" data-fautif="acheteur">Annulée : faute de l’acheteur</button><button class="btn sm" data-lit="${c.id}" data-iss="annulee" data-fautif="">Annulée : torts partagés</button>` : ''}
+            ${c.etat === 'litige' && !c.refus && c.quantite != null ? `<button class="btn sm" data-part="${c.id}">Partager</button>` : ''}
+            ${['a_confirmer', 'en_cours'].includes(c.etat) ? `<button class="btn sm bad" data-iss2="${c.id}" data-iss="annulee" data-fautif="vendeur">Annuler : faute du vendeur</button><button class="btn sm bad" data-iss2="${c.id}" data-iss="annulee" data-fautif="acheteur">Annuler : faute de l’acheteur</button><button class="btn sm" data-iss2="${c.id}" data-iss="annulee" data-fautif="">Annuler : personne en faute</button>${c.etat === 'en_cours' ? `<button class="btn sm pri" data-iss2="${c.id}" data-iss="terminee" data-fautif="">Clore : livrée</button>` : ''}` : ''}
             <button class="btn sm ghost" data-hist="${c.id}">Historique</button><button class="btn sm ghost" data-tout="${e(c.numero)}">Tout voir</button></div>
           ${D.ouverts[c.id] ? `<ul class="at-j">${D.ouverts[c.id].map(j => `<li><b>${e(EV[j.evenement] || j.evenement)}</b> · ${e(j.role)} · ${new Date(j.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${j.lieu ? ' · ' + e(j.lieu) : ''}${j.lat != null ? ' · position jointe' : ''}${j.note ? ' · « ' + e(j.note) + ' »' : ''}</li>`).join('') || '<li>Aucune étape.</li>'}</ul>` : ''}</div>`;
       };
@@ -165,6 +175,24 @@
             .catch(e => /schema cache|Could not find the function|PGRST202/i.test(String(e && e.message)) ? H.rpc('admin_litige_trancher', { p_cmd: b.dataset.lit, p_issue: iss, p_note: note.trim() }) : Promise.reject(e));
           H.toast('Litige clos.'); await H.relire(); }
         catch (e) { b.disabled = false; H.toast('Impossible : ' + e.message); }
+      });
+      // schéma 92 : décision de l'équipe sur une commande à confirmer ou en cours (journalisée, note visible des deux parties)
+      root.querySelectorAll('[data-iss2]').forEach(b => b.onclick = async () => {
+        const iss = b.dataset.iss, fa = b.dataset.fautif || null;
+        const note = prompt(iss === 'terminee' ? 'Décision : commande considérée comme livrée. Expliquez (les deux parties le verront) :'
+          : 'Décision : commande annulée' + (fa ? ', faute ' + (fa === 'vendeur' ? 'du vendeur' : 'de l’acheteur') + ' (compte dans sa fiabilité)' : ', personne en faute') + '. Expliquez (les deux parties le verront) :');
+        if (!note || !note.trim()) return; b.disabled = true;
+        try { await H.rpc('admin_commande_issue', { p_cmd: b.dataset.iss2, p_issue: iss, p_note: note.trim(), p_fautif: fa }); H.toast('Décision enregistrée.'); await H.relire(); }
+        catch (x) { b.disabled = false; H.toast('Impossible : ' + x.message); }
+      });
+      // schéma 92 : litige tranché en partage (une partie de la marchandise n'est pas due)
+      root.querySelectorAll('[data-part]').forEach(b => b.onclick = async () => {
+        const id = b.dataset.part, c = D.cmd.find(x => x.id === id) || D.aTraiter.find(x => x.id === id);
+        const v = prompt('Partage : quantité qui n’est pas due (sur ' + (c && c.quantite != null ? c.quantite + ' ' + (c.unite || '') : 'la commande') + ') :', ''); if (v === null) return;
+        const q = Number(String(v).replace(',', '.')); if (!(q > 0) || (c && c.quantite != null && q >= c.quantite)) return H.toast('Quantité invalide : plus de 0 et moins que la commande.');
+        const note = prompt('Partage : ' + q + ' ' + ((c && c.unite) || '') + ' ne sont pas dus. Expliquez (les deux parties le verront) :'); if (!note || !note.trim()) return; b.disabled = true;
+        try { await H.rpc('admin_litige_partager', { p_cmd: id, p_quantite: q, p_note: note.trim() }); H.toast('Partage enregistré.'); await H.relire(); }
+        catch (x) { b.disabled = false; H.toast('Impossible : ' + x.message); }
       });
       root.querySelectorAll('[data-lib]').forEach(b => b.onclick = async () => {
         const note = prompt('Clôturer la commande (l’acheteur ne répond pas). Expliquez (les parties le verront) :'); if (!note || !note.trim()) return; b.disabled = true;

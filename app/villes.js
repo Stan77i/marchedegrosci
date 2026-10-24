@@ -1,7 +1,7 @@
 /* Marché de Gros CI — villes et villages principaux de chaque région (districts de Côte d'Ivoire).
    Sert aux formulaires : choisir une région montre ses villes ; choisir une ville remplit la région.
    La première ville de chaque liste est le chef-lieu (le même que MDGApp.REG). Une ville absente peut toujours être écrite à la main.
-   API : MDGVilles.de(region) → [noms] · MDGVilles.region(nom) → slug ou '' · MDGVilles.toutes() → [{ nom, region }] */
+   API : MDGVilles.de(region) → [noms] · MDGVilles.region(nom) → slug ou '' · MDGVilles.toutes() → [{ nom, region }] · MDGVilles.ref(nom) → la ville qui compte */
 (function () {
   'use strict';
   const V = {
@@ -29,5 +29,8 @@
   const toutes = () => Object.keys(V).flatMap(r => V[r].map(nom => ({ nom, region: r })));
   // le nom tel qu'écrit dans la liste (« bouake » → « Bouaké ») ; sinon le texte tel quel
   const propre = n => { const r = region(n); if (!r) return String(n || '').trim(); return V[r].find(x => cle(x) === cle(n)) || String(n).trim(); };
-  window.MDGVilles = { de, region, toutes, propre, cle, V };
+  // la ville qui compte pour « vendre / acheter uniquement à » et « même ville » (règle du propriétaire, 24/10/2026) :
+  // « X (près de Ville) » → Ville ; une commune d'Abidjan (Cocody, Yopougon…) → Abidjan. Même règle que la base (_ville_ref, schéma 87c).
+  const ref = n => { let c = String(n || '').trim(); const m = /\(près de ([^)]+)\)\s*$/.exec(c); if (m) c = m[1].trim(); return region(c) === 'abidjan' ? 'Abidjan' : c; };
+  window.MDGVilles = { de, region, toutes, propre, cle, ref, V };
 })();

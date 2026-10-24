@@ -1072,7 +1072,7 @@
     const cle = v => window.MDGVilles ? MDGVilles.cle(v) : String(v || '').toLowerCase();
     // schéma 87 : annonce « ville seulement » → la ville est imposée (pré-remplie et verrouillée), avec la phrase d'explication
     const aVs = a || mienne(n), VS = window.MDGVilleSeule, villeSeule = !!(aVs && aVs.villeSeule && aVs.city && VS) ? aVs.city : '';
-    const optV = villeSeule ? `<input type="text" id="cmVille" value="${esc(villeSeule)}" readonly aria-readonly="true" aria-describedby="cmVs" class="cm-fige">`
+    const optV = villeSeule ? `<input type="text" id="cmVille" value="${esc(VS.nom(villeSeule))}" readonly aria-readonly="true" aria-describedby="cmVs" class="cm-fige">`
       : VL.length ? `<select id="cmVille" required><option value="">Choisir la ville</option>${VL.map(v => `<option${!offre && cle(v) === cle(villeAnn) ? ' selected' : ''}>${esc(v)}</option>`).join('')}</select>`
       : `<input type="text" id="cmVille" maxlength="80" autocomplete="off" placeholder="Ville" value="${offre ? '' : esc(villeAnn)}">`;
     const DESC = { reseau: 'L’équipe du Marché de Gros vous propose un transporteur vérifié. Son prix se convient à trois : lui, l’acheteur et le vendeur.',
@@ -1097,7 +1097,8 @@
       </form>`;
     box.querySelector('[data-x]').onclick = fermer;
     const f = box.querySelector('form'), err = f.querySelector('.cm-err'), vi = f.querySelector('#cmVille'), zone = f.querySelector('[data-modes]');
-    const meme = () => { const v = vi.value.trim(); return v ? cle(v) === cle(villeAnn) : null; };
+    const ref = v => window.MDGVilles && MDGVilles.ref ? MDGVilles.ref(v) : v;   // Cocody et Yopougon : même ville (Abidjan)
+    const meme = () => { const v = vi.value.trim(); return v ? cle(ref(v)) === cle(ref(villeAnn)) : null; };
     const modes = () => {
       const tr = choixTransport(n, meme()), coche = tr.defaut;   // la ville change la règle : on repart du choix conseillé
       zone.innerHTML = (tr.info ? `<p class="cm-info">${TI('camion')}${esc(tr.info)}</p>` : '')

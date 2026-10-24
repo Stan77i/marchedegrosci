@@ -167,3 +167,50 @@ html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme
   }
   window.MDGToast = { dire, suivre, deviner, fermer };
 })();
+
+/* MDGDemande : la petite feuille de confirmation de l'application, à la place des fenêtres grises du navigateur
+   (confirm / prompt : hors charte, sans mode nuit). 24/10/2026, audit antislop n° 34.
+   MDGDemande.oui(texte, { ok, annuler, danger }) → Promise<boolean>
+   MDGDemande.saisie(texte, { ok, annuler, placeholder }) → Promise<string | null> (null si annulé)
+   Échap ou toucher le fond annule ; le focus revient là d'où on venait. Le mode nuit est traduit par app/nuit.js. */
+(function () {
+  'use strict';
+  if (window.MDGDemande) return;
+  const CSS = `.dq-bg{position:fixed;inset:0;z-index:2147483200;display:flex;align-items:flex-end;justify-content:center;background:rgba(8,7,5,.5);font-family:Jost,system-ui,sans-serif}
+.dq{width:100%;max-width:480px;box-sizing:border-box;padding:22px 20px calc(18px + env(safe-area-inset-bottom));border-radius:26px 26px 0 0;background:#F4EEE3;color:#171512;box-shadow:0 -12px 40px rgba(0,0,0,.25);animation:dqMonte .28s cubic-bezier(.22,1,.36,1)}
+@media (min-width:600px){.dq-bg{align-items:center}.dq{border-radius:26px}}
+@keyframes dqMonte{from{transform:translateY(40px)}}
+.dq p{margin:0 0 16px;font-size:16.5px;line-height:1.45}
+.dq textarea{display:block;width:100%;min-height:88px;box-sizing:border-box;margin:0 0 16px;padding:12px 14px;border:1px solid rgba(23,21,18,.18);border-radius:14px;background:#FFFDF8;color:#171512;font:400 16px/1.4 Jost,sans-serif;resize:vertical}
+.dq textarea:focus{outline:2px solid #10392B;outline-offset:1px}
+.dq-r{display:flex;gap:10px}
+.dq-r button{flex:1;min-height:50px;padding:0 16px;border:0;border-radius:16px;font:600 16px Jost,sans-serif;cursor:pointer}
+.dq-r .non{background:rgba(23,21,18,.07);color:#171512}.dq-r .oui{background:#10392B;color:#F3EFE4}.dq-r .oui.danger{background:#C0442B;color:#fff}
+.dq-r button:focus-visible{outline:2px solid #10392B;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.dq{animation:none}}`;
+  function ouvrir(texte, o, avecSaisie) {
+    o = o || {};
+    if (!document.getElementById('dqCss')) { const st = document.createElement('style'); st.id = 'dqCss'; st.textContent = CSS; document.head.appendChild(st); }
+    return new Promise(resolve => {
+      const retour = document.activeElement, bg = document.createElement('div');
+      bg.className = 'dq-bg';
+      bg.innerHTML = `<div class="dq" role="alertdialog" aria-modal="true" aria-labelledby="dqT"><p id="dqT"></p>${avecSaisie ? '<textarea aria-labelledby="dqT"></textarea>' : ''}
+        <div class="dq-r"><button type="button" class="non"></button><button type="button" class="oui${o.danger ? ' danger' : ''}"></button></div></div>`;
+      bg.querySelector('#dqT').textContent = texte;
+      bg.querySelector('.non').textContent = o.annuler || 'Annuler';
+      bg.querySelector('.oui').textContent = o.ok || (avecSaisie ? 'Envoyer' : 'Confirmer');
+      const ta = bg.querySelector('textarea'); if (ta && o.placeholder) ta.placeholder = o.placeholder;
+      const fin = v => { document.removeEventListener('keydown', cle, true); bg.remove(); if (retour && retour.isConnected && retour.focus) retour.focus({ preventScroll: true }); resolve(v); };
+      const non = () => fin(avecSaisie ? null : false), oui = () => fin(avecSaisie ? ta.value.trim() : true);
+      const cle = e => { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); non(); }
+        else if (e.key === 'Tab') { const f = [...bg.querySelectorAll('textarea, button')]; const i = f.indexOf(document.activeElement);
+          e.preventDefault(); f[(i + (e.shiftKey ? f.length - 1 : 1)) % f.length].focus(); } };
+      bg.addEventListener('click', e => { if (e.target === bg) non(); });
+      bg.querySelector('.non').onclick = non; bg.querySelector('.oui').onclick = oui;
+      document.addEventListener('keydown', cle, true);
+      document.body.appendChild(bg);
+      (ta || bg.querySelector(o.danger ? '.non' : '.oui')).focus({ preventScroll: true });
+    });
+  }
+  window.MDGDemande = { oui: (t, o) => ouvrir(t, o, false), saisie: (t, o) => ouvrir(t, o, true) };
+})();

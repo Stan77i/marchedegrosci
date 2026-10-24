@@ -539,8 +539,8 @@
       const f = $('.nx-f'), e = f.querySelector('.nx-err');
       if (g === 'edit' || g === 'accord') { mode = g; pied(); return; }
       if (g === 'annuler') { mode = ''; pied(); return; }
-      if (g === 'fin' && !confirm('Arrêter cette négociation ? Une proposition en attente sera retirée. Vous pourrez relancer plus tard.')) return;
-      if (g === 'refus' && !confirm('Refuser cette proposition ? Vous pourrez ensuite faire la vôtre.')) return;
+      if (g === 'fin' && !await (window.MDGDemande ? MDGDemande.oui('Arrêter cette négociation ? Une proposition en attente sera retirée. Vous pourrez relancer plus tard.', { ok: 'Arrêter', danger: true }) : Promise.resolve(confirm('Arrêter cette négociation ? Une proposition en attente sera retirée. Vous pourrez relancer plus tard.')))) return;
+      if (g === 'refus' && !await (window.MDGDemande ? MDGDemande.oui('Refuser cette proposition ? Vous pourrez ensuite faire la vôtre.', { ok: 'Refuser' }) : Promise.resolve(confirm('Refuser cette proposition ? Vous pourrez ensuite faire la vôtre.')))) return;
       const args = { nego: n.id, action: g === 'accord-ok' ? 'accord' : g, prix: null, quantite: null, texte: null, ref: ['accord-ok', 'refus'].includes(g) ? n.dernier_msg : null };
       if (g === 'texte') { args.texte = f.querySelector('textarea').value.trim(); if (!args.texte) return; }
       if (!navigator.onLine) { if (e) e.textContent = 'Pas de connexion internet. Réessayez quand le réseau revient.'; return; }

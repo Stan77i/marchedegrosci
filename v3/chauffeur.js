@@ -206,8 +206,8 @@
     box.querySelectorAll('[data-pas]').forEach(b => b.onclick = () => passer(b.dataset.pas));
     const constat = async (id, oui, b) => {
       let note = null;
-      if (!oui) { note = prompt('Qu’avez-vous vu à la livraison ? (facultatif)') ; if (note === null) return; }
-      else if (!confirm('Vous confirmez que la marchandise était dans cet état à la livraison ?')) return;
+      if (!oui) { note = await (window.MDGDemande ? MDGDemande.saisie('Qu’avez-vous vu à la livraison ? (facultatif)', { ok: 'Envoyer' }) : Promise.resolve(prompt('Qu’avez-vous vu à la livraison ? (facultatif)'))); if (note === null) return; }
+      else if (!await (window.MDGDemande ? MDGDemande.oui('Vous confirmez que la marchandise était dans cet état à la livraison ?', { ok: 'Je confirme' }) : Promise.resolve(confirm('Vous confirmez que la marchandise était dans cet état à la livraison ?')))) return;
       b.disabled = true;
       try { const r = await N().rpc('commande_refus_chauffeur', { p_id: id, p_oui: oui, p_note: (note || '').trim() || null });
         toast(oui ? 'Merci, refus confirmé' : 'Merci, votre réponse est enregistrée', { type: 'ok', sous: r === 'applique' ? 'La partie refusée est rendue à l’acheteur. Votre transport reste dû.' : 'L’équipe du Marché de Gros va juger.' });
@@ -224,7 +224,7 @@
     box.querySelectorAll('[data-gps-stop]').forEach(b => b.onclick = () => { arreterPartage('Partage arrêté.'); peindre(); });
   }
   async function repondre(id, oui, b) {
-    if (!oui && !confirm('Refuser cette mission ? L’acheteur et le vendeur seront prévenus.')) return;
+    if (!oui && !await (window.MDGDemande ? MDGDemande.oui('Refuser cette mission ? L’acheteur et le vendeur seront prévenus.', { ok: 'Refuser', danger: true }) : Promise.resolve(confirm('Refuser cette mission ? L’acheteur et le vendeur seront prévenus.')))) return;
     b.disabled = true;
     try { await N().rpc('chauffeur_repondre', { p_mission: id, p_oui: oui }); toast(oui ? 'Mission acceptée' : 'Mission refusée', { type: oui ? 'ok' : 'info', sous: oui ? 'L’acheteur et le vendeur sont prévenus.' : '' }); await lire(); peindre(); }
     catch (x) { b.disabled = false; toast(erreurTxt(x), { type: 'erreur' }); }

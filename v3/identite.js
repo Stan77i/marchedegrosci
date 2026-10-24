@@ -243,7 +243,7 @@
 .idv-photo{position:relative;display:grid;place-items:center;min-height:210px;border:1.5px dashed rgba(23,21,18,.25);border-radius:20px;background:var(--card);overflow:hidden;cursor:pointer;color:var(--mute);text-align:center;padding:16px}
 .idv-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#1d1a15}
 .idv-photo span{display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:500}
-.idv-photo input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.idv-photo input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.idv-photo:focus-within,.idv-pv-add:focus-within{outline:2px solid #10392B;outline-offset:2px}
 .idv-cadre{width:72%;aspect-ratio:1.586;border:2px solid currentColor;border-radius:10px;opacity:.35}
 .idv-code{display:flex;justify-content:center;gap:8px;font:600 44px/1 Jost,sans-serif;letter-spacing:.06em;color:var(--ink)}
 .idv-code i{font-style:normal;display:grid;place-items:center;width:58px;height:70px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line2)}

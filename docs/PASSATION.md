@@ -1395,3 +1395,13 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - Onglet Prix (`v3/tableau.js`) : plus de cascade des lignes, de saut des sacs ni de zoom des pastilles ; le petit « ↑ monte » (vrai changement) reste.
 - Vérifié (navigateur, iPhone, parcours accueil → 4 onglets → J'ai) : 14 animations de cascade avant, 0 après ; aucune erreur JS. Mon compte et Mes commandes : vérifiés par la relecture et `node --check` (serveur bloqué dans cette session).
 - `?v=20261124d` (effets, compte, commandes, prixmoment, tableau, mgci-app.css, annee-app.css) ; cache `mgci-v238`.
+
+## 24/10/2026 — Clavier et formulaires (audit antislop n° 26, 31, 32, 34, 35)
+
+- **Photo au clavier** (n° 26) : dans Mon avatar, le champ fichier n'est plus `hidden` (invisible mais atteignable, `.avx-in`), cadre de focus sur la zone ; vérification d'identité : cadre de focus sur les zones photo (`v3/compte.js`, `v3/identite.js`).
+- **Échap et focus** (n° 31, `application.dc.html`) : le menu et les feuilles Familles, Tous les produits et J'ai / Je cherche ont la classe `fl-sheet` (et `role="dialog"`) ; Échap les ferme quand le focus y est ; à l'ouverture le focus entre dans la feuille (`focusFeuille`, qui garde l'état précédent dans `this._flOuvert` : le `prevState` du moteur ne suffit pas), à la fermeture il revient au bouton d'origine.
+- **Erreur du formulaire J'ai / Je cherche** (n° 32) : « Indiquez la quantité. » et « Choisissez la région. » sous les champs, `aria-invalid`, bord `#C0442B` doublé ; le message rapide nomme ce qui manque (`manque()`), aussi pour Vendre et Demander (plus de « champs en orange »).
+- **Fenêtres du navigateur** (n° 34) : nouvelle feuille commune `MDGDemande` (`app/toast.js`) ; les 9 `confirm()` / `prompt()` de la négociation, des messages, des commandes et de l'espace chauffeur passent par elle (repli sur `confirm` si elle manque, par exemple dans `admin.html`).
+- **Focus visible** (n° 35) : onglet Prix vert en clair, maïs en sombre ; bulles et regroupements de la carte ; liens `all:unset` de Mes commandes ; la bulle « Non envoyé » répond à Entrée et Espace.
+- Vérifié (navigateur, iPhone, clair et sombre) : J'ai ouvert → focus dans la feuille ; publier vide → 2 messages sous les champs, 2 `aria-invalid` ; Échap → feuille fermée, focus revenu sur « J'ai » ; `MDGDemande` : focus sur « Annuler » quand l'action est risquée, Échap → `false` ; aucune erreur JS. Les écrans avec compte : vérifiés dans le code (serveur bloqué dans cette session).
+- `?v=20261124e` (compte, identite, toast, negoce, messages, commandes, chauffeur, tableau, carte-gl) ; site refabriqué (seul `carte-gl.js` change) ; cache `mgci-v239`.

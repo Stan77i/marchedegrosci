@@ -1,13 +1,22 @@
 /* Marché de Gros CI — service worker (utilisation hors connexion).
-   Le code (pages, JS, CSS, manifeste) part du RÉSEAU D'ABORD : une mise à jour publiée sur le site arrive aussi dans l'application
-   installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
-   Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
+   Deux réserves :
+   - CACHE (« mgci-vNNN », change à chaque version) : le code. À l'installation d'une version, un fichier déjà gardé sous la même
+     adresse (même « ?v= ») est recopié de l'ancienne réserve sans rien télécharger ; seuls les fichiers dont le « ?v= » a changé
+     dans application.dc.html sont téléchargés. Un fichier sans « ?v= » est recopié lui aussi : il part du réseau d'abord à
+     l'usage, la copie ne sert qu'hors connexion.
+   - FICHIERS (« fichiers-mgci », ne change pas) : images, polices, icônes, bibliothèques (vendor/) et carte. Gardés d'une version à
+     l'autre, jamais retéléchargés. Pour remplacer un de ces fichiers sous le même nom : ajouter « ?v=2 » (puis 3…) à son entrée
+     dans IMAGES, CARTE ou DURABLES ci-dessous ; seul ce fichier sera retéléchargé.
+   Le code (pages, JS, CSS, manifeste) sans « ?v= » part du RÉSEAU D'ABORD : une mise à jour publiée arrive aussi dans l'application
+   installée sur l'écran d'accueil. Le cache ne sert qu'hors connexion (ou si le réseau traîne).
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v284';
+const CACHE = 'mgci-v288';
+const FICHIERS = 'fichiers-mgci', INVENTAIRE = 'mgci-inventaire.json';
 // tuiles de la carte en relief déjà vues (relief Terrarium, rues OpenFreeMap) : gardées d'une version à l'autre, 1 500 au plus
 const TUILES = 'tuiles-mgci', TUILES_MAX = 1500, HOTES_TUILES = ['s3.amazonaws.com', 'tiles.openfreemap.org'];
 
-// Indispensable : si l'un de ces fichiers manque, l'installation échoue et l'ancienne version reste active.
+// Code indispensable : si l'un de ces fichiers manque, l'installation échoue et l'ancienne version reste active.
+// Un fichier que application.dc.html appelle avec « ?v= » est gardé sous cette adresse versionnée.
 const CORE = [
   "./",
   "application.dc.html",
@@ -42,36 +51,8 @@ const CORE = [
   "css/sombre.css",
   "css/annee-app.css",
   "css/categories-app.css",
-  "icons/v2/icon-192.png",
-  "icons/v2/icon-512.png",
-  "icons/v2/apple-touch-icon.png",
-  "icons/v2/apple-touch-icon-noir.png",
-  "icons/v2/icon-maskable-512.png",
-  "icons/v2/favicon.svg",
-  "icons/v2/favicon-32.png",
-  "icons/v2/favicon-noir.svg",
-  "icons/v2/favicon-noir-32.png",
-  "vendor/babel.min.js",
-  "vendor/countries-110m.json",
-  "vendor/countries-50m.json",
-  "vendor/react-dom.production.min.js",
-  "vendor/react.production.min.js",
-  "vendor/topojson-client.min.js",
-  "fonts/jost-latin-400-normal.woff2",
-  "fonts/jost-latin-500-normal.woff2",
-  "fonts/jost-latin-600-normal.woff2",
-  "fonts/jost-latin-700-normal.woff2",
-  "fonts/jost-latin-800-normal.woff2",
-  "fonts/jost-latin-900-normal.woff2",
-  "fonts/jost-latin-400-italic.woff2",
-  "fonts/jost-latin-500-italic.woff2",
-  "fonts/jost-latin-600-italic.woff2",
-  "fonts/jost-latin-700-italic.woff2",
-  "fonts/jost-latin-800-italic.woff2",
-  "fonts/jost-latin-900-italic.woff2",
   "index-v3.html",
   "maintenance.html",
-  "vendor/qrcode-generator-1.4.4.js",
   "app/admin-pc.js",
   "css/styles.css",
   "css/typo.css",
@@ -107,11 +88,6 @@ const CORE = [
   "v3/tweaks.jsx",
   "v3/vendre.css",
   "v3/vendre.js",
-  "vendor/ScrollTrigger.min.js",
-  "vendor/d3.min.js",
-  "vendor/gsap.min.js",
-  "vendor/lenis.min.js",
-  "vendor/ci-hydro.json",
   "v3/terre.js",
   "v3/nuage.js",
   "v3/sons.js",
@@ -133,20 +109,88 @@ const CORE = [
   "v3/alertes.js",
   "v3/identite.js"
 ];
+// modules plus récents : gardés au mieux, sans bloquer l'installation si l'un manque
+const MODULES = ['v3/releve.js', 'app/garanties.js', 'v3/commandes.js', 'v3/chauffeur.js', 'v3/suivi.js', 'v3/prixzone.js', 'v3/racheter.js', 'v3/appro.js', 'v3/groupes.js', 'v3/astuces.js', 'v3/tableau.js'];
 
-// Images v2/img/ : mises en cache au mieux (une image manquante n'empêche pas l'installation).
+// Fichiers durables indispensables (réserve FICHIERS) : bibliothèques, polices, icônes.
+const DURABLES = [
+  "icons/v2/icon-192.png",
+  "icons/v2/icon-512.png",
+  "icons/v2/apple-touch-icon.png",
+  "icons/v2/apple-touch-icon-noir.png",
+  "icons/v2/icon-maskable-512.png",
+  "icons/v2/favicon.svg",
+  "icons/v2/favicon-32.png",
+  "icons/v2/favicon-noir.svg",
+  "icons/v2/favicon-noir-32.png",
+  "vendor/babel.min.js",
+  "vendor/countries-110m.json",
+  "vendor/countries-50m.json",
+  "vendor/react-dom.production.min.js",
+  "vendor/react.production.min.js",
+  "vendor/topojson-client.min.js",
+  "vendor/qrcode-generator-1.4.4.js",
+  "vendor/ScrollTrigger.min.js",
+  "vendor/d3.min.js",
+  "vendor/gsap.min.js",
+  "vendor/lenis.min.js",
+  "vendor/ci-hydro.json",
+  ...['400', '500', '600', '700', '800', '900'].flatMap(g => ['normal', 'italic'].map(s => 'fonts/jost-latin-' + g + '-' + s + '.woff2'))
+];
+// Images v2/img/ : gardées au mieux (une image manquante n'empêche pas l'installation). « nom.webp?v=2 » = image remplacée.
 const IMAGES = ["evenement-camion-depart-paysage.webp", "evenement-camion-depart-portrait.webp", "evenement-piment-seche-paysage.webp", "evenement-piment-seche-portrait.webp", "evenement-soudure-etal-paysage.webp", "evenement-soudure-etal-portrait.webp", "evenement-vendeuse-monnaie-paysage.webp", "evenement-vendeuse-monnaie-portrait.webp", "famille-arachide-noix-et-oleagineux.webp", "famille-assaisonnements-epices-condiments.webp", "famille-autres-produits-vivriers.webp", "famille-cereales-et-riz-local.webp", "famille-legumes-et-fruits.webp", "famille-oeufs.webp", "famille-poissons.webp", "famille-produits-surgeles.webp", "famille-tubercules-et-feculents.webp", "famille-viande-de-brousse.webp", "famille-viandes-et-abats.webp", "famille-volaille.webp", "femme-marche-07-paysage.webp", "femme-marche-07-portrait.webp", "produit-ail.webp", "produit-ananas.webp", "produit-aubergine.webp", "produit-avocat.webp", "produit-banane-douce.webp", "produit-banane-plantain.webp", "produit-chou.webp", "produit-citron.webp", "produit-concombre.webp", "produit-gombo.webp", "produit-oignon.webp", "produit-orange.webp", "produit-papaye.webp", "produit-pasteque.webp", "produit-patate-douce.webp", "produit-piment-frais.webp", "produit-piment-garba.webp", "produit-poivron.webp", "produit-pomme-de-terre.webp", "produit-tomate.webp", "produit-aubergine-blanche.webp", "produit-aubergine-violette.webp", "produit-courgette-obra.webp", "produit-courgette-verte.webp", "produit-feuille-d-oignon.webp", "produit-haricot-vert-du-burkina.webp", "produit-haricot-vert-local.webp", "produit-oignon-blanc.webp", "produit-oignon-violet.webp", "produit-orange-locale.webp", "produit-papaye-ronde.webp", "produit-papaye-solo.webp", "produit-patate-douce-jaune.webp", "produit-patate-douce-blanche.webp", "produit-persil.webp", "produit-piment-big-sun.webp", "produit-piment-sent-bon.webp", "produit-piment-vert.webp", "saison-01-janvier-paysage.webp", "saison-01-janvier-portrait.webp", "saison-02-fevrier-paysage.webp", "saison-02-fevrier-portrait.webp", "saison-05-mai-paysage.webp", "saison-05-mai-portrait.webp", "saison-07-juillet-paysage.webp", "saison-07-juillet-portrait.webp", "saison-08-aout-paysage.webp", "saison-08-aout-portrait.webp", "saison-09-septembre-paysage.webp", "saison-09-septembre-portrait.webp", "saison-10-octobre-paysage.webp", "saison-10-octobre-portrait.webp", "saison-11-novembre-paysage.webp", "saison-11-novembre-portrait.webp", "saison-12-decembre-paysage.webp", "saison-12-decembre-portrait.webp"].map(f => 'v2/img/' + f);
 
 // la carte en relief, pour qu'elle s'ouvre vite et sans connexion : son moteur et ses polices (Latin et ponctuation)
 const CARTE = ['vendor/maplibre/maplibre-gl.js', 'vendor/maplibre/maplibre-gl.css',
   ...['Jost Regular', 'Jost Medium', 'Jost Italic'].flatMap(f => ['0-255', '8192-8447'].map(r => 'vendor/glyphs/' + f + '/' + r + '.pbf'))];
+
+// Ce qui va dans la réserve durable quand on le croise en route : images, polices, icônes, bibliothèques
+const EST_DURABLE = p => /\/(v2\/img|vendor|fonts|icons)\//.test(p) || /\.(webp|png|jpe?g|gif|svg|woff2?|pbf|mp3|ogg|wav)$/.test(p);
+
+// Remplit la réserve durable : un fichier déjà gardé (même « ?v= » d'entrée) n'est pas retéléchargé ; un fichier encore dans une
+// ancienne réserve de code (versions d'avant) y est recopié ; sinon il est téléchargé. strict : un échec fait échouer l'installation.
+async function remplirDurables(entrees, strict) {
+  const d = await caches.open(FICHIERS);
+  let inv = {};
+  try { const r = await d.match(INVENTAIRE); if (r) inv = await r.json(); } catch (_) {}
+  const un = async e => {
+    const i = e.indexOf('?v='), chemin = i < 0 ? e : e.slice(0, i), tag = i < 0 ? '' : e.slice(i + 3), u = encodeURI(chemin);
+    if ((inv[chemin] || '') === tag && await d.match(u)) return;
+    if (!tag) { const ancien = await caches.match(u); if (ancien) { await d.put(u, ancien); inv[chemin] = ''; return; } }
+    const res = await fetch(u, { cache: tag ? 'no-cache' : 'default' });
+    if (!res.ok) throw new Error(chemin);
+    await d.put(u, res); inv[chemin] = tag;
+  };
+  await Promise.all(entrees.map(e => strict ? un(e) : un(e).catch(() => {})));
+  await d.put(INVENTAIRE, new Response(JSON.stringify(inv), { headers: { 'content-type': 'application/json' } }));
+}
+
+// Remplit la réserve de code de la nouvelle version. La page est relue au réseau ; ses « ?v= » disent quels fichiers ont changé.
+async function remplirCode() {
+  const c = await caches.open(CACHE);
+  const page = await fetch('application.dc.html', { cache: 'no-cache' });
+  if (!page.ok) throw new Error('page');
+  const html = await page.clone().text();
+  await c.put('application.dc.html', page);
+  const vers = {};
+  for (const m of html.matchAll(/["'`]((?:app|v2|v3|css)\/[\w\/.-]+\.(?:js|css|json|jsx))\?v=([\w.-]+)["'`]/g)) vers[m[1]] = m[1] + '?v=' + m[2];
+  const garder = async u => {
+    const ancien = await caches.match(u);   // même adresse, « ?v= » compris : contenu identique, rien à télécharger
+    if (ancien) return c.put(u, ancien);
+    const res = await fetch(u, { cache: 'no-cache' });
+    if (!res.ok) throw new Error(u);
+    return c.put(u, res);
+  };
+  const coeur = [...new Set(CORE.filter(u => u !== 'application.dc.html').map(u => vers[u] || u))];
+  const autres = [...new Set([...MODULES.map(u => vers[u] || u), ...Object.values(vers)])].filter(u => !coeur.includes(u));
+  await Promise.all(coeur.map(garder));
+  await Promise.all(autres.map(u => garder(u).catch(() => {})));
+}
+
 self.addEventListener('install', e => {
   e.waitUntil((async () => {
-    const c = await caches.open(CACHE);
-    await c.addAll(CORE.map(u => new Request(u, { cache: 'reload' })));
-    await Promise.all(IMAGES.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})));
-    await Promise.all(CARTE.map(u => c.add(new Request(encodeURI(u), { cache: 'reload' })).catch(() => {})));
-    await Promise.all(['v3/releve.js', 'app/garanties.js', 'v3/commandes.js', 'v3/chauffeur.js', 'v3/suivi.js', 'v3/prixzone.js', 'v3/racheter.js', 'v3/appro.js', 'v3/groupes.js', 'v3/astuces.js', 'v3/tableau.js'].map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})));   // nouveaux modules : au mieux   // sans bloquer l'installation si l'un manque
+    await Promise.all([remplirCode(), remplirDurables(DURABLES, true)]);
+    await remplirDurables([...IMAGES, ...CARTE], false);
     await self.skipWaiting();
   })());
 });
@@ -206,20 +250,38 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Code (JS, CSS, JSON, manifeste) : le réseau d'abord — revalidé auprès du serveur, jamais une vieille copie du navigateur —,
-  // le cache si le réseau échoue ou traîne plus de 4 s.
-  // Fichier versionné (« ?v=… ») : son contenu ne change jamais pour cette adresse → le cache d'abord, ouverture instantanée hors ligne
-  if (/[?&]v=/.test(url.search) && /\.(js|css)$/.test(url.pathname)) {
+  // Images, polices, icônes, bibliothèques et moteur de la carte : la réserve durable d'abord, puis le réseau.
+  if (EST_DURABLE(url.pathname)) {
     e.respondWith((async () => {
-      const hit = await caches.match(req);
+      const hit = await caches.match(req, { ignoreSearch: true });
       if (hit) return hit;
       const res = await fetch(req);
-      if (res && res.ok && res.type === 'basic') { const c = await caches.open(CACHE); c.put(req, res.clone()); }
+      if (res && res.ok && res.type === 'basic') { const c = await caches.open(FICHIERS); c.put(req, res.clone()); }
       return res;
     })());
     return;
   }
-  if (/\.(js|css|json|webmanifest|html)$/.test(url.pathname) || ['script', 'style', 'manifest'].includes(req.destination)) {
+
+  // Fichier versionné (« ?v=… ») : son contenu ne change jamais pour cette adresse → le cache d'abord, ouverture instantanée hors ligne
+  if (/[?&]v=/.test(url.search) && /\.(js|css|json|jsx)$/.test(url.pathname)) {
+    e.respondWith((async () => {
+      const hit = await caches.match(req);
+      if (hit) return hit;
+      try {
+        const res = await fetch(req);
+        if (res && res.ok && res.type === 'basic') { const c = await caches.open(CACHE); c.put(req, res.clone()); }
+        return res;
+      } catch (err) {
+        const vieux = await caches.match(req, { ignoreSearch: true });   // hors ligne : la dernière copie gardée de ce fichier
+        if (vieux) return vieux;
+        throw err;
+      }
+    })());
+    return;
+  }
+  // Code sans « ?v= » (JS, CSS, JSON, manifeste) : le réseau d'abord — revalidé auprès du serveur, jamais une vieille copie du
+  // navigateur —, le cache si le réseau échoue ou traîne plus de 2,5 s.
+  if (/\.(js|css|json|webmanifest|html|jsx)$/.test(url.pathname) || ['script', 'style', 'manifest'].includes(req.destination)) {
     e.respondWith((async () => {
       const reseau = fetch(req, { cache: 'no-cache' }).then(async res => {
         if (res && res.ok && res.type === 'basic') { const c = await caches.open(CACHE); await c.put(req, res.clone()); }
@@ -239,12 +301,12 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Images, polices, sons : le cache d'abord, puis le réseau.
+  // Le reste (sons…) : le cache d'abord, puis le réseau.
   e.respondWith((async () => {
     const hit = await caches.match(req, { ignoreSearch: true });
     if (hit) return hit;
     const res = await fetch(req);
-    if (res && res.ok && res.type === 'basic') { const c = await caches.open(CACHE); c.put(req, res.clone()); }
+    if (res && res.ok && res.type === 'basic') { const c = await caches.open(FICHIERS); c.put(req, res.clone()); }
     return res;
   })());
 });

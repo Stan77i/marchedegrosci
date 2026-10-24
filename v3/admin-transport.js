@@ -19,6 +19,10 @@
     sq_depot: 'Fonds bloqués', sq_liberee: 'Conforme : clôturée par l’acheteur', sq_liberee_auto: 'Clôture automatique (1 h)', sq_refus: 'Marchandise refusée',
     sq_refus_chauffeur_confirme: 'Chauffeur confirme le refus', sq_refus_chauffeur_conteste: 'Chauffeur conteste le refus', sq_refus_vendeur_reconnu: 'Vendeur reconnaît',
     sq_refus_vendeur_conteste: 'Vendeur conteste', sq_refus_applique: 'Refus appliqué', sq_refus_admin: 'Décision de l’équipe', sq_solde: 'Séquestre soldé', sq_rembourse: 'Remboursement' };
+  // schéma 92 : avis du système et livraison déclarée par celui qui transporte
+  Object.assign(EV, { arrivee: 'Livraison déclarée', rappel_chargement: 'Rappel : chargement attendu', retard_chargement: 'Délai de chargement dépassé',
+    rappel_reception: 'Rappel : réception à vérifier', mot_bloque: 'Mot secret bloqué' });
+  const dt92 = t => t ? new Date(t).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
 
   const CSS = `.at-ph{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}.at-ph img{width:64px;height:64px;object-fit:cover;border-radius:10px;display:block}
 .at-l{border-radius:20px;overflow:hidden;background:var(--panel)}
@@ -105,8 +109,12 @@
             <small>${e(c.vendeur)} → ${e(c.acheteur)} · ${e(c.ville_depart || 'départ à préciser')} → ${e(c.lieu_livraison || 'livraison à convenir')}</small>
             <small>${c.montant != null ? H.fmt(c.montant) + ' F' : '—'}${c.commission_montant != null ? ' · commission prévue ' + H.fmt(c.commission_montant) + ' F (non prélevée)' : ''}</small></div>
           <div>${tag(ETAT[c.etat] || c.etat, c.etat === 'litige' ? 'r' : c.etat === 'en_cours' ? 'v' : '')} ${c.etape && c.etat === 'en_cours' ? tag(ETAPE[c.etape] || c.etape) : ''}
-            <small>${e(MODE[c.mode_transport] || '')}${c.mission ? ' · ' + e(c.mission.nom) + ' (' + e(MST[c.mission.statut] || c.mission.statut) + ')' : ''}${c.mission && c.mission.prix != null ? ' · transport ' + H.fmt(c.mission.prix) + ' F (commission 6,9 % : ' + H.fmt(Math.round(Math.round(c.mission.prix) * 0.069)) + ' F, non prélevée)' : ''} · ${H.ago(c.maj)}</small>
+            <small>${e(MODE[c.mode_transport] || '')}${c.mission ? ' · ' + e(c.mission.nom) + ' (' + e(MST[c.mission.statut] || c.mission.statut) + ')' : ''}${c.mission && c.mission.prix != null ? ' · transport ' + H.fmt(c.mission.prix) + ' F' + (c.mode_transport === 'reseau' ? ' (commission 6,9 % : ' + H.fmt(Math.round(Math.round(c.mission.prix) * 0.069)) + ' F, non prélevée)' : ' (livreur hors service : aucune commission)') : ''} · ${H.ago(c.maj)}</small>
             ${c.etat === 'litige' && !c.refus ? `<small style="color:var(--bad-t)">Litige : « ${e(c.litige_motif || '')} »</small>` : ''}
+            ${c.litige_retard ? `<small style="color:var(--bad-t)">Litige à trancher : échéance dépassée (${e(dt92(c.litige_echeance))})</small>` : c.etat === 'litige' && c.litige_echeance ? `<small>À trancher avant le ${e(dt92(c.litige_echeance))}</small>` : ''}
+            ${c.chargement_retard ? `<small style="color:var(--bad-t)">Pas chargée à temps (échéance ${e(dt92(c.chargement_echeance))}) : l’acheteur peut annuler</small>` : ''}
+            ${c.mot_bloque ? `<small style="color:var(--bad-t)">Mot secret bloqué après trop d’essais faux</small>` : ''}
+            ${c.annulation_bloquee ? `<small style="color:var(--bad-t)">Annulation du vendeur refusée deux fois : à trancher</small>` : ''}
             ${c.refus ? `<small style="color:var(--bad-t)">Marchandise refusée : ${c.refus.quantite != null ? e(String(c.refus.quantite)) + ' ' + e(c.unite || '') : 'tout'} · « ${e(c.refus.motif || '')} »</small>
               <small>Chauffeur : ${c.refus.chauffeur === 'confirme' ? 'confirme' : c.refus.chauffeur === 'conteste' ? 'conteste' : 'pas de réponse'}${c.refus.chauffeur_suffit ? '' : ' (choisi par l’acheteur : ne suffit pas seul)'} · Vendeur : ${c.refus.vendeur === 'reconnu' ? 'reconnaît' : c.refus.vendeur === 'conteste' ? 'conteste' : 'pas de réponse'}</small>
               <span class="at-ph">${(c.refus.photos || []).map((x, i) => D.rfImg[c.id] && D.rfImg[c.id][i] ? `<a href="${e(D.rfImg[c.id][i])}" target="_blank" rel="noopener"><img src="${e(D.rfImg[c.id][i])}" alt="Photo ${i + 1} du refus"></a>` : '').join('')}</span>` : ''}
@@ -118,10 +126,12 @@
           <div class="at-a">
             ${sansTr ? (dispo.length ? `<select class="at-sel" data-trsel="${c.id}" aria-label="Transporteur">${dispo.map(t => `<option value="${t.id}">${e(t.nom)} · ${e(VEH[t.vehicule] || '')}${t.disponible ? ' · disponible' : ''}${t.avec_application ? '' : ' · sans appli'}</option>`).join('')}</select><button class="btn sm pri" data-aff="${c.id}">Affecter</button>` : '<small>Aucun transporteur vérifié</small>') : ''}
             ${c.mission && c.mission.id && c.mission.statut === 'acceptee' && !c.mission.avec_application && ['a_confirmer', 'en_cours'].includes(c.etat) && ['confirmee', 'preparation', null, undefined].includes(c.etape) ? `<input class="at-sel" type="number" inputmode="numeric" min="1" step="1" data-mpx="${c.mission.id}" value="${c.mission.prix != null ? Math.round(c.mission.prix) : ''}" placeholder="Prix du transport (F)" aria-label="Prix du transport, donné par le chauffeur au téléphone" style="max-width:170px"><button class="btn sm pri" data-mpxb="${c.mission.id}">${c.mission.prix != null ? 'Changer le prix' : 'Saisir le prix'}</button>` : ''}
-            ${c.sans_reponse ? `<button class="btn sm pri" data-lib="${c.id}">Libérer le paiement</button>` : ''}
+            ${c.sans_reponse ? `<button class="btn sm pri" data-lib="${c.id}">Clôturer la commande</button>` : ''}
             ${c.etat === 'litige' ? `<button class="btn sm ghost" data-ds="${c.id}" aria-expanded="${!!D.disc[c.id]}">Discussion</button>` : ''}
             ${c.etat === 'litige' && c.refus ? `<button class="btn sm ghost" data-rfph="${c.id}">Photos (${(c.refus.photos || []).length})</button><button class="btn sm pri" data-rft="${c.id}" data-q="0">Rejeter le refus</button><button class="btn sm bad" data-rft="${c.id}" data-q="">Accepter le refus</button>` : ''}
-            ${c.etat === 'litige' && !c.refus ? `<button class="btn sm pri" data-lit="${c.id}" data-iss="terminee" data-fautif="">Livrée : sans faute</button><button class="btn sm" data-lit="${c.id}" data-iss="terminee" data-fautif="acheteur">Livrée : réclamation de l’acheteur sans fondement</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee" data-fautif="vendeur">Annulée : faute du vendeur</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee" data-fautif="acheteur">Annulée : faute de l’acheteur</button><button class="btn sm" data-lit="${c.id}" data-iss="annulee" data-fautif="">Annulée : torts partagés</button>` : ''}
+            ${c.etat === 'litige' && !c.refus ? `<button class="btn sm pri" data-lit="${c.id}" data-iss="terminee" data-fautif="">Clore : livrée, sans faute</button><button class="btn sm" data-lit="${c.id}" data-iss="terminee" data-fautif="acheteur">Clore : livrée, réclamation de l’acheteur sans fondement</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee" data-fautif="vendeur">Annulée : faute du vendeur</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee" data-fautif="acheteur">Annulée : faute de l’acheteur</button><button class="btn sm" data-lit="${c.id}" data-iss="annulee" data-fautif="">Annulée : torts partagés</button>` : ''}
+            ${c.etat === 'litige' && !c.refus && c.quantite != null ? `<button class="btn sm" data-part="${c.id}">Partager</button>` : ''}
+            ${['a_confirmer', 'en_cours'].includes(c.etat) ? `<button class="btn sm bad" data-iss2="${c.id}" data-iss="annulee" data-fautif="vendeur">Annuler : faute du vendeur</button><button class="btn sm bad" data-iss2="${c.id}" data-iss="annulee" data-fautif="acheteur">Annuler : faute de l’acheteur</button><button class="btn sm" data-iss2="${c.id}" data-iss="annulee" data-fautif="">Annuler : personne en faute</button>${c.etat === 'en_cours' ? `<button class="btn sm pri" data-iss2="${c.id}" data-iss="terminee" data-fautif="">Clore : livrée</button>` : ''}` : ''}
             <button class="btn sm ghost" data-hist="${c.id}">Historique</button><button class="btn sm ghost" data-tout="${e(c.numero)}">Tout voir</button></div>
           ${D.ouverts[c.id] ? `<ul class="at-j">${D.ouverts[c.id].map(j => `<li><b>${e(EV[j.evenement] || j.evenement)}</b> · ${e(j.role)} · ${new Date(j.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${j.lieu ? ' · ' + e(j.lieu) : ''}${j.lat != null ? ' · position jointe' : ''}${j.note ? ' · « ' + e(j.note) + ' »' : ''}</li>`).join('') || '<li>Aucune étape.</li>'}</ul>` : ''}</div>`;
       };
@@ -132,7 +142,7 @@
           <small>${e(tr.vendeur)} → ${e(tr.acheteur)} · ${tr.quantite != null ? e(String(tr.quantite)) + ' ' + e(tr.unite || '') : ''} à ${tr.prix_unitaire != null ? H.fmt(tr.prix_unitaire) + ' F' : '—'} = ${tr.montant != null ? H.fmt(tr.montant) + ' F' : '—'}</small>
           <small>${e(tr.ville_depart || 'départ ?')} → ${e(tr.lieu_livraison || 'livraison ?')} · ${e(MODE[tr.mode_transport] || '')} · validation ${tr.validation === 'code' ? 'avec codes' : 'sans code'}</small>
           ${tr.negociation ? `<small>Accord : ${tr.negociation.prix_final != null ? H.fmt(tr.negociation.prix_final) + ' F' : '—'} × ${e(String(tr.negociation.quantite_finale ?? '—'))}${tr.negociation.transport_final ? ' · transport compris' : ''}${tr.negociation.conditions_finales ? ' · « ' + e(tr.negociation.conditions_finales) + ' »' : ''}${tr.negociation.conclu_le ? ' · conclu le ' + new Date(tr.negociation.conclu_le).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}</small>` : ''}
-          ${tr.sequestre && tr.sequestre.repartition ? `<small>Répartition : vendeur ${H.fmt(tr.sequestre.repartition.vendeur_net)} F net · transporteur ${H.fmt(tr.sequestre.repartition.transporteur_net)} F net · acheteur ${H.fmt(tr.sequestre.repartition.acheteur_rembourse)} F rendus · Marché de Gros ${H.fmt(tr.sequestre.repartition.marche)} F · séquestre : ${tr.sequestre.actif ? e(tr.sequestre.etat) : 'pas encore de partenaire'}</small>` : ''}
+          ${tr.sequestre && tr.sequestre.repartition ? `<small>Répartition : vendeur ${H.fmt(tr.sequestre.repartition.vendeur_net)} F net · transporteur ${H.fmt(tr.sequestre.repartition.transporteur_net)} F net · acheteur ${H.fmt(tr.sequestre.repartition.acheteur_rembourse)} F refusés (non dus) · Marché de Gros ${H.fmt(tr.sequestre.repartition.marche)} F · séquestre : ${tr.sequestre.actif ? e(tr.sequestre.etat) : 'pas encore de partenaire'}</small>` : ''}
           ${[['Négociation', tr.conversation], ['Messages directs entre eux', tr.messages_directs], ['Discussion à trois', tr.discussion_litige]].map(([t, L]) => `<p style="margin:10px 0 4px;font-weight:600">${t} (${(L || []).length})</p><ul class="at-j">${(L || []).map(m => `<li><b>${e({ vendeur: 'Vendeur', acheteur: 'Acheteur', admin: 'Marché de Gros' }[m.role] || 'Autre')}</b> · ${new Date(m.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${m.genre && m.genre !== 'texte' ? ' · ' + e({ prix: 'propose', accord: 'accord', refus: 'refuse', retrait: 'retire', fin: 'fin' }[m.genre] || m.genre) : ''}${m.prix != null ? ' ' + H.fmt(m.prix) + ' F' : ''}${m.quantite != null ? ' × ' + e(String(m.quantite)) : ''}${m.texte ? ' · « ' + e(m.texte) + ' »' : ''}</li>`).join('') || '<li>Rien.</li>'}</ul>`).join('')}
           <p style="margin:10px 0 4px;font-weight:600">Historique</p><ul class="at-j">${(tr.journal || []).map(j => `<li><b>${e(EV[j.evenement] || j.evenement)}</b> · ${e(j.role)} · ${new Date(j.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}${j.lieu ? ' · ' + e(j.lieu) : ''}${j.note ? ' · « ' + e(j.note) + ' »' : ''}</li>`).join('') || '<li>Aucune étape.</li>'}</ul></div></section>` : ''}
         <div class="seg" role="group" aria-label="Afficher">${[['a_traiter', 'À traiter'], ['en_cours', 'En cours'], ['tout', 'Toutes']].map(([k, l]) => `<button data-cvue="${k}" aria-pressed="${D.vueCmd === k}">${l}</button>`).join('')}</div>`) + `
@@ -167,9 +177,27 @@
           H.toast('Litige clos.'); await H.relire(); }
         catch (e) { b.disabled = false; H.toast('Impossible : ' + e.message); }
       });
+      // schéma 92 : décision de l'équipe sur une commande à confirmer ou en cours (journalisée, note visible des deux parties)
+      root.querySelectorAll('[data-iss2]').forEach(b => b.onclick = async () => {
+        const iss = b.dataset.iss, fa = b.dataset.fautif || null;
+        const note = prompt(iss === 'terminee' ? 'Décision : commande considérée comme livrée. Expliquez (les deux parties le verront) :'
+          : 'Décision : commande annulée' + (fa ? ', faute ' + (fa === 'vendeur' ? 'du vendeur' : 'de l’acheteur') + ' (compte dans sa fiabilité)' : ', personne en faute') + '. Expliquez (les deux parties le verront) :');
+        if (!note || !note.trim()) return; b.disabled = true;
+        try { await H.rpc('admin_commande_issue', { p_cmd: b.dataset.iss2, p_issue: iss, p_note: note.trim(), p_fautif: fa }); H.toast('Décision enregistrée.'); await H.relire(); }
+        catch (x) { b.disabled = false; H.toast('Impossible : ' + x.message); }
+      });
+      // schéma 92 : litige tranché en partage (une partie de la marchandise n'est pas due)
+      root.querySelectorAll('[data-part]').forEach(b => b.onclick = async () => {
+        const id = b.dataset.part, c = D.cmd.find(x => x.id === id) || D.aTraiter.find(x => x.id === id);
+        const v = prompt('Partage : quantité qui n’est pas due (sur ' + (c && c.quantite != null ? c.quantite + ' ' + (c.unite || '') : 'la commande') + ') :', ''); if (v === null) return;
+        const q = Number(String(v).replace(',', '.')); if (!(q > 0) || (c && c.quantite != null && q >= c.quantite)) return H.toast('Quantité invalide : plus de 0 et moins que la commande.');
+        const note = prompt('Partage : ' + q + ' ' + ((c && c.unite) || '') + ' ne sont pas dus. Expliquez (les deux parties le verront) :'); if (!note || !note.trim()) return; b.disabled = true;
+        try { await H.rpc('admin_litige_partager', { p_cmd: id, p_quantite: q, p_note: note.trim() }); H.toast('Partage enregistré.'); await H.relire(); }
+        catch (x) { b.disabled = false; H.toast('Impossible : ' + x.message); }
+      });
       root.querySelectorAll('[data-lib]').forEach(b => b.onclick = async () => {
-        const note = prompt('Libérer le paiement (l’acheteur ne répond pas). Expliquez (les parties le verront) :'); if (!note || !note.trim()) return; b.disabled = true;
-        try { await H.rpc('admin_liberer', { p_cmd: b.dataset.lib, p_note: note.trim() }); H.toast('Paiement libéré.'); await H.relire(); }
+        const note = prompt('Clôturer la commande (l’acheteur ne répond pas). Expliquez (les parties le verront) :'); if (!note || !note.trim()) return; b.disabled = true;
+        try { await H.rpc('admin_liberer', { p_cmd: b.dataset.lib, p_note: note.trim() }); H.toast('Commande clôturée.'); await H.relire(); }
         catch (x) { b.disabled = false; H.toast('Impossible : ' + x.message); }
       });
       root.querySelectorAll('[data-ds]').forEach(b => b.onclick = async () => { const id = b.dataset.ds;
@@ -188,7 +216,7 @@
       root.querySelectorAll('[data-rft]').forEach(b => b.onclick = async () => {
         const id = b.dataset.rft, c = D.cmd.find(x => x.id === id) || D.aTraiter.find(x => x.id === id); let q = b.dataset.q === '' ? null : 0;
         if (q === null) { const v = prompt('Quantité refusée retenue (sur ' + (c && c.quantite != null ? c.quantite + ' ' + (c.unite || '') : 'la commande') + ') :', c && c.refus && c.refus.quantite != null ? c.refus.quantite : (c && c.quantite) || ''); if (v === null) return; q = Number(String(v).replace(',', '.')); if (!(q > 0)) return H.toast('Quantité invalide.'); }
-        const note = prompt(q === 0 ? 'Refus rejeté : tout est payé au vendeur. Expliquez (les parties le verront) :' : 'Refus accepté : la partie refusée revient à l’acheteur. Expliquez (les parties le verront) :');
+        const note = prompt(q === 0 ? 'Refus rejeté : tout est dû au vendeur. Expliquez (les parties le verront) :' : 'Refus accepté : la partie refusée n’est pas due. Expliquez (les parties le verront) :');
         if (!note || !note.trim()) return; b.disabled = true;
         try { await H.rpc('admin_refus_trancher', { p_cmd: id, p_quantite: q, p_note: note.trim() }); H.toast('Décision enregistrée.'); await H.relire(); }
         catch (x) { b.disabled = false; H.toast('Impossible : ' + x.message); }
@@ -202,8 +230,8 @@
   };
 
   // Commissions (schéma 30) : registre calculé par le serveur. Rien n'est encaissé.
-  const KST = { prevue: ['Prévue', 'a'], due: ['Due', 'v'], suspendue: ['Suspendue (litige)', 'r'], annulee: ['Annulée', ''] };
-  // commission transport (schéma 42) : 6,9 % du prix fixé par le chauffeur, due par lui. Rien n'est encaissé.
+  const KST = { prevue: ['Prévue', 'a'], calculee: ['Calculée (jamais réclamée)', 'v'], due: ['Due (argent passé par l’application)', 'v'], suspendue: ['Suspendue (litige)', 'r'], annulee: ['Annulée', ''] };
+  // commission transport (schéma 42, 95, 95b) : 6,9 % du prix du transporteur du service Marché de Gros. « Calculée » : jamais réclamée. Rien n'est encaissé.
   function commTransport(H) {
     const e = H.esc, c = D.comTr; if (!c) return '';
     const t = k => (c.totaux && c.totaux[k]) || { n: 0, transports: 0, commission: 0 };
@@ -211,8 +239,8 @@
     const ligne = k => `<div class="at-r"><div><b>${e(k.produit || 'Commande')} · ${e(k.numero)}</b><small>${e(k.transporteur || 'Chauffeur')} · ${new Date(k.updated_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</small></div>
         <div><b>${H.fmt(k.commission)} F</b><small>6,9 % de ${H.fmt(k.prix_transport)} F</small></div>
         <div class="at-a"><span class="at-t ${KST[k.statut][1]}">${KST[k.statut][0]}</span></div></div>`;
-    return `<section class="sec"><h2 style="margin:6px 0 4px">Transport · 6,9 %</h2><p style="margin:0 0 10px;color:var(--mute,#655C4D)">Calculée sur le prix fixé par le chauffeur, due par lui (il l’inclut dans son prix). L’acheteur paie le transport à la livraison. Rien n’est encaissé.</p>
-      <div class="at-ks">${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div>
+    return `<section class="sec"><h2 style="margin:6px 0 4px">Transport · 6,9 %</h2><p style="margin:0 0 10px;color:var(--mute,#655C4D)">Seulement pour le service transport Marché de Gros, sur le prix du transporteur. Avant le paiement dans l’application, elle est calculée et jamais réclamée. Rien n’est encaissé.</p>
+      <div class="at-ks">${tuile('calculee')}${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div>
       <div class="at-l" style="margin-top:10px">${(c.lignes || []).length ? c.lignes.map(ligne).join('') : '<div class="at-vide"><b>Aucune commission transport</b>Elle s’inscrit quand un chauffeur accepte une mission avec son prix.</div>'}</div></section>`;
   }
   D.com = null; D.comOuv = {};
@@ -226,8 +254,8 @@
           <div><b>${H.fmt(k.commission)} F</b><small>3,5 % de ${H.fmt(k.montant_vente)} F</small></div>
           <div class="at-a"><span class="at-t ${KST[k.statut][1]}">${KST[k.statut][0]}</span><button class="btn sm ghost" data-kj="${k.id}" aria-expanded="${!!D.comOuv[k.id]}">Journal</button></div>
           ${D.comOuv[k.id] ? `<ul class="at-j">${(k.journal || []).map(j => `<li><b>${e(KST[j.statut] ? KST[j.statut][0] : j.statut)}</b> · ${H.fmt(j.commission)} F · ${e(j.motif)} · ${new Date(j.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</li>`).join('')}</ul>` : ''}</div>`;
-      return H.top('Commissions', 'Registre de la commission de 3,5 % sur les ventes de marchandises, calculée par le serveur. Aucun paiement n’existe encore : « due » veut dire « à percevoir plus tard », rien n’a été encaissé.', '') + `
-        <section class="sec"><div class="at-ks">${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div></section>
+      return H.top('Commissions', 'Registre de la commission de 3,5 % sur les ventes de marchandises, calculée par le serveur. Aucun paiement n’existe encore : une vente clôturée donne une commission « calculée », jamais réclamée. « Due » viendra seulement quand l’argent passera par l’application. Rien n’a été encaissé.', '') + `
+        <section class="sec"><div class="at-ks">${tuile('calculee')}${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div></section>
         <section class="sec"><div class="at-l">${(c.lignes || []).length ? c.lignes.map(ligne).join('') : '<div class="at-vide"><b>Aucune commission</b>Elles s’inscrivent seules à chaque commande.</div>'}</div></section>
         ${commTransport(H)}`;
     },

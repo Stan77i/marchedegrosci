@@ -15,7 +15,7 @@
     'Négociez le prix.',
     'Payez à la livraison.',
     'Votre numéro reste caché.',
-    'Badge vérifié sur pièce.',
+    'Sceau vert : pièce contrôlée.',
     'Coopératives vérifiées.',
     'Partout en Côte d’Ivoire.',
     'Du champ au marché.'

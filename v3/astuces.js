@@ -46,26 +46,26 @@
       ['📦', 'Ensuite, la commande', 'Depuis l’accord, créez la commande : qui transporte, où livrer. Pour l’instant, *paiement à la livraison*, après avoir vu la marchandise.'],
       ['👀', 'Rien n’est secret', 'La négociation reste dans l’application. En cas de litige, l’équipe du Marché de Gros peut la *relire*.']] },
     commande: { t: 'Créer la commande', cartes: [
-      ['🚚', 'Qui transporte ?', 'Le *vendeur* livre, ou l’*acheteur* s’en charge. Le transporteur du réseau Marché de Gros arrive *bientôt*.'],
+      ['🚚', 'Qui transporte ?', 'Le *vendeur* livre, ou l’*acheteur* s’en charge. Le service transport Marché de Gros n’est *pas encore ouvert*.'],
       ['🔐', 'Votre transporteur, sans code', 'Avec votre propre camion ou chauffeur : *rien à installer, aucun code*. Le vendeur glisse un *mot secret* dans la marchandise ; à la réception, l’acheteur le tape pour confirmer.'],
       ['👍', 'L’autre partie confirme', 'Puis chaque étape s’affiche avec son heure : préparation, chargement, départ du camion, arrivée, réception.'],
       ['🚫', 'Confirmée = engagée', 'Une fois la commande confirmée, l’*acheteur ne peut plus l’annuler*. Seul le vendeur peut demander l’annulation, avant le chargement.']] },
     transport: { t: 'Le transporteur du réseau', cartes: [
-      ['🛡️', 'Un transporteur recommandé', 'Avec le *transporteur du réseau Marché de Gros*, l’équipe confie la mission à un chauffeur qu’elle a vérifié. Avec votre propre transporteur, rien de tout cela : pas de code.'],
+      ['🛡️', 'Un transporteur recommandé', '*Pas encore ouvert.* Avec le *service transport Marché de Gros*, l’équipe confiera la mission à un chauffeur qu’elle a vérifié. Avec votre propre transporteur : pas de code.'],
       ['🔐', 'Avec les codes', 'Le chauffeur du réseau tape le code du *vendeur* au chargement, puis celui de l’*acheteur* à la réception. Personne ne valide à votre place.'],
-      ['💰', 'Il accepte et fixe son prix', 'Sa réponse et le prix du transport s’affichent dans la commande. Vous le payez à la livraison, avec la marchandise.'],
+      ['💰', 'Il propose son prix', 'L’acheteur et le vendeur acceptent, refusent ou proposent un autre prix. Le prix convenu s’affiche dans la commande.'],
       ['🛡️', '« Vérifié par l’équipe »', 'Ce badge veut dire que l’équipe a contrôlé ce chauffeur. Sans lui, soyez prudent.']] },
     codes: { t: 'Les codes du réseau', cartes: [
-      ['🔐', 'Votre code secret', 'Seulement avec le *transporteur du réseau Marché de Gros*. Vendeur : le code de *prise en charge*. Acheteur : le code de *réception*. Il ne sert qu’une seule fois.'],
+      ['🔐', 'Votre code secret', 'Seulement avec le *service transport Marché de Gros* (pas encore ouvert). Vendeur : le code de *prise en charge*. Acheteur : le code de *réception*. Il ne sert qu’une seule fois.'],
       ['🚚', 'Vérifiez d’abord le chauffeur', 'Exigez qu’il vous montre son *code transporteur* (T-4K7P) dans son application. S’il ne l’a pas, ce n’est pas le bon chauffeur.'],
       ['👀', 'Donnez-le au bon moment', 'Vendeur : quand la marchandise est *dans le camion*. Acheteur : *après avoir vérifié* la quantité et la qualité.'],
       ['🗣️', 'De vive voix seulement', 'Ne l’envoyez jamais par message ni par WhatsApp. Le chauffeur le tape dans son application : l’étape est validée. Vos codes sont aussi dans *Accueil → Alertes*.']] },
     chauffeur: { t: 'L’Espace chauffeur', cartes: [
-      ['🚛', 'Bienvenue, chauffeur', 'Ici, les *transporteurs du réseau* que le Marché de Gros recommande. Inscrivez-vous, c’est *gratuit* : l’équipe vérifie votre profil et vous confie des missions.'],
+      ['🚛', 'Bienvenue, chauffeur', 'Inscrivez-vous, c’est *gratuit* : l’équipe vérifie votre profil. Le *service transport Marché de Gros* n’est pas encore ouvert : les missions viendront à son ouverture.'],
       ['🪪', 'Votre code transporteur', 'Montrez-le au vendeur et à l’acheteur : il prouve que vous êtes bien le transporteur du réseau. Vous *acceptez* la mission en fixant votre prix, ou vous refusez.'],
       ['📦', 'Au chargement', 'Montrez votre code transporteur au vendeur. Il vous dit son *code de prise en charge* : tapez-le. Besoin ? Touchez *« Demander le code »*.'],
       ['📍', 'À la livraison', 'Même chose avec l’acheteur : il vérifie la marchandise, puis vous dit le *code de réception*. Vous le tapez : la livraison est validée.'],
-      ['💰', 'Votre prix, moins 6,9 %', 'C’est la commission du Marché de Gros. Si l’acheteur refuse la marchandise, dites honnêtement ce que vous avez vu : *votre transport reste dû*.']] },
+      ['💰', 'Votre prix', 'Choisi par un vendeur ou un acheteur : *aucune commission*. Mission du service Marché de Gros, à son ouverture : votre prix moins *6,9 %*. Si l’acheteur refuse la marchandise, dites honnêtement ce que vous avez vu : *votre transport reste dû*.']] },
     // schémas 57 à 61 : séquestre, mot secret, refus, discussion, tableau des prix (montrés jusqu'à 3 fois, tant que « J’ai compris » n’est pas touché)
     mot: { t: 'Le mot secret', insiste: 3, cartes: [
       ['📝', 'Votre mot secret', 'Il s’affiche en jaune dans votre commande, par exemple *MANGUE 47*.'],
@@ -74,26 +74,26 @@
       ['🤐', 'Ne le donnez à personne', 'Ni par message, ni au téléphone. Il est *dans le colis*, c’est tout.']] },
     verifier: { t: 'Vérifier la marchandise', insiste: 3, cartes: [
       ['🔍', 'Vérifiez la marchandise', 'Quantité, qualité, et le *papier du vendeur* glissé dans le colis.'],
-      ['✅', 'Tout est bon ?', 'Touchez *« Tout est conforme »* : la commande est terminée. Le paiement se fait *à la livraison*, entre vous.'],
+      ['✅', 'Tout est bon ?', 'Touchez *« Tout est conforme »* : la commande est *clôturée*. Le paiement se fait *à la livraison*, entre vous.'],
       ['⏰', 'Sans réponse : 1 h', 'Si vous ne réclamez pas, la commande est *clôturée toute seule 1 h après la réception*. L’heure exacte est affichée.'],
       ['⚠️', 'Un problème ?', 'Touchez *« Refuser la marchandise »* avant la fin du délai, avec le mot du vendeur et des photos.']] },
     refus: { t: 'Refuser la marchandise', insiste: 3, cartes: [
       ['🧾', 'Il faut des preuves réelles', 'Le *mot secret du vendeur* (le papier dans le colis) et *1 à 4 photos* : la marchandise et le papier.'],
       ['🤝', 'Si le vendeur reconnaît', 'Vous ne devez *que la partie acceptée*. Le *transport reste dû* : le chauffeur a fait son travail.'],
       ['⚖️', 'Sinon, on en parle à trois', 'Vous, le vendeur et le *Marché de Gros*, dans la discussion de la commande. L’équipe juge avec tous les échanges.'],
-      ['📄', 'Pas de papier ?', 'Revenez en arrière et touchez *« Signaler un problème »* : rien n’est rendu tout seul, l’équipe juge.']] },
+      ['📄', 'Pas de papier ?', 'Revenez en arrière et touchez *« Signaler un problème »* : rien n’est décidé tout seul, l’équipe juge.']] },
     discussion: { t: 'La discussion à trois', insiste: 2, cartes: [
       ['💬', 'Acheteur, vendeur, Marché de Gros', 'Expliquez-vous ici, calmement. Chaque message prévient les deux autres.'],
       ['👀', 'Rien n’est secret', 'L’équipe lit *tout* : la négociation, vos messages, les photos, le mot du vendeur. C’est comme ça qu’elle juge.'],
       ['🚫', 'Pas de numéro, pas de lien', 'Tout se règle dans l’application. Le Marché de Gros ne vous demandera *jamais d’argent* par message.']] },
-    sequestre: { t: 'Le paiement sécurisé', insiste: 2, cartes: [
+    sequestre: { t: 'Le séquestre, plus tard', insiste: 2, cartes: [
       ['💵', 'Aujourd’hui : à la livraison', 'Vous payez *à la livraison*, après avoir vu la marchandise. Le séquestre est *en construction*.'],
-      ['🔒', 'Bientôt : l’argent bloqué', 'Dès la commande confirmée, l’acheteur paiera par Wave, Orange Money ou MTN MoMo. L’argent restera *bloqué* : le vendeur ne fera plus le voyage pour rien.'],
-      ['🔓', 'La libération', 'L’acheteur valide, ou *1 h* passe sans réclamation : chacun reçoit sa part. Vendeur : moins *3,5 %*. Transporteur : moins *6,9 %*.']] },
+      ['🔒', 'Plus tard : l’argent bloqué', 'Dès la commande confirmée, l’acheteur paiera dans l’application (Wave, Orange Money ou MTN MoMo), *jamais à une personne*. L’argent restera *bloqué* : le vendeur ne fera plus le voyage pour rien.'],
+      ['🔓', 'La clôture', 'L’acheteur valide, ou *1 h* passe sans réclamation : la commande est clôturée. Vendeur : moins *3,5 %*. Les *6,9 %* : seulement avec le service transport Marché de Gros.']] },
     prix: { t: 'Le tableau des prix', insiste: 2, cartes: [
       ['📊', 'Comme au marché', '*Acheter* : les vendeurs, le moins cher en haut. *Vendre* : les acheteurs, le meilleur budget en haut.'],
       ['⬆️', 'Baissez votre prix, vous montez', 'Le tableau se met à jour tout seul. À prix égal, le *transport compris* passe devant.'],
-      ['🤝', 'Touchez « Acheter » ou « Vendre »', 'Vous proposez votre prix dans l’application. *Aucun numéro* : le Marché de Gros est le seul intermédiaire.']] },
+      ['🤝', 'Touchez « Acheter » ou « Vendre »', 'Vous proposez votre prix dans l’application. *Aucun numéro* : le Marché de Gros met en relation.']] },
     // un tutoriel à l'entrée de chaque écran du menu (montré 2 fois au plus, tant que « J’ai compris » n’est pas touché)
     p_acheter: { t: 'Acheter', insiste: 2, cartes: [
       ['🔎', 'Tout ce qui est à vendre', 'Cherchez un produit en haut : les noms locaux sont compris (aloco, gnangnan…). Affinez avec les *filtres*.'],
@@ -150,7 +150,7 @@
       ['🏅', 'Les membres recommandés', 'Classés d’après les *notes réelles* laissées après une négociation.'],
       ['👆', 'Touchez un nom', 'Vous voyez son profil, ses notes et ses statuts. Un statut ne s’achète pas.']] },
     m_alertes: { t: 'Alertes produits', insiste: 2, cartes: [
-      ['🔔', 'Soyez prévenu', 'Choisissez vos produits (igname, tomate…) : une *notification* arrive dès qu’une annonce est publiée.'],
+      ['🔔', 'Soyez prévenu', 'Choisissez vos produits (igname, tomate…) : une *notification* vous prévient des nouvelles annonces, entre 7 h et 21 h.'],
       ['🎯', 'Offres, demandes, ou les deux', 'Vendeur ? Suivez les *demandes*. Acheteur ? Suivez les *offres*.']] },
     m_commandes: { t: 'Mes commandes', insiste: 2, cartes: [
       ['🚚', 'Du « oui » à la livraison', 'Chaque commande, avec ses étapes et leur heure. *En cours* d’un côté, *terminées* de l’autre.'],

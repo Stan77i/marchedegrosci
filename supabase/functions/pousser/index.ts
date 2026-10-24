@@ -31,6 +31,9 @@
 // 18. par la base (pg_cron « mdg-notif », public.notif_tick, schéma 88) avec { lots: true } : les messages en file d'attente
 //     (nouvelles offres et demandes, groupe bientôt complet, veille de la date limite, produit à racheter), regroupés par
 //     personne et par sujet : « 3 nouvelles offres : Tomate ».
+// v24 (24/10/2026, schéma 96b, NON DÉPLOYÉE) : « N professionnels cherchent » ne compte que les besoins encore actuels
+//     (public.notif_besoins_ouverts). L'objet (offre, demande, négociation…) est revérifié par la base dans notif_preparer et
+//     notif_lots_prendre ; un lot raté repart (notif_resultat). Texte du rappel « offre_fin » (schéma 93c, équipe B).
 // v22 (24/10/2026, schéma 91) : textes commerciaux relus : accord et pluriel des unités (« 40 caisses », « 5 000 F la caisse »),
 //     élision juste (« de haricot », « d'œufs »), un prix jamais coupé (version plus courte), « Dans votre budget » seulement si
 //     la base l'a vérifié, échéances réelles (aujourd'hui, demain, « jusqu'au 27/10 »), anti-répétition lue par paquets.
@@ -269,7 +272,8 @@ Deno.serve(async (req) => {
         chargement: ["Chargement confirmé", produit],
         transport: e.par ? [`${qui} : le camion est parti`, `${produit} · en route vers la livraison`] : ["Le camion est parti", `${produit} · départ vu par le lien de suivi du chauffeur`],
         transbordement: ["Transbordement", `${produit}${e.lieu ? " · " + e.lieu : ""}`],
-        arrivee: ["Le chauffeur est arrivé", produit],
+        // schéma 92 : l'acheteur dit « arrivée » ; le vendeur (ou le chauffeur) peut déclarer « livré »
+        arrivee: e.par && e.par === k.acheteur_id ? ["La marchandise est arrivée", `${produit} · L'acheteur vérifie.`] : ["Livraison déclarée", `${produit} · Vérifiez, puis confirmez ou refusez.`],
         reception: ["Réception confirmée, commande terminée", produit],
         annulation_demandee: [`${qui} demande l'annulation`, `${produit}. Touchez pour répondre.`],
         annulation_refusee: ["Annulation refusée", produit],
@@ -560,6 +564,24 @@ Deno.serve(async (req) => {
               M(T45(`${lib} : la commande n'est pas créée`, "Votre commande n'est pas créée"), B80(`Vous êtes d'accord avec ${pm}${pm.endsWith(".") ? "" : "."} Créez la commande en un geste.`, "Vous êtes d'accord. Créez la commande en un geste."), "nego-" + l.objet_id),
             ][i(2)];
           }
+          // schéma 92d : avis du système sur une commande (commande_alertes → notif_file), écran : la commande
+          case "cmd_rappel_chargement": {
+            const h = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
+            return M(T45(`${lib} : chargez avant ${h}`, `Chargement attendu : ${lib}`, "Chargement attendu"),
+              B80("Sinon, l'acheteur pourra annuler. Touchez pour voir la commande.", "Sinon, l'acheteur pourra annuler."), "cmd-" + l.objet_id);
+          }
+          case "cmd_retard_chargement":
+            return d.role === "vendeur"
+              ? M(T45(`${lib} : délai de chargement passé`, "Délai de chargement passé"), B80("L'acheteur peut maintenant annuler. Chargez ou écrivez-lui.", "L'acheteur peut maintenant annuler."), "cmd-" + l.objet_id)
+              : M(T45(`${lib} : pas encore chargé`, "Pas encore chargé"), B80("Vous pouvez annuler la commande, ou signaler un problème.", "Vous pouvez annuler ou signaler un problème."), "cmd-" + l.objet_id);
+          case "cmd_rappel_reception": {
+            const h = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
+            return M(T45(`${lib} : le vendeur dit avoir livré`, "Livraison déclarée"),
+              B80(h ? `Vérifiez et confirmez la réception, ou refusez, avant ${h}.` : "", "Vérifiez, puis confirmez la réception ou refusez."), "cmd-" + l.objet_id);
+          }
+          case "cmd_mot_bloque":
+            return M(T45(`${lib} : mot secret bloqué`, "Mot secret bloqué"),
+              B80("Trop d'essais faux. L'équipe du Marché de Gros va regarder la commande.", "Trop d'essais faux. L'équipe va regarder."), "cmd-" + l.objet_id);
           case "stock_ancien": {
             const k = i(3), du = dateCourte(d.depuis);
             // formules sans accord : « Crevettes séchées », « Œufs » restent justes
@@ -591,6 +613,13 @@ Deno.serve(async (req) => {
               : j ? T45(`Votre demande ${de(lib)} se termine ${j}`, `Votre demande se termine ${j}`)
               : T45(`Votre demande ${de(lib)} arrive à sa fin`, "Votre demande arrive à sa date limite");
             return M(t, "Prolongez-la si vous cherchez encore, sinon fermez-la.");
+          }
+          case "offre_fin": {
+            // schéma 93c : l'offre quitte le marché à sa date de fin (donnees.limite) ; écran : Mes publications, « Prolonger 30 jours »
+            const j = jourDe(d.limite);
+            const t = j ? T45(`Votre offre ${de(lib)} se termine ${j}`, `${lib} : votre offre finit ${j}`, `Votre offre se termine ${j}`)
+              : T45(`Votre offre ${de(lib)} arrive à sa fin`, "Votre offre arrive à sa date de fin");
+            return M(t, "Encore du stock ? Prolongez-la de 30 jours dans Mes publications.");
           }
           case "boutique_visites": {
             const v = Number(d.vues || 0); if (!(v > 0)) return null;
@@ -705,7 +734,9 @@ Deno.serve(async (req) => {
       const vend: Record<string, Set<string>> = {};
       const vendeurs = L.filter((x) => x.vend).map((x) => x.user_id);
       if (vendeurs.length) for (const o of ((await sb.from("offres").select("user_id, product_slug").eq("status", "active").in("user_id", vendeurs.slice(0, 500))).data || []) as { user_id: string; product_slug: string }[]) (vend[o.user_id] ||= new Set()).add(o.product_slug);
-      const { count: bes } = await sb.from("besoins").select("id", { count: "exact", head: true }).eq("statut", "ouvert");
+      // besoins encore actuels seulement (schéma 96b : date de fin non passée ; sans date, moins de 30 jours) ; base sans la fonction : aucun
+      const { data: besN } = await sb.rpc("notif_besoins_ouverts");
+      const bes = Number(besN) || 0;
       const { count: grp } = await sb.from("groupes_achat").select("id", { count: "exact", head: true }).in("statut", ["ouvert", "seuil_atteint"]);
       type Fourchette = { slug: string; libelle: string; unite: string; nb: number; prix_min: number; prix_max: number; region: boolean };
       const fourchettes: Record<string, Fourchette[]> = {};

@@ -354,16 +354,15 @@
   const trTag = (v, pt) => v === true ? '<span class="nx-tr oui">' + TI('camion') + 'Transport inclus</span>' : v === false && +pt > 0 ? '<span class="nx-tr oui">' + TI('camion') + 'Transport à part · ' + fmt(pt) + ' F</span>' : v === false ? '<span class="nx-tr">Transport à la charge de l’acheteur</span>' : '';
   const trTxt = (v, pt) => v === true ? ', transport inclus' : v === false && +pt > 0 ? ', transport à part ' + fmt(pt) + ' F' : v === false ? ', transport à la charge de l’acheteur' : '';
   const trDe = (v, pt) => v === true ? 'inclus' : v === false ? (+pt > 0 ? 'apart' : 'sans') : null;
-  // envoi d'une proposition : prix, quantité et transport en un seul appel (nego_ouvrir2, nego_agir2) ; ancien serveur → comme avant
+  // envoi d'une proposition : prix, quantité et transport en un seul appel (nego_ouvrir2, nego_agir2) ;
+  // ancien serveur sans ces fonctions : seulement sans transport (nego_transport n'est plus ouverte aux membres, schéma 93b)
   const sansFn = x => /Could not find|schema cache|PGRST202|does not exist/i.test((x && x.message) || '');
-  async function envoyer(fn, args, v, nego) {
+  async function envoyer(fn, args, v) {
     try { return await N().rpc(fn + '2', Object.assign({}, args, { p_transport: v.tr, p_prix_transport: v.tr === 'apart' ? v.pt : null })); }
     catch (x) {
       if (!sansFn(x)) throw x;
-      if (v.tr === 'apart') throw new Error('Le transport à part n’est pas encore activé sur le serveur. Choisissez « Inclus » ou le transport à la charge de l’acheteur.');
-      const r = await N().rpc(fn, args);
-      if (v.tr) await N().rpc('nego_transport', { p_nego: nego || r, p_oui: v.tr === 'inclus' }).catch(() => {});
-      return r;
+      if (v.tr) throw new Error('Le choix du transport n’est pas encore activé sur le serveur. Réessayez sans le préciser.');
+      return N().rpc(fn, args);
     }
   }
   // transport annoncé (schéma 48) → choix de départ dans une proposition (schéma 49) : inclus, sans, ou à discuter (rien)

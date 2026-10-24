@@ -237,7 +237,7 @@ Toutes actives en production :
 | `mdg-purger-positions` | chaque nuit, 3 h 23 UTC | `positions_purger` : effacement des positions GPS |
 | `mdg-niveaux` | chaque nuit, 4 h 37 UTC | `niveaux_recalculer` : niveaux de confiance (fenêtre de 12 mois, fin des sursis) |
 | `mdg-identites-matin` | chaque matin, 7 h 45 UTC | `push_resume_identites` : résumé des identités à examiner pour l'admin |
-| `mdg-notif` | toutes les 15 min (**projet de test seulement**, schéma 88b) | `notif_tick` : alertes regroupées, groupes bientôt complets, produits à racheter, actions après ouverture |
+| `mdg-notif` | toutes les 15 min (schémas 88b et 91) | `notif_tick` : alertes regroupées, groupes bientôt complets, produits à racheter, actions après ouverture, et `notif_relances` (9 déclencheurs commerciaux, de 7 h à 21 h) |
 
 ### 4.8 Fonctions Edge
 

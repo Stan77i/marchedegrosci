@@ -6,6 +6,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Notifications commerciales automatiques (schéma 91, décision du propriétaire : « comme Orange Max it ») : envoyées toutes seules de 7 h à 21 h, 8 au plus par personne et par jour, 90 min d'écart ; 9 déclencheurs réels (offre pour ma demande, proposition sans réponse ou qui expire, accord sans commande, offre à mettre à jour, demande sans offre, demande à sa date limite, visites de la boutique, boutique à ouvrir) ; « contenu du marché » tiré de vraies annonces ; plusieurs versions de chaque texte. Lien `#/?maboutique=1`.
 - Notifications (schémas 88a, 88b, 88d et `pousser` en production le 24/10/2026 ; écran dans la PR « Notifications ») : audit (`docs/audits/audit-notifications-2026-10-24.md`) ; serveur (schémas 88a, 88b, 88d, `pousser` version 22) : catégories, préférences, plafonds, heures calmes, regroupement, anti-doublon, ciblage, groupe à 80 %, produit à racheter, journal et statistiques ; écran : réglages par catégorie, état réel et essai vérifié, toucher qui ouvre le bon écran, ouverture comptée, tableau de bord « Notifications ». Cache `mgci-v274`.
 
 - Colis au départ (schémas 90 et 90b) : avant le chargement, le vendeur envoie 2 à 4 photos du colis emballé et le poids pesé, et photographie le papier du mot secret avec un code au hasard (3 minutes, vu par l'équipe seulement). Sans ces preuves, le serveur refuse le chargement. L'acheteur voit les photos du colis ; en cas de refus, ses photos sont comparées à celles du départ.

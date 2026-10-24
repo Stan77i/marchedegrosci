@@ -208,6 +208,13 @@ Les écrans ouverts par chaque lien sont vérifiés dans Chromium (iPhone émul�
 
 ---
 
+## 6 bis. Décisions du propriétaire (24/10/2026)
+
+- **Comme Orange Max it** : envoi automatique, aucun nouveau réglage à activer (seule l'autorisation du téléphone, une fois).
+- **Pas d'arrêt après 2 ou 3 messages** : les membres reçoivent des notifications au fil de la journée, « intelligentes et subtiles », jamais la nuit. Construit (schéma 91) : 8 au plus par jour et par personne, 90 min d'écart (180 si les 5 derniers n'ont pas été ouverts), 7 h à 21 h, 4 « contenus du marché » au plus par jour en plus des événements.
+- Les interrupteurs existants de Réglages sont gardés (pour celui qui veut couper), les messages partent sans rien activer.
+- Le reste du plan est validé (« je suis d'accord avec tout ce que tu as fait »).
+
 ## 7. À valider par le propriétaire
 
 1. Les nouveaux déclencheurs N1 à N9.

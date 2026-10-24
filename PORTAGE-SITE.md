@@ -89,6 +89,7 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Réglages des notifications par catégorie, essai vérifié, toucher qui ouvre l'écran précis (schéma 88). Le site n'a pas la page Réglages ; `v3/pousse.js` (commun) suit tout seul | `app/theme.js` (`categories`, `texteEssai`), `application.dc.html` (`allerLien`) | basse (le site est pour l'ordinateur) |
 
 | Boutique d'un vendeur (`#/boutique/<adresse>`), Ma boutique (lien, QR code PNG, visites), pause d'une offre, retrait avec trace (schéma 86). Le site a déjà les pages d'aperçu `site/boutiques/<adresse>/` (noindex), qui renvoient vers l'application | `v3/boutique.js`, `application.dc.html` (Mes publications) | haute |
+| Lien de notification « Ma boutique » (`#/?maboutique=1`) | `v3/boutique.js` (`depuisAdresse`), schéma 91 | basse (le site n'envoie pas de notifications) |
 | « Ville seulement » (schéma 87) : l'interrupteur « Je vends uniquement à Guiglo » à la publication et dans Mes publications, l'avertissement avant de négocier ou d'écrire, la ville imposée à la commande. Le site montre déjà la pastille « Guiglo uniquement » (fil, carte) | `app/ville-seule.js`, `application.dc.html` (`vsEl`, `vsSw`), `v3/negoce.js`, `v3/messages.js`, `v3/commandes.js` | moyenne |
 
 | Annulation avec motif obligatoire (liste fermée), accord ou non de l'autre partie sur le motif, expiration à 48 h (schéma 84) | `v3/commandes.js` (`confirmer`, `annulerMotif`, `repondreMotif`) | haute |

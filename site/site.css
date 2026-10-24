@@ -48,7 +48,7 @@ em { font-style: italic; font-weight: 900; }
 .tete nav a:hover { color: var(--ivoire); background: rgba(243, 239, 228, .08); }
 
 /* ——— 1. l'étal ——— */
-.etal { position: relative; overflow: hidden; background: radial-gradient(120% 90% at 78% 70%, #1A5440 0%, var(--vert) 58%); color: var(--ivoire); padding: clamp(28px, 4vw, 56px) var(--gout) 32px;
+.etal { position: relative; overflow: hidden; background: var(--vert); color: var(--ivoire); padding: clamp(28px, 4vw, 56px) var(--gout) 32px;
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr); grid-template-areas: "l d" "f f"; column-gap: clamp(24px, 4vw, 64px); align-items: center; }
 @media (min-width: 1300px) { .etal { padding-left: calc((100% - var(--large)) / 2); padding-right: calc((100% - var(--large)) / 2); } }
 .etal-l { grid-area: l; }
@@ -69,7 +69,7 @@ em { font-style: italic; font-weight: 900; }
 .porte-o .fl { background: var(--offre); stroke: #0E3323; }
 .porte-d .fl { background: var(--mais); }
 .etal-d { grid-area: d; position: relative; aspect-ratio: 1 / .92; margin-right: -2%; }
-.etal-d img { position: absolute; height: auto; filter: drop-shadow(0 16px 14px rgba(0, 0, 0, .38)); animation: pose .8s cubic-bezier(.16, 1, .3, 1) both; animation-delay: var(--d, 0ms); }
+.etal-d img { position: absolute; height: auto; filter: drop-shadow(0 16px 14px rgba(0, 0, 0, .38)); }
 .etal-d .r0 { z-index: 1; filter: drop-shadow(0 12px 12px rgba(0, 0, 0, .35)) brightness(.9); }
 .etal-d .r1 { z-index: 2; }
 .etal-d .r2 { z-index: 3; }
@@ -173,6 +173,13 @@ em { font-style: italic; font-weight: 900; }
 .garanties div { display: grid; gap: 4px; }
 .garanties b { font-size: 19px; }
 .garanties span { color: var(--texte-2); }
+/* deux garanties en avant (numéro caché, mot secret), les autres en liste plus discrète : plus six cases identiques (audit du site n° 16) */
+.garanties li.fort { padding: 26px 0; }
+.garanties li.fort svg { width: 40px; height: 40px; }
+.garanties li.fort b { font-size: 23px; }
+.garanties li:not(.fort) { padding: 14px 0; }
+.garanties li:not(.fort) svg { width: 24px; height: 24px; }
+.garanties li:not(.fort) b { font-size: 17px; }
 
 /* ——— 6. les pros ——— */
 .pros-g { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 48px; align-items: center; }
@@ -227,8 +234,12 @@ html.garde body { overflow: hidden; }
 
 /* ——— écrans plus étroits (tablette, téléphone venu de Google) ——— */
 @media (max-width: 980px) {
-  .tete nav { display: none; }
+  .tete { flex-wrap: wrap; row-gap: 6px; }
   .tete .bt { margin-left: auto; }
+  /* le menu passe sur une 2e ligne qui défile, au lieu de disparaître (audit du site n° 12) */
+  .tete nav { order: 3; width: 100%; margin: 0 -12px; overflow-x: auto; scrollbar-width: none; }
+  .tete nav::-webkit-scrollbar { display: none; }
+  .tete nav a { flex: none; }
   .etal { grid-template-columns: 1fr; grid-template-areas: "l" "d" "f"; }
   .etal-d { max-width: 560px; width: 100%; margin: 24px auto 0; }
   .etagere ul { grid-template-columns: repeat(5, minmax(0, 1fr)); }
@@ -245,7 +256,7 @@ html.garde body { overflow: hidden; }
   .tete { padding: 10px 16px; gap: 12px; }
   .tete .bt { min-height: 44px; padding: 0 14px; font-size: 14px; }
   .marque svg { height: 20px; }
-  .marque span { font-size: 11px; }
+  .marque span { font-size: 11.5px; }
   .garanties, .pros-l { grid-template-columns: 1fr; }
   .etagere ul { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .fil { grid-template-columns: 1fr; }
@@ -258,7 +269,7 @@ html.garde body { overflow: hidden; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .pt, .porte, .bt, .etal-d img, .etagere img { animation: none !important; transition: none !important; }
+  .pt, .porte, .bt, .etal-d img, .etagere img, .pr-photo img, .gd-cartes a { animation: none !important; transition: none !important; }
 }
 /* la barre de l'administrateur (app/admin-pc.js) : en bas sur le site, pour ne pas couvrir l'en-tête */
 #mdgAdmPc { top: auto !important; bottom: 16px; }
@@ -269,7 +280,7 @@ html.garde body { overflow: hidden; }
 .ariane a { color: var(--creme-2); text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
 .ariane a:hover { color: var(--ivoire); text-decoration: underline; text-decoration-color: var(--mais); text-underline-offset: 4px; }
 .ariane [aria-current] { color: var(--ivoire); font-weight: 600; }
-.pr-tete { background: radial-gradient(110% 100% at 80% 60%, #1A5440 0%, var(--vert) 60%); color: var(--ivoire); padding: clamp(24px, 3.5vw, 48px) var(--gout) clamp(36px, 5vw, 64px);
+.pr-tete { background: var(--vert); color: var(--ivoire); padding: clamp(24px, 3.5vw, 48px) var(--gout) clamp(36px, 5vw, 64px);
   display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(24px, 4vw, 64px); align-items: center; }
 @media (min-width: 1300px) { .pr-tete { padding-left: calc((100% - var(--large)) / 2); padding-right: calc((100% - var(--large)) / 2); } }
 .pr-tete h1 { font-size: clamp(38px, 4.6vw, 64px); max-width: 14ch; }
@@ -279,7 +290,7 @@ html.garde body { overflow: hidden; }
 .alias b { color: var(--ivoire); font-weight: 600; }
 .pr-photo { position: relative; display: grid; place-items: center; }
 .pr-photo::after { content: ""; position: absolute; left: 12%; right: 12%; bottom: 4%; height: 12%; border-radius: 50%; background: radial-gradient(closest-side, rgba(0, 0, 0, .35), transparent); z-index: 0; }
-.pr-photo img { position: relative; z-index: 1; width: min(100%, 440px); height: auto; filter: drop-shadow(0 22px 22px rgba(0, 0, 0, .35)); animation: pose .8s cubic-bezier(.16, 1, .3, 1) both; }
+.pr-photo img { position: relative; z-index: 1; width: min(100%, 440px); height: auto; filter: drop-shadow(0 22px 22px rgba(0, 0, 0, .35)); }
 .pr-prix { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
 .pp { display: grid; gap: 6px; align-content: start; padding: 20px 22px; border-radius: 20px; background: var(--blanc); box-shadow: 0 1px 0 var(--ligne), 0 10px 30px rgba(23, 21, 18, .06); }
 .pp > span:first-child { font-size: 14.5px; font-weight: 600; color: var(--texte-3); }
@@ -482,10 +493,15 @@ html.garde body { overflow: hidden; }
 .px-bref { margin: 0; padding: 20px 24px 20px 44px; display: grid; gap: 8px; border-radius: 22px; background: var(--carte); font-size: 18px; }
 .px-bref a { color: var(--vert); text-decoration-color: var(--mais); text-underline-offset: 4px; }
 .px-appro { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
-.px-appro blockquote { margin: 0; padding: 20px 24px; border-left: 4px solid var(--mais); border-radius: 0 18px 18px 0; background: var(--carte); }
+.px-appro blockquote { margin: 0; padding: 20px 24px; border-radius: 18px; background: var(--carte); }
 .px-appro cite { display: block; margin-top: 8px; font-style: normal; font-weight: 700; font-size: 15px; color: var(--texte-3); }
 .px-src { margin-top: 18px; font-size: 14px; color: var(--texte-3); }
 .px-src a { color: var(--vert); text-underline-offset: 3px; }
 .ocpv .bloc-tete p { max-width: 72ch; }
 .tb-pied { margin-top: 14px; }
 .ocpv { min-width: 0; }
+/* une pastille sans nombre ne s'affiche pas : pas de « 0 » trompeur avant le chargement (audit du site n° 10) */
+.nbul:empty { display: none; }
+/* en-tête d'un très petit téléphone : le bouton dit « L'application » (audit du site n° 11) */
+.bt-court { display: none; }
+@media (max-width: 380px) { .tete .bt .bt-long { display: none; } .tete .bt .bt-court { display: inline; } .tete .bt { padding: 0 12px; } .marque svg { height: 16px; } .tete { column-gap: 8px; } }

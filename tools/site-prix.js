@@ -24,7 +24,7 @@ function prix(esc) {
     const ks = parProduit[sl]; if (!ks) return '';
     const lignes = ks.map(k => { const x = P[k];
       return `<tr><th scope="row">${esc(x.nom)}</th>${cellMoy(x.abidjan)}${cellMoy(x.interieur)}${cellFou(x.fa)}</tr>`; }).join('');
-    return `<section class="bloc ocpv" aria-labelledby="t-ocpv"><div class="bloc-tete"><h2 id="t-ocpv">Le prix officiel au détail : ${esc(nom.toLowerCase())}</h2>
+    return `<section class="bloc ocpv" aria-labelledby="t-ocpv"><div class="bloc-tete"><h2 id="t-ocpv">Le prix moyen au détail, relevé par l’OCPV : ${esc(nom.toLowerCase())}</h2>
       <p>Prix moyens au détail relevés par l’OCPV sur les marchés, semaine ${esc(S.semaine)}, en ${esc(S.unite)}. Ce sont des prix de détail, pas des prix de gros : un repère pour négocier.</p></div>
       <div class="px-boite"><table class="px-tab"><thead><tr><th scope="col">Produit</th><th scope="col">Abidjan</th><th scope="col">Intérieur du pays</th><th scope="col">Les marchés d’Abidjan</th></tr></thead><tbody>${lignes}</tbody></table></div>
       <p class="px-src">Source : ${SRC}. Variations calculées par Marché de Gros à partir des prix de la note.</p>
@@ -42,12 +42,12 @@ function prix(esc) {
   const baisses = ab.filter(a => a.v <= -0.05).sort((a, b) => a.v - b.v).slice(0, 4), hausses = ab.filter(a => a.v >= 0.05).sort((a, b) => b.v - a.v).slice(0, 4);
   const resume = [baisses.length ? `<li><b>En baisse à Abidjan</b> : ${fmt(baisses)}.</li>` : '', hausses.length ? `<li><b>En hausse à Abidjan</b> : ${fmt(hausses)}.</li>` : '',
     `<li><b>Stables</b> (moins de 5 % d’écart) : ${ab.filter(a => Math.abs(a.v) < 0.05).length} produits sur ${ab.length}.</li>`].join('');
-  const titre = 'Prix du vivrier cette semaine en Côte d’Ivoire';
+  const titre = 'Prix du vivrier au détail cette semaine en Côte d’Ivoire';
   return {
     blocProduit,
     page: {
       TITRE_PX: esc(titre), H1_PX: esc(titre),
-      DESC_PX: esc(`Prix officiels au détail du vivrier relevés par l’OCPV, semaine ${S.semaine} : Abidjan et intérieur, variations, marchés les moins chers.`),
+      DESC_PX: esc(`Prix moyens au détail du vivrier relevés par l’OCPV, semaine ${S.semaine} : Abidjan et intérieur, variations, marchés les moins chers.`),
       SEMAINE: esc(S.semaine), PRECEDENTE: esc(S.precedente), UNITE: esc(S.unite), NATURE: esc(S.nature),
       RESUME_PX: resume, TABLE_MOY: familles, TABLE_FOU: fourchettes,
       APPRO_ABJ: esc(S.appro_abidjan), APPRO_INT: esc(S.appro_interieur), SOURCE_PX: SRC, NOTE_PX: esc(S.note),

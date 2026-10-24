@@ -46,6 +46,7 @@
   function poser() { if (api) api.set({ items: items(), me: '', sel: '', zones: [], pts: {}, pairs: [], lier: [] }); }
 
   document.addEventListener('site:fil', function (e) { tout = e.detail || []; liste(); poser(); });
+  document.addEventListener('site:fil-erreur', function () { var cl = $('crListe'); if (cl && !tout.length) { cl._h = ''; cl.innerHTML = '<li class="fil-vide">Les annonces ne s’affichent pas pour l’instant (réseau ?). Réessayez dans un moment.</li>'; } });
   document.querySelectorAll('.cr-filtres [data-f]').forEach(function (b) {
     b.onclick = function () { filtre = b.getAttribute('data-f'); document.querySelectorAll('.cr-filtres [data-f]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); montrer([]); poser(); };
   });

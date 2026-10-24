@@ -69,7 +69,7 @@
     Object.keys(g).forEach(function (k, i) {
       var x = g[k], n = x.o + x.d, sens = x.o >= x.d ? 'offre' : 'demande';
       var el = calque.querySelector('.pt[data-k="' + k + '"]');
-      if (!el) { el = document.createElement('span'); el.className = 'pt'; el.dataset.k = k; el.style.left = x.p[0] + '%'; el.style.top = x.p[1] + '%'; el.style.animationDelay = (vus[k] ? 0 : i * 60) + 'ms'; calque.appendChild(el); vus[k] = 1; }
+      if (!el) { el = document.createElement('span'); el.className = 'pt'; el.dataset.k = k; el.style.left = x.p[0] + '%'; el.style.top = x.p[1] + '%'; el.style.animationDelay = '0ms'; /* tous les points d'un coup, sans cascade (audit du site n° 13) */ calque.appendChild(el); vus[k] = 1; }
       el.className = 'pt' + (sens === 'demande' ? ' d' : ''); el.innerHTML = (photo(x.s, 'pp') || symb(sens)) + (n > 1 ? '<b>' + n + '</b>' : '');
       el.title = (x.o ? x.o + ' offre' + (x.o > 1 ? 's' : '') : '') + (x.o && x.d ? ' · ' : '') + (x.d ? x.d + ' demande' + (x.d > 1 ? 's' : '') : '');
     });
@@ -101,7 +101,10 @@
   }
   function lireFil() {
     return rpc('fil_public', { p_limite: 120 }).then(function (L) { L = L || []; fil(L); points(L); document.dispatchEvent(new CustomEvent('site:fil', { detail: L })); })
-      .catch(function () { var c = $('filCourt'); if (c && /fil-vide/.test(c.innerHTML)) poser(c, '<li class="fil-vide">Le fil ne répond pas pour l’instant.</li>'); });
+      .catch(function () {
+        // le serveur ne répond pas : chaque liste encore vide le dit, au lieu de « Les annonces arrivent… » pour toujours (audit du site n° 10)
+        ['filCourt', 'filLong', 'filProduit'].forEach(function (id) { var c = $(id); if (c && /fil-vide/.test(c.innerHTML)) poser(c, '<li class="fil-vide">Les annonces ne s’affichent pas pour l’instant (réseau ?). Réessayez dans un moment.</li>'); });
+        document.dispatchEvent(new Event('site:fil-erreur')); });
   }
 
   // ——— le tableau ———

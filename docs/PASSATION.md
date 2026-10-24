@@ -1313,3 +1313,14 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - Vérifié dans Chromium : ordinateur 1440 px et téléphone 390 px, aucun débordement, un seul titre principal, titre de 46 caractères. `sw.js` : cache `mgci-v232`.
 - À faire chaque semaine : mettre à jour `prix-ocpv.json` avec la nouvelle note (voir `docs/REPRISE.md`).
 - Mise à jour chaque semaine (accord du propriétaire) : tâche GitHub `.github/workflows/ocpv-note.yml` (télécharge la note, texte dans `tools/site/ocpv/`) et tâche programmée de Claude « Prix OCPV de la semaine » chaque mardi à 8 h 36 (heure d'Abidjan), qui ouvre la PR. Raison de la tâche GitHub : les sessions programmées n'ont ni l'outil de lecture des PDF ni un accès Internet libre.
+
+## 24/10/2026 — Application : plus stable (ouverture, profil, défilement)
+
+Demande du propriétaire : supprimer les petits défauts visibles (« ça doit être super stable »).
+- **Ouverture** : avant le chargement, la page montrait un petit logo « marché de Gros » (96 px) puis l'écran d'ouverture avec le sac et le grand nom. Le fond d'avant chargement est maintenant **uni**, de la même couleur que l'écran d'ouverture (vert, ou noir si le logo noir est choisi : classe `spl-noir` posée par un petit script en tête de `application.dc.html`). Le sac et le nom arrivent ensemble, une seule fois.
+- **Fenêtre du compte** (toucher sa photo) : le contenu apparaissait en fondu après la fenêtre, d'où un instant de fenêtre vide ; puis il refaisait un fondu à l'arrivée des données. `v3/compte.js` : `aller(page, calme)` ; pas de fondu à l'ouverture ni au rafraîchissement, le fondu reste pour passer d'une page à l'autre.
+- **Défilement** : `app/effets.js` effaçait les cartes de l'accueil, les mots soulignés de maïs et les tampons dès qu'ils sortaient de l'écran, puis rejouait leur arrivée en remontant (clignotements). Ils ne sont remis à zéro que quand leur page s'en va (glissée de côté, fermée). Mesuré dans Chromium : 3 éléments effacés pendant un aller-retour de défilement avant, 0 après.
+- **Tableau des prix** (`v3/tableau.js`) : relu toutes les 30 s, il refaisait toute la liste (photos rechargées, éclairs pendant le défilement, liste déroulante refermée). Nouveau `MDGStable.poser(el, html)` dans `app/stable.js` : ne touche que ce qui a changé. Vérifié : mêmes photos et mêmes lignes gardées, seul le prix changé est mis à jour.
+- **Messages** (liste relue toutes les 15 s) et **Mes commandes** (toutes les 20 s) : plus de redessin quand rien n'a changé.
+- `?v=` augmentés (`application.dc.html`, `index-v3.html`, `admin.html`), `sw.js` : cache `mgci-v233`.
+- Non vérifiable ici : le vrai rendu de Safari sur iPhone (Chromium seulement) et les écrans qui demandent le serveur (pas d'accès réseau à Supabase depuis la session). À regarder sur le téléphone après la fusion.

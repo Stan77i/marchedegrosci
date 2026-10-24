@@ -169,11 +169,15 @@
     const dessiner = () => {
       const box = b.querySelector('[data-l]'); if (!box) return; const u = me();
       if (!liste.length) {
+        box._h = '';
         box.innerHTML = `<div class="dm-vide">${window.MDGSac ? MDGSac.svg('vide', { t: 70 }) : I.bulle}<b>Aucune conversation</b>Touchez la photo d’un vendeur ou d’un acheteur, puis « Écrire ». Vous pouvez parler de tout, même sans acheter.${window.MDGRep ? '<br><button type="button" data-top>Voir les mieux notés</button>' : ''}</div>`;
         const t = box.querySelector('[data-top]'); if (t) t.onclick = () => { fermer(); MDGRep.classement(); };
         return;
       }
-      box.innerHTML = liste.map(c => `<button type="button" class="dm-c${c.non_lu ? ' neuf' : ''}" data-id="${c.id}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 46, c.officiel)}<b>${esc(c.autre_nom)}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 14 }) : ''}</b><time>${quand(c.updated_at)}</time><small>${(() => { const st = !c.officiel && window.MDGCompte && MDGCompte.structure ? MDGCompte.structure(c.autre_id) : null; return st ? `<em class="dm-org-l">${esc(st.nom)} · </em>` : ''; })()}${c.dernier_par === u ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small>${c.non_lu ? '<i aria-label="Non lu"></i>' : ''}</button>`).join('');
+      // relu toutes les 15 s : rien n'est redessiné si rien n'a changé (sinon les avatars clignotent et rejouent leur animation)
+      const html = liste.map(c => `<button type="button" class="dm-c${c.non_lu ? ' neuf' : ''}" data-id="${c.id}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 46, c.officiel)}<b>${esc(c.autre_nom)}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 14 }) : ''}</b><time>${quand(c.updated_at)}</time><small>${(() => { const st = !c.officiel && window.MDGCompte && MDGCompte.structure ? MDGCompte.structure(c.autre_id) : null; return st ? `<em class="dm-org-l">${esc(st.nom)} · </em>` : ''; })()}${c.dernier_par === u ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small>${c.non_lu ? '<i aria-label="Non lu"></i>' : ''}</button>`).join('');
+      if (box._h === html && box.firstChild) return; box._h = html;
+      box.innerHTML = html;
       box.querySelectorAll('[data-id]').forEach(el => {
         el.onclick = () => conversation(el.dataset.id, true);
         if (window.MDGNegoce && MDGNegoce.glisser) MDGNegoce.glisser(el, async () => { await N().rpc('dm_masquer', { p_discussion: el.dataset.id }); liste = liste.filter(c => c.id !== el.dataset.id); W(KL, liste); annoncer(); N().toast('Conversation retirée de votre liste. Elle reviendra si la personne vous écrit.'); });

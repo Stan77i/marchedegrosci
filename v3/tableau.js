@@ -172,7 +172,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
       const P = s.produits;
       // la cascade ne se joue qu'à la première apparition de la liste (ou après un changement de zone), pas à chaque relecture de 30 s
       const cle = 'l:' + (s.region || ''), anim = !!(P && P.length) && this._anim !== cle; if (anim) this._anim = cle;
-      this.innerHTML = `<h2 class="tb-h">Le tableau du <em>marché</em></h2>
+      this.poser(`<h2 class="tb-h">Le tableau du <em>marché</em></h2>
         <p class="tb-s">Les meilleurs prix du moment. Pour acheter, le moins cher est en haut ; pour vendre, le meilleur budget est en haut. Baissez votre prix : vous montez.</p>
         ${this.choixZone()}
         ${s.err ? this.erreur() : !P ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div><div class="tb-charge"></div></div>'
@@ -181,7 +181,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
               ${vignette(p.slug)}<span class="tb-tx"><b>${esc(p.lab || nomProduit(p.slug))}</b><span class="tb-pils">${(p.n_offres ? `<span class="tb-pil o"><i aria-hidden="true"></i>${nf(p.n_offres)} offre${p.n_offres > 1 ? 's' : ''}</span>` : '') + (p.n_demandes ? `<span class="tb-pil d"><i aria-hidden="true"></i>${nf(p.n_demandes)} demande${p.n_demandes > 1 ? 's' : ''}</span>` : '') || '<small>Aucune annonce</small>'}</span></span>
               <span class="px">${p.meilleure_offre != null ? `<span><b>dès ${F(p.meilleure_offre)}</b><small>le ${esc(p.unite_offre || 'kg')} · pour acheter</small></span>` : ''}
                 ${p.meilleure_demande != null ? `<span class="d"><b>jusqu’à ${F(p.meilleure_demande)}</b><small>le ${esc(p.unite_demande || 'kg')} · pour vendre</small></span>` : ''}</span></button></li>`).join('')}</ul>`}
-        <p class="tb-n">Le Marché de Gros est le seul intermédiaire : aucun numéro n’est affiché, tout se négocie dans l’application.</p>`;
+        <p class="tb-n">Le Marché de Gros est le seul intermédiaire : aucun numéro n’est affiché, tout se négocie dans l’application.</p>`);
       this.lier();
     }
     peindreProduit() {
@@ -215,7 +215,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
           </div>
           <button type="button" class="tb-go" data-go="${esc(x.id)}">${ach ? 'Acheter' : 'Vendre'}</button></li>`;
       };
-      this.innerHTML = `<button type="button" class="tb-dos" data-dos>‹ Tous les produits</button>
+      this.poser(`<button type="button" class="tb-dos" data-dos>‹ Tous les produits</button>
         <div class="tb-hd"><h2 class="tb-h">${esc(lab)}</h2>${vignette(s.slug)}</div>
         <p class="tb-s">${ach ? 'Les vendeurs, du moins cher au plus cher. À prix égal, le transport compris passe devant.' : 'Les acheteurs, du meilleur budget au plus bas. Vous avez ce produit ? Vendez au meilleur prix.'}</p>
         <div class="tb-seg" role="group" aria-label="Je veux"><button type="button" class="a" data-sens="acheter" aria-pressed="${ach}">Acheter · ${nf(no)}</button><button type="button" class="v" data-sens="vendre" aria-pressed="${!ach}">Vendre · ${nf(nd)}</button></div>
@@ -224,9 +224,11 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
         ${s.err ? this.erreur() : !d ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div></div>'
           : !L.length ? `<div class="tb-vide"><b>${ach ? 'Aucune offre' : 'Aucune demande'}${s.region ? ' dans cette zone' : ''} pour l’instant</b>${ach ? 'Publiez une demande avec « Je cherche » : les vendeurs seront prévenus.' : 'Publiez votre offre avec « J’ai » : les acheteurs seront prévenus.'}</div>`
           : `<ul class="tb-l">${L.map(ligne).join('')}</ul>${coupe ? `<p class="tb-n tb-coupe">Les ${L.length} meilleures sur ${nf(parU(s.unite || ''))}. Choisissez une zone pour affiner.</p>` : ''}`}
-        <p class="tb-n">Comment c’est classé : le prix d’abord (dans la même unité), puis le transport, la fiabilité, l’identité vérifiée et les commandes honorées. Mis à jour toutes les 30 secondes. Aucun numéro affiché : vous négociez dans l’application, le Marché de Gros est le seul intermédiaire.</p>`;
+        <p class="tb-n">Comment c’est classé : le prix d’abord (dans la même unité), puis le transport, la fiabilité, l’identité vérifiée et les commandes honorées. Mis à jour toutes les 30 secondes. Aucun numéro affiché : vous négociez dans l’application, le Marché de Gros est le seul intermédiaire.</p>`);
       this.lier();
     }
+    // relecture toutes les 30 s : seul ce qui a changé est retouché (app/stable.js), les photos ne clignotent plus pendant qu'on fait défiler
+    poser(html) { if (window.MDGStable && MDGStable.poser) MDGStable.poser(this, html); else this.innerHTML = html; }
     lier() {
       const s = this.st;
       const z = this.querySelector('[data-zone]'); if (z) z.onchange = async () => { s.region = z.value; s.rangs = {}; this.memo(); this.classList.add('tb-attente'); await this.charger(); this.classList.remove('tb-attente'); };

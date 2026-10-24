@@ -404,20 +404,22 @@ label.cp-r{cursor:pointer}
     let page = TITRES[onglet] ? onglet : 'accueil';
     cadre(`<header class="cp-top"><span></span><span class="cp-top-t"></span><span></span></header><div class="cp-main"></div>`, 'Mon espace');
     const main = bg.querySelector('.cp-main'), top = bg.querySelector('.cp-top');
-    const aller = p => {
+    // calme : le contenu se pose sans fondu (à l'ouverture et quand les données arrivent) ; le fondu ne sert qu'en passant d'une page à l'autre
+    const aller = (p, calme) => {
       page = p;
       top.innerHTML = (p === 'accueil' ? '<span></span>' : `<button type="button" class="cp-back" data-retour aria-label="Retour à Mon compte">${IC('retour', 22) || '‹'}</button>`) + `<span class="cp-top-t" aria-hidden="true">${TITRES[p]}</span><span></span>`;
       top.classList.remove('titre'); bg.querySelector('.cp').classList.toggle('sur-hero', p === 'accueil'); bg.querySelector('.cp').classList.remove('defile');
       const r = top.querySelector('[data-retour]'); if (r) r.onclick = () => aller('accueil');
       VUES[p](main); main.scrollTop = 0;
+      if (calme) main.querySelectorAll('.cp-pg').forEach(x => { x.style.animation = 'none'; });
       const h = main.querySelector('h2'); if (h) h.setAttribute('tabindex', '-1');
     };
     // le titre de la page apparaît dans la barre quand le grand titre est passé
     main.addEventListener('scroll', () => { if (!bg) return;   // la fenêtre vient d'être fermée : plus rien à mettre à jour
       const h = page === 'accueil'; top.classList.toggle('titre', main.scrollTop > (h ? 260 : 48)); bg.querySelector('.cp').classList.toggle('defile', h && main.scrollTop > 200); }, { passive: true });
     bg.aller = aller;
-    aller(page);
-    bg.rafraichir = () => { const y = main.scrollTop; aller(page); main.scrollTop = y; };
+    aller(page, true);
+    bg.rafraichir = () => { const y = main.scrollTop; aller(page, true); main.scrollTop = y; };
     if (navigator.onLine) charger().then(() => bg && bg.rafraichir && bg.rafraichir());
     const adm0 = J('mdg-nuage:admin', false); if (N().isAdmin) N().isAdmin().then(a => { if (a !== adm0 && bg && bg.rafraichir) bg.rafraichir(); if (a) compterIdent(); });
     // l'administrateur : dossiers d'identité à examiner (supabase/schema-19), gardés 60 s (même cache que le menu de l'application)

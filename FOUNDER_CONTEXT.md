@@ -12,7 +12,7 @@ Fiche lue par les compétences « founder-skills » (`.claude/skills/`). Les dé
 ## Le produit
 
 - Application mobile `application.dc.html` (la priorité). Site web : un nouveau site public (`site/`, pour ordinateur : accueil, 27 pages produits, 7 guides, 14 districts, calendrier des récoltes, carte du réseau, annonces et prix en direct) est prêt mais **encore caché** (page de maintenance pour le public) ; l'ouverture est la décision du propriétaire. L'ancien site (`index-v3.html`) reste caché, visible par l'administrateur seulement.
-- Six étapes : publier (offre « J'ai » ou demande « Je cherche ») → comparer les prix → négocier sans numéro visible → commander (prix et quantité figés) → livrer (camion suivi par un lien) → réceptionner (mot secret, 24 h pour réclamer).
+- Six étapes : publier (offre « J'ai » ou demande « Je cherche ») → comparer les prix → négocier sans numéro visible → commander (prix et quantité figés) → livrer (camion suivi par un lien) → réceptionner (mot secret, 1 h pour réclamer).
 - Pour les pros : approvisionnement, achats groupés, « Racheter ».
 
 ## Modèle économique

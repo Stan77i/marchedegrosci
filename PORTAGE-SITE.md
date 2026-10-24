@@ -72,7 +72,8 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 
 | Fonction | Modèle dans l'application | Priorité |
 |---|---|---|
-| Commandes : fiche, plan de livraison, étapes (« À confirmer », « Le camion est parti »…), code de prise en charge et de réception, refus avec preuves, litige à trois, libération sous 24 h | `v3/commandes.js` (schémas 57 à 65) | haute |
+| Commandes : fiche, plan de livraison, étapes (« À confirmer », « Le camion est parti »…), code de prise en charge et de réception, refus avec preuves, litige à trois, libération sous 1 h | `v3/commandes.js` (schémas 57 à 65) | haute |
+| Colis au départ : 2 à 4 photos + poids pesé avant le chargement, photo du papier du mot secret avec code au hasard (3 min, équipe seulement) | `v3/commandes.js` (`depart`, `blocDepart`), schémas 90 et 90b | haute (avec les commandes) |
 | Accord conclu en reçu (quantité, prix, total), « Suivre la commande » | `v3/negoce.js` (commun : déjà là) mais le bouton s'appuie sur `v3/commandes.js` | haute |
 | Tableau du marché façon P2P (50 meilleures annonces par unité) | `v3/tableau.js` (schémas 59, 70) | haute |
 | « Ici, chacun place son prix » : pop-up du prix du moment, placer son prix dans les deux sens | `app/prixmoment.js` | haute |

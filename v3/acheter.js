@@ -28,7 +28,7 @@
     const priceOf = o => o.price == null ? 'à discuter' : `${fmt(o.price)} F/${unitOf(o)}`;
 
     view.innerHTML = `<div class="v3a">
-  ${V3.head('acheter', { label: 'Acheter, en-tête', kicker: 'Acheter', title: 'Ce qui est disponible maintenant, là où ça pousse.', sub: 'Vous contactez directement le producteur, sans intermédiaire.',
+  ${V3.head('acheter', { label: 'Acheter, en-tête', kicker: 'Acheter', title: 'Ce qui est disponible maintenant, là où ça pousse.', sub: 'Vous négociez directement avec le vendeur : le Marché de Gros met en relation.',
     extra: `${OFFERS.length ? `<p class="pg-num"><span><b>${OFFERS.length}</b> ${OFFERS.length > 1 ? 'offres' : 'offre'}</span><i></i><span><b>${nProd}</b> ${nProd > 1 ? 'produits' : 'produit'}</span><i></i><span><b>${nPr}</b> ${nPr > 1 ? 'vendeurs' : 'vendeur'}</span><i></i><span><b>${nReg}</b> ${nReg > 1 ? 'régions' : 'région'}</span></p>` : ''}<div class="pg-search">${C.searchBox('')}</div>` })}
   <section class="ax" id="ax" data-tone="dark" aria-labelledby="axT">
     <div class="wrap">

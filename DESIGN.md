@@ -121,7 +121,7 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 27. `prefers-reduced-motion` respecté : l'état change, le déplacement disparaît.
 
 **Finitions qui trahissent l'amateur**
-28. Les surfaces du navigateur sont à nos couleurs : sélection de texte (maïs), curseur de saisie, cases et curseurs (`accent-color`), anneau de focus.
+28. Les surfaces du navigateur sont à nos couleurs : sélection de texte (maïs), curseur de saisie, cases et curseurs (`accent-color`), anneau de focus. L'anneau de focus est **vert `#10392B` sur fond clair** et maïs seulement sur fond vert ou noir (le maïs sur crème ne fait que 1,4 à 1,7:1).
 29. Chiffres alignés (`tabular-nums`) dans les prix et les quantités.
 29 bis. Un nombre à côté d'un libellé (« Offres 6 », « Tout 8 », « Préparer la sélection 3 ») est **toujours dans une pastille** (`.nbul`) : neutre, vert pour les offres (`.o`), maïs pour les demandes (`.d`), maïs quand le bouton est choisi. Jamais un chiffre nu ni entre parenthèses.
 30. Tous les états existent : vide, chargement, erreur, hors connexion, désactivé.

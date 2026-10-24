@@ -11,7 +11,11 @@
 html { background: var(--papier); color: var(--encre); font: 400 17px/1.55 Jost, system-ui, sans-serif; -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 84px; }
 body { margin: 0; font-variant-numeric: lining-nums; }
 ::selection { background: var(--mais); color: var(--encre); }
-:focus-visible { outline: 3px solid var(--mais); outline-offset: 3px; border-radius: 6px; }
+:focus-visible { outline: 3px solid var(--vert); outline-offset: 3px; border-radius: 6px; }
+/* sur fond clair, le maïs ne se voit pas (1,4 à 1,7:1) : vert par défaut, maïs sur les zones foncées (audit antislop du site n° 2, 24/10/2026) */
+:where(.tete, .etal, .reseau, .fil-long, .appli, .pied, .ariane, .pr-tete, .cr, .gd-tete, .gd-action, .cal-now) :focus-visible, #garde :focus-visible,
+.tb-go:focus-visible { outline-color: var(--mais); }
+.porte:focus-visible { outline-color: var(--vert); }   /* les portes J'ai / Je cherche sont posées sur le fond clair */
 input { caret-color: var(--mais); accent-color: var(--vert); }
 a { color: inherit; }
 h1, h2, h3 { margin: 0; font-weight: 700; line-height: 1.08; letter-spacing: -.015em; text-wrap: balance; }

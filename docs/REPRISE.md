@@ -62,7 +62,7 @@
 
 **0. Audit antislop de l'application (24/10/2026) : le propriétaire choisit les numéros à corriger** dans `docs/anti-slop/audit-001-2026-10-24.md` (59 constats + 3 décisions A, B, C). Ne rien corriger sans son choix ; ensuite une PR par lot, et noter dans le fichier ce qui est fait. **Audit terminé** : tout est fait sauf 3 points laissés exprès (50, 54) ou à vérifier avec des données (59). Décisions A, B, C tranchées le 24/10/2026 et appliquées (accueil calmé, « vérifié » en vert, dégradé de « de Gros » gardé). Seul reste le n° 59, à vérifier quand le serveur sera joignable depuis la session.
 
-**0 bis. Audit antislop du site caché (24/10/2026) : le propriétaire choisit les numéros** dans `docs/anti-slop/audit-002-2026-10-24-site.md` (32 constats + décision D : l'eau en bleu sur la carte). Ne rien corriger sans son choix ; conseillé d'abord : n° 1 à 3.
+**0 bis. Audit antislop du site caché (24/10/2026) : le propriétaire choisit les numéros** dans `docs/anti-slop/audit-002-2026-10-24-site.md` (32 constats + décision D : l'eau en bleu sur la carte). Ne rien corriger sans son choix. Faits : n° 1 à 3. Conseillé ensuite : n° 4 à 17, et lui reposer la décision D.
 
 **Le site caché est presque complet côté contenu.** Ce qui bloque maintenant, ce sont les étapes 1 et 3, qui dépendent du propriétaire.
 

@@ -31,7 +31,7 @@
   }
   function liste() {
     var L = tout.filter(function (a) { return filtre === 'tout' || a.sens === filtre; });
-    $('crListe').innerHTML = L.length ? L.map(function (a) { return ligne(a, choisis.indexOf(a.cle) >= 0); }).join('') : '<li class="fil-vide">Aucune annonce ici pour l’instant : la première peut être la vôtre.</li>';
+    var h = L.length ? L.map(function (a) { return ligne(a, choisis.indexOf(a.cle) >= 0); }).join('') : '<li class="fil-vide">Aucune annonce ici pour l’instant : la première peut être la vôtre.</li>'; var cl = $('crListe'); if (cl._h !== h) { cl._h = h; cl.innerHTML = h; }   // seulement si la liste a changé (audit du site n° 3)
     var no = tout.filter(function (a) { return a.sens === 'offre'; }).length;
     $('nTout').textContent = tout.length; $('nOffre').textContent = no; $('nDemande').textContent = tout.length - no;
   }

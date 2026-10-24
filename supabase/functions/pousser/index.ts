@@ -31,6 +31,9 @@
 // 18. par la base (pg_cron « mdg-notif », public.notif_tick, schéma 88) avec { lots: true } : les messages en file d'attente
 //     (nouvelles offres et demandes, groupe bientôt complet, veille de la date limite, produit à racheter), regroupés par
 //     personne et par sujet : « 3 nouvelles offres : Tomate ».
+// v24 (24/10/2026, schéma 96b, NON DÉPLOYÉE) : « N professionnels cherchent » ne compte que les besoins encore actuels
+//     (public.notif_besoins_ouverts). L'objet (offre, demande, négociation…) est revérifié par la base dans notif_preparer et
+//     notif_lots_prendre ; un lot raté repart (notif_resultat). Rien d'autre ne change ici.
 // v22 (24/10/2026, schéma 91) : textes commerciaux relus : accord et pluriel des unités (« 40 caisses », « 5 000 F la caisse »),
 //     élision juste (« de haricot », « d'œufs »), un prix jamais coupé (version plus courte), « Dans votre budget » seulement si
 //     la base l'a vérifié, échéances réelles (aujourd'hui, demain, « jusqu'au 27/10 »), anti-répétition lue par paquets.
@@ -705,7 +708,9 @@ Deno.serve(async (req) => {
       const vend: Record<string, Set<string>> = {};
       const vendeurs = L.filter((x) => x.vend).map((x) => x.user_id);
       if (vendeurs.length) for (const o of ((await sb.from("offres").select("user_id, product_slug").eq("status", "active").in("user_id", vendeurs.slice(0, 500))).data || []) as { user_id: string; product_slug: string }[]) (vend[o.user_id] ||= new Set()).add(o.product_slug);
-      const { count: bes } = await sb.from("besoins").select("id", { count: "exact", head: true }).eq("statut", "ouvert");
+      // besoins encore actuels seulement (schéma 96b : date de fin non passée ; sans date, moins de 30 jours) ; base sans la fonction : aucun
+      const { data: besN } = await sb.rpc("notif_besoins_ouverts");
+      const bes = Number(besN) || 0;
       const { count: grp } = await sb.from("groupes_achat").select("id", { count: "exact", head: true }).in("statut", ["ouvert", "seuil_atteint"]);
       type Fourchette = { slug: string; libelle: string; unite: string; nb: number; prix_min: number; prix_max: number; region: boolean };
       const fourchettes: Record<string, Fourchette[]> = {};

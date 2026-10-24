@@ -1609,3 +1609,9 @@ Demande du propriétaire : « Vente uniquement à Guiglo », « Achat uniquement
 - Le propriétaire veut garder l'animation « marché de Gros » / « marché du pays » comme signature de la marque.
 - `videos/signature/` : `signature-carre.mp4` (1080 × 1080), `signature-large.mp4` (1920 × 1080), `connexion-titre.mp4` (l'écran de connexion validé), `signature.html` (même animation que `v3/nuage.js`, pour refaire les vidéos), `LISEZMOI.md` (mode d'emploi, couleurs).
 - Vidéos enregistrées dans Chromium, converties en MP4 H.264 (30 i/s). Règle ajoutée dans `CLAUDE.md`.
+
+## 24/10/2026 · « Transport à part » à la place de « Non inclus »
+
+- Demande du propriétaire : « non inclus » veut dire que le prix du transport se négocie à part, pas que l'acheteur vient chercher.
+- `application.dc.html` : choix `non` de `TR_OFF` = « Transport à part » / « Mon prix n'inclut pas le transport : son prix se négocie à part » ; étiquette de l'annonce (`trTexte`) « Transport à part » (au lieu de « Transport à discuter », et au lieu de « Transport par l'acheteur » pour une offre « ville seulement »). La valeur enregistrée (`non`) ne change pas. Cache `mgci-v262`.
+- Vu dans Chromium (iPhone 13, sombre) : aucune erreur, texte sur deux lignes sans débordement. Règle ajoutée dans `CLAUDE.md`.

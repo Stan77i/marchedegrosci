@@ -6,7 +6,7 @@
 ## 1. L'état au moment de la reprise
 
 - **Toutes les PR sont fusionnées** (jusqu'à la PR #247). Aucune PR ouverte, aucun travail en cours. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
-- `main` : cache du service worker `mgci-v234` (`mgci-v242` après les PR de l'audit antislop).
+- `main` : cache du service worker `mgci-v234` (`mgci-v243` après les PR de l'audit antislop).
 - Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **81** appliqués (80 `fil_public`, 81 `site_mesures` / `mesurer` / `mesures_resume`). Mêmes schémas sur le projet de test.
 
 ## 2. Ce qui a été fait (session du 23/10/2026)
@@ -60,7 +60,7 @@
 
 ## 3. Ce qui reste à faire (dans l'ordre conseillé)
 
-**0. Audit antislop de l'application (24/10/2026) : le propriétaire choisit les numéros à corriger** dans `docs/anti-slop/audit-001-2026-10-24.md` (59 constats + 3 décisions A, B, C). Ne rien corriger sans son choix ; ensuite une PR par lot, et noter dans le fichier ce qui est fait. **Audit terminé** : tout est fait sauf 3 points laissés exprès (50, 54) ou à vérifier avec des données (59). Restent les **décisions A, B, C** du propriétaire (accueil vivant, bleu « vérifié », « de Gros » en dégradé) : les lui reposer.
+**0. Audit antislop de l'application (24/10/2026) : le propriétaire choisit les numéros à corriger** dans `docs/anti-slop/audit-001-2026-10-24.md` (59 constats + 3 décisions A, B, C). Ne rien corriger sans son choix ; ensuite une PR par lot, et noter dans le fichier ce qui est fait. **Audit terminé** : tout est fait sauf 3 points laissés exprès (50, 54) ou à vérifier avec des données (59). Décisions A, B, C tranchées le 24/10/2026 et appliquées (accueil calmé, « vérifié » en vert, dégradé de « de Gros » gardé). Seul reste le n° 59, à vérifier quand le serveur sera joignable depuis la session.
 
 **Le site caché est presque complet côté contenu.** Ce qui bloque maintenant, ce sont les étapes 1 et 3, qui dépendent du propriétaire.
 

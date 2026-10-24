@@ -97,7 +97,7 @@
     // un tutoriel à l'entrée de chaque écran du menu (montré 2 fois au plus, tant que « J’ai compris » n’est pas touché)
     p_acheter: { t: 'Acheter', insiste: 2, cartes: [
       ['🔎', 'Tout ce qui est à vendre', 'Cherchez un produit en haut : les noms locaux sont compris (aloco, gnangnan…). Affinez avec les *filtres*.'],
-      ['🧺', 'Chaque offre en un coup d’œil', 'Produit, quantité, prix, lieu et nom du vendeur. Le *sceau bleu* : identité vérifiée par l’équipe.'],
+      ['🧺', 'Chaque offre en un coup d’œil', 'Produit, quantité, prix, lieu et nom du vendeur. Le *sceau vert* : identité vérifiée par l’équipe.'],
       ['🤝', 'Écrire ou proposer un prix', 'Touchez une offre, puis *« Écrire »* ou *« Proposer un prix »*. Votre numéro reste caché.']] },
     p_vendre: { t: 'Vendre', insiste: 2, cartes: [
       ['🧺', 'Publiez votre offre', 'Choisissez le *produit*, ajoutez une *photo* si vous pouvez, puis la *quantité*.'],
@@ -130,7 +130,7 @@
       ['✏️', 'Gardez-les à jour', 'Quand vous vendez, mettez à jour la *quantité* : les acheteurs voient le vrai stock. Retirez une annonce qui n’est plus valable.']] },
     m_compte: { t: 'Mon compte', insiste: 2, cartes: [
       ['👤', 'Votre espace', 'Votre profil, vos annonces, vos négociations et vos statuts.'],
-      ['✅', 'Faites vérifier votre identité', 'Le *sceau bleu* rassure vos acheteurs et vos vendeurs.'],
+      ['✅', 'Faites vérifier votre identité', 'Le *sceau vert* rassure vos acheteurs et vos vendeurs.'],
       ['⚙️', 'Vos réglages', 'Notifications, sons, thème clair ou sombre, *aide pour débuter* (ces tutoriels).']] },
     m_negos: { t: 'Mes négociations', insiste: 2, cartes: [
       ['🤝', 'Toutes vos propositions', 'Chaque ligne est une négociation : la *dernière proposition* et qui doit répondre.'],

@@ -36,7 +36,7 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261124h','v3/astuces.js?v=20261124h','app/scene.js?v=20261124h','v3/porte.js?v=20261028c','v3/sons.js?v=20261124c','v3/negoce.js?v=20261124h','v3/compte.js?v=20261124h','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261124g','v3/reputation.js?v=20261124h','v3/statuts.js?v=20261124f','v3/messages.js?v=20261124h','v3/aide.js?v=20261124f','v3/alertes.js?v=20261124h','v3/releve.js?v=20261124h','v3/commandes.js?v=20261124h','v3/tableau.js?v=20261124h','v3/chauffeur.js?v=20261124h','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261101a','v3/racheter.js?v=20261124h','v3/appro.js?v=20261124h','v3/groupes.js?v=20261124h','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261124h','v3/identite.js?v=20261124h'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261124i','v3/astuces.js?v=20261124i','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261124c','v3/negoce.js?v=20261124i','v3/compte.js?v=20261124i','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261124g','v3/reputation.js?v=20261124h','v3/statuts.js?v=20261124i','v3/messages.js?v=20261124h','v3/aide.js?v=20261124i','v3/alertes.js?v=20261124h','v3/releve.js?v=20261124h','v3/commandes.js?v=20261124h','v3/tableau.js?v=20261124h','v3/chauffeur.js?v=20261124h','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261101a','v3/racheter.js?v=20261124h','v3/appro.js?v=20261124h','v3/groupes.js?v=20261124h','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261124i','v3/identite.js?v=20261124i'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -62,11 +62,11 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/symboles.css?v=20261102d">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261101e">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261124h">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261124i">
 <link rel="stylesheet" href="css/sombre.css?v=20261027f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261124h">
 <link rel="stylesheet" href="css/categories-app.css?v=20261124f">
-<link rel="stylesheet" href="v3/ux.css?v=20261124f">
+<link rel="stylesheet" href="v3/ux.css?v=20261124i">
 <script src="v2/data.js?v=20261031a"></script>
 <script src="app/marche-app.js?v=20261124h"></script>
 <script src="app/villes.js"></script>
@@ -934,7 +934,7 @@ class Component extends DCLogic {
     if (st.includes(prev)) { go(top, T_OFF, T_IN); go(prev, T_IN, T_UNDER); } else { go(prev, T_IN, T_OFF); go(top, T_UNDER, T_IN); }
     this.animT = setTimeout(() => { (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; }, 650);
   }
-  componentDidUpdate(pp, ps) { this.focusFeuille(); this.tendVeille(); this.ventesCharger(); if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
+  componentDidUpdate(pp, ps) { this.focusFeuille(); this.rejouerAccueil(); this.tendVeille(); this.ventesCharger(); if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
   /* carte en profondeur (app/carte-gl.js) : chargée après l'affichage de la carte Canvas, elle la remplace en fondu.
      Sans WebGL, sur un appareil faible ou si un fichier manque, la carte Canvas reste. */
   /* la carte : une seule, sans changement visible. Téléphone capable → la carte en relief directement (fond de la même couleur pendant
@@ -1374,6 +1374,13 @@ class Component extends DCLogic {
   // le message d'un formulaire incomplet nomme ce qui manque (pas seulement une couleur)
   manque(e) { const N = { slug: 'le produit', qty: 'la quantité', qmin: 'la quantité minimum', region: 'la région', phone: 'le numéro' };
     const l = Object.keys(e).map(k => N[k]).filter(Boolean); return l.length ? 'Indiquez ' + (l.length > 1 ? l.slice(0, -1).join(', ') + ' et ' + l[l.length - 1] : l[0]) + '.' : 'Complétez le formulaire.'; }
+  // décision du propriétaire (24/10/2026, « calmer l'accueil ») : les effets de la roue se jouent une fois, puis rejouent
+  // seulement quand on change de produit (comète, point, sac qui flotte, halo, triangles du prix, reflet « En saison », lumières du fond)
+  rejouerAccueil() { const k = Math.round(this.state.rot || 0); if (this._rotJoue === undefined) { this._rotJoue = k; return; } if (k === this._rotJoue) return; this._rotJoue = k;
+    clearTimeout(this._rejoue); this._rejoue = setTimeout(() => { if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      // une animation CSS finie n'existe plus : on la retire puis on la remet (classe .rejoue, css/mgci-app.css), ce qui la relance
+      const els = [...document.querySelectorAll('.acc-comete, .acc-pouls, .acc-flotte, .acc-flotte .acc-ombre, .acc-halo, .acc-px-tri s, .en-saison, .mf-bk i')];
+      els.forEach(el => el.classList.add('rejoue')); void document.body.offsetWidth; els.forEach(el => el.classList.remove('rejoue')); }, 350); }
   // à l'ouverture, le focus entre dans la feuille ; à la fermeture, il revient là d'où on venait
   focusFeuille() { const S = this.state, avant = this._flOuvert || null, apres = (S.menu ? 'menu' : S.sheet) || null; if (avant === apres) return; this._flOuvert = apres;
     const CL = { menu: '.fl-menu', fam: '.fl-fam', tout: '.fl-tout', match: '.fl-match' };

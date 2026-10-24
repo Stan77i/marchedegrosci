@@ -321,19 +321,20 @@ html[data-theme=sombre] .acc-ong button .acc-n.doux{background:#F2C230;color:#10
 .acc-k b mdg-nb{font-variant-numeric:tabular-nums}
 @media (prefers-reduced-motion:reduce){.acc-salut,.acc-orb,.acc-k,.acc-carte,.acc-ligne,.acc-al{animation:none}.acc-ong-ind{transition:none}.acc-k:active,.acc-ligne:active,.acc-al:active,.acc-r:active,.acc-mq:active{transform:none}}
 .acc-sac{display:block;line-height:0}.acc-sac svg{display:block}
-/* ——— accueil vivant (22 oct. 2026, demandé par le propriétaire ; à trancher : décision A de l'audit antislop) ———
+/* ——— accueil vivant (22 oct. 2026) — décision du propriétaire du 24/10/2026 : « calmer ». Chaque effet se joue 1 ou 2 fois,
+   puis s'arrête ; il rejoue quand on change de produit sur la roue (rejouerAccueil, application.dc.html) ———
    orbite : une lueur maïs parcourt l'arc ; le point du produit actif respire ; le sac flotte (son ombre suit) ; le halo pulse.
    cartes de chiffres : un reflet passe de temps en temps, les icônes bougent à tour de rôle.
    (la cascade d'arrivée des cartes et des annonces est rejouée à chaque retour à l'écran : app/effets.js) */
-.acc-comete{stroke-dasharray:7 93;stroke-dashoffset:100;filter:drop-shadow(0 0 4px rgba(242,194,48,.85));animation:accComete 7s linear infinite}
+.acc-comete{stroke-dasharray:7 93;stroke-dashoffset:100;filter:drop-shadow(0 0 4px rgba(242,194,48,.85));animation:accComete 7s linear 1}
 @keyframes accComete{0%{stroke-dashoffset:100;opacity:0}6%{opacity:1}88%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
-.acc-pouls{transform-box:fill-box;transform-origin:center;animation:accPouls 2.6s ease-in-out infinite}
+.acc-pouls{transform-box:fill-box;transform-origin:center;animation:accPouls 2.6s ease-in-out 2}
 @keyframes accPouls{50%{transform:scale(1.7);fill-opacity:.06}}
-.acc-flotte{animation:accFlotte 4.8s ease-in-out infinite}
-.acc-flotte .acc-ombre{animation:accOmbre 4.8s ease-in-out infinite}
+.acc-flotte{animation:accFlotte 4.8s ease-in-out 1}
+.acc-flotte .acc-ombre{animation:accOmbre 4.8s ease-in-out 1}
 @keyframes accFlotte{50%{transform:translateY(-5px)}}
 @keyframes accOmbre{50%{transform:translateY(5px) scaleX(.86);opacity:.7}}
-.acc-halo{animation:accHalo 6s ease-in-out infinite}
+.acc-halo{animation:accHalo 6s ease-in-out 1}
 @keyframes accHalo{50%{opacity:.72;transform:scale(1.06)}}
 .acc-k{overflow:hidden}
 /* (retiré le 23/10/2026 : reflet qui balayait les cartes de chiffres en boucle, et cercles décoratifs : des tics de « design généré ») */
@@ -691,8 +692,8 @@ html[data-theme=sombre] .cd-genre{color:#10392B}
 .acc-px-tri{display:inline-flex;flex-direction:column;gap:3px;margin-left:.3em;align-self:center}
 .acc-px-tri s{display:block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;text-decoration:none}
 /* même langage que tout le reste : ▲ maïs = les acheteurs montent leur budget, ▼ vert = les vendeurs baissent leur prix */
-.acc-px-tri s:first-child{border-bottom:7px solid #F2C230;animation:accTriH 2.2s ease-in-out infinite}
-.acc-px-tri s:last-child{border-top:7px solid #9FDCB2;animation:accTriB 2.2s ease-in-out infinite}
+.acc-px-tri s:first-child{border-bottom:7px solid #F2C230;animation:accTriH 2.2s ease-in-out 2}
+.acc-px-tri s:last-child{border-top:7px solid #9FDCB2;animation:accTriB 2.2s ease-in-out 2}
 @keyframes accTriH{0%,60%,100%{transform:none}30%{transform:translateY(-3px)}}
 @keyframes accTriB{0%,40%,100%{transform:none}70%{transform:translateY(3px)}}
 .acc-px-t .acc-px-tri{vertical-align:middle}
@@ -798,3 +799,5 @@ html:not([data-theme=sombre]) .aseg > button[aria-pressed="true"] > .aseg-s.d { 
 .cz-moi select:focus, .cz-moi select:focus-visible { outline: none !important; }
 @keyframes czOnde { 0% { transform: scale(.8); opacity: .9; } 80%, 100% { transform: scale(1.35); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .cz-moi-pt::after { animation: none; } .cz-moi:active { transform: none; } }
+/* relancer une animation de l'accueil quand on change de produit (rejouerAccueil, application.dc.html) */
+.rejoue, .rejoue::before, .rejoue::after { animation: none !important; }

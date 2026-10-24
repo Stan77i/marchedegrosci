@@ -1,10 +1,10 @@
 /* ═════════ Marché de Gros CI — statuts des comptes : ce que la communauté peut savoir d'un membre en un coup d'œil ═════════
    Philosophie : un statut se GAGNE par des faits vérifiables (pièce d'identité, ventes conclues, avis, réponses, activité),
    jamais en payant ni en le déclarant soi-même. Chaque statut dit ce qu'il prouve, et Mon compte dit comment l'obtenir.
-     Identité vérifiée   — l'équipe a comparé la pièce (valide) et le selfie                    (sceau bleu, MDGIdentite.badge)
+     Identité vérifiée   — l'équipe a comparé la pièce (valide) et le selfie                    (sceau vert, MDGIdentite.badge)
      Vendeur de confiance — ≥ 3 ventes conclues sur le Marché de Gros, note ≥ 4,2 s'il a ≥ 3 avis  (maïs)
      Acheteur sérieux     — ≥ 3 achats conclus, note ≥ 4 s'il a ≥ 3 avis                         (vert)
-     Répond vite          — répond en moins de 24 h à 80 % des personnes qui le contactent (≥ 3)  (bleu)
+     Répond vite          — répond en moins de 24 h à 80 % des personnes qui le contactent (≥ 3)  (crème)
      Actif aujourd'hui / cette semaine — a publié ou écrit récemment                              (point vert)
      Nouveau membre       — inscrit depuis moins de 30 jours                                     (neutre)
    Serveur : supabase/schema-17-statuts.sql → statuts_publics(ids), lisible sans compte, chiffres seulement.
@@ -108,7 +108,7 @@
 .st-l{display:flex;gap:12px;align-items:flex-start}.st-l b{display:block;font-weight:600}.st-l small{display:block;opacity:.75;font-size:13px;line-height:1.35;margin-top:2px}
 .st-i{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(140,140,140,.14)}
 .st-l-confiance .st-i{background:#F2C230;color:#10392B}.st-l-serieux .st-i{background:#6CC58C;color:#0d2a1c}.st-l-rapide .st-i{background:#EFE7D9;color:#10392B}
-.st-l-verifie .st-i{background:rgba(74,144,226,.14)}
+.st-l-verifie .st-i{background:rgba(16,57,43,.1)}
 .st-vide{margin:0;opacity:.7;font-size:13.5px}
 .st-but{display:flex;flex-direction:column;gap:6px}.st-but b{font-weight:600}.st-but small{opacity:.72}
 .st-jauge{height:6px;border-radius:3px;background:rgba(140,140,140,.2);overflow:hidden}.st-jauge i{display:block;height:100%;border-radius:3px;background:#F2C230}`;

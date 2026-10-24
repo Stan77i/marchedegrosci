@@ -100,7 +100,7 @@
 .cgl-pill{position:relative;display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 11px 0 9px;border:0;border-radius:15px;background:#FAF4E9;color:#171512;font:700 13px Jost,sans-serif;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.35),0 0 0 1px rgba(23,21,18,.08);cursor:pointer;transform-origin:50% 100%;transition:transform .18s cubic-bezier(.22,1,.36,1),background .18s,color .18s}
 .cgl-pill::after{content:"";position:absolute;left:50%;bottom:-5px;width:10px;height:10px;margin-left:-5px;background:inherit;transform:rotate(45deg);border-radius:0 0 3px 0;box-shadow:2px 2px 3px rgba(0,0,0,.12)}
 .cgl-pill i{display:inline-grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 11px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.cgl-pill i::before{content:"";display:block;width:74%;height:74%;background:var(--sym-o) center/contain no-repeat}.cgl-pill i.d{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.cgl-pill i.d::before{content:"";display:block;width:74%;height:74%;background:var(--sym-d) center/contain no-repeat}
-.cgl-v{flex:none;display:inline-flex;color:#2C6CB0;margin-left:-2px}
+.cgl-v{flex:none;display:inline-flex;color:#10392B;margin-left:-2px}
 .cgl-pill small{font-weight:500;font-size:11px;color:#655C4D}.cgl-pill b{font-weight:700}
 .cgl-pill.d{background:#FFF6DA}.cgl-pill.approx{box-shadow:0 2px 10px rgba(0,0,0,.35),0 0 0 1.5px rgba(23,21,18,.25)}
 .cgl-pill:hover,.cgl-pill:focus-visible{transform:scale(1.06);z-index:3;outline:2px solid #10392B;outline-offset:2px;box-shadow:0 0 0 2px #FFFDF8}

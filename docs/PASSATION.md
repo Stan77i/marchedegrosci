@@ -1436,3 +1436,12 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - Laissés exprès : n° 50 (couleurs en dur qui passent le contraste), n° 54 (transition d'entrée voulue). À vérifier avec des données : n° 59.
 - Vérifié (navigateur, iPhone, clair et sombre, 390 et 320 px) : accueil, connexion, réglages, J'ai, aide : aucune erreur, aucun débordement, aucun contraste faible, plus de texte sous 11,5 px sur l'accueil ; noms de la roue sans chevauchement ; aucun texte simple qui contiendrait « ${ » (contrôle automatique de tous les modules).
 - `?v=20261124h` (34 fichiers) ; site refabriqué ; cache `mgci-v242`.
+
+## 24/10/2026 — Décisions A, B, C de l'audit antislop (choisies par le propriétaire)
+
+- **A. Accueil vivant : « calmer »** : comète (1 fois), point du produit (2), sac qui flotte et son ombre (1), halo (1), triangles du prix (2), reflet « En saison » (1), lumières du fond `mfFlotte` (2) ; puis tout s'arrête. Quand on change de produit sur la roue, ils rejouent (`rejouerAccueil` dans `application.dc.html`, classe `.rejoue` dans `css/mgci-app.css` : une animation CSS finie n'existe plus, on la retire puis la remet). Mouvement réduit : rien ne rejoue.
+- **B. Plus de bleu « vérifié »** : badge d'identité (`v3/identite.js`), teinte « échanger / vérifié » de Mon compte (`--blue` = `#10392B`), point et bouton de l'encadré de vérification, sceau de la carte (`app/carte-gl.js`), statut « Identité vérifiée » (`v3/statuts.js`), icône de la négociation vide (`v3/negoce.js`) ; textes « sceau bleu » → « sceau vert » (aide, tutoriels, guide) ; derniers bleus décoratifs de la porte d'entrée → maïs pâle (`v3/porte.js`). Seul bleu restant : le lien « compatible » sur la carte.
+- **C. « de Gros » en dégradé avec reflet** sur la page de connexion : **gardé** ; exception écrite dans `DESIGN.md` (loi 2).
+- `CLAUDE.md` (Design) et `DESIGN.md` (lois 2, 25, couleurs) mis à jour ; le rapport d'audit note les trois décisions.
+- Vérifié (navigateur, iPhone) : au début, 9 effets jouent ; après 14 s, seules les lumières du fond finissent leur 2e passage ; « Produit suivant » → les effets rejouent ; aucune erreur JS.
+- `?v=20261124i` (11 fichiers) ; site refabriqué ; cache `mgci-v243`.

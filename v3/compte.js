@@ -89,9 +89,9 @@
   const CSS = `.cp-bg{position:fixed;inset:0;z-index:8800;background:rgba(8,7,5,.62);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:cpIn var(--ux-d2,200ms) ease both}
 @media (min-width:760px){.cp-bg{align-items:center;padding:24px}}
 /* Mon compte : un en-tête chaud et vivant (qui je suis), puis un papier clair et calme (ce que je fais, mes réglages).
-   La couleur porte le sens dans l'activité (vert vendre, jaune chercher, bleu échanger, terracotta le marché) ; les réglages restent sobres. */
+   La couleur porte le sens dans l'activité (vert vendre, jaune chercher, vert profond échanger et vérifié, terracotta le marché ; plus de bleu : décision du 24/10/2026) ; les réglages restent sobres. */
 .cp{--bg:#F4EEE3;--card:#FFFDF8;--card2:#EFE7D9;--ink:#171512;--mute:#655C4D;--faint:#6F6553;--line:rgba(23,21,18,.08);--line2:rgba(23,21,18,.14);--acc:#10392B;--acc-t:#10392B;
-  --ok:#2E7D4F;--ok-bg:rgba(108,197,140,.2);--warn:#8A6400;--warn-bg:rgba(242,201,76,.24);--blue:#2C6CB0;--blue-bg:rgba(106,174,240,.18);--violet:#6B4FB8;--violet-bg:rgba(176,149,240,.2);--bad:#C0442B;--bad-bg:rgba(226,115,91,.14);
+  --ok:#2E7D4F;--ok-bg:rgba(108,197,140,.2);--warn:#8A6400;--warn-bg:rgba(242,201,76,.24);--blue:#10392B;--blue-bg:rgba(16,57,43,.1);--violet:#6B4FB8;--violet-bg:rgba(176,149,240,.2);--bad:#C0442B;--bad-bg:rgba(226,115,91,.14);
   position:relative;display:flex;flex-direction:column;width:100%;max-width:600px;height:min(94dvh,880px);background:var(--bg);color:var(--ink);border-radius:28px 28px 0 0;box-shadow:0 -10px 60px rgba(0,0,0,.5);
   font:400 15px/1.45 Jost,system-ui,sans-serif;font-variant-numeric:lining-nums tabular-nums;overflow:hidden;animation:cpUp var(--ux-d3,320ms) cubic-bezier(.22,1,.36,1) both}
 @media (min-width:760px){.cp{border-radius:28px;height:min(90dvh,840px);box-shadow:0 30px 90px rgba(0,0,0,.5)}}
@@ -137,7 +137,7 @@
 .cp-hero-tags span.idok{background:#fff;color:var(--blue)}
 .cp-idv{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 14px;padding:12px 14px;border:0;border-radius:18px;background:#FFFDF8;box-shadow:0 4px 14px rgba(23,21,18,.06),inset 0 0 0 1px rgba(23,21,18,.07);color:var(--ink);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 button.cp-idv:active{transform:scale(.985)}div.cp-idv{cursor:default}
-.cp-idv-i{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:rgba(44,108,176,.1);color:var(--blue)}.cp-idv.ko .cp-idv-i{background:var(--bad-bg);color:var(--bad)}
+.cp-idv-i{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:rgba(16,57,43,.08);color:var(--blue)}.cp-idv.ko .cp-idv-i{background:var(--bad-bg);color:var(--bad)}
 .cp-idv-x{flex:1;min-width:0}.cp-idv b{display:block;font:600 15.5px/1.25 Jost,sans-serif}.cp-idv small{display:block;margin-top:2px;color:var(--mute);font-size:13px;line-height:1.35}
 .cp-idv-j{flex:none;display:flex;gap:3px}.cp-idv-j i{width:7px;height:7px;border-radius:50%;background:rgba(23,21,18,.14)}.cp-idv-j i.on{background:var(--warn)}
 .cp-idv-c{flex:none;color:var(--mute);display:flex}
@@ -183,7 +183,7 @@ button.cp-idv:active{transform:scale(.985)}div.cp-idv{cursor:default}
 .cp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 .cp-st{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:84px;padding:12px;border:0;border-radius:18px;background:var(--card);color:var(--ink);text-align:left;cursor:pointer;font:inherit;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.05)}
 .cp-st:active{transform:scale(.98)}
-.cp-st i:not(.n){display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 13px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.cp-st i:not(.n)::before{content:"";display:block;width:74%;height:74%;background:var(--sym-o) center/contain no-repeat}.cp-st i.d{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.cp-st i.d::before{content:"";display:block;width:74%;height:74%;background:var(--sym-d) center/contain no-repeat}.cp-st i.n{display:block;width:10px;height:10px;border-radius:50%;background:#6AAEF0}
+.cp-st i:not(.n){display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 13px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.cp-st i:not(.n)::before{content:"";display:block;width:74%;height:74%;background:var(--sym-o) center/contain no-repeat}.cp-st i.d{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.cp-st i.d::before{content:"";display:block;width:74%;height:74%;background:var(--sym-d) center/contain no-repeat}.cp-st i.n{display:block;width:10px;height:10px;border-radius:50%;background:#1F8A55}
 .cp-st b{font:600 26px/1 Jost,sans-serif;letter-spacing:-.01em}
 .cp-st small{color:var(--mute);font-size:12.5px;line-height:1.2}
 /* activité : regroupée par jour ; une pastille ronde colorée par le sens, le montant à droite */
@@ -206,7 +206,7 @@ button.cp-idv:active{transform:scale(.985)}div.cp-idv{cursor:default}
 /* listes : réglages sobres (icône monochrome), comme des pages d'un carnet */
 .cp-statuts{padding:16px;display:flex;flex-direction:column;gap:14px}.cp-statuts .cp-vide{margin:0;padding:0;text-align:left}
 .cp-st-l{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.cp-st-l .st-p{height:26px;padding:0 11px;font-size:13px}
-.cp-st-go{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:rgba(44,108,176,.1);color:#2C6CB0;font:600 14px Jost,system-ui,sans-serif}
+.cp-st-go{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:rgba(16,57,43,.08);color:#10392B;font:600 14px Jost,system-ui,sans-serif}
 .cp-grp{background:var(--card);border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.04)}
 .cp-grp+.cp-grp,.cp-grp+.cp-sh{margin-top:12px}
 .cp-r{position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:60px;padding:10px 16px;border:0;background:none;color:var(--ink);font:inherit;text-align:left;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color var(--ux-d1,120ms)}

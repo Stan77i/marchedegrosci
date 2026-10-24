@@ -78,7 +78,7 @@ const ETAGERES = ['cereales-et-riz-local', 'tubercules-et-feculents', 'legumes-e
 const etg = ETAGERES.map(k => parCat.find(g => g.c.slug === k)).filter(Boolean), reste = parCat.filter(g => !ETAGERES.includes(g.c.slug));
 const AVEC_PAGE = new Set(require('./site-produits.js').LISTE);
 const lienProduit = sl => AVEC_PAGE.has(sl) ? `href="produits/${sl}/"` : `href="../application.dc.html#/produits/${sl}" data-app="#/produits/${sl}" data-intention="produit"`;
-const RAYONS = etg.map(g => `<div class="etagere"><h3>${esc(g.c.name)}</h3><ul>${g.p.slice(0, 10).map(p => `<li><a ${lienProduit(p.s)}><span class="plateau"><img src="${img(p.s, 160)}" alt="${esc(p.n)} en gros" width="160" height="160" loading="lazy" decoding="async"></span><span class="nom">${esc(p.n)}</span></a></li>`).join('')}</ul></div>`).join('')
+const RAYONS = etg.map(g => `<div class="etagere"><h3>${esc(g.c.name)}</h3><ul>${g.p.slice(0, 10).map(p => `<li><a ${lienProduit(p.s)}><span class="plateau"><img src="${img(p.s, 160)}" alt="" width="160" height="160" loading="lazy" decoding="async"></span><span class="nom">${esc(p.n)}</span></a></li>`).join('')}</ul></div>`).join('')
   + `<p class="autres-rayons"><b>Aussi au marché :</b> ${reste.map(g => esc(g.c.name.toLowerCase())).join(' · ')}. En tout, ${produits.length} produits dans l’application.</p>`;
 const DATE = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Africa/Abidjan' });
 const DONNEES = { produits: produits.filter(p => p.f).map(p => [p.s, p.n]), villes };

@@ -24,7 +24,7 @@
 <link rel="preload" href="../../../fonts/jost-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../../../css/fonts.css">
 <link rel="stylesheet" href="../../../css/symboles.css">
-<link rel="stylesheet" href="../../site.css?v=b13f0c56">
+<link rel="stylesheet" href="../../site.css?v=14bb132d">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://stan77i.github.io/marchedegrosci/#org","name":"Marché de Gros CI","alternateName":"MGCI","url":"https://stan77i.github.io/marchedegrosci/site/","logo":"https://stan77i.github.io/marchedegrosci/logo/marque-1024.png","description":"Application privée et indépendante du vivrier en gros en Côte d’Ivoire.","areaServed":{"@type":"Country","name":"Côte d’Ivoire"}},{"@type":"WebSite","@id":"https://stan77i.github.io/marchedegrosci/#site","url":"https://stan77i.github.io/marchedegrosci/site/","name":"Marché de Gros CI","inLanguage":"fr-CI","publisher":{"@id":"https://stan77i.github.io/marchedegrosci/#org"}}]}</script>
 <script>/* EN CONSTRUCTION (23/10/2026) : seul l'administrateur entre ; les autres vont à la page de maintenance.
    Le voile #garde reste posé jusqu'à ce que le serveur confirme est_admin. Pour ouvrir au public : retirer ce bloc, le voile et sa vérification, et le noindex. */
@@ -42,7 +42,7 @@ if(!ok){location.replace('../../../maintenance.html');return}document.documentEl
     <a href="../../guides/">Guides</a>
     <a href="../../#pros">Pour les pros</a>
   </nav>
-  <a class="bt bt-mais" href="../../#appli" data-app="#/" data-intention="entete">Prendre l’application</a>
+  <a class="bt bt-mais" href="../../#appli" data-app="#/" data-intention="entete"><span class="bt-long">Prendre l’application</span><span class="bt-court">L’application</span></a>
 </header>
 
 
@@ -54,17 +54,17 @@ if(!ok){location.replace('../../../maintenance.html');return}document.documentEl
 <section class="pr-tete" aria-labelledby="t-pr">
   <div class="pr-l">
     <h1 id="t-pr">Chou en gros en <em>Côte d’Ivoire</em></h1>
-    <p class="pr-sous">Vendeurs et acheteurs de chou se trouvent dans l’application : chacun publie sa quantité, sa ville et son prix, et tout se négocie par écrit, sans numéro affiché.</p>
+    <p class="pr-sous">Dans l’application, vendeurs et acheteurs de chou publient leurs annonces : chacun indique sa quantité, sa ville et son prix, et tout se négocie par écrit, sans numéro affiché.</p>
     <p class="alias">Aussi appelé : <b>chou pommé</b></p>
     <div class="portes">
       <a class="porte porte-o" href="../../../application.dc.html#/publier?sens=offre&amp;produit=chou" data-app="#/publier?sens=offre&amp;produit=chou" data-intention="vendre-chou">
         <i class="sym sym-o" aria-hidden="true"></i>
-        <span><b>Je vends</b><small>Publiez votre offre de chou : les acheteurs vous écrivent.</small></span>
+        <span><b>J’ai</b><small>À vendre : publiez votre offre de chou. Les acheteurs du réseau la voient et peuvent vous écrire.</small></span>
         <svg class="fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
       <a class="porte porte-d" href="../../../application.dc.html#/publier?sens=demande&amp;produit=chou" data-app="#/publier?sens=demande&amp;produit=chou" data-intention="acheter-chou">
         <i class="sym sym-d" aria-hidden="true"></i>
-        <span><b>Je cherche</b><small>Votre demande de chou : les vendeurs vous font leur prix.</small></span>
+        <span><b>Je cherche</b><small>À acheter : publiez votre demande de chou. Les vendeurs du réseau peuvent vous faire leur prix.</small></span>
         <svg class="fl" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </a>
     </div>
@@ -93,17 +93,10 @@ if(!ok){location.replace('../../../maintenance.html');return}document.documentEl
       <p class="mois-leg"><span class="plein">pleine récolte</span><span class="debut">ça commence</span><span class="fin">ça se termine</span></p>
       <p><a class="lien" href="../../saisons/">Le calendrier de tous les produits</a></p></section>
 
-<!-- 3. comment ça marche, pour ce produit -->
+<!-- 3. comment ça marche : une phrase, le détail est sur l'accueil -->
 <section class="bloc route" aria-labelledby="t-route">
-  <div class="bloc-tete"><h2 id="t-route">Chou en gros : vendre ou acheter, pas à pas</h2></div>
-  <ol class="etapes">
-    <li><b>Publier</b><span>Votre offre ou votre demande : quantité, unité, ville, prix.</span></li>
-    <li><b>Comparer</b><span>Le tableau classe les vendeurs du moins cher au plus cher.</span></li>
-    <li><b>Négocier</b><span>Par écrit, dans l’application, sans numéro visible.</span></li>
-    <li><b>Commander</b><span>Le prix et la quantité sont figés.</span></li>
-    <li><b>Livrer</b><span>Le camion se suit par un simple lien.</span></li>
-    <li><b>Réceptionner</b><span>Un mot secret, et 24 h pour réclamer.</span></li>
-  </ol>
+  <div class="bloc-tete"><h2 id="t-route">Chou en gros : vendre ou acheter</h2>
+    <p>On publie son offre ou sa demande, on compare les prix, on négocie par écrit, puis on commande et on suit la livraison. <a class="lien" href="../../#etapes">Voir les étapes, de l’annonce à la livraison</a></p></div>
 </section>
 
 <!-- 4. les produits voisins -->
@@ -144,9 +137,9 @@ if(!ok){location.replace('../../../maintenance.html');return}document.documentEl
 
 <script id="donnees" type="application/json">{"produits":[["riz-local","Riz local"],["mais-grain","Maïs grain"],["fonio","Fonio"],["igname","Igname"],["manioc","Manioc"],["banane-plantain","Banane plantain"],["attieke","Attiéké"],["patate-douce","Patate douce"],["taro","Taro"],["macabo","Macabo"],["farine-de-manioc","Farine de manioc"],["tapioca","Tapioca"],["pomme-de-terre","Pomme de terre"],["patate-douce-jaune","Patate douce jaune"],["patate-douce-blanche","Patate douce blanche"],["tomate","Tomate"],["oignon","Oignon"],["aubergine","Aubergine"],["gombo","Gombo"],["piment-frais","Piment frais"],["poivron","Poivron"],["chou","Chou"],["concombre","Concombre"],["oseille-de-guinee","Oseille de Guinée"],["citron","Citron"],["orange","Orange"],["mangue","Mangue"],["ananas","Ananas"],["papaye","Papaye"],["papaye-ronde","Papaye ronde"],["papaye-solo","Papaye solo"],["banane-douce","Banane douce"],["avocat","Avocat"],["pasteque","Pastèque"],["noix-de-coco","Noix de coco"],["aubergine-blanche","Aubergine blanche"],["aubergine-violette","Aubergine violette"],["piment-garba","Piment garba"],["piment-vert","Piment vert"],["piment-big-sun","Piment Big Sun"],["piment-sent-bon","Piment sent bon"],["courgette-verte","Courgette verte"],["courgette-obra","Courgette obra"],["orange-du-ghana","Orange du Ghana"],["orange-locale","Orange locale"],["haricot-vert-du-burkina","Haricot vert du Burkina"],["haricot-vert-local","Haricot vert local"],["oignon-blanc","Oignon blanc"],["oignon-violet","Oignon violet"],["feuille-d-oignon","Feuille d'oignon"],["agouti","Agouti"],["aulacode","Aulacode"],["escargot-geant-achatine","Escargot géant (achatine)"],["antilope-cobe-biche","Antilope (cobe, biche)"],["porc-epic","Porc-épic"],["tilapia-frais","Tilapia frais"],["capitaine","Capitaine"],["silure","Silure"],["poisson-fume","Poisson fumé"],["sardine-fraiche","Sardine fraîche"],["maquereau","Maquereau"],["thon-frais","Thon frais"],["chinchard","Chinchard"],["bar-loup-de-mer","Bar (loup de mer)"],["crevette","Crevette"],["poisson-seche","Poisson séché"],["crevettes-sechees","Crevettes séchées"],["anchois-seches","Anchois séchés"],["poulet-de-chair","Poulet de chair"],["poulet-fermier","Poulet fermier"],["pintade","Pintade"],["canard","Canard"],["dinde","Dinde"],["lapin","Lapin"],["oeufs-de-poule-alveole-de-30","Œufs de poule (alvéole de 30)"],["oeufs-de-pintade","Œufs de pintade"],["oeufs-de-caille","Œufs de caille"],["poulet-surgele","Poulet surgelé"],["poisson-surgele","Poisson surgelé"],["viande-de-boeuf-surgelee","Viande de bœuf surgelée"],["maquereau-surgele","Maquereau surgelé"],["cuisses-de-dinde-surgelees","Cuisses de dinde surgelées"],["dos-de-poulet-surgele","Dos de poulet surgelé"],["saucisses-surgelees","Saucisses surgelées"],["tripes-de-boeuf-surgelees","Tripes de bœuf surgelées"],["foie-de-boeuf-surgele","Foie de bœuf surgelé"],["ail","Ail"],["poivre-noir","Poivre noir"],["poivre-de-guinee-selim","Poivre de Guinée (selim)"],["bouillon-cube","Bouillon cube"],["akpi","Akpi"],["gombo-seche-djoumble","Gombo séché (djoumblé)"],["sel","Sel"],["curcuma","Curcuma"],["clou-de-girofle","Clou de girofle"],["feuille-de-laurier","Feuille de laurier"],["soumbara-nere-fermente","Soumbara (néré fermenté)"],["basilic-tchayo","Basilic (tchayo)"],["persil","Persil"],["arachide-en-coque","Arachide en coque"],["arachide-decortiquee","Arachide décortiquée"],["pate-d-arachide","Pâte d'arachide"],["huile-d-arachide","Huile d'arachide"],["noix-de-cajou","Noix de cajou"],["noix-de-kola","Noix de kola"],["noix-de-karite","Noix de karité"],["sesame","Sésame"],["huile-de-palme-rouge","Huile de palme rouge"],["noix-de-palme","Noix de palme"],["beurre-de-karite","Beurre de karité"],["graine-de-courge-pistache","Graine de courge (pistache)"],["soja","Soja"],["haricot-niebe","Haricot (niébé)"],["pois-d-angole","Pois d'angole"],["miel","Miel"],["cafe-en-grains","Café en grains"],["cacao-en-feves","Cacao en fèves"],["farine-de-ble","Farine de blé"],["farine-de-mais","Farine de maïs"],["semoule-de-mais","Semoule de maïs"],["gari","Gari"],["amidon-de-manioc","Amidon de manioc"],["corossol","Corossol"],["goyave","Goyave"],["mandarine","Mandarine"],["pamplemousse","Pamplemousse"],["melon","Melon"],["fruit-de-la-passion","Fruit de la passion"],["pomme-de-cajou","Pomme de cajou"],["gnangnan","Gnangnan (aubergine amère)"],["feuilles-de-baobab","Feuilles de baobab"],["cannelle","Cannelle"],["muscade","Noix de muscade"],["thym","Thym"],["tomate-sechee","Tomate séchée"],["pate-de-tomate","Pâte de tomate"],["huile-de-coco","Huile de coco"],["huile-de-palme-raffinee","Huile de palme raffinée"],["pois-bambara","Pois de terre (voandzou)"],["rat-de-gambie","Rat de Gambie"],["viande-de-boeuf","Viande de bœuf"],["viande-de-mouton","Viande de mouton"],["viande-de-chevre","Viande de chèvre"],["viande-de-porc","Viande de porc"],["abats","Abats"]],"villes":[{"n":"Yamoussoukro","x":543.4,"y":634.2},{"n":"Bouaké","x":580.5,"y":501.2},{"n":"Abidjan","x":733.2,"y":862.3}]}</script>
 <script src="../../../vendor/qrcode-generator-1.4.4.js"></script>
-<script src="../../../v3/nuage.js?v=20261124h"></script>
-<script src="../../garde.js?v=b13f0c56"></script>
-<script src="../../site.js?v=b13f0c56"></script>
-<script src="../../../app/admin-pc.js?v=b13f0c56" data-ici="seo"></script>
+<script src="../../../v3/nuage.js?v=20261124v"></script>
+<script src="../../garde.js?v=14bb132d"></script>
+<script src="../../site.js?v=14bb132d"></script>
+<script src="../../../app/admin-pc.js?v=14bb132d" data-ici="seo"></script>
 </body>
 </html>

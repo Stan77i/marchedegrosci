@@ -6,6 +6,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 
 **Nouvelle discussion : un mot suffit** (règle du propriétaire, 24/10/2026). Le propriétaire vide souvent la discussion et écrit seulement « On reprend », « Continue » ou une courte phrase. Alors, sans lui poser de question :
 1. lire `docs/REPRISE.md` (partie 1 : l'état ; partie 3 : ce qui reste, dans l'ordre) ;
+   puis rappeler en une ligne ce qui attend le propriétaire dans `docs/A-FAIRE-PROPRIETAIRE.md` (s'il reste des cases non cochées) ;
 2. regarder les PR ouvertes (`gh api "repos/Stan77i/marchedegrosci/pulls?state=open" --jq '.[].number'`) et les signaler s'il y en a ;
 3. partir de `origin/main` à jour ;
 4. continuer la prochaine tâche de la partie 3, ou celle que sa phrase désigne, puis lui dire en deux lignes où on en est.
@@ -45,12 +46,14 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 
 - **Une PR par mise à jour. Ne jamais fusionner** : c'est le propriétaire qui fusionne. Quand une PR dépend d'une autre, indiquer l'ordre de fusion.
 - **Avant d'ajouter un commit à une PR existante, vérifier qu'elle est encore ouverte** (`gh api repos/Stan77i/marchedegrosci/pulls/<n> --jq .state,.merged`). Fusionnée ou fermée : nouvelle branche depuis `origin/main` et nouvelle PR. Le propriétaire fusionne vite : dans le doute, toujours une nouvelle PR.
+- **Choix du modèle pour les agents** (règle du propriétaire, 24/10/2026) : le travail simple et répétitif (recherches, vérifications mécaniques, remplacements en série) va à un modèle plus léger ; le travail qui demande une précision chirurgicale (textes sans rien inventer, accessibilité, design, relecture) reste sur le modèle le plus fort. Pour aller vite sur beaucoup de tâches, une opération coordonnée (équipes sur des fichiers séparés, chacune relue).
 - Créer les PR avec `gh api repos/Stan77i/marchedegrosci/pulls --input fichier.json`, le JSON étant écrit par python dans le scratchpad.
 - Partir de `origin/main` à jour pour chaque nouvelle branche (`claude/<sujet>`).
 - **À chaque changement du front** :
   - augmenter le `?v=` des fichiers modifiés dans les pages HTML ;
   - augmenter `CACHE` dans `sw.js` (format `mgci-vNNN`) ;
   - ajouter les nouvelles images à la liste `IMAGES` de `sw.js`.
+- **Documentation officielle** (demande du propriétaire, 24/10/2026) : `FONCTIONNALITES.md`, `ROADMAP.md`, `ARCHITECTURE.md`, `CHANGELOG.md` à la racine. Chaque PR qui ajoute ou change une fonctionnalité les met à jour (état réel, fichiers, tables, fonctions) ; ne jamais présenter une idée comme faite.
 - **Rapport de passation à chaque fois** (règle du propriétaire, 23/10/2026) : chaque PR ajoute sa section dans `docs/PASSATION.md` et met à jour tout ce qui doit l'être (`docs/REPRISE.md` : état, ce qui est fait, ce qui reste ; `docs/seo/PLAN.md` pour le site ; `PORTAGE-SITE.md`, `FOUNDER_CONTEXT.md`, modèles de `strategie/sources/`, `DESIGN.md` quand ils sont concernés). Sans attendre qu'il le demande.
 - **Mesurer, ne pas supposer.** Aucune donnée inventée. Ne jamais dire qu'un test, un déploiement ou une migration a réussi sans l'avoir vérifié.
 - Vérifier dans un vrai navigateur :
@@ -115,7 +118,11 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - La tomate est montrée **en carton**, pas en sac.
 - Avatars : les **personnages du marché** (`v3/personnages.js`) : des produits avec un visage, dessinés en SVG. Au repos, ils respirent et clignent des yeux seulement ; ils **sautent uniquement quand il y a du nouveau** (proposition de prix, message, notification, commande à traiter) ou quand on change son avatar. Pas de service extérieur. Les anciens portraits restent lisibles.
 - Couleurs de l'accord conclu : vert de la marque, plus de bleu.
-- **Décisions de l'audit antislop (24/10/2026)** : le badge « vérifié » et les négociations sont en vert profond `#10392B` (plus aucun bleu hors du lien « compatible » de la carte) ; l'accueil vivant est « calmé » (chaque effet se joue 1 ou 2 fois, puis rejoue seulement quand on change de produit) ; « de Gros » en dégradé avec reflet est gardé, sur la page de connexion seulement.
+- **L'eau (fleuves, lacs) reste en bleu sur les cartes** (décision du propriétaire, 24/10/2026) : le bleu y a un sens ; c'est la seule exception avec le lien « compatible ».
+- **Décisions de l'audit antislop (24/10/2026)** : le badge « vérifié » et les négociations sont en vert profond `#10392B` (plus aucun bleu, sauf le lien « compatible » de la carte et l'eau des cartes) ; l'accueil vivant est « calmé » (chaque effet se joue 1 ou 2 fois, puis rejoue seulement quand on change de produit) ; « de Gros » en dégradé avec reflet est gardé, sur la page de connexion seulement.
+- **Titre de la connexion (choix du propriétaire, 24/10/2026)** : « marché **de Gros** » passe à « marché **du pays** » 3 s après l'apparition (reflet doré), « du pays » reste 2 s, puis retour ; la séquence recommence toutes les 10 s (`v3/nuage.js`, CSS seulement). La scène de la porte ne change pas : le « court film » de connexion a été essayé puis **refusé** par le propriétaire (branche `claude/scene-connexion`, non fusionnée).
+- **Animations : vidéo d'aperçu d'abord** (règle du propriétaire, 24/10/2026) : pour toute animation nouvelle ou changée, envoyer une vidéo d'aperçu (MP4) et attendre son « OK » avant de créer la PR.
+- **Signature de la marque** (choix du propriétaire, 24/10/2026) : l'animation « marché de Gros » / « marché du pays » est gardée dans `videos/signature/` (MP4 carré et large, page qui sert à les refaire, mode d'emploi). La garder identique au titre de la connexion.
 - **Stabilité avant tout** (règle du propriétaire, 24/10/2026) : aucun écran vide ni clignotement. Une fenêtre s'ouvre avec son contenu déjà là (pas de fondu du contenu à l'ouverture) ; rien ne s'efface ni ne rejoue pendant qu'on fait défiler ; une liste relue régulièrement ne se redessine pas en entier (`MDGStable.poser`, `app/stable.js`) ni quand rien n'a changé.
 - Les nombres à côté d'un libellé sont **toujours dans une jolie pastille** (`.nbul`), partout : jamais un chiffre nu (« Offres 6 ») ni entre parenthèses.
 
@@ -156,6 +163,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 ## Décisions en attente ou pour plus tard
 
 - **Vérification anti-robot (Cloudflare Turnstile)** : le propriétaire la veut **sur le site web seulement**, pas dans l'application. Attention : dans Supabase, la protection CAPTCHA vaut pour tout le projet, donc l'application serait bloquée. Le conseil donné est de l'activer partout en mode invisible. Rien n'est fait : lui reposer la question au moment de le faire. Il faudra un compte Cloudflare gratuit.
+- **Serveur bloqué dans l'environnement Claude** : le propriétaire doit autoriser `catmsypctymgkjkfzdkt.supabase.co` (mode d'emploi : `docs/A-FAIRE-PROPRIETAIRE.md`). Remis à plus tard le 24/10/2026.
 - **Vérification du numéro par SMS/WhatsApp** : quand il y aura un budget.
 - Limite de connexion Supabase Auth : 20 par 5 minutes et par IP (réglée par le propriétaire).
 - En attente : réglage « Voix » (fichiers audio fr_P1.zip) ; rappel du mot secret en notification (fonction `pousser`).

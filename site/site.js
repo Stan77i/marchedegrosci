@@ -57,7 +57,7 @@
   var calque = null, vus = {};
   function villes() {
     if (!carte || !VB || carte.querySelector('.pts')) return;
-    calque = document.createElement('div'); calque.className = 'pts'; carte.insertBefore(calque, carte.querySelector('.reseau-legende'));
+    calque = document.createElement('div'); calque.className = 'pts'; calque.setAttribute('aria-hidden', 'true'); /* le fil donne déjà ces annonces aux lecteurs d'écran (audit du site n° 28) */ carte.insertBefore(calque, carte.querySelector('.reseau-legende'));
     calque.style.height = carte.querySelector('svg').getBoundingClientRect().height + 'px';
     (D.villes || []).forEach(function (v) { var s = document.createElement('span'); s.className = 'ville'; s.textContent = v.n; s.style.left = (v.x / VB.width * 100) + '%'; s.style.top = (v.y / VB.height * 100) + '%'; calque.appendChild(s); });
   }
@@ -69,9 +69,8 @@
     Object.keys(g).forEach(function (k, i) {
       var x = g[k], n = x.o + x.d, sens = x.o >= x.d ? 'offre' : 'demande';
       var el = calque.querySelector('.pt[data-k="' + k + '"]');
-      if (!el) { el = document.createElement('span'); el.className = 'pt'; el.dataset.k = k; el.style.left = x.p[0] + '%'; el.style.top = x.p[1] + '%'; el.style.animationDelay = (vus[k] ? 0 : i * 60) + 'ms'; calque.appendChild(el); vus[k] = 1; }
+      if (!el) { el = document.createElement('span'); el.className = 'pt'; el.dataset.k = k; el.style.left = x.p[0] + '%'; el.style.top = x.p[1] + '%'; el.style.animationDelay = '0ms'; /* tous les points d'un coup, sans cascade (audit du site n° 13) */ calque.appendChild(el); vus[k] = 1; }
       el.className = 'pt' + (sens === 'demande' ? ' d' : ''); el.innerHTML = (photo(x.s, 'pp') || symb(sens)) + (n > 1 ? '<b>' + n + '</b>' : '');
-      el.title = (x.o ? x.o + ' offre' + (x.o > 1 ? 's' : '') : '') + (x.o && x.d ? ' · ' : '') + (x.d ? x.d + ' demande' + (x.d > 1 ? 's' : '') : '');
     });
   }
   // page produit : <main data-produit="tomate">
@@ -79,26 +78,32 @@
   // page d'un district : <main data-region="savanes"> (annonces et prix du district seulement)
   var REGION = (document.querySelector('[data-region]') || { getAttribute: function () { return ''; } }).getAttribute('data-region');
   function publier(h, intention, texte) { return '<a class="lien" href="' + R + 'application.dc.html' + h.replace(/&/g, '&amp;') + '" data-app="' + h.replace(/&/g, '&amp;') + '" data-intention="' + intention + '">' + texte + '</a>'; }
+  // n'écrire une liste que si elle a changé : relue toutes les 2 minutes, elle ne doit ni clignoter, ni faire perdre sa place au clavier,
+  // ni être relue par les lecteurs d'écran quand rien n'est nouveau (audit antislop du site n° 3, 24/10/2026)
+  function poser(el, html) { if (!el || el._h === html) return; el._h = html; el.innerHTML = html; }
   function fil(L) {
     var court = $('filCourt'), long = $('filLong'), pf = $('filProduit');
     if (pf) {
       var LP = L.filter(function (a) { return REGION ? a.region_slug === REGION : a.product_slug === PROD; });
-      pf.innerHTML = LP.length ? LP.map(function (a) { var h = '#/produits/' + esc(a.product_slug); return '<li><a class="fil-a" href="' + R + 'application.dc.html' + h + '" data-app="' + h + '" data-intention="annonce">' + ((REGION && photo(a.product_slug)) || symb(a.sens)) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></a></li>'; }).join('')
-        : '<li class="fil-vide">Aucune annonce active ' + (REGION ? 'dans ce district' : 'pour ce produit') + ' en ce moment. ' + publier('#/publier?sens=offre' + (PROD ? '&produit=' + encodeURIComponent(PROD) : ''), 'premiere-annonce', 'Publiez la première') + ' : tout le réseau la verra.</li>';
+      poser(pf, LP.length ? LP.map(function (a) { var h = '#/produits/' + esc(a.product_slug); return '<li><a class="fil-a" href="' + R + 'application.dc.html' + h + '" data-app="' + h + '" data-intention="annonce">' + ((REGION && photo(a.product_slug)) || symb(a.sens)) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></a></li>'; }).join('')
+        : '<li class="fil-vide">Aucune annonce active ' + (REGION ? 'dans ce district' : 'pour ce produit') + ' en ce moment. ' + publier('#/publier?sens=offre' + (PROD ? '&produit=' + encodeURIComponent(PROD) : ''), 'premiere-annonce', 'Publiez la première') + ' : tout le réseau la verra.</li>');
     }
     if (!L.length) {
-      if (court) court.innerHTML = '<li class="fil-vide">Aucune annonce pour l’instant. ' + publier('#/publier?sens=offre', 'premiere-annonce', 'Publiez la première') + ' : tout le réseau la verra.</li>';
-      if (long) long.innerHTML = '<li class="fil-vide">Aucune annonce active pour l’instant. ' + publier('#/publier?sens=offre', 'premiere-annonce', 'Publiez la première') + '.</li>';
+      poser(court, '<li class="fil-vide">Aucune annonce pour l’instant. ' + publier('#/publier?sens=offre', 'premiere-annonce', 'Publiez la première') + ' : tout le réseau la verra.</li>');
+      poser(long, '<li class="fil-vide">Aucune annonce active pour l’instant. ' + publier('#/publier?sens=offre', 'premiere-annonce', 'Publiez la première') + '.</li>');
       return;
     }
     // chaque annonce s'ouvre dans l'application (fiche du produit) : le parcours voulu, « il clique sur une annonce »
     var ligne = function (a, nuit) { var h = '#/produits/' + esc(a.product_slug); return '<li><a class="fil-a" href="' + R + 'application.dc.html' + h + '" data-app="' + h + '" data-intention="annonce">' + (photo(a.product_slug) || symb(a.sens, nuit)) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></a></li>'; };
-    if (court) court.innerHTML = L.slice(0, 3).map(function (a) { return ligne(a, true); }).join('');
-    if (long) long.innerHTML = L.slice(0, 40).map(function (a) { return ligne(a, true); }).join('');
+    poser(court, L.slice(0, 3).map(function (a) { return ligne(a, true); }).join(''));
+    poser(long, L.slice(0, 40).map(function (a) { return ligne(a, true); }).join(''));
   }
   function lireFil() {
     return rpc('fil_public', { p_limite: 120 }).then(function (L) { L = L || []; fil(L); points(L); document.dispatchEvent(new CustomEvent('site:fil', { detail: L })); })
-      .catch(function () { var c = $('filCourt'); if (c && /fil-vide/.test(c.innerHTML)) c.innerHTML = '<li class="fil-vide">Le fil ne répond pas pour l’instant.</li>'; });
+      .catch(function () {
+        // le serveur ne répond pas : chaque liste encore vide le dit, au lieu de « Les annonces arrivent… » pour toujours (audit du site n° 10)
+        ['filCourt', 'filLong', 'filProduit'].forEach(function (id) { var c = $(id); if (c && /fil-vide/.test(c.innerHTML)) poser(c, '<li class="fil-vide">Les annonces ne s’affichent pas pour l’instant (réseau ?). Réessayez dans un moment.</li>'); });
+        document.dispatchEvent(new Event('site:fil-erreur')); });
   }
 
   // ——— le tableau ———
@@ -114,16 +119,18 @@
       }
       if (!corps) return;
       L = (L || []).slice(0, 8);
-      if (!L.length) { corps.innerHTML = '<p class="tb-attente">Aucun prix publié pour l’instant. ' + publier('#/publier?sens=offre', 'premier-prix', 'Publier mon prix') + '</p>'; return; }
+      if (!L.length) { corps.innerHTML = '<div role="row"><p class="tb-attente" role="cell">Aucun prix publié pour l’instant. ' + publier('#/publier?sens=offre', 'premier-prix', 'Publier mon prix') + '</p></div>'; return; }
       corps.innerHTML = L.map(function (r) {
-        var nom = NOMS[r.slug] || r.lab, img = NOMS[r.slug] ? '<img src="' + S + 'img/' + esc(r.slug) + '-160.webp" alt="' + esc(nom) + '" width="56" height="56" loading="lazy">' : '<span style="width:56px"></span>';
+        var nom = NOMS[r.slug] || r.lab, img = NOMS[r.slug] ? '<img src="' + S + 'img/' + esc(r.slug) + '-160.webp" alt="" width="56" height="56" loading="lazy">' : '<span style="width:56px"></span>';
         var achat = r.n_offres > 0;
         return '<div class="tb-ligne" role="row"><span class="tb-p" role="cell">' + img + esc(nom) + '</span>'
           + '<span role="cell">' + prix(r.meilleure_offre, r.unite_offre) + '</span><span role="cell">' + prix(r.meilleure_demande, r.unite_demande) + '</span>'
-          + '<span class="tb-n" role="cell">' + (r.n_offres ? '<span class="nbul o">' + symb('offre') + r.n_offres + '</span>' : '') + (r.n_demandes ? '<span class="nbul d">' + symb('demande') + r.n_demandes + '</span>' : '') + '</span>'
-          + '<span role="cell"><a class="tb-go" href="' + R + 'application.dc.html#/produits/' + esc(r.slug) + '" data-app="' + (achat ? '#/produits/' + esc(r.slug) : '#/vendre?produit=' + esc(r.slug)) + '" data-intention="' + (achat ? 'acheter' : 'vendre') + '">' + (achat ? 'Acheter' : 'Vendre') + '</a></span></div>';
+          + '<span class="tb-n" role="cell">' + (r.n_offres ? '<span class="nbul o">' + symb('offre') + r.n_offres + '<span class="vh"> offre' + (r.n_offres > 1 ? 's' : '') + '</span></span>' : '') + (r.n_demandes ? '<span class="nbul d">' + symb('demande') + r.n_demandes + '<span class="vh"> demande' + (r.n_demandes > 1 ? 's' : '') + '</span></span>' : '') + '</span>'
+          + '<span role="cell"><a class="tb-go" href="' + R + 'application.dc.html#/produits/' + esc(r.slug) + '" data-app="' + (achat ? '#/produits/' + esc(r.slug) : '#/vendre?produit=' + esc(r.slug)) + '" data-intention="' + (achat ? 'acheter' : 'vendre') + '">' + (achat ? 'Acheter' : 'Vendre') + '<span class="vh"> : ' + esc(nom) + '</span></a></span></div>';
       }).join('');
-    }).catch(function () { [corps, pp].forEach(function (c) { if (c) c.innerHTML = '<p class="tb-attente">Les prix ne répondent pas pour l’instant. Réessayez dans un moment.</p>'; }); });
+    }).catch(function () { var m = '<p class="tb-attente">Les prix ne répondent pas pour l’instant. Réessayez dans un moment.</p>';
+      if (corps) corps.innerHTML = '<div role="row">' + m.replace('<p class="tb-attente">', '<p class="tb-attente" role="cell">') + '</div>';
+      if (pp) pp.innerHTML = m; });
   }
 
   // ——— la mesure (schéma 81) : une vue par page et par visite, un clic par bouton d'action ; sans donnée personnelle ; jamais l'administrateur ———

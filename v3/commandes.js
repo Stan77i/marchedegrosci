@@ -378,6 +378,7 @@
     if (c && (c.etat === 'litige' || c.refus_le)) { const d = await N().rpc('litige_messages_lire', { p_cmd: id }).catch(() => null); if (d) disc[id] = d; }
     if (c && c.etat === 'terminee') { const a = await N().rpc('avis_commande_moi', { p_cmd: id }).catch(() => null); if (a) avis[id] = a; }
   }
+  let sigAvant = '';
   async function rafraichir() {
     if (!bg || document.hidden) return;
     const avant = sel && trouve(sel) && trouve(sel).etape;
@@ -386,6 +387,9 @@
     // un formulaire est ouvert (créer la commande, refuser, confirmer une étape) : on ne le redessine pas, sinon ce qu'on a choisi ou écrit disparaît
     if (dernierEcran === 'creer' || dernierEcran === 'geste') return;
     const apres = sel && trouve(sel) && trouve(sel).etape;
+    // rien de neuf depuis la dernière relecture : on ne redessine pas (sinon l'écran clignote et le défilement saute toutes les 20 s)
+    let sig = ''; try { sig = JSON.stringify([vue, sel, filtre, liste, sel ? journal[sel] : null]); } catch (_) {}
+    if (sig && sig === sigAvant) return; sigAvant = sig;
     peindre(avant && apres && avant !== apres ? apres : null);
   }
 

@@ -51,5 +51,29 @@
   const go = () => obs.observe(document.body, { childList: true, subtree: true });
   if (document.body) go(); else document.addEventListener('DOMContentLoaded', go);
 
-  window.MDGStable = { FIXES, TOUTES };
+  /* poser(el, html) : comme el.innerHTML = html, mais ne touche que ce qui a changé (24/10/2026).
+     Une liste relue toutes les 30 s n'est plus refaite en entier : les photos ne se rechargent pas (plus d'éclair blanc),
+     le défilement ne saute pas, une liste déroulante ouverte reste ouverte. Les gestionnaires posés en propriété (el.onclick) restent. */
+  function accorder(a, b) {
+    const na = [...a.childNodes], nb = [...b.childNodes];
+    nb.forEach((n, i) => {
+      const o = na[i];
+      if (!o) { a.appendChild(n); return; }
+      if (o.nodeType !== n.nodeType || o.nodeName !== n.nodeName) { a.replaceChild(n, o); return; }
+      if (o.nodeType !== 1) { if (o.nodeValue !== n.nodeValue) o.nodeValue = n.nodeValue; return; }
+      if (o.isEqualNode(n)) return;
+      [...o.attributes].forEach(x => { if (!n.hasAttribute(x.name)) o.removeAttribute(x.name); });
+      [...n.attributes].forEach(x => { if (o.getAttribute(x.name) !== x.value) o.setAttribute(x.name, x.value); });
+      if (o.nodeName === 'SELECT' || o.nodeName === 'svg' || o.nodeName === 'SVG') { a.replaceChild(n, o); return; }
+      accorder(o, n);
+    });
+    for (let i = na.length - 1; i >= nb.length; i--) a.removeChild(na[i]);
+  }
+  function poser(el, html) {
+    if (!el) return;
+    if (!el.firstChild) { el.innerHTML = html; return; }
+    const t = document.createElement('template'); t.innerHTML = html; accorder(el, t.content);
+  }
+
+  window.MDGStable = { FIXES, TOUTES, poser };
 })();

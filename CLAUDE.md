@@ -103,6 +103,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - La tomate est montrée **en carton**, pas en sac.
 - Avatars : les **personnages du marché** (`v3/personnages.js`) : des produits avec un visage, dessinés en SVG. Au repos, ils respirent et clignent des yeux seulement ; ils **sautent uniquement quand il y a du nouveau** (proposition de prix, message, notification, commande à traiter) ou quand on change son avatar. Pas de service extérieur. Les anciens portraits restent lisibles.
 - Couleurs de l'accord conclu : vert de la marque, plus de bleu.
+- **Stabilité avant tout** (règle du propriétaire, 24/10/2026) : aucun écran vide ni clignotement. Une fenêtre s'ouvre avec son contenu déjà là (pas de fondu du contenu à l'ouverture) ; rien ne s'efface ni ne rejoue pendant qu'on fait défiler ; une liste relue régulièrement ne se redessine pas en entier (`MDGStable.poser`, `app/stable.js`) ni quand rien n'a changé.
 - Les nombres à côté d'un libellé sont **toujours dans une jolie pastille** (`.nbul`), partout : jamais un chiffre nu (« Offres 6 ») ni entre parenthèses.
 
 ## Design et UI/UX : les compétences à utiliser

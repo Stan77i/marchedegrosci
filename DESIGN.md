@@ -64,6 +64,7 @@ Règles :
 - Durées : 160 / 280 / 420 ms, courbe `--courbe` (`cubic-bezier(.22,1,.36,1)`).
 - Le mouvement **dit quelque chose** (arrivée, nouveauté, confirmation). Rien ne bouge en boucle sans raison.
 - `prefers-reduced-motion` : on garde le changement d'état, on enlève le déplacement.
+- **Stabilité** (24/10/2026) : une fenêtre arrive avec son contenu déjà affiché (seule la fenêtre glisse, le contenu ne fait pas de fondu à part) ; rien ne s'efface ni ne rejoue pendant le défilement ; une liste relue régulièrement est mise à jour sur place (`MDGStable.poser`) et pas du tout si rien n'a changé ; l'écran d'avant chargement a la couleur de l'écran d'ouverture, sans logo.
 
 ## 7. Mise en page des écrans à carte
 

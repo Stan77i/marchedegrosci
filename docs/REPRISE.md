@@ -6,7 +6,7 @@
 ## 1. L'état au moment de la reprise
 
 - **Toutes les PR sont fusionnées** (jusqu'à la PR #243). Aucune PR ouverte, aucun travail en cours. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
-- `main` : cache du service worker `mgci-v232`.
+- `main` : cache du service worker `mgci-v232` (`mgci-v233` avec la PR « Application plus stable »).
 - Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **81** appliqués (80 `fil_public`, 81 `site_mesures` / `mesurer` / `mesures_resume`). Mêmes schémas sur le projet de test.
 
 ## 2. Ce qui a été fait (session du 23/10/2026)
@@ -42,6 +42,7 @@
 - Toujours écrire « prix de détail », jamais les présenter comme des prix de gros.
 
 ### Dernières corrections de l'application
+- **Stabilité (24/10/2026)** : écran d'ouverture sans petit logo avant le sac, fenêtre du compte sans instant vide, plus de clignotement au défilement (`app/effets.js`), tableau des prix mis à jour sans tout redessiner (`MDGStable.poser`, `app/stable.js`), messages et commandes non redessinés quand rien ne change.
 - Calendrier des récoltes : sources FAO, Nitidae (plantain), RONGEAD (oignon) ajoutées (`v2/saisons.js`, `A.CAL`) ; cadran de « L'année du marché » : un anneau par produit.
 - Onglet Activité : la carte « Dernières annonces » n'existe que s'il y a au moins une annonce (PR #240).
 - Claude Design : un dossier de copies a été ajouté (PR #242) puis **retiré** à la demande du propriétaire (PR #243). Ne pas le recréer (`CLAUDE.md`).

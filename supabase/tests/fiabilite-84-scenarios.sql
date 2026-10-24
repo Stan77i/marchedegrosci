@@ -39,7 +39,7 @@ end $f$;
 -- Résultats obtenus le 24/10/2026 sur le projet de test (blocs lancés un par un avec les outils ci-dessus) :
 -- A. motif obligatoire (« Choisissez un motif », « autre » sans mot refusé), retrait et refus avant confirmation = légitime,
 --    imputée à personne ; ancien chemin sans motif accepté ; demande du vendeur après confirmation, l'acheteur voit le motif,
---    doit dire s'il est d'accord ; d'accord = légitime ; pas d'accord ou ancien chemin = abusive pour le vendeur + avertissement ;
+--    doit dire s'il est d'accord ; d'accord = légitime ; pas d'accord = abusive pour le vendeur + avertissement ; ancien chemin = légitime depuis 84f ;
 --    l'acheteur ne peut pas demander seul après confirmation ; une seule ligne par commande ; un tiers ne voit rien.
 -- B. paliers : 1-2 avertissement, 3-4 baisse, 5 examen ; aucune suspension automatique ; achat groupé : 3 annulations du même
 --    groupe = 1 dans le comptage et 1 sanction ; expiration après 48 h (tâche) = légitime, motif « sans réponse », journal ;
@@ -93,5 +93,28 @@ begin
   update public.sanctions set debut = now() - interval '8 days', fin = now() - interval '1 minute' where id = sid;
   perform set_config('request.jwt.claims', '', true);
   r := r || 'E2 ' || public.fiabilite_tick()::text || ' actives avant=' || actives || ' après=' || (select count(*) from public.offres where user_id = S and status = 'active') || E'\n';
+  raise exception E'TEST\n%', r;
+end $$;
+
+-- Bloc H (relecture, schéma 84f) : ancien chemin légitime, confidentialité de « Ma fiabilité ».
+-- Résultats obtenus le 24/10/2026 : T1 ancien chemin = légitime, 0 sanction ; T2 pas d'accord = abusive vendeur + avertissement,
+-- second appel refusé, 1 ligne ; T3 l'acheteur ne peut pas contester, ne voit ni catégorie, ni contestation, ni note ; le vendeur
+-- voit tout ; réimputée à l'acheteur après la contestation du vendeur : « contestable » faux, 1 seule sanction active (acheteur).
+do $$
+declare S uuid := 'd56f75b3-463d-484d-9e19-4af3fd3eb8d8'; B uuid := 'efec4ce4-7ab1-4b93-9e90-020bd0007a8c'; ADM uuid := '981961d4-25ba-4e1b-a732-8fd68cd6c922';
+  o uuid := '94a33186-8a5e-4cf1-a198-d8a7d6c523ab'; c1 uuid; c2 uuid; r text := ''; a public.annulations; j json; cid uuid; x text;
+begin
+  c1 := pg_temp.mk(S, B, o); perform pg_temp.qui(S); perform public.commande_repondre(c1, true, null);
+  perform public.commande_annuler(c1, true, 'vieux');
+  perform pg_temp.qui(B); perform public.commande_annuler(c1, true, null);
+  select * into a from public.annulations where commande_id = c1;
+  r := r || 'T1 ancien: cat=' || a.categorie || ' sanctions=' || (select count(*) from public.sanctions where annulation_id = a.id) || E'\n';
+  c2 := pg_temp.mk(S, B, o); perform pg_temp.qui(S); perform public.commande_repondre_motif(c2, true, null);
+  x := public.commande_annuler_motif(c2, true, null, 'prix_change', null);
+  perform pg_temp.qui(B); x := public.commande_annuler_motif(c2, true, null, null, null, false);
+  select * into a from public.annulations where commande_id = c2;
+  perform pg_temp.qui(S); cid := public.contester_annulation(a.id, 'Le camion est vraiment tombé en panne');
+  perform pg_temp.qui(B); j := public.ma_fiabilite();
+  r := r || 'T3 B voit: ' || coalesce((select e::text from json_array_elements(j->'annulations') e where (e->>'id')::uuid = a.id), 'rien') || E'\n';
   raise exception E'TEST\n%', r;
 end $$;

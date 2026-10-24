@@ -99,7 +99,7 @@
 .gd-g{display:flex;gap:12px;align-items:flex-start}
 .gd-g i{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:700 16px Jost,sans-serif;font-style:normal;background:#F2C230;color:#10392B}
 .gd-g b{display:block;font-size:18px;font-weight:600;line-height:1.3}.gd-g span{display:block;color:rgba(243,239,228,.82);font-size:16px;margin-top:2px}
-.gd-sh{margin:28px 0 12px;font:600 13px/1 Jost,sans-serif;letter-spacing:0;color:#7a7064}
+.gd-sh{margin:28px 0 12px;font:600 13px/1 Jost,sans-serif;letter-spacing:0;color:#6F6553}
 .gd-tu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .gd-tu button{min-height:118px;border:0;border-radius:20px;background:#FFFCF6;box-shadow:0 1px 2px rgba(23,21,18,.06),0 6px 16px rgba(23,21,18,.05);padding:14px;text-align:left;color:#171512;display:flex;flex-direction:column;gap:10px;align-items:flex-start;font:inherit}
 .gd-tu button span{width:44px;height:44px;border-radius:14px;display:grid;place-items:center}
@@ -116,7 +116,7 @@
 .gd-go{margin:22px 0 0;width:100%;min-height:54px;border:0;border-radius:27px;background:#10392B;color:#F3EFE4;font:600 17px Jost,sans-serif;display:flex;align-items:center;justify-content:center;gap:10px}
 .gd-nav{margin:12px 0 0;display:flex;gap:10px}
 .gd-nav button{flex:1;min-height:48px;border-radius:24px;border:1px solid rgba(23,21,18,.16);background:none;color:#171512;font:500 16px Jost,sans-serif;padding:0 12px}
-.gd-pied{margin:28px 0 0;text-align:center;color:#7a7064;font-size:15px}
+.gd-pied{margin:28px 0 0;text-align:center;color:#6F6553;font-size:15px}
 .gd-pastille{position:fixed;left:50%;bottom:calc(98px + env(safe-area-inset-bottom));z-index:8500;transform:translate(-50%,10px);opacity:0;transition:opacity .35s,transform .35s;
   display:flex;align-items:center;gap:8px;min-height:44px;padding:0 6px 0 16px;border-radius:22px;background:#10392B;color:#F3EFE4;box-shadow:0 10px 26px rgba(0,0,0,.35);font:500 15px Jost,sans-serif;white-space:nowrap}
 .gd-pastille.on{opacity:1;transform:translate(-50%,0)}

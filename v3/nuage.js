@@ -303,13 +303,13 @@
 .ng--porte .ng-tabs{margin:0 0 22px;padding:4px;background:rgba(245,240,230,.05)}
 .ng--porte .ng-tabs button{min-height:40px;font-weight:500;color:#A89D89}.ng--porte .ng-tabs button[aria-selected=true]{background:#F5F0E6;color:#171512}
 .ng-fd{margin:0 0 16px}
-.ng--porte label{margin:0 0 8px;font:500 13.5px/1.2 Jost,sans-serif;letter-spacing:0;color:#CFC4B1}.ng--porte label i{font-style:normal;color:#7E7462;margin-left:6px;font-size:13px}
+.ng--porte label{margin:0 0 8px;font:500 13.5px/1.2 Jost,sans-serif;letter-spacing:0;color:#CFC4B1}.ng--porte label i{font-style:normal;color:#A89D89;margin-left:6px;font-size:13px}
 .ng-ip{position:relative;display:flex;align-items:center;border:1px solid rgba(245,240,230,.09);border-radius:14px;background:#1F1B16;transition:border-color .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s cubic-bezier(.2,.8,.2,1),background .2s}
 .ng-ip:hover{border-color:rgba(245,240,230,.17)}
 .ng-ip:focus-within{border-color:#F2C230;background:#221E18;box-shadow:0 0 0 4px rgba(242,194,48,.14)}
 .ng-ip.is-bad{border-color:#E2735B}.ng-ip.is-bad:focus-within{box-shadow:0 0 0 4px rgba(226,115,91,.18)}
 .ng--porte .ng-ip input{flex:1;min-width:0;height:56px;margin:0;border:0;background:none;box-shadow:none;outline:none;padding:0 16px;color:#F5F0E6;font:500 18px Jost,sans-serif;letter-spacing:.05em;font-variant-numeric:tabular-nums}
-.ng--porte .ng-ip input::placeholder{color:#5F574A;letter-spacing:.05em}
+.ng--porte .ng-ip input::placeholder{color:#948A77;letter-spacing:.05em}
 .ng--porte .ng-ip input:focus,.ng--porte .ng-ip input:focus-visible{border:0!important;box-shadow:none!important;outline:none!important}
 .ng-ip--tel>span{align-self:stretch;display:flex;align-items:center;padding:0 12px 0 16px;border-right:1px solid rgba(245,240,230,.09);color:#A89D89;font:500 16px Jost,sans-serif;letter-spacing:.02em}.ng-ip--tel input{padding-left:12px!important}
 .ng-ck{flex:none;width:22px;height:22px;margin-right:14px;border-radius:50%;background:#6CC58C url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Cpath d='m6.5 11.4 3 3 6-6.4' fill='none' stroke='%23171512' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/22px no-repeat;opacity:0;transform:scale(.6);transition:opacity .2s,transform .32s cubic-bezier(.22,1,.36,1)}
@@ -325,7 +325,7 @@
 .ng--porte .ng-go:hover:not([disabled]){filter:brightness(1.05)}.ng--porte .ng-go:active:not([disabled]){transform:scale(.985)}
 .ng--porte .ng-go:focus-visible{outline:2px solid #F5F0E6;outline-offset:3px}
 .ng--porte .ng-go[disabled]{opacity:.72}.ng--porte .ng-go[aria-busy=true]{opacity:1}
-.ng--porte .ng-note{margin:22px 0 0;padding-top:16px;border-top:1px solid rgba(245,240,230,.07);color:#7E7462;font-size:12.5px}
+.ng--porte .ng-note{margin:22px 0 0;padding-top:16px;border-top:1px solid rgba(245,240,230,.07);color:#A89D89;font-size:12.5px}
 /* le titre de la porte : le logo en phrase, posé en trois temps (la ligne d'appel monte, « marché » sort de son cache, « de Gros » s'écrit puis un reflet le traverse) */
 .ng--porte h2.ng-tt{display:flex;flex-direction:column;gap:2px;margin:0 0 24px}
 .ng-tt-a{font:500 17px/1.3 Jost,sans-serif;letter-spacing:.005em;color:#BDB29E}

@@ -11,7 +11,7 @@
   const TEINTS = ['#4A2E1F', '#5E3A26', '#7A4B2E', '#94603C', '#B47A50', '#D5A27A'];
   const CHEVEUX = ['#17110D', '#3A2618', '#6B4A2F', '#A88A6A', '#8C8C8C', '#C9C2B8'];
   const TISSUS = ['#E07A3F', '#31543C', '#D6A83E', '#B85C38', '#3D5A80', '#8E3B5B', '#6CC58C', '#F5F0E6'];
-  const FONDS = ['#2B2620', '#31543C', '#8C3F22', '#B8882A', '#2E4560', '#5B2A35'];
+  const FONDS = ['#2B2620', '#31543C', '#8C3F22', '#7E5C00', '#2E4560', '#5B2A35'];
   const HABITS = ['#E07A3F', '#F5F0E6', '#D6A83E', '#6CC58C', '#B85C38', '#3D5A80'];
   // les styles se nomment par ce qu'ils montrent, jamais par un genre
   const STYLES = [

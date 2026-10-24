@@ -1366,3 +1366,20 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - `app/toast.js` : « L'équipe est prévenue » (faux) → « Réessayez plus tard ». Formulaire J'ai / Je cherche : « Votre offre sera la première du réseau » (parfois faux) → « les acheteurs verront votre offre ».
 - Vérifié (navigateur, iPhone) : les 24 phrases de la bande, les 4 cartes du tutoriel et la phrase du formulaire s'affichent ; aucune erreur JS. Mes commandes n'a pas pu être ouverte (pas d'accès au serveur dans cette session) : vérifié par la relecture et `node --check`.
 - `?v=20261124b` pour garanties, toast, admin-transport, aide, astuces, commandes ; cache `mgci-v236`.
+
+## 24/10/2026 — Textes lisibles (audit antislop n° 7 à 20)
+
+- Contraste mesuré avec `contrast-check.py` sur le vrai fond, avant et après. Tous les textes corrigés passent maintenant 4,5:1.
+- Négociation (`v3/negoce.js`) : ligne « … a accepté » vert foncé sur vert pâle (était bleu très clair, 1,04:1) ; libellé du prix rapide choisi en crème à 72 % ; heure des bulles en couleur pleine.
+- Messages (`v3/messages.js`) : conversation survolée en voile léger (devenait noire, 1,14:1) ; heure des bulles 11,5 px en couleur pleine (crème à 72 % dans la bulle foncée, 8,7:1).
+- Espace chauffeur (`v3/chauffeur.js`) : code de transfert en vert du logo (était maïs, 1,65:1).
+- Mon compte (`v3/compte.js`) : « Supprimer définitivement » sur #C0442B (était 2,67:1) ; badge « vérifié » crème sur l'en-tête vert (était bleu, 2,36:1).
+- Avis (`v3/reputation.js`) : mot sous les étoiles et rangs 1 à 3 en `#765802` (étaient maïs, 1,37:1) ; croix « Retirer la photo » crème, 44 px (était invisible) ; barres 11,5 px.
+- Bandeau « Pas de connexion » (`app/sac.js`) : bouton « Réessayer » blanc, texte #C0442B (était 3,65:1).
+- Gris trop pâles `#857A67`, `#7a7064`, `#8a7f72` → `#6F6553` dans aide, alertes, compte, guide, identité, négociation, avis, sons (et le jeton `--faint`).
+- Connexion en sombre (`v3/nuage.js`) : exemples de format `#948A77` (5,0:1, était 2,40:1), « 6 chiffres » et la note `#A89D89` (6,4:1).
+- Avatar « Initiales » (`v3/avatar.js`) : fond ocre `#B8882A` → `#7E5C00` (5,4:1).
+- Nom du produit sur le sac en toile (`application.dc.html`) : encre `#2A2016` pleine (était bleu à 75 %, 2,4:1).
+- `DESIGN.md`, loi 5 : gris le plus pâle `#6F6553`, jamais de maïs en texte sur fond clair, pas d'opacité pour pâlir un texte.
+- Vérifié (navigateur, iPhone, clair et sombre, 390 et 320 px) : accueil, connexion, réglages, J'ai, aide : aucun texte sous le minimum (avant : « Réessayer » 3,65:1 et « 6 chiffres » 4,03:1), aucune erreur JS. Les fenêtres qui demandent un compte (négociation, messages, avis, chauffeur) : vérifiées par le calcul, pas à l'écran (serveur bloqué dans cette session).
+- `?v=20261124c` pour les 13 fichiers ; pages du site refabriquées par `tools/site-public.js` (seul le numéro de `nuage.js` change) ; cache `mgci-v237`.

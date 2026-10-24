@@ -81,7 +81,7 @@ Mesuré en production le 24/10/2026 :
 
 **Écartés volontairement** : « un acheteur a regardé votre offre » (non mesuré), « X personnes cherchent » sans demande publiée, toute urgence sans date réelle.
 
-Deux nouvelles catégories réglables dans Réglages → Notifications : **« Mes offres et mon stock »** (N4) et **« Ma boutique »** (N7, N8).
+**Décision du propriétaire (24/10/2026)** : comme l'application Orange Max it, ces notifications partent **toutes seules**, envoyées par le serveur. Elles sont actives par défaut et **aucun nouveau réglage** n'est ajouté. N4, N7 et N8 entrent dans les catégories qui existent déjà. Seule limite qu'on ne peut pas contourner : la personne doit avoir autorisé les notifications sur son téléphone, une fois, comme pour Max it.
 
 ---
 
@@ -215,5 +215,5 @@ Les écrans ouverts par chaque lien sont vérifiés dans Chromium (iPhone émul�
 3. Plafond de la plateforme : 30 par jour.
 4. Plafond par personne : 3 par jour (au lieu de 6).
 5. Pause de 3 jours après 3 messages ignorés d'affilée.
-6. Deux nouveaux réglages : « Mes offres et mon stock » et « Ma boutique ».
+6. ~~Deux nouveaux réglages~~ : refusé par le propriétaire (envoi automatique, sans réglage).
 7. Retrait des conseils sans chiffre ni événement.

@@ -18,7 +18,7 @@
 
   function items() {
     return tout.filter(function (a) { return filtre === 'tout' || a.sens === filtre; }).map(function (a) {
-      return { id: a.cle, kind: a.sens, slug: a.product_slug, product: NOMS[a.product_slug] || a.produit, qty: a.quantite, unit: a.unite || '', price: a.sens === 'offre' ? a.prix : null, budget: a.sens === 'demande' ? a.prix : null, region: a.region_slug, city: a.ville || '' };
+      return { id: a.cle, kind: a.sens, slug: a.product_slug, product: NOMS[a.product_slug] || a.produit, qty: a.quantite, unit: a.unite || '', price: a.sens === 'offre' ? a.prix : null, budget: a.sens === 'demande' ? a.prix : null, region: a.region_slug, city: a.ville || '', vs: !!a.ville_seulement };
     });
   }
   function ligne(a, sel) {
@@ -26,7 +26,7 @@
     var img = NOMS[a.product_slug] ? '<img class="ph" src="site/img/' + esc(a.product_slug) + '-160.webp" alt="" width="40" height="40" loading="lazy">' : '<i class="sym ' + (a.sens === 'offre' ? 'sym-o' : 'sym-d nuit') + '"></i>';
     var px = a.prix != null ? '<b class="px">' + nf(a.prix) + ' F' + (a.unite ? '/' + esc(a.unite) : '') + '</b>' : '';
     return '<li class="' + (sel ? 'sel' : '') + '">' + img + '<div><span><b>' + esc(a.nom || 'Un membre') + '</b> ' + (a.sens === 'offre' ? 'vend' : 'cherche') + ' ' + esc(nom.toLowerCase()) + '</span>'
-      + '<small>' + q + esc(a.ville || (MDGApp.REG[a.region_slug] || [])[2] || '') + '</small>' + px
+      + '<small>' + q + (a.ville_seulement && a.ville && window.MDGSiteLieu ? MDGSiteLieu(a) : esc(a.ville || (MDGApp.REG[a.region_slug] || [])[2] || '')) + '</small>' + px
       + '<a class="lien" href="application.dc.html#/produits/' + esc(a.product_slug) + '" data-app="' + (a.sens === 'offre' ? '#/produits/' + esc(a.product_slug) : '#/vendre?produit=' + esc(a.product_slug)) + '" data-intention="carte-' + (a.sens === 'offre' ? 'acheter' : 'vendre') + '">' + (a.sens === 'offre' ? 'Acheter' : 'Lui vendre') + '<span class="vh"> : ' + esc(nom) + '</span></a></div></li>';
   }
   function liste() {

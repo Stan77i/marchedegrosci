@@ -85,6 +85,8 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Commande : ville de livraison, règle « même ville » (livreur du vendeur, retrait si le vendeur l'accepte), transport à part figé avec le total convenu (schéma 83) | `v3/commandes.js` (`creer`, `ddTransport`) | haute |
 | Prix du transporteur du réseau convenu à trois (proposer, accepter, refuser, contre-proposer), côté commande et côté chauffeur (schéma 83, service fermé) | `v3/commandes.js` (`blocTrois`), `v3/chauffeur.js` | basse (réseau en pause) |
 | Alertes par produit | `v3/alertes.js` (schéma 75) | moyenne |
+| « Ville seulement » (schéma 87) : l'interrupteur « Je vends uniquement à Guiglo » à la publication et dans Mes publications, l'avertissement avant de négocier ou d'écrire, la ville imposée à la commande. Le site montre déjà la pastille « Guiglo uniquement » (fil, carte) | `app/ville-seule.js`, `application.dc.html` (`vsEl`, `vsSw`), `v3/negoce.js`, `v3/messages.js`, `v3/commandes.js` | moyenne |
+
 | Annulation avec motif obligatoire (liste fermée), accord ou non de l'autre partie sur le motif, expiration à 48 h (schéma 84) | `v3/commandes.js` (`confirmer`, `annulerMotif`, `repondreMotif`) | haute |
 | « Ma fiabilité » : score, annulations qui comptent ou non, avertissements, contestation ; ligne « Fiabilité : 96 % sur 25 commandes » du profil (schéma 84) | `v3/reputation.js` (`fiabilite`, commun) et la ligne de `v3/compte.js` (commun) : à vérifier sur le site | moyenne |
 | « Mes niveaux » : niveau vendeur et acheteur, ce qui manque pour le suivant, sursis de 30 jours, historique, contestation ; ligne « Mes niveaux » de Mon compte avec pastille (schéma 85) | `v3/reputation.js` (`niveaux`, commun) et la ligne de `v3/compte.js` (commun) : à vérifier sur le site | moyenne |
@@ -168,18 +170,18 @@ _Partie mise à jour automatiquement par `tools/inventaire-site.js` (tâche GitH
 
 | Page | Rôle | Fichiers chargés | Poids chargé |
 |---|---|---|---|
-| `application.dc.html` | Application mobile (la priorité). S’ouvre sur téléphone ; sur ordinateur, seulement pour l’administrateur. | 59 | 2,8 Mo |
-| `index-v3.html` | Site pour ordinateur. Aujourd’hui caché derrière la maintenance, ouvert seulement à l’administrateur. | 64 | 4,6 Mo |
+| `application.dc.html` | Application mobile (la priorité). S’ouvre sur téléphone ; sur ordinateur, seulement pour l’administrateur. | 60 | 2,9 Mo |
+| `index-v3.html` | Site pour ordinateur. Aujourd’hui caché derrière la maintenance, ouvert seulement à l’administrateur. | 65 | 4,7 Mo |
 | `index.html` | Aiguillage : téléphone → application, ordinateur → maintenance (ou site pour l’administrateur). | 0 | 2 ko |
 | `maintenance.html` | Page « site en maintenance » avec QR code vers l’application. | 3 | 83 ko |
 | `suivi.html` | Lien de suivi envoyé au chauffeur (sans compte). | 0 | 12 ko |
-| `admin.html` | Tableau de bord de l’administrateur. | 14 | 408 ko |
+| `admin.html` | Tableau de bord de l’administrateur. | 14 | 409 ko |
 
-### Modules communs à l’application et au site (22)
+### Modules communs à l’application et au site (23)
 
 Ce qu’ils font est déjà sur les deux : une correction dans l’un de ces fichiers profite aux deux.
 
-`app/admin-pc.js` · `app/icones.js` · `app/marque.js` · `app/stable.js` · `app/toast.js` · `css/fonts.css` · `css/symboles.css` · `v2/data.js` · `v2/search.js` · `v3/avatar.js` · `v3/compte.js` · `v3/identite.js` · `v3/messages.js` · `v3/negoce.js` · `v3/nuage.js` · `v3/personnages.js` · `v3/porte.js` · `v3/pousse.js` · `v3/reputation.js` · `v3/sons.js` · `v3/statuts.js` · `v3/ux.css`
+`app/admin-pc.js` · `app/icones.js` · `app/marque.js` · `app/stable.js` · `app/toast.js` · `app/ville-seule.js` · `css/fonts.css` · `css/symboles.css` · `v2/data.js` · `v2/search.js` · `v3/avatar.js` · `v3/compte.js` · `v3/identite.js` · `v3/messages.js` · `v3/negoce.js` · `v3/nuage.js` · `v3/personnages.js` · `v3/porte.js` · `v3/pousse.js` · `v3/reputation.js` · `v3/sons.js` · `v3/statuts.js` · `v3/ux.css`
 
 ### Propres à l’application (37) : ce que le site n’a pas
 

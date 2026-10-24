@@ -1615,3 +1615,14 @@ Demande du propriétaire : « Vente uniquement à Guiglo », « Achat uniquement
 - Demande du propriétaire : « non inclus » veut dire que le prix du transport se négocie à part, pas que l'acheteur vient chercher.
 - `application.dc.html` : choix `non` de `TR_OFF` = « Transport à part » / « Mon prix n'inclut pas le transport : son prix se négocie à part » ; étiquette de l'annonce (`trTexte`) « Transport à part » (au lieu de « Transport à discuter », et au lieu de « Transport par l'acheteur » pour une offre « ville seulement »). La valeur enregistrée (`non`) ne change pas. Cache `mgci-v262`.
 - Vu dans Chromium (iPhone 13, sombre) : aucune erreur, texte sur deux lignes sans débordement. Règle ajoutée dans `CLAUDE.md`.
+
+## 24/10/2026 · « Transport à votre charge » partout
+
+- Demande du propriétaire : quand le prix ne comprend pas le transport, l'acheteur doit lire simplement « Transport à votre charge ». Chacun lit la phrase de son côté :
+  - publication d'une offre (le vendeur) : « À la charge de l'acheteur », aide « Mon prix ne comprend pas le transport. Les acheteurs lisent : « Transport à votre charge » » ;
+  - annonce et tableau du marché (l'acheteur) : « Transport à votre charge » (aussi pour une offre « ville seulement ») ;
+  - publication d'une demande (l'acheteur) : « À ma charge » ; demande vue par les vendeurs : « Transport à la charge de l'acheteur » ;
+  - négociation : le 3e bouton devient « À ma charge » (acheteur) ou « À l'acheteur » (vendeur), avec son explication ; résumés et accord : « transport à la charge de l'acheteur » ;
+  - commande : règle `acheteur` = « Transport à la charge de l'acheteur » ; villes différentes : « le transport est à la charge de l'acheteur, sauf accord avec le vendeur ».
+- « À part » garde son sens du chantier 1 (le vendeur livre, prix du transport ajouté et négocié). Aucune valeur enregistrée ne change.
+- `v3/negoce.js`, `v3/tableau.js`, `v3/commandes.js` en `?v=20261124tc` ; cache `mgci-v263`. Vu dans Chromium (iPhone 13, sombre) : formulaires J'ai et Je cherche, aucune erreur. Négociation et commande non vues (il faut un compte connecté).

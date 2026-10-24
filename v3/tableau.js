@@ -19,8 +19,8 @@
   const REG = { abidjan: 'Abidjan', yamoussoukro: 'Yamoussoukro', 'bas-sassandra': 'Bas-Sassandra', comoe: 'Comoé', denguele: 'Denguélé', 'goh-djiboua': 'Gôh-Djiboua',
     lacs: 'Lacs', lagunes: 'Lagunes', montagnes: 'Montagnes', 'sassandra-marahoue': 'Sassandra-Marahoué', savanes: 'Savanes', 'vallee-du-bandama': 'Vallée du Bandama',
     woroba: 'Woroba', zanzan: 'Zanzan' };
-  const TR_O = { inclus: ['Transport compris', 'v'], hors_ville: ['Transport compris hors de sa ville', 'v'], non: ['Transport à part', ''] };
-  const TR_D = { acheteur: ['L’acheteur prend le transport', 'v'], vendeur: ['Le vendeur doit livrer', ''] };
+  const TR_O = { inclus: ['Transport compris', 'v'], hors_ville: ['Transport compris hors de sa ville', 'v'], non: ['Transport à votre charge', ''] };
+  const TR_D = { acheteur: ['Transport à la charge de l’acheteur', 'v'], vendeur: ['Le vendeur doit livrer', ''] };
   const pluriel = (q, u) => { u = String(u || ''); return q > 1 && u && !/[sx]$|^(kg|t|l|L)$/.test(u) ? u + 's' : u; };
   const nomProduit = slug => { const p = window.MDG && MDG.products && MDG.products.find(x => x.slug === slug); return p ? p.name : slug; };
   // l'image du produit : le sac détouré quand il existe (comme sur l'orbite de l'accueil), sinon la photo de sa famille ; la teinte vient du produit

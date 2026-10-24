@@ -164,7 +164,7 @@ Les changements de base sont gardés dans `supabase/schema-*.sql` (81 fichiers, 
 | `groupes_achat`, `groupe_participants` | achats groupés | 0 |
 | `push_abonnements` | téléphones abonnés aux notifications | 1 (voir les siens) |
 | `notif_reglages` | réglages de notification (ancien interrupteur unique, gardé) | 0 |
-| `notif_categories`, `notif_regles`, `notif_prefs`, `notif_journal`, `notif_desactivations`, `notif_file` | catégories, plafonds et heures calmes, préférences, journal des envois (clé anti-doublon, ouverture, action), désactivations, file d'attente (schémas 88a, 88b : **projet de test seulement**) | 0 en production (tables absentes) |
+| `notif_categories`, `notif_regles`, `notif_prefs`, `notif_journal`, `notif_desactivations`, `notif_file` | catégories, plafonds, écart et heures calmes, préférences (sans effet depuis le schéma 91), journal des envois (clé anti-doublon, ouverture, action), désactivations, file d'attente (schémas 88a, 88b : en production depuis le 24/10/2026 ; schéma 91, colonne `notif_regles.ecart_min` : **projet de test seulement**) | non recompté ici |
 | `push_annonce_jour`, `push_diffusions_jour`, `push_marketing_jour` | plafonds par jour | 0 |
 | `marketing_reglage` | réglage des messages du marché | 0 |
 | `code_demandes` | demandes de remise à zéro du code | 0 |
@@ -206,7 +206,7 @@ Stockage (buckets) :
 - **Commissions** : `_commission_sync`, `mes_commissions`, `admin_commissions`, `mes_commissions_transport`. Elles calculent un montant dû. Rien n'est encaissé.
 - **Séquestre et litiges** : `sequestre_depot_confirme` (réservée au rôle service, aucun appelant réel), `commande_liberer`, `admin_liberer`, `sequestre_liberer_echus`, `commande_litige`, `litige_ecrire`, `admin_litige_trancher`. Aucun argent ne circule.
 - **Achats récurrents, pros, groupés** : `recommande_preparer`, `mes_rappels`, `rappels_envoyer`, `besoin_creer3`, `besoins_liste`, `besoin_repondre`, `groupe_*`, `groupes_echeances`.
-- **Notifications** : `push_abonner`, `push_desabonner`, `notif_reglage_moi`, `push_config` (rôle service), `push_*` des déclencheurs, `marketing_tick`. Schémas 88a, 88b, 88d (**test seulement**) : `notif_preparer`, `notif_resultat`, `notif_desactivation_noter` (rôle service), `notif_ouverte` (anon et membres), `push_quitter`, `notif_permission_retiree`, `notif_prefs_moi`, `notif_pref_regler`, `notif_reglage_diffusions` (gardée), `notif_stats`, `notif_stats_jours`, `notif_regles_regler` (admin), `notif_cible_annonce`, `notif_cible_marche`, `notif_cible_conseils`, `notif_fourchette`, `notif_groupes_veille`, `notif_renouveler_calculer`, `notif_lots_prendre`, `notif_actions_calculer`, `notif_tick`.
+- **Notifications** : `push_abonner`, `push_desabonner`, `notif_reglage_moi`, `push_config` (rôle service), `push_*` des déclencheurs, `marketing_tick`. Schémas 88a, 88b, 88d (en production depuis le 24/10/2026) : `notif_preparer`, `notif_resultat`, `notif_desactivation_noter` (rôle service), `notif_ouverte` (anon et membres), `push_quitter`, `notif_permission_retiree`, `notif_prefs_moi`, `notif_pref_regler`, `notif_reglage_diffusions` (gardée), `notif_stats`, `notif_stats_jours`, `notif_regles_regler` (admin), `notif_cible_annonce`, `notif_cible_marche`, `notif_cible_conseils`, `notif_fourchette`, `notif_groupes_veille`, `notif_renouveler_calculer`, `notif_lots_prendre`, `notif_actions_calculer`, `notif_tick`. Schéma 91 (**projet de test seulement**, production après l'accord du propriétaire) : `notif_relances` (N1 à N9), `_notif_mettre`, `_notif_dernier_com`, `_notif_ecart_ok`, `_notif_rang`, `notif_annonces_recentes`, `notif_deja_vus` ; `_notif_pref` répond toujours « oui » (les anciennes préférences ne comptent plus).
 - **Mesure du site** : `mesurer`, `mesures_resume` (admin).
 - **Boutiques** (schéma 86, projet de test seulement) : `boutique_publique`, `boutiques_de`, `boutiques_publiques`, `ma_boutique`, `boutique_activer`, `boutique_mesurer` ; outils internes `_boutique_*` (nom, adresse, état d'une offre, catalogue, boutique cachée).
 
@@ -237,13 +237,13 @@ Toutes actives en production :
 | `mdg-purger-positions` | chaque nuit, 3 h 23 UTC | `positions_purger` : effacement des positions GPS |
 | `mdg-niveaux` | chaque nuit, 4 h 37 UTC | `niveaux_recalculer` : niveaux de confiance (fenêtre de 12 mois, fin des sursis) |
 | `mdg-identites-matin` | chaque matin, 7 h 45 UTC | `push_resume_identites` : résumé des identités à examiner pour l'admin |
-| `mdg-notif` | toutes les 15 min (**projet de test seulement**, schéma 88b) | `notif_tick` : alertes regroupées, groupes bientôt complets, produits à racheter, actions après ouverture |
+| `mdg-notif` | toutes les 15 min (schéma 88b, en production) | `notif_tick` : alertes regroupées, groupes bientôt complets, produits à racheter, actions après ouverture. Avec le schéma 91 (**projet de test seulement**, production après l'accord du propriétaire), il appelle aussi `notif_relances` (9 déclencheurs commerciaux, de 7 h à 21 h) |
 
 ### 4.8 Fonctions Edge
 
 | Fonction | Version | Rôle |
 |---|---|---|
-| `pousser` (`supabase/functions/pousser/index.ts`) | 22 en production depuis le 24/10/2026 (= fichier du dépôt ; catégories, préférences, plafonds, journal, `nid`), déployée après les schémas 88a, 88b et 88d | envoie les notifications Web Push (bibliothèque `web-push`). `verify_jwt` désactivé : protégée par une clé partagée lue dans le coffre, ou par le jeton de session pour l'essai |
+| `pousser` (`supabase/functions/pousser/index.ts`) | 23 en production depuis le 24/10/2026 au soir (textes N1 à N9, contenu du marché, schéma 91 ; même code que le fichier du dépôt, vérifié caractère par caractère), déployée après le schéma 91 | envoie les notifications Web Push (bibliothèque `web-push`). `verify_jwt` désactivé : protégée par une clé partagée lue dans le coffre, ou par le jeton de session pour l'essai |
 | `itineraire` (`supabase/functions/itineraire/index.ts`) | 1 | `verify_jwt` désactivé, mais la fonction exige le jeton de session d'un membre (sinon 401). Calcule une fois le trajet d'une commande avec openrouteservice (offre gratuite), clé dans les secrets Supabase. Appelée par `v3/suivi.js`. Un seul résultat en production, de source « introuvable » : non vérifiée en conditions réelles |
 
 ## 5. Permissions

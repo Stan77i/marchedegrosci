@@ -2,12 +2,11 @@
    Trois choix : clair, sombre, comme le téléphone (par défaut). Mémorisé sur ce téléphone (mdg-app:theme).
    <html data-theme="clair|sombre"> est posé avant l'affichage, pour éviter un éclair blanc.
    API : MDGTheme.mode() · MDGTheme.choisir('clair'|'sombre'|'auto') · MDGTheme.ouvrir() (la page Réglages) 
-   La page Réglages réunit TOUS les réglages (demandé le 22/10) : apparence, notifications du téléphone, annonces du marché,
-   sons, messages à l'écran, aide pour débuter (v3/astuces.js), confidentialité. Mon compte et Notifications n'en ont plus.
-   Notifications (schéma 88a, 24/10/2026) : l'état RÉEL du téléphone (activées, pas abonné, bloquées, iPhone à installer, navigateur sans push),
-   un essai qui affiche la vraie réponse du serveur, puis une ligne par catégorie lue dans notif_prefs_moi() : les échanges en cours
-   (messages, négociations, commandes, litiges, sécurité) ne se coupent pas ; le reste se règle (notif_pref_regler).
-   Tant que le schéma 88a n'est pas en place, l'ancien interrupteur « Annonces du marché » (notif_reglage_diffusions) reste. */
+   La page Réglages : apparence, notifications du téléphone, sons et écran, aide pour débuter (v3/astuces.js).
+   Notifications : l'état RÉEL du téléphone (activées, pas abonné, bloquées, iPhone à installer, navigateur sans push) et un essai
+   qui affiche la vraie réponse du serveur. Plus d'interrupteur par catégorie (décision du propriétaire, 24/10/2026 : elles partent
+   toutes seules, comme Orange Max it). Les tutoriels et la démo sont dans L'aide (v3/aide.js) ; « Montrer mon nom de famille » est
+   dans Mon compte → Profil et avatar ; la confidentialité est expliquée dans L'aide. */
 (function () {
   'use strict';
   if (window.MDGTheme) return;
@@ -62,8 +61,6 @@ html[data-theme=sombre] .rg-freq{background:#1E1B16}html[data-theme=sombre] .rg-
 .rg-fix{padding:12px 14px;border-radius:16px;background:#FFFDF8;border:1px solid rgba(23,21,18,.08);font:500 14px/1.4 Jost,sans-serif}.rg-fix small{display:block;margin-top:2px;font:400 13px/1.4 Jost,sans-serif;color:#5E5546}
 .rg-res{margin:0 2px;font:400 13.5px/1.4 Jost,sans-serif;color:#10392B}.rg-res:empty{display:none}
 html[data-theme=sombre] .rg-ss{color:#E8DFCC}html[data-theme=sombre] .rg-ss small,html[data-theme=sombre] .rg-fix small{color:#CFC4B1}html[data-theme=sombre] .rg-fix{background:#1E1B16;border-color:rgba(243,239,228,.08)}html[data-theme=sombre] .rg-res{color:#F2C230}
-.rg-tours{display:flex;flex-wrap:wrap;gap:8px}.rg-tours button{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid rgba(16,57,43,.25);background:#F7F4EC;color:#10392B;font:600 14px Jost,sans-serif;cursor:pointer}
-html[data-theme=sombre] .rg-tours button{background:#25211B;color:#F2C230;border-color:rgba(242,194,48,.35)}
 @keyframes rgIn{from{opacity:0}}@keyframes rgUp{from{transform:translateY(40px);opacity:.4}}
 @media (prefers-reduced-motion:reduce){.rg-bg,.rg{animation:none}.rg-o{transition:none}}`;
   const I = n => (window.MDGIco ? MDGIco.svg(n, 22, 1.9) : '');
@@ -77,8 +74,7 @@ html[data-theme=sombre] .rg-tours button{background:#25211B;color:#F2C230;border
     bg = document.createElement('div'); bg.className = 'rg-bg';
     // état lu à l'ouverture (puis redessiné) : notifications du téléphone, annonces du marché (serveur), profil
     const N = () => window.MDGNuage, connecte = () => !!(N() && N().session && N().session());
-    const KPR = 'mdg-notif:prefs';   // dernier état connu des catégories : la page s'ouvre avec, puis se met à jour (pas d'écran vide)
-    const st = { pousse: null, diff: null, prefs: (() => { try { return JSON.parse(localStorage.getItem(KPR) || 'null'); } catch (_) { return null; } })(), prefsKo: false, essai: '' };
+    const st = { pousse: null, essai: '' };
     // la vraie réponse du serveur à l'essai (supabase/functions/pousser) : jamais « ça marche » sans envoi accepté
     const texteEssai = r => !r ? 'L’essai n’a pas pu être demandé. Vérifiez la connexion, puis réessayez.'
       : r.envoyees > 0 ? 'Essai parti vers ' + r.envoyees + (r.envoyees > 1 ? ' téléphones' : ' téléphone') + '. Il s’affiche dès que le téléphone a du réseau.'
@@ -94,18 +90,6 @@ html[data-theme=sombre] .rg-tours button{background:#25211B;color:#F2C230;border
       impossible: ['Indisponibles dans ce navigateur', 'Ouvrez le Marché de Gros dans l’application installée, ou dans Chrome, Safari ou Edge à jour.', '', '']
     };
     const sw = (k, t, sm, on, dis) => `<label class="rg-o rg-sw"><i>${I(k)}</i><span>${t}<small>${sm}</small></span><input type="checkbox" role="switch" data-sw="${t}"${on ? ' checked' : ''}${dis ? ' disabled' : ''}></label>`;
-    // une ligne par catégorie (notif_prefs_moi) ; sinon, l'ancien interrupteur unique
-    const categories = () => {
-      const L = Array.isArray(st.prefs) ? st.prefs : null;
-      if (!L) return st.prefsKo ? sw('cloche', 'Annonces du marché', 'Nouvelles offres et demandes, achats groupés, besoins des pros, conseils. Vos échanges en cours restent toujours actifs.', st.diff !== false, st.diff === null)
-        : '<p class="rg-n" style="margin:2px 2px 0">Lecture de vos choix…</p>';
-      const ICO = { fiabilite: 'confiance', niveaux: 'tendance', groupe_suivi: 'panier', rappel: 'horloge', offres: 'offre', pour_vendeur: 'vendre', groupes: 'reseau', renouveler: 'echanger', conseils: 'prix' };
-      const ligne = c => `<label class="rg-o rg-sw"><i>${I(ICO[c.cat] || 'cloche')}</i><span>${esc(c.libelle)}<small>${esc(c.aide || '')}</small></span><input type="checkbox" role="switch" data-cat="${esc(c.cat)}"${c.actif ? ' checked' : ''}></label>`;
-      const fixes = L.filter(c => !c.coupable), act = L.filter(c => c.coupable && c.nature === 'trans'), com = L.filter(c => c.coupable && c.nature === 'com');
-      return (fixes.length ? `<div class="rg-fix">Toujours envoyées<small>${esc(fixes.map((c, i) => i ? c.libelle.toLowerCase() : c.libelle).join(', '))}. Ce sont vos échanges en cours : elles ne se coupent pas.</small></div>` : '')
-        + (act.length ? '<p class="rg-ss">Votre activité</p>' + act.map(ligne).join('') : '')
-        + (com.length ? '<p class="rg-ss">Du marché<small>Choisies d’après vos produits et votre région. Quelques-unes par jour au plus, jamais la nuit.</small></p>' + com.map(ligne).join('') : '');
-    };
     const peindre = () => { const m = lire(), pf = lirePrefs(), S = window.MDGSons, sn = S ? S.reglages() : null;
       const C = window.MDGCompte, pr = C && C.profil ? C.profil() : null, P = window.MDGPousse;
       const o = (k, ico, t, s) => `<button type="button" class="rg-o" role="radio" aria-checked="${m === k}" data-m="${k}"><i>${I(ico)}</i><span>${t}<small>${s}</small></span><b class="ok" aria-hidden="true">✓</b></button>`;
@@ -120,7 +104,7 @@ html[data-theme=sombre] .rg-tours button{background:#25211B;color:#F2C230;border
           ${T[2] && connecte() ? `<button type="button" class="rg-btn${T[3] === 'on' ? ' plein' : ''}" data-pousse="${T[3]}">${T[2]}</button>` : ''}
           ${st.pousse === 'actif' && connecte() ? '<button type="button" class="rg-btn" data-essai>Envoyer un essai</button>' : ''}
           <p class="rg-res" role="status" data-res>${esc(st.essai)}</p>
-          ${!connecte() ? '<p class="rg-n" style="margin:2px 2px 0">Connectez-vous pour régler les notifications.</p>' : categories()}
+          <p class="rg-n" style="margin:2px 2px 0">${connecte() ? 'Messages, négociations, commandes et nouvelles du marché arrivent toutes seules, jamais la nuit.' : 'Connectez-vous pour recevoir les notifications.'}</p>
         </div>
         <p class="rg-sec">Sons et écran</p>
         <div class="rg-l">
@@ -134,12 +118,9 @@ html[data-theme=sombre] .rg-tours button{background:#25211B;color:#F2C230;border
             return `<div class="rg-freq"><span>Fréquence<small>${f === 'une' ? 'Chaque astuce, tutoriel et démo s’affiche une seule fois.' : f === 'semaine' ? 'Tout revient une fois par semaine, comme pour un nouveau.' : 'Tout revient à chaque ouverture de l’application.'}</small></span><div role="radiogroup" aria-label="Fréquence des astuces et des démos">${b('une', 'Une fois')}${b('semaine', 'Chaque semaine')}${b('toujours', 'À chaque ouverture')}</div></div>`; })() : ''}
           ${window.MDGDemo && MDGAstuces.actif() ? sw('apercu', 'Démo de la roue au démarrage', 'L’accueil montre tout seul la roue des produits, le prix et « placer son prix »', MDGDemo.reglages().auto) : ''}
           ${window.MDGDemo ? sw('tableau', 'Bouton « Démo » sur l’accueil', 'Le petit interrupteur au-dessus de la roue, pour rejouer la démo quand vous voulez', MDGDemo.reglages().bouton) : ''}
-          ${window.MDGDemo ? '<button type="button" class="rg-demo" data-demo style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;margin:8px 0 4px;border:0;border-radius:14px;background:#F2C230;color:#171512;font:600 15px Jost,sans-serif;cursor:pointer">' + (window.MDGIco ? MDGIco.svg('suite', 16, 2) : '') + 'Voir la démo : la roue et les prix</button>' : ''}
-          <p class="rg-n" style="margin:4px 2px 0">Revoir un tutoriel :</p>
-          <div class="rg-tours">${Object.keys(MDGAstuces.TOURS).map(k => `<button type="button" data-tour="${k}">${esc(MDGAstuces.TOURS[k].t)}</button>`).join('')}</div></div>` : ''}
-        ${pr && connecte() && !(window.MDGStatut && MDGStatut.estOfficiel && N().session().user && MDGStatut.estOfficiel(N().session().user.id)) ? `<p class="rg-sec">Confidentialité</p>
-        <p class="rg-n" style="margin:4px 2px 8px">Vos échanges (négociations, messages, litiges) ne sont pas secrets : l’équipe du Marché de Gros peut les lire pour vérifier un accord ou régler un litige. Ils sont gardés 1 an. Votre numéro, lui, n’est jamais montré aux autres membres.</p>
-        <div class="rg-l">${sw('oeil', 'Montrer mon nom de famille', 'Sinon, les autres voient « ' + esc(pr.prenom || 'Prénom') + ' ' + esc(pr.nom ? pr.nom[0] + '.' : 'N.') + ' ». Votre numéro n’est jamais affiché.', !!pr.nom_public)}</div>` : ''}
+
+          <p class="rg-n" style="margin:4px 2px 0">Les tutoriels et la démo se revoient dans L’aide.</p></div>` : ''}
+
         <p class="rg-n">L’apparence, les sons, les vibrations et les messages à l’écran restent sur ce téléphone.</p></div>`;
       bg.querySelector('.rg-x').onclick = fermer;
       bg.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { choisir(b.dataset.m); peindre(); const f = bg.querySelector(`[data-m="${b.dataset.m}"]`); if (f) f.focus(); });
@@ -151,26 +132,16 @@ html[data-theme=sombre] .rg-tours button{background:#25211B;color:#F2C230;border
       const be = bg.querySelector('[data-essai]');
       if (be) be.onclick = async () => { be.disabled = true; be.textContent = 'Envoi…'; const out = bg.querySelector('[data-res]');
         const r = await P.essai(); st.essai = texteEssai(r); if (out) out.textContent = st.essai; be.disabled = false; be.textContent = 'Envoyer un essai'; };
-      bg.querySelectorAll('[data-cat]').forEach(i => i.onchange = async () => { i.disabled = true;
-        try { const r = await N().rpc('notif_pref_regler', { p_cat: i.dataset.cat, p_actif: i.checked }); if (Array.isArray(r)) { st.prefs = r; try { localStorage.setItem(KPR, JSON.stringify(r)); } catch (_) {} }
-          const c = (st.prefs || []).find(x => x.cat === i.dataset.cat); dire((c ? c.libelle : 'Réglage') + (i.checked ? ' : *activé*' : ' : *coupé*')); }
-        catch (x) { i.checked = !i.checked; dire(window.MDGErreur ? MDGErreur(x) : 'Impossible pour l’instant. Réessayez.'); }
-        i.disabled = false; });
-      const dmo = bg.querySelector('[data-demo]'); if (dmo) dmo.onclick = () => { fermer(); if (location.hash && location.hash !== '#/') location.hash = '#/';
-        setTimeout(() => { const b = [...document.querySelectorAll('.acc-ong button')].find(x => x.textContent.trim().startsWith('Marché')); if (b) b.click(); setTimeout(() => MDGDemo.lancer(), 600); }, 350); };
       bg.querySelectorAll('[data-freq]').forEach(b => b.onclick = () => { MDGAstuces.frequence(b.dataset.freq); dire('Fréquence *enregistrée*'); peindre(); const f = bg.querySelector(`[data-freq="${b.dataset.freq}"]`); if (f) f.focus(); });
-      bg.querySelectorAll('[data-tour]').forEach(b => b.onclick = () => { const k = b.dataset.tour; fermer(); setTimeout(() => MDGAstuces.tour(k, true), 250); });
       const so = bg.querySelector('[data-sons]'); if (so) so.onclick = () => { fermer(); S.panneau(); };
       bg.querySelectorAll('[data-sw]').forEach(i => i.onchange = async () => {
         const k = i.dataset.sw; i.disabled = true;
         try {
-          if (k === 'Annonces du marché') { await N().rpc('notif_reglage_diffusions', { p_oui: i.checked }); st.diff = i.checked; dire(i.checked ? 'Annonces du marché *activées*' : 'Annonces du marché *coupées*'); }
-          else if (k === 'Vibrations au toucher') { MDGVibre.regler(i.checked); dire(i.checked ? 'Vibrations *activées*' : 'Vibrations *coupées*'); }
+          if (k === 'Vibrations au toucher') { MDGVibre.regler(i.checked); dire(i.checked ? 'Vibrations *activées*' : 'Vibrations *coupées*'); }
           else if (k === 'Astuces et tutoriels') { if (i.checked) { MDGAstuces.revoir(); try { localStorage.removeItem('mdg-demo:orbite'); } catch (_) {} } else MDGAstuces.regler(false); dire(i.checked ? 'Astuces *activées* : elles reviennent comme pour un nouveau' : 'Astuces, tutoriels et démo automatique *coupés*'); setTimeout(peindre, 0); }
           else if (k === 'Démo de la roue au démarrage') { MDGDemo.regler({ auto: i.checked }); dire(i.checked ? 'Démo au démarrage *activée*' : 'Démo au démarrage *coupée*'); }
-          else if (k === 'Bouton « Démo » sur l’accueil') { MDGDemo.regler({ bouton: i.checked }); dire(i.checked ? 'Bouton Démo *affiché*' : 'Bouton Démo *caché* : la démo reste ici, dans les réglages'); }
+          else if (k === 'Bouton « Démo » sur l’accueil') { MDGDemo.regler({ bouton: i.checked }); dire(i.checked ? 'Bouton Démo *affiché*' : 'Bouton Démo *caché* : la démo reste dans L’aide (Revoir un tutoriel)'); }
           else if (k === 'Messages à l’écran') { const o = lirePrefs(); o.toasts = i.checked; localStorage.setItem('mdg-compte:prefs', JSON.stringify(o)); dire('Réglage *enregistré*'); }
-          else if (k === 'Montrer mon nom de famille' && C && C.regler) { await C.regler({ nom_public: i.checked }); dire('Réglage *enregistré*'); }
         } catch (x) { i.checked = !i.checked; dire((window.MDGErreur ? MDGErreur(x) : 'Impossible : ' + ((x && x.message) || 'réessayez'))); }
         i.disabled = false;
       });
@@ -179,12 +150,6 @@ html[data-theme=sombre] .rg-tours button{background:#25211B;color:#F2C230;border
     // deux lectures indépendantes : l'une ne bloque jamais l'autre (l'état du téléphone peut tarder, 4 s au plus)
     (async () => { const P = window.MDGPousse;
       try { st.pousse = P ? await Promise.race([P.etat(), new Promise(r => setTimeout(() => r('inactif'), 4000))]) : 'impossible'; } catch (_) { st.pousse = 'impossible'; }
-      if (bg) peindre(); })();
-    (async () => { if (!connecte()) return;
-      let r = null; try { r = await N().rpc('notif_prefs_moi'); } catch (_) {}
-      if (Array.isArray(r) && r.length) { const avant = JSON.stringify(st.prefs); st.prefs = r; try { localStorage.setItem(KPR, JSON.stringify(r)); } catch (_) {} if (bg && avant !== JSON.stringify(r)) peindre(); return; }
-      st.prefs = null; st.prefsKo = true;   // schéma 88a absent : l'ancien réglage unique
-      try { const d = await N().rpc('notif_reglage_moi'); st.diff = !(d && d.diffusions === false); } catch (_) { st.diff = true; }
       if (bg) peindre(); })();
     peindre();
     bg.addEventListener('click', e => { if (e.target === bg) fermer(); });

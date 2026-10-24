@@ -6,7 +6,7 @@
      (menu ouvert) ou après 3 fois.
    • Tutoriels (quelques cartes, « Passer » toujours visible) : la première fois qu'on ouvre une négociation,
      la création d'une commande, le choix du chauffeur, un code, l'Espace chauffeur. Une seule fois chacun.
-   • Réglages → « Aide pour débuter » : tout couper, ou revoir un tutoriel. Rien ne part au serveur : tout reste sur ce téléphone.
+   • Réglages → « Aide pour débuter » : tout couper ou tout remettre ; L'aide → « Revoir un tutoriel » : en revoir un. Rien ne part au serveur : tout reste sur ce téléphone.
    Mouvement réduit (réglage du téléphone) : pas de déplacement, seulement la bulle.
    API : MDGAstuces.actif() · regler(oui) · tour(id, force) · revoir() · frequence(f?) · TOURS */
 (function () {
@@ -131,7 +131,7 @@
     m_compte: { t: 'Mon compte', insiste: 2, cartes: [
       ['👤', 'Votre espace', 'Votre profil, vos annonces, vos négociations et vos statuts.'],
       ['✅', 'Faites vérifier votre identité', 'Le *sceau vert* rassure vos acheteurs et vos vendeurs.'],
-      ['⚙️', 'Vos réglages', 'Notifications, sons, thème clair ou sombre, *aide pour débuter* (ces tutoriels).']] },
+      ['⚙️', 'Vos réglages', 'Notifications, sons, thème clair ou sombre : dans le menu, « *Réglages* ». Ces tutoriels se revoient dans *L’aide*.']] },
     m_negos: { t: 'Mes négociations', insiste: 2, cartes: [
       ['🤝', 'Toutes vos propositions', 'Chaque ligne est une négociation : la *dernière proposition* et qui doit répondre.'],
       ['⏳', 'Répondez dans les 48 h', 'Touchez une ligne pour *accepter*, *refuser* ou *proposer un autre prix*.'],
@@ -145,7 +145,7 @@
       ['✍️', 'Court et utile', 'Une information vraie et utile à tous. Relisez avant d’envoyer : on ne peut pas le reprendre.']] },
     m_profil: { t: 'Mon profil public', insiste: 2, cartes: [
       ['🪪', 'Ce que voient les autres', 'Quand on touche votre nom : qui vous êtes, ce que vous faites, vos notes et vos statuts.'],
-      ['🔒', 'Votre numéro reste caché', 'Il n’est jamais affiché. Votre nom de famille complet s’affiche seulement si vous le choisissez (Réglages).']] },
+      ['🔒', 'Votre numéro reste caché', 'Il n’est jamais affiché. Votre nom de famille complet s’affiche seulement si vous le choisissez (Mon compte → Profil et avatar).']] },
     m_notes: { t: 'Les mieux notés', insiste: 2, cartes: [
       ['🏅', 'Les membres recommandés', 'Classés d’après les *notes réelles* laissées après une négociation.'],
       ['👆', 'Touchez un nom', 'Vous voyez son profil, ses notes et ses statuts. Un statut ne s’achète pas.']] },
@@ -281,7 +281,7 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
     suiv.onclick = () => { if (i < T.cartes.length - 1) { i++; montrer(); } else { noter('ok:' + id, 1); fermer(); } };
     ret.onclick = () => { if (i > 0) { i--; montrer(); } };
     tourEl.querySelector('[data-passer]').onclick = fermer;
-    const off = tourEl.querySelector('[data-off]'); if (off) off.onclick = () => { regler(false); fermer(); if (window.MDGToast) MDGToast.dire('Tutoriels *coupés*', { type: 'info', sous: 'Réglages → Aide pour débuter, pour les revoir.' }); };
+    const off = tourEl.querySelector('[data-off]'); if (off) off.onclick = () => { regler(false); fermer(); if (window.MDGToast) MDGToast.dire('Tutoriels *coupés*', { type: 'info', sous: 'Pour les remettre : Réglages → Aide pour débuter. Pour en revoir un : L’aide.' }); };
     // glisser la carte du doigt : à gauche = suivant, à droite = retour
     let x0 = null; vue.addEventListener('pointerdown', e => { x0 = e.clientX; }); vue.addEventListener('pointerup', e => { if (x0 == null) return; const d = e.clientX - x0; x0 = null; if (d < -50 && i < T.cartes.length - 1) { i++; montrer(); } else if (d > 50 && i > 0) { i--; montrer(); } });
     addEventListener('keydown', cle, true);

@@ -107,6 +107,7 @@
 .rp-fb-t{display:flex;align-items:center;min-height:22px;margin-top:6px;padding:0 9px;border-radius:11px;font-size:12px;font-weight:600;background:#DCEFE3;color:#10392B}.rp-fb-t.contre{background:#F5D5CC;color:#5C1A0E}
 .rp-fb-it .rp-alt{display:flex;align-items:center;margin-top:10px;box-shadow:inset 0 0 0 1.5px rgba(23,21,18,.28)}.rp-fb-t{width:max-content;max-width:100%}.rp-fb-it textarea{margin-top:8px;min-height:72px}.rp-fb-reg{margin:0;padding-left:18px;color:#2A251E;font-size:13.5px}.rp-fb-reg li{margin:4px 0}
 .rp-sec h3 .nbul{vertical-align:1px}
+.rp-nonid{display:inline-block;margin-left:6px;padding:1px 10px;border-radius:999px;border:1.5px solid currentColor;font:600 12px/1.6 Jost,sans-serif;letter-spacing:0;vertical-align:4px;white-space:nowrap}
 .rp-off{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:rgba(16,57,43,.2);color:#A0492A;font:700 10.5px/1.7 Jost,sans-serif;letter-spacing:.06em;text-transform:uppercase;vertical-align:4px}
 .rp-ed label{display:block;margin:14px 0 6px;font:500 14px Jost,sans-serif;color:#2A251E}.rp-ed label i{font-style:normal;color:#6F6553;font-size:12.5px;margin-left:6px}
 .rp-ed input{width:100%;box-sizing:border-box;height:50px;padding:0 14px;border:1px solid rgba(23,21,18,.16);border-radius:14px;background:#FFFFFF;color:#171512;font:500 16px Jost,sans-serif}
@@ -251,7 +252,7 @@
     bg.querySelector('[data-sc]').innerHTML = off ? 'Compte officiel du Marché de Gros' : nb ? etoiles(moy, nb, 14) + ' ' + moy.toFixed(1).replace('.', ',') + ' · ' + nb + ' avis' : 'Pas encore noté';
     let haut = '';
     if (pp) {
-      const nomH = () => esc(pp.affichage || o.nom || 'Membre') + (off ? ' ' + (window.MDGStatut ? MDGStatut.puces(uid, { max: 1 }) : '<span class="rp-off">Officiel</span>') : '') + (!off && window.MDGIdentite && MDGIdentite.estVerifie(uid) ? ' ' + MDGIdentite.badge(18, true) : '');
+      const nomH = () => esc(pp.affichage || o.nom || 'Membre') + (off ? ' ' + (window.MDGStatut ? MDGStatut.puces(uid, { max: 1 }) : '<span class="rp-off">Officiel</span>') : '') + (off || !window.MDGIdentite ? '' : MDGIdentite.estVerifie(uid) ? ' ' + MDGIdentite.badge(18, true) : (MDGIdentite.connu ? MDGIdentite.connu(uid) === false : false) ? ' <span class="rp-nonid">Non identifié</span>' : '');
       bg.querySelector('[data-nom]').innerHTML = nomH();
       if (window.MDGIdentite) { const maj = () => { if (!bg.isConnected) return removeEventListener('mdg:identite', maj); bg.querySelector('[data-nom]').innerHTML = nomH(); }; addEventListener('mdg:identite', maj); }
       bg.querySelector('[data-dep]').textContent = [pp.membre_depuis ? 'Membre depuis ' + mois(pp.membre_depuis) : '', actif(pp.vu_le)].filter(Boolean).join(' · ');

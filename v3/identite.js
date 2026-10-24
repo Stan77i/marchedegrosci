@@ -2,7 +2,7 @@
    Parcours : la pièce (recto, verso), un selfie tenant un code écrit à la main, le nom comme sur la pièce, puis l'envoi.
    Un administrateur décide (admin.html, onglet Identités). Rien n'est jamais déclaré « vérifié » automatiquement :
    la lecture de la bande MRZ (Tesseract.js, dans le téléphone) pré-remplit le nom et n'est qu'une indication pour l'administrateur.
-   API : MDGIdentite.ouvrir() · inviter('limite'|'banni') · gratuitesRestantes() · signaler(uid, {nom, source, ref, bloquer}) · gardePaiement(uid, nom) · statut(force) · estVerifie(uid) · badge(taille, texte?) · lireMRZ(blob, piece) · analyserMRZ(texte)
+   API : MDGIdentite.ouvrir() · inviter('limite'|'banni') · gratuitesRestantes() · signaler(uid, {nom, source, ref, bloquer}) · gardePaiement(uid, nom) · statut(force) · estVerifie(uid) · connu(uid) · badge(taille, texte?) · lireMRZ(blob, piece) · analyserMRZ(texte)
    Événement « mdg:identite » quand un statut ou un badge arrive. Aucune donnée de la pièce n'est écrite dans la console. */
 (function () {
   const N = () => window.MDGNuage;
@@ -29,6 +29,8 @@
     if (!c || Date.now() - c.t > TTL) { file.add(uid); clearTimeout(minuterie); minuterie = setTimeout(demander, 60); }
     return !!(c && c.v);
   }
+  // déjà su ? true = vérifié, false = pas vérifié, null = pas encore de réponse du serveur (rien n'est affiché tant qu'on ne sait pas)
+  const connu = uid => { if (!uid) return null; estVerifie(uid); const c = J(KV, {})[uid]; return c ? !!c.v : null; };
   async function demander() {
     const ids = [...file].slice(0, 200); file = new Set(); if (!ids.length || !N()) return;
     try {
@@ -574,5 +576,5 @@
   // vider le cache de statut quand on change de compte
   addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte') { const u = me(), c = J(KS, null); if (!u || (c && c.uid !== u.id)) { try { localStorage.removeItem(KS); } catch (_) {} dire(); } } });
 
-  window.MDGIdentite = { ouvrir, inviter, gratuitesRestantes, signaler, gardePaiement, statut, statutCache, RESUME, estVerifie, badge, lireMRZ, analyserMRZ, retirer };
+  window.MDGIdentite = { ouvrir, inviter, gratuitesRestantes, signaler, gardePaiement, statut, statutCache, RESUME, estVerifie, connu, badge, lireMRZ, analyserMRZ, retirer };
 })();

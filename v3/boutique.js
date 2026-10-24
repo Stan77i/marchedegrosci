@@ -341,5 +341,15 @@ html[data-theme=sombre] .bqg-msg{color:#F2A08E}`;
     lire();
   }
 
+  // notification « Ouvrez votre boutique » (schéma 91) : #/?maboutique=1 ouvre « Ma boutique »
+  function depuisAdresse(h) {
+    if (!/[?&]maboutique=1/.test(String(h || location.hash))) return;
+    try { if (!h) history.replaceState(history.state, '', location.hash.replace(/[?&]maboutique=1/, '').replace(/\?$/, '') || '#/'); } catch (_) {}
+    const go = k => { if (N() && N().session) gerer(); else if (k < 20) setTimeout(() => go(k + 1), 300); };
+    setTimeout(() => go(0), 700);
+  }
+  if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'mdg-lien') depuisAdresse(e.data.url); });
+  depuisAdresse();
+
   window.MDGBoutique = { de, ouvrir, gerer, adresseDe, connue, charger, chercher, lien, court };
 })();

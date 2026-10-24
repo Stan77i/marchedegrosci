@@ -160,14 +160,19 @@
   function boite() {
     if (!N() || !N().session()) { N() && N().open('Connectez-vous pour voir vos messages.'); return; }
     const b = feuille(`<div class="dm-h"><h2 class="dm-t">Messages<small>Gardés 1 an · lisibles par l’équipe</small></h2><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div><div class="dm-b"><div class="dm-act" data-act></div><div class="dm-l" data-l></div></div>`, 'Messages');
+    // « Écrire au Marché de Gros » seulement s'il n'y a pas déjà une conversation avec le Marché de Gros dans la liste ;
+    // si elle est retirée, la carte revient (demande du propriétaire, 24/10/2026 : pas de doublon). Rien n'est redessiné si rien ne change.
     const actions = () => { const z = b.querySelector('[data-act]'); if (!z) return;
-      z.innerHTML = admin()
+      const html = admin()
         ? `<button type="button" data-tous>${LOGO(34)}<span>Message à tous les membres<small>Au nom du Marché de Gros, avec le logo</small></span></button><a href="admin.html#messages">${I.bulle}<span>Toutes les conversations<small>Lire, alertes de sortie de l’application</small></span></a>`
+        : liste.some(c => c.officiel) ? ''
         : `<button type="button" data-marche>${LOGO(34)}<span>Écrire au Marché de Gros<small>Une question, un problème, un vol : l’équipe vous répond ici</small></span></button>`;
+      if (z._h === html) return; z._h = html; z.innerHTML = html; z.style.display = html ? '' : 'none';
       const t = z.querySelector('[data-tous]'); if (t) t.onclick = () => diffuser();
       const m = z.querySelector('[data-marche]'); if (m) m.onclick = () => ecrireMarche(); };
     actions(); N().isAdmin().then(() => { if (bg === b) actions(); });
     const dessiner = () => {
+      actions();
       const box = b.querySelector('[data-l]'); if (!box) return; const u = me();
       if (!liste.length) {
         box._h = '';
@@ -181,7 +186,7 @@
       box.innerHTML = html;
       box.querySelectorAll('[data-id]').forEach(el => {
         el.onclick = () => conversation(el.dataset.id, true);
-        if (window.MDGNegoce && MDGNegoce.glisser) MDGNegoce.glisser(el, async () => { await N().rpc('dm_masquer', { p_discussion: el.dataset.id }); liste = liste.filter(c => c.id !== el.dataset.id); W(KL, liste); annoncer(); N().toast('Conversation retirée de votre liste. Elle reviendra si la personne vous écrit.'); });
+        if (window.MDGNegoce && MDGNegoce.glisser) MDGNegoce.glisser(el, async () => { await N().rpc('dm_masquer', { p_discussion: el.dataset.id }); liste = liste.filter(c => c.id !== el.dataset.id); W(KL, liste); annoncer(); actions(); N().toast('Conversation retirée de votre liste. Elle reviendra si la personne vous écrit.'); });
       });
     };
     dessiner();

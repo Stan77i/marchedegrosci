@@ -6,6 +6,9 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Abidjan est une seule ville : avec une commune (Cocody, Yopougon…), l'interrupteur dit « Je vends uniquement à Abidjan » ; une livraison d'une commune à l'autre est « même ville » (schéma 87c, appliqué en production).
+
+- Chantier 4 (branche `claude/chantier-boutiques-p`, schéma 86, 86b et 86c appliqués en production) : boutique par vendeur avec adresse (pseudo ou code court), lien, QR code à télécharger, aperçu de partage (pages `site/boutiques/`, noindex), visites en totaux ; pause d'une offre, retrait sans effacement, quantité obligatoire, verrou contre la survente ; page de maintenance avec le QR de la boutique.
 - Formulaires de publication : une ville d'une autre région n'est plus gardée en mémoire (« Guiglo » ne revient plus sous « Abidjan » à la réouverture de l'application) ; le profil la vide quand sa région change.
 - Transport : « Transport à votre charge » pour l'acheteur, « À la charge de l'acheteur » pour le vendeur, « À ma charge » dans une demande, partout (publication, annonces, tableau du marché, négociation, commande).
 

@@ -34,7 +34,7 @@
       // texte refusé par la base (schéma 22 : liens, e-mails, codes) : seulement la phrase pour le membre
       if (/^TEXTE_REFUSE : /.test(m)) throw Object.assign(new Error(m.replace(/^TEXTE_REFUSE : /, '')), { status: r.status, body: j, code: 'texte' });
       // erreur technique de la base (champ, colonne, fonction…) : une phrase simple pour le membre, le détail reste dans la console
-      if (/record "new"|has no field|column .* does not exist|relation .* does not exist|function .* does not exist|syntax error/i.test(m) && !/^[A-Z_]+ : /.test(m)) {
+      if (/record "new"|has no field|column .* does not exist|could not find the '[a-z_]+' column|relation .* does not exist|function .* does not exist|syntax error/i.test(m) && !/^[A-Z_]+ : /.test(m)) {
         console.warn('[nuage] erreur technique', m);
         throw Object.assign(new Error('Un problème technique a empêché l’envoi. Réessayez dans un instant ; si cela continue, écrivez au Marché de Gros.'), { status: r.status, body: j, code: 'technique', detail: m }); }
       throw Object.assign(new Error(m), { status: r.status, body: j }); }
@@ -147,13 +147,15 @@
 
   /* ——— les annonces des autres (cache local) ——— */
   const fromRow = {
-    offres: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, _uid: r.user_id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', price: num(r.price), availableFrom: r.available_from || 'maintenant', createdAt: r.created_at, producer: { name: r.seller_name || 'Vendeur', phone: r.phone || '' }, producerName: r.seller_name || 'Vendeur', agent: r.agent || '', negociable: r.negociable !== false, lieu: r.lieu || '', qteMin: num(r.qte_min) || 0, transport: r.transport || '', villeSeule: r.ville_seulement === true }),
+    offres: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, _uid: r.user_id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', price: num(r.price), availableFrom: r.available_from || 'maintenant', createdAt: r.created_at, producer: { name: r.seller_name || 'Vendeur', phone: r.phone || '' }, producerName: r.seller_name || 'Vendeur', agent: r.agent || '', negociable: r.negociable !== false, lieu: r.lieu || '', qteMin: num(r.qte_min) || 0, transport: r.transport || '', villeSeule: r.ville_seulement === true, ...(r.pause_le ? { pause: true, pauseLe: r.pause_le } : {}) }),
     demandes: r => ({ id: 'n-' + r.id, _remote: true, _rid: r.id, _uid: r.user_id, client_id: r.client_id, productSlug: r.product_slug, productLabel: r.product_label, productName: r.product_label, regionSlug: r.region_slug, city: r.city || '', quantity: num(r.quantity) || 0, unit: r.unit || 'kg', budget: num(r.budget), deadline: r.deadline || 'semaine', buyerType: r.buyer_type || 'Acheteur', buyerName: r.buyer_name || 'Acheteur', phone: r.phone || '', buyerContact: { tel: r.phone || '' }, createdAt: r.created_at, negociable: r.negociable !== false, lieu: r.lieu || '', criteres: Array.isArray(r.criteres) ? r.criteres : [], detail: r.detail && typeof r.detail === 'object' ? r.detail : {}, exigences: r.exigences || '', transport: r.transport || '', villeSeule: r.ville_seulement === true }),
   };
   // « ville seulement » (schéma 87) : envoyé seulement quand l'annonce l'a choisi une fois (les anciennes annonces ne changent pas)
   const vsRow = x => x.villeSeule === undefined ? {} : { ville_seulement: !!x.villeSeule && !!txt(x.city, 80) };
   const toRow = {
-    offres: o => ({ client_id: txt(o.id, 60), product_slug: txt(o.productSlug, 80), product_label: txt(o.productLabel || o.productName, 120), region_slug: txt(o.regionSlug, 60), city: txt(o.city, 80), quantity: num(o.quantity), unit: txt(o.unit, 20), price: num(o.price), available_from: txt(o.availableFrom, 40), seller_name: txt((o.producer && o.producer.name) || o.producerName, 80), phone: null, lieu: txt(o.lieu, 20) || null, agent: txt(o.agent && typeof o.agent === 'object' ? (o.agent.name || 'Agent') : o.agent, 80) || null, negociable: o.negociable !== false, ...(o.qteMin !== undefined ? { qte_min: +o.qteMin > 0 ? +o.qteMin : null } : {}), ...(['inclus', 'hors_ville', 'non'].includes(o.transport) ? { transport: o.transport } : {}), ...vsRow(o) }),
+    offres: o => ({ client_id: txt(o.id, 60), product_slug: txt(o.productSlug, 80), product_label: txt(o.productLabel || o.productName, 120), region_slug: txt(o.regionSlug, 60), city: txt(o.city, 80), quantity: num(o.quantity), unit: txt(o.unit, 20), price: num(o.price), available_from: txt(o.availableFrom, 40), seller_name: txt((o.producer && o.producer.name) || o.producerName, 80), phone: null, lieu: txt(o.lieu, 20) || null, agent: txt(o.agent && typeof o.agent === 'object' ? (o.agent.name || 'Agent') : o.agent, 80) || null, negociable: o.negociable !== false, ...(o.qteMin !== undefined ? { qte_min: +o.qteMin > 0 ? +o.qteMin : null } : {}), ...(['inclus', 'hors_ville', 'non'].includes(o.transport) ? { transport: o.transport } : {}),
+      // pause (schéma 86) : envoyée seulement si le vendeur s'en est servi (compatibilité avec une base sans la colonne) ; la date reste la même tant que dure la pause
+      ...vsRow(o), ...(o.pause !== undefined ? { pause_le: o.pause ? (o.pauseLe || null) : null } : {}) }),
     demandes: d => ({ client_id: txt(d.id, 60), product_slug: txt(d.productSlug, 80), product_label: txt(d.productLabel || d.productName, 120), region_slug: txt(d.regionSlug, 60), city: txt(d.city, 80), quantity: num(d.quantity), unit: txt(d.unit, 20), budget: num(d.budget), deadline: txt(d.deadline, 40), buyer_type: txt(d.buyerType, 60), buyer_name: txt(d.buyerName, 80), phone: null, lieu: txt(d.lieu, 20) || null, negociable: d.negociable !== false, criteres: Array.isArray(d.criteres) ? d.criteres.slice(0, 12) : [], detail: d.detail && typeof d.detail === 'object' ? d.detail : {}, exigences: txt(d.exigences, 300) || null, ...(['vendeur', 'acheteur'].includes(d.transport) ? { transport: d.transport } : {}), ...vsRow(d) }),
   };
   // annonces des autres seulement : celles publiées depuis ce téléphone sont déjà dans « mes annonces »
@@ -219,9 +221,14 @@
           if (!x.productSlug || !x.regionSlug) continue;
           const key = k + ':' + x.id, row = toRow[k](x), h = hash(row);
           if (p[key] && (!em[key] || em[key] === h)) { if (!em[key]) { em[key] = h; W(K.e, em); } continue; } // déjà envoyée, inchangée
-          try { const envoi = b => api('/rest/v1/' + KIND[k] + '?on_conflict=user_id,client_id', { method: 'POST', body: b, auth: true, prefer: 'return=representation,resolution=merge-duplicates' });
-            // serveur pas encore au schéma 87 : la colonne ville_seulement n'existe pas, l'annonce part quand même (sans ce choix)
-            const r = await envoi(row).catch(e => { if ('ville_seulement' in row && /ville_seulement/.test((e && e.message) || '')) { const b = Object.assign({}, row); delete b.ville_seulement; return envoi(b); } throw e; }); if (r && r[0]) { p[key] = r[0].id; em[key] = h; changed = true; W(K.p, p); W(K.e, em);
+          // base sans la colonne ville_seulement (schéma 87) ou pause_le (schéma 86) : l'annonce part quand même, sans ce choix
+          const envoi = b => api('/rest/v1/' + KIND[k] + '?on_conflict=user_id,client_id', { method: 'POST', body: b, auth: true, prefer: 'return=representation,resolution=merge-duplicates' });
+          const sans = (b, c) => { const x = Object.assign({}, b); delete x[c]; return x; };
+          const essai = b => envoi(b).catch(e => { const m = (e && e.message) || '';
+            if ('ville_seulement' in b && /ville_seulement/.test(m)) return essai(sans(b, 'ville_seulement'));
+            if ('pause_le' in b && (e.code === 'technique' || /pause_le/.test(m))) return essai(sans(b, 'pause_le'));
+            throw e; });
+          try { const r = await essai(row); if (r && r[0]) { p[key] = r[0].id; em[key] = h; changed = true; W(K.p, p); W(K.e, em);
               // stock à zéro sur le téléphone : l'annonce sort du marché ; stock remis : elle revient (jamais une annonce masquée par l'administration)
               if (k === 'offres') await api('/rest/v1/offres?id=eq.' + r[0].id + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: x.epuise || !(+x.quantity > 0) ? 'retiree' : 'active' }, prefer: 'return=minimal' }).catch(() => {}); } }
           catch (e) { if (e.code === 'auth') throw e; console.warn('[nuage] envoi refusé', e.message); if (/Limite atteinte/.test(e.message)) toast(e.message);
@@ -230,7 +237,11 @@
         }
         for (const key of Object.keys(p)) {
           if (!key.startsWith(k + ':') || ids.has(key.slice(k.length + 1))) continue;
-          try { await api('/rest/v1/' + KIND[k] + '?id=eq.' + encodeURIComponent(p[key]), { method: 'DELETE', auth: true }); delete p[key]; delete em[key]; changed = true; W(K.p, p); W(K.e, em); }
+          // retirée sur le téléphone : cachée sur le serveur, la ligne reste (schéma 86, décision 37 : plus d'effacement) ; base sans la colonne : ancien chemin
+          try { const u = '/rest/v1/' + KIND[k] + '?id=eq.' + encodeURIComponent(p[key]);
+            try { await api(u + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: 'retiree', retiree_le: new Date().toISOString() }, prefer: 'return=minimal' }); }
+            catch (e2) { if (e2.code !== 'technique') throw e2; await api(u, { method: 'DELETE', auth: true }); }
+            delete p[key]; delete em[key]; changed = true; W(K.p, p); W(K.e, em); }
           catch (e) { if (e.code === 'auth') throw e; if (e.status === 404) { delete p[key]; W(K.p, p); } }
         }
       }

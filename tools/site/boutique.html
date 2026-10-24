@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="fr-CI">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Page fabriquée par tools/site-boutiques.js depuis tools/site/boutique.html : modifier le gabarit, pas ce fichier.
+     Aperçu de partage d'une boutique (WhatsApp, Facebook : ils lisent les balises og:). Un visiteur est aussitôt envoyé
+     vers la boutique dans l'application ; sur ordinateur, l'application montre la page de maintenance avec le QR de la boutique. -->
+<meta name="robots" content="noindex, nofollow">
+<title>{{TITRE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<link rel="canonical" href="{{URL}}">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_CI">
+<meta property="og:site_name" content="Marché de Gros CI">
+<meta property="og:title" content="{{TITRE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:url" content="{{URL}}">
+<meta property="og:image" content="https://stan77i.github.io/marchedegrosci/logo/partage-reseaux-1200.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#10392B">
+<link rel="icon" type="image/svg+xml" href="../../../icons/v2/favicon.svg">
+<script>/* vers la boutique dans l'application (la provenance utm_* et l'offre ?o= suivent) */
+(function(){try{var q=new URLSearchParams(location.search),o=(q.get('o')||'').replace(/[^a-f0-9]/g,'').slice(0,12);q.delete('o');
+location.replace('../../../application.dc.html'+(q.toString()?'?'+q:'')+'#/boutique/{{ADRESSE}}'+(o?'/'+o:''))}catch(e){}})();</script>
+<style>
+html,body{margin:0;background:#10392B;color:#F3EFE4;font:400 17px/1.5 Jost,system-ui,sans-serif}
+main{max-width:520px;margin:0 auto;padding:40px 16px}
+.m{font-weight:700;font-size:22px}.m span{color:#F2C230}
+h1{margin:24px 0 8px;font-size:30px;line-height:1.15}
+p{color:#CFE0D6}
+ul{padding-left:20px}
+a{display:inline-block;margin-top:16px;padding:14px 24px;border-radius:999px;background:#F2C230;color:#171512;font-weight:700;text-decoration:none}
+</style>
+</head>
+<body>
+<main>
+  <div class="m">Marché <span>de Gros</span></div>
+  <h1>Boutique {{NOM}}</h1>
+  <p>{{RESUME}}</p>
+  {{PRODUITS}}
+  <a href="../../../application.dc.html#/boutique/{{ADRESSE}}">Ouvrir la boutique</a>
+</main>
+</body>
+</html>

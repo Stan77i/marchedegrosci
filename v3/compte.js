@@ -709,6 +709,7 @@ label.cp-r{cursor:pointer}
           <div class="cp-sh"><h3>Votre compte</h3><small>${esc(N().fmtTel(u.tel))}</small></div>
           <div class="cp-grp">
             ${off0 ? '' : ligne({ ico: mono('compte'), t: 'Profil et avatar', s: nom ? '' : 'Prénom, rôle, lieu', attrs: 'data-go="profil"' })}
+            ${window.MDGBoutique && !off0 ? ligne({ ico: mono('vendre'), t: 'Ma boutique', s: 'Mes offres sur une page à partager, QR code', attrs: 'data-boutique' }) : ''}
             ${window.MDGReleve ? ligne({ ico: mono('barres'), t: 'Mes ventes et achats', s: 'Relevés, bons de transaction, volumes', attrs: 'data-releve' }) : ''}
             ${window.MDGCommandes && !off0 ? (() => { const nC = MDGCommandes.aAgir(); return ligne({ ico: mono('negoce'), t: 'Mes commandes', s: nC ? nC + (nC > 1 ? ' commandes attendent' : ' commande attend') + ' votre action' : 'Suivi du chargement à la réception', n: nC, attrs: 'data-cmds' }); })() : ''}
             ${window.MDGRep && MDGRep.fiabilite && !off0 ? (() => { const f = MDGRep.fiabResume(), sc = f && f.score, nv = f ? +f.non_vues || 0 : 0; return ligne({ ico: mono('tendance'), t: 'Ma fiabilité', s: f && f.suspension ? 'Compte suspendu pour l’instant' : sc && sc.sur ? 'Fiabilité : ' + sc.pourcent + ' % sur ' + sc.sur + ' commande' + (sc.sur > 1 ? 's' : '') : 'Votre score et votre historique', n: nv, attrs: 'data-fiab' }); })() : ''}
@@ -734,6 +735,7 @@ label.cp-r{cursor:pointer}
       if (q('[data-idv2]')) q('[data-idv2]').onclick = () => { fermer(); ID.ouvrir(); };
       if (q('[data-marche]')) q('[data-marche]').onclick = () => { fermer(); M.ecrireMarche(); };
       if (q('[data-releve]')) q('[data-releve]').onclick = () => { fermer(); window.MDGReleve.ouvrir(); };
+      if (q('[data-boutique]')) q('[data-boutique]').onclick = () => { fermer(); window.MDGBoutique.gerer(); };   // schéma 86
       if (q('[data-cmds]')) q('[data-cmds]').onclick = () => { fermer(); window.MDGCommandes.ouvrir(); };
       if (q('[data-fiab]')) q('[data-fiab]').onclick = () => { fermer(); window.MDGRep.fiabilite(); };
       if (q('[data-niv]')) q('[data-niv]').onclick = () => { fermer(); window.MDGRep.niveaux(); };

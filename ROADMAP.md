@@ -39,6 +39,8 @@ Ce qui manque :
 - Une gestion des stocks au-delà d'un nombre par annonce (pas d'entrées ni de sorties, pas d'historique de stock).
 - À vérifier : au-delà de 30 annonces par sens gardées sur le téléphone, le code peut retirer la plus ancienne sur le serveur (lu dans le code, non testé).
 
+Mise à jour du 24/10/2026 (chantier 4, branche `claude/chantier-boutiques-p`, schéma 86 **sur le projet de test seulement**) : **boutique par vendeur construite** (`v3/boutique.js`, `boutique_publique`), états disponible, stock faible (20 % ou moins), en pause, épuisé ; pause d'une offre ; retrait sans effacement ; quantité obligatoire ; verrou contre la survente. Reste : appliquer en production, pas d'historique d'entrées et de sorties de stock.
+
 Dépendance : aucune. C'est du développement.
 
 ## 2. Liens de partage et QR codes
@@ -57,6 +59,8 @@ Ce qui manque :
 - L'adresse `#/producteurs/<id>` ne marche que si l'offre est déjà en mémoire sur le téléphone.
 - Mesure : **0 ligne** dans `site_mesures` au 24/10/2026. Rien n'a encore été mesuré en vrai : **à tester**.
 - Liens Play Store et App Store : absents (l'application est une PWA installable, `manifest.webmanifest`, `sw.js`, pas publiée dans les boutiques).
+
+Mise à jour du 24/10/2026 (chantier 4, projet de test seulement) : lien et QR code **par boutique** et **par offre** (`?o=<code>`), aperçu de partage par pages fabriquées `site/boutiques/<adresse>/` (noindex), page de maintenance qui montre la boutique et son QR sur ordinateur, visites limitées par visiteur (`boutique_mesurer`). L'adresse `#/producteurs/<id>` reste valable.
 
 Dépendance : aucune pour les liens et les QR. Une publication dans les boutiques d'applications demanderait des comptes développeur (payants).
 
@@ -236,7 +240,7 @@ Règles données le 24/10/2026. **La plupart ne sont pas encore codées telles q
 
 ### Boutiques
 - Une **boutique par vendeur**, avec son **lien** et son **QR code**.
-- Manque : la page boutique, le lien et le QR (chantiers 1 et 2). Le profil public et le générateur de QR (`vendor/qrcode-generator-1.4.4.js`) existent déjà.
+- Construit le 24/10/2026 (schéma 86, projet de test) : page boutique, lien, QR, pause, retrait avec trace, quantité obligatoire, verrou de stock. Reste : production, et la clé `offres.user_id … ON DELETE CASCADE` (proposition, décision du propriétaire).
 
 ---
 

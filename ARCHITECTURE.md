@@ -168,6 +168,7 @@ Les changements de base sont gardés dans `supabase/schema-*.sql` (81 fichiers, 
 | `marketing_reglage` | réglage des messages du marché | 0 |
 | `code_demandes` | demandes de remise à zéro du code | 0 |
 | `site_mesures` | mesure d'audience anonyme du site | 0 |
+| `niveaux_regles`, `niveaux_membres`, `niveaux_journal`, `niveaux_contestations` | niveaux de confiance (schéma 85) : paliers, état de chaque membre, historique (ajout seulement), contestations | 0 (lecture par fonctions seulement) |
 
 ### 4.4 Politiques RLS principales
 
@@ -228,6 +229,7 @@ Toutes actives en production :
 | `mdg-rappels-achat` | toutes les 15 min | `rappels_envoyer` : rappels des achats récurrents (rien n'est acheté) |
 | `mdg-effacer-messages` | chaque heure, à la minute 23 | `dm_purger` : efface les messages directs et discussions de plus de 365 jours (`dm_duree`) |
 | `mdg-purger-positions` | chaque nuit, 3 h 23 UTC | `positions_purger` : effacement des positions GPS |
+| `mdg-niveaux` | chaque nuit, 4 h 37 UTC | `niveaux_recalculer` : niveaux de confiance (fenêtre de 12 mois, fin des sursis) |
 | `mdg-identites-matin` | chaque matin, 7 h 45 UTC | `push_resume_identites` : résumé des identités à examiner pour l'admin |
 
 ### 4.8 Fonctions Edge

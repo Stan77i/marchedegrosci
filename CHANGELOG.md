@@ -6,6 +6,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Niveaux de confiance (chantier 3) : Vendeur fiable, Bon, Excellent, Grand vendeur, mêmes paliers pour les acheteurs et « Acheteur en gros », calculés par le serveur (schéma 85, appliqué en production), écran « Mes niveaux », tableau de bord de l'administrateur.
 - Connexion : le titre alterne « marché de Gros » et « marché du pays » (3 s, puis 2 s, toutes les 10 s), validé en vidéo par le propriétaire ; le « court film » de connexion a été refusé et n'est pas fusionné.
 
 Audit antislop de l'application, stabilité, prix officiels et reprise de projet.

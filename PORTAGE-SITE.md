@@ -89,6 +89,8 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 
 | Annulation avec motif obligatoire (liste fermée), accord ou non de l'autre partie sur le motif, expiration à 48 h (schéma 84) | `v3/commandes.js` (`confirmer`, `annulerMotif`, `repondreMotif`) | haute |
 | « Ma fiabilité » : score, annulations qui comptent ou non, avertissements, contestation ; ligne « Fiabilité : 96 % sur 25 commandes » du profil (schéma 84) | `v3/reputation.js` (`fiabilite`, commun) et la ligne de `v3/compte.js` (commun) : à vérifier sur le site | moyenne |
+| « Mes niveaux » : niveau vendeur et acheteur, ce qui manque pour le suivant, sursis de 30 jours, historique, contestation ; ligne « Mes niveaux » de Mon compte avec pastille (schéma 85) | `v3/reputation.js` (`niveaux`, commun) et la ligne de `v3/compte.js` (commun) : à vérifier sur le site | moyenne |
+| Puces de niveau (Vendeur fiable … Grand vendeur, Acheteur fiable … Grand acheteur, Acheteur en gros) sur les cartes, fiches et messages ; niveau dans le tableau du marché (schéma 85) | `v3/statuts.js` (commun : suit tout seul), `v3/tableau.js` ; pages fabriquées de `site/` : lire `niveaux_publics(ids)` | moyenne |
 
 ### Accueil et navigation
 

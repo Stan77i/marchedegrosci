@@ -648,6 +648,8 @@ label.cp-r{cursor:pointer}
       // fiabilité (schéma 84) : relue en fond ; la ligne se met à jour seulement si quelque chose a changé
       if (window.MDGRep && MDGRep.lireFiabilite && !off0 && navigator.onLine) { const fv = JSON.stringify(MDGRep.fiabResume());
         MDGRep.lireFiabilite().then(f => { if (f && JSON.stringify(f) !== fv && bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); }).catch(() => {}); }
+      if (window.MDGRep && MDGRep.lireNiveaux && !off0 && navigator.onLine) { const nvv = JSON.stringify(MDGRep.nivResume());
+        MDGRep.lireNiveaux().then(f => { if (f && JSON.stringify(f) !== nvv && bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); }).catch(() => {}); }
       // la vérification d'identité, bien en vue tant qu'elle n'est pas faite : 3 annonces gratuites, puis elle est demandée pour publier
       const idBandeau = (() => {
         if (!ID || !idC || idC.exempt || off0 || idS === 'verifie') return '';
@@ -684,7 +686,7 @@ label.cp-r{cursor:pointer}
       if (SG && !SG.get(u.id)) addEventListener('mdg:rep', function f() { removeEventListener('mdg:rep', f); if (bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); });
       const stBloc = !SG || off0 ? '' : (() => { const gag = SG.liste(u.id), but = SG.progres(u.id), v = idS === 'verifie';
         return `<div class="cp-sh"><h3>Vos statuts</h3><small>Ils se gagnent, ils ne s’achètent pas</small></div>
-          <div class="cp-grp cp-statuts">${gag.length || v ? `<div class="cp-st-l">${SG.puces(u.id, { max: 9, t: 18 })}</div>` : '<p class="cp-vide">Pas encore de statut. Votre identité vérifiée, vos ventes conclues et vos réponses rapides en font gagner, et les autres membres les voient partout : annonces, carte, messages.</p>'}
+          <div class="cp-grp cp-statuts">${gag.length || v ? `<div class="cp-st-l">${SG.puces(u.id, { max: 9, t: 18 })}</div>` : '<p class="cp-vide">Pas encore de statut. Votre identité vérifiée, vos commandes terminées et vos réponses rapides en font gagner, et les autres membres les voient partout : annonces, carte, messages.</p>'}
           ${!v && ID && !(idC && idC.exempt) && !idBandeau ? '<button type="button" class="cp-st-go" data-idv2>' + (ID.badge ? ID.badge(16) : '') + 'Faire vérifier mon identité</button>' : ''}
           ${but.map(x => `<div class="st-but"><b>${x.t}</b><small>${x.fait} sur ${x.total} ${x.txt}</small><div class="st-jauge" role="img" aria-label="${x.fait} sur ${x.total}"><i style="width:${Math.min(100, x.fait / x.total * 100)}%"></i></div></div>`).join('')}</div>`; })();
       main.innerHTML = `<div class="cp-pg">
@@ -710,6 +712,7 @@ label.cp-r{cursor:pointer}
             ${window.MDGReleve ? ligne({ ico: mono('barres'), t: 'Mes ventes et achats', s: 'Relevés, bons de transaction, volumes', attrs: 'data-releve' }) : ''}
             ${window.MDGCommandes && !off0 ? (() => { const nC = MDGCommandes.aAgir(); return ligne({ ico: mono('negoce'), t: 'Mes commandes', s: nC ? nC + (nC > 1 ? ' commandes attendent' : ' commande attend') + ' votre action' : 'Suivi du chargement à la réception', n: nC, attrs: 'data-cmds' }); })() : ''}
             ${window.MDGRep && MDGRep.fiabilite && !off0 ? (() => { const f = MDGRep.fiabResume(), sc = f && f.score, nv = f ? +f.non_vues || 0 : 0; return ligne({ ico: mono('tendance'), t: 'Ma fiabilité', s: f && f.suspension ? 'Compte suspendu pour l’instant' : sc && sc.sur ? 'Fiabilité : ' + sc.pourcent + ' % sur ' + sc.sur + ' commande' + (sc.sur > 1 ? 's' : '') : 'Votre score et votre historique', n: nv, attrs: 'data-fiab' }); })() : ''}
+            ${window.MDGRep && MDGRep.niveaux && !off0 ? (() => { const f = MDGRep.nivResume(), R = f && f.roles || {}, L = ['vendeur', 'acheteur'].map(k => R[k] && R[k].libelle).filter(Boolean), sursis = ['vendeur', 'acheteur'].some(k => R[k] && R[k].grace_jusqua); return ligne({ ico: mono('confiance'), t: 'Mes niveaux', s: sursis ? 'Un niveau est en sursis : voyez ce qui manque' : L.length ? L.join(' · ') : 'Vendeur fiable, Bon, Excellent, Grand : ce qui manque', n: f ? +f.non_vus || 0 : 0, attrs: 'data-niv' }); })() : ''}
             ${window.MDGAppro && !off0 ? ligne({ ico: mono('tableau'), t: 'Approvisionnement pro', s: 'Besoins réguliers, propositions, comparaison', attrs: 'data-appro' }) : ''}
             ${window.MDGGroupes && !off0 ? ligne({ ico: mono('comptes'), t: 'Achats groupés', s: 'Acheter à plusieurs, moins cher', attrs: 'data-groupes' }) : ''}
             ${window.MDGRacheter && !off0 ? ligne({ ico: mono('echanger'), t: 'Racheter', s: 'Mes achats habituels, prix du jour, rappels', attrs: 'data-racheter' }) : ''}
@@ -733,6 +736,7 @@ label.cp-r{cursor:pointer}
       if (q('[data-releve]')) q('[data-releve]').onclick = () => { fermer(); window.MDGReleve.ouvrir(); };
       if (q('[data-cmds]')) q('[data-cmds]').onclick = () => { fermer(); window.MDGCommandes.ouvrir(); };
       if (q('[data-fiab]')) q('[data-fiab]').onclick = () => { fermer(); window.MDGRep.fiabilite(); };
+      if (q('[data-niv]')) q('[data-niv]').onclick = () => { fermer(); window.MDGRep.niveaux(); };
       if (q('[data-appro]')) q('[data-appro]').onclick = () => { fermer(); window.MDGAppro.ouvrir(); };
       if (q('[data-groupes]')) q('[data-groupes]').onclick = () => { fermer(); window.MDGGroupes.ouvrir('miens'); };
       if (q('[data-racheter]')) q('[data-racheter]').onclick = () => { fermer(); window.MDGRacheter.habituels(); };

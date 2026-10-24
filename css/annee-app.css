@@ -36,7 +36,7 @@
 .an2-sm { min-width: 0; height: 66px; padding: 0; border: 0; background: transparent; color: var(--an-faint); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; border-radius: 10px; }
 .an2-bar { position: relative; width: min(16px, 70%); border-radius: 4px; background: rgba(181, 222, 193, .3); overflow: hidden; transition: background .3s; }
 .an2-bar i { position: absolute; left: 0; right: 0; bottom: 0; background: #6CC58C; }
-.an2-sm small { font: 600 9.5px/1 var(--f-texte, Jost), sans-serif; letter-spacing: .02em; }
+.an2-sm small { font: 600 11.5px/1 var(--f-texte, Jost), sans-serif; letter-spacing: .02em; }
 .an2-sm.auj small { color: var(--an-ink); }
 .an2-sm.sel { background: rgba(242, 194, 48, .14); color: var(--an-mais); }
 .an2-sm.sel .an2-bar { box-shadow: 0 0 0 1.5px var(--an-mais); }
@@ -76,7 +76,7 @@
 .an2-fb { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
 .an2-fc { width: 100%; height: 36px; border-radius: 5px; background: rgba(243, 239, 228, .05); display: flex; align-items: flex-end; overflow: hidden; }
 .an2-fc i { display: block; width: 100%; border-radius: 4px 4px 0 0; }
-.an2-fb small { font: 600 9.5px/1 var(--f-texte, Jost), sans-serif; color: var(--an-faint); }
+.an2-fb small { font: 600 11.5px/1 var(--f-texte, Jost), sans-serif; color: var(--an-faint); }
 .an2-fb.sel .an2-fc { box-shadow: inset 0 0 0 1.5px var(--an-mais); }
 .an2-fb.sel small { color: var(--an-mais); }
 .an2-fl { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--an-mute); }

@@ -144,9 +144,9 @@
     const csv = box.querySelector('[data-csv]'); if (csv) csv.onclick = exporter;
   }
 
-  // ——— le bon de transaction ———
+  // le bon de transaction
   const parties = x => x.sens === 'vente' ? [moi(), x.partenaire_nom] : [x.partenaire_nom, moi()];
-  // ——— le tampon rouge du Marché de Gros (22/10/2026) ———
+  // le tampon rouge du Marché de Gros (22/10/2026)
   // Il dit ce que le serveur sait, rien de plus : VENDU / ACHETÉ (accord conclu), LIVRÉ (réception confirmée), ANNULÉ.
   // Jamais « PAYÉ » : l'application ne voit pas l'argent (paiement à la livraison, hors application).
   const dcourt = t => new Date(t).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -198,7 +198,7 @@
     box.scrollTop = 0;
   }
 
-  // ——— relevé de période ———
+  // relevé de période
   function releveHTML() {
     const L = visibles(), V = L.filter(x => x.sens === 'vente'), A = L.filter(x => x.sens === 'achat'), som = l => l.reduce((s, x) => s + (+x.total || 0), 0);
     return `<h1>marché de Gros</h1><p>Relevé de ${esc(moi())} · ${esc(libelle(etat.p, etat.d1, etat.d2))}${etat.sens !== 'tout' ? ' · ' + (etat.sens === 'vente' ? 'ventes' : 'achats') : ''}</p>

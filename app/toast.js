@@ -48,7 +48,7 @@
 .il-g svg{display:block}
 .il-g.seul{width:12px;height:12px;margin-left:8px}.il-g.seul .il-pt{position:static;display:block;box-shadow:none}
 .il-pt{position:absolute;right:-2px;top:-2px;width:11px;height:11px;border-radius:50%;background:#6CC58C;box-shadow:0 0 0 2.5px #FFFDF8}
-.il[data-t="alerte"] .il-pt{background:#F2C230}.il[data-t="erreur"] .il-pt{background:#EF6F5A}.il[data-t="info"] .il-pt{background:#B9AF98}
+.il[data-t="alerte"] .il-pt{background:#F2C230}.il[data-t="erreur"] .il-pt{background:#EF6F5A}.il[data-t="info"] .il-pt{background:#857A67}
 .il[data-t="attente"] .il-pt{background:#F2C230;animation:ilPouls 1.1s ease-in-out infinite}
 @keyframes ilPouls{50%{transform:scale(.6);opacity:.5}}
 .il-x{min-width:0;flex:1;display:flex;flex-direction:column;gap:1px}

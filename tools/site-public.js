@@ -114,7 +114,7 @@ const COMMUN = { BASE: '', SCRIPTS_PAGE: '' };
 ecrire('index.html', page(fs.readFileSync(path.join(GAB, 'index.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: '', R: '../' })));
 // la carte du réseau : <base> à la racine du dépôt, pour que la carte de l'application (app/carte-gl.js) trouve ses fichiers
 ecrire('carte/index.html', page(fs.readFileSync(path.join(GAB, 'carte.html'), 'utf8'), Object.assign({}, VAL, COMMUN, { S: 'site/', R: '', BASE: '<base href="../../">\n',
-  SCRIPTS_PAGE: '<script src="app/icones.js?v=20261025a"></script>\n<script src="app/carte-gl.js?v=20261124g"></script>\n<script src="site/carte.js?v=' + VERSION + '"></script>\n' })));
+  SCRIPTS_PAGE: '<script src="app/icones.js?v=20261025a"></script>\n<script src="app/carte-gl.js?v=20261124i"></script>\n<script src="site/carte.js?v=' + VERSION + '"></script>\n' })));
 
 // ——— les pages produits (site/produits/<id>/) ———
 const PP = require('./site-produits.js')({ produits, CAT, NOM, esc, lire, vm, photo: sl => fs.existsSync(path.join(SITE, img(sl, 480))) });

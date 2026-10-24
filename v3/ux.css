@@ -151,7 +151,7 @@ button[aria-busy="true"]:disabled::after{content:"";display:inline-block;width:1
 .ct-s:not([hidden]),.en-saison{position:relative;overflow:hidden;display:inline-block;isolation:isolate}
 .ct-s:not([hidden])::after,.en-saison::after{content:"";position:absolute;inset:-2px;z-index:1;pointer-events:none;
   background:linear-gradient(105deg,transparent 30%,rgba(255,248,225,.55) 48%,rgba(255,248,225,.15) 56%,transparent 70%);
-  transform:translateX(-120%);animation:enSaison 5s cubic-bezier(.4,0,.2,1) infinite}
+  transform:translateX(-120%);animation:enSaison 5s cubic-bezier(.4,0,.2,1) 1}
 @keyframes enSaison{0%,62%{transform:translateX(-120%)}86%,100%{transform:translateX(120%)}}
 @media (prefers-reduced-motion:reduce){.cx-c .mk--offre,.dx-k .mk--offre,.sx__pvn .mk--offre,[title="Offres"] .mk--offre,.hero__st--on{animation:none}.ct-s:not([hidden])::after,.en-saison::after{display:none}}
 

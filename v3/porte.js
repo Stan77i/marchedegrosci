@@ -16,7 +16,7 @@
     ['a', 'Ceux qui cherchent', 'Le bon produit, au bon endroit, au bon moment.'],
     ['l', 'La rencontre', 'Deux mondes. Un même marché.']
   ];
-  const C = { v: '#6CC58C', a: '#F2C94C', l: '#6AAEF0', terre: '#C9A27A', sable: '#F5F0E6' };
+  const C = { v: '#6CC58C', a: '#F2C94C', l: '#F2C94C', terre: '#C9A27A', sable: '#F5F0E6' };
   const REDUIT = matchMedia('(prefers-reduced-motion: reduce)');
   const CIBLE = { repos: .18, saisie: .38, envoi: .78, ok: 1, erreur: .1 };
 
@@ -56,8 +56,8 @@
     <g class="ps-poussiere" fill="#FFF3D6" clip-path="url(#${k}C)"><circle cx="190" cy="104" r="1"/><circle cx="204" cy="108" r="1.2" style="animation-delay:-1.4s"/><circle cx="213" cy="102" r=".9" style="animation-delay:-2.6s"/><circle cx="196" cy="110" r=".8" style="animation-delay:-3.5s"/></g>
     <path class="ps-faisceau" d="M180 112h40l38 20H142z" fill="#FCE6B8" fill-opacity=".22"/>
   </g>
-  <path d="M70 118Q200 76 330 118" fill="none" stroke="#6AAEF0" stroke-opacity=".18" stroke-dasharray="2 5"/>
-  <g class="ps-lien" fill="none" stroke="#6AAEF0" stroke-width="1.6" stroke-linecap="round"><path d="M70 118Q135 97 200 97" pathLength="1"/><path d="M330 118Q265 97 200 97" pathLength="1"/></g>
+  <path d="M70 118Q200 76 330 118" fill="none" stroke="#F2C94C" stroke-opacity=".18" stroke-dasharray="2 5"/>
+  <g class="ps-lien" fill="none" stroke="#F2C94C" stroke-width="1.6" stroke-linecap="round"><path d="M70 118Q135 97 200 97" pathLength="1"/><path d="M330 118Q265 97 200 97" pathLength="1"/></g>
   <g class="ps-flux" fill="#F5F0E6">
     <circle r="1.6" opacity="0"><animateMotion dur="3.4s" repeatCount="indefinite" path="M70 118Q135 97 200 97"/><animate attributeName="opacity" values="0;.9;0" dur="3.4s" repeatCount="indefinite"/></circle>
     <circle r="1.3" opacity="0"><animateMotion dur="3.4s" begin="-1.7s" repeatCount="indefinite" path="M70 118Q135 97 200 97"/><animate attributeName="opacity" values="0;.8;0" dur="3.4s" begin="-1.7s" repeatCount="indefinite"/></circle>
@@ -66,7 +66,7 @@
   </g>
   <circle class="ps-v" cx="70" cy="118" r="7" fill="#6CC58C"/>
   <rect class="ps-a" x="323" y="111" width="14" height="14" rx="2.5" fill="#F2C94C"/>
-  <circle class="ps-r" cx="200" cy="97" r="3.2" fill="#6AAEF0"/>
+  <circle class="ps-r" cx="200" cy="97" r="3.2" fill="#F2C94C"/>
 </svg>`;
   const SVG = scene('ps');
   const CSS = `.ps{position:absolute;inset:0;width:100%;height:100%;display:block}
@@ -240,11 +240,11 @@
 .mf-flou .ps *{animation:none!important;transition:none!important}
 .mf-net{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .mf-bk{position:absolute;inset:0}
-.mf-bk i{position:absolute;border-radius:50%;opacity:0;background:radial-gradient(circle,var(--c) 0%,transparent 70%);animation:mfFlotte var(--d) ease-in-out infinite;animation-delay:var(--t)}
+.mf-bk i{position:absolute;border-radius:50%;opacity:0;background:radial-gradient(circle,var(--c) 0%,transparent 70%);animation:mfFlotte var(--d) ease-in-out 2;animation-delay:var(--t)}
 @keyframes mfFlotte{0%{opacity:0;transform:translate3d(0,0,0) scale(.8)}25%{opacity:var(--o)}70%{opacity:calc(var(--o) * .7)}100%{opacity:0;transform:translate3d(var(--x),-46px,0) scale(1.1)}}
 @media (prefers-reduced-motion:reduce){.mf-bk i{animation:none;opacity:calc(var(--o) * .6)}}`;
   const BOKEH = [[12, 58, 14, '#FCE6B8', .32, 11], [24, 70, 8, '#6CC58C', .4, 13], [37, 52, 18, '#F5D6A0', .22, 15], [50, 66, 10, '#FFF3D6', .45, 10], [61, 57, 7, '#F2C94C', .38, 12],
-    [72, 72, 16, '#FCE6B8', .26, 14], [84, 60, 9, '#6AAEF0', .32, 11], [91, 74, 12, '#F5D6A0', .24, 16], [6, 76, 6, '#F2C94C', .36, 12], [44, 80, 7, '#6CC58C', .3, 13]];
+    [72, 72, 16, '#FCE6B8', .26, 14], [84, 60, 9, '#F2C94C', .32, 11], [91, 74, 12, '#F5D6A0', .24, 16], [6, 76, 6, '#F2C94C', .36, 12], [44, 80, 7, '#6CC58C', .3, 13]];
   if (window.customElements && !customElements.get('mdg-marche')) customElements.define('mdg-marche', class extends HTMLElement {
     connectedCallback() {
       if (this._pret || this.closest('x-dc')) return; this._pret = true; cssScene();  // jamais dans le gabarit brut, avant que l'application ne le lise

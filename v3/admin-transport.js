@@ -42,7 +42,7 @@
   const qte = (H, x) => x.quantite != null ? ' · ' + H.fmt(x.quantite) + ' ' + H.esc(unites(x.quantite, x.unite)) : '';
   const MST = { proposee: 'en attente de sa réponse', acceptee: 'a accepté', refusee: 'a refusé', retiree: 'retiré' };
 
-  // ——— Transporteurs ———
+  // Transporteurs
   EXT.transporteurs = {
     titre: 'Transporteurs', ico: 'distance',
     n: () => D.tr.filter(t => t.statut === 'en_attente').length,
@@ -88,7 +88,7 @@
     }
   };
 
-  // ——— Commandes ———
+  // Commandes
   EXT.commandes = {
     titre: 'Commandes', ico: 'negoce',
     n: () => D.aTraiter.length,
@@ -196,7 +196,7 @@
     }
   };
 
-  // ——— Commissions (schéma 30) : registre calculé par le serveur. Rien n'est encaissé. ———
+  // Commissions (schéma 30) : registre calculé par le serveur. Rien n'est encaissé.
   const KST = { prevue: ['Prévue', 'a'], due: ['Due', 'v'], suspendue: ['Suspendue (litige)', 'r'], annulee: ['Annulée', ''] };
   // commission transport (schéma 42) : 6,9 % du prix fixé par le chauffeur, due par lui. Rien n'est encaissé.
   function commTransport(H) {
@@ -231,7 +231,7 @@
     }
   };
 
-  // ——— Structures (schéma 39) : badge « Coopérative / Marché vérifié ». Document officiel + identité vérifiée du responsable. ———
+  // Structures (schéma 39) : badge « Coopérative / Marché vérifié ». Document officiel + identité vérifiée du responsable.
   const SST = { en_attente: ['À examiner', 'a'], verifiee: ['Vérifiée', 'v'], refusee: ['Refusée', 'r'], retiree: ['Retirée par le membre', ''] };
   const STYPE = { cooperative: 'Coopérative', marche: 'Marché' };
   D.st = []; D.stImg = {};

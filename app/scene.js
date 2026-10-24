@@ -20,7 +20,7 @@
 
   const PEAU = ['#6A4127', '#57351F', '#7A4D2E'], OMBRE = 'rgba(20,12,6,.28)';
 
-  // ——— morceaux de corps (coordonnées locales : pieds en y = 0, le personnage regarde vers la droite) ———
+  // morceaux de corps (coordonnées locales : pieds en y = 0, le personnage regarde vers la droite)
   // une jambe : cuisse + mollet + pied d'un seul tenant ; pivot en haut (la hanche), animée par .mk-j
   const jambe = (x, haut, couleur, peau, cls, pied) => `<g class="mk-j ${cls}"><path d="M${x - 2.7} ${haut}h5.4l-.5 ${-haut - 3.2}h-4.4z" fill="${couleur}"/>` +
     `<path d="M${x - 2.2} -3.4h4.2l.2 1.6h${pied || 3.4}q1.6 0 1.6 1.8h-${(pied || 3.4) + 6}z" fill="${peau === 'pied' ? '#2A1D14' : peau}"/></g>`;
@@ -31,7 +31,7 @@
   const tete = (y, peau, cou) => `<path d="M-1.8 ${y + 4}h3.6v${cou || 4}h-3.6z" fill="${peau}"/><ellipse cx="0" cy="${y}" rx="4.5" ry="5.3" fill="${peau}"/>` +
     `<path d="M4.1 ${y - .6}l1.6 2-1.4.6z" fill="${peau}"/><ellipse cx="-.9" cy="${y + .4}" rx="1" ry="1.4" fill="${OMBRE}"/><circle cx="2.6" cy="${y - 1.2}" r=".55" fill="#1A120C"/>`;
 
-  // ——— les passants ———
+  // les passants
   // femme, bassine de tomates sur la tête ; pagne terre cuite à motifs maïs, foulard rouge, corsage maïs
   function femmeBassine() {
     const p = PEAU[0];
@@ -135,7 +135,7 @@
     `<ellipse class="mk-om" cx="0" cy="0" rx="${n === 'camion' ? 60 : n === 'brouette' ? 30 : 11}" ry="2.4" fill="rgba(0,0,0,.35)"/>` +
     `<g transform="scale(${sens} 1)"><g class="mk-pas">${f()}</g></g></g>`).join('');
 
-  // ——— le décor ———
+  // le décor
   // les deux étals, avec leurs conversations : on discute le prix, on se met d'accord, on paie ; on parle de ce que fait l'application
   // (les bulles se suivent ; le prix « ne bouge plus jusqu'à la livraison » : c'est la règle d'un accord conclu dans l'application)
   const BULLES_G = `<g class="mk-bu mk-cg" style="--n:0"><rect x="83.8" y="76.5" width="132.3" height="19.5" rx="7" fill="#F3EFE4"/><path d="M146.0 95.5l4 5.5 4-5.5z" fill="#F3EFE4"/><text x="150.0" y="89.7" text-anchor="middle" font-family="Jost,system-ui,sans-serif" font-weight="600" font-size="9" fill="#171512"><tspan x="150.0" dy="0">La tomate, c'est combien ?</tspan></text></g><g class="mk-bu mk-cg" style="--n:1"><rect x="73.2" y="68.5" width="77.7" height="19.5" rx="7" fill="#F3EFE4"/><path d="M108.0 87.5l4 5.5 4-5.5z" fill="#F3EFE4"/><text x="112.0" y="81.7" text-anchor="middle" font-family="Jost,system-ui,sans-serif" font-weight="600" font-size="9" fill="#171512"><tspan x="112.0" dy="0">350 F le kilo.</tspan></text></g><g class="mk-bu mk-cg" style="--n:2"><rect x="83.8" y="76.5" width="132.3" height="19.5" rx="7" fill="#F3EFE4"/><path d="M146.0 95.5l4 5.5 4-5.5z" fill="#F3EFE4"/><text x="150.0" y="89.7" text-anchor="middle" font-family="Jost,system-ui,sans-serif" font-weight="600" font-size="9" fill="#171512"><tspan x="150.0" dy="0">D'accord, je prends 50 kg.</tspan></text></g>`;

@@ -213,7 +213,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
           </div>
           <button type="button" class="tb-go" data-go="${esc(x.id)}">${ach ? 'Acheter' : 'Vendre'}</button></li>`;
       };
-      this.poser(`<button type="button" class="tb-dos" data-dos>‹ Tous les produits</button>
+      this.poser(`<button type="button" class="tb-dos" data-dos>${window.MDGIco ? '<span class="ic-t" aria-hidden="true">' + MDGIco.svg('retour', 17, 2) + '</span>' : '‹ '}Tous les produits</button>
         <div class="tb-hd"><h2 class="tb-h">${esc(lab)}</h2>${vignette(s.slug)}</div>
         <p class="tb-s">${ach ? 'Les vendeurs, du moins cher au plus cher. À prix égal, le transport compris passe devant.' : 'Les acheteurs, du meilleur budget au plus bas. Vous avez ce produit ? Vendez au meilleur prix.'}</p>
         <div class="tb-seg" role="group" aria-label="Je veux"><button type="button" class="a" data-sens="acheter" aria-pressed="${ach}">Acheter<span class="nbul o">${nf(no)}</span></button><button type="button" class="v" data-sens="vendre" aria-pressed="${!ach}">Vendre<span class="nbul d">${nf(nd)}</span></button></div>

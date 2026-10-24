@@ -59,7 +59,7 @@
   const pousseNote = () => { const P = window.MDGPousse; if (!P || !P.ok) return 'Ce téléphone ne peut pas recevoir de notifications.' + (P && P.ios && !P.installee ? ' Sur iPhone, ajoutez d’abord l’application à l’écran d’accueil.' : '');
     return P.ios && !P.installee ? 'Sur iPhone, les notifications marchent quand l’application est ajoutée à l’écran d’accueil.' : 'Les notifications arrivent même application fermée.'; };
 
-  // ——— un produit : offres, demandes ———
+  // un produit : offres, demandes
   function panneau(slug, nom) {
     if (!N() || !N().session()) { N() && N().open('Connectez-vous pour recevoir les alertes de ce produit.'); return; }
     nom = nom || nomDe(slug); const a = suit(slug); let o = a ? a.offres : true, d = a ? a.demandes : false;
@@ -75,7 +75,7 @@
       catch (x) { e.target.disabled = false; N().toast(/alertes_produits|schema cache|Could not find/i.test(String(x.message)) ? 'Pas encore activé sur le serveur.' : (window.MDGErreur ? MDGErreur(x) : 'Impossible : ' + x.message)); } };
   }
 
-  // ——— toutes mes alertes ———
+  // toutes mes alertes
   function gerer() {
     if (!N() || !N().session()) { N() && N().open('Connectez-vous pour choisir vos alertes produits.'); return; }
     const prods = (window.MDG && MDG.products || []).slice().sort((a, b) => a.name.localeCompare(b.name, 'fr'));

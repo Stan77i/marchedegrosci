@@ -217,12 +217,12 @@
   }
 
   /* ——— apparence (papier clair, comme Mon compte) ——— */
-  const CSS = `.idv-badge{display:inline-flex;align-items:center;gap:5px;color:#2C6CB0;vertical-align:-3px;flex:none}
+  const CSS = `.idv-badge{display:inline-flex;align-items:center;gap:5px;color:#10392B;vertical-align:-3px;flex:none}
 .idv-badge svg{display:block}
-.idv-badge.txt{padding:3px 10px 3px 6px;border-radius:999px;background:rgba(106,174,240,.18);font:600 12.5px/1.2 Jost,system-ui,sans-serif;vertical-align:middle}
+.idv-badge.txt{padding:3px 10px 3px 6px;border-radius:999px;background:rgba(16,57,43,.1);font:600 12.5px/1.2 Jost,system-ui,sans-serif;vertical-align:middle}
 .idv-bg{position:fixed;inset:0;z-index:9400;background:rgba(8,7,5,.62);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:idvF .2s both}
 @media (min-width:760px){.idv-bg{align-items:center;padding:24px}}
-.idv{--bg:#F4EEE3;--card:#FFFDF8;--card2:#EFE7D9;--ink:#171512;--mute:#655C4D;--faint:#6F6553;--line2:rgba(23,21,18,.14);--acc:#10392B;--acc-t:#10392B;--ok:#2E7D4F;--bad:#C0442B;--blue:#2C6CB0;
+.idv{--bg:#F4EEE3;--card:#FFFDF8;--card2:#EFE7D9;--ink:#171512;--mute:#655C4D;--faint:#6F6553;--line2:rgba(23,21,18,.14);--acc:#10392B;--acc-t:#10392B;--ok:#2E7D4F;--bad:#C0442B;--blue:#10392B;
   position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:min(94dvh,860px);background:var(--bg);color:var(--ink);border-radius:28px 28px 0 0;font:400 15px/1.45 Jost,system-ui,sans-serif;overflow:hidden;animation:idvUp .32s cubic-bezier(.22,1,.36,1) both}
 @media (min-width:760px){.idv{border-radius:28px;height:min(90dvh,820px);box-shadow:0 30px 90px rgba(0,0,0,.5)}}
 .idv-top{flex:none;display:grid;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;min-height:60px;padding:10px 8px 4px}
@@ -251,7 +251,7 @@
 .idv-in{width:100%;box-sizing:border-box;height:52px;padding:0 14px;border:1px solid var(--line2);border-radius:13px;background:#fff;color:var(--ink);font:500 17px Jost,sans-serif}
 .idv-sf{display:flex;gap:12px;align-items:flex-start;margin-top:12px;padding:12px 14px;border-radius:14px;background:rgba(140,140,140,.1);cursor:pointer}.idv-sf input{flex:none;width:22px;height:22px;margin:1px 0 0;accent-color:#10392B}.idv-sf b{display:block;font-weight:600}.idv-sf small{display:block;margin-top:3px;opacity:.75;font-size:13px;line-height:1.4}
 .idv-in:disabled{opacity:.45}
-.idv-lu{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:rgba(106,174,240,.14);color:#234f80;font-size:13.5px;line-height:1.4}
+.idv-lu{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:rgba(16,57,43,.08);color:#234f80;font-size:13.5px;line-height:1.4}
 .idv-lu.doute{background:rgba(242,201,76,.22);color:#6b4e00}
 .idv-act{display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:6px}
 .idv-go{min-height:54px;border:0;border-radius:27px;background:#10392B;color:#F3EFE4;font:600 16px Jost,sans-serif;cursor:pointer}
@@ -270,7 +270,7 @@
 .idv-chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;color:var(--ink)}.idv-chk input{width:22px;height:22px;flex:none;margin:0;accent-color:var(--acc)}
 .idv-etat{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:18px 6px}
 .idv-etat .rond{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:rgba(23,21,18,.06);color:var(--mute)}
-.idv-etat .rond.ok{background:rgba(106,174,240,.18);color:var(--blue)}.idv-etat .rond.att{background:rgba(242,201,76,.24);color:#8A6400}.idv-etat .rond.ko{background:rgba(192,68,43,.12);color:var(--bad)}
+.idv-etat .rond.ok{background:rgba(16,57,43,.1);color:var(--blue)}.idv-etat .rond.att{background:rgba(242,201,76,.24);color:#8A6400}.idv-etat .rond.ko{background:rgba(192,68,43,.12);color:var(--bad)}
 .idv-motif{padding:12px 14px;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 1px var(--line2);text-align:left;color:var(--ink);font-size:14.5px;width:100%;box-sizing:border-box}
 .idv-barre{height:6px;border-radius:3px;background:rgba(23,21,18,.1);overflow:hidden}.idv-barre i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
 @keyframes idvUp{from{transform:translateY(40px);opacity:.4}}@keyframes idvF{from{opacity:0}}
@@ -334,11 +334,11 @@
     const qui = o.nom ? esc(o.nom) : 'la personne';
     main.innerHTML = `<h2>Que s’est-il passé${o.nom ? ' avec ' + esc(o.nom) : ''} ?</h2>
       <p>L’équipe du Marché de Gros lit chaque signalement. ${o.nom ? esc(o.nom) : 'La personne'} ne saura pas que c’est vous.</p>
-      <div class="idv-sg-t">1 · Le motif</div>
+      <div class="idv-sg-t">Le motif</div>
       <div class="idv-choix" role="group" aria-label="Motif">${MOTIFS.map(m => `<button type="button" data-m="${m[0]}" aria-pressed="false"><span><b>${m[1]}</b><small>${m[2]}</small></span></button>`).join('')}</div>
-      <div class="idv-sg-t">2 · En une phrase</div>
+      <div class="idv-sg-t">En une phrase</div>
       <div><label class="idv-l" for="idv-sig">Ce qui s’est passé <i data-cpt>0 / 15 caractères minimum</i></label><textarea id="idv-sig" class="idv-in" maxlength="500" rows="3" style="height:auto;padding:12px 14px;font-size:15px;resize:vertical" placeholder="${esc(EXEMPLES.arnaque)}"></textarea></div>
-      <div class="idv-sg-t">3 · La preuve</div>
+      <div class="idv-sg-t">La preuve</div>
       ${conv ? `<div class="idv-lu">${IC('verifie', 18)}<span>La ${o.source === 'dm' ? 'discussion' : 'négociation'} est jointe : l’équipe peut la lire. Vous pouvez aussi ajouter des captures d’écran.</span></div>` : '<p class="idv-sg-p">Une capture d’écran de la conversation, une photo de la marchandise, un reçu de paiement…</p>'}
       <div class="idv-preuves" data-ph></div>
       ${conv ? '' : `<label class="idv-chk"><input type="checkbox" data-sans> <span>Je n’ai pas de preuve. <small style="display:block;color:var(--faint)">Sans preuve, il faut que plusieurs personnes signalent ce compte pour que l’équipe agisse.</small></span></label>`}

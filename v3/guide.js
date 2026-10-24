@@ -33,7 +33,7 @@
       conseil: 'Avec un budget, les vendeurs savent tout de suite s’ils peuvent vous servir.', aller: PAGE('demande') },
     { id: 'acheter', ico: 'acheter', ton: 'offre', t: 'Trouver une offre', sert: 'Voir tout ce qui est à vendre, et contacter le vendeur.',
       etapes: ['Touchez « Acheter » dans le menu, ou cherchez un produit en haut de l’accueil.', 'Faites défiler les offres : produit, quantité, prix, lieu et nom du vendeur.', 'Touchez « Écrire » pour lui parler, ou « Proposer un prix » pour négocier.'],
-      conseil: 'Le sceau bleu à côté d’un nom veut dire : identité vérifiée par l’équipe.', aller: PAGE('acheter') },
+      conseil: 'Le sceau vert à côté d’un nom veut dire : identité vérifiée par l’équipe.', aller: PAGE('acheter') },
     { id: 'reseau', ico: 'reseau', ton: 'lien', t: 'Le réseau : la carte', sert: 'La carte de la Côte d’Ivoire montre où sont les offres et les demandes.',
       etapes: ['Touchez « Le réseau » dans le menu.', 'Chaque bulle est une ville : verte pour les offres, jaune pour les demandes. Touchez-en une pour voir les annonces.', 'En haut, choisissez un produit ou « Où êtes-vous ? » pour voir ce qui est près de vous.', 'Touchez + ou − en bas pour vous approcher ou vous éloigner.'],
       conseil: 'La position est toujours celle de la ville, jamais l’adresse exacte d’une personne.', aller: PAGE('carte') },
@@ -43,7 +43,7 @@
     { id: 'negoce', ico: 'negoce', ton: 'marche', t: 'Proposer un prix', sert: 'Négocier calmement, par écrit, jusqu’à un accord.',
       etapes: ['Sur une annonce, touchez « Proposer un prix ». Écrivez votre prix et la quantité.', 'L’autre personne a 48 heures pour accepter, refuser ou proposer un autre prix.', 'Quand vous êtes d’accord, l’accord est conclu : le prix et la quantité ne bougent plus.', 'Ensuite, touchez « Suivre la commande » : vous choisissez qui transporte et où livrer.'],
       conseil: 'Un accord conclu n’est pas un paiement. La négociation n’est pas secrète : l’équipe peut la relire en cas de litige.', aller: FEN('MDGNegoce', 'inbox') },
-    { id: 'tableau', ico: 'tableau', ton: 'marche', t: 'L’onglet Prix : le tableau du marché', sert: 'Voir tout de suite qui vend le moins cher et qui achète le plus cher, comme sur un marché P2P.',
+    { id: 'tableau', ico: 'tableau', ton: 'marche', t: 'L’onglet Prix : le tableau du marché', sert: 'Voir tout de suite qui vend le moins cher et qui achète le plus cher, en un coup d’œil.',
       etapes: ['Sur l’accueil, touchez l’onglet « Prix ».', 'Touchez un produit. « Acheter » : les vendeurs, le moins cher en haut. « Vendre » : les acheteurs, le meilleur budget en haut.', 'À prix égal, le transport compris passe devant. Les prix ne se comparent que dans la même unité (kg, sac, régime…).', 'Touchez « Acheter » ou « Vendre » sur une ligne pour proposer votre prix.'],
       conseil: 'Vous vendez ? Baissez votre prix : vous montez dans le tableau. Aucun numéro n’est affiché : le Marché de Gros est le seul intermédiaire.', aller: ONGLET('Prix') },
     { id: 'commande', ico: 'camion', ton: 'offre', t: 'La commande et la livraison', sert: 'Suivre la marchandise, du « oui » jusqu’à la livraison.',
@@ -70,14 +70,14 @@
     { id: 'confiance', ico: 'confiance', ton: 'vous', t: 'Notes et statuts', sert: 'Savoir à qui vous avez affaire avant d’acheter ou de vendre.',
       etapes: ['Touchez le nom d’un membre pour voir son profil, ses notes et ses statuts.', 'Après une négociation, vous pouvez noter l’autre personne.', '« Vendeur de confiance », « Acheteur sérieux », « Répond vite » : ces statuts se gagnent par des ventes et des réponses réelles.'],
       conseil: 'Un statut ne s’achète pas. « Nouveau membre » veut dire : soyez encore plus prudent.', aller: FEN('MDGRep', 'classement') },
-    { id: 'identite', ico: 'verifie', ton: 'lien', t: 'Faire vérifier son identité', sert: 'Le sceau bleu rassure vos acheteurs et vos vendeurs.',
+    { id: 'identite', ico: 'verifie', ton: 'lien', t: 'Faire vérifier son identité', sert: 'Le sceau vert rassure vos acheteurs et vos vendeurs.',
       etapes: ['Dans Mon compte, touchez « Identité ».', 'Prenez en photo votre pièce (recto et verso), puis un selfie en tenant le code affiché, écrit sur un papier.', 'Une personne de l’équipe compare et décide, en quelques jours.'],
       conseil: 'Vos 3 premières annonces sont gratuites ; ensuite, la vérification est demandée. Une pièce expirée est refusée.', aller: FEN('MDGIdentite', 'ouvrir') },
     { id: 'compte', ico: 'compte', ton: 'vous', t: 'Mon compte', sert: 'Votre profil, vos annonces, vos réglages.',
       etapes: ['Touchez le petit bonhomme en haut à droite.', 'Retrouvez vos offres, vos demandes, vos négociations et vos statuts.', 'Réglez les notifications, les sons et votre code secret.'],
       conseil: 'Dans le menu, « Alertes produits » vous prévient quand votre produit arrive.', aller: FEN('MDGCompte', 'ouvrir') },
     { id: 'securite', ico: 'cadenas', ton: 'aide', t: 'Pour être en sécurité', sert: 'Quelques règles simples protègent contre les arnaques.',
-      etapes: ['Voyez toujours la marchandise avant de payer. Ne payez jamais d’avance à quelqu’un (le séquestre du Marché de Gros, quand il ouvrira, sera dans l’application, jamais par un numéro).', 'Restez dans les messages de l’application : votre numéro reste caché.', 'Préférez les membres avec le sceau bleu et de bonnes notes.', 'Quelque chose ne va pas ? Touchez « Signaler » sur l’annonce ou sur le profil : l’équipe regarde chaque signalement.', 'Le Marché de Gros ne vous demandera jamais d’argent ni de code par message ou par téléphone.'],
+      etapes: ['Voyez toujours la marchandise avant de payer. Ne payez jamais d’avance à quelqu’un (le séquestre du Marché de Gros, quand il ouvrira, sera dans l’application, jamais par un numéro).', 'Restez dans les messages de l’application : votre numéro reste caché.', 'Préférez les membres avec le sceau vert et de bonnes notes.', 'Quelque chose ne va pas ? Touchez « Signaler » sur l’annonce ou sur le profil : l’équipe regarde chaque signalement.', 'Le Marché de Gros ne vous demandera jamais d’argent ni de code par message ou par téléphone.'],
       conseil: 'Si quelqu’un vous presse de payer vite, arrêtez l’échange.' },
     { id: 'probleme', ico: 'bouee', ton: 'aide', t: 'Si ça ne marche pas', sert: 'Les solutions aux soucis les plus courants.',
       etapes: ['Pas de réseau : les annonces déjà vues restent affichées. Réessayez quand le réseau revient.', 'L’application semble bloquée : fermez-la complètement, puis rouvrez-la.', 'Toujours un souci : dans le menu, touchez « Écrire au Marché de Gros ». Écrivez votre question : les réponses toutes prêtes s’affichent. Rien ne vous aide ? Touchez « Je veux parler à une personne » : l’équipe vous répond.'],
@@ -132,7 +132,7 @@
     return `<h1 class="gd-t">Comment ça <em>marche</em></h1>
       <p class="gd-lead">Le Marché de Gros met en relation ceux qui vendent et ceux qui achètent des produits vivriers, partout en Côte d’Ivoire. Voici l’essentiel.</p>
       <section class="gd-3" aria-label="L’essentiel en 3 gestes"><h2>L’essentiel en 3 gestes</h2>
-        ${GESTES.map((g, i) => `<div class="gd-g"><i>${i + 1}</i><div><b>${esc(g.t)}</b><span>${esc(g.x)}</span></div></div>`).join('')}</section>
+        ${GESTES.map(g => `<div class="gd-g"><i aria-hidden="true">${IC(g.ico, 18, 2)}</i><div><b>${esc(g.t)}</b><span>${esc(g.x)}</span></div></div>`).join('')}</section>
       <h2 class="gd-sh">Partie par partie</h2>
       <div class="gd-tu">${FICHES.filter(f => !['securite', 'probleme'].includes(f.id)).map((f, i, L) => `<button type="button"${L.length % 2 && i === L.length - 1 ? ' class="large"' : ''} data-f="${f.id}"><span ${pastille(TON[f.ton])}>${IC(f.ico, 24)}</span><b>${esc(f.t)}</b></button>`).join('')}</div>
       <h2 class="gd-sh">Bon à savoir</h2>
@@ -145,7 +145,7 @@
       <ol class="gd-et">${f.etapes.map(e => `<li>${esc(e)}</li>`).join('')}</ol>
       <p class="gd-cs">${IC('info', 22)}<span><b>Conseil</b>${esc(f.conseil)}</span></p>
       ${f.aller ? `<button type="button" class="gd-go" data-aller>Montrer dans l’app ${IC('fleche', 20, 2)}</button>` : ''}
-      <div class="gd-nav">${av ? `<button type="button" data-f="${av.id}">‹ ${esc(av.t)}</button>` : ''}${ap ? `<button type="button" data-f="${ap.id}">${esc(ap.t)} ›</button>` : ''}</div></article>`;
+      <div class="gd-nav">${av ? `<button type="button" data-f="${av.id}"><span class="ic-t" aria-hidden="true">${IC('retour', 17, 2)}</span>${esc(av.t)}</button>` : ''}${ap ? `<button type="button" data-f="${ap.id}">${esc(ap.t)}<span class="ic-t" aria-hidden="true" style="margin:0 0 0 6px">${IC('suite', 17, 2)}</span></button>` : ''}</div></article>`;
   }
   function dessiner() {
     const id = pile[pile.length - 1], f = id && FICHES.find(x => x.id === id), b = el.querySelector('.gd-b');

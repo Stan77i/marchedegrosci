@@ -1426,3 +1426,22 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - **Liserés** (n° 40) retirés (cartes d'état des commandes, lignes non lues : le point et « Nouveau » suffisent). **Trois cartes « On connecte / On vérifie / On protège »** (n° 41) retirées. **Phrase d'accueil** (n° 42) : « Choisissez un produit sur la roue, ou publiez le vôtre. » (les nombres sont dans les cartes). **Point corail du menu** (n° 43) retiré. **Notifications** (n° 44) : un message pour chaque échec (refus, iPhone non installé, pas de réponse, téléphone incompatible). **Contrastes** (n° 45) : « En ligne » `#31543C`, erreurs des avis et de la négociation `#8E2A1C`. **Bande** (n° 52) : plus de « Nouveau : » ni de « Parcours sécurisé ».
 - Vérifié (navigateur, iPhone) : accueil sans point sur le menu, famille en casse normale, feuille des garanties sans les trois cartes, `MDGErreur` correct, sac au repos qui respire seulement ; boucles restantes = accueil vivant + respiration et clignement ; aucune erreur JS.
 - `?v=20261124g` (22 fichiers) ; site refabriqué ; cache `mgci-v241`.
+
+## 24/10/2026 — Finitions (audit antislop n° 46 à 58)
+
+- **Petits textes** (n° 46) : 11,5 px au moins pour les noms de l'arc de la roue, les bulles des onglets, « Démo », « OFFICIEL », les choix de « Tous les produits », les codes, la ligne « Vous êtes ici » de la carte, le calendrier de l'année (hors dessin).
+- **Numéros** (n° 47) : les « 3 gestes » du guide portent leur icône ; « Signaler » n'a plus de « 1 · 2 · 3 ». **« P2P »** (n° 48) retiré. **Flèches** (n° 49) : retour et suite dessinés (achats groupés, approvisionnement, onglet Prix, guide), bouton d'envoi de la négociation = icône « envoyer ».
+- **Phrases internes** (n° 51) retirées de Mon compte. **« Vente conclue »** (n° 53) : coche dessinée. **« Racheter »** (n° 55) au lieu de « Voir ». **Contrastes limites** (n° 56) : étapes à venir de la fiche, ligne retirée de la sélection (cadre pointillé au lieu de l'opacité), point du message « info ».
+- **Code mort** (n° 57) : `A.yearSVG` (`app/marche-app.js`), `oAnim`, cercles et reflet retirés de `css/mgci-app.css` ; bug corrigé dans l'ancienne fenêtre de compte du site (`v3/nuage.js`, « ${CHEVD} » s'affichait en clair). **Commentaires** (n° 58) : 95 bannières `// ——— X ———` simplifiées, commentaire de `v3/personnages.js` corrigé.
+- Laissés exprès : n° 50 (couleurs en dur qui passent le contraste), n° 54 (transition d'entrée voulue). À vérifier avec des données : n° 59.
+- Vérifié (navigateur, iPhone, clair et sombre, 390 et 320 px) : accueil, connexion, réglages, J'ai, aide : aucune erreur, aucun débordement, aucun contraste faible, plus de texte sous 11,5 px sur l'accueil ; noms de la roue sans chevauchement ; aucun texte simple qui contiendrait « ${ » (contrôle automatique de tous les modules).
+- `?v=20261124h` (34 fichiers) ; site refabriqué ; cache `mgci-v242`.
+
+## 24/10/2026 — Décisions A, B, C de l'audit antislop (choisies par le propriétaire)
+
+- **A. Accueil vivant : « calmer »** : comète (1 fois), point du produit (2), sac qui flotte et son ombre (1), halo (1), triangles du prix (2), reflet « En saison » (1), lumières du fond `mfFlotte` (2) ; puis tout s'arrête. Quand on change de produit sur la roue, ils rejouent (`rejouerAccueil` dans `application.dc.html`, classe `.rejoue` dans `css/mgci-app.css` : une animation CSS finie n'existe plus, on la retire puis la remet). Mouvement réduit : rien ne rejoue.
+- **B. Plus de bleu « vérifié »** : badge d'identité (`v3/identite.js`), teinte « échanger / vérifié » de Mon compte (`--blue` = `#10392B`), point et bouton de l'encadré de vérification, sceau de la carte (`app/carte-gl.js`), statut « Identité vérifiée » (`v3/statuts.js`), icône de la négociation vide (`v3/negoce.js`) ; textes « sceau bleu » → « sceau vert » (aide, tutoriels, guide) ; derniers bleus décoratifs de la porte d'entrée → maïs pâle (`v3/porte.js`). Seul bleu restant : le lien « compatible » sur la carte.
+- **C. « de Gros » en dégradé avec reflet** sur la page de connexion : **gardé** ; exception écrite dans `DESIGN.md` (loi 2).
+- `CLAUDE.md` (Design) et `DESIGN.md` (lois 2, 25, couleurs) mis à jour ; le rapport d'audit note les trois décisions.
+- Vérifié (navigateur, iPhone) : au début, 9 effets jouent ; après 14 s, seules les lumières du fond finissent leur 2e passage ; « Produit suivant » → les effets rejouent ; aucune erreur JS.
+- `?v=20261124i` (11 fichiers) ; site refabriqué ; cache `mgci-v243`.

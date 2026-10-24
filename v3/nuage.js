@@ -542,8 +542,8 @@
       <p>${n ? n + (n > 1 ? ' annonces attendent' : ' annonce attend') + ' le réseau pour partir.' : 'Vos annonces sont visibles de tous.'}</p>
       <div class="ng-sos"></div>
       <div class="ng-list">
-        ${N ? `<button type="button" class="ng-item ng-nego"><span>Mes négociations<small>Prix proposés, réponses et accords</small></span>${nonLus ? `<span class="ng-dot" aria-label="${nonLus} non lues">${nonLus}</span>` : '<i aria-hidden="true">${CHEVD}</i>'}</button>` : ''}
-        ${window.MDGMessages ? `<button type="button" class="ng-item ng-dm"><span>Messages<small>Écrire directement à un membre · effacés après ${MDGMessages.JOURS} jours</small></span>${MDGMessages.unread() ? `<span class="ng-dot" aria-label="${MDGMessages.unread()} non lus">${MDGMessages.unread()}</span>` : '<i aria-hidden="true">${CHEVD}</i>'}</button>` : ''}
+        ${N ? `<button type="button" class="ng-item ng-nego"><span>Mes négociations<small>Prix proposés, réponses et accords</small></span>${nonLus ? `<span class="ng-dot" aria-label="${nonLus} non lues">${nonLus}</span>` : `<i aria-hidden="true">${CHEVD}</i>`}</button>` : ''}
+        ${window.MDGMessages ? `<button type="button" class="ng-item ng-dm"><span>Messages<small>Écrire directement à un membre · effacés après ${MDGMessages.JOURS} jours</small></span>${MDGMessages.unread() ? `<span class="ng-dot" aria-label="${MDGMessages.unread()} non lus">${MDGMessages.unread()}</span>` : `<i aria-hidden="true">${CHEVD}</i>`}</button>` : ''}
         <a class="ng-item ng-admin" href="admin.html" hidden><span>Tableau de bord<small>Administration : annonces, comptes, signalements</small></span><i aria-hidden="true">${CHEVD}</i></a>
       </div>
       <button type="button" class="ng-out">Me déconnecter</button></div>`);

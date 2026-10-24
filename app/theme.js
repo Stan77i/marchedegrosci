@@ -19,7 +19,7 @@
   if (mq) (mq.addEventListener ? mq.addEventListener('change', () => { if (lire() === 'auto') appliquer(); }) : mq.addListener(() => { if (lire() === 'auto') appliquer(); }));
   appliquer();
 
-  // ——— la page Réglages (feuille du bas) ———
+  // la page Réglages (feuille du bas)
   const CSS = `.rg-bg{position:fixed;inset:0;z-index:2147483000;background:rgba(10,12,9,.45);display:flex;align-items:flex-end;justify-content:center;animation:rgIn .2s ease both}
 .rg{width:100%;max-width:520px;background:#FFFDF8;color:#171512;border-radius:28px 28px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -12px 40px rgba(16,57,43,.22);font-family:Jost,system-ui,sans-serif;animation:rgUp .38s cubic-bezier(.22,1,.36,1) both}
 .rg-p{width:40px;height:4px;border-radius:2px;background:rgba(23,21,18,.16);margin:0 auto 12px}

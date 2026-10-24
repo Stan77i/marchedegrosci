@@ -27,7 +27,7 @@ Les valeurs viennent du code (`css/mgci-tokens.css`, `css/sombre.css`, `css/mgci
 | Compatible (lien offre ↔ demande) | `--compat` | `#6AAEF0` (carte seulement) |
 
 Règles :
-- **Plus de bleu ni de violet pour décorer** (24/10/2026) : « transport compris » et le choix retenu sont en vert (`#1F8A55` en bordure, `#10392B` pour le tampon) ; les tuiles « vous » et « lien » du menu sont vert profond et encre chaude. Seul reste, en attente de décision, le bleu « vérifié ».
+- **Plus de bleu ni de violet pour décorer** (24/10/2026) : « transport compris » et le choix retenu sont en vert (`#1F8A55` en bordure, `#10392B` pour le tampon) ; les tuiles « vous » et « lien » du menu sont vert profond et encre chaude. Décision du propriétaire (24/10/2026) : le badge « vérifié » et les négociations sont en **vert profond** `#10392B` ; plus aucun bleu hors du lien « compatible » de la carte.
 - **Une couleur = un sens.** Vert clair = offre, jaune = demande, vert profond = accord, corail = alerte. Ne pas réutiliser ces couleurs pour décorer.
 - Texte sur couleur : contraste 4,5:1 minimum (3:1 pour 18 px gras et plus). Blanc sur corail clair est interdit (3,1:1).
 - Mode nuit : `css/sombre.css` pour les pages, `app/nuit.js` traduit les fenêtres. Une fenêtre qui a ses propres couleurs sombres s'ajoute à la liste `DEJA` de `app/nuit.js`.
@@ -85,7 +85,7 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 
 **Couleur et matière**
 1. Pas de dégradé violet ou bleu, pas de violet « tech » comme couleur de marque (notre violet `--vous` ne sert qu'à « votre position »).
-2. Pas de texte en dégradé. On souligne par la graisse ou la taille.
+2. Pas de texte en dégradé. On souligne par la graisse ou la taille. **Exception voulue par le propriétaire (24/10/2026)** : « de Gros » en dégradé avec un reflet, sur la page de connexion seulement (`v3/nuage.js`, `.ng-tt-g`). Nulle part ailleurs.
 3. Pas de halo coloré (ombre sans décalage), pas de néon, pas de quadrillage en fond (un quadrillage n'a sa place que sur une carte).
 4. Pas de verre dépoli décoratif. Le flou seulement pour un élément posé sur du contenu (boutons de la carte, menus).
 5. Pas de gris clair sur fond clair : texte ≥ 4,5:1, gros texte ≥ 3:1. Le gris le plus pâle permis pour un texte est `#6F6553` (plus de `#857A67`, `#7a7064`, `#8a7f72`). Le maïs et le jaune ne sont jamais une couleur de texte sur fond clair (1,4 à 1,7:1) : sur fond clair, l'accent jaune s'écrit `#765802`. Sur une bulle foncée, l'heure et les petits textes en crème à 72 %. Pas d'opacité pour pâlir un texte : une couleur pleine. Sur fond coloré, le texte secondaire prend une teinte de ce fond, pas du gris.
@@ -116,7 +116,7 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 24. Aucune preuve invérifiable : pas de faux avis, de faux chiffres, de faux logos (règle du projet : rien d'inventé).
 
 **Mouvement**
-25. Rien ne bouge en boucle sans raison : pas de point qui clignote, de reflet qui balaie, de bouton qui rebondit en permanence. On anime ce qui change, une fois, en moins de 300 ms à peu près. Une animation qui annonce quelque chose (point qui bat, flèche, lueur « à vous d'agir ») se joue 2 ou 3 fois puis s'arrête ; seuls la respiration et le clignement des personnages tournent sans fin.
+25. Rien ne bouge en boucle sans raison : pas de point qui clignote, de reflet qui balaie, de bouton qui rebondit en permanence. On anime ce qui change, une fois, en moins de 300 ms à peu près. Une animation qui annonce quelque chose (point qui bat, flèche, lueur « à vous d'agir ») se joue 2 ou 3 fois puis s'arrête ; seuls la respiration et le clignement des personnages tournent sans fin. **Accueil vivant** (décision du propriétaire, 24/10/2026, « calmer ») : la comète, le point, le sac qui flotte, le halo, les triangles du prix, le reflet « En saison » et les lumières du fond se jouent 1 ou 2 fois, puis rejouent seulement quand on change de produit (`rejouerAccueil`).
 26. Pas d'apparition animée sur chaque bloc au défilement. Le contenu est là tout de suite : pas de cascade, pas de fondu du contenu (`mkFade`, `accMonte` retirés le 24/10/2026), pas de chiffre qui repart de 0 ; seule la fenêtre glisse. Un trait ou un tampon se joue une fois par élément, jamais au retour sur la page.
 27. `prefers-reduced-motion` respecté : l'état change, le déplacement disparaît.
 

@@ -1559,3 +1559,9 @@ Règles appliquées : décisions 11 à 21 de `docs/audits/decisions-chantiers-20
 - Vérifié (Chromium, iPhone 13) : titre et champ du numéro immobiles au pixel pendant 14 s ; aucune erreur ; mouvement réduit : reste « de Gros » ; « du pays » caché aux lecteurs d'écran. Rythme réglé en trois vidéos avec le propriétaire (10 s, puis 3 s, puis « du pays » 2 s), validé.
 - `v3/nuage.js?v=20261124v` (application, ancien site, admin, gabarit du site), site refabriqué ; cache `mgci-v256`.
 - Nouvelle règle dans `CLAUDE.md` : toute animation passe d'abord par une vidéo d'aperçu validée par le propriétaire.
+
+## 24/10/2026 — Dossier `videos/signature/` : la signature animée
+
+- Le propriétaire veut garder l'animation « marché de Gros » / « marché du pays » comme signature de la marque.
+- `videos/signature/` : `signature-carre.mp4` (1080 × 1080), `signature-large.mp4` (1920 × 1080), `connexion-titre.mp4` (l'écran de connexion validé), `signature.html` (même animation que `v3/nuage.js`, pour refaire les vidéos), `LISEZMOI.md` (mode d'emploi, couleurs).
+- Vidéos enregistrées dans Chromium, converties en MP4 H.264 (30 i/s). Règle ajoutée dans `CLAUDE.md`.

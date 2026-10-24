@@ -495,8 +495,6 @@ label.cp-r{cursor:pointer}
     if (vs && vs !== '__autre') return { region_slug: r || (V && V.region(vs)) || null, ville: vs };
     const nom = root.querySelector('#cp-ville').value.trim(), pr = root.querySelector('#cp-pres');
     if (!nom) return { region_slug: r, ville: null };
-    // une ville connue tapée à la main : elle garde toujours sa vraie région (ex. « Guiglo » → Montagnes)
-    { const rv = V && V.region(nom); if (rv) return { region_slug: rv, ville: V.propre(nom) }; }
     const pres = pr && !pr.disabled && pr.value;
     return { region_slug: r || (V && pres && V.region(pres)) || null, ville: pres ? nom + ' (près de ' + pres + ')' : nom };
   };

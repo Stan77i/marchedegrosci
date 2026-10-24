@@ -39,7 +39,7 @@
 .al-sw i::after{content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.25);transition:transform .2s}
 .al-sw[aria-pressed=true]{border-color:rgba(16,57,43,.6)}.al-sw[aria-pressed=true] i{background:#10392B}.al-sw[aria-pressed=true] i::after{transform:translateX(18px)}
 .al-go{width:100%;min-height:52px;margin-top:10px;border:0;border-radius:999px;background:#10392B;color:#F3EFE4;font:700 15.5px Jost,sans-serif;cursor:pointer}.al-go:disabled{opacity:.5}
-.al-note{margin:12px 0 0;color:#857A67;font-size:12.5px;line-height:1.45}
+.al-note{margin:12px 0 0;color:#6F6553;font-size:12.5px;line-height:1.45}
 .al-l{display:flex;flex-direction:column;gap:8px}.al-r{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:rgba(23,21,18,.04);box-shadow:inset 0 0 0 1px rgba(23,21,18,.08)}
 .al-r b{display:block;font-size:15px}.al-r small{color:#655C4D;font-size:12.5px}.al-r span{flex:1;min-width:0}
 .al-r button{min-height:40px;padding:0 14px;border:0;border-radius:999px;background:#EFE7D9;color:#171512;font:600 13px Jost,sans-serif;cursor:pointer}

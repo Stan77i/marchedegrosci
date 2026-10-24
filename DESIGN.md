@@ -84,7 +84,7 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 2. Pas de texte en dégradé. On souligne par la graisse ou la taille.
 3. Pas de halo coloré (ombre sans décalage), pas de néon, pas de quadrillage en fond (un quadrillage n'a sa place que sur une carte).
 4. Pas de verre dépoli décoratif. Le flou seulement pour un élément posé sur du contenu (boutons de la carte, menus).
-5. Pas de gris clair sur fond clair : texte ≥ 4,5:1, gros texte ≥ 3:1. Sur fond coloré, le texte secondaire prend une teinte de ce fond, pas du gris.
+5. Pas de gris clair sur fond clair : texte ≥ 4,5:1, gros texte ≥ 3:1. Le gris le plus pâle permis pour un texte est `#6F6553` (plus de `#857A67`, `#7a7064`, `#8a7f72`). Le maïs et le jaune ne sont jamais une couleur de texte sur fond clair (1,4 à 1,7:1) : sur fond clair, l'accent jaune s'écrit `#765802`. Sur une bulle foncée, l'heure et les petits textes en crème à 72 %. Pas d'opacité pour pâlir un texte : une couleur pleine. Sur fond coloré, le texte secondaire prend une teinte de ce fond, pas du gris.
 6. Pas de bordure colorée sur un seul côté d'une carte (« liseré latéral »). Réservé à un vrai statut, et jamais à plus de 1 px.
 
 **Mise en page**

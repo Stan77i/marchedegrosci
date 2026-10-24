@@ -108,9 +108,9 @@
   padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px 16px;background:#C0442B;color:#fff;font:600 15px/1.3 Jost,system-ui,sans-serif;
   box-shadow:0 6px 18px rgba(23,21,18,.22);transition:transform .3s cubic-bezier(.22,1,.36,1),background-color .3s}
 .ms-hl.on{transform:none}.ms-hl.ok{background:#10392B}.ms-hl svg.wi{flex:none}
-.ms-hl button{margin-left:auto;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:rgba(255,255,255,.2);color:#fff;font:700 15px Jost,system-ui,sans-serif;
+.ms-hl button{margin-left:auto;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:#fff;color:#C0442B;font:700 15px Jost,system-ui,sans-serif;
   display:inline-flex;align-items:center;gap:7px;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.ms-hl button:active{background:rgba(255,255,255,.32)}.ms-hl button:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
+.ms-hl button:active{background:#F3EFE4}.ms-hl.ok button{color:#10392B}.ms-hl button:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
 .ms-hl.ok b{color:#F2C230}
 @media (prefers-reduced-motion:reduce){.ms *{animation:none!important}.ms-plein .ms-t{display:none}.ms-hl{transition:none}}`;
   function css() { if (document.getElementById('msCss')) return; const s = document.createElement('style'); s.id = 'msCss'; s.textContent = CSS; (document.head || document.documentElement).appendChild(s); }

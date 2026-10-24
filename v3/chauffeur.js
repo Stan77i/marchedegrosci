@@ -348,7 +348,7 @@
         const r = await N().rpc('commande_transfert_preparer', { p_cmd: cmd, p_code_transporteur: t, p_lieu: lieu });
         box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
           <h2>Code de <em>transfert</em></h2><p class="cm-sous">À donner à ${esc(r.nom)}, de vive voix, quand la marchandise est dans son véhicule.</p>
-          <div class="cm-st" style="text-align:center"><b style="font:800 44px/1 Jost,sans-serif;letter-spacing:.18em;color:#F2C230">${esc(r.code.slice(0, 3))} ${esc(r.code.slice(3))}</b>
+          <div class="cm-st" style="text-align:center"><b style="font:800 44px/1 Jost,sans-serif;letter-spacing:.18em;color:#10392B">${esc(r.code.slice(0, 3))} ${esc(r.code.slice(3))}</b>
             <small>Valable jusqu’à ${new Date(r.expire_le).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}. Un seul usage. Ne l’envoyez pas par message.</small></div>
           <div class="cm-act"><button type="button" class="p" data-ann>J’ai donné le code</button></div>
           <p class="cm-note">Tant qu’il ne l’a pas tapé, la mission reste la vôtre.</p>`;

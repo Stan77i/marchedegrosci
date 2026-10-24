@@ -89,7 +89,7 @@
 @media (min-width:760px){.cp-bg{align-items:center;padding:24px}}
 /* Mon compte : un en-tête chaud et vivant (qui je suis), puis un papier clair et calme (ce que je fais, mes réglages).
    La couleur porte le sens dans l'activité (vert vendre, jaune chercher, bleu échanger, terracotta le marché) ; les réglages restent sobres. */
-.cp{--bg:#F4EEE3;--card:#FFFDF8;--card2:#EFE7D9;--ink:#171512;--mute:#655C4D;--faint:#857A67;--line:rgba(23,21,18,.08);--line2:rgba(23,21,18,.14);--acc:#10392B;--acc-t:#10392B;
+.cp{--bg:#F4EEE3;--card:#FFFDF8;--card2:#EFE7D9;--ink:#171512;--mute:#655C4D;--faint:#6F6553;--line:rgba(23,21,18,.08);--line2:rgba(23,21,18,.14);--acc:#10392B;--acc-t:#10392B;
   --ok:#2E7D4F;--ok-bg:rgba(108,197,140,.2);--warn:#8A6400;--warn-bg:rgba(242,201,76,.24);--blue:#2C6CB0;--blue-bg:rgba(106,174,240,.18);--violet:#6B4FB8;--violet-bg:rgba(176,149,240,.2);--bad:#C0442B;--bad-bg:rgba(226,115,91,.14);
   position:relative;display:flex;flex-direction:column;width:100%;max-width:600px;height:min(94dvh,880px);background:var(--bg);color:var(--ink);border-radius:28px 28px 0 0;box-shadow:0 -10px 60px rgba(0,0,0,.5);
   font:400 15px/1.45 Jost,system-ui,sans-serif;font-variant-numeric:lining-nums tabular-nums;overflow:hidden;animation:cpUp var(--ux-d3,320ms) cubic-bezier(.22,1,.36,1) both}
@@ -126,7 +126,7 @@
 .cp-hero-cam{position:absolute;right:-2px;bottom:-2px;width:36px;height:36px;padding:0;margin:0;-webkit-appearance:none;appearance:none;display:grid;place-items:center;border:0;border-radius:50%;background:#F2C230;color:#171512;cursor:pointer;box-shadow:0 0 0 3px #143F30,0 4px 10px rgba(0,0,0,.3)}
 .cp-hero-cam svg{display:block;width:18px;height:18px}.cp-hero-cam:active{transform:scale(.94)}
 .cp-hero h2 em{font:800 italic 1em Jost,sans-serif;color:#F2C230;letter-spacing:-.015em}
-.cp-hero h2{margin:14px 0 0;font:600 24px/1.1 Jost,sans-serif;letter-spacing:-.01em;overflow-wrap:anywhere}
+.cp-hero h2{margin:14px 0 0;font:600 24px/1.1 Jost,sans-serif;letter-spacing:-.01em;overflow-wrap:anywhere}.cp-hero h2 .idv-badge{color:#F3EFE4}
 .cp-hero p{margin:6px 0 0;color:rgba(255,255,255,.82);font-size:14px}
 .cp-hero-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:10px}
 .cp-hero-tags span{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:13px;background:rgba(255,255,255,.16);color:#fff;font:600 12.5px/1 Jost,sans-serif}
@@ -857,7 +857,7 @@ label.cp-r{cursor:pointer}
   function deconnecter() { fermer(); const fin = () => N().toast('Vous êtes sorti du marché. Vos annonces restent publiées.'); if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N().signOut()); else { N().signOut(); fin(); } }
   function supprimer(main) {
     const box = document.createElement('div'); box.className = 'cp-card'; box.style.marginTop = '10px';
-    box.innerHTML = `<form class="cp-f" novalidate><p style="margin:0;font-size:14.5px">Pour confirmer, tapez votre code secret.</p>${champ('cp-dc', 'Code secret', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}<div class="cp-row"><button type="submit" class="cp-go" style="background:#E2735B">Supprimer définitivement</button><button type="button" class="cp-alt" data-no>Annuler</button></div></form>`;
+    box.innerHTML = `<form class="cp-f" novalidate><p style="margin:0;font-size:14.5px">Pour confirmer, tapez votre code secret.</p>${champ('cp-dc', 'Code secret', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}<div class="cp-row"><button type="submit" class="cp-go" style="background:#C0442B">Supprimer définitivement</button><button type="button" class="cp-alt" data-no>Annuler</button></div></form>`;
     main.querySelector('[data-del]').replaceWith(box);
     box.querySelector('[data-no]').onclick = () => bg.rafraichir();
     box.querySelector('form').onsubmit = async e => {

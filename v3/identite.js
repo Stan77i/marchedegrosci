@@ -222,7 +222,7 @@
 .idv-badge.txt{padding:3px 10px 3px 6px;border-radius:999px;background:rgba(106,174,240,.18);font:600 12.5px/1.2 Jost,system-ui,sans-serif;vertical-align:middle}
 .idv-bg{position:fixed;inset:0;z-index:9400;background:rgba(8,7,5,.62);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:idvF .2s both}
 @media (min-width:760px){.idv-bg{align-items:center;padding:24px}}
-.idv{--bg:#F4EEE3;--card:#FFFDF8;--card2:#EFE7D9;--ink:#171512;--mute:#655C4D;--faint:#857A67;--line2:rgba(23,21,18,.14);--acc:#10392B;--acc-t:#10392B;--ok:#2E7D4F;--bad:#C0442B;--blue:#2C6CB0;
+.idv{--bg:#F4EEE3;--card:#FFFDF8;--card2:#EFE7D9;--ink:#171512;--mute:#655C4D;--faint:#6F6553;--line2:rgba(23,21,18,.14);--acc:#10392B;--acc-t:#10392B;--ok:#2E7D4F;--bad:#C0442B;--blue:#2C6CB0;
   position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:min(94dvh,860px);background:var(--bg);color:var(--ink);border-radius:28px 28px 0 0;font:400 15px/1.45 Jost,system-ui,sans-serif;overflow:hidden;animation:idvUp .32s cubic-bezier(.22,1,.36,1) both}
 @media (min-width:760px){.idv{border-radius:28px;height:min(90dvh,820px);box-shadow:0 30px 90px rgba(0,0,0,.5)}}
 .idv-top{flex:none;display:grid;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;min-height:60px;padding:10px 8px 4px}

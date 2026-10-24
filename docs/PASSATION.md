@@ -1294,3 +1294,11 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 
 - Demande du propriétaire : tout retirer. Supprimés : `claude-design/` (copies, captures, .zip), `tools/claude-design.py`, `tools/claude-design-captures.js`, `tools/claude-design-retour.py`, `tools/claude-design/`, la tâche `.github/workflows/claude-design.yml` ; renvois retirés de `DESIGN.md` et `docs/REPRISE.md` ; `CLAUDE.md` garde la décision (ne pas recréer).
 - Sécurité vérifiée : le dossier ne contenait que des copies de fichiers déjà publics (le dépôt est public), aucune clé secrète. L'« aperçu » qui levait la protection « ordinateur → maintenance » n'a jamais été fusionné ni publié ; sa branche de travail `claude/apercu-claude-design` ne contient que le script inachevé (aucune copie de l'application) ; Claude Code n'a pas le droit de supprimer une branche sur GitHub : le propriétaire peut la supprimer dans « Branches » (GitHub Pages ne publie que `main`). La protection de l'application est inchangée.
+
+## 24/10/2026 — Vérification des mises à jour
+
+- État : toutes les PR fusionnées jusqu'à #243 ; aucune PR ouverte ; cache `mgci-v231` ; plus aucun fichier Claude Design dans `main`.
+- `FOUNDER_CONTEXT.md` : état du site mis à jour (nouveau site prêt mais caché, ancien site caché).
+- `PORTAGE-SITE.md` : la ligne « Dernières annonces » précise que la carte disparaît quand elle est vide.
+- `docs/REPRISE.md` : état après la PR #243, branche obsolète signalée.
+- PDF de stratégie : rien à refaire. Aucun de leurs textes ne parle de ce qui a changé ; leurs chiffres se mettent à jour seuls (tâche du lundi). Le nouveau site n'y sera ajouté qu'à son ouverture.

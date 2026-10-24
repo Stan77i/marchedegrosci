@@ -3,64 +3,61 @@
 -- (https://test.invalid/…), créés puis annulés avec le bloc : aucun push ne part (le projet de test n'a pas les clés push).
 -- Résultat obtenu le 24/10/2026 noté sous chaque bloc.
 
--- Bloc 1 : préférences, catégories critiques, ancien réglage « diffusions », plafond commercial, conseil du jour, doublon,
--- heures calmes, envoi sans téléphone.
+-- Bloc 1 (mis à jour pour le schéma 91, relu avec le schéma 96b) : plus aucun réglage par catégorie (le serveur ignore les
+-- anciennes préférences et « diffusions »), catégories critiques, plafond de 8 commerciaux par jour (l'envoi raté ne compte pas),
+-- écart de 90 min entre deux commerciaux, 4 « conseils » au plus, doublon, heures calmes, envoi sans téléphone.
+-- L'ancien bloc 1 (schéma 88 : préférences « pref », plafond de 6, 1 conseil) est périmé depuis le schéma 91.
 do $$
 declare B1 uuid := '9bdc3a6d-93b3-41f1-bbbd-984b1094f05f'; B2 uuid := 'af343de8-c7f9-4531-899e-624322b72a38';
   B3 uuid := '66b186ee-6e92-4a0d-8bc9-d5b5699d652f'; B4 uuid := 'ec705bc9-0a7b-45f8-905d-3458bad00037'; B5 uuid := '9a88ae51-03fb-41e9-8197-485763bf74af';
   res text := ''; j json; i int; n int; h int := extract(hour from now() at time zone 'UTC');
 begin
-  -- heures calmes neutralisées (le résultat ne dépend pas de l'heure du test)
-  update public.notif_regles set calme_debut = 0, calme_fin = 0 where id = 1;
+  -- heures calmes neutralisées, écart réduit à 1 min (le résultat ne dépend pas de l'heure du test) ; remis plus bas pour les tester.
+  -- Le temps qui passe est simulé en reculant de 3 min les envois (plus que l'écart doublé de 2 min) déjà notés (now() ne bouge pas dans un bloc).
+  update public.notif_regles set calme_debut = 0, calme_fin = 0, ecart_min = 1 where id = 1;
   perform set_config('request.jwt.claims', json_build_object('sub', B1, 'role', 'authenticated')::text, true);
-  perform public.notif_pref_regler('offres', false);
-  perform public.notif_pref_regler('fiabilite', false);
-  begin perform public.notif_pref_regler('commande', false); res := res || 'commande coupée ACCEPTÉ (erreur)'; exception when others then res := res || 'commande ne se coupe pas'; end;
-  begin perform public.notif_pref_regler('inconnue', false); res := res || ' | inconnue ACCEPTÉ (erreur)'; exception when others then res := res || ' | catégorie inconnue refusée'; end;
-  res := res || ' | prefs_moi offres=' || (select x ->> 'actif' from json_array_elements(public.notif_prefs_moi()) x where x ->> 'cat' = 'offres')
-    || ' commande=' || (select x ->> 'actif' from json_array_elements(public.notif_prefs_moi()) x where x ->> 'cat' = 'commande')
-    || ' désactivations=' || (select count(*) from public.notif_desactivations where user_id = B1 and origine = 'preference');
-  res := res || ' | offres coupées : ' || (public.notif_preparer(B1, 'offres', 't88:o1') ->> 'raison');
-  res := res || ' | fiabilité coupée : ' || (public.notif_preparer(B1, 'fiabilite', 't88:f1') ->> 'raison');
+  begin perform public.notif_pref_regler('offres', false); exception when others then null; end;
+  res := res || 'offres « coupées » : envoyer=' || (public.notif_preparer(B1, 'offres', 't88:o1') ->> 'envoyer');
   j := public.notif_preparer(B1, 'commande', 't88:c1', 'creee', null, null, 'application.dc.html#/?commande=x', 'Commande', 'Tomate');
   res := res || ' | commande (critique) : envoyer=' || (j ->> 'envoyer') || ' nature=' || (j ->> 'nature');
 
   perform set_config('request.jwt.claims', json_build_object('sub', B2, 'role', 'authenticated')::text, true);
-  perform public.notif_reglage_diffusions(false);
-  res := res || ' | diffusions=false : conseils ' || (public.notif_preparer(B2, 'conseils', 't88:d1') ->> 'raison')
-    || ', groupes ' || (public.notif_preparer(B2, 'groupes', 't88:d2') ->> 'raison')
-    || ', pour_vendeur ' || (public.notif_preparer(B2, 'pour_vendeur', 't88:d3') ->> 'raison')
-    || ', renouveler envoyer=' || (public.notif_preparer(B2, 'renouveler', 't88:d4') ->> 'envoyer');
+  begin perform public.notif_reglage_diffusions(false); exception when others then null; end;
+  res := res || ' | diffusions=false : conseils envoyer=' || (public.notif_preparer(B2, 'conseils', 't88:d1') ->> 'envoyer');
 
-  -- 7 envois commerciaux, le 1er raté : il ne compte pas, donc le 7e passe ; le 8e est refusé ; la négociation passe toujours
-  for i in 1..7 loop
+  -- 9 envois commerciaux, le 1er raté : il ne compte pas, donc 8 réussis ; le 10e est refusé ; la négociation passe toujours
+  for i in 1..9 loop
     j := public.notif_preparer(B3, 'groupes', 't88:p' || i);
     perform public.notif_resultat((j ->> 'nid')::uuid, 1, case when i = 1 then 0 else 1 end);
+    update public.notif_journal set cree_le = cree_le - interval '3 minutes' where user_id = B3;
   end loop;
   res := res || ' | plafond : ' || (select string_agg(resultat, ',' order by id) from public.notif_journal where user_id = B3 and cle like 't88:p%');
-  res := res || ' | 8e : ' || (public.notif_preparer(B3, 'offres', 't88:p8') ->> 'raison');
+  res := res || ' | 10e : ' || (select coalesce(x ->> 'raison', x::text) from (select public.notif_preparer(B3, 'offres', 't88:p10') x) y);
   res := res || ' | négociation après plafond : envoyer=' || (public.notif_preparer(B3, 'negociation', 't88:n1') ->> 'envoyer');
 
-  j := public.notif_preparer(B4, 'conseils', 't88:k1'); perform public.notif_resultat((j ->> 'nid')::uuid, 1, 1);
-  res := res || ' | conseil 1 ok, conseil 2 : ' || (public.notif_preparer(B4, 'conseils', 't88:k2') ->> 'raison');
-  j := public.notif_preparer(B5, 'offres', 't88:k3'); perform public.notif_resultat((j ->> 'nid')::uuid, 1, 1);
-  res := res || ' | conseil après une offre : ' || (public.notif_preparer(B5, 'conseils', 't88:k4') ->> 'raison');
+  for i in 1..4 loop j := public.notif_preparer(B5, 'conseils', 't88:k' || i); perform public.notif_resultat((j ->> 'nid')::uuid, 1, 1);
+    update public.notif_journal set cree_le = cree_le - interval '3 minutes' where user_id = B5; end loop;
+  res := res || ' | 4 conseils, 5e : ' || (select coalesce(x ->> 'raison', x::text) from (select public.notif_preparer(B5, 'conseils', 't88:k5') x) y);
+
+  update public.notif_regles set ecart_min = 90 where id = 1;
+  j := public.notif_preparer(B4, 'groupes', 't88:e1'); perform public.notif_resultat((j ->> 'nid')::uuid, 1, 1);
+  res := res || ' | écart 90 min : 2e commercial ' || (select coalesce(x ->> 'raison', x::text) from (select public.notif_preparer(B4, 'offres', 't88:e2') x) y);
 
   res := res || ' | doublon : 1er envoyer=' || (public.notif_preparer(B5, 'negociation', 't88:dbl') ->> 'envoyer');
-  res := res || ', 2e ' || (public.notif_preparer(B5, 'negociation', 't88:dbl') ->> 'raison');
+  res := res || ', 2e ' || (select coalesce(x ->> 'raison', x::text) from (select public.notif_preparer(B5, 'negociation', 't88:dbl') x) y);
   select count(*) into n from public.notif_journal where cle = 't88:dbl';
   res := res || ', lignes=' || n;
 
-  update public.notif_regles set calme_debut = h, calme_fin = (h + 1) % 24 where id = 1;
-  res := res || ' | calme : groupes ' || (public.notif_preparer(B4, 'groupes', 't88:q1') ->> 'raison')
-    || ', commande envoyer=' || (public.notif_preparer(B4, 'commande', 't88:q2') ->> 'envoyer');
+  update public.notif_regles set calme_debut = h, calme_fin = (h + 1) % 24, ecart_min = 1 where id = 1;
+  res := res || ' | calme : groupes ' || (select coalesce(x ->> 'raison', x::text) from (select public.notif_preparer(B2, 'groupes', 't88:q1') x) y)
+    || ', commande envoyer=' || (public.notif_preparer(B2, 'commande', 't88:q2') ->> 'envoyer');
 
   j := public.notif_preparer(B4, 'commande', 't88:t0'); perform public.notif_resultat((j ->> 'nid')::uuid, 0, 0);
   res := res || ' | sans téléphone : ' || (select resultat from public.notif_journal where cle = 't88:t0');
   raise exception 'TEST %', res;
 end $$;
--- Résultat (24/10/2026) : TEST commande ne se coupe pas | catégorie inconnue refusée | prefs_moi offres=false commande=true désactivations=2 | offres coupées : pref | fiabilité coupée : pref | commande (critique) : envoyer=true nature=trans | diffusions=false : conseils pref, groupes pref, pour_vendeur pref, renouveler envoyer=true | plafond : echec,ok,ok,ok,ok,ok,ok | 8e : plafond | négociation après plafond : envoyer=true | conseil 1 ok, conseil 2 : plafond | conseil après une offre : plafond | doublon : 1er envoyer=true, 2e doublon, lignes=1 | calme : groupes calme, commande envoyer=true | sans téléphone : aucun_telephone
--- Lecture : préférence coupée = rien ; commande toujours envoyée ; « diffusions » coupe les 4 catégories commerciales ; 6 envois commerciaux réussis par jour, l'envoi raté ne compte pas ; 1 conseil par jour et seulement sans autre message commercial ; une seule ligne pour une clé ; heures calmes : le commercial attend, la commande part.
+-- Résultat (24/10/2026, après le schéma 96b, projet de test) : TEST offres « coupées » : envoyer=true | commande (critique) : envoyer=true nature=trans | diffusions=false : conseils envoyer=true | plafond : echec,ok,ok,ok,ok,ok,ok,ok,ok | 10e : plafond | négociation après plafond : envoyer=true | 4 conseils, 5e : plafond | écart 90 min : 2e commercial plafond | doublon : 1er envoyer=true, 2e doublon, lignes=1 | calme : groupes calme, commande envoyer=true | sans téléphone : aucun_telephone
+-- Lecture : les anciennes préférences ne coupent plus rien ; la commande part toujours ; 8 envois commerciaux réussis par jour (le raté ne compte pas), le suivant est refusé ; 4 conseils au plus ; 90 min entre deux commerciaux ; une seule ligne pour une clé ; heures calmes : le commercial attend, la commande part.
 
 -- Bloc 2 : ouverture (une seule fois, faux identifiant refusé), droits du visiteur, du membre et de l'administrateur.
 do $$

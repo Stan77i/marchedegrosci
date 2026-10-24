@@ -7,6 +7,9 @@
    Transport choisi par l'acheteur ou le vendeur (schéma 63) : le transporteur n'a rien à faire dans l'application — ni inscription,
    ni code. Le vendeur glisse son mot secret dans la marchandise ; l'acheteur le tape pour confirmer la réception (commande_reception_mot).
    Les codes (prise en charge, réception, code transporteur) sont réservés au transporteur du réseau Marché de Gros.
+   Transport (schéma 83) : la ville de livraison décide « même ville » ; le vendeur organise alors son livreur (frais réglés au livreur,
+   hors Marché de Gros), ou l'acheteur vient chercher si le vendeur l'accepte. Un transport à part convenu dans l'accord est figé dans la commande.
+   Le transporteur du réseau (fermé pour l'instant) convient son prix à trois : lui, l'acheteur et le vendeur (transport_agir).
    Aucun paiement : la commission de 3,5 % est seulement calculée et montrée au vendeur (« non prélevée »).
    Pas de faux suivi en direct : sans position réelle, on montre la dernière étape et son heure, rien d'autre.
    API : MDGCommandes.ouvrir(id?) · MDGCommandes.depuisAccord(nego) · MDGCommandes.creer(nego) */
@@ -204,6 +207,8 @@
 .cm-rf ul{margin:6px 0 0;padding:0;list-style:none;font-size:13px}.cm-rf li{padding:3px 0}
 .cm-wa{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:rgba(37,211,102,.1);font-size:13.5px}.cm-wa b{font-weight:600}.cm-wa a{color:#10392B;font-weight:600}
 .cm-f input[type=number]{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512}
+.cm-f select{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512;accent-color:#10392B}
+.cm-f select:focus-visible{outline:2px solid #10392B;outline-offset:2px}
 .cm-pick{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:16px;border:2px dashed rgba(16,57,43,.35);background:#FFFDF8;color:#10392B;font:600 15px Jost,sans-serif;cursor:pointer}
 .cm-pick input{position:absolute;width:1px;height:1px;opacity:0}
 @media (prefers-reduced-motion:reduce){.cm-bg,.cm,.cm-camion,.cm-pb i,.cm-scene *{animation:none!important;transition:none!important}}
@@ -529,8 +534,7 @@
       <dl class="cm-dl">
         ${c.role === 'vendeur' && c.commission_montant != null ? (() => { const clos = c.etat === 'terminee' && !aVerifier(c), k = seq[c.id] && seq[c.id].repartition ? seq[c.id].repartition.vendeur_commission : c.commission_montant;
           return `<dt>${c.etat === 'annulee' ? 'Commission (3,5 %) annulée' : c.etat === 'litige' ? 'Commission (3,5 %) suspendue' : clos ? 'Commission due (3,5 %)' : 'Commission prévue (3,5 %)'}</dt><dd>${c.etat === 'annulee' ? '0 F' : F(clos ? k : c.commission_montant)}<br><small style="font-weight:400;color:#5E5546">${c.etat === 'annulee' ? 'commande annulée : rien n’est dû' : clos ? 'rien n’est prélevé : pas encore de paiement dans l’application' : 'due seulement à la libération · rien n’est prélevé'}</small></dd>`; })() : ''}
-        <dt>Transport</dt><dd>${esc(MODES[c.mode_transport] || '—')}${transport[c.id] && transport[c.id].prix_transport != null ? '<br>' + F(transport[c.id].prix_transport) + ' <small style="font-weight:400;color:#5E5546">(prix du chauffeur)</small>' : ''}</dd>
-        ${transport[c.id] && transport[c.id].total_livraison != null && c.etat !== 'annulee' ? `<dt>À payer à la livraison</dt><dd><b>${F(transport[c.id].total_livraison)}</b><br><small style="font-weight:400;color:#5E5546">marchandise ${F(c.montant)} + transport ${F(transport[c.id].prix_transport)}, payés à la réception, hors application</small></dd>` : ''}
+        ${ddTransport(c)}
         <dt>Paiement</dt><dd>${seq[c.id] && seq[c.id].actif ? 'Séquestre ' + esc(OPE[seq[c.id].operateur] || '') : 'À la livraison<br><small style="font-weight:400;color:#5E5546">séquestre en construction</small>'}</dd>
       </dl>
       ${Jr.length ? `<h3 class="cm-h3">Historique</h3><ul class="cm-j">${Jr.slice().reverse().map(e => `<li><b>${esc(EV[e.evenement] || e.evenement)}</b> · ${esc(e.par_moi ? 'vous' : ROLE[e.role] || '')}<small>${quand(e.at)} · ${esc(PREUVE[e.preuve] || '')}${e.lieu ? ' · ' + esc(e.lieu) : ''}${e.lat != null ? ' · position jointe' : ''}</small>${e.note ? `<small>« ${esc(e.note)} »</small>` : ''}</li>`).join('')}</ul>` : ''}
@@ -540,7 +544,7 @@
     box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => geste(c, b.dataset.g));
     const rb = box.querySelector('[data-racheter]'); if (rb) rb.onclick = () => { fermer(); MDGRacheter.ouvrir(c.id); };
     const ec = box.querySelector('[data-ecrire]'); if (ec) ec.onclick = () => { fermer(); MDGMessages.ecrire(c.partenaire_id, { nom: c.partenaire_nom }); };
-    lierTransport(c, box); lierLien(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box); photos(box); lierDisc(c, box);
+    lierTransport(c, box); lierTrois(c, box); lierLien(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box); photos(box); lierDisc(c, box);
     if (arrive) { if (navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {} toast('Le chauffeur est arrivé', { type: 'ok', sous: c.role === 'acheteur' ? 'Vérifiez la marchandise avant de confirmer.' : esc(c.produit || '') }); }
   }
   // paiement sécurisé : où en est l'argent, et qui reçoit quoi à la libération (schéma 57)
@@ -774,6 +778,50 @@
     const n = box.querySelector('[data-code-nv]'); if (n) n.onclick = async () => { if (await (window.MDGDemande ? MDGDemande.oui('Créer un nouveau code ? L’ancien ne marchera plus.', { ok: 'Nouveau code' }) : Promise.resolve(confirm('Créer un nouveau code ? L’ancien ne marchera plus.')))) go(n); };
   }
 
+  // la ligne « Transport » du détail (schéma 83) : la règle, les villes, le prix accepté ; pas de total quand le livreur est hors Marché de Gros
+  const REGLE = { inclus: 'Compris dans le prix', a_part: 'Le vendeur livre · transport à part', livreur_vendeur: 'Le vendeur organise son livreur', retrait: 'L’acheteur vient chercher', acheteur: 'Transporteur choisi par l’acheteur', mgci: 'Transporteur du réseau Marché de Gros' };
+  function ddTransport(c) {
+    const T = transport[c.id] || {}, R = T.regle || c.transport_regle, px = T.prix_transport, hors = c.mode_transport !== 'reseau', gris = 'style="font-weight:400;color:#5E5546"';
+    let h = `<dt>Transport</dt><dd>${esc(REGLE[R] || MODES[c.mode_transport] || '—')}`;
+    if (T.ville_arrivee) h += `<br><small ${gris}>${esc(T.ville_depart || '')} → ${esc(T.ville_arrivee)}${T.meme_ville ? ' · même ville' : ''}</small>`;
+    if (px != null) h += `<br>${F(px)} <small ${gris}>(${hors ? 'convenu dans l’accord' : 'convenu à trois'})</small>`;
+    else if (hors && R && R !== 'inclus' && R !== 'retrait') h += `<br><small ${gris}>Frais de livraison : à régler directement au livreur, hors Marché de Gros.</small>`;
+    h += '</dd>';
+    if (T.total_livraison != null && c.etat !== 'annulee') h += `<dt>Total convenu</dt><dd><b>${F(T.total_livraison)}</b><br><small ${gris}>marchandise ${F(c.montant)} + transport ${F(px)}, à régler à la livraison, hors application</small></dd>`;
+    return h;
+  }
+  // le prix du transporteur du réseau, convenu à trois (schéma 83) : il propose, l'acheteur et le vendeur acceptent, refusent ou contre-proposent
+  const QUI3 = { transporteur: 'Le transporteur', acheteur: 'L’acheteur', vendeur: 'Le vendeur' };
+  let trois = null;   // commande dont le formulaire de contre-proposition est ouvert
+  function blocTrois(c, T) {
+    const P = T && T.prix_trois; if (!P || !['acheteur', 'vendeur'].includes(T.mon_role)) return '';
+    if (P.convenu != null) return `<small style="color:#5E5546">Prix convenu par les trois : <b style="color:#171512">${F(P.convenu)}</b>. Il ne change plus, même en cas de transbordement.</small>`;
+    const A = P.en_attente, moi = T.mon_role;
+    if (!A) return `<small style="color:#5E5546">En attente du prix du transporteur. Vous pourrez l’accepter, le refuser ou proposer le vôtre (48 h pour répondre).</small>`;
+    const ok = r => A['ok_' + r] ? 'a accepté' : 'pas encore', fini = A['ok_' + moi];
+    return `<div class="cm-st" style="margin:6px 0 0;background:#FFFDF8;color:#171512"><b>${esc(QUI3[A.role] || '')} propose ${F(A.prix)}</b>
+      <small style="color:#5E5546">Transporteur : ${ok('transporteur')} · acheteur : ${ok('acheteur')} · vendeur : ${ok('vendeur')}. Réponse avant ${esc(quand(A.expire_le))}.</small>
+      ${fini ? '<small style="color:#5E5546">Vous avez accepté ce prix. En attente des autres.</small>' : `<div class="cm-act" style="margin:10px 0 0"><button type="button" class="p" data-t3="accord">Accepter ${F(A.prix)}</button><button type="button" data-t3="contre">Proposer un autre prix</button><button type="button" class="m" data-t3="refus">Refuser</button></div>`}
+      ${trois === c.id ? `<form class="cm-f" data-t3f style="display:flex;gap:8px;margin-top:8px"><input type="number" inputmode="numeric" min="1" step="1" data-t3v aria-label="Votre prix pour le transport, en francs" placeholder="ex. 15000" style="flex:1;min-width:0"><button type="submit" style="min-height:48px;padding:0 18px;border-radius:24px;border:0;background:#10392B;color:#F3EFE4;font:600 15px Jost,sans-serif;cursor:pointer">Proposer</button></form>` : ''}
+      <p class="cm-err" data-t3e role="alert" style="margin:4px 0 0"></p></div>`;
+  }
+  function lierTrois(c, box) {
+    const T = transport[c.id], P = T && T.prix_trois; if (!P || !P.en_attente) return;
+    const err = box.querySelector('[data-t3e]');
+    const go = async (action, prix) => {
+      try { transport[c.id].prix_trois = await N().rpc('transport_agir', { p_mission: P.mission_id, p_action: action, p_prix: prix || null, p_ref: action === 'prix' ? null : P.en_attente.id });
+        trois = null; toast(action === 'accord' ? 'Prix accepté' : action === 'refus' ? 'Prix refusé : le livreur du vendeur prend le relais' : 'Prix proposé', { type: 'ok' }); await lireJournal(c.id); peindre(); }
+      catch (x) { if (err) err.textContent = erreurTxt(x); }
+    };
+    box.querySelectorAll('[data-t3]').forEach(b => b.onclick = async () => {
+      const g = b.dataset.t3;
+      if (g === 'contre') { trois = trois === c.id ? null : c.id; peindre(); const v = bg && bg.querySelector('[data-t3v]'); if (v) v.focus(); return; }
+      if (g === 'refus' && !await (window.MDGDemande ? MDGDemande.oui('Refuser ce prix ? Le transporteur du réseau est retiré et la commande continue avec le livreur du vendeur.', { ok: 'Refuser', danger: true }) : Promise.resolve(false))) return;
+      b.disabled = true; await go(g); b.disabled = false;
+    });
+    const f = box.querySelector('[data-t3f]');
+    if (f) f.onsubmit = e => { e.preventDefault(); const p = Math.round(+f.querySelector('[data-t3v]').value || 0); if (!(p > 0)) { if (err) err.textContent = 'Indiquez votre prix, en francs.'; return; } go('prix', p); };
+  }
   // le transport du réseau : qui conduit, sa réponse (son propre transporteur n'apparaît pas ici : pas de code, schéma 63)
   function blocTransport(c) {
     const T = transport[c.id]; if (!T || c.etat === 'annulee') return '';
@@ -781,13 +829,13 @@
     // son propre transporteur (schéma 63) : rien à choisir ni à taper ici ; on n'affiche une mission que si elle existait déjà
     if (c.mode_transport !== 'reseau' && !m) return '';
     const choisir = T.peut_choisir && c.mode_transport === 'reseau', qui = c.mode_transport === 'acheteur' ? 'l’acheteur' : 'le vendeur';
-    const etat = !m ? '' : m.statut === 'proposee' ? 'En attente de la réponse du chauffeur' : m.statut === 'acceptee' ? 'A accepté la mission' + (m.avec_application ? '' : ' (inscrit par l’équipe, sans l’application)') : 'A refusé la mission : choisissez un autre transporteur.';
+    const etat = !m ? '' : m.statut === 'proposee' ? 'Mission proposée : le prix du transport se convient à trois' : m.statut === 'acceptee' ? 'A accepté la mission' + (m.avec_application ? '' : ' (inscrit par l’équipe, sans l’application)') : 'A refusé la mission.';
     const vide = c.mode_transport === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié.' : 'En attente du choix de ' + qui + '.';
     return `<h3 class="cm-h3">Transport</h3><div class="cm-dl" style="grid-template-columns:1fr;gap:6px">
       ${m ? `<b style="font-weight:600">${esc(m.nom)} · ${esc(m.vehicule)}${m.immatriculation ? ' · ' + esc(m.immatriculation) : ''}</b>
         <span><span class="cm-tag ${m.verifie ? '' : 'mais'}">${m.verifie ? 'Vérifié par l’équipe' : 'Pas encore vérifié par l’équipe'}</span></span>
         <small style="color:${m.statut === 'refusee' ? '#8A2414' : '#5E5546'}">${esc(etat)}</small>
-        ${m.statut === 'acceptee' ? (T.prix_transport != null ? `<span><b style="font-weight:600">Prix du transport : ${F(T.prix_transport)}</b> <small style="color:#5E5546">fixé par le chauffeur</small></span>` : '<small style="color:#5E5546">Le chauffeur n’a pas encore indiqué son prix.</small>') : ''}` : `<small style="color:#5E5546">${esc(vide)}</small>`}
+        ${c.mode_transport === 'reseau' ? blocTrois(c, T) : ''}` : `<small style="color:#5E5546">${esc(vide)}</small>`}
       ${choisir ? `<form class="cm-f" data-trf style="display:flex;gap:8px;margin-top:6px"><input type="text" data-code maxlength="8" placeholder="T-4K7P" aria-label="Code du transporteur" autocapitalize="characters" autocomplete="off" style="flex:1;min-width:0;text-transform:uppercase"><button type="submit" style="min-height:48px;padding:0 18px;border-radius:24px;border:0;background:#10392B;color:#F3EFE4;font:600 15px Jost,sans-serif;cursor:pointer">${m ? 'Changer' : 'Choisir'}</button></form>
         ${m && m.statut !== 'refusee' ? '<button type="button" data-trx style="all:unset;cursor:pointer;color:#10392B;text-decoration:underline;min-height:44px;display:inline-flex;align-items:center">Retirer ce transporteur</button>' : ''}<p class="cm-err" data-tre role="alert" style="margin:0"></p>` : ''}
     </div>`;
@@ -913,28 +961,32 @@
     }
   }
 
-  // le transport annoncé (schéma 48) décide des choix proposés à la commande
-  // offre « inclus » ou demande « le vendeur livre » : le vendeur transporte, pas de transporteur du réseau (le serveur le refuse aussi).
-  // offre « inclus hors de ma ville » : autre ville → le vendeur livre ; même ville → l'acheteur s'en charge.
-  function choixTransport(n) {
-    const t = choixTransport0(n); if (RESEAU_OUVERT) return t;
+  // qui transporte (schéma 83) : l'accord passe avant l'annonce, puis la ville (même ville ou non)
+  // · transport inclus dans l'accord : le vendeur livre ;
+  // · transport à part, prix convenu dans l'accord : le vendeur livre à ce prix (ou un transporteur du réseau) ;
+  // · même ville : le vendeur organise son livreur, l'acheteur paie les frais au livreur, hors Marché de Gros ; retrait si le vendeur l'accepte ;
+  // · villes différentes sans transport convenu : l'acheteur s'en charge, sauf accord avec le vendeur.
+  function choixTransport(n, meme) {
+    const t = choixTransport0(n, meme); if (RESEAU_OUVERT) return t;
     const modes = t.modes.filter(k => k !== 'reseau');
     return Object.assign({}, t, { modes, defaut: modes.includes(t.defaut) ? t.defaut : modes[0], bientot: t.modes.includes('reseau') });
   }
-  function choixTransport0(n) {
-    let a = null; try { a = (N().list(n.cible === 'offre' ? 'offres' : 'demandes') || []).find(x => x._rid === n.cible_id) || null; } catch (_) {}
-    const t = a && a.transport, ville = (a && a.city) || n.ville || '';
-    // ce qui a été convenu dans la négociation passe avant l'annonce (schéma 49)
-    if (n.transport_final === true) return { modes: ['vendeur'], defaut: 'vendeur', lib: { vendeur: 'Le vendeur livre (transport inclus dans l’accord)' }, info: 'L’accord comprend le transport : c’est le vendeur qui livre.' };
-    if (n.transport_final === false) return { modes: ['acheteur', 'reseau', 'vendeur'], defaut: 'acheteur', lib: {}, info: 'L’accord est sans transport : l’acheteur s’en charge.' };
-    if ((n.cible === 'offre' && t === 'inclus') || (n.cible === 'demande' && t === 'vendeur'))
-      return { modes: ['vendeur'], defaut: 'vendeur', lib: { vendeur: 'Le vendeur livre (transport inclus)' }, info: 'Le transport est inclus dans le prix : c’est le vendeur qui s’en occupe.' };
-    if (n.cible === 'offre' && t === 'hors_ville')
-      return { modes: ['vendeur', 'acheteur', 'reseau'], defaut: 'vendeur', info: 'Le vendeur livre hors ' + (ville ? (/^[aeiouyàâéèêîôh]/i.test(ville) ? 'd’' : 'de ') + ville : 'de sa ville') + ' ; à ' + (ville || 'sa ville') + ', l’acheteur s’en charge.',
-        lib: { vendeur: 'Livraison dans une autre ville : le vendeur livre', acheteur: 'Livraison à ' + (ville || 'la même ville') + ' : l’acheteur s’en charge', reseau: 'Livraison à ' + (ville || 'la même ville') + ' avec un transporteur du réseau' } };
-    if ((n.cible === 'offre' && t === 'non') || (n.cible === 'demande' && t === 'acheteur'))
-      return { modes: ['acheteur', 'reseau', 'vendeur'], defaut: 'acheteur', lib: {}, info: 'Le transport n’est pas inclus : l’acheteur s’en charge, sauf accord avec le vendeur.' };
-    return { modes: ['reseau', 'acheteur', 'vendeur'], defaut: 'acheteur', lib: {}, info: '' };
+  const annonceDe = n => { try { return (N().list(n.cible === 'offre' ? 'offres' : 'demandes') || []).find(x => x._rid === n.cible_id) || null; } catch (_) { return null; } };
+  const moiVendeur = n => (n.cible === 'offre') === (me() === n.proprio_id);
+  function choixTransport0(n, meme) {
+    const a = annonceDe(n), t = a && a.transport, pt = n.transport_final === false && +n.prix_transport_final > 0 ? +n.prix_transport_final : 0;
+    const inclus = n.transport_final === true || (n.transport_final == null && ((n.cible === 'offre' && t === 'inclus') || (n.cible === 'demande' && t === 'vendeur')));
+    const V = moiVendeur(n), frais = 'L’acheteur paie les frais de livraison directement au livreur, hors Marché de Gros.';
+    if (inclus) return { modes: ['vendeur'], defaut: 'vendeur', lib: { vendeur: 'Le vendeur livre' }, sous: { vendeur: 'Le transport est compris dans le prix convenu.' }, info: 'L’accord comprend le transport : c’est le vendeur qui livre.' };
+    if (pt) return { modes: ['vendeur', 'reseau'], defaut: 'vendeur', lib: { vendeur: 'Le vendeur livre · transport ' + F(pt) }, sous: { vendeur: 'Prix du transport convenu dans l’accord, à régler à la livraison, hors application.' },
+      info: 'Transport à part, convenu dans l’accord : ' + F(pt) + '.' };
+    if (meme === true) return { modes: ['vendeur', 'acheteur', 'reseau'], defaut: 'vendeur',
+      lib: { vendeur: 'Le vendeur organise son livreur', acheteur: V ? 'L’acheteur vient chercher la marchandise' : 'Je viens chercher la marchandise' },
+      sous: { vendeur: 'Le vendeur choisit le livreur. ' + frais, acheteur: V ? 'Retrait chez vous : vous l’acceptez en envoyant la commande.' : 'Retrait seulement si le vendeur l’accepte : il le dit en confirmant la commande.' },
+      info: 'Même ville : le vendeur organise la livraison. ' + frais };
+    const hv = n.cible === 'offre' && t === 'hors_ville';
+    return { modes: hv ? ['vendeur', 'acheteur', 'reseau'] : ['acheteur', 'vendeur', 'reseau'], defaut: hv ? 'vendeur' : 'acheteur', lib: {}, sous: {},
+      info: meme === false ? (hv ? 'Le vendeur livre hors de sa ville.' : 'Villes différentes, transport non compris dans l’accord : l’acheteur s’en charge, sauf accord avec le vendeur.') : '' };
   }
   // le lien de suivi pour son propre chauffeur (schéma 48)
   const ago = t => { const m = Math.round((Date.now() - Date.parse(t)) / 60000); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
@@ -983,37 +1035,58 @@
     if (pc) pc.onclick = async () => { try { await navigator.clipboard.writeText(url); toast('Lien copié', { type: 'ok', sous: 'Collez-le dans un message à votre chauffeur.' }); } catch (_) { toast('Copie impossible', { type: 'erreur', sous: url }); } };
   }
 
-  // créer une commande à partir d'un accord
+  // créer une commande à partir d'un accord : la ville d'abord (même ville ou non), puis qui transporte
   function creer(n) {
     if (!N() || !N().session()) { if (N()) N().open(); return; }
     monter();
     const box = bg.querySelector('.cm'), u = n.unite || 'unité', q = n.quantite_finale; box.scrollTop = 0; dernierEcran = 'creer';
-    const tr = choixTransport(n);
+    const offre = n.cible === 'offre', a = annonceDe(n), villeAnn = (a && a.city) || n.ville || '';
+    const VL = window.MDGVilles ? MDGVilles.toutes().map(x => x.nom).sort((x, y) => x.localeCompare(y, 'fr')) : [];
+    const cle = v => window.MDGVilles ? MDGVilles.cle(v) : String(v || '').toLowerCase();
+    const optV = VL.length ? `<select id="cmVille" required><option value="">Choisir la ville</option>${VL.map(v => `<option${!offre && cle(v) === cle(villeAnn) ? ' selected' : ''}>${esc(v)}</option>`).join('')}</select>`
+      : `<input type="text" id="cmVille" maxlength="80" autocomplete="off" placeholder="Ville" value="${offre ? '' : esc(villeAnn)}">`;
+    const DESC = { reseau: 'L’équipe du Marché de Gros vous propose un transporteur vérifié. Son prix se convient à trois : lui, l’acheteur et le vendeur.',
+      acheteur: 'L’acheteur envoie son camion ou son chauffeur. Rien à installer pour le chauffeur ; un lien de suivi est possible.',
+      vendeur: 'Le vendeur livre avec son camion ou son livreur. Rien à installer pour le livreur ; un lien de suivi est possible.' };
     box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
       <h2>Suivre la <em>commande</em></h2>
       <p class="cm-sous">${esc(n.produit || '')}${q ? ' · ' + qte(q, u) : ''}${n.prix_final != null ? ' · ' + F(n.prix_final) + ' / ' + esc(u) : ''}</p>
       <form class="cm-f" novalidate>
+        <label class="t" for="cmVille">${offre ? 'Ville de livraison' : 'Ville où se trouve la marchandise'}</label>
+        ${optV}
+        <p class="cm-note" style="margin:6px 0 0">${offre ? 'La marchandise part de ' + esc(villeAnn || 'la ville de l’annonce') + '.' : 'Livraison à ' + esc(villeAnn || 'la ville de la demande') + '.'}</p>
         <label class="t">Qui transporte la marchandise ?</label>
-        ${tr.info ? `<p class="cm-info">${TI('camion')}${esc(tr.info)}</p>` : ''}
-        ${tr.modes.map(k => `<label class="cm-opt"><input type="radio" name="mode" value="${k}"${k === tr.defaut ? ' checked' : ''}><span><b>${tr.lib[k] || MODES[k]}</b><small>${k === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié, avec les codes de prise en charge et de réception.' : k === 'acheteur' ? 'L’acheteur envoie son camion ou son chauffeur. Rien à installer pour le chauffeur ; un lien de suivi est possible.' : 'Le vendeur livre avec son camion ou son chauffeur. Rien à installer pour le chauffeur ; un lien de suivi est possible.'}</small></span></label>`).join('')}
-        ${tr.bientot ? `<label class="cm-opt cm-off" aria-disabled="true"><input type="radio" name="mode" value="reseau" disabled><span><b>${MODES.reseau} <span class="cm-tag">Bientôt</span></b><small>Pas encore disponible : le réseau de transporteurs se construit. Pour l’instant, l’acheteur ou le vendeur s’occupe du transport.</small></span></label>` : ''}
-        <p class="cm-info" data-regle>${TI('cle')}<b>Votre transporteur n’a rien à faire dans l’application</b> : ni inscription, ni code. Le vendeur glisse un <b>mot secret</b> dans la marchandise ; à la réception, l’acheteur le tape pour confirmer.</p>
+        <div data-modes></div>
+        <p class="cm-info" data-regle>${TI('cle')}<b>Votre livreur n’a rien à faire dans l’application</b> : ni inscription, ni code. Le vendeur glisse un <b>mot secret</b> dans la marchandise ; à la réception, l’acheteur le tape pour confirmer.</p>
         <label class="t" for="cmLv">Lieu de livraison <small style="font-weight:400;color:#5E5546">(facultatif)</small></label>
-        <input type="text" id="cmLv" maxlength="120" placeholder="Ville, quartier, marché…" autocomplete="off">
+        <input type="text" id="cmLv" maxlength="120" placeholder="Quartier, marché, entrepôt…" autocomplete="off">
         <p class="cm-err" role="alert"></p>
         <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">Envoyer à l’autre partie</button></div>
         <p class="cm-note">L’autre partie confirme, puis chaque étape s’affiche ici avec son heure. Aucun paiement ne passe par l’application.</p>
       </form>`;
     box.querySelector('[data-x]').onclick = fermer;
-    const f = box.querySelector('form'), err = f.querySelector('.cm-err');
+    const f = box.querySelector('form'), err = f.querySelector('.cm-err'), vi = f.querySelector('#cmVille'), zone = f.querySelector('[data-modes]');
+    const meme = () => { const v = vi.value.trim(); return v ? cle(v) === cle(villeAnn) : null; };
+    const modes = () => {
+      const tr = choixTransport(n, meme()), coche = tr.defaut;   // la ville change la règle : on repart du choix conseillé
+      zone.innerHTML = (tr.info ? `<p class="cm-info">${TI('camion')}${esc(tr.info)}</p>` : '')
+        + tr.modes.map(k => `<label class="cm-opt"><input type="radio" name="mode" value="${k}"${k === coche ? ' checked' : ''}><span><b>${esc(tr.lib[k] || MODES[k])}</b><small>${esc((tr.sous && tr.sous[k]) || DESC[k])}</small></span></label>`).join('')
+        + (tr.bientot ? `<label class="cm-opt cm-off" aria-disabled="true"><input type="radio" name="mode" value="reseau" disabled><span><b>${MODES.reseau} <span class="cm-tag">Bientôt</span></b><small>Pas encore disponible : le réseau de transporteurs se construit. Pour l’instant, l’acheteur ou le vendeur s’occupe du transport.</small></span></label>` : '');
+    };
+    modes();
+    vi.addEventListener(vi.tagName === 'SELECT' ? 'change' : 'input', () => { err.textContent = ''; modes(); });
     f.onsubmit = async e => {
       e.preventDefault();
-      const mode = (f.querySelector('[name=mode]:checked') || {}).value, lieu = f.querySelector('#cmLv').value.trim(), val = mode === 'reseau' ? 'code' : 'declaration';   // le serveur décide aussi (schéma 63)
+      const mode = (f.querySelector('[name=mode]:checked') || {}).value, lieu = f.querySelector('#cmLv').value.trim(), ville = vi.value.trim(), val = mode === 'reseau' ? 'code' : 'declaration';   // le serveur décide aussi (schémas 63 et 83)
+      if (!ville) { err.textContent = offre ? 'Choisissez la ville de livraison.' : 'Choisissez la ville où se trouve la marchandise.'; vi.focus(); return; }
       if (!mode) { err.textContent = 'Choisissez qui transporte.'; return; }
       if (lieu && N().texteRefus) { const r = N().texteRefus(lieu); if (r) { err.textContent = r; return; } }
       const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = '';
       try {
-        const id = await N().rpc('commande_creer', { p_nego: n.id, p_mode: mode, p_lieu: lieu || null, p_validation: val });
+        let id;
+        try { id = await N().rpc('commande_creer2', { p_nego: n.id, p_mode: mode, p_lieu: lieu || null, p_ville_arrivee: offre ? ville : null, p_ville_depart: offre ? null : ville }); }
+        catch (x) { if (!/Could not find|schema cache|PGRST202/i.test((x && x.message) || '')) throw x;
+          id = await N().rpc('commande_creer', { p_nego: n.id, p_mode: mode, p_lieu: [ville, lieu].filter(Boolean).join(', ').slice(0, 120) || null, p_validation: val }); }
         toast('Commande envoyée', { type: 'ok', sous: 'Elle démarre dès que l’autre partie la confirme.' });
         await lireListe(); await lireJournal(id); sel = id; vue = 'detail'; peindre();
       } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }

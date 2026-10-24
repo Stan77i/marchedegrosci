@@ -1,7 +1,8 @@
 /* ═════════ Marché de Gros CI — Négoce : proposer, contre-proposer, conclure ═════════
    Le site et l'application utilisent ce même module (au-dessus de v3/nuage.js ; sons : v3/sons.js).
    Une négociation porte sur une annonce partagée (offre ou demande) entre la personne qui l'a publiée et une autre.
-   • Une proposition = prix + quantité + conditions. Elle attend une réponse 48 h, puis expire.
+   • Une proposition = prix + quantité + transport (inclus, à part avec son prix, ou sans) + conditions, envoyés en un seul appel
+     (nego_ouvrir2, nego_agir2, schéma 83). Elle attend une réponse 48 h, puis expire.
    • L'autre partie l'accepte (après un résumé), la refuse ou fait une contre-proposition ; l'auteur peut la retirer.
    • L'accord fige les conditions (prix, quantité, conditions, date). Ce n'est ni un paiement ni une livraison.
    • Toutes les règles sont vérifiées par la base (nego_ouvrir, nego_agir) : rien n'est simulé ici.
@@ -269,6 +270,7 @@
 .nx-trc{display:flex;flex-direction:column;gap:6px;margin:14px 0 2px}.nx-trc>div{display:flex;gap:8px}
 .nx-trc button{flex:1;min-height:44px;padding:0 10px;border-radius:22px;border:1px solid rgba(23,21,18,.18);background:none;color:var(--ink);font:500 14.5px Jost,sans-serif;cursor:pointer}
 .nx-trc button[aria-pressed=true]{border-color:#1F8A55;background:rgba(31,138,85,.12);font-weight:600}.nx-trc small{font-size:12.5px;line-height:1.35;color:var(--mute)}
+.nx-trp{display:flex;align-items:baseline;gap:8px;margin:2px 0 0;padding:4px 0 6px;border-bottom:1px solid var(--line)}.nx-trp[hidden]{display:none}.nx-trp label{flex:none;font-size:14px;color:var(--mute)}.nx-trp input{flex:1;min-width:0;border:0;background:none;color:var(--ink);font:700 22px/1.2 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;padding:6px 0;outline:none;text-align:right}.nx-trp input:focus-visible{box-shadow:0 2px 0 var(--acc)}.nx-trp span{flex:none;color:var(--mute);font-size:15px}
 .nx-tr{display:inline-flex;align-items:center;gap:4px;margin:4px 0 2px;padding:2px 10px;border-radius:999px;background:rgba(23,21,18,.07);font:600 12.5px/1.6 Jost,sans-serif;color:var(--mute)}
 .nx-tr.oui{background:rgba(31,138,85,.13);color:#17633D}.nx-tk.me .nx-tr{background:rgba(245,240,230,.14);color:#F5F0E6}.nx-tk.me .nx-tr.oui{background:rgba(159,220,178,.22);color:#CDEFD8}
 .nx-pq{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:14px 0 2px}
@@ -348,9 +350,24 @@
     return h + '</div></div>';
   }
 
-  const trTag = v => v === true ? '<span class="nx-tr oui">' + TI('camion') + 'Transport inclus</span>' : v === false ? '<span class="nx-tr">Sans transport</span>' : '';
+  // transport d'une proposition (schéma 83) : inclus, à part (avec son prix, négocié ici) ou sans ; null = rien de dit
+  const trTag = (v, pt) => v === true ? '<span class="nx-tr oui">' + TI('camion') + 'Transport inclus</span>' : v === false && +pt > 0 ? '<span class="nx-tr oui">' + TI('camion') + 'Transport à part · ' + fmt(pt) + ' F</span>' : v === false ? '<span class="nx-tr">Sans transport</span>' : '';
+  const trTxt = (v, pt) => v === true ? ', transport inclus' : v === false && +pt > 0 ? ', transport à part ' + fmt(pt) + ' F' : v === false ? ', sans transport' : '';
+  const trDe = (v, pt) => v === true ? 'inclus' : v === false ? (+pt > 0 ? 'apart' : 'sans') : null;
+  // envoi d'une proposition : prix, quantité et transport en un seul appel (nego_ouvrir2, nego_agir2) ; ancien serveur → comme avant
+  const sansFn = x => /Could not find|schema cache|PGRST202|does not exist/i.test((x && x.message) || '');
+  async function envoyer(fn, args, v, nego) {
+    try { return await N().rpc(fn + '2', Object.assign({}, args, { p_transport: v.tr, p_prix_transport: v.tr === 'apart' ? v.pt : null })); }
+    catch (x) {
+      if (!sansFn(x)) throw x;
+      if (v.tr === 'apart') throw new Error('Le transport à part n’est pas encore activé sur le serveur. Choisissez « Inclus » ou « Sans ».');
+      const r = await N().rpc(fn, args);
+      if (v.tr) await N().rpc('nego_transport', { p_nego: nego || r, p_oui: v.tr === 'inclus' }).catch(() => {});
+      return r;
+    }
+  }
   // transport annoncé (schéma 48) → choix de départ dans une proposition (schéma 49) : inclus, sans, ou à discuter (rien)
-  const trAnnonce = (cible, t) => cible === 'offre' ? (t === 'inclus' ? true : t === 'non' ? false : null) : (t === 'vendeur' ? true : t === 'acheteur' ? false : null);
+  const trAnnonce = (cible, t) => cible === 'offre' ? (t === 'inclus' ? 'inclus' : t === 'non' ? 'sans' : null) : (t === 'vendeur' ? 'inclus' : t === 'acheteur' ? 'sans' : null);
   /* ——— l'éditeur de proposition (nouvelle proposition, contre-proposition, relance) ——— */
   // ctx : { cible, prixRef (prix affiché), unite, qmax, q0, negociable, pour (le rôle qui reçoit), dernier (dernier prix de l'autre) }
   function editeur(box, ctx, onSend, label) {
@@ -362,8 +379,9 @@
       <div class="nx-px"><input id="nxP" inputmode="numeric" autocomplete="off" placeholder="${ref ? fmt(chips[1] ? chips[1].v : ref) : '0'}" ${fixe ? `value="${fmt(ref)}" readonly` : ''} aria-describedby="nxD"><span>F / ${esc(u)}</span></div>
       <div class="nx-chips nx-pq" role="group" aria-label="Prix rapides">${ref ? `<button type="button" class="nx-chip" data-v="${ref}" aria-pressed="false"><small>Prix affiché</small>${fmt(ref)}</button>` : ''}${ctx.dernier && ctx.dernier !== ref ? `<button type="button" class="nx-chip" data-v="${ctx.dernier}" aria-pressed="false"><small>Sa proposition</small>${fmt(ctx.dernier)}</button>` : ''}${chips.map(c => `<button type="button" class="nx-chip" data-v="${c.v}" aria-pressed="false"><small>${c.t}</small>${fmt(c.v)}</button>`).join('')}</div>
       <div class="nx-qr"><label class="nx-lbl" for="nxQ">Quantité</label><div class="nx-q"><input id="nxQ" inputmode="decimal" autocomplete="off" value="${ctx.q0 ? fq(ctx.q0) : ''}" placeholder="—"><span>${esc(u)}</span>${qmin && qmin < (ctx.qmax || Infinity) ? `<button type="button" class="nx-chip" data-q="${qmin}">Minimum · ${fq(qmin)}</button>` : ''}${ctx.qmax ? `<button type="button" class="nx-chip" data-q="${ctx.qmax}">Tout le lot · ${fq(ctx.qmax)}</button>` : ''}</div>${qmin ? `<p class="nx-note" style="margin:6px 0 0">Le vendeur vend à partir de ${fq(qmin)} ${esc(uQ(qmin, u))}.</p>` : ''}</div>
-      <div class="nx-trc" role="group" aria-label="Transport"><span class="nx-lbl">Transport dans ce prix</span><div><button type="button" data-tr="1" aria-pressed="${ctx.tr0 === true}">${TI('camion')}Transport inclus</button><button type="button" data-tr="0" aria-pressed="${ctx.tr0 === false}">Sans transport</button></div>
-        <small>${ctx.pour === 'vendeur' ? 'Transport inclus : le vendeur livre, son prix comprend la livraison. Demandez-le ici si l’annonce ne l’inclut pas.' : 'Transport inclus : vous livrez, votre prix comprend la livraison. Ajustez-le en conséquence.'}</small></div>
+      <div class="nx-trc" role="group" aria-label="Transport"><span class="nx-lbl">Transport</span><div><button type="button" data-tr="inclus" aria-pressed="${ctx.tr0 === 'inclus'}">Inclus</button><button type="button" data-tr="apart" aria-pressed="${ctx.tr0 === 'apart'}">À part</button><button type="button" data-tr="sans" aria-pressed="${ctx.tr0 === 'sans'}">Sans</button></div>
+        <div class="nx-trp"${ctx.tr0 === 'apart' ? '' : ' hidden'}><label for="nxTP">Prix du transport</label><input id="nxTP" inputmode="numeric" autocomplete="off" placeholder="0" value="${ctx.pt0 ? fmt(ctx.pt0) : ''}"><span>F</span></div>
+        <small>Inclus : le vendeur livre, son prix comprend la livraison. À part : le vendeur livre et le transport s’ajoute, au prix discuté ici. Sans : l’acheteur s’en charge. Dans la même ville, les frais de livraison se règlent au livreur, hors Marché de Gros.</small></div>
       <div class="nx-tot" id="nxD" aria-live="polite"></div>
       <div class="nx-prev"></div>
       <label class="nx-lbl" for="nxT" style="margin-top:14px">Conditions (facultatif)</label>
@@ -371,15 +389,20 @@
       <textarea id="nxT" maxlength="500" placeholder="Livraison, paiement, délai…"></textarea>
       <div class="nx-pied"><button type="button" class="nx-go nx-send" disabled>${esc(label || 'Envoyer ma proposition')}</button><p class="nx-err" role="alert"></p></div></div>`;
     const $ = s => box.querySelector(s), ip = $('#nxP'), iq = $('#nxQ'), go = $('.nx-send'), out = $('#nxD');
-    let tr = ctx.tr0 === true || ctx.tr0 === false ? ctx.tr0 : null;
-    box.querySelectorAll('[data-tr]').forEach(b => b.onclick = () => { const v = b.dataset.tr === '1'; tr = tr === v ? null : v; box.querySelectorAll('[data-tr]').forEach(x => x.setAttribute('aria-pressed', String(tr === (x.dataset.tr === '1')))); upd(); });
-    const vals = () => ({ p: num(ip.value), q: num(iq.value) || null, t: $('#nxT').value.trim(), tr });
+    let tr = ['inclus', 'apart', 'sans'].includes(ctx.tr0) ? ctx.tr0 : null;
+    const tp = $('#nxTP'), tpb = $('.nx-trp');
+    box.querySelectorAll('[data-tr]').forEach(b => b.onclick = () => { const v = b.dataset.tr; tr = tr === v ? null : v; box.querySelectorAll('[data-tr]').forEach(x => x.setAttribute('aria-pressed', String(tr === x.dataset.tr)));
+      tpb.hidden = tr !== 'apart'; if (tr === 'apart') setTimeout(() => tp.focus(), 30); upd(); });
+    tp.addEventListener('input', () => { const v = num(tp.value); tp.value = v ? fmt(v) : ''; upd(); });
+    const vals = () => ({ p: num(ip.value), q: num(iq.value) || null, t: $('#nxT').value.trim(), tr, pt: tr === 'apart' ? num(tp.value) || null : null });
     const upd = () => {
-      const { p, q } = vals(); go.disabled = !p || (ctx.qmax && q > ctx.qmax) || (qmin && !(q >= qmin));
+      const { p, q, pt } = vals(); go.disabled = !p || (ctx.qmax && q > ctx.qmax) || (qmin && !(q >= qmin)) || (tr === 'apart' && !pt);
       go.textContent = p ? (label || 'Proposer') + ' ' + fmt(p) + ' F / ' + u + (q ? ' × ' + fq(q) : '') : (label || 'Envoyer ma proposition');
       box.querySelectorAll('.nx-chip[data-v]').forEach(c => c.setAttribute('aria-pressed', String(+c.dataset.v === p)));
       let h = '';
-      if (p && q) h += `<div class="nx-sum"><span>Total</span><b>${fq(q)} ${esc(uQ(q, u))} × ${fmt(p)} F = ${fmt(p * q)} F${tr === true ? ', transport inclus' : tr === false ? ', sans transport' : ''}</b></div>`;
+      if (p && q) h += `<div class="nx-sum"><span>Total</span><b>${fq(q)} ${esc(uQ(q, u))} × ${fmt(p)} F = ${fmt(p * q)} F${tr === 'inclus' ? ', transport inclus' : tr === 'sans' ? ', sans transport' : ''}</b></div>`;
+      if (p && q && tr === 'apart' && pt) h += `<div class="nx-sum"><span>Avec le transport</span><b>${fmt(p * q)} + ${fmt(pt)} = ${fmt(p * q + pt)} F</b></div>`;
+      if (tr === 'apart' && !pt) h += `<p class="nx-warn">Indiquez le prix du transport.</p>`;
       if (p && ref) { const e = p - ref, pc = Math.round(Math.abs(e) / ref * 100); h += `<div class="nx-sum"><span>Par rapport au prix affiché</span><b>${Math.abs(e) < 1 ? 'identique' : (e < 0 ? '−' : '+') + fmt(Math.abs(e)) + ' F (' + (e < 0 ? '−' : '+') + pc + ' %)'}${Math.abs(e) >= 1 && q ? `<small> soit ${fmt(Math.abs(e) * q)} F ${e < 0 ? 'de moins' : 'de plus'} au total</small>` : ''}</b></div>`;
         if (p < ref * 0.25 || p > ref * 4) h += `<p class="nx-warn">Ce prix est très loin du prix affiché (${fmt(ref)} F). Un zéro en trop ou en moins ?</p>`;
         else if (pc > 40) h += `<p class="nx-warn">Un écart de plus de 40 % a peu de chances d’être accepté.</p>`; }
@@ -421,7 +444,7 @@
     bindSnd();
     const fake = { cible, prix_annonce: prix || null, unite: u, statut: 'ouverte', proprio_id: 'lui', auteur_id: me() };
     editeur(bg.querySelector('.nx-edbox'), { cible, tr0: trAnnonce(cible, a.transport), prixRef: prix, unite: u, qmax: q || null, q0: q || null, qmin: cible === 'offre' ? +a.qmin || 0 : 0, negociable: a.negociable, pour: lui, moi: 'auteur', preview: p => rail(fake, [{ genre: 'prix', auteur_id: me(), prix: p, issue: 'en_attente', expire_le: new Date(Date.now() + 864e5).toISOString() }]) },
-      async v => { const id = await N().rpc('nego_ouvrir', { cible, cible_id: a.id, prix: v.p, quantite: v.q, texte: v.t || null }); if (v.tr !== null) await N().rpc('nego_transport', { p_nego: id, p_oui: v.tr }).catch(() => {}); await refresh(); thread(id, true); N().toast('Proposition envoyée. Réponse attendue sous 48 h.'); });
+      async v => { const id = await envoyer('nego_ouvrir', { cible, cible_id: a.id, prix: v.p, quantite: v.q, texte: v.t || null }, v); await refresh(); thread(id, true); N().toast('Proposition envoyée. Réponse attendue sous 48 h.'); });
   }
 
   /* ——— la boîte ——— */
@@ -464,20 +487,20 @@
       if (m.genre === 'texte') return `<div class="nx-m${cls}">${esc(m.texte)}${when}</div>`;
       if (m.genre === 'fin') return `<div class="nx-ev${cls}">${who} ${mine ? 'avez' : 'a'} arrêté la négociation${m.texte ? ' : « ' + esc(m.texte) + ' »' : ''} · ${ago(m.created_at)}</div>`;
       if (m.genre === 'refus' || m.genre === 'retrait') return `<div class="nx-ev${cls}">${who} ${mine ? 'avez' : 'a'} ${m.genre === 'refus' ? 'refusé' : 'retiré'} la proposition à ${fmt(m.prix)} F${m.texte ? ' : « ' + esc(m.texte) + ' »' : ''} · ${ago(m.created_at)}</div>`;
-      if (m.genre === 'accord') return `<div class="nx-ev nx-ev-ok${cls}">${who} ${mine ? 'avez' : 'a'} accepté : ${m.quantite ? fq(m.quantite) + ' ' + esc(uQ(m.quantite, u)) + ' × ' : ''}${fmt(m.prix)} F${m.transport_inclus === true ? ', transport inclus' : m.transport_inclus === false ? ', sans transport' : ''} · ${ago(m.created_at)}</div>`;
+      if (m.genre === 'accord') return `<div class="nx-ev nx-ev-ok${cls}">${who} ${mine ? 'avez' : 'a'} accepté : ${m.quantite ? fq(m.quantite) + ' ' + esc(uQ(m.quantite, u)) + ' × ' : ''}${fmt(m.prix)} F${trTxt(m.transport_inclus, m.prix_transport)} · ${ago(m.created_at)}</div>`;
       const iss = m.issue === 'en_attente' && Date.parse(m.expire_le) <= Date.now() ? 'expiree' : m.issue;
       const IS = { en_attente: ['En attente · ' + reste(m.expire_le), 'acc'], acceptee: ['Acceptée', 'ok'], refusee: ['Refusée', 'bad'], retiree: ['Retirée', ''], remplacee: ['Remplacée par une nouvelle proposition', ''], expiree: ['Expirée sans réponse', ''] }[iss] || ['', ''];
       return `<div class="nx-tk${cls} is-${iss || 'x'}"><div class="who">${mk(R[m.auteur_id])}${who} ${mine ? 'proposez' : 'propose'}<span class="nx-tag ${IS[1]}">${IS[0]}</span></div>
-        <div class="amt">${fmt(m.prix)} <small>F / ${esc(u)}</small></div>${trTag(m.transport_inclus)}${m.quantite ? `<div class="qty">${fq(m.quantite)} ${esc(uQ(m.quantite, u))} · total ${fmt(m.prix * m.quantite)} F</div>` : ''}${m.texte ? `<div class="t">${esc(m.texte)}</div>` : ''}${when}</div>`;
+        <div class="amt">${fmt(m.prix)} <small>F / ${esc(u)}</small></div>${trTag(m.transport_inclus, m.prix_transport)}${m.quantite ? `<div class="qty">${fq(m.quantite)} ${esc(uQ(m.quantite, u))} · total ${fmt(m.prix * m.quantite)} F${+m.prix_transport > 0 && m.transport_inclus === false ? ' + transport ' + fmt(m.prix_transport) + ' F' : ''}</div>` : ''}${m.texte ? `<div class="t">${esc(m.texte)}</div>` : ''}${when}</div>`;
     };
-    const deal = () => { const u = n.unite || 'unité', q = n.quantite_finale, tr = n.transport_final;
+    const deal = () => { const u = n.unite || 'unité', q = n.quantite_finale, tr = n.transport_final, pt = tr === false && +n.prix_transport_final > 0 ? +n.prix_transport_final : 0;
       const ic = (d, t) => `<svg width="${t || 16}" height="${t || 16}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
       const lien = window.MDGMessages ? `<a href="#" class="nx-dlink" data-deal-dm>${ic('<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>', 18)}Écrire ${autre(monRole(n)) === 'vendeur' ? 'au vendeur' : 'à l’acheteur'}</a>` : '';
       return `<div class="nx-deal" role="status">
       <div class="nx-dh"><span class="nx-dck">${ic('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 22).replace('stroke-width="2"', 'stroke-width="2.6"')}</span><div><b>Accord conclu</b><small>le ${jour(n.conclu_le || n.updated_at)}</small></div></div>
-      <div class="nx-dl">${q ? `<div><span>Quantité</span><b>${fq(q)} ${esc(uQ(q, u))}</b></div>` : ''}<div><span>Prix convenu</span><b>${fmt(n.prix_final)} F / ${esc(u)}</b></div>${tr === true || tr === false ? `<div><span>Transport</span><b>${tr ? 'Compris dans le prix' : 'Non compris'}</b></div>` : ''}${q ? `<div class="tot"><span>Total</span><b>${fmt(n.prix_final * q)} F</b></div>` : ''}</div>
+      <div class="nx-dl">${q ? `<div><span>Quantité</span><b>${fq(q)} ${esc(uQ(q, u))}</b></div>` : ''}<div><span>Prix convenu</span><b>${fmt(n.prix_final)} F / ${esc(u)}</b></div>${tr === true || tr === false ? `<div><span>Transport</span><b>${tr ? 'Compris dans le prix' : pt ? 'À part · ' + fmt(pt) + ' F' : 'Non compris'}</b></div>` : ''}${q ? `<div class="tot"><span>Total${pt ? ' avec le transport' : ''}</span><b>${fmt(n.prix_final * q + pt)} F</b></div>` : ''}</div>
       ${n.conditions_finales ? `<p class="nx-cond"><span>Conditions</span>${esc(n.conditions_finales)}</p>` : ''}
-      <p class="nx-dnote">${ic('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>', 15)}Prix et quantité sont figés. Rien n’est encore payé ni livré.</p>
+      <p class="nx-dnote">${ic('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>', 15)}Prix${pt ? ', transport' : ''} et quantité sont figés. Rien n’est encore payé ni livré.</p>
       ${window.MDGIdentite && MDGIdentite.gardePaiement ? `<p class="nx-warn">${MDGIdentite.gardePaiement(autreId(n), avDe(n, 40).nom || '')}</p>` : '<p class="nx-dnote">Voyez la marchandise avant de payer.</p>'}
       ${window.MDGCommandes ? `<button type="button" class="nx-go" data-deal-cmd>${ic('<path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>', 20)}Suivre la commande</button>` : ''}
       ${lien}${lien ? `<p class="nx-dsafe">${ic('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>', 13)}Restez ici : en cas de litige, l’équipe peut vérifier vos échanges.</p>` : ''}</div>`; };
@@ -513,10 +536,11 @@
       let h = '';
       const P = n.dernier_prix, Q = n.dernier_quantite, prop = (msgs || []).find(m => m.id === n.dernier_msg);
       if (mode === 'edit') h = `<div class="nx-edbox nx-edf"></div><button type="button" class="nx-alt nx-cancel" style="width:100%;margin-top:8px">Annuler</button>`;
-      else if (mode === 'accord') h = `<div class="nx-confirm"><b>Vous acceptez :</b><div class="nx-big">${Q ? fq(Q) + ' ' + esc(uQ(Q, u)) + ' × ' : ''}${fmt(P)} F / ${esc(u)}</div>${Q ? `<div class="nx-dtot">Total : ${fmt(P * Q)} F</div>` : ''}${prop && prop.texte ? `<p class="nx-cond"><span>Conditions</span>${esc(prop.texte)}</p>` : ''}<p>Une fois confirmé, l’accord est figé : il ne pourra plus être modifié. Ce n’est pas un paiement.</p>${window.MDGIdentite && MDGIdentite.gardePaiement ? `<p class="nx-warn" style="margin:0 0 12px">${MDGIdentite.gardePaiement(autreId(n), avDe(n, 40).nom || '')}</p>` : ''}
+      else if (mode === 'accord') h = `<div class="nx-confirm"><b>Vous acceptez :</b><div class="nx-big">${Q ? fq(Q) + ' ' + esc(uQ(Q, u)) + ' × ' : ''}${fmt(P)} F / ${esc(u)}</div>${(() => { const ti = prop ? prop.transport_inclus : n.dernier_transport, tpx = prop ? prop.prix_transport : n.dernier_prix_transport, x = ti === false && +tpx > 0 ? +tpx : 0;
+          return (ti === true || ti === false ? `<div class="nx-dtot">Transport : ${ti ? 'inclus' : x ? 'à part, ' + fmt(x) + ' F' : 'non compris'}</div>` : '') + (Q ? `<div class="nx-dtot">Total${x ? ' avec le transport' : ''} : ${fmt(P * Q + x)} F</div>` : ''); })()}${prop && prop.texte ? `<p class="nx-cond"><span>Conditions</span>${esc(prop.texte)}</p>` : ''}<p>Une fois confirmé, l’accord est figé : il ne pourra plus être modifié. Ce n’est pas un paiement.</p>${window.MDGIdentite && MDGIdentite.gardePaiement ? `<p class="nx-warn" style="margin:0 0 12px">${MDGIdentite.gardePaiement(autreId(n), avDe(n, 40).nom || '')}</p>` : ''}
         <div class="nx-act"><button type="button" class="nx-go" data-g="accord-ok">Confirmer l’accord</button><button type="button" class="nx-alt" data-g="annuler" style="grid-column:1 / -1">Retour</button></div><p class="nx-err" role="alert"></p></div>`;
       else {
-        if (n.statut === 'ouverte' && aMoi(n)) h += `<div class="nx-pend"><span>${Le(lui)} propose ${Q ? fq(Q) + ' ' + esc(uQ(Q, u)) + ' × ' : ''}<b>${fmt(P)} F</b>${Q ? ' = ' + fmt(P * Q) + ' F' : ''} · ${reste(n.expire_le)}</span></div>
+        if (n.statut === 'ouverte' && aMoi(n)) h += `<div class="nx-pend"><span>${Le(lui)} propose ${Q ? fq(Q) + ' ' + esc(uQ(Q, u)) + ' × ' : ''}<b>${fmt(P)} F</b>${Q ? ' = ' + fmt(P * Q) + ' F' : ''}${trTxt(n.dernier_transport, n.dernier_prix_transport)} · ${reste(n.expire_le)}</span></div>
           <div class="nx-act"><button type="button" class="nx-go" data-g="accord">Accepter ${fmt(P)} F / ${esc(u)}</button><button type="button" class="nx-alt" data-g="edit">Contre-proposer</button><button type="button" class="nx-alt" data-g="refus">Refuser</button></div>`;
         else if (n.statut === 'ouverte' && enCours(n)) h += `<div class="nx-pend"><span>Votre proposition : ${Q ? fq(Q) + ' ' + esc(uQ(Q, u)) + ' × ' : ''}<b>${fmt(P)} F</b> · en attente, ${reste(n.expire_le)}</span></div>
           <div class="nx-act"><button type="button" class="nx-alt" data-g="edit">Modifier ma proposition</button><button type="button" class="nx-alt" data-g="retrait">Retirer ma proposition</button></div>`;
@@ -531,8 +555,8 @@
       const c = f.querySelector('.nx-cancel'); if (c) c.onclick = () => { mode = ''; pied(); };
       if (mode === 'edit') {
         const proprio = me() === n.proprio_id;
-        editeur(f.querySelector('.nx-edbox'), { cible: n.cible, tr0: n.dernier_transport != null ? n.dernier_transport : trAnnonce(n.cible, a && a.transport), prixRef: n.prix_annonce, unite: u, qmax: (a && a.quantity) || n.quantite, q0: n.dernier_quantite || n.quantite, negociable: a ? a.negociable : true, qmin: n.cible === 'offre' && !proprio && a ? +a.qteMin || 0 : 0, pour: lui, moi: proprio ? 'proprio' : 'auteur', dernier: aMoi(n) ? n.dernier_prix : null },
-          async v => { await N().rpc('nego_agir', { nego: n.id, action: 'prix', prix: v.p, quantite: v.q, texte: v.t || null, ref: null }); if (v.tr !== null) await N().rpc('nego_transport', { p_nego: n.id, p_oui: v.tr }).catch(() => {}); mode = ''; await load(true); N().toast('Proposition envoyée.'); },
+        editeur(f.querySelector('.nx-edbox'), { cible: n.cible, tr0: n.dernier_transport != null ? trDe(n.dernier_transport, n.dernier_prix_transport) : trAnnonce(n.cible, a && a.transport), pt0: n.dernier_prix_transport, prixRef: n.prix_annonce, unite: u, qmax: (a && a.quantity) || n.quantite, q0: n.dernier_quantite || n.quantite, negociable: a ? a.negociable : true, qmin: n.cible === 'offre' && !proprio && a ? +a.qteMin || 0 : 0, pour: lui, moi: proprio ? 'proprio' : 'auteur', dernier: aMoi(n) ? n.dernier_prix : null },
+          async v => { await envoyer('nego_agir', { nego: n.id, action: 'prix', prix: v.p, quantite: v.q, texte: v.t || null, ref: null }, v, n.id); mode = ''; await load(true); N().toast('Proposition envoyée.'); },
           aMoi(n) ? 'Contre-proposer' : 'Proposer');
       }
     }

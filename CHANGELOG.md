@@ -8,6 +8,8 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 Audit antislop de l'application, stabilité, prix officiels et reprise de projet.
 
+- Connexion : la scène devient un court film de 17 s, « le marché qui relie tout le pays » (deux commerçantes, la commande, la carte de Côte d'Ivoire, le camion, le titre « marché du pays ») ; décision du propriétaire, exception à « l'accueil calmé » limitée à cet écran (branche `claude/scene-connexion`).
+
 - Audit antislop de l'application : rapport complet sans correction (a40b3ca, Stan77i/marchedegrosci#251), puis corrections par lots :
   - phrases justes sur le paiement, n° 1 à 6 (b9143f4, Stan77i/marchedegrosci#251) ;
   - textes lisibles, n° 7 à 20 (c345021, Stan77i/marchedegrosci#252) ;

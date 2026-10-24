@@ -6,7 +6,7 @@
 ## 1. L'état au moment de la reprise
 
 - **Toutes les PR sont fusionnées** (jusqu'à la PR #247). Aucune PR ouverte, aucun travail en cours. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
-- `main` : cache du service worker `mgci-v234` (`mgci-v243` après les PR de l'audit antislop).
+- `main` : cache du service worker `mgci-v234` (`mgci-v243` après les PR de l'audit antislop ; `mgci-v251` avec le film de la connexion).
 - Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **81** appliqués (80 `fil_public`, 81 `site_mesures` / `mesurer` / `mesures_resume`). Mêmes schémas sur le projet de test.
 
 ## 2. Ce qui a été fait (session du 23/10/2026)
@@ -42,6 +42,7 @@
 - Toujours écrire « prix de détail », jamais les présenter comme des prix de gros.
 
 ### Dernières corrections de l'application
+- **Connexion : un court film de 17 s** (24/10/2026, branche `claude/scene-connexion`, décision du propriétaire) : deux commerçantes à Abidjan et Bouaké, la commande qui part du téléphone, la carte de Côte d'Ivoire qui s'allume (vraies coordonnées), le camion qui fait l'aller-retour en même temps que son impulsion, le titre « marché de Gros » ↔ « marché du pays ». Une seule horloge (`app/scene.js`, `kf()` ; le titre est recalé par `MDGScene.lancer().lier`), pause quand la scène n'est plus visible, image fixe en mouvement réduit, mode allégé sur téléphone modeste. Reste à le voir sur un vrai téléphone et à revoir la mise en page large (≥ 760 px), non vérifiée.
 - **Stabilité (24/10/2026)** : écran d'ouverture sans petit logo avant le sac, fenêtre du compte sans instant vide, plus de clignotement au défilement (`app/effets.js`), tableau des prix mis à jour sans tout redessiner (`MDGStable.poser`, `app/stable.js`), messages et commandes non redessinés quand rien ne change.
 - Calendrier des récoltes : sources FAO, Nitidae (plantain), RONGEAD (oignon) ajoutées (`v2/saisons.js`, `A.CAL`) ; cadran de « L'année du marché » : un anneau par produit.
 - Onglet Activité : la carte « Dernières annonces » n'existe que s'il y a au moins une annonce (PR #240).
@@ -103,3 +104,4 @@
 - La page `site/carte/` a `<base href="../../">` : `S = site/`, `R = ''`. `app/carte-gl.js` résout ses adresses avec `document.baseURI`.
 - Le bac à sable ne joint pas Supabase ni le site en ligne : tester avec Playwright en simulant les réponses (`page.route`), avec de **vraies** données lues via le MCP Supabase.
 - Le MCP Supabase refuse tout texte contenant DELETE / DROP / TRUNCATE, même en commentaire.
+- **Film de la connexion (`app/scene.js`)** : tout est calé sur une seule horloge de 17 s ; une nouvelle animation passe par `piste()` / `kf()` (étapes en secondes) et doit finir à 17 s sur la même valeur qu'à 0 s ; une petite boucle à part doit durer un diviseur de 17 s (4,25 ou 8,5 s), sinon la boucle saute. Ne jamais animer un élément qui porte un attribut `transform="…"` (le CSS l'écrase) : envelopper. Pour vérifier une image précise : mettre en pause les animations `mk*` et poser `currentTime` (voir la section du 24/10 dans `docs/PASSATION.md`).

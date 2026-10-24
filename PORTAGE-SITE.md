@@ -93,6 +93,7 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Fil « Dernières annonces » avec les ventes conclues (la carte n'existe que s'il y a au moins une annonce, 23/10/2026) | `application.dc.html`, `ventesCharger()` (schéma 55) | moyenne |
 | Bande d'accroches (garanties, nouveautés) | `app/garanties.js`, `v3/souffle.js` | basse |
 | Roue des produits et sac, scène d'entrée | `app/scene.js`, `app/sac.js`, `app/effets.js` | moyenne |
+| Connexion : le court film « le marché qui relie tout le pays » (17 s) et le titre « marché de Gros » ↔ « marché du pays » (24/10/2026). Le site garde sa scène canvas « deux mondes » ; le titre y reste « marché de Gros » | `app/scene.js` (`MDGScene.lancer`), `v3/porte.js` (`monterSvg`, `titre`) | basse (le site est fait pour l'ordinateur) |
 | Démo de la roue et des prix | `app/demo-orbite.js` | basse |
 | Tutoriels à l'entrée de chaque écran, astuces, réglages de l'aide | `v3/astuces.js`, `v3/guide.js`, `app/theme.js` (Réglages) | moyenne |
 | Aide : questions et réponses, puis une personne | `v3/aide.js` | moyenne |

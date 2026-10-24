@@ -106,11 +106,9 @@
   const SCSS = `.pt--sac .ps-fond{position:absolute;inset:0;width:100%;height:100%;display:block}
 .pt--sac .ps-halo{opacity:.55;transform-box:fill-box;transform-origin:50% 100%;transition:opacity .7s,transform .9s cubic-bezier(.22,1,.36,1);animation:psSouffle 5s ease-in-out infinite}
 .pt--sac .ps-scene{overflow:hidden}
-.pt--sac .ps-scene .mk{--mk-tint:#F2C230;transition:filter .7s}
-.pt[data-etat=saisie] .ps-scene .mk{filter:brightness(1.08)}
-.pt[data-etat=envoi] .ps-scene .mk,.pt[data-etat=ok] .ps-scene .mk{filter:brightness(1.18) saturate(1.1)}
-.pt[data-etat=erreur] .ps-scene .mk{filter:brightness(.7) saturate(.6)}
-.pt[data-etat=ferme] .ps-scene .mk{filter:brightness(.55) saturate(.4)}
+.pt--sac .ps-scene::before{content:"";position:absolute;inset:0;z-index:1;background:#0B0906;opacity:0;pointer-events:none;transition:opacity .7s}
+.pt[data-etat=erreur] .ps-scene::before{opacity:.3}
+.pt[data-etat=ferme] .ps-scene::before{opacity:.45}
 /* le sac devant les étals : une ombre chaude le pose au sol */
 .pt--sac .ps-sac{position:absolute;left:50%;bottom:6px;line-height:0;transform:translateX(-50%);transition:transform .55s cubic-bezier(.22,1,.36,1);filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
 .pt--sac .ps-sac svg{display:block}
@@ -126,18 +124,22 @@
   function monterSvg(el, large) {
     if (!document.getElementById('psSacCss')) { const st = document.createElement('style'); st.id = 'psSacCss'; st.textContent = SCSS; document.head.appendChild(st); }
     el.classList.add('pt', 'pt--sac'); el.dataset.mode = 'in'; el.dataset.etat = 'repos';
-    // le marché (app/scene.js) s'exprime seul : pas de sac ici, il vient dire bienvenue une fois la connexion réussie (entrer())
+    // le marché (app/scene.js) joue son court film : pas de sac ici, il vient dire bienvenue une fois la connexion réussie (entrer()).
+    // L'état du formulaire ne touche plus au dessin (plus de filtre sur le SVG, qui coûtait une passe de plus à chaque image) :
+    // un voile sombre seulement pour l'erreur et l'absence de réseau ; la scène n'est jamais redessinée pendant la saisie.
     if (window.MDGScene) MDGScene.css();
     el.innerHTML = (window.MDGScene ? `<div class="ps-fond ps-scene">${MDGScene.svg('ps')}</div>` : `<svg class="ps-fond" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
       <defs><radialGradient id="psH" cx="50%" cy="100%" r="62%"><stop offset="0" stop-color="#F2C230" stop-opacity=".4"/><stop offset=".55" stop-color="#E9A35E" stop-opacity=".14"/><stop offset="1" stop-color="#E07A3F" stop-opacity="0"/></radialGradient></defs>
       <ellipse class="ps-halo" cx="200" cy="134" rx="200" ry="104" fill="url(#psH)"/><path d="M0 123.5H400" stroke="rgba(245,240,230,.16)"/></svg>`) +
-      `<p class="pt-sr">Un marché de gros le soir : des étals éclairés, des vendeuses, et des passants qui traversent la rue.</p>`;
+      `<p class="pt-sr">Marché de Gros. Le soir, deux commerçantes, l'une à Abidjan, l'autre à Bouaké, commandent depuis leur téléphone ; les villes du pays s'allument et un camion part livrer.</p>`;
     // grand écran : la colonne est haute ; on garde tout le marché, calé en bas, et le ciel continue au-dessus
     if (large) { el.classList.add('ps-large'); el.querySelector('.mk')?.setAttribute('preserveAspectRatio', 'xMidYMax meet'); }
+    const film = window.MDGScene && MDGScene.lancer ? MDGScene.lancer(el.querySelector('.mk')) : null;
     return {
-      etat(n) { if (n in HUMEUR) el.dataset.etat = n; },
+      etat(n) { if (n in HUMEUR) el.dataset.etat = n; film && film.pause('ferme', n === 'ferme'); },
       mode(m) { el.dataset.mode = m; },
-      arreter() {}
+      titre(t) { film && film.lier(t); },
+      arreter() { film && film.arreter(); }
     };
   }
 

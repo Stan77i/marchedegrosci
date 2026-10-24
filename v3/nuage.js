@@ -255,6 +255,7 @@
             // règles des annonces (schéma 93a) : la phrase, une fois par session et par annonce ; l'annonce reste sur le téléphone
             else if (/^(ANNONCE_FIGEE|VILLE_INCONNUE|PRIX_REQUIS|QUANTITE_REQUISE|DOUBLON|PRODUIT_REQUIS) : /.test(e.message)) { const kt = 'mdg-nuage:regle:' + key; try { if (!sessionStorage.getItem(kt)) { sessionStorage.setItem(kt, '1'); toast((p[key] ? 'Annonce non mise à jour. ' : 'Annonce non publiée. ') + e.message.replace(/^[A-Z_]+ : /, '').replace(/^./, c => c.toUpperCase())); } } catch (_) {} }
             else if (e.code === 'texte') { const kt = 'mdg-nuage:texte:' + key; try { if (!sessionStorage.getItem(kt)) { sessionStorage.setItem(kt, '1'); toast('Annonce non publiée. ' + e.message + ' Modifiez-la dans Mon compte → Mon activité.'); } } catch (_) {} }
+            else if (/^STOCK_(EPUISE|VIDE) : /.test(e.message)) { const ks = 'mdg-nuage:stock:' + key; try { if (!sessionStorage.getItem(ks)) { sessionStorage.setItem(ks, '1'); toast(e.message.replace(/^STOCK_[A-Z]+ : /, '')); } } catch (_) {} }   // schéma 92a
             else if (/COMPTE_BANNI/.test(e.message)) refus = 'banni'; else if (/VERIFICATION_REQUISE/.test(e.message) && refus !== 'banni') refus = 'limite'; }
         }
         for (const key of Object.keys(p)) {

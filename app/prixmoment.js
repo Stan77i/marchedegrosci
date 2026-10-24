@@ -32,7 +32,7 @@
 .pm-hd small{display:block;font:600 11px/1.2 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#B9AD98}
 .pm-hd h2{margin:4px 0 0;font:600 23px/1.12 Jost,sans-serif;letter-spacing:-.015em}.pm-hd h2 em{font-style:italic;font-weight:900;color:#F2C230}
 .pm-ac{display:flex;align-items:center;gap:10px;margin:-6px 0 16px;padding:8px 12px 8px 8px;border-radius:16px;background:rgba(243,239,228,.05);box-shadow:inset 0 0 0 1px rgba(243,239,228,.12)}
-.pm-ac i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:16px;background:rgba(243,239,228,.08)}
+.pm-ac i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:16px;background:rgba(243,239,228,.08)}.pm-ac i .ico{width:17px;height:17px;color:#F3EFE4}.pm-ac.vente i .ico{color:#9FDCB2}.pm-ac.demande i .ico{color:#F2C230}
 .pm-ac b{display:block;font:700 14px/1.15 Jost,sans-serif;color:#F3EFE4}.pm-ac small{display:block;font-size:12px;line-height:1.3;color:#CFC4B1}
 .pm-ac.vente{box-shadow:inset 0 0 0 1px rgba(159,220,178,.4)}.pm-ac.vente i{background:rgba(159,220,178,.16)}.pm-ac.vente b{color:#9FDCB2}
 .pm-ac.demande{box-shadow:inset 0 0 0 1px rgba(242,194,48,.4)}.pm-ac.demande i{background:rgba(242,194,48,.16)}.pm-ac.demande b{color:#F2C230}
@@ -68,14 +68,14 @@
 .pm-ech.pm-d .pm-tag{background:#F2C230;color:#171512}.pm-ech.pm-d .pm-qui .av{background:#5A4A12;color:#F2C230}
 .pm-tabs{display:flex;gap:4px;margin:0 0 16px;padding:4px;border-radius:16px;background:rgba(243,239,228,.06)}
 .pm-tabs button{flex:1;min-height:44px;border:0;border-radius:12px;background:none;color:#CFC4B1;font:600 14.5px Jost,sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
-.pm-tabs button span{min-width:20px;padding:0 6px;border-radius:10px;background:rgba(243,239,228,.1);font-size:12px;line-height:20px}
+.pm-tabs button span:not(.nbul){min-width:20px;padding:0 6px;border-radius:10px;background:rgba(243,239,228,.1);font-size:12px;line-height:20px}
 .pm-tabs .v[aria-selected=true]{background:#9FDCB2;color:#0E2A1F}.pm-tabs .a[aria-selected=true]{background:#F2C230;color:#171512}
 .pm-tabs [aria-selected=true] span{background:rgba(0,0,0,.12)}
 @keyframes pmPan{from{opacity:0;transform:translateY(6px)}}
 .pm-vide{margin:0 0 8px;padding:12px 14px;border-radius:14px;background:rgba(243,239,228,.05);color:#CFC4B1;font-size:14px}
 .pm-rep{display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:10px 12px;border-radius:14px;background:rgba(243,239,228,.05);font-size:14px;color:#CFC4B1}
 .pm-rep b{color:#F3EFE4}.pm-rep.a{color:#F2C230}.pm-rep.v{color:#9FDCB2}
-.pm-rep button{margin-left:auto;min-height:36px;padding:0 10px;border:0;border-radius:18px;background:rgba(243,239,228,.08);color:#F3EFE4;font:600 13px Jost,sans-serif;cursor:pointer}
+.pm-rep button{margin-left:auto;min-height:44px;padding:0 10px;border:0;border-radius:18px;background:rgba(243,239,228,.08);color:#F3EFE4;font:600 13px Jost,sans-serif;cursor:pointer}
 .pm-ech.pm-d li.top::before{background:#F2C230;box-shadow:0 0 0 4px rgba(242,194,48,.16)}
 .pm-ech.pm-d::before{background:linear-gradient(#F2C230,rgba(243,239,228,.14))}
 .pm-act{display:flex;flex-direction:column;gap:8px;margin-top:18px}
@@ -123,8 +123,8 @@
     bg.innerHTML = `<div class="pm" role="dialog" aria-modal="true" aria-labelledby="pmT"><span class="pm-poi" aria-hidden="true"></span><button type="button" class="pm-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
       <div class="pm-hd">${o.img ? `<span class="im" aria-hidden="true"><img src="${esc(o.img)}" alt=""></span>` : ''}<div><small>${esc(o.nom)}${art ? ' · ' + esc(art) : ''}</small><h2 id="pmT">Ici, chacun <em>place son prix</em></h2></div></div>
       ${o.exemple ? '<p class="pm-ex">Exemple de démonstration : ces prix et ces noms ne sont pas réels.</p>' : ''}
-      ${o.activite ? `<div class="pm-ac ${esc(o.activite.cls || '')}" role="status"><i aria-hidden="true">${esc(o.activite.ico)}</i><span><b>${esc(o.activite.t)}</b><small>${esc(o.activite.s)}</small></span></div>` : ''}
-      <div class="pm-tabs" role="tablist" aria-label="Vendeurs ou acheteurs"><button type="button" role="tab" class="v" data-c="v">▼ Vendeurs <span>${O.length}</span></button><button type="button" role="tab" class="a" data-c="a">▲ Acheteurs <span>${D.length}</span></button></div>
+      ${o.activite ? `<div class="pm-ac ${esc(o.activite.cls || '')}" role="status"><i aria-hidden="true">${(() => { const n = { '🔥': 'chaleur', '📈': 'tendance', '✅': 'verifie', '🤝': 'negoce', '🛒': 'panier' }[o.activite.ico]; return n && window.MDGIco ? MDGIco.svg(n, 17, 1.9) : esc(o.activite.ico); })()}</i><span><b>${esc(o.activite.t)}</b><small>${esc(o.activite.s)}</small></span></div>` : ''}
+      <div class="pm-tabs" role="tablist" aria-label="Vendeurs ou acheteurs"><button type="button" role="tab" class="v" data-c="v">▼ Vendeurs <span class="nbul o">${O.length}</span></button><button type="button" role="tab" class="a" data-c="a">▲ Acheteurs <span class="nbul d">${D.length}</span></button></div>
       <div class="pm-pan" role="tabpanel"></div>
       <p class="pm-n">Le Marché de Gros ne fixe aucun prix : les vendeurs placent leur prix, les acheteurs leur budget. Le vendeur le moins cher et l’acheteur le plus généreux passent en tête.</p></div>`;
     document.body.appendChild(bg);

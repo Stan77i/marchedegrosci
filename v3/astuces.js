@@ -28,7 +28,7 @@
     '🧾': 'etiquette', '⚖️': 'confiance', '🛡️': 'confiance', '📊': 'tableau', '🔎': 'chercher', '🔍': 'chercher', '🧺': 'offre', '⏳': 'sablier', '⏰': 'horloge', '🔐': 'cadenas', '🔒': 'cadenas', '🤐': 'cadenas',
     '🔓': 'cle', '📍': 'lieu', '✍️': 'crayon', '📝': 'crayon', '✏️': 'crayon', '💬': 'messages', '🔔': 'cloche', '👍': 'traiter', '⌨️': 'ecran', '🗣️': 'comment', '📸': 'photo', '🤳': 'photo',
     '⚠️': 'signaler', '📄': 'donnees', '⬆️': 'haut', '🛒': 'panier', '🗺️': 'pays', '🗂️': 'categories', '📈': 'tendance', '🌾': 'annee', '🌱': 'producteur', '💡': 'info', '👤': 'compte', '⚙️': 'reglages',
-    '📣': 'partager', '🏅': 'notes', '🎯': 'localiser' };
+    '📣': 'partager', '🏅': 'notes', '🎯': 'localiser', '🙋': 'service' };
   const pictogramme = e => { const n = PICTO[e]; return n && window.MDGIco && MDGIco.a(n) ? MDGIco.svg(n, 40, 1.7) : esc(e); };
 
   /* ——— les tutoriels : des phrases courtes, un geste par carte (ce que l'application fait vraiment, rien d'autre) ——— */
@@ -228,7 +228,7 @@
 .as-c{width:100%;max-width:440px;margin:0 12px calc(14px + env(safe-area-inset-bottom));background:#FFFDF8;color:#171512;border-radius:28px;padding:18px 20px 16px;box-shadow:0 20px 50px rgba(0,0,0,.35);animation:asMonte .4s cubic-bezier(.22,1,.36,1) both}
 .as-haut{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 8px}
 .as-titre{font:600 13px/1 Jost,sans-serif;letter-spacing:0;color:#655C4D}
-.as-passer{border:0;background:rgba(23,21,18,.06);color:#171512;font:600 14px Jost,sans-serif;min-height:40px;padding:0 16px;border-radius:20px;cursor:pointer}
+.as-passer{border:0;background:rgba(23,21,18,.06);color:#171512;font:600 14px Jost,sans-serif;min-height:44px;padding:0 16px;border-radius:22px;cursor:pointer}
 .as-vue{min-height:206px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
 .as-vue.in{animation:asCarte .38s cubic-bezier(.22,1,.36,1) both}
 .as-ill{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;font-size:46px;line-height:1;background:radial-gradient(circle at 35% 30%,#FFF6D6,#F2C230);box-shadow:0 0 0 8px rgba(242,194,48,.18);margin:4px 0 2px}
@@ -238,14 +238,14 @@
 .as-pts{display:flex;justify-content:center;gap:6px;margin:14px 0 12px}.as-pts i{width:7px;height:7px;border-radius:4px;background:rgba(23,21,18,.18);transition:width .3s,background .3s}.as-pts i.on{width:22px;background:#10392B}
 .as-bas{display:flex;gap:10px}.as-bas button{flex:1;min-height:52px;border-radius:26px;border:0;font:600 16px Jost,sans-serif;cursor:pointer}
 .as-ret{background:rgba(23,21,18,.07);color:#171512}.as-ret[hidden]{display:none}.as-suiv{background:#10392B;color:#F3EFE4}
-.as-off{display:block;margin:12px auto 0;border:0;background:none;color:#655C4D;font:400 13px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;min-height:36px;cursor:pointer}
+.as-off{display:block;margin:12px auto 0;border:0;background:none;color:#655C4D;font:400 13px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;min-height:44px;cursor:pointer}
 .as-c button:focus-visible{outline:3px solid #10392B;outline-offset:2px}
 .as-bulle{position:fixed;z-index:9000;max-width:250px;padding:12px 14px;border-radius:16px;background:#10392B;color:#F3EFE4;font:500 14px/1.35 Jost,system-ui,sans-serif;box-shadow:0 10px 28px rgba(16,57,43,.35);opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s;pointer-events:auto}
 .as-bulle.on{opacity:1;transform:none}.as-bulle b{color:#F2C230;font-weight:600}
 .as-bulle::before{content:"";position:absolute;top:-6px;left:var(--fl,22px);width:14px;height:14px;background:#10392B;transform:rotate(45deg);border-radius:3px}
 .as-bulle.bas::before{top:auto;bottom:-6px}
 .as-bulle small{display:block;margin-top:4px;color:rgba(243,239,228,.7);font-size:12px}
-.as-main{position:fixed;z-index:9001;font-size:34px;line-height:1;pointer-events:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
+.as-main{position:fixed;z-index:9001;width:34px;height:34px;box-sizing:border-box;border-radius:50%;border:3px solid #F2C230;background:rgba(242,194,48,.28);pointer-events:none;box-shadow:0 0 0 2px rgba(23,21,18,.45),0 4px 10px rgba(0,0,0,.3)}
 html[data-theme=sombre] .as-c{background:#1C1915;color:#F3EFE4}html[data-theme=sombre] .as-titre,html[data-theme=sombre] .as-off{color:#B9AD98}
 html[data-theme=sombre] .as-vue p{color:#D9D0BE}html[data-theme=sombre] .as-vue p b{color:#F2C230}
 html[data-theme=sombre] .as-passer,html[data-theme=sombre] .as-ret{background:rgba(243,239,228,.08);color:#F3EFE4}
@@ -321,7 +321,7 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
       // le geste « glisser de gauche à droite », comme pour retirer une ligne : il part, revient, trois fois
       if (opts.glisse) anims.push(cible.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(14px)', offset: .35 }, { transform: 'translateX(14px)', offset: .5 }, { transform: 'translateX(0)' }],
         { duration: 1100, iterations: 3, easing: 'cubic-bezier(.22,1,.36,1)', delay: 300 }));
-      if (opts.main) { main = document.createElement('div'); main.className = 'as-main'; main.textContent = '👆'; main.setAttribute('aria-hidden', 'true'); document.body.appendChild(main);
+      if (opts.main) { main = document.createElement('div'); main.className = 'as-main'; main.setAttribute('aria-hidden', 'true'); document.body.appendChild(main);
         main.style.left = (r.left + r.width / 2 - 60) + 'px'; main.style.top = (r.top + r.height / 2) + 'px';
         anims.push(main.animate([{ transform: 'translateX(0)', opacity: 0 }, { opacity: 1, offset: .15 }, { transform: 'translateX(110px)', opacity: 1, offset: .7 }, { transform: 'translateX(110px)', opacity: 0 }],
           { duration: 1500, iterations: 3, easing: 'ease-in-out', delay: 300 })); }

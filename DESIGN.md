@@ -27,6 +27,7 @@ Les valeurs viennent du code (`css/mgci-tokens.css`, `css/sombre.css`, `css/mgci
 | Compatible (lien offre ↔ demande) | `--compat` | `#6AAEF0` (carte seulement) |
 
 Règles :
+- **Plus de bleu ni de violet pour décorer** (24/10/2026) : « transport compris » et le choix retenu sont en vert (`#1F8A55` en bordure, `#10392B` pour le tampon) ; les tuiles « vous » et « lien » du menu sont vert profond et encre chaude. Seul reste, en attente de décision, le bleu « vérifié ».
 - **Une couleur = un sens.** Vert clair = offre, jaune = demande, vert profond = accord, corail = alerte. Ne pas réutiliser ces couleurs pour décorer.
 - Texte sur couleur : contraste 4,5:1 minimum (3:1 pour 18 px gras et plus). Blanc sur corail clair est interdit (3,1:1).
 - Mode nuit : `css/sombre.css` pour les pages, `app/nuit.js` traduit les fenêtres. Une fenêtre qui a ses propres couleurs sombres s'ajoute à la liste `DEJA` de `app/nuit.js`.
@@ -109,7 +110,7 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 20. Pas de tiret cadratin (—) pour couper une phrase ou séparer deux informations : « · » entre deux informations, « : » pour expliquer. Le « — » seul reste permis pour une valeur vide (case d'un tableau) : c'est la signature d'un texte généré. Préférer « : », « , » ou deux phrases.
 
 **Icônes, images, preuves**
-21. Pas d'emoji à la place d'une icône dans l'interface (boutons, listes, onglets). Les icônes sont dessinées (`app/icones.js`), d'un seul trait. Offre et demande ont leurs symboles dessinés (`css/symboles.css`) : un **panier de produits** (offre) et un **caddie** (demande), via `var(--sym-o)` et `var(--sym-d)` ; le caddie a un trait crème de nuit.
+21. Pas d'emoji à la place d'une icône dans l'interface (boutons, listes, onglets). Les icônes sont dessinées (`app/icones.js`), d'un seul trait. Devant un texte : `TI('nom')` (petite icône de 17 px, classe `.ic-t`, `v3/ux.css`) ; dans la page : le dessin SVG de l'icône. Offre et demande ont leurs symboles dessinés (`css/symboles.css`) : un **panier de produits** (offre) et un **caddie** (demande), via `var(--sym-o)` et `var(--sym-d)` ; le caddie a un trait crème de nuit.
 22. Pas de pastilles « NOUVEAU », de points colorés ou de « EN DIRECT » qui ne changent rien à ce que la personne fait.
 23. Pas d'image de remplacement laissée en place, pas de dessin « métaphore » expliqué par une étiquette : montrer le vrai produit.
 24. Aucune preuve invérifiable : pas de faux avis, de faux chiffres, de faux logos (règle du projet : rien d'inventé).

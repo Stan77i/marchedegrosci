@@ -83,3 +83,6 @@
   .ct-fam { animation: none; }
   .ct-tuile, .ct-pr { transition: none; }
 }
+/* 🧺 / 🛒 en emoji → les symboles dessinés (24/10/2026) */
+.ct-chiffres i::before, .ct-pas i::before, .ct-ann i::before { content: "" !important; display: block; width: 82%; height: 82%; background: var(--sym-o) center / contain no-repeat; }
+.ct-chiffres i.d::before, .ct-pas .d i::before, .ct-ann .d i::before { background-image: var(--sym-d); }

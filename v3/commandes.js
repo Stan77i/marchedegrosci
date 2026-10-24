@@ -20,6 +20,7 @@
   const W = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const IC = (n, t) => window.MDGIco ? MDGIco.svg(n, t || 18, 1.9) : '';
+  const TI = n => `<span class="ic-t" aria-hidden="true">${IC(n, 17)}</span>`;   // petite icône dessinée devant un texte (plus d'emoji)
   const nf = (v, d) => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: d == null ? 0 : d }).format(v || 0);
   const F = v => nf(v) + ' F';
   const heure = t => new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
@@ -122,7 +123,7 @@
 .cm-act button.p{background:#10392B;color:#F3EFE4}.cm-act button.m{border-color:transparent;background:none;text-decoration:underline;min-height:44px;font-weight:500}
 .cm-act button:disabled{opacity:.55;cursor:default}
 .cm-info{margin:0 0 12px;padding:12px 14px;border-radius:14px;background:rgba(242,194,48,.2);font-size:13.5px}
-.cm-lien{display:flex;flex-direction:column;gap:8px;margin:10px 0 4px;padding:14px;border-radius:16px;background:rgba(106,174,240,.12);border:1px solid rgba(106,174,240,.35)}
+.cm-lien{display:flex;flex-direction:column;gap:8px;margin:10px 0 4px;padding:14px;border-radius:16px;background:rgba(16,57,43,.06);border:1px solid rgba(16,57,43,.2)}
 .cm-lien b{font:600 15px Jost,sans-serif}
 .cm-lien-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.cm-lien-h b{flex:1;min-width:0}
 .cm-lien-i{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#FFFDF8;font:normal 20px/1 "Apple Color Emoji","Segoe UI Emoji",sans-serif}
@@ -144,7 +145,7 @@
 .cm-code{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:#10392B;color:#F3EFE4}
 .cm-code span{flex:1;min-width:0;font:400 12.5px/1.35 Jost,sans-serif;color:rgba(243,239,228,.78)}.cm-code span em{font-style:normal;color:#F3EFE4;word-break:break-all}
 .cm-code strong{flex:none;font:600 24px/1 Jost,sans-serif;letter-spacing:.12em;color:#F2C230;font-variant-numeric:tabular-nums}
-.cm-lien .cm-code button{flex:none;min-height:40px;padding:0 12px;border-color:rgba(243,239,228,.4);color:#F3EFE4}
+.cm-lien .cm-code button{flex:none;min-height:44px;padding:0 12px;border-color:rgba(243,239,228,.4);color:#F3EFE4}
 .cm-lien button{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid #10392B;background:none;color:#10392B;font:600 14.5px Jost,sans-serif;cursor:pointer}
 .cm-lien button.p{background:#10392B;color:#FFFDF8}.cm-lien-a{display:flex;gap:8px;flex-wrap:wrap}.cm-lien-a button{flex:1 1 auto}.cm-lien-a button.p{flex-basis:100%}
 .cm-info b{font-weight:600}
@@ -483,7 +484,7 @@
         if (c.role === 'vendeur' && c.etape === 'preparation' && !K) b('chargement', 'Chargement confirmé', 'p');
         // schéma 65 : avec son propre transporteur, « Chargée » attend « Le camion est parti » (vendeur, ou celui qui transporte)
         const PARTI = !K && c.etape === 'chargement' && c.mode_transport !== 'reseau' && (c.role === 'vendeur' || c.role === c.mode_transport);
-        if (PARTI) b('transport', '🚚 Le camion est parti', 'p');
+        if (PARTI) b('transport', TI('camion') + 'Le camion est parti', 'p');
         if (c.role === 'acheteur' && (['transport', 'transbordement'].includes(c.etape) || (!K && c.etape === 'chargement'))) { b('arrivee', 'Le chauffeur est arrivé', K || c.etape === 'chargement' ? '' : 'p'); if (!K) b('reception', 'Réception confirmée'); }
         if (c.role === 'acheteur' && c.etape === 'arrivee' && !K) b('reception', 'Réception confirmée', 'p');
         if (['transport', 'transbordement'].includes(c.etape)) b('transbordement', 'Signaler un transbordement', 'm');
@@ -551,7 +552,7 @@
     const pas = [['Commande confirmée', true], ['Livraison', parti], ['Vérification (24 h)', recu], [A ? 'Libération' : 'Clôture', clos]];
     const ici = pas.findIndex(p => !p[1]);
     const etat = !A ? '<span class="cm-sq-e">Séquestre en construction</span>'
-      : S.etat === 'bloque' ? `<span class="cm-sq-e on">🔒 ${F(r.total)} bloqués chez ${esc(OPE[S.operateur] || '')}</span>`
+      : S.etat === 'bloque' ? `<span class="cm-sq-e on">${TI('cadenas')}${F(r.total)} bloqués chez ${esc(OPE[S.operateur] || '')}</span>`
       : `<span class="cm-sq-e on">✓ Séquestre soldé${S.solde_le ? ' le ' + quand(S.solde_le) : ''}</span>`;
     const lignes = [];
     lignes.push(`<tr class="tot"><td>L’acheteur paie<small>marchandise${r.transport ? ' + transport' : ''}</small></td><td>${F(r.total)}</td></tr>`);
@@ -559,7 +560,7 @@
     lignes.push(V ? `<tr><td>Vous recevez<small>${F(r.vendeur_brut)} moins 3,5 % (${F(r.vendeur_commission)})</small></td><td>${F(r.vendeur_net)}</td></tr>`
                   : `<tr><td>Le vendeur reçoit<small>prix de la marchandise${Number(r.acheteur_rembourse) > 0 ? ', partie acceptée' : ''}</small></td><td>${F(r.vendeur_brut)}</td></tr>`);
     if (Number(r.transport) > 0) lignes.push(`<tr><td>Le transporteur reçoit<small>son prix de transport</small></td><td>${F(r.transporteur_brut)}</td></tr>`);
-    return `<section class="cm-sq" aria-label="Paiement sécurisé"><h3><span aria-hidden="true">🛡️</span> Paiement sécurisé</h3>${etat}
+    return `<section class="cm-sq" aria-label="Paiement sécurisé"><h3>${TI('confiance')}Paiement sécurisé</h3>${etat}
       <ol>${pas.map((p, i) => `<li class="${p[1] ? 'fait' : ''}${i === ici ? ' ici' : ''}">${p[0]}</li>`).join('')}</ol>
       <table><tbody>${lignes.join('')}</tbody></table>
       <p>${A ? 'L’argent reste bloqué jusqu’à ce que l’acheteur valide la marchandise, ou 24 h après la réception sans réclamation. Pour être remboursé, il faut des preuves : le mot secret du vendeur et des photos. Le Marché de Gros n’est payé qu’à la libération.'
@@ -583,7 +584,7 @@
   function blocMot(c) {
     const S = seq[c.id]; if (!S || !S.mot || c.role !== 'vendeur' || !['en_cours', 'litige'].includes(c.etat)) return '';
     const avant = c.etat === 'en_cours' && ['confirmee', 'preparation'].includes(c.etape);
-    return `<section class="cm-mot${avant ? ' fort' : ''}" aria-label="Mot secret à glisser dans la marchandise"><span aria-hidden="true">📝</span><span>
+    return `<section class="cm-mot${avant ? ' fort' : ''}" aria-label="Mot secret à glisser dans la marchandise">${TI('crayon')}<span>
       <small>Mot secret à glisser dans la marchandise</small><b>${esc(S.mot)}</b>
       <small>${avant ? 'Écrivez-le sur un papier et mettez-le dans le colis avant le chargement. À l’arrivée, l’acheteur le retrouve et le tape pour confirmer la réception : c’est la preuve que c’est bien votre marchandise qui est arrivée. Ne le donnez à personne, ni par message.' : 'Il est dans la marchandise. Ne le donnez à personne.'}</small></span></section>`;
   }
@@ -608,8 +609,8 @@
     };
   }
   function blocWa(c) {
-    return WA_LITIGES ? `<div class="cm-wa"><span aria-hidden="true">💬</span><span><b>Service litiges</b> sur WhatsApp : <a href="https://wa.me/${WA_LITIGES}?text=${encodeURIComponent('Bonjour, litige sur la commande n° ' + c.numero)}" target="_blank" rel="noopener">écrire au service</a>. Donnez votre numéro de commande <b>${esc(c.numero)}</b>. Nous ne demandons jamais d’argent ni de code.</span></div>`
-      : `<div class="cm-wa"><span aria-hidden="true">💬</span><span><b>Service litiges WhatsApp : bientôt.</b> Gardez votre numéro de commande <b>${esc(c.numero)}</b> : il suffit pour retrouver l’accord, la négociation et vos messages. Nous ne demandons jamais d’argent ni de code.</span></div>`;
+    return WA_LITIGES ? `<div class="cm-wa">${TI('messages')}<span><b>Service litiges</b> sur WhatsApp : <a href="https://wa.me/${WA_LITIGES}?text=${encodeURIComponent('Bonjour, litige sur la commande n° ' + c.numero)}" target="_blank" rel="noopener">écrire au service</a>. Donnez votre numéro de commande <b>${esc(c.numero)}</b>. Nous ne demandons jamais d’argent ni de code.</span></div>`
+      : `<div class="cm-wa">${TI('messages')}<span><b>Service litiges WhatsApp : bientôt.</b> Gardez votre numéro de commande <b>${esc(c.numero)}</b> : il suffit pour retrouver l’accord, la négociation et vos messages. Nous ne demandons jamais d’argent ni de code.</span></div>`;
   }
   // photos privées : liens signés de courte durée (le serveur vérifie qui peut les voir)
   function photos(box) {
@@ -649,7 +650,7 @@
         <small style="display:block;margin-top:4px;color:#5E5546;font-size:12.5px">Obligatoire : c’est la preuve que vous avez bien reçu le colis du vendeur. Pas de papier ? Revenez en arrière et touchez « Signaler un problème » : l’équipe jugera.</small>` : ''}
         <span class="t" style="display:block;margin:14px 0 6px;font-weight:600">Photos (1 à 4) : la marchandise, et le papier du vendeur</span>
         <div class="cm-ph" data-apercu></div>
-        <label class="cm-pick">📷 Ajouter des photos<input type="file" accept="image/*" multiple data-fic></label>
+        <label class="cm-pick">${TI('photo')}Ajouter des photos<input type="file" accept="image/*" multiple data-fic></label>
         <p class="cm-note" style="font-size:13.5px">Pas de remboursement sans preuves réelles : le mot du vendeur et des photos. Le vendeur verra vos photos et répondra. S’il reconnaît le problème, la partie refusée vous est rendue. Sinon, on en discute à trois et l’équipe du Marché de Gros juge. Le transport reste dû : le chauffeur a fait son travail.</p>
         <p class="cm-err" role="alert"></p>
         <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">Envoyer le refus</button><button type="button" data-ann>Retour</button></div>
@@ -753,8 +754,8 @@
     const T = transport[c.id], ok = T && T.mission && T.mission.statut === 'acceptee' && T.mission.avec_application;
     const k = codesVus[c.id + (pec ? ':p' : ':r')], titre = pec ? 'Code de prise en charge' : 'Code de réception';
     const regle = pec ? 'Donnez-le au chauffeur seulement quand la marchandise est dans son véhicule.' : 'Donnez-le au chauffeur seulement après avoir vérifié la quantité et la qualité.';
-    const garde = pec ? '🔐 Gardez bien ce code : vous aurez à le présenter au chauffeur au chargement.' : '🔐 Gardez bien ce code : vous aurez à le présenter à la réception.';
-    return `<div class="cm-st" data-code-bloc style="background:#FFFDF8;color:#171512;box-shadow:inset 0 0 0 2px #10392B"><p class="cm-garde">${garde}</p>${ok && T.mission.code ? `<p class="cm-tcode">🚚 Code du chauffeur : <b>${esc(T.mission.code)}</b><br>Exigez qu’il vous le montre dans son application avant de donner votre code : s’il ne l’a pas, ce n’est pas le bon chauffeur.</p>` : ''}<b style="color:#10392B">${titre}</b>
+    const garde = pec ? TI('cle') + 'Gardez bien ce code : vous aurez à le présenter au chauffeur au chargement.' : TI('cle') + 'Gardez bien ce code : vous aurez à le présenter à la réception.';
+    return `<div class="cm-st" data-code-bloc style="background:#FFFDF8;color:#171512;box-shadow:inset 0 0 0 2px #10392B"><p class="cm-garde">${garde}</p>${ok && T.mission.code ? `<p class="cm-tcode">${TI('camion')}Code du chauffeur : <b>${esc(T.mission.code)}</b><br>Exigez qu’il vous le montre dans son application avant de donner votre code : s’il ne l’a pas, ce n’est pas le bon chauffeur.</p>` : ''}<b style="color:#10392B">${titre}</b>
       ${!ok ? '<small style="color:#5E5546">Le code s’affichera quand le chauffeur (avec l’application) aura accepté la mission.</small>'
         : k ? `<div aria-live="polite" style="margin:10px 0 4px;font:800 40px/1 Jost,sans-serif;letter-spacing:.18em;color:#10392B;font-variant-numeric:tabular-nums">${esc(k.code.slice(0, 3))} ${esc(k.code.slice(3))}</div>
             <small style="color:#5E5546">Valable jusqu’à ${heure(k.expire_le)}. Un seul usage. ${regle} Dites-le de vive voix : ne l’envoyez pas par message.</small>
@@ -952,20 +953,20 @@
   function blocLien(c) {
     if (c.mode_transport === 'reseau' || !['a_confirmer', 'en_cours'].includes(c.etat)) return '';
     const L = lien[c.id], moi = c.role === c.mode_transport, qui = c.mode_transport === 'vendeur' ? 'le vendeur' : 'l’acheteur', autre = c.mode_transport === 'vendeur' ? 'l’acheteur' : 'le vendeur';
-    const etat = L && L.vu_le ? `<span class="cm-lien-e on">🟢 Le chauffeur partage sa position · ${esc(ago(L.vu_le))}</span>`
-      : L && L.ouvert_le ? `<span class="cm-lien-e">👀 Le chauffeur a ouvert le lien · ${esc(ago(L.ouvert_le))} · en attente de sa position</span>`
+    const etat = L && L.vu_le ? `<span class="cm-lien-e on">${TI('lieu')}Le chauffeur partage sa position · ${esc(ago(L.vu_le))}</span>`
+      : L && L.ouvert_le ? `<span class="cm-lien-e">${TI('oeil')}Le chauffeur a ouvert le lien · ${esc(ago(L.ouvert_le))} · en attente de sa position</span>`
       : L ? '<span class="cm-lien-e">⏳ Le chauffeur n’a pas encore ouvert le lien</span>' : '';
-    if (!moi) return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">🛡️</span><b>Suivi de la livraison</b></div>
+    if (!moi) return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">${IC('confiance', 18)}</span><b>Suivi de la livraison</b></div>
       ${L ? etat : `<small>Nous avons conseillé à ${qui} de donner un lien de suivi à son chauffeur. Dès qu’il l’ouvre, vous voyez le camion avancer ici.</small>`}</div>`;
-    const pourquoi = `<ul class="cm-lien-l"><li><span aria-hidden="true">📍</span>${autre === 'l’acheteur' ? 'L’acheteur' : 'Le vendeur'} voit le camion avancer : moins d’appels, plus de confiance.</li>
-      <li><span aria-hidden="true">🔒</span>Sécurité : en cas de retard ou d’incident, la dernière position est connue.</li>
-      <li><span aria-hidden="true">📲</span>Sans compte, sans application, sans code à retenir pour le chauffeur.</li></ul>`;
-    if (!L || !L.jeton) return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">🛡️</span><b>Donnez un lien de suivi à votre chauffeur</b><span class="cm-tag mais">Recommandé</span></div>
-      ${pourquoi}${schema(false)}<button type="button" class="p" data-lien>📍 Créer le lien de suivi</button><small class="cm-lien-f">Facultatif, mais vivement conseillé pour votre sécurité et celle ${autre === 'le vendeur' ? 'du vendeur' : 'de l’acheteur'}.</small><p class="cm-err" data-liene role="alert"></p></div>`;
-    return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">📍</span><b>Suivi prêt pour votre chauffeur</b></div>
+    const pourquoi = `<ul class="cm-lien-l"><li>${TI('lieu')}${autre === 'l’acheteur' ? 'L’acheteur' : 'Le vendeur'} voit le camion avancer : moins d’appels, plus de confiance.</li>
+      <li>${TI('cadenas')}Sécurité : en cas de retard ou d’incident, la dernière position est connue.</li>
+      <li>${TI('telephone')}Sans compte, sans application, sans code à retenir pour le chauffeur.</li></ul>`;
+    if (!L || !L.jeton) return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">${IC('confiance', 18)}</span><b>Donnez un lien de suivi à votre chauffeur</b><span class="cm-tag mais">Recommandé</span></div>
+      ${pourquoi}${schema(false)}<button type="button" class="p" data-lien>${TI('lieu')}Créer le lien de suivi</button><small class="cm-lien-f">Facultatif, mais vivement conseillé pour votre sécurité et celle ${autre === 'le vendeur' ? 'du vendeur' : 'de l’acheteur'}.</small><p class="cm-err" data-liene role="alert"></p></div>`;
+    return `<div class="cm-lien"><div class="cm-lien-h"><span class="cm-lien-i" aria-hidden="true">${IC('lieu', 18)}</span><b>Suivi prêt pour votre chauffeur</b></div>
       ${etat}${schema(!!L.code)}
       <small>Envoyez-lui le lien avant le départ, par WhatsApp ou SMS.</small>
-      <div class="cm-lien-a"><button type="button" class="p" data-lps>📲 Envoyer au chauffeur</button><button type="button" data-lpc>Copier le lien</button></div>
+      <div class="cm-lien-a"><button type="button" class="p" data-lps>${TI('telephone')}Envoyer au chauffeur</button><button type="button" data-lpc>Copier le lien</button></div>
       ${L.code ? `<div class="cm-ou">ou, au téléphone</div>
       <div class="cm-code"><span>Il ouvre <em>${esc(pageSuivi())}</em> et tape ce code :</span><strong aria-label="Code ${esc(L.code.split('').join(' '))}">${esc(L.code)}</strong><button type="button" data-lcc aria-label="Copier le code">Copier</button></div>` : ''}</div>`;
   }
@@ -993,10 +994,10 @@
       <p class="cm-sous">${esc(n.produit || '')}${q ? ' · ' + qte(q, u) : ''}${n.prix_final != null ? ' · ' + F(n.prix_final) + ' / ' + esc(u) : ''}</p>
       <form class="cm-f" novalidate>
         <label class="t">Qui transporte la marchandise ?</label>
-        ${tr.info ? `<p class="cm-info">🚚 ${esc(tr.info)}</p>` : ''}
+        ${tr.info ? `<p class="cm-info">${TI('camion')}${esc(tr.info)}</p>` : ''}
         ${tr.modes.map(k => `<label class="cm-opt"><input type="radio" name="mode" value="${k}"${k === tr.defaut ? ' checked' : ''}><span><b>${tr.lib[k] || MODES[k]}</b><small>${k === 'reseau' ? 'L’équipe du Marché de Gros vous affecte un transporteur vérifié, avec les codes de prise en charge et de réception.' : k === 'acheteur' ? 'L’acheteur envoie son camion ou son chauffeur. Rien à installer pour le chauffeur ; un lien de suivi est possible.' : 'Le vendeur livre avec son camion ou son chauffeur. Rien à installer pour le chauffeur ; un lien de suivi est possible.'}</small></span></label>`).join('')}
         ${tr.bientot ? `<label class="cm-opt cm-off" aria-disabled="true"><input type="radio" name="mode" value="reseau" disabled><span><b>${MODES.reseau} <span class="cm-tag">Bientôt</span></b><small>Pas encore disponible : le réseau de transporteurs se construit. Pour l’instant, l’acheteur ou le vendeur s’occupe du transport.</small></span></label>` : ''}
-        <p class="cm-info" data-regle>🔐 <b>Votre transporteur n’a rien à faire dans l’application</b> : ni inscription, ni code. Le vendeur glisse un <b>mot secret</b> dans la marchandise ; à la réception, l’acheteur le tape pour confirmer.</p>
+        <p class="cm-info" data-regle>${TI('cle')}<b>Votre transporteur n’a rien à faire dans l’application</b> : ni inscription, ni code. Le vendeur glisse un <b>mot secret</b> dans la marchandise ; à la réception, l’acheteur le tape pour confirmer.</p>
         <label class="t" for="cmLv">Lieu de livraison <small style="font-weight:400;color:#5E5546">(facultatif)</small></label>
         <input type="text" id="cmLv" maxlength="120" placeholder="Ville, quartier, marché…" autocomplete="off">
         <p class="cm-err" role="alert"></p>

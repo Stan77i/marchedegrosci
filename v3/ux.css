@@ -160,3 +160,6 @@ button[aria-busy="true"]:disabled::after{content:"";display:inline-block;width:1
 .sz-pousse{transform-origin:50% 100%;animation:szPousse 2.8s ease-in-out infinite}
 @keyframes szPousse{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(9deg)}}
 @media (prefers-reduced-motion:reduce){.sz-pousse{animation:none}}
+
+/* petite icône dessinée devant un texte (remplace les emoji, 24/10/2026) */
+.ic-t{display:inline-flex;vertical-align:-3px;margin-right:6px;flex:none}.ic-t .ico,.ic-t svg{width:17px;height:17px}

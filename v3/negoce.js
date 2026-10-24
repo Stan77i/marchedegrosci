@@ -13,6 +13,7 @@
 (function () {
   'use strict';
   const N = () => window.MDGNuage;
+  const TI = n => window.MDGIco ? '<span class="ic-t" aria-hidden="true">' + MDGIco.svg(n, 17, 1.9) + '</span>' : '';   // petite icône dessinée devant un texte (plus d'emoji)
   const KL = 'mdg-negoce:liste', KX = 'mdg-negoce:expire-vues';
   const J = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } };
   const W = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
@@ -78,7 +79,7 @@
     const pf = window.MDGCompte ? MDGCompte.prefs() : { toasts: true };
     if (!bg && pf.toasts) {
       const ok = ev.some(([c]) => /accord|accept/.test(c)), ko = ev.every(([c]) => c === 'refus');
-      N().toast(ev.length > 1 ? 'Du nouveau dans vos négociations (' + ev.length + ')' : ev[0][1], { type: ok ? 'ok' : ko ? 'alerte' : 'info', groupe: 'nego', muet: true,
+      N().toast(ev.length > 1 ? ev.length + ' nouveautés dans vos négociations' : ev[0][1], { type: ok ? 'ok' : ko ? 'alerte' : 'info', groupe: 'nego', muet: true,
         pluriel: () => 'nouveautés dans vos négociations', action: ev.length > 1 ? { t: 'Ouvrir', fn: () => inbox() } : { t: 'Voir', fn: () => thread(ev[0][2]) } });
     }
   }
@@ -246,7 +247,7 @@
 .nx-confirm>p{margin:10px 0 12px;color:var(--mute);font-size:13.5px;line-height:1.5}
 .nx-cond{margin:10px 0 0!important;padding:10px 12px;border-radius:12px;background:rgba(31,138,85,.06);color:var(--ink)!important;font-size:14px;line-height:1.45}.nx-cond span{display:block;color:var(--mute);font-size:12px}
 
-.nx-stop{margin:8px 0 0;text-align:center}.nx-stop button{min-height:36px;border:0;background:none;color:#6F6553;font:500 13px Jost,sans-serif;text-decoration:underline;cursor:pointer}
+.nx-stop{margin:8px 0 0;text-align:center}.nx-stop button{min-height:44px;border:0;background:none;color:#6F6553;font:500 13px Jost,sans-serif;text-decoration:underline;cursor:pointer}
 .nx-in{color:var(--ink);font-weight:600}
 .nx-snd s{opacity:.6}
 .nx-av{position:relative;grid-row:span 2;width:36px;height:36px}.nx-av svg{display:block;border-radius:50%}.nx-av i{position:absolute;right:-4px;bottom:-4px;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#F4EEE3}.nx-av i svg{width:14px;height:14px}
@@ -267,9 +268,9 @@
 .nx-px span{padding-bottom:8px;font-size:15px}
 .nx-trc{display:flex;flex-direction:column;gap:6px;margin:14px 0 2px}.nx-trc>div{display:flex;gap:8px}
 .nx-trc button{flex:1;min-height:44px;padding:0 10px;border-radius:22px;border:1px solid rgba(23,21,18,.18);background:none;color:var(--ink);font:500 14.5px Jost,sans-serif;cursor:pointer}
-.nx-trc button[aria-pressed=true]{border-color:#3E8FE0;background:rgba(106,174,240,.16);font-weight:600}.nx-trc small{font-size:12.5px;line-height:1.35;color:var(--mute)}
+.nx-trc button[aria-pressed=true]{border-color:#1F8A55;background:rgba(31,138,85,.12);font-weight:600}.nx-trc small{font-size:12.5px;line-height:1.35;color:var(--mute)}
 .nx-tr{display:inline-flex;align-items:center;gap:4px;margin:4px 0 2px;padding:2px 10px;border-radius:999px;background:rgba(23,21,18,.07);font:600 12.5px/1.6 Jost,sans-serif;color:var(--mute)}
-.nx-tr.oui{background:rgba(106,174,240,.2);color:#1C5E9E}.nx-tk.me .nx-tr{background:rgba(245,240,230,.14);color:#F5F0E6}.nx-tk.me .nx-tr.oui{background:rgba(106,174,240,.3);color:#D9ECFF}
+.nx-tr.oui{background:rgba(31,138,85,.13);color:#17633D}.nx-tk.me .nx-tr{background:rgba(245,240,230,.14);color:#F5F0E6}.nx-tk.me .nx-tr.oui{background:rgba(159,220,178,.22);color:#CDEFD8}
 .nx-pq{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px;margin:14px 0 2px}
 @media (max-width:520px){.nx-pq{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .nx-pq .nx-chip{display:grid;align-content:center;gap:2px;min-height:58px;padding:8px 12px;border-radius:16px;border-color:rgba(23,21,18,.14);text-align:left;font:600 16px/1.1 Jost,sans-serif;font-variant-numeric:tabular-nums;transition:background .2s,border-color .2s,color .2s}
@@ -347,7 +348,7 @@
     return h + '</div></div>';
   }
 
-  const trTag = v => v === true ? '<span class="nx-tr oui">🚚 Transport inclus</span>' : v === false ? '<span class="nx-tr">Sans transport</span>' : '';
+  const trTag = v => v === true ? '<span class="nx-tr oui">' + TI('camion') + 'Transport inclus</span>' : v === false ? '<span class="nx-tr">Sans transport</span>' : '';
   // transport annoncé (schéma 48) → choix de départ dans une proposition (schéma 49) : inclus, sans, ou à discuter (rien)
   const trAnnonce = (cible, t) => cible === 'offre' ? (t === 'inclus' ? true : t === 'non' ? false : null) : (t === 'vendeur' ? true : t === 'acheteur' ? false : null);
   /* ——— l'éditeur de proposition (nouvelle proposition, contre-proposition, relance) ——— */
@@ -361,7 +362,7 @@
       <div class="nx-px"><input id="nxP" inputmode="numeric" autocomplete="off" placeholder="${ref ? fmt(chips[1] ? chips[1].v : ref) : '0'}" ${fixe ? `value="${fmt(ref)}" readonly` : ''} aria-describedby="nxD"><span>F / ${esc(u)}</span></div>
       <div class="nx-chips nx-pq" role="group" aria-label="Prix rapides">${ref ? `<button type="button" class="nx-chip" data-v="${ref}" aria-pressed="false"><small>Prix affiché</small>${fmt(ref)}</button>` : ''}${ctx.dernier && ctx.dernier !== ref ? `<button type="button" class="nx-chip" data-v="${ctx.dernier}" aria-pressed="false"><small>Sa proposition</small>${fmt(ctx.dernier)}</button>` : ''}${chips.map(c => `<button type="button" class="nx-chip" data-v="${c.v}" aria-pressed="false"><small>${c.t}</small>${fmt(c.v)}</button>`).join('')}</div>
       <div class="nx-qr"><label class="nx-lbl" for="nxQ">Quantité</label><div class="nx-q"><input id="nxQ" inputmode="decimal" autocomplete="off" value="${ctx.q0 ? fq(ctx.q0) : ''}" placeholder="—"><span>${esc(u)}</span>${qmin && qmin < (ctx.qmax || Infinity) ? `<button type="button" class="nx-chip" data-q="${qmin}">Minimum · ${fq(qmin)}</button>` : ''}${ctx.qmax ? `<button type="button" class="nx-chip" data-q="${ctx.qmax}">Tout le lot · ${fq(ctx.qmax)}</button>` : ''}</div>${qmin ? `<p class="nx-note" style="margin:6px 0 0">Le vendeur vend à partir de ${fq(qmin)} ${esc(uQ(qmin, u))}.</p>` : ''}</div>
-      <div class="nx-trc" role="group" aria-label="Transport"><span class="nx-lbl">Transport dans ce prix</span><div><button type="button" data-tr="1" aria-pressed="${ctx.tr0 === true}">🚚 Transport inclus</button><button type="button" data-tr="0" aria-pressed="${ctx.tr0 === false}">Sans transport</button></div>
+      <div class="nx-trc" role="group" aria-label="Transport"><span class="nx-lbl">Transport dans ce prix</span><div><button type="button" data-tr="1" aria-pressed="${ctx.tr0 === true}">${TI('camion')}Transport inclus</button><button type="button" data-tr="0" aria-pressed="${ctx.tr0 === false}">Sans transport</button></div>
         <small>${ctx.pour === 'vendeur' ? 'Transport inclus : le vendeur livre, son prix comprend la livraison. Demandez-le ici si l’annonce ne l’inclut pas.' : 'Transport inclus : vous livrez, votre prix comprend la livraison. Ajustez-le en conséquence.'}</small></div>
       <div class="nx-tot" id="nxD" aria-live="polite"></div>
       <div class="nx-prev"></div>

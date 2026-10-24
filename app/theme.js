@@ -55,7 +55,7 @@ html[data-theme=sombre] .rg-btn{background:rgba(243,239,228,.08)}html[data-theme
 .rg-freq [role=radio][aria-checked=true]{background:#10392B;color:#F3EFE4;font-weight:600}
 html[data-theme=sombre] .rg-freq{background:#1E1B16}html[data-theme=sombre] .rg-freq>span{color:#F3EFE4}html[data-theme=sombre] .rg-freq small{color:#CFC4B1}html[data-theme=sombre] .rg-freq [role=radiogroup]{background:#2A261F}html[data-theme=sombre] .rg-freq [role=radio]{color:#E8DFCC}html[data-theme=sombre] .rg-freq [role=radio][aria-checked=true]{background:#F2C230;color:#171512}
 .rg-tours{display:flex;flex-wrap:wrap;gap:8px}.rg-tours button{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid rgba(16,57,43,.25);background:#F7F4EC;color:#10392B;font:600 14px Jost,sans-serif;cursor:pointer}
-.rg-tours button::before{content:"▶ ";font-size:11px}html[data-theme=sombre] .rg-tours button{background:#25211B;color:#F2C230;border-color:rgba(242,194,48,.35)}
+html[data-theme=sombre] .rg-tours button{background:#25211B;color:#F2C230;border-color:rgba(242,194,48,.35)}
 @keyframes rgIn{from{opacity:0}}@keyframes rgUp{from{transform:translateY(40px);opacity:.4}}
 @media (prefers-reduced-motion:reduce){.rg-bg,.rg{animation:none}.rg-o{transition:none}}`;
   const I = n => (window.MDGIco ? MDGIco.svg(n, 22, 1.9) : '');
@@ -106,7 +106,7 @@ html[data-theme=sombre] .rg-freq{background:#1E1B16}html[data-theme=sombre] .rg-
             return `<div class="rg-freq"><span>Fréquence<small>${f === 'une' ? 'Chaque astuce, tutoriel et démo s’affiche une seule fois.' : f === 'semaine' ? 'Tout revient une fois par semaine, comme pour un nouveau.' : 'Tout revient à chaque ouverture de l’application.'}</small></span><div role="radiogroup" aria-label="Fréquence des astuces et des démos">${b('une', 'Une fois')}${b('semaine', 'Chaque semaine')}${b('toujours', 'À chaque ouverture')}</div></div>`; })() : ''}
           ${window.MDGDemo && MDGAstuces.actif() ? sw('apercu', 'Démo de la roue au démarrage', 'L’accueil montre tout seul la roue des produits, le prix et « placer son prix »', MDGDemo.reglages().auto) : ''}
           ${window.MDGDemo ? sw('tableau', 'Bouton « Démo » sur l’accueil', 'Le petit interrupteur au-dessus de la roue, pour rejouer la démo quand vous voulez', MDGDemo.reglages().bouton) : ''}
-          ${window.MDGDemo ? '<button type="button" class="rg-demo" data-demo style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;margin:8px 0 4px;border:0;border-radius:14px;background:#F2C230;color:#171512;font:600 15px Jost,sans-serif;cursor:pointer">▶ Voir la démo : la roue et les prix</button>' : ''}
+          ${window.MDGDemo ? '<button type="button" class="rg-demo" data-demo style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;margin:8px 0 4px;border:0;border-radius:14px;background:#F2C230;color:#171512;font:600 15px Jost,sans-serif;cursor:pointer">' + (window.MDGIco ? MDGIco.svg('suite', 16, 2) : '') + 'Voir la démo : la roue et les prix</button>' : ''}
           <p class="rg-n" style="margin:4px 2px 0">Revoir un tutoriel :</p>
           <div class="rg-tours">${Object.keys(MDGAstuces.TOURS).map(k => `<button type="button" data-tour="${k}">${esc(MDGAstuces.TOURS[k].t)}</button>`).join('')}</div></div>` : ''}
         ${pr && connecte() && !(window.MDGStatut && MDGStatut.estOfficiel && N().session().user && MDGStatut.estOfficiel(N().session().user.id)) ? `<p class="rg-sec">Confidentialité</p>

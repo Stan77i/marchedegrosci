@@ -1460,3 +1460,18 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - **Listes stables** (n° 3) : `poser(el, html)` dans `site/site.js` n'écrit une liste que si elle a changé (fil court, fil long, fil d'un produit ou d'un district, message d'erreur) ; même chose pour la liste de la page carte (`site/carte.js`). `aria-live` passe du bloc entier (titre compris) à la seule liste `#filCourt`.
 - Vérifié (navigateur, ordinateur 1366 px) : au clavier sur l'accueil et un guide, anneau vert sur fond clair, maïs sur fond foncé ; texte du guide correct ; aucune erreur JS. Le rafraîchissement des listes n'a pas pu être vu avec de vraies annonces (serveur bloqué) : vérifié par la relecture et `node --check`.
 - Site refabriqué par `node tools/site-public.js` (empreintes de `site.css`, `site.js`, `carte.js` mises à jour) ; cache `mgci-v244`.
+
+## 24/10/2026 — Liste « À faire par le propriétaire »
+
+- Nouveau `docs/A-FAIRE-PROPRIETAIRE.md` : ce que seul le propriétaire peut faire, avec le mode d'emploi pas à pas. Pour l'instant : autoriser le serveur `catmsypctymgkjkfzdkt.supabase.co` dans l'environnement Claude (remis à plus tard par le propriétaire), puis un compte de test.
+- `CLAUDE.md` : au début d'une discussion, rappeler en une ligne les cases non cochées de cette liste ; « Décisions en attente » mis à jour. `docs/REPRISE.md`, partie 3, point 0 : remplacé par cette liste (l'audit antislop est terminé, PR #250 à #258).
+
+## 24/10/2026 — Documentation officielle : FONCTIONNALITES, ROADMAP, ARCHITECTURE, CHANGELOG
+
+- Quatre fichiers à la racine, écrits après un inventaire du code (`main`) et de la base de production (catalogue et comptages seulement), chacun relu contre le code par un contrôleur :
+  - `FONCTIONNALITES.md` : 195 fonctionnalités, application d'abord, site à part ; 159 opérationnelles (beaucoup jamais servies en vrai, c'est écrit), 25 partielles, 6 prévues, 5 défectueuses ;
+  - `ROADMAP.md` : les 10 sujets demandés, avec leur état, et les décisions du propriétaire à développer ;
+  - `ARCHITECTURE.md` : application, site, Supabase (54 tables, fonctions, RLS, tâches planifiées, fonctions Edge), permissions, intégrations ;
+  - `CHANGELOG.md` : les 607 commits depuis le 03/10/2026, par jour.
+- Défauts trouvés (non corrigés, aucune logique touchée) : limite de 30 annonces qui peut effacer une annonce active au `sync()` ; diffusion « annonce du marché » jamais envoyée sans abonné au produit ; libellés « Paiement libéré » de l'écran admin sans mouvement d'argent ; ancienne note `noter` (code mort) ; refabrication automatique du site non déclenchée par `tools/site-prix.js` et `tools/site-regions.js`.
+- À tenir à jour : chaque PR qui ajoute ou change une fonctionnalité met à jour `FONCTIONNALITES.md` (et `ROADMAP.md` si un élément prévu avance), et ajoute sa ligne au `CHANGELOG.md`.

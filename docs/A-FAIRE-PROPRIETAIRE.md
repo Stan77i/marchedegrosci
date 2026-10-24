@@ -35,5 +35,5 @@ Guide officiel (en anglais) : https://code.claude.com/docs/en/cloud-environments
 revoke truncate on public.alertes, public.alertes_produits, public.zones from authenticated;
 ```
 
-- [ ] Fait
+- [x] Fait (24/10/2026, vérifié par Claude : la permission est retirée sur les trois tables)
 

@@ -52,6 +52,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
   - augmenter le `?v=` des fichiers modifiés dans les pages HTML ;
   - augmenter `CACHE` dans `sw.js` (format `mgci-vNNN`) ;
   - ajouter les nouvelles images à la liste `IMAGES` de `sw.js`.
+- **Documentation officielle** (demande du propriétaire, 24/10/2026) : `FONCTIONNALITES.md`, `ROADMAP.md`, `ARCHITECTURE.md`, `CHANGELOG.md` à la racine. Chaque PR qui ajoute ou change une fonctionnalité les met à jour (état réel, fichiers, tables, fonctions) ; ne jamais présenter une idée comme faite.
 - **Rapport de passation à chaque fois** (règle du propriétaire, 23/10/2026) : chaque PR ajoute sa section dans `docs/PASSATION.md` et met à jour tout ce qui doit l'être (`docs/REPRISE.md` : état, ce qui est fait, ce qui reste ; `docs/seo/PLAN.md` pour le site ; `PORTAGE-SITE.md`, `FOUNDER_CONTEXT.md`, modèles de `strategie/sources/`, `DESIGN.md` quand ils sont concernés). Sans attendre qu'il le demande.
 - **Mesurer, ne pas supposer.** Aucune donnée inventée. Ne jamais dire qu'un test, un déploiement ou une migration a réussi sans l'avoir vérifié.
 - Vérifier dans un vrai navigateur :

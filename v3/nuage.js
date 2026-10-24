@@ -335,16 +335,26 @@
 .ng-tt-a{font:500 17px/1.3 Jost,sans-serif;letter-spacing:.005em;color:#BDB29E}
 .ng-tt-b{display:block;font:600 clamp(34px,10.4vw,42px)/1.04 Jost,sans-serif;letter-spacing:-.028em;color:#F3EFE4;white-space:nowrap}
 .ng-tt-m{display:inline-block;overflow:hidden;vertical-align:bottom;padding:0 .02em .08em;margin:0 -.02em -.08em}.ng-tt-m>span{display:inline-block}
-.ng-tt-g{display:inline-block;padding:0 .12em .06em .02em;margin:0 -.12em -.06em 0;font-weight:800;font-style:italic;letter-spacing:-.02em;color:#F2C230;background:linear-gradient(100deg,#F2C230 0 42%,#FFEDB0 50%,#F2C230 58% 100%) 100% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.ng-tt-g{display:inline-block;font-weight:800;font-style:italic;letter-spacing:-.02em;color:#F2C230}
+/* « de Gros » et « du pays » empilés dans la même case : la largeur du titre ne bouge jamais ; le lecteur d'écran lit « marché de Gros » */
+.ng-tt-pile{display:inline-grid;clip-path:inset(-.12em -.3em -.26em -.1em)}.ng-tt-pile>span{grid-area:1/1;display:inline-block}.ng-tt-pile>.ng-tt-y{opacity:0}
+.ng-tt-t{display:inline-block;padding:0 .12em .06em .02em;margin:0 -.12em -.06em 0;background:linear-gradient(100deg,#F2C230 0 42%,#FFEDB0 50%,#F2C230 58% 100%) 100% 0/260% 100% no-repeat;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .ng-tt.is-on .ng-tt-a{animation:ngTtA .55s .12s cubic-bezier(.22,1,.36,1) both}
 .ng-tt.is-on .ng-tt-m>span{animation:ngTtM .8s .26s cubic-bezier(.22,1,.36,1) both}
-.ng-tt.is-on .ng-tt-g{animation:ngTtG .7s .62s cubic-bezier(.65,0,.35,1) both,ngTtS 1.5s 1.45s cubic-bezier(.4,0,.2,1) both}
+.ng-tt.is-on .ng-tt-g{animation:ngTtG .7s .62s cubic-bezier(.65,0,.35,1) both}.ng-tt.is-on .ng-tt-x .ng-tt-t{animation:ngTtS 1.5s 1.45s cubic-bezier(.4,0,.2,1) both}
+/* le titre bascule seul, 3 s après l'apparition, « de Gros » monte et s'efface, « du pays » monte du bas avec un reflet et reste 2 s ; puis le retour, à l'inverse ; la séquence recommence toutes les 10 s */
+.ng-tt.is-on .ng-tt-x{animation:ngTtX 10s cubic-bezier(.65,0,.35,1) infinite}
+.ng-tt.is-on .ng-tt-y{animation:ngTtY 10s cubic-bezier(.65,0,.35,1) infinite}
+.ng-tt.is-on .ng-tt-y .ng-tt-t{animation:ngTtR 10s linear infinite}
+@keyframes ngTtX{0%,30%{transform:none;opacity:1}35%,57%{transform:translateY(-.5em);opacity:0}62%,100%{transform:none;opacity:1}}
+@keyframes ngTtY{0%,32%{transform:translateY(.5em);opacity:0}37%,55%{transform:none;opacity:1}60%,100%{transform:translateY(.5em);opacity:0}}
+@keyframes ngTtR{0%,37%{background-position:100% 0}49%,100%{background-position:0 0}}
 @keyframes ngTtA{from{opacity:0;transform:translateY(8px);filter:blur(3px)}}
 @keyframes ngTtM{from{transform:translateY(105%)}}
 @keyframes ngTtG{from{clip-path:inset(-30% 100% -30% -10%);transform:translateX(-6px)}to{clip-path:inset(-30% -10% -30% -10%);transform:none}}
 @keyframes ngTtS{from{background-position:100% 0}to{background-position:0 0}}
 @media (min-width:760px){.ng-tt-a{font-size:18px}.ng-tt-b{font-size:48px}}
-@media (prefers-reduced-motion:reduce){.ng-tt.is-on .ng-tt-a,.ng-tt.is-on .ng-tt-m>span,.ng-tt.is-on .ng-tt-g{animation:none}}
+@media (prefers-reduced-motion:reduce){.ng-tt.is-on .ng-tt-a,.ng-tt.is-on .ng-tt-m>span,.ng-tt.is-on .ng-tt-g,.ng-tt.is-on .ng-tt-x,.ng-tt.is-on .ng-tt-x .ng-tt-t,.ng-tt.is-on .ng-tt-y,.ng-tt.is-on .ng-tt-y .ng-tt-t{animation:none}}
 /* bureau : la scène à gauche, le formulaire à droite, sans trait entre les deux */
 @media (min-width:760px){
   .ng-bg:has(.ng--porte){padding:24px}
@@ -450,8 +460,9 @@
       $('.ng-sw span').textContent = SW[0]; $('.ng-sw button').textContent = SW[1]; $('.ng-sw button').onclick = () => setMode(SW[2]);
       const t = $('#ngT'), dm = raison !== 'publie' && raison !== 'negocie' ? { in: 'Entrez dans le', up: 'Rejoignez le' }[m] : '';
       t.classList.toggle('ng-tt', !!dm);
-      // le titre de la porte reprend le logo : « marché » crème, « de Gros » maïs, gras italique ; il se rejoue à chaque bascule
-      if (dm) { t.innerHTML = `<span class="ng-tt-a">${dm}</span><span class="ng-tt-b"><span class="ng-tt-m"><span>marché</span></span> <span class="ng-tt-g">de Gros</span></span>`; t.classList.remove('is-on'); void t.offsetWidth; t.classList.add('is-on'); }
+      // le titre de la porte reprend le logo : « marché » crème, « de Gros » maïs, gras italique ; il se rejoue à chaque bascule.
+      // « de Gros » passe à « du pays » 3 s après l'apparition, puis revient ; recommence toutes les 10 s (choix du propriétaire, 24/10/2026), en CSS seulement
+      if (dm) { t.innerHTML = `<span class="ng-tt-a">${dm}</span><span class="ng-tt-b"><span class="ng-tt-m"><span>marché</span></span> <span class="ng-tt-g"><span class="ng-tt-pile"><span class="ng-tt-x"><span class="ng-tt-t">de Gros</span></span><span class="ng-tt-y" aria-hidden="true"><span class="ng-tt-t">du pays</span></span></span></span></span>`; t.classList.remove('is-on'); void t.offsetWidth; t.classList.add('is-on'); }
       else t.textContent = TITRE[m]; $('.ng-lede').textContent = LEDE[m]; $('.ng-lede').hidden = !LEDE[m];
       $('.ng-lc').innerHTML = (m === 'sos' ? 'Nouveau code secret' : m === 'up' ? 'Choisissez un code secret' : 'Code secret') + ' <i>6 chiffres</i>';
       $('#ngCode').autocomplete = m === 'in' ? 'current-password' : 'new-password'; go.querySelector('span').textContent = BTN[m]; glob('');

@@ -87,6 +87,9 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Alertes par produit | `v3/alertes.js` (schéma 75) | moyenne |
 | « Ville seulement » (schéma 87) : l'interrupteur « Je vends uniquement à Guiglo » à la publication et dans Mes publications, l'avertissement avant de négocier ou d'écrire, la ville imposée à la commande. Le site montre déjà la pastille « Guiglo uniquement » (fil, carte) | `app/ville-seule.js`, `application.dc.html` (`vsEl`, `vsSw`), `v3/negoce.js`, `v3/messages.js`, `v3/commandes.js` | moyenne |
 
+| Annulation avec motif obligatoire (liste fermée), accord ou non de l'autre partie sur le motif, expiration à 48 h (schéma 84) | `v3/commandes.js` (`confirmer`, `annulerMotif`, `repondreMotif`) | haute |
+| « Ma fiabilité » : score, annulations qui comptent ou non, avertissements, contestation ; ligne « Fiabilité : 96 % sur 25 commandes » du profil (schéma 84) | `v3/reputation.js` (`fiabilite`, commun) et la ligne de `v3/compte.js` (commun) : à vérifier sur le site | moyenne |
+
 ### Accueil et navigation
 
 | Fonction | Modèle dans l'application | Priorité |
@@ -170,7 +173,7 @@ _Partie mise à jour automatiquement par `tools/inventaire-site.js` (tâche GitH
 | `index.html` | Aiguillage : téléphone → application, ordinateur → maintenance (ou site pour l’administrateur). | 0 | 2 ko |
 | `maintenance.html` | Page « site en maintenance » avec QR code vers l’application. | 3 | 83 ko |
 | `suivi.html` | Lien de suivi envoyé au chauffeur (sans compte). | 0 | 12 ko |
-| `admin.html` | Tableau de bord de l’administrateur. | 13 | 393 ko |
+| `admin.html` | Tableau de bord de l’administrateur. | 14 | 408 ko |
 
 ### Modules communs à l’application et au site (22)
 

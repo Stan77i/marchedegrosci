@@ -5,7 +5,7 @@
 -- n'est pas cette ville (comparaison _ville_cle). L'ancienne commande_creer (anciennes versions de l'application) refuse aussi
 -- une offre « ville seulement » si le lieu de livraison ne nomme pas la ville.
 -- fil_public2 : comme fil_public (schéma 80), avec ville_seulement en plus (aucune donnée privée).
--- Appliqué sur le projet de test le 24/10/2026. À appliquer en production AVANT de fusionner le front.
+-- Appliqué sur le projet de test puis en production le 24/10/2026.
 -- (fichier sans les mots interdits par le MCP ; tout est en add column if not exists / create or replace)
 
 alter table public.offres add column if not exists ville_seulement boolean not null default false;

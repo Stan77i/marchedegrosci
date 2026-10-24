@@ -6,6 +6,8 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Connexion : le titre alterne « marché de Gros » et « marché du pays » (3 s, puis 2 s, toutes les 10 s), validé en vidéo par le propriétaire ; le « court film » de connexion a été refusé et n'est pas fusionné.
+
 Audit antislop de l'application, stabilité, prix officiels et reprise de projet.
 
 - « Ville seulement » : vendre ou acheter uniquement dans sa ville (schéma 87, projet de test seulement) : interrupteur à la publication, pastille « Guiglo uniquement » partout où l'annonce apparaît, avertissement avant de négocier ou d'écrire, ville imposée à la commande, refus du serveur hors de la ville (branche `claude/ville-seulement`).

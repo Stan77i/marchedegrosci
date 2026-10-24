@@ -7,8 +7,8 @@
 
 - **Toutes les PR sont fusionnées** (jusqu'à la PR #247). Aucune PR ouverte, aucun travail en cours. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
 - `main` : cache du service worker `mgci-v254` après les PR du site (#259 à #263) ; numéros réservés : `mgci-v248` fiabilité, `v249` badges, `v250` boutiques, `v251` film de connexion.
-- **Ville seulement** (branche `claude/ville-seulement`, 24/10/2026) : schéma 87 appliqué sur le projet de test seulement ; à appliquer en production **avant** de fusionner la PR. Cache `mgci-v255`.
-- Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **83** appliqués (82 commission transport réservée au service Marché de Gros ; 83a à 83e chantier transport, appliqués le 24/10/2026). Le projet de test a en plus le schéma 84 (fiabilité, en cours).
+- Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **84** appliqués (82 commission transport réservée au service Marché de Gros ; 83a à 83e transport ; 84a à 84f fiabilité, appliqués le 24/10/2026, tâche `mdg-fiabilite` toutes les 15 min). Le projet de test peut avoir en plus les schémas des chantiers en cours (85 badges, 86 boutiques, 87 ville seulement).
+- **Ville seulement** (branche `claude/ville-seulement`, 24/10/2026) : schéma 87 appliqué sur le test puis **en production** le 24/10/2026 (fonctions identiques au test, à une ligne de commentaire près). Cache `mgci-v260`.
 
 ## 2. Ce qui a été fait (session du 23/10/2026)
 
@@ -65,11 +65,11 @@
 
 **0 bis. Audit antislop du site caché (24/10/2026) : le propriétaire choisit les numéros** dans `docs/anti-slop/audit-002-2026-10-24-site.md` (32 constats + décision D : l'eau en bleu sur la carte). Ne rien corriger sans son choix. Faits : n° 1 à 32. Décision D tranchée : l'eau reste bleue. L'audit du site est terminé.
 
-**0 ter. Les 4 chantiers (24/10/2026) : décisions validées** (`docs/audits/decisions-chantiers-2026-10-24.md`). C1 et C2 faits (schéma 82). **Chantier 1 (transport) construit** sur la branche `claude/chantier-transport` : schéma 83 (83a à 83e) testé sur le projet de test puis **appliqué en production** le 24/10/2026 (PR #267, fusionnée). Le transporteur du réseau reste fermé (réglage `transport_reseau_ouvert` à `false`, `RESEAU_OUVERT = false`). Pour garder aussi l'alerte d'un numéro dans un litige, le propriétaire peut coller dans l'éditeur SQL : `alter table public.alertes drop constraint alertes_source_check; alter table public.alertes add constraint alertes_source_check check (source in ('dm', 'negociation', 'litige'));` Reste, dans l'ordre : fiabilité, badges, boutiques ; une PR par chantier.
+**0 ter. Les 4 chantiers (24/10/2026) : décisions validées** (`docs/audits/decisions-chantiers-2026-10-24.md`). C1 et C2 faits (schéma 82). **Chantier 1 (transport) construit** sur la branche `claude/chantier-transport` : schéma 83 (83a à 83e) testé sur le projet de test puis **appliqué en production** le 24/10/2026 (PR #267, fusionnée). Le transporteur du réseau reste fermé (réglage `transport_reseau_ouvert` à `false`, `RESEAU_OUVERT = false`). Pour garder aussi l'alerte d'un numéro dans un litige, le propriétaire peut coller dans l'éditeur SQL : `alter table public.alertes drop constraint alertes_source_check; alter table public.alertes add constraint alertes_source_check check (source in ('dm', 'negociation', 'litige'));` Reste, dans l'ordre : fiabilité, badges, boutiques ; une PR par chantier. **Chantier 2 (fiabilité)** : schéma 84 (84a à 84f) testé puis appliqué en production le 24/10/2026 ; écran dans la PR « Chantier 2 : fiabilité ». La fonction Edge `pousser` (cas 16 : notifications de fiabilité) reste à redéployer.
+
+**0 quater. Ville seulement** : schéma 87 en production ; reste à fusionner la PR, puis à vérifier avec un compte la négociation, les messages et la commande (le navigateur de l'environnement de travail ne joint pas Supabase).
 
 **0. Audit antislop de l'application (24/10/2026) : le propriétaire choisit les numéros à corriger** dans `docs/anti-slop/audit-001-2026-10-24.md` (59 constats + 3 décisions A, B, C). Ne rien corriger sans son choix ; ensuite une PR par lot, et noter dans le fichier ce qui est fait. **Audit terminé** : tout est fait sauf 3 points laissés exprès (50, 54) ou à vérifier avec des données (59). Décisions A, B, C tranchées le 24/10/2026 et appliquées (accueil calmé, « vérifié » en vert, dégradé de « de Gros » gardé). Seul reste le n° 59, à vérifier quand le serveur sera joignable depuis la session.
-
-**0 quater. Ville seulement** : appliquer `supabase/schema-87-ville-seulement.sql` en production, puis fusionner la PR ; ensuite vérifier avec un compte la négociation, les messages et la commande (ville verrouillée).
 
 **Le site caché est presque complet côté contenu.** Ce qui bloque maintenant, ce sont les étapes 1 et 3, qui dépendent du propriétaire.
 

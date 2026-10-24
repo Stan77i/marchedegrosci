@@ -15,7 +15,7 @@
     'Négociez le prix.',
     'Payez à la livraison.',
     'Votre numéro reste caché.',
-    'Identités vérifiées.',
+    'Sceau vert : identité vérifiée.',
     'Coopératives vérifiées.',
     'Partout en Côte d’Ivoire.',
     'Du champ au marché.'

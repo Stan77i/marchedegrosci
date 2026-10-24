@@ -1761,3 +1761,10 @@ Suite du commit serveur 37518f7 (schémas 88a, 88b, `pousser` v21 ; plan : `docs
   - textes : L'aide (« Revoir les tutoriels » renvoie vers « Revoir un tutoriel », en bas de L'aide ; « Je ne reçois pas les notifications » renvoie vers Menu → Réglages), `app/theme.js` (bouton Démo caché : « la démo reste dans L'aide »), `v3/astuces.js` (nom de famille : Mon compte → Profil et avatar ; tutoriels : L'aide) ;
   - documentation remise d'accord : `CLAUDE.md` (l'ancienne règle « 6 par jour, 1 conseil » remplacée), `docs/REPRISE.md`, `ARCHITECTURE.md` (schéma 91 et nouvelle `pousser` : test seulement), `ROADMAP.md`, `FONCTIONNALITES.md`, `PORTAGE-SITE.md` (plus de réglages par catégorie à porter), audit `docs/audits/notifications-commerciales-2026-10-24.md` (état construit, catégories et liens réels, plafond de plateforme et pause de 3 jours non construits).
 
+
+## 24/10/2026 · Audit de logique métier et de viabilité
+
+- Rapport : `docs/audits/audit-logique-viabilite-2026-10-24.md` (9 auditeurs, contre-vérification de chaque constat grave, tests sur le projet de test dans des blocs annulés ; production : lecture des définitions seulement). Aucun code modifié.
+- Score 49/100 : essai fermé possible, ouverture au public non.
+- 6 P1 : stock non rendu quand une vente tombe ; commande confirmée bloquée sans issue ; numéro non prouvé ; nom « Marché de Gros » libre ; pas de CGU ni de politique de confidentialité ; ~10 Mo retéléchargés à chaque version (`sw.js`).
+- Ordre des corrections : partie 10 du rapport. Décisions du propriétaire attendues d'abord (délais d'accord, de chargement, de réception, de litige).

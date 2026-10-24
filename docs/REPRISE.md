@@ -65,6 +65,8 @@
 
 ## 3. Ce qui reste à faire (dans l'ordre conseillé)
 
+- **D'abord : l'audit du 24/10/2026** (`docs/audits/audit-logique-viabilite-2026-10-24.md`, partie 10) : décisions du propriétaire sur les délais, puis stock rendu, commandes bloquées, noms réservés, service worker, CGU.
+
 **0. À faire par le propriétaire** (liste et mode d'emploi : `docs/A-FAIRE-PROPRIETAIRE.md`) : autoriser le serveur `catmsypctymgkjkfzdkt.supabase.co` dans l'environnement Claude, puis un compte de test. Le rappeler au début d'une discussion ; ensuite, vérifier à l'écran les fenêtres avec compte et le point n° 59 de l'audit antislop (`docs/anti-slop/audit-001-2026-10-24.md`, terminé pour le reste).
 
 **0 bis. Audit antislop du site caché (24/10/2026) : le propriétaire choisit les numéros** dans `docs/anti-slop/audit-002-2026-10-24-site.md` (32 constats + décision D : l'eau en bleu sur la carte). Ne rien corriger sans son choix. Faits : n° 1 à 32. Décision D tranchée : l'eau reste bleue. L'audit du site est terminé.

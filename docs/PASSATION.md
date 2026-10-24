@@ -1703,5 +1703,5 @@ Règles appliquées : décisions 34 à 44 de `docs/audits/decisions-chantiers-20
 - Testé sur le projet de test sans rien laisser (bloc annulé) : commande reçue il y a 2 h → clôturée « auto » ; reçue il y a 30 min → ouverte ; échéance = réception + 1 h.
 - Application : avertissement à la confirmation de la réception (« Vous aurez 1 h pour signaler un problème… »), message de l'arrivée du chauffeur, étapes « Vérification (1 h) », aide, astuces, guide, garanties, admin. Site (gabarits `tools/site/`) et PDF (pitch, présentation) refaits.
 - Fiche profil : le délai va dans la carte du rôle (« Livre en général en 30 h », « Valide en général en 20 min »).
-- Captures envoyées au propriétaire avant la PR (nouvelle règle). Production : à appliquer après son accord.
+- Captures envoyées au propriétaire, validées (« OK »). Production : 89a et 89b appliqués le 24/10/2026 et vérifiés (tâche toutes les 5 min, 1 h dans les 3 fonctions, `delais_publics` ouverte aux visiteurs). Aucune commande en attente de clôture au moment du changement.
 

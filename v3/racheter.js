@@ -98,7 +98,7 @@
   }
   function ouvrirNego(id) { if (id && window.MDGNegoce && MDGNegoce.thread) { fermer(); MDGNegoce.thread(id); } }
 
-  // ——— Racheter un produit, depuis une commande terminée ———
+  // Racheter un produit, depuis une commande terminée
   async function ouvrir(cmdId) {
     if (!connecte()) return;
     const box = monter('Racheter');
@@ -176,7 +176,7 @@
     peindre(); focusTitre(box);
   }
 
-  // ——— Mes achats habituels : retrouver, choisir plusieurs produits, tout préparer, confirmer une fois ———
+  // Mes achats habituels : retrouver, choisir plusieurs produits, tout préparer, confirmer une fois
   async function habituels() {
     if (!connecte()) return;
     const box = monter('Racheter');
@@ -191,7 +191,7 @@
         (L.length ? L.map((x, i) => `<div class="rc-li"><input type="checkbox" id="rh${i}" data-c="${i}" ${choix.has(i) ? 'checked' : ''}><label class="t" for="rh${i}"><b>${esc(x.produit || x.slug)}</b>
           <small>${nf(x.quantite)} ${esc(x.unite)} à ${F(x.prix_unitaire)} · ${esc(x.vendeur)} · ${jour(x.dernier)}${x.fois > 1 ? ' · acheté ' + x.fois + ' fois' : ''}</small>
           ${x.rappel && x.rappel.actif ? `<small>Rappel : ${x.rappel.frequence === 'quotidien' ? 'chaque jour' : 'chaque ' + JOURS[x.rappel.jour]} à ${x.rappel.heure} h</small>` : ''}</label>
-          <button class="rc-b s" data-un="${i}" aria-label="Racheter ${esc(x.produit || '')}">Voir</button></div>`).join('')
+          <button class="rc-b s" data-un="${i}" aria-label="Racheter ${esc(x.produit || '')}">Racheter</button></div>`).join('')
           + `<div class="rc-pied"><button class="rc-b" data-prep ${choix.size ? '' : 'disabled'}>Préparer la sélection${choix.size ? '<span class="nbul">' + choix.size + '</span>' : ''}</button></div>`
           : '<div class="rc-vide">' + (window.MDGSac ? MDGSac.svg('vide') : '') + '<b>Pas encore d’achat terminé</b>Quand une commande sera terminée, vous pourrez la racheter d’ici en un geste.</div>');
       box.querySelectorAll('[data-c]').forEach(c => c.onchange = () => { const i = +c.dataset.c; c.checked ? choix.add(i) : choix.delete(i); const b = box.querySelector('[data-prep]'); b.disabled = !choix.size; b.innerHTML = 'Préparer la sélection' + (choix.size ? '<span class="nbul">' + choix.size + '</span>' : ''); });
@@ -220,7 +220,7 @@
           if (l.d && l.d.erreur) return `<article class="rc-o"><b>${esc(x.produit)}</b><p class="rc-err">${esc(l.d.erreur)}</p></article>`;
           if (!o) return `<article class="rc-o"><div class="rc-ot"><b>${esc(x.produit)}</b></div><p class="rc-note">${l.ouverte ? 'Une négociation est déjà ouverte pour ce produit.' : 'Aucune offre disponible aujourd’hui pour ce produit.'}</p>${l.ouverte ? `<button class="rc-b s" data-nego="${l.ouverte.ouverte_id}">Ouvrir la négociation</button>` : ''}</article>`;
           const q = qDefaut(x.quantite, o.dispo);
-          return `<article class="rc-o" style="${l.actif ? '' : 'opacity:.55'}"><div class="rc-ot"><b>${esc(x.produit)}</b><small>${esc(o.vendeur)}<br>${esc(o.ville || '')}</small></div>
+          return `<article class="rc-o" style="${l.actif ? '' : 'background:transparent;outline:1.5px dashed rgba(23,21,18,.3);outline-offset:-1.5px'}"><div class="rc-ot"><b>${esc(x.produit)}</b><small>${esc(o.vendeur)}<br>${esc(o.ville || '')}</small></div>
             <div class="rc-px"><strong>${F(o.prix)}</strong><small>/ ${esc(o.unite)}</small>${o.unite === x.unite ? ecart(o.prix, x.prix_unitaire) : ''}</div>
             ${l.actif ? `<div class="rc-q"><label for="ql${i}">Quantité (${esc(o.unite)}) · reste ${nf(o.dispo)}</label>${stepper('l' + i, q, o.dispo).replace('data-q=', `id="ql${i}" data-q=`)}<span class="rc-tot" data-tot="l${i}">${F(q * o.prix)}</span></div>` : ''}
             <button class="rc-b s" data-tog="${i}">${l.actif ? 'Retirer de la sélection' : 'Remettre dans la sélection'}</button></article>`; }).join('') +

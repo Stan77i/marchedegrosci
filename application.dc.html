@@ -22,21 +22,21 @@ var adm=false;try{adm=localStorage.getItem("mdg-site:admin")==="1"}catch(e){}
 if(!adm){try{sessionStorage.removeItem("mdg-app")}catch(e){}location.replace("maintenance.html"+(location.hash||""));return}
 if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.getItem("mdg-app")!=="1")location.replace("index-v3.html"+h)}catch(e){}})();</script>
 <script>/* service worker : vérifie les mises à jour à chaque retour sur l'application ; quand une nouvelle version prend la main, la page se recharge (tout de suite si elle vient de s'ouvrir, sinon au prochain retour, jamais pendant une saisie) */if('serviceWorker' in navigator){(function(){var sw=navigator.serviceWorker,avant=!!sw.controller,t0=Date.now(),attente=false;sw.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(attente)location.reload();else r.update().catch(function(){})}})}).catch(function(){});sw.addEventListener('controllerchange',function(){if(!avant||attente)return;if(Date.now()-t0<6000)location.reload();else attente=true})})()}</script>
-<script src="v3/nuage.js?v=20261124c"></script>
+<script src="v3/nuage.js?v=20261124h"></script>
 <script src="app/admin-pc.js?v=20261102a" data-ici="mobile"></script>
-<script src="v3/personnages.js?v=20261101d"></script>
+<script src="v3/personnages.js?v=20261124h"></script>
 <script src="v3/avatar.js?v=20261124c"></script>
 <script src="app/icones.js?v=20261025a"></script>
 <script src="app/effets.js?v=20261124d"></script>
 <script src="app/marque.js?v=20261023v"></script>
-<script src="app/sac.js?v=20261124g"></script>
-<script src="app/garanties.js?v=20261124g"></script>
-<script src="app/toast.js?v=20261124g"></script>
+<script src="app/sac.js?v=20261124h"></script>
+<script src="app/garanties.js?v=20261124h"></script>
+<script src="app/toast.js?v=20261124h"></script>
 <script>/* l'adresse d'arrivée (liens d'intention du site : #/publier?…, #/groupes…), gardée avant que l'application ne la remette à #/ */window.MDGAdresse0=location.hash;</script>
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261124g','v3/astuces.js?v=20261124g','app/scene.js?v=20261028d','v3/porte.js?v=20261028c','v3/sons.js?v=20261124c','v3/negoce.js?v=20261124g','v3/compte.js?v=20261124g','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261124g','v3/reputation.js?v=20261124g','v3/statuts.js?v=20261124f','v3/messages.js?v=20261124g','v3/aide.js?v=20261124f','v3/alertes.js?v=20261124g','v3/releve.js?v=20261124g','v3/commandes.js?v=20261124g','v3/tableau.js?v=20261124f','v3/chauffeur.js?v=20261124g','v3/suivi.js?v=20261124g','v3/prixzone.js?v=20261101a','v3/racheter.js?v=20261124g','v3/appro.js?v=20261101a','v3/groupes.js?v=20261101a','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261124g','v3/identite.js?v=20261124g'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261124h','v3/astuces.js?v=20261124h','app/scene.js?v=20261124h','v3/porte.js?v=20261028c','v3/sons.js?v=20261124c','v3/negoce.js?v=20261124h','v3/compte.js?v=20261124h','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261124g','v3/reputation.js?v=20261124h','v3/statuts.js?v=20261124f','v3/messages.js?v=20261124h','v3/aide.js?v=20261124f','v3/alertes.js?v=20261124h','v3/releve.js?v=20261124h','v3/commandes.js?v=20261124h','v3/tableau.js?v=20261124h','v3/chauffeur.js?v=20261124h','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261101a','v3/racheter.js?v=20261124h','v3/appro.js?v=20261124h','v3/groupes.js?v=20261124h','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261124h','v3/identite.js?v=20261124h'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -50,25 +50,25 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
-<script src="app/theme.js?v=20261124g"></script>
-<script src="app/nuit.js?v=20261101a" defer></script>
+<script src="app/theme.js?v=20261124h"></script>
+<script src="app/nuit.js?v=20261124h" defer></script>
 <script src="app/stable.js?v=20261103a" defer></script>
 <script src="app/vibre.js?v=20261025a" defer></script>
 <script src="app/prixmoment.js?v=20261124g" defer></script>
-<script src="app/demo-orbite.js?v=20261124g" defer></script>
+<script src="app/demo-orbite.js?v=20261124h" defer></script>
 <script src="app/activite.js?v=20261101a" defer></script>
 <link rel="preload" href="fonts/jost-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/symboles.css?v=20261102d">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261101e">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261124g">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261124h">
 <link rel="stylesheet" href="css/sombre.css?v=20261027f">
-<link rel="stylesheet" href="css/annee-app.css?v=20261124d">
+<link rel="stylesheet" href="css/annee-app.css?v=20261124h">
 <link rel="stylesheet" href="css/categories-app.css?v=20261124f">
 <link rel="stylesheet" href="v3/ux.css?v=20261124f">
 <script src="v2/data.js?v=20261031a"></script>
-<script src="app/marche-app.js?v=20261102b"></script>
+<script src="app/marche-app.js?v=20261124h"></script>
 <script src="app/villes.js"></script>
 <style>html,body{margin:0;height:100%;position:fixed;inset:0;width:100%;overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}input,select,textarea{font-size:16px!important;min-width:0;max-width:100%}label{min-width:0}[data-pg],[data-screen-label="Application"]{overflow:clip!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"]{overflow-x:hidden!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"],[style*="overflow-x:auto"]{overscroll-behavior:none;-webkit-overflow-scrolling:touch}[style*="overflow-x:auto"]{overflow-y:hidden!important;touch-action:pan-x}*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}img,svg,a{-webkit-user-drag:none}textarea{resize:none}button{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}html,body{background:#0d0c0a;font-variant-numeric:lining-nums;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box;scrollbar-width:none}a{color:var(--terre)}a:hover{color:var(--terre);opacity:.85}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}:where(a,button,input,select,textarea):focus-visible{outline:2px solid var(--terre);outline-offset:2px}button:active{transform:scale(.97);transition:transform 120ms cubic-bezier(.2,.8,.2,1)}.ux-pip::before{content:'';position:absolute;inset:-8px 0}@media (prefers-reduced-motion:reduce){button:active{transform:none}}
 @keyframes mkWave{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.3);opacity:0}}
@@ -1330,7 +1330,7 @@ class Component extends DCLogic {
     const ventes = (this.ventesR || ls('mdg-app:ventes') || []).filter(v => v && v.conclu_le && !MQ['v:' + v.cle]).map(v => ({ kind: 'vente', id: v.cle, slug: v.product_slug, at: v.conclu_le, qty: +v.quantite || 0, unit: v.unite || '', ville: v.ville, nom: v.produit }));
     const acts = [...this.offers(), ...dem, ...ventes].filter(x => x.at && !MQ['a:' + x.id]).sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 15).map(x => {
       if (x.kind === 'vente') { const P = x.slug ? this.prod(x.slug) : null, nom = (P && P.name) || x.nom || 'Produit', u = x.unit && x.qty > 1 && !/[sx]$|^(kg|t|l)$/i.test(x.unit) ? x.unit + 's' : x.unit;
-        return { tint: 'v', ico: emo('✅'), t: nom + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + u : ''), s: 'Vente conclue · ' + (x.ville || 'Côte d’Ivoire'), h: A.ago(x.at), cle: 'v:' + x.id,
+        return { tint: 'v', ico: ico('verifie'), t: nom + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + u : ''), s: 'Vente conclue · ' + (x.ville || 'Côte d’Ivoire'), h: A.ago(x.at), cle: 'v:' + x.id,
           go: () => { if (x.slug) this.openFiche(x.slug); }, glis: this.glisser([['v:' + x.id]], 'Vente retirée de votre activité'), ret: () => this.masquer([['v:' + x.id]], 'Vente retirée de votre activité') }; }
       const o = x.kind === 'offre', P = this.prod(x.slug);
       return { tint: o ? 'v' : 'j', ico: emo('', !o), t: P.name + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + A.unites(x.qty, x.unit) : ''), s: (o ? 'Offre' : 'Demande') + ' · ' + this.place(x) + (x.name ? ' · ' + x.name : ''), h: A.ago(x.at), cle: 'a:' + x.id, go: () => this.openFiche(x.slug),
@@ -1603,7 +1603,7 @@ class Component extends DCLogic {
     const angAt = r => n < 2 ? 0 : r <= 0 ? r * ang[1] : r >= n - 1 ? ang[n - 1] + (r - n + 1) * (ang[n - 1] - ang[n - 2]) : ang[Math.floor(r)] + (ang[Math.floor(r) + 1] - ang[Math.floor(r)]) * (r - Math.floor(r));
     const a0 = angAt(S.rot), halfV = Math.asin(Math.min(1, (Math.min(390, aW / wheelSc) / 2 - 6) / RAD)) * DEG;
     const labels = F.prods.map((p, i) => { const off = ang[i] - a0, act0 = Math.abs(i - S.rot) < .5, edge = Math.abs(off) + ws[i] / 2 / RAD * DEG, op = act0 ? 1 : Math.max(0, Math.min(.78, (halfV - edge) / 4));
-      return { name: p.name, fs: act0 ? '13px' : '10.5px', color: act0 ? '#F5F0E6' : '#B9AD98', weight: act0 ? 600 : 400, tf: 'rotate(' + off.toFixed(2) + 'deg) translate(-50%,-352px)', op, pe: op < .15 ? 'none' : 'auto', tr, go: () => this.setState({ rot: i }) }; });
+      return { name: p.name, fs: act0 ? '13px' : '11.5px', color: act0 ? '#F5F0E6' : '#B9AD98', weight: act0 ? 600 : 400, tf: 'rotate(' + off.toFixed(2) + 'deg) translate(-50%,-352px)', op, pe: op < .15 ? 'none' : 'auto', tr, go: () => this.setState({ rot: i }) }; });
     const ticks = F.prods.map((p, i) => { const off = ang[i] - a0, a = Math.abs(i - S.rot); return { op: Math.abs(off) > halfV + 4 ? 0 : (a < .5 ? .9 : .35), tf: 'rotate(' + off.toFixed(2) + 'deg) translate(-50%,-322px)', tr }; });
     // sacs : seule la photo affichée et ses voisines se téléchargent (une fois vue, elle reste) — avant, toute la famille d'un coup
     const vus = this._sacsVus || (this._sacsVus = new Set()), VIDE = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
@@ -1846,7 +1846,7 @@ class Component extends DCLogic {
       prev: () => this.snap(Math.round(S.rot) - 1), next: () => this.snap(Math.round(S.rot) + 1),
       ...this.accueil({ h, mine, moiS, moiP, moiC, moiN }),
       markEl: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.ligne({ fond: 'clair', h: 24 }) } }) : 'Marché de Gros',
-      act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, oAnim: ao ? 'mkLuciole 3.2s ease-in-out infinite' : 'none', dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }, this.prixMoment(act, O, D, inSeason(act.slug, cm), Math.min(aW, 390) - 48)), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
+      act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }, this.prixMoment(act, O, D, inSeason(act.slug, cm), Math.min(aW, 390) - 48)), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
       openFicheAct: () => this.openFiche(act.slug), openPrix: () => this.prixPop(act.slug, O, D), demoGo: () => window.MDGDemo && MDGDemo.basculer(),
       tendOn: !!(S.tendS && S.tendS === act.slug && S.tendM), tend: S.tendM ? Object.assign({}, S.tendM, { ico: (() => { const n = { '🔥': 'chaleur', '📈': 'tendance', '✅': 'verifie', '🤝': 'negoce', '🛒': 'panier' }[S.tendM.ico]; return n && window.MDGIco ? React.createElement('span', { style: { display: 'flex' }, dangerouslySetInnerHTML: { __html: MDGIco.svg(n, 17, 2) } }) : S.tendM.ico; })() }) : { ico: '', t: '', s: '', cls: '', dur: '5.2s' },   // icônes dessinées, pas d'emoji
       duoH: { jaiL: 'J\u2019ai ' + act.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + act.name.toLowerCase() + ' à acheter : publier une demande' }, duoF: { jaiL: 'J\u2019ai ' + FP.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + FP.name.toLowerCase() + ' à acheter : publier une demande' },

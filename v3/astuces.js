@@ -66,7 +66,7 @@
       ['📦', 'Au chargement', 'Montrez votre code transporteur au vendeur. Il vous dit son *code de prise en charge* : tapez-le. Besoin ? Touchez *« Demander le code »*.'],
       ['📍', 'À la livraison', 'Même chose avec l’acheteur : il vérifie la marchandise, puis vous dit le *code de réception*. Vous le tapez : la livraison est validée.'],
       ['💰', 'Votre prix, moins 6,9 %', 'C’est la commission du Marché de Gros. Si l’acheteur refuse la marchandise, dites honnêtement ce que vous avez vu : *votre transport reste dû*.']] },
-    // ——— schémas 57 à 61 : séquestre, mot secret, refus, discussion, tableau des prix (montrés jusqu'à 3 fois, tant que « J’ai compris » n’est pas touché) ———
+    // schémas 57 à 61 : séquestre, mot secret, refus, discussion, tableau des prix (montrés jusqu'à 3 fois, tant que « J’ai compris » n’est pas touché)
     mot: { t: 'Le mot secret', insiste: 3, cartes: [
       ['📝', 'Votre mot secret', 'Il s’affiche en jaune dans votre commande, par exemple *MANGUE 47*.'],
       ['✍️', 'Sur un papier, dans le colis', 'Écrivez-le sur un papier et *glissez-le dans la marchandise* avant le chargement.'],
@@ -91,10 +91,10 @@
       ['🔒', 'Bientôt : l’argent bloqué', 'Dès la commande confirmée, l’acheteur paiera par Wave, Orange Money ou MTN MoMo. L’argent restera *bloqué* : le vendeur ne fera plus le voyage pour rien.'],
       ['🔓', 'La libération', 'L’acheteur valide, ou *24 h* passent sans réclamation : chacun reçoit sa part. Vendeur : moins *3,5 %*. Transporteur : moins *6,9 %*.']] },
     prix: { t: 'Le tableau des prix', insiste: 2, cartes: [
-      ['📊', 'Comme un marché P2P', '*Acheter* : les vendeurs, le moins cher en haut. *Vendre* : les acheteurs, le meilleur budget en haut.'],
+      ['📊', 'Comme au marché', '*Acheter* : les vendeurs, le moins cher en haut. *Vendre* : les acheteurs, le meilleur budget en haut.'],
       ['⬆️', 'Baissez votre prix, vous montez', 'Le tableau se met à jour tout seul. À prix égal, le *transport compris* passe devant.'],
       ['🤝', 'Touchez « Acheter » ou « Vendre »', 'Vous proposez votre prix dans l’application. *Aucun numéro* : le Marché de Gros est le seul intermédiaire.']] },
-    // ——— un tutoriel à l'entrée de chaque écran du menu (montré 2 fois au plus, tant que « J’ai compris » n’est pas touché) ———
+    // un tutoriel à l'entrée de chaque écran du menu (montré 2 fois au plus, tant que « J’ai compris » n’est pas touché)
     p_acheter: { t: 'Acheter', insiste: 2, cartes: [
       ['🔎', 'Tout ce qui est à vendre', 'Cherchez un produit en haut : les noms locaux sont compris (aloco, gnangnan…). Affinez avec les *filtres*.'],
       ['🧺', 'Chaque offre en un coup d’œil', 'Produit, quantité, prix, lieu et nom du vendeur. Le *sceau bleu* : identité vérifiée par l’équipe.'],

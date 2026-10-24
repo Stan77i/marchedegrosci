@@ -189,7 +189,7 @@
           <div class="acts"><button class="btn sm" data-fil="${n.id}">Lire</button></div></div>`).join('') : '<div class="empty"><b>Aucune négociation</b>Elles apparaîtront ici dès qu’un acheteur proposera un prix.</div>'}</div>`;
     }
   };
-  // ——— messages : écrire à tous, alertes « sortie de l'application », toutes les conversations ———
+  // messages : écrire à tous, alertes « sortie de l'application », toutes les conversations
   VIEWS.messages = () => {
     const nv = D.alertes.filter(a => !a.vu).length, L = D.discussions;
     const nomU = uid => { const c = D.byUser && D.byUser[uid]; return c ? fmtTel(String(c.tel).replace(/^225/, '')) : 'compte supprimé'; };
@@ -219,7 +219,7 @@
             <div class="c4">${d.alertes > 0 ? `<span class="tag bad">${d.alertes} alerte(s)</span>` : ''}</div>
             <div class="acts"><button class="btn sm" data-lire="${d.id}">Lire</button></div></div>`).join('') : '<div class="empty"><b>Aucune conversation</b></div>'}</div></section>`;
   };
-  // ——— personnes signalées, regroupées par compte (schéma 18) ———
+  // personnes signalées, regroupées par compte (schéma 18)
   const SRC = { dm: 'discussion', negociation: 'négociation', profil: 'profil' };
   function sigComptes() {
     if (!D.sigc.length) return '<div class="empty"><b>Aucun signalement</b>Les personnes signalées par les membres apparaîtront ici.</div>';
@@ -246,7 +246,7 @@
       + '<p style="color:var(--faint);font-size:12.5px;margin:8px 0 0">Les liens des photos expirent après deux minutes.</p>';
     el.querySelectorAll('[data-lire]').forEach(b => { const o = document.querySelector('[data-lire="' + b.dataset.lire + '"]:not(.fil [data-lire])'); b.onclick = () => o ? o.click() : toast('Ouvrez la discussion depuis la liste des conversations.'); });
   }
-  // ——— identités : dossiers à examiner (supabase/schema-13-identite.sql). Personne n'est « vérifié » sans décision ici. ———
+  // identités : dossiers à examiner (supabase/schema-13-identite.sql). Personne n'est « vérifié » sans décision ici.
   const PIECE = { cni: 'Carte nationale d’identité', passeport: 'Passeport', carte_consulaire: 'Carte consulaire', permis: 'Permis de conduire' };
   const auj = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
   const jour = j => j ? new Date(j + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
@@ -291,7 +291,7 @@
         <p style="color:var(--faint);font-size:12.5px">Les liens des photos expirent après deux minutes. Rien n’est téléchargé sur cet ordinateur. Cette ouverture est notée dans le registre.</p></div>`;
     bindIdent(el);
   }
-  // ——— bannissement à vie (supabase/schema-14-confiance.sql) ———
+  // bannissement à vie (supabase/schema-14-confiance.sql)
   const MOTIF_BAN = { arnaque: 'arnaque', mauvais_produits: 'mauvais produits', insultes: 'insultes', autre: 'autre' };
   async function bannir(uid) {
     const c = D.byUser[uid], qui = c ? fmtTel(String(c.tel).replace(/^225/, '')) : 'ce compte';
@@ -325,7 +325,7 @@
       toast(st === 'verifie' ? 'Identité vérifiée : le badge apparaît jusqu’à l’expiration de la pièce.' : st === 'refuse' ? 'Dossier refusé (conservé 5 ans).' : 'Le membre est prévenu qu’il doit refaire des photos.');
     } catch (e) { b.disabled = false; toast('Décision impossible : ' + e.message); }
   }
-  // ——— registre : retrouver un dossier conservé, l'ouvrir avec un motif (noté) ———
+  // registre : retrouver un dossier conservé, l'ouvrir avec un motif (noté)
   const ST_REG = { en_attente: 'en examen', verification_manuelle: 'photos à refaire', verifie: 'vérifiée', refuse: 'refusée', remplace: 'remplacée', retire: 'retirée' };
   async function chercherRegistre(box) {
     const q = box.querySelector('[data-reg-q]').value.trim(), res = box.querySelector('[data-reg-res]');
@@ -361,7 +361,7 @@
     r.querySelectorAll('[data-iddec]').forEach(b => b.onclick = () => decider(b));
     r.querySelectorAll('[data-rapide]').forEach(b => b.onclick = async () => { b.disabled = true; try { await modeRapide(); } finally { b.disabled = false; } });
   }
-  // ——— mode rapide : un dossier à la fois, en plein écran, les « propres » d'abord (supabase/schema-19-admin-identites.sql) ———
+  // mode rapide : un dossier à la fois, en plein écran, les « propres » d'abord (supabase/schema-19-admin-identites.sql)
   // Le tri (propre · à regarder · suspect) n'est qu'une aide : chaque dossier est regardé et décidé par l'administrateur.
   // Raccourcis : V valider (deux fois pour confirmer) · P photos à refaire · R refuser · ← → précédent / suivant · Échap fermer.
   const MR_REFUS = ['Pièce expirée', 'Photo floue', 'Code absent ou faux', 'Visage différent', 'Pièce d’une autre personne'];

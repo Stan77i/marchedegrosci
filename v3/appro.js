@@ -128,14 +128,14 @@
     }
     return bg.querySelector('.ap');
   }
-  const tete = (t, em, retourVue) => `<div class="ap-h">${retourVue ? `<button class="ap-x" data-retour="${retourVue}" aria-label="Retour" style="margin:-8px 0 0 -8px">‹</button>` : ''}<h2 tabindex="-1">${esc(t)}${em ? ' <em>' + esc(em) + '</em>' : ''}</h2><button class="ap-x" data-apx aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`;
+  const tete = (t, em, retourVue) => `<div class="ap-h">${retourVue ? `<button class="ap-x" data-retour="${retourVue}" aria-label="Retour" style="margin:-8px 0 0 -8px">${window.MDGIco ? MDGIco.svg('retour', 22, 2) : '‹'}</button>` : ''}<h2 tabindex="-1">${esc(t)}${em ? ' <em>' + esc(em) + '</em>' : ''}</h2><button class="ap-x" data-apx aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`;
   const focusTitre = box => { const h = box.querySelector('h2'); if (h) h.focus(); box.scrollTop = 0; };
   const connecte = () => { if (!N() || !N().session()) { if (N()) N().open(); return false; } return true; };
   const attente = (box, t) => { box.innerHTML = tete(t) + (window.MDGSac ? MDGSac.charge('Un instant…') : ''); };
   function lierRetour(box) { box.querySelectorAll('[data-retour]').forEach(b => b.onclick = () => ouvrir(b.dataset.retour)); }
   const periode = x => (x.frequence ? FREQ[x.frequence] + ' · ' : '') + (x.fin ? 'du ' + jour(x.debut) + ' au ' + jour(x.fin) : 'à partir du ' + jour(x.debut));
 
-  // ——— Accueil : mes besoins (acheteur) · besoins des pros (vendeur) ———
+  // Accueil : mes besoins (acheteur) · besoins des pros (vendeur)
   let vue = 'miens';
   async function ouvrir(v) {
     if (!connecte()) return;
@@ -158,7 +158,7 @@
     focusTitre(box);
   }
 
-  // ——— Publier un besoin ———
+  // Publier un besoin
   function formulaire() {
     const box = boite(), auj = new Date(), dans = n => iso(new Date(auj.getTime() + n * 864e5));
     let lignes = [{ produit: '', quantite: '', unite: 'kg', prix: '' }], freq = 'hebdomadaire';
@@ -253,7 +253,7 @@
     peindre();
   }
 
-  // ——— Un besoin : comparaison (acheteur) ou réponse (vendeur) ———
+  // Un besoin : comparaison (acheteur) ou réponse (vendeur)
   async function besoin(id) {
     if (!connecte()) return;
     const box = boite(); attente(box, 'Besoin');

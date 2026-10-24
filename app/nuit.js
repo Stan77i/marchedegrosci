@@ -18,7 +18,7 @@
   const fait = new Map();                                         // élément → { propriété: [valeur d'origine, priorité] }
   let ecrit = false;
 
-  // ——— couleurs ———
+  // couleurs
   const lire = s => { const m = /rgba?\(([^)]+)\)/.exec(s || ''); if (!m) return null; const v = m[1].split(/[\s,/]+/).filter(Boolean).map(Number); return { r: v[0], g: v[1], b: v[2], a: v.length > 3 ? v[3] : 1 }; };
   function hsl(c) { const r = c.r / 255, g = c.g / 255, b = c.b / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; let h = 0, s = 0;
     if (mx !== mn) { const d = mx - mn; s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6; }
@@ -44,7 +44,7 @@
   }
   const bord = c => { if (!c || c.a < .02) return null; const x = hsl(c); if (neutre(c) && x.l < .4) return rgb(CHAUD, .2, .93, Math.min(c.a, .3)); if (neutre(c) && x.l > .7 && c.a > .5) return rgb(CHAUD, .14, .22, c.a); return null; };
 
-  // ——— appliquer / défaire ———
+  // appliquer / défaire
   function poser(el, p, v) { const o = fait.get(el) || {}; if (!(p in o)) o[p] = [el.style.getPropertyValue(p), el.style.getPropertyPriority(p)]; el.style.setProperty(p, v, 'important'); o[p][2] = el.style.getPropertyValue(p); fait.set(el, o); }
   // on ne rend la valeur d'origine que si personne n'a réécrit la propriété entre-temps (le module a pu changer la couleur)
   function defaire(el) { const o = fait.get(el); if (!o) return; for (const p in o) { if (el.style.getPropertyValue(p) !== o[p][2]) continue; if (o[p][0]) el.style.setProperty(p, o[p][0], o[p][1]); else el.style.removeProperty(p); } fait.delete(el); }
@@ -82,7 +82,7 @@
     obs.takeRecords(); ecrit = false;
   }
 
-  // ——— suivre les fenêtres qui s'ouvrent et changent ———
+  // suivre les fenêtres qui s'ouvrent et changent
   let file = new Set(), prevu = false;
   const vider = () => { prevu = false; const L = [...file]; file = new Set(); L.filter(e => e.isConnected && !L.some(p => p !== e && p.contains(e))).forEach(traiter); };
   const obs = new MutationObserver(ms => { if (ecrit || !sombre()) return;

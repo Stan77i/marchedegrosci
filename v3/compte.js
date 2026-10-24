@@ -717,7 +717,7 @@ label.cp-r{cursor:pointer}
             ${adm ? (() => { const nI = +(J('mdg-admin:identites', {}).n) || 0; return ligne({ ico: mono('tableau'), t: 'Tableau de bord', s: nI ? nI + (nI > 1 ? ' dossiers' : ' dossier') + ' à examiner' : 'Administration', n: nI, href: nI ? 'admin.html#identites' : 'admin.html' }); })() : ''}
           </div>
           <div class="cp-grp">${ligne({ ico: mono('sortir'), t: 'Déconnexion', cls: 'bad', chev: false, attrs: 'data-out' })}</div>
-          <p class="cp-note">${off0 ? 'Compte officiel : pas de vérification d’identité, pas de note, pas d’étoiles. Tout ce que vous publiez ou écrivez apparaît au nom du « Marché de Gros ».' : 'Votre numéro n’est pas vérifié par SMS. Rien n’est compté ici qui n’ait eu lieu.'}</p>
+          <p class="cp-note">${off0 ? 'Compte officiel : pas de vérification d’identité, pas de note, pas d’étoiles. Tout ce que vous publiez ou écrivez apparaît au nom du « Marché de Gros ».' : 'Votre numéro n’est pas vérifié par SMS.'}</p>
         </div></div>`;
       main.querySelectorAll('[data-go]').forEach(b => b.onclick = () => bg.aller(b.dataset.go));
       const q = s => main.querySelector(s);
@@ -784,7 +784,7 @@ label.cp-r{cursor:pointer}
         return `<button type="button" class="cp-r cp-it" data-nego="${n.id}"><span class="mk" aria-hidden="true">${av.svg}</span><b>${esc(n.produit || 'Annonce')}</b><span class="p">${v ? fmt(v) + ' F' : '—'}</span><small><span class="cp-tag ${e[1]}">${e[0]}</span>${av.nom ? '<span>avec ' + esc(av.nom) + '</span>' : ''}</small></button>`; };
       const dms = J('mdg-dm:liste', []), dm = c => `<button type="button" class="cp-r cp-it${c.non_lu ? ' neuf' : ''}" data-dm="${c.id}"><span class="mk" aria-hidden="true">${avatar(c.autre_id, { size: 32, nom: c.autre_nom }).svg}</span><b>${esc(c.autre_nom)}</b><span class="p">${c.non_lu ? '<span class="cp-tag acc">Nouveau</span>' : ''}</span><small><span>${c.dernier_par === u.id ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</span></small></button>`;
       const sec = (t, L, f, vide) => `<h3 class="cp-lab">${t}${L.length ? '<span class="nbul">' + L.length + '</span>' : ''}</h3><div class="cp-grp">${L.length ? L.slice(0, 20).map(f).join('') : `<p class="cp-vide">${vide}</p>`}</div>`;
-      main.innerHTML = `<div class="cp-pg"><h2>Mon activité</h2><p>Vos annonces et vos négociations réelles. Rien n’est compté qui n’ait eu lieu.</p>
+      main.innerHTML = `<div class="cp-pg"><h2>Mon activité</h2><p>Vos annonces, vos négociations, vos messages et vos notifications.</p>
         ${ng.rec.length ? sec('À vous de répondre', ng.rec, neg, '') : ''}
         ${sec('Mes offres', off, x => ann('offres', x), '<b>Aucune offre</b>Publiez ce que vous avez avec « J’ai ».')}
         ${sec('Mes demandes', dem, x => ann('demandes', x), '<b>Aucune demande</b>Dites ce qu’il vous faut avec « Je cherche ».')}
@@ -812,7 +812,7 @@ label.cp-r{cursor:pointer}
     },
     prefs(main) {
       const pf = prefs(), p = profil || {}, S = window.MDGSons, sn = S ? S.reglages() : null;
-      main.innerHTML = `<div class="cp-pg"><h2>Réglages</h2><p>Chaque réglage agit vraiment ; ce qui n’existe pas encore n’est pas montré.</p>
+      main.innerHTML = `<div class="cp-pg"><h2>Réglages</h2>
         <h3 class="cp-lab">Confidentialité</h3>
         <div class="cp-grp"><label class="cp-r">${ti('oeil', 'vous')}<span class="cp-r-t"><b>Montrer mon nom de famille</b><small>Sinon, les autres voient « ${esc(p.prenom || 'Prénom')} ${esc(p.nom ? p.nom[0] + '.' : 'N.')} »${p.pseudo ? ' (votre pseudonyme passe avant)' : ''}</small></span><input type="checkbox" class="cp-tog" role="switch" data-np ${p.nom_public ? 'checked' : ''}></label></div>
         <p class="cp-note">Votre numéro n’est jamais affiché sur vos annonces : on vous écrit et on vous propose un prix dans l’application.</p>

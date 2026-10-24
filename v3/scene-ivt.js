@@ -74,7 +74,7 @@ void main(){
     const orbit = root.querySelector('.hero__orbit'); if (!orbit) return () => {};
     const cv = document.createElement('canvas'); cv.className = 'ivh-scene'; cv.setAttribute('aria-hidden', 'true'); root.prepend(cv);
 
-    // ——— WebGL (facultatif) ———
+    // WebGL (facultatif)
     let gl = null, prog = null, U = {};
     try {
       gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, depth: false, stencil: false, powerPreference: 'low-power' });
@@ -90,7 +90,7 @@ void main(){
     } catch (e) { console.warn('scène accueil : WebGL indisponible', e); gl = null; }
     if (!gl) cv.remove(); else root.classList.add('has-scene');
 
-    // ——— état ———
+    // état
     const S = coarse ? .6 : .8;            // résolution interne (brume douce : pas besoin de plein DPR)
     const st = { mx: -1e4, my: -1e4, tmx: -1e4, tmy: -1e4, on: 0, ton: 0, near: 0, tnear: 0, pulse: 0, pulseT0: -1,
       until: 0, lx: 0, ly: 0, fx: 0, fy: 0, fr: 100, init: false, acc: [.88, .48, .25], tacc: [.88, .48, .25], glow: [.72, .36, .22], tglow: [.72, .36, .22] };
@@ -107,7 +107,7 @@ void main(){
     }
     const cacheLabels = () => { labels = [...orbit.querySelectorAll('.hero__arc-label')].map(t => { const r = t.getBoundingClientRect(); return { t, x: r.left + r.width / 2, y: r.top + r.height / 2, v: -1 }; }); lastLab = performance.now(); };
 
-    // ——— curseur : une force ———
+    // curseur : une force
     const onMove = e => {
       if (e.pointerType === 'touch' && !(e.buttons || e.type === 'pointerdown')) return;
       st.tmx = e.clientX; st.tmy = e.clientY; st.ton = 1;

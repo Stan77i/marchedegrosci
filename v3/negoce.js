@@ -522,7 +522,7 @@
           <div class="nx-act"><button type="button" class="nx-alt" data-g="edit">Modifier ma proposition</button><button type="button" class="nx-alt" data-g="retrait">Retirer ma proposition</button></div>`;
         else if (n.statut === 'ouverte') h += `<div class="nx-act"><button type="button" class="nx-go" data-g="edit">${expiree(n) ? 'Faire une nouvelle proposition' : 'Faire une proposition'}</button></div>`;
         else if (n.statut === 'close' && n.motif_fin !== 'annonce_retiree' && a) h += `<div class="nx-act"><button type="button" class="nx-alt" data-g="edit" style="grid-column:1 / -1">Relancer avec une proposition</button></div>`;
-        h += `<div class="nx-comp"><textarea maxlength="500" placeholder="Écrire un message" aria-label="Message à ${leLa(lui)}"></textarea><button type="button" class="nx-ib" data-g="texte" aria-label="Envoyer le message">↑</button></div>
+        h += `<div class="nx-comp"><textarea maxlength="500" placeholder="Écrire un message" aria-label="Message à ${leLa(lui)}"></textarea><button type="button" class="nx-ib" data-g="texte" aria-label="Envoyer le message">${window.MDGIco ? MDGIco.svg('envoyer', 20, 2) : '↑'}</button></div>
           ${n.statut === 'ouverte' ? '<p class="nx-stop"><button type="button" data-g="fin">Arrêter la négociation</button></p>' : ''}<p class="nx-err" role="alert"></p>`;
       }
       f.innerHTML = h;

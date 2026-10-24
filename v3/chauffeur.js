@@ -49,7 +49,7 @@
     catch (e) { if (bg) toast('Espace chauffeur indisponible', { type: 'erreur', sous: erreurTxt(e) }); }
   }
 
-  // ——— inscription ou modification du profil ———
+  // inscription ou modification du profil
   function formulaire() {
     const box = bg.querySelector('.cm'), t = moi || {}, Z = new Set(t.zones || []);
     box.scrollTop = 0;
@@ -91,7 +91,7 @@
     };
   }
 
-  // ——— accueil : statut, code, disponibilité, missions ———
+  // accueil : statut, code, disponibilité, missions
   function carteMission(m) {
     const q = m.quantite != null ? ' · ' + nf(m.quantite, 2) + ' ' + esc(unites(m.quantite, m.unite)) : '';
     const B = [];
@@ -230,7 +230,7 @@
     try { await N().rpc('chauffeur_repondre', { p_mission: id, p_oui: oui }); toast(oui ? 'Mission acceptée' : 'Mission refusée', { type: oui ? 'ok' : 'info', sous: oui ? 'L’acheteur et le vendeur sont prévenus.' : '' }); await lire(); peindre(); }
     catch (x) { b.disabled = false; toast(erreurTxt(x), { type: 'erreur' }); }
   }
-  // ——— partager sa position pendant le transport ———
+  // partager sa position pendant le transport
   // Seulement application ouverte (une page web ne peut pas envoyer sa position écran éteint) : l'écran reste allumé
   // si le téléphone le permet (Wake Lock). Une position toutes les 30 s, ou plus tôt après 150 m (jamais moins de 15 s).
   // Le serveur arrête de lui-même quand la marchandise n'est plus en route. Une pastille rappelle que le partage est actif.
@@ -284,7 +284,7 @@
     if (bg) peindre();
   }
 
-  // ——— taper un code (prise en charge, réception, transfert) : le serveur dit s'il est bon et combien d'essais restent ———
+  // taper un code (prise en charge, réception, transfert) : le serveur dit s'il est bon et combien d'essais restent
   function taper(cmd, quoi) {
     const box = bg.querySelector('.cm');
     const T = { prise: ['Code de <em>prise en charge</em>', 'Le vendeur vous le donne quand la marchandise est dans votre véhicule.'],
@@ -321,7 +321,7 @@
     };
   }
 
-  // ——— passer la marchandise à un autre chauffeur : son code transporteur, le lieu, puis le code à lui donner ———
+  // passer la marchandise à un autre chauffeur : son code transporteur, le lieu, puis le code à lui donner
   function passer(cmd) {
     const box = bg.querySelector('.cm');
     box.scrollTop = 0;

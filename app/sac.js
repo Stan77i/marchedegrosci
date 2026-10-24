@@ -19,7 +19,7 @@
   const SAC = 'M52 70Q40 150 46 214Q50 238 110 240Q170 238 174 214Q180 150 168 70Z';
   let n = 0;
 
-  // ——— les produits (dessinés une fois, posés où il faut) ———
+  // les produits (dessinés une fois, posés où il faut)
   const P = {
     tomate: (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})"><circle r="13" fill="#D9472B"/><ellipse cx="-4.5" cy="-5" rx="4.2" ry="2.6" fill="rgba(255,255,255,.26)"/><path d="M-6.5-11l3.5 4 3-6.5 3 6.5 3.5-4-2.5 6.5h-8z" fill="#3E8E4E"/></g>`,
     mais: (x, y, s = 1) => `<g transform="translate(${x} ${y}) rotate(-16) scale(${s})"><ellipse rx="8.6" ry="15.5" fill="#F2C230"/><g fill="rgba(120,80,0,.2)"><circle cx="-3.2" cy="-9" r="1.5"/><circle cx="2.4" cy="-10.5" r="1.5"/><circle cx="-4" cy="-3" r="1.5"/><circle cx="1.6" cy="-4" r="1.5"/><circle cx="-2" cy="3" r="1.5"/><circle cx="3.6" cy="2" r="1.5"/><circle cx="-3" cy="9" r="1.5"/><circle cx="2.6" cy="8" r="1.5"/></g><path d="M-8.5 7q-6.5 10 1.5 16.5q2-10 7-14.5z" fill="#5E9E4A"/><path d="M8.5 7q6.5 10-1.5 16.5q-2-10-7-14.5z" fill="#4C8A3E"/></g>`,

@@ -23,7 +23,7 @@
   de.dataset.etat = cur;
   const isOpen = () => de.classList.contains('sx-open') || (document.body && document.body.classList.contains('nav-open')) || !!document.querySelector('.odv.is-on,#sheet.on,dialog[open]');
 
-  // ——— sources d'état ———
+  // sources d'état
   addEventListener('hashchange', () => set('transition', 700));
   let sT = 0;
   addEventListener('scroll', () => { if (cur === 'focus' || cur === 'connection' || cur === 'transition') return; if (cur !== 'approach') set('approach'); clearTimeout(sT); sT = setTimeout(rest, 260); }, { passive: true });
@@ -45,7 +45,7 @@
     else if (!open && cur === 'focus') rest();
   }); }).observe(de, { attributes: true, subtree: true, attributeFilter: ['class', 'open'] });
 
-  // ——— connexion ———
+  // connexion
   const read = k => { try { return JSON.parse(localStorage.getItem('mdg-v2:' + k) || '[]'); } catch (_) { return []; } };
   function matches(kind, item) {
     if (!item || !item.productSlug) return [];

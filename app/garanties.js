@@ -122,7 +122,7 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const moinsDeMouvement = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // ——— la feuille « Pourquoi le Marché de Gros » ———
+  // la feuille « Pourquoi le Marché de Gros »
   let fond = null;
   function ouvrir() {
     if (fond) return;
@@ -143,7 +143,7 @@
     setTimeout(() => { const x = fond && fond.querySelector('.gr-x'); if (x) x.focus(); }, 60);
   }
 
-  // ——— la bande et la ligne ———
+  // la bande et la ligne
   class Garanties extends HTMLElement {
     connectedCallback() {
       if (this._pret) return; this._pret = true;
@@ -175,7 +175,7 @@
   }
   if (window.customElements && !customElements.get('mdg-garanties')) customElements.define('mdg-garanties', Garanties);
 
-  // ——— avant d'écrire à quelqu'un qui n'est pas vérifié : un rappel court, une fois par personne et par jour ———
+  // avant d'écrire à quelqu'un qui n'est pas vérifié : un rappel court, une fois par personne et par jour
   function avantContact(uid, nom) {
     try {
       if (!uid || !window.MDGToast) return;

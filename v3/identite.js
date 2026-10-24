@@ -334,11 +334,11 @@
     const qui = o.nom ? esc(o.nom) : 'la personne';
     main.innerHTML = `<h2>Que s’est-il passé${o.nom ? ' avec ' + esc(o.nom) : ''} ?</h2>
       <p>L’équipe du Marché de Gros lit chaque signalement. ${o.nom ? esc(o.nom) : 'La personne'} ne saura pas que c’est vous.</p>
-      <div class="idv-sg-t">1 · Le motif</div>
+      <div class="idv-sg-t">Le motif</div>
       <div class="idv-choix" role="group" aria-label="Motif">${MOTIFS.map(m => `<button type="button" data-m="${m[0]}" aria-pressed="false"><span><b>${m[1]}</b><small>${m[2]}</small></span></button>`).join('')}</div>
-      <div class="idv-sg-t">2 · En une phrase</div>
+      <div class="idv-sg-t">En une phrase</div>
       <div><label class="idv-l" for="idv-sig">Ce qui s’est passé <i data-cpt>0 / 15 caractères minimum</i></label><textarea id="idv-sig" class="idv-in" maxlength="500" rows="3" style="height:auto;padding:12px 14px;font-size:15px;resize:vertical" placeholder="${esc(EXEMPLES.arnaque)}"></textarea></div>
-      <div class="idv-sg-t">3 · La preuve</div>
+      <div class="idv-sg-t">La preuve</div>
       ${conv ? `<div class="idv-lu">${IC('verifie', 18)}<span>La ${o.source === 'dm' ? 'discussion' : 'négociation'} est jointe : l’équipe peut la lire. Vous pouvez aussi ajouter des captures d’écran.</span></div>` : '<p class="idv-sg-p">Une capture d’écran de la conversation, une photo de la marchandise, un reçu de paiement…</p>'}
       <div class="idv-preuves" data-ph></div>
       ${conv ? '' : `<label class="idv-chk"><input type="checkbox" data-sans> <span>Je n’ai pas de preuve. <small style="display:block;color:var(--faint)">Sans preuve, il faut que plusieurs personnes signalent ce compte pour que l’équipe agisse.</small></span></label>`}

@@ -71,14 +71,14 @@
     }
     return bg.querySelector('.gr');
   }
-  const tete = (t, em, ret) => `<div class="gr-h">${ret ? `<button class="gr-x" data-retour="${ret}" aria-label="Retour" style="margin:-8px 0 0 -8px">‹</button>` : ''}<h2 tabindex="-1">${esc(t)}${em ? ' <em>' + esc(em) + '</em>' : ''}</h2><button class="gr-x" data-grx aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`;
+  const tete = (t, em, ret) => `<div class="gr-h">${ret ? `<button class="gr-x" data-retour="${ret}" aria-label="Retour" style="margin:-8px 0 0 -8px">${window.MDGIco ? MDGIco.svg('retour', 22, 2) : '‹'}</button>` : ''}<h2 tabindex="-1">${esc(t)}${em ? ' <em>' + esc(em) + '</em>' : ''}</h2><button class="gr-x" data-grx aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`;
   const focusTitre = box => { const h = box.querySelector('h2'); if (h) h.focus(); box.scrollTop = 0; };
   const connecte = () => { if (!N() || !N().session()) { if (N()) N().open(); return false; } return true; };
   const lierRetour = box => box.querySelectorAll('[data-retour]').forEach(b => b.onclick = () => ouvrir(b.dataset.retour));
   const jauge = (total, objectif) => { const max = Math.max(objectif * 1.25, total), w = Math.min(100, total / max * 100), o = objectif / max * 100;
     return `<div class="gr-jauge" role="img" aria-label="${nf(total)} sur ${nf(objectif)} visés"><i style="width:${w.toFixed(1)}%"></i><b style="left:${o.toFixed(1)}%"></b></div>`; };
 
-  // ——— Liste ———
+  // Liste
   let vue = 'ouverts';
   async function ouvrir(v) {
     vue = v || vue; const box = boite();
@@ -101,7 +101,7 @@
     focusTitre(box);
   }
 
-  // ——— Un groupe ———
+  // Un groupe
   async function groupe(id, focusSel) {
     const box = boite();
     box.innerHTML = tete('Achat groupé') + (window.MDGSac ? MDGSac.charge('Un instant…') : '');
@@ -187,7 +187,7 @@
     const fr = (box.querySelector('[data-frais]') || {}).value; return { L, frais: fr ? +fr : null, base };
   }
 
-  // ——— Créer depuis une offre ———
+  // Créer depuis une offre
   function creer(o) {
     if (!connecte() || !o || !o.id) return;
     const box = boite(), vend = o._uid && o._uid === me(), dans = j => { const d = new Date(Date.now() + j * 864e5); d.setMinutes(0, 0, 0); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 16); };

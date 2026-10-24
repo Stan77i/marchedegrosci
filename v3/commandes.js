@@ -34,7 +34,7 @@
   const toast = (t, o) => window.MDGToast ? MDGToast.dire(t, o) : (N() && N().toast && N().toast(t));
   const MOUV = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 
-  // ——— les étapes, dans l'ordre (le transbordement n'apparaît que s'il a eu lieu) ———
+  // les étapes, dans l'ordre (le transbordement n'apparaît que s'il a eu lieu)
   const ETAPES = [
     ['confirmee', 'Commande confirmée'], ['preparation', 'Préparation'], ['chargement', 'Chargement confirmé'], ['transport', 'Le camion est parti'],
     ['transbordement', 'Transbordement'], ['arrivee', 'Chauffeur arrivé'], ['reception', 'Réception confirmée'], ['terminee', 'Commande terminée']];
@@ -229,7 +229,7 @@
 .cm-puce{flex:none;display:inline-flex;align-items:center;min-height:30px;padding:0 13px;border-radius:15px;background:rgba(243,239,228,.1);box-shadow:inset 0 0 0 1px rgba(243,239,228,.16);color:#F3EFE4;font:500 13px Jost,sans-serif;white-space:nowrap}
 .cm-puce.mais{background:#F2C230;box-shadow:none;color:#10392B;font-weight:600}.cm-puce.rouge{background:rgba(226,115,91,.2);box-shadow:inset 0 0 0 1px rgba(226,115,91,.45);color:#FFD9CF}
 .cm-pts{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:16px 0 4px;padding:0}
-.cm-pts li{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;color:rgba(243,239,228,.55);font:500 11.5px/1.2 Jost,sans-serif;text-align:center}
+.cm-pts li{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;color:rgba(243,239,228,.62);font:500 11.5px/1.2 Jost,sans-serif;text-align:center}
 .cm-pts li::before{content:"";position:absolute;top:10px;left:calc(-50% + 14px);right:calc(50% + 14px);border-top:2px dotted rgba(243,239,228,.3)}
 .cm-pts li:first-child::before{display:none}
 .cm-pts li.fait::before,.cm-pts li.ici::before{border-top-color:#F2C230;border-top-style:solid}
@@ -268,7 +268,7 @@
     return c.etat === 'a_confirmer' ? 0 : i < 0 ? 0 : i / (L.length - 1);
   }
 
-  // ——— la livraison : plan, fiche, image du produit (23/10/2026) ———
+  // la livraison : plan, fiche, image du produit (23/10/2026)
   // l'image détourée du produit (sac d'aubergines, bidon d'huile, panier de poisson…) à la place d'un carton ; sinon le sac de l'application
   const sansAcc = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
   function imgProduit(nom) {
@@ -348,7 +348,7 @@
     </section>`;
   }
 
-  // ——— état ———
+  // état
   let lu = false, bg = null, vue = 'liste', filtre = 'cours', liste = [], journal = {}, transport = {}, lien = {}, pos = {}, carte = null, sel = null, charge = false, minuteur = null;
   const trouve = id => liste.find(x => x.id === id);
   const enRoute = c => c.etat === 'en_cours' && ['chargement', 'transport', 'transbordement', 'arrivee'].includes(c.etape);
@@ -395,7 +395,7 @@
     peindre(avant && apres && avant !== apres ? apres : null);
   }
 
-  // ——— la liste ———
+  // la liste
   // reçue mais pas encore clôturée (libere_le vaut null seulement avec mes_commandes2 : l'ancienne liste ne le donne pas)
   const aVerifier = x => x.etat === 'terminee' && x.libere_le === null;
   const dansDelai = x => aVerifier(x);   // l'acheteur peut refuser tant que rien n'est libéré (libération automatique 24 h après la réception, schéma 61)
@@ -426,7 +426,7 @@
     box.querySelectorAll('[data-id]').forEach(b => b.onclick = () => detail(b.dataset.id));
   }
 
-  // ——— le détail : la scène, la progression, le statut, les actions, le journal ———
+  // le détail : la scène, la progression, le statut, les actions, le journal
   function prochaine(c) {
     const lui = esc(c.partenaire_nom);
     if (c.etat === 'a_confirmer') return c.cree_par_moi ? [`En attente de <em>${lui}</em>`, 'La commande démarre quand l’autre partie la confirme.'] : [`${lui} vous propose cette <em>commande</em>`, 'Vérifiez le transport et le lieu de livraison, puis confirmez.'];
@@ -543,7 +543,7 @@
     lierTransport(c, box); lierLien(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box); photos(box); lierDisc(c, box);
     if (arrive) { if (navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {} toast('Le chauffeur est arrivé', { type: 'ok', sous: c.role === 'acheteur' ? 'Vérifiez la marchandise avant de confirmer.' : esc(c.produit || '') }); }
   }
-  // ——— paiement sécurisé : où en est l'argent, et qui reçoit quoi à la libération (schéma 57) ———
+  // paiement sécurisé : où en est l'argent, et qui reçoit quoi à la libération (schéma 57)
   const OPE = { wave: 'Wave', orange: 'Orange Money', mtn: 'MTN MoMo', moov: 'Moov Money' };
   function blocSequestre(c) {
     const S = seq[c.id]; if (!S || c.etat === 'annulee' || c.etat === 'a_confirmer') return '';
@@ -691,7 +691,7 @@
     };
   }
   let dernierEcran = '';
-  // ——— la carte : créée une fois par commande, puis déplacée d'un rendu à l'autre (jamais recréée toutes les 20 s) ———
+  // la carte : créée une fois par commande, puis déplacée d'un rendu à l'autre (jamais recréée toutes les 20 s)
   function placerCarte(c, box) {
     const ph = box.querySelector('[data-carte]');
     if (!ph) { if (carte && carte.cmd === c.id) oublierCarte(); return; }
@@ -705,7 +705,7 @@
     });
   }
 
-  // ——— l'avis : seulement après une commande terminée (schéma 32), un par commande, corrigeable 24 h puis figé ———
+  // l'avis : seulement après une commande terminée (schéma 32), un par commande, corrigeable 24 h puis figé
   const avis = {}, avisNote = {};
   const ETOILE = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8L10 14.9 4.8 17.6l1-5.8L1.6 7.7l5.8-.8z"/></svg>';
   const LIBA = ['', 'Mauvaise expérience', 'Décevant', 'Correct', 'Bon partenaire', 'Excellent partenaire'];
@@ -744,7 +744,7 @@
     };
   }
 
-  // ——— les codes : le vendeur voit le code de prise en charge, l'acheteur le code de réception ; le chauffeur les tape ———
+  // les codes : le vendeur voit le code de prise en charge, l'acheteur le code de réception ; le chauffeur les tape
   // Le code n'est gardé qu'en mémoire, le temps de l'écran : jamais dans le téléphone, jamais dans un message.
   const codesVus = {};
   function blocCode(c) {
@@ -774,7 +774,7 @@
     const n = box.querySelector('[data-code-nv]'); if (n) n.onclick = async () => { if (await (window.MDGDemande ? MDGDemande.oui('Créer un nouveau code ? L’ancien ne marchera plus.', { ok: 'Nouveau code' }) : Promise.resolve(confirm('Créer un nouveau code ? L’ancien ne marchera plus.')))) go(n); };
   }
 
-  // ——— le transport du réseau : qui conduit, sa réponse (son propre transporteur n'apparaît pas ici : pas de code, schéma 63) ———
+  // le transport du réseau : qui conduit, sa réponse (son propre transporteur n'apparaît pas ici : pas de code, schéma 63)
   function blocTransport(c) {
     const T = transport[c.id]; if (!T || c.etat === 'annulee') return '';
     const m = T.mission && T.mission.statut !== 'retiree' ? T.mission : null;
@@ -823,7 +823,7 @@
   let titreFait = false;
   function focusTitre(box) { const h = box.querySelector('h2'); if (h) { h.tabIndex = -1; try { h.focus({ preventScroll: true }); } catch (_) {} } }
 
-  // ——— les gestes : une petite feuille de confirmation, puis l'appel au serveur ———
+  // les gestes : une petite feuille de confirmation, puis l'appel au serveur
   async function position(oui) {
     if (!oui || !navigator.geolocation) return null;
     return new Promise(ok => navigator.geolocation.getCurrentPosition(p => ok([p.coords.latitude, p.coords.longitude]), () => ok(null), { timeout: 8000, maximumAge: 60000, enableHighAccuracy: false }));
@@ -913,7 +913,7 @@
     }
   }
 
-  // ——— le transport annoncé (schéma 48) décide des choix proposés à la commande ———
+  // le transport annoncé (schéma 48) décide des choix proposés à la commande
   // offre « inclus » ou demande « le vendeur livre » : le vendeur transporte, pas de transporteur du réseau (le serveur le refuse aussi).
   // offre « inclus hors de ma ville » : autre ville → le vendeur livre ; même ville → l'acheteur s'en charge.
   function choixTransport(n) {
@@ -936,7 +936,7 @@
       return { modes: ['acheteur', 'reseau', 'vendeur'], defaut: 'acheteur', lib: {}, info: 'Le transport n’est pas inclus : l’acheteur s’en charge, sauf accord avec le vendeur.' };
     return { modes: ['reseau', 'acheteur', 'vendeur'], defaut: 'acheteur', lib: {}, info: '' };
   }
-  // ——— le lien de suivi pour son propre chauffeur (schéma 48) ———
+  // le lien de suivi pour son propre chauffeur (schéma 48)
   const ago = t => { const m = Math.round((Date.now() - Date.parse(t)) / 60000); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
   const lienURL = j => new URL('suivi.html?j=' + j, location.href).href;
   const SV = {
@@ -983,7 +983,7 @@
     if (pc) pc.onclick = async () => { try { await navigator.clipboard.writeText(url); toast('Lien copié', { type: 'ok', sous: 'Collez-le dans un message à votre chauffeur.' }); } catch (_) { toast('Copie impossible', { type: 'erreur', sous: url }); } };
   }
 
-  // ——— créer une commande à partir d'un accord ———
+  // créer une commande à partir d'un accord
   function creer(n) {
     if (!N() || !N().session()) { if (N()) N().open(); return; }
     monter();

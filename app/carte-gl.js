@@ -18,7 +18,7 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const abs = p => new URL(p, document.baseURI).href;   // document.baseURI : l'adresse de la page, ou celle de <base> (site/carte/)
 
-  // ——— chargement à la demande (le moteur ne pèse rien tant que la carte n'est pas ouverte) ———
+  // chargement à la demande (le moteur ne pèse rien tant que la carte n'est pas ouverte)
   let libP = null, geoP = null;
   function lib() {
     if (window.maplibregl) return Promise.resolve(window.maplibregl);
@@ -38,7 +38,7 @@
     } catch (_) { return false; }
   }
 
-  // ——— deux ambiances, mêmes repères : nuit (l'application) et jour (comme les applications de transport) ———
+  // deux ambiances, mêmes repères : nuit (l'application) et jour (comme les applications de transport)
   const PAL = {
     nuit: { mer: '#0f1417', voisin: '#1a1814', civ: '#2a241b', ville: '#3a3023', lac: '#1b2e34', fleuve: '#3d6166', r1: '#d9b07a', r2: '#9d8463', r3: '#5f5344', casing: '#14110d', rail: '#6f6455',
       t1: '#F5F0E6', t2: '#E6DCCB', t3: '#B9AD98', halo: 'rgba(15,13,10,.92)', bat: '#4a3e2e', batBord: '#5d4f3b', solHab: '#30291f', solCom: '#3a2d22', solInd: '#2c2a26', solPub: '#2b2e2a', parc: '#24301f', piste: '#7a6a52', marche: '#F3B48A', ombre: 'rgba(0,0,0,.45)',
@@ -93,7 +93,7 @@
   }
   const vide = () => ({ type: 'FeatureCollection', features: [] });
 
-  // ——— styles des bulles et des contrôles (préfixe cgl-) ———
+  // styles des bulles et des contrôles (préfixe cgl-)
   const CSS = `.cgl{position:absolute;inset:0;opacity:0;transition:opacity .5s ease}.cgl.on{opacity:1}.cgl .maplibregl-canvas{outline:none}
 .cgl .maplibregl-ctrl-attrib{background:rgba(23,21,18,.55)!important;color:rgba(245,240,230,.6);font:400 9.5px Jost,sans-serif;border-radius:8px 0 0 0}.cgl .maplibregl-ctrl-attrib a{color:inherit}
 .cgl.jour .maplibregl-ctrl-attrib{background:rgba(255,255,255,.7)!important;color:#5d5444}
@@ -157,7 +157,7 @@
       // carte figée : vue du dessus, nord en haut ; on glisse et on zoome, on ne la tourne pas
       map.touchZoomRotate.disableRotation(); map.keyboard.disableRotation();
 
-      // ——— contrôles : me localiser, tout le pays, jour/nuit, chaleur, zoomer ———
+      // contrôles : me localiser, tout le pays, jour/nuit, chaleur, zoomer
       const ui = document.createElement('div'); ui.className = 'cgl-ui'; box.appendChild(ui);
       const ic = d => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
       const I = n => window.MDGIco ? window.MDGIco.svg(n, 20, 2) : ic('');   // même jeu d'icônes que l'application (app/icones.js)
@@ -176,7 +176,7 @@
       const placer = () => { const i = ins(); etat.style.top = (i.t + 34) + 'px'; ech.style.top = (i.t + 4) + 'px'; ui.style.bottom = (i.b + 12) + 'px'; map.setPadding({ top: i.t + 30, bottom: i.b + 20, left: 0, right: 52 }); };
       const dire = (en, txt) => { etat.className = 'cgl-etat' + (en ? '' : ' hors'); etat.innerHTML = '<i></i>' + esc(txt); };
 
-      // ——— en ligne : relief (Terrarium) et rues, quartiers, bâtiments (OpenFreeMap) ; hors ligne : la carte embarquée seule ———
+      // en ligne : relief (Terrarium) et rues, quartiers, bâtiments (OpenFreeMap) ; hors ligne : la carte embarquée seule
       let demOk = false, rues = false;
       function ajouterRelief() {
         if (demOk || !enLigne()) return;
@@ -239,7 +239,7 @@
       const surReseau = () => { majEtat(); if (enLigne()) { ajouterRelief(); appliquerRelief(false); ajouterRues(); } };
       addEventListener('online', surReseau); addEventListener('offline', majEtat);
 
-      // ——— nuit / jour : on recolore les calques sans recharger la carte ———
+      // nuit / jour : on recolore les calques sans recharger la carte
       function ambiance() {
         P = PAL[theme]; box.classList.toggle('jour', theme === 'jour');
         const set = (id, k, v) => { try { if (map.getLayer(id)) map.setPaintProperty(id, k, v); } catch (_) {} };
@@ -256,7 +256,7 @@
         appliquerRelief(false);
       }
 
-      // ——— annonces : bulles de prix par ville ; de loin, regroupées par district ———
+      // annonces : bulles de prix par ville ; de loin, regroupées par district
       let data = { items: [], me: '', sel: '', zones: [] }, picked = [], markers = [], moiM = null, distM = null, gps = null, alive = true, pret = false;
       const Z_VILLE = 7.1;
       const court = (x) => { const off = x.kind === 'offre', p = off ? x.price : x.budget;
@@ -319,7 +319,7 @@
         tracer(xy);
       }
 
-      // ——— moi : ma position (GPS précis, ou mon district) ; distance et trajet vers l'annonce choisie ———
+      // moi : ma position (GPS précis, ou mon district) ; distance et trajet vers l'annonce choisie
       const moiXY = () => gps || regXY(data.me);
       function dessinerMoi() {
         if (moiM) { moiM.remove(); moiM = null; }
@@ -355,7 +355,7 @@
           opt.onLocate && opt.onLocate(p.coords.latitude, p.coords.longitude); }, () => dire('Position refusée : choisissez votre région'), { enableHighAccuracy: false, timeout: 9000, maximumAge: 600000 });
       }
 
-      // ——— calques de données : chaleur de la demande, liens offre ↔ demande ———
+      // calques de données : chaleur de la demande, liens offre ↔ demande
       function calques() {
         const D = (data.items || []).filter(x => x.kind !== 'offre'), mx = Math.max(1, ...D.map(x => x.qty || 1));
         map.getSource('heat').setData({ type: 'FeatureCollection', features: D.map(x => { const o = ou(x); return o && { type: 'Feature', properties: { w: .25 + .75 * Math.log(1 + (x.qty || 1)) / Math.log(1 + mx) }, geometry: { type: 'Point', coordinates: o.xy } }; }).filter(Boolean) });

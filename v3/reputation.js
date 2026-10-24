@@ -13,7 +13,7 @@
   const dire = () => dispatchEvent(new CustomEvent('mdg:rep'));
   const RAISONS = ['Prix trompeur', 'Produit indisponible', 'Arnaque suspectée', 'Coordonnées fausses', 'Annonce en double', 'Contenu déplacé'];
 
-  // ——— données (par lots, une seule requête pour tout ce qui est affiché) ———
+  // données (par lots, une seule requête pour tout ce qui est affiché)
   function charger(uids) {
     (uids || []).forEach(u => { if (u && !(u in notes)) attenteN.add(u); });
     if (!attenteN.size || !N()) return; clearTimeout(tN);
@@ -29,7 +29,7 @@
   const resume = uid => { if (!uid) return null; if (!(uid in notes)) charger([uid]); return notes[uid] || null; };
   const signal = rid => { if (!rid) return null; if (!(rid in sig)) chargerSignal([rid]); return sig[rid] || null; };
 
-  // ——— étoiles : cinq étoiles dessinées, remplies au dixième près ———
+  // étoiles : cinq étoiles dessinées, remplies au dixième près
   function etoiles(m, n, t = 14, clair) {
     const v = Math.max(0, Math.min(5, +m || 0)), w = (v / 5 * 100).toFixed(1);
     const une = '<path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8L10 14.9 4.8 17.6l1-5.8L1.6 7.7l5.8-.8z"/>';
@@ -38,7 +38,7 @@
   }
   const texteNote = r => r && r.n ? r.m.toFixed(1).replace('.', ',') + ' · ' + r.n + ' avis' : 'Nouveau';
 
-  // ——— feuille commune (sombre, depuis le bas) ———
+  // feuille commune (sombre, depuis le bas)
   const CSS = `.rp-bg{position:fixed;inset:0;z-index:9300;background:rgba(10,9,7,.6);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:rpIn .2s ease both}
 @media (min-width:720px){.rp-bg{align-items:center;padding:24px}}
 .rp{position:relative;width:100%;max-width:520px;max-height:min(90dvh,820px);overflow-x:hidden;overflow-y:auto;background:#F4EEE3;color:#171512;border-radius:28px 28px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));font:400 15px/1.5 Jost,system-ui,sans-serif;box-shadow:0 -10px 50px rgba(0,0,0,.5);animation:rpUp .36s cubic-bezier(.22,1,.36,1) both;overscroll-behavior:contain}
@@ -124,7 +124,7 @@
   const avatar = (uid, av, nom, t, uri) => uri || A() ? `<img src="${uri || A().uri(av, { size: t, nom: nom || '?', seed: uid })}" width="${t}" height="${t}" alt="">` : '';
   const quand = t => { const d = (Date.now() - Date.parse(t)) / 864e5; return d < 1 ? 'aujourd’hui' : d < 2 ? 'hier' : d < 30 ? 'il y a ' + Math.round(d) + ' j' : new Date(t).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' }); };
 
-  // ——— signaler : une raison obligatoire, une précision possible ———
+  // signaler : une raison obligatoire, une précision possible
   function signaler({ kind, rid, titre }) {
     if (!rid) return;
     const bg = feuille(`<h2>Signaler cette annonce</h2><p>${esc(titre || 'Dites-nous ce qui ne va pas.')} La raison choisie sera visible des autres utilisateurs ; votre précision, seulement de l’équipe.</p>
@@ -141,7 +141,7 @@
     };
   }
 
-  // ——— noter : cinq grandes étoiles, un mot possible ———
+  // noter : cinq grandes étoiles, un mot possible
   const LIB = ['', 'Mauvaise expérience', 'Décevant', 'Correct', 'Bon partenaire', 'Excellent partenaire'];
   async function noter(uid, nom, apres) {
     if (!N() || !N().session()) return N() && N().open();
@@ -164,14 +164,14 @@
     };
   }
 
-  // ——— fiche profil : qui il est, ce qu'il fait, ce qu'il a vendu, où ; note, avis, et noter ———
+  // fiche profil : qui il est, ce qu'il fait, ce qu'il a vendu, où ; note, avis, et noter
   const REGN = slug => { const r = window.MDG && MDG.regions && MDG.regions.find(x => x.slug === slug); return r ? r.name : slug; };
   const mois = t => t ? new Date(t).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : '';
   const actif = t => { if (!t) return ''; const m = (Date.now() - Date.parse(t)) / 6e4; return m < 10 ? 'actif à l’instant' : m < 60 ? 'actif il y a ' + Math.round(m) + ' min' : m < 1440 ? 'actif il y a ' + Math.round(m / 60) + ' h' : m < 2880 ? 'actif hier' : 'actif il y a ' + Math.round(m / 1440) + ' j'; };
   const fq = n => n == null ? '' : Number(n).toLocaleString('fr-FR').replace(/ | /g, ' ');
   // seulement le stockage de l'application (schéma 74) : jamais une image venue d'un autre site
   const photoUrl = p => !p || /^[a-z]+:|^\/\//i.test(p) ? '' : (N() && N().URL ? N().URL + '/storage/v1/object/public/activites/' + p : '');
-  // ——— la structure en tête du profil : logo, type, nom, réputation, preuves (agrandissables) ———
+  // la structure en tête du profil : logo, type, nom, réputation, preuves (agrandissables)
   const TYPE_ORG = { cooperative: 'Coopérative', groupement: 'Groupement', entreprise: 'Entreprise', marche: 'Marché' };
   function carteStructure(st, uid) {
     const pv = (st.preuves || []).slice(0, 4), puces = window.MDGStatut ? MDGStatut.puces(uid, { max: 2 }) : '';
@@ -195,7 +195,7 @@
       v.onclick = e => { if (e.target === v) fin(); }; addEventListener('keydown', cle); document.body.appendChild(v); peindre();
     });
   }
-  // ——— réputation par rôle (schéma 32) : calculée par le serveur, sur les commandes ; « vérifié » n'est pas « fiable » ———
+  // réputation par rôle (schéma 32) : calculée par le serveur, sur les commandes ; « vérifié » n'est pas « fiable »
   function blocReputation(r, moi) {
     if (!r) return '<div class="rp-vide">Réputation indisponible pour l’instant.</div>';
     const col = (t, x) => { x = x || {}; const n = x.terminees || 0;
@@ -265,7 +265,7 @@
     const m = bg.querySelector('[data-modif]'); if (m) m.onclick = () => { bg.fermer(); modifier(pp || {}, () => profil(uid, o)); };
   }
 
-  // ——— modifier son profil public : présentation, activités, photos (6 au plus) ———
+  // modifier son profil public : présentation, activités, photos (6 au plus)
   const reduire = file => new Promise((ok, ko) => { const r = new FileReader(); r.onerror = ko; r.onload = () => { const im = new Image(); im.onerror = ko; im.onload = () => {
     const s = Math.min(1, 1000 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
     c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); c.toBlob(b => b ? ok(b) : ko(new Error('Photo illisible')), 'image/jpeg', .74); }; im.src = r.result; }; r.readAsDataURL(file); });
@@ -295,7 +295,7 @@
       catch (x) { ev.target.disabled = false; msg('Enregistrement impossible. ' + (window.MDGErreur ? MDGErreur(x) : x.message)); } };
   }
 
-  // ——— les mieux notés ———
+  // les mieux notés
   async function classement() {
     const bg = feuille(`<h2>Les mieux notés</h2><p>Les vendeurs et acheteurs que leurs partenaires recommandent, d’après leurs notes après négociation.</p><div class="rp-cl" data-l><div class="rp-vide">Chargement…</div></div>`, 'Les mieux notés');
     let l = [], rate = false; try { l = await N().rpc('mieux_notes', { n: 50 }, !!N().session()) || []; } catch (_) { rate = true; }

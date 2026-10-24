@@ -4,7 +4,7 @@
    cabosse de cacao, chou, pastèque, carotte, arachide, patate, poivron, œuf.
    Chacun se compose : couleur, yeux, bouche, joues, chapeau (et sa couleur), lunettes, moustache, objet en main,
    chaussures, fond et motif. Cela fait des dizaines de milliards de combinaisons : deux membres ont très peu de chances
-   d'avoir le même. Avec { anime: true }, le personnage respire, cligne des yeux et saute de temps en temps
+   d'avoir le même. Avec { anime: true }, le personnage respire et cligne des yeux ; il ne saute que s'il y a du nouveau
    (rien ne bouge si le téléphone demande moins d'animations). { saut: true } : un petit saut à l'affichage.
    Code enregistré dans le profil : « mg:b=0;p=0;y=0;m=0;j=1;h=0;hc=0;l=0;s=0;i=0;c=0;f=0;g=0 ».
    API : MDGPerso.svg(o, { size, nom, anime, saut, seed }) · CHOIX (listes nommées) · CLES · hasard() · parse(code) · code(o) */
@@ -12,12 +12,12 @@
   'use strict';
   if (window.MDGPerso) return;
 
-  // ——— couleurs ———
+  // couleurs
   const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
   const mix = (a, b, t) => { const x = hex(a), y = hex(b); return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join(''); };
   const LIMB = '#3B2C22', BOUCHE = '#3A1A12', OEIL = '#1F1A16';
 
-  // ——— les produits : forme, couleurs, place du visage (fx, fy), haut de la tête (top), côtés (bras), bas (pieds) ———
+  // les produits : forme, couleurs, place du visage (fx, fy), haut de la tête (top), côtés (bras), bas (pieds)
   // G = remplissage en dégradé du corps, S = ombre, M = couleur principale, X = 3e couleur, U = identifiant unique
   const CORPS = [
     { id: 'tomate', nom: 'Tomate', pal: [['#E2412F', '#A8261A'], ['#F07A2A', '#C2541A'], ['#8DBF45', '#5E8F2A']], fx: 50, fy: 60, top: 40, cote: [24, 76], bas: 86,
@@ -81,7 +81,7 @@
       corps: c => `<path d="M50 33c12 0 21 17 21 33 0 14-9 23-21 23s-21-9-21-23c0-16 9-33 21-33z" fill="${c.G}"/>`, haut: () => '' }
   ];
 
-  // ——— le visage ———
+  // le visage
   const YEUX = [
     { nom: 'Ronds', d: (x, y) => `<circle cx="${x}" cy="${y}" r="3.1" fill="${OEIL}"/><circle cx="${x + 1}" cy="${y - 1.1}" r="1" fill="#fff"/>` },
     { nom: 'Joyeux', d: (x, y) => `<path d="M${x - 3.6} ${y + 1.2}q3.6-5 7.2 0" stroke="${OEIL}" stroke-width="2" stroke-linecap="round" fill="none"/>`, ferme: true },
@@ -105,7 +105,7 @@
     { nom: 'Chat', d: (x, y) => `<path d="M${x - 5.4} ${y}q2.7 3.6 5.4 0 2.7 3.6 5.4 0" stroke="${BOUCHE}" stroke-width="1.8" stroke-linecap="round" fill="none"/>` },
     { nom: 'Waouh', d: (x, y) => `<ellipse cx="${x}" cy="${y + 2}" rx="4.4" ry="5" fill="${BOUCHE}"/><ellipse cx="${x}" cy="${y + 4.6}" rx="2.6" ry="1.6" fill="#E2735B"/>` }
   ];
-  // ——— la tête : chapeaux (dessinés autour de (0,0), bas du chapeau en y = 0) ———
+  // la tête : chapeaux (dessinés autour de (0,0), bas du chapeau en y = 0)
   const COUL = ['#E2412F', '#F2C230', '#2E6B4A', '#2E4560', '#8E3B5B', '#F07A2A', '#F5F0E6', '#1F1A16'];
   const CHAPEAUX = [
     { nom: 'Rien', d: () => '' },
@@ -134,7 +134,7 @@
     { nom: 'Guidon', d: (x, y) => `<path d="M${x} ${y - .4}c-2-2-7-2-9 1-1 2-3 2-4 0 0 4 4 5 7 3 3-1 5-2 6-2 1 0 3 1 6 2 3 2 7 1 7-3-1 2-3 2-4 0-2-3-7-3-9-1z" fill="#2B1D14"/>` },
     { nom: 'Barbichette', d: (x, y) => `<path d="M${x - 3} ${y + 10}h6l-3 6z" fill="#2B1D14"/>` }
   ];
-  // ——— dans la main (dessiné autour de (0,0)) ———
+  // dans la main (dessiné autour de (0,0))
   const OBJETS = [
     { nom: 'Rien', d: () => '' },
     { nom: 'Téléphone', d: () => `<rect x="-4" y="-7" width="8" height="14" rx="1.8" fill="#222"/><rect x="-3" y="-5.4" width="6" height="9.6" rx=".8" fill="#6CC58C"/>` },
@@ -158,7 +158,7 @@
     { nom: 'Soleil', d: () => { let s = ''; for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6, b = a + .14; s += `<path d="M50 62L${(50 + 80 * Math.cos(a)).toFixed(1)} ${(62 + 80 * Math.sin(a)).toFixed(1)}L${(50 + 80 * Math.cos(b)).toFixed(1)} ${(62 + 80 * Math.sin(b)).toFixed(1)}z"/>`; } return `<g fill="#fff" opacity=".1">${s}</g>`; } }
   ];
 
-  // ——— le code ———
+  // le code
   const CLES = { b: CORPS, y: YEUX, m: BOUCHES, h: CHAPEAUX, hc: COUL, l: LUNETTES, s: POILS, i: OBJETS, c: SOULIERS, f: FONDS, g: MOTIFS };
   const ORDRE = ['b', 'p', 'y', 'm', 'j', 'h', 'hc', 'l', 's', 'i', 'c', 'f', 'g'];
   const n = (v, L) => ((+v || 0) % L + L) % L;
@@ -180,7 +180,7 @@
     return normal(Object.assign(o, garde || {}));
   }
 
-  // ——— le dessin ———
+  // le dessin
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const hash = s => { let h = 7; for (const ch of String(s || '')) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
   let uid = 0;
@@ -235,7 +235,7 @@
 
   const noms = L => L.map(x => typeof x === 'string' ? x : x.nom);
   const visage = b => { const C = CORPS[n(b, CORPS.length)]; return { x: (C.fx - 5) / .9, y: (C.fy + 4 - 8) / .9 }; };   // pour zoomer une vignette sur le visage
-  // ——— il saute quand il y a du nouveau : proposition de prix, message, notification, commande à traiter ———
+  // il saute quand il y a du nouveau : proposition de prix, message, notification, commande à traiter
   const CSS_SAUT = '.mg-saute>img,.mg-saute>span>img{animation:mgSautImg .8s cubic-bezier(.3,1.5,.5,1)}@keyframes mgSautImg{0%{transform:translateY(0) scale(1.06,.92)}45%{transform:translateY(-7px) scale(.96,1.05)}80%{transform:translateY(0) scale(1.03,.97)}100%{transform:none}}@media (prefers-reduced-motion:reduce){.mg-saute>img,.mg-saute>span>img{animation:none}}';
   function saute(cible) {
     if (!document.getElementById('mgSautCss')) { const st = document.createElement('style'); st.id = 'mgSautCss'; st.textContent = CSS_SAUT; document.head.appendChild(st); }

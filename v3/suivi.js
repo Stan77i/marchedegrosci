@@ -23,7 +23,7 @@
   const dureeTxt = x => { const h = Math.floor(x / 3600), m = Math.round((x % 3600) / 60); return h ? h + ' h ' + String(m).padStart(2, '0') : m + ' min'; };
   const heure = d => d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
-  // ——— géométrie simple (distances en mètres, assez précise à l'échelle d'un trajet) ———
+  // géométrie simple (distances en mètres, assez précise à l'échelle d'un trajet)
   const R = Math.PI / 180;
   const metres = (a, b) => { const x = Math.sin((b[1] - a[1]) * R / 2) ** 2 + Math.cos(a[1] * R) * Math.cos(b[1] * R) * Math.sin((b[0] - a[0]) * R / 2) ** 2; return 2 * 6371000 * Math.asin(Math.sqrt(x)); };
   const cap = (a, b) => { const y = Math.sin((b[0] - a[0]) * R) * Math.cos(b[1] * R), x = Math.cos(a[1] * R) * Math.sin(b[1] * R) - Math.sin(a[1] * R) * Math.cos(b[1] * R) * Math.cos((b[0] - a[0]) * R); return (Math.atan2(y, x) / R + 360) % 360; };

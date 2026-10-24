@@ -33,7 +33,7 @@
   box-shadow:0 18px 40px rgba(0,0,0,.45),inset 0 0 0 1px rgba(242,194,48,.35);opacity:0;transform:translateY(-14px);transition:opacity .3s,transform .4s cubic-bezier(.22,1,.36,1)}
 .dm-carte.on{opacity:1;transform:none}
 .dm-hd{display:flex;align-items:center;gap:10px}
-.dm-k{flex:none;display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:10px;background:#F2C230;color:#171512;font:700 11px/1.4 Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.dm-k{flex:none;display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:10px;background:#F2C230;color:#171512;font:700 11.5px/1.4 Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase}
 .dm-k i{width:6px;height:6px;border-radius:50%;background:#171512}
 @keyframes dmRec{50%{opacity:.25}}
 .dm-n{color:#B9AD98;font:500 12px Jost,sans-serif}

@@ -36,7 +36,7 @@
   const err = x => { const m = String(x && x.message || x || ''); return /BLOQUE/.test(m) ? 'Vous ne pouvez plus écrire à cette personne.' : /TROP_VITE/.test(m) ? 'Trop de messages d’un coup. Attendez une minute.'
     : /Failed to fetch|NetworkError/i.test(m) ? 'Pas de réseau. Le message n’est pas parti.' : /dm_|schema cache|Could not find/i.test(m) ? 'La messagerie n’est pas encore activée sur le serveur.' : (window.MDGErreur ? MDGErreur(x) : (m || 'Une erreur est survenue.')); };
 
-  // ——— la liste des conversations (gardée sur l'appareil pour s'afficher tout de suite) ———
+  // la liste des conversations (gardée sur l'appareil pour s'afficher tout de suite)
   let liste = J(KL, []), dernierU = -1, premier = true, ouverte = null;
   const unread = () => liste.filter(c => c.non_lu && c.id !== ouverte).length;
   // pour la cloche de l'accueil : les conversations non lues dont le dernier message est arrivé après « ts » (heure du dernier toucher sur la cloche)
@@ -59,7 +59,7 @@
     annoncer(); return liste;
   }
 
-  // ——— feuille (sombre, plein écran sur téléphone, comme une vraie messagerie) ———
+  // feuille (sombre, plein écran sur téléphone, comme une vraie messagerie)
   const CSS = `.dm-bg{position:fixed;inset:0;z-index:9200;background:rgba(10,9,7,.6);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:dmIn .2s ease both}
 .dm{--ink:#171512;--mute:#655C4D;--line:rgba(23,21,18,.1);--acc:#10392B;position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:100%;background:#F4EEE3;color:var(--ink);font:400 15px/1.45 Jost,system-ui,sans-serif;animation:dmUp .38s cubic-bezier(.22,1,.36,1) both;overflow:hidden}
 @media (min-width:720px){.dm-bg{align-items:center;padding:24px}.dm{height:min(760px,92dvh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.55)}}
@@ -102,7 +102,7 @@
 .dm-c time{color:var(--mute);font-size:12px;text-align:right}.dm-c i{grid-column:3;justify-self:end;width:10px;height:10px;border-radius:50%;background:var(--acc)}
 .dm-c.neuf b,.dm-c.neuf small{color:var(--ink);font-weight:600}.dm-c.neuf time{color:#10392B}
 .dm-l .sw{border-radius:18px}.dm-l .sw+.sw{margin-top:2px}.dm-l .sw>.sw-row{background-color:#F4EEE3!important}
-.dm-off{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:rgba(16,57,43,.2);color:#10392B;font:700 10.5px/1.6 Jost,sans-serif;letter-spacing:.06em;text-transform:uppercase;vertical-align:2px}
+.dm-off{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:rgba(16,57,43,.2);color:#10392B;font:700 11.5px/1.6 Jost,sans-serif;letter-spacing:.06em;text-transform:uppercase;vertical-align:2px}
 .dm-act{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
 .dm-act button,.dm-act a{flex:1 1 200px;display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 14px;border:1px solid rgba(23,21,18,.06);border-radius:18px;background:#FFFDF8;color:var(--ink);font:600 14.5px Jost,sans-serif;text-align:left;text-decoration:none;cursor:pointer;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.04)}
 .dm-act small{display:block;color:var(--mute);font-size:12px;font-weight:400}.dm-act a>svg{flex:none;width:34px;height:34px;padding:7px;border-radius:50%;background:rgba(16,57,43,.1);fill:none;stroke:#10392B;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;box-sizing:border-box}
@@ -156,7 +156,7 @@
   }
   if (window.visualViewport) { visualViewport.addEventListener('resize', ajuster); visualViewport.addEventListener('scroll', ajuster); }
 
-  // ——— la boîte : toutes mes conversations ———
+  // la boîte : toutes mes conversations
   function boite() {
     if (!N() || !N().session()) { N() && N().open('Connectez-vous pour voir vos messages.'); return; }
     const b = feuille(`<div class="dm-h"><h2 class="dm-t">Messages<small>Gardés 1 an · lisibles par l’équipe</small></h2><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div><div class="dm-b"><div class="dm-act" data-act></div><div class="dm-l" data-l></div></div>`, 'Messages');
@@ -189,7 +189,7 @@
     clearInterval(minuteur); minuteur = setInterval(() => { if (!document.hidden && bg === b) refresh().then(() => { if (bg === b) dessiner(); }); }, 15000);
   }
 
-  // ——— écrire à quelqu'un (depuis sa fiche, une annonce, une négociation) ———
+  // écrire à quelqu'un (depuis sa fiche, une annonce, une négociation)
   async function ecrire(uid, o = {}) {
     if (!uid) return;
     if (!N() || !N().session()) {
@@ -204,7 +204,7 @@
     } catch (x) { N().toast(err(x)); }
   }
 
-  // ——— écrire au Marché de Gros (un administrateur répond) ———
+  // écrire au Marché de Gros (un administrateur répond)
   // D'abord l'aide (v3/aide.js) : des réponses toutes prêtes ; « Je veux parler à une personne » mène ici. { direct: true } : la conversation tout de suite.
   async function ecrireMarche(o = {}) {
     if (!o.direct && window.MDGAide && !admin()) { MDGAide.ouvrir(o); return; }
@@ -227,7 +227,7 @@
       return true;
     } catch (x) { N().toast(/contact_marche|schema cache|Could not find/i.test(String(x.message)) ? 'Pas encore activé sur le serveur.' : err(x)); return false; }
   }
-  // ——— l'administration écrit à tous les membres ———
+  // l'administration écrit à tous les membres
   function diffuser() {
     if (!admin()) { N().toast('Réservé aux administrateurs.'); return; }
     const b = feuille(`<div class="dm-h"><button type="button" class="dm-ib" data-back aria-label="Retour aux messages">${I.retour}</button><h2 class="dm-t">Message à tous<small>Au nom du Marché de Gros</small></h2><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div>
@@ -244,7 +244,7 @@
     setTimeout(() => ta.focus(), 200);
   }
 
-  // ——— une conversation ———
+  // une conversation
   async function conversation(id, depuisBoite, meta) {
     if (!id || !N() || !N().session()) return;
     if (window.MDGActivite) MDGActivite.noter('dm', id);   // pour « Reprendre » dans Accueil → Activité

@@ -43,7 +43,7 @@
     { id: 'negoce', ico: 'negoce', ton: 'marche', t: 'Proposer un prix', sert: 'Négocier calmement, par écrit, jusqu’à un accord.',
       etapes: ['Sur une annonce, touchez « Proposer un prix ». Écrivez votre prix et la quantité.', 'L’autre personne a 48 heures pour accepter, refuser ou proposer un autre prix.', 'Quand vous êtes d’accord, l’accord est conclu : le prix et la quantité ne bougent plus.', 'Ensuite, touchez « Suivre la commande » : vous choisissez qui transporte et où livrer.'],
       conseil: 'Un accord conclu n’est pas un paiement. La négociation n’est pas secrète : l’équipe peut la relire en cas de litige.', aller: FEN('MDGNegoce', 'inbox') },
-    { id: 'tableau', ico: 'tableau', ton: 'marche', t: 'L’onglet Prix : le tableau du marché', sert: 'Voir tout de suite qui vend le moins cher et qui achète le plus cher, comme sur un marché P2P.',
+    { id: 'tableau', ico: 'tableau', ton: 'marche', t: 'L’onglet Prix : le tableau du marché', sert: 'Voir tout de suite qui vend le moins cher et qui achète le plus cher, en un coup d’œil.',
       etapes: ['Sur l’accueil, touchez l’onglet « Prix ».', 'Touchez un produit. « Acheter » : les vendeurs, le moins cher en haut. « Vendre » : les acheteurs, le meilleur budget en haut.', 'À prix égal, le transport compris passe devant. Les prix ne se comparent que dans la même unité (kg, sac, régime…).', 'Touchez « Acheter » ou « Vendre » sur une ligne pour proposer votre prix.'],
       conseil: 'Vous vendez ? Baissez votre prix : vous montez dans le tableau. Aucun numéro n’est affiché : le Marché de Gros est le seul intermédiaire.', aller: ONGLET('Prix') },
     { id: 'commande', ico: 'camion', ton: 'offre', t: 'La commande et la livraison', sert: 'Suivre la marchandise, du « oui » jusqu’à la livraison.',
@@ -132,7 +132,7 @@
     return `<h1 class="gd-t">Comment ça <em>marche</em></h1>
       <p class="gd-lead">Le Marché de Gros met en relation ceux qui vendent et ceux qui achètent des produits vivriers, partout en Côte d’Ivoire. Voici l’essentiel.</p>
       <section class="gd-3" aria-label="L’essentiel en 3 gestes"><h2>L’essentiel en 3 gestes</h2>
-        ${GESTES.map((g, i) => `<div class="gd-g"><i>${i + 1}</i><div><b>${esc(g.t)}</b><span>${esc(g.x)}</span></div></div>`).join('')}</section>
+        ${GESTES.map(g => `<div class="gd-g"><i aria-hidden="true">${IC(g.ico, 18, 2)}</i><div><b>${esc(g.t)}</b><span>${esc(g.x)}</span></div></div>`).join('')}</section>
       <h2 class="gd-sh">Partie par partie</h2>
       <div class="gd-tu">${FICHES.filter(f => !['securite', 'probleme'].includes(f.id)).map((f, i, L) => `<button type="button"${L.length % 2 && i === L.length - 1 ? ' class="large"' : ''} data-f="${f.id}"><span ${pastille(TON[f.ton])}>${IC(f.ico, 24)}</span><b>${esc(f.t)}</b></button>`).join('')}</div>
       <h2 class="gd-sh">Bon à savoir</h2>
@@ -145,7 +145,7 @@
       <ol class="gd-et">${f.etapes.map(e => `<li>${esc(e)}</li>`).join('')}</ol>
       <p class="gd-cs">${IC('info', 22)}<span><b>Conseil</b>${esc(f.conseil)}</span></p>
       ${f.aller ? `<button type="button" class="gd-go" data-aller>Montrer dans l’app ${IC('fleche', 20, 2)}</button>` : ''}
-      <div class="gd-nav">${av ? `<button type="button" data-f="${av.id}">‹ ${esc(av.t)}</button>` : ''}${ap ? `<button type="button" data-f="${ap.id}">${esc(ap.t)} ›</button>` : ''}</div></article>`;
+      <div class="gd-nav">${av ? `<button type="button" data-f="${av.id}"><span class="ic-t" aria-hidden="true">${IC('retour', 17, 2)}</span>${esc(av.t)}</button>` : ''}${ap ? `<button type="button" data-f="${ap.id}">${esc(ap.t)}<span class="ic-t" aria-hidden="true" style="margin:0 0 0 6px">${IC('suite', 17, 2)}</span></button>` : ''}</div></article>`;
   }
   function dessiner() {
     const id = pile[pile.length - 1], f = id && FICHES.find(x => x.id === id), b = el.querySelector('.gd-b');

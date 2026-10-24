@@ -200,7 +200,7 @@
     if (uid === me()) { N().toast('C’est votre propre compte.'); return; }
     try {
       const id = await N().rpc('dm_ouvrir', { p_autre: uid });
-      conversation(id, false, { autre_id: uid, autre_nom: o.nom || 'Membre', autre_avatar: o.avatar || null, officiel: !!o.officiel });
+      conversation(id, false, { autre_id: uid, autre_nom: o.nom || 'Membre', autre_avatar: o.avatar || null, officiel: !!o.officiel, vs: o.vs || null });
     } catch (x) { N().toast(err(x)); }
   }
 
@@ -249,12 +249,13 @@
     if (!id || !N() || !N().session()) return;
     if (window.MDGActivite) MDGActivite.noter('dm', id);   // pour « Reprendre » dans Accueil → Activité
     let c = liste.find(x => x.id === id) || Object.assign({ id, bloque: false, je_bloque: false }, meta || {});
+    const vsA = meta && meta.vs && meta.vs.city && window.MDGVilleSeule ? MDGVilleSeule.avertir(meta.vs.sens, meta.vs.city) : '';   // « Vente uniquement à Guiglo » (schéma 87)
     if (!c.autre_id) { await refresh(); c = liste.find(x => x.id === id) || c; }
     const u = me(); ouverte = id;
     const b = feuille(`<div class="dm-h">${depuisBoite ? `<button type="button" class="dm-ib" data-back aria-label="Retour aux messages">${I.retour}</button>` : ''}
       <button type="button" class="dm-qui" data-profil aria-label="${c.officiel ? 'Marché de Gros' : 'Voir le profil de ' + esc(c.autre_nom)}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 40, c.officiel)}<span><b>${esc(c.autre_nom || 'Membre')}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 15 }) : ''}</b>${!c.officiel && window.MDGCompte && MDGCompte.puceStructure ? `<span class="dm-org">${MDGCompte.puceStructure(c.autre_id)}</span>` : ''}<small data-rep>${c.officiel ? 'L’équipe du Marché de Gros' : window.MDGStatut && MDGStatut.liste(c.autre_id).length ? MDGStatut.puces(c.autre_id, { max: 2, sceau: false }) : 'Voir son profil'}</small></span></button>
       <button type="button" class="dm-ib" data-plus aria-label="Plus d’options" aria-haspopup="menu">${I.plus}</button><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div>
-      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les échanges ne sont pas secrets : l’équipe du Marché de Gros peut les lire pour vérifier un accord ou régler un litige. Ils sont gardés 1 an. Restez ici : les numéros sont masqués.</div>${!c.officiel && window.MDGIdentite && MDGIdentite.gardePaiement ? `<div class="dm-garde" data-garde>${MDGIdentite.gardePaiement(c.autre_id, c.autre_nom)}</div>` : ''}<div data-msgs></div></div>
+      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les échanges ne sont pas secrets : l’équipe du Marché de Gros peut les lire pour vérifier un accord ou régler un litige. Ils sont gardés 1 an. Restez ici : les numéros sont masqués.</div>${vsA}${!c.officiel && window.MDGIdentite && MDGIdentite.gardePaiement ? `<div class="dm-garde" data-garde>${MDGIdentite.gardePaiement(c.autre_id, c.autre_nom)}</div>` : ''}<div data-msgs></div></div>
       <div class="dm-f" data-f></div>`, 'Conversation avec ' + (c.autre_nom || 'un membre'));
     const corps = b.querySelector('[data-b]'), zone = b.querySelector('[data-msgs]'), pied = b.querySelector('[data-f]');
     const garde = b.querySelector('[data-garde]');

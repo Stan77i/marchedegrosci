@@ -119,7 +119,10 @@ ecrire('carte/index.html', page(fs.readFileSync(path.join(GAB, 'carte.html'), 'u
 // ——— les pages produits (site/produits/<id>/) ———
 const PP = require('./site-produits.js')({ produits, CAT, NOM, esc, lire, vm, photo: sl => fs.existsSync(path.join(SITE, img(sl, 480))) });
 const GP = fs.readFileSync(path.join(GAB, 'produit.html'), 'utf8');
-PP.forEach(v => ecrire('produits/' + v.SLUG + '/index.html', page(GP, Object.assign({}, VAL, COMMUN, v, { S: '../../', R: '../../../' }))));
+// les prix officiels de la semaine (OCPV, prix au détail) : un bloc par page produit et la page site/prix-de-la-semaine/
+const PX = require('./site-prix.js')(esc);
+PP.forEach(v => ecrire('produits/' + v.SLUG + '/index.html', page(GP, Object.assign({}, VAL, COMMUN, v, { S: '../../', R: '../../../', PRIX_OCPV: PX.blocProduit(v.SLUG, NOM[v.SLUG]) }))));
+ecrire('prix-de-la-semaine/index.html', page(fs.readFileSync(path.join(GAB, 'prix-semaine.html'), 'utf8'), Object.assign({}, VAL, COMMUN, PX.page, { S: '../', R: '../../', LU_LE_TXT: dateTxt(PX.page.LU_LE) })));
 // ——— les guides (site/guides/<id>/) : contenu écrit à la main dans tools/site/guides/<id>.html, chiffres sourcés ———
 GUIDES.forEach(g => {
   const canon = 'https://stan77i.github.io/marchedegrosci/site/guides/' + g.slug + '/', mots = g.corps.replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
@@ -153,7 +156,7 @@ ecrire('guides/index.html', page(fs.readFileSync(path.join(GAB, 'guides.html'), 
 // Tant que les pages sont en noindex, ce fichier ne fait rien ; ne pas le soumettre avant l'ouverture décidée par le propriétaire.
 {
   const B = 'https://stan77i.github.io/marchedegrosci/site/';
-  const U = [[B, ''], [B + 'carte/', ''], [B + 'guides/', ''], [B + 'a-propos/', ''], [B + 'saisons/', ''], [B + 'regions/', '']]
+  const U = [[B, ''], [B + 'carte/', ''], [B + 'guides/', ''], [B + 'a-propos/', ''], [B + 'saisons/', ''], [B + 'regions/', ''], [B + 'prix-de-la-semaine/', PX.page.LU_LE]]
     .concat(PP.map(v => [B + 'produits/' + v.SLUG + '/', '']))
     .concat(RG.pages.map(p => [B + 'regions/' + p.r + '/', '']))
     .concat(GUIDES.map(g => [B + 'guides/' + g.slug + '/', g.maj || g.publie]));

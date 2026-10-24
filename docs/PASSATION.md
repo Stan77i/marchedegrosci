@@ -1303,3 +1303,13 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - `docs/REPRISE.md` : état après la PR #243, branche obsolète signalée.
 - PDF de stratégie : rien à refaire. Aucun de leurs textes ne parle de ce qui a changé ; leurs chiffres se mettent à jour seuls (tâche du lundi). Le nouveau site n'y sera ajouté qu'à son ouverture.
 - `CLAUDE.md` : marche à suivre quand une nouvelle discussion commence par un seul mot (« On reprend ») ; `docs/REPRISE.md` : liste « ce qui reste » corrigée (guides déjà faits retirés).
+
+## 24/10/2026 — Site : prix officiels de la semaine (OCPV)
+
+- Source vérifiée : OCPV, note de conjoncture n° 42, semaine du 12 au 18 octobre 2026 (PDF public sur ocpv-ci.com). Prix moyens **au détail**, FCFA le kg, Abidjan et intérieur (semaines 41 et 42), prix mini-maxi et marchés les moins chers et les plus chers, niveau d'approvisionnement.
+- Les pourcentages de la note sont faux par endroits (banane plantain 650 → 385 annoncé −69 %, en vrai −41 %) : seuls les prix sont repris, les variations sont calculées par le site.
+- `tools/site/prix-ocpv.json` (données), `tools/site-prix.js` (bloc produit et page), `tools/site/prix-semaine.html` (gabarit), `tools/site-public.js` (branchement, plan du site), `tools/site/produit.html` (`{{PRIX_OCPV}}`), `tools/site/index.html` et `_fin.html` (liens « Les prix de la semaine »), `site/site.css` (styles `.px-*` ; attention, `.pt` existait déjà : les marqueurs de la carte).
+- Bloc « Le prix officiel au détail » sur 11 pages produits (tomate, igname, banane plantain, manioc, oignon, maïs grain, riz local, piment frais, aubergine, gombo, arachide décortiquée). Page `site/prix-de-la-semaine/` : en bref (baisses et hausses à Abidjan), prix moyens, où c'est le moins cher, approvisionnement, tableau en direct de l'application.
+- Vérifié dans Chromium : ordinateur 1440 px et téléphone 390 px, aucun débordement, un seul titre principal, titre de 46 caractères. `sw.js` : cache `mgci-v232`.
+- À faire chaque semaine : mettre à jour `prix-ocpv.json` avec la nouvelle note (voir `docs/REPRISE.md`).
+- Mise à jour chaque semaine (accord du propriétaire) : tâche GitHub `.github/workflows/ocpv-note.yml` (télécharge la note, texte dans `tools/site/ocpv/`) et tâche programmée de Claude « Prix OCPV de la semaine » chaque mardi à 8 h 36 (heure d'Abidjan), qui ouvre la PR. Raison de la tâche GitHub : les sessions programmées n'ont ni l'outil de lecture des PDF ni un accès Internet libre.

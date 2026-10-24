@@ -1,0 +1,66 @@
+<!--@tete-->
+<title>{{TITRE_PX}}</title>
+<meta name="description" content="{{DESC_PX}}">
+<link rel="canonical" href="https://stan77i.github.io/marchedegrosci/site/prix-de-la-semaine/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_CI">
+<meta property="og:site_name" content="Marché de Gros CI">
+<meta property="og:title" content="{{TITRE_PX}}">
+<meta property="og:description" content="{{DESC_PX}}">
+<meta property="og:url" content="https://stan77i.github.io/marchedegrosci/site/prix-de-la-semaine/">
+<meta property="og:image" content="https://stan77i.github.io/marchedegrosci/site/img/tomate-480.webp">
+<!--@corps-->
+<main id="contenu" class="pg-prix">
+<nav class="ariane" aria-label="Fil d’Ariane"><a href="../">Marché de Gros CI</a><span aria-hidden="true">›</span><span aria-current="page">Les prix de la semaine</span></nav>
+
+<section class="bloc ocpv" aria-labelledby="t-px">
+  <div class="bloc-tete">
+    <h1 id="t-px">{{H1_PX}}</h1>
+    <p>Semaine {{SEMAINE}}. Les {{NATURE}}, en {{UNITE}}, comparés à la semaine {{PRECEDENTE}}. Ce sont des prix de détail : en gros, chaque prix se négocie dans l’application.</p>
+  </div>
+  <h2 class="px-t">Cette semaine en bref</h2>
+  <ul class="px-bref">{{RESUME_PX}}</ul>
+
+  <h2 class="px-t" id="moyens">Les prix moyens</h2>
+  <div class="px-boite"><table class="px-tab">
+    <thead><tr><th scope="col">Produit</th><th scope="col">Abidjan</th><th scope="col">Intérieur du pays</th></tr></thead>
+    <tbody>{{TABLE_MOY}}</tbody>
+  </table></div>
+
+  <h2 class="px-t" id="marches">Où c’est le moins cher</h2>
+  <p class="px-intro">Le prix le plus bas et le plus haut relevés cette semaine, et les marchés où ils ont été vus.</p>
+  <div class="px-boite"><table class="px-tab">
+    <thead><tr><th scope="col">Produit</th><th scope="col">Marchés d’Abidjan</th><th scope="col">Marchés de l’intérieur</th></tr></thead>
+    <tbody>{{TABLE_FOU}}</tbody>
+  </table></div>
+
+  <h2 class="px-t">L’approvisionnement des marchés</h2>
+  <div class="px-appro">
+    <blockquote><p>« {{APPRO_ABJ}} »</p><cite>Abidjan</cite></blockquote>
+    <blockquote><p>« {{APPRO_INT}} »</p><cite>Intérieur du pays</cite></blockquote>
+  </div>
+
+  <p class="px-src">Source : {{SOURCE_PX}}. {{NOTE_PX}} L’OCPV publie une note chaque semaine ; cette page reprend la plus récente que nous avons lue (lue le <time datetime="{{LU_LE}}">{{LU_LE_TXT}}</time>).</p>
+</section>
+
+<section class="bloc tableau" id="prix" aria-labelledby="t-prix">
+  <div class="bloc-tete">
+    <h2 id="t-prix">Et dans l’application, en direct</h2>
+    <p>Les meilleurs prix publiés en ce moment par les vendeurs et les acheteurs de l’application. Ce sont des prix demandés et des budgets proposés, pas des prix conclus. Le Marché de Gros ne fixe aucun prix.</p>
+  </div>
+  <div class="tb" role="table" aria-label="Meilleurs prix du moment">
+    <div class="tb-ligne tb-entete" role="row"><span role="columnheader">Produit</span><span role="columnheader">Vendeur le moins cher</span><span role="columnheader">Meilleur budget</span><span role="columnheader">Annonces</span><span role="columnheader"><span class="vh">Action</span></span></div>
+    <div id="tbCorps" role="rowgroup"><p class="tb-attente">Le tableau se charge…</p></div>
+  </div>
+</section>
+
+<section class="appli" id="appli" aria-labelledby="t-appli">
+  <div class="appli-texte">
+    <h2 id="t-appli">Vendez ou achetez au bon prix dans l’<em>application</em></h2>
+    <p>Scannez ce code avec l’appareil photo de votre téléphone. L’application s’ouvre dans le navigateur ; pour la garder, choisissez « Ajouter à l’écran d’accueil ».</p>
+    <p class="appli-lien">Ou tapez : <b id="lienCourt">stan77i.github.io/marchedegrosci</b></p>
+    <p class="appli-store">Pas encore sur le Play Store ni l’App Store.</p>
+  </div>
+  <div class="appli-qr" id="qr" role="img" aria-label="Code QR vers l’application"></div>
+</section>
+</main>

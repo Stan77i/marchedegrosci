@@ -1,0 +1,50 @@
+# Télécharge chaque semaine la note de conjoncture de l'OCPV (PDF public) et en garde le texte dans tools/site/ocpv/.
+# Pourquoi : la tâche programmée de Claude (chaque mardi, « Prix OCPV de la semaine ») ne peut pas lire Internet librement ;
+# elle lit ce texte dans le dépôt, met à jour tools/site/prix-ocpv.json et ouvre une PR. Demande du propriétaire du 24/10/2026.
+# Gratuit (dépôt public). N'enregistre un commit que si une nouvelle note est trouvée. Ne touche à rien d'autre.
+name: Note OCPV de la semaine
+on:
+  schedule:
+    - cron: '7 5 * * 2'    # mardi 5 h 07 (heure d'Abidjan = UTC), avant la tâche de Claude (8 h 36)
+    - cron: '7 17 * * 1'   # lundi 17 h 07 : au cas où la note sort tôt
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: ocpv-note
+  cancel-in-progress: false
+jobs:
+  note:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Chercher et lire la note la plus récente
+        run: |
+          sudo apt-get install -y -qq poppler-utils >/dev/null
+          Y=$(date -u +%Y); W=$(date -u +%V); W=$((10#$W))
+          trouve=""
+          for n in $((W)) $((W-1)) $((W-2)); do
+            [ "$n" -lt 1 ] && continue
+            f="tools/site/ocpv/note-${Y}-$(printf %02d $n).txt"
+            [ -f "$f" ] && { echo "Déjà là : $f"; break; }
+            for base in "https://ocpv-ci.com" "https://www.ocpv-ci.com"; do
+              for nom in "NOTE_DE_CONJONCTURE_N_${n}_${Y}.pdf" "NOTE_DE_CONJONCTURE_N_$(printf %02d $n)_${Y}.pdf"; do
+                u="$base/doc/note_de_conjoncture/$Y/$nom"
+                if curl -fsSL --max-time 60 -o /tmp/note.pdf "$u" && head -c 4 /tmp/note.pdf | grep -q '%PDF'; then
+                  { echo "SOURCE: $u"; echo "TÉLÉCHARGÉ LE: $(date -u +%F)"; echo; pdftotext -layout /tmp/note.pdf -; } > "$f"
+                  echo "Trouvé : $u"; trouve="$f"; break 3
+                fi
+              done
+            done
+          done
+          echo "TROUVE=$trouve" >> "$GITHUB_ENV"
+      - name: Enregistrer si une nouvelle note est arrivée
+        if: env.TROUVE != ''
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/site/ocpv
+          git commit -m "Note OCPV de la semaine (texte) téléchargée automatiquement"
+          git pull --rebase origin main
+          git push origin HEAD:main

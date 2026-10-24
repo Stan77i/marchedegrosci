@@ -457,3 +457,31 @@ html.garde body { overflow: hidden; }
 .rg-cartes a { height: 100%; } .rg-cartes .nbul { min-height: 24px; padding: 0 9px; margin-right: 4px; background: rgba(16, 57, 43, .1); color: var(--vert); }
 .pr-sous a { color: var(--mais); font-weight: 600; text-underline-offset: 3px; }
 .mois-t span a { color: inherit; text-decoration: underline; text-decoration-color: rgba(16, 57, 43, .3); text-underline-offset: 2px; } .mois-t span a:hover { color: var(--vert); text-decoration-color: var(--mais); }
+
+/* ——— les prix officiels de la semaine (OCPV, prix au détail) : bloc des pages produits et page site/prix-de-la-semaine/ ——— */
+.px-boite { min-width: 0; max-width: min(100%, var(--large)); overflow-x: auto; border-radius: 22px; background: var(--blanc); box-shadow: 0 1px 0 var(--ligne), 0 10px 30px rgba(23, 21, 18, .06); }
+.px-tab { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums lining-nums; }
+.px-tab th, .px-tab td { padding: 14px 22px; text-align: left; vertical-align: top; border-top: 1px solid var(--ligne); }
+.px-tab thead th { border-top: 0; padding-top: 16px; padding-bottom: 10px; font-size: 14px; font-weight: 600; color: var(--texte-3); }
+.px-tab tbody th { font-weight: 600; font-size: 17px; }
+.px-tab tbody th a { color: var(--vert); text-decoration-color: var(--mais); text-underline-offset: 4px; }
+.px-tab td b { display: block; font-size: 19px; font-weight: 700; white-space: nowrap; }
+.px-tab td small { display: block; font-size: 14px; color: var(--texte-3); }
+.px-tab td .px-hausse { color: #A8401F; font-weight: 600; }
+.px-tab td .px-baisse { color: var(--vert); font-weight: 600; }
+.px-tab td .px-stable { color: var(--texte-3); font-weight: 600; }
+.px-tab .px-rien { color: var(--texte-3); }
+.px-tab .px-fam th { padding-top: 22px; padding-bottom: 6px; font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--texte-3); background: var(--carte); }
+.px-t { margin: 48px 0 14px; font-size: clamp(24px, 2.4vw, 30px); }
+.px-t:first-of-type { margin-top: 8px; }
+.px-intro { margin-bottom: 14px; color: var(--texte-2); }
+.px-bref { margin: 0; padding: 20px 24px 20px 44px; display: grid; gap: 8px; border-radius: 22px; background: var(--carte); font-size: 18px; }
+.px-bref a { color: var(--vert); text-decoration-color: var(--mais); text-underline-offset: 4px; }
+.px-appro { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.px-appro blockquote { margin: 0; padding: 20px 24px; border-left: 4px solid var(--mais); border-radius: 0 18px 18px 0; background: var(--carte); }
+.px-appro cite { display: block; margin-top: 8px; font-style: normal; font-weight: 700; font-size: 15px; color: var(--texte-3); }
+.px-src { margin-top: 18px; font-size: 14px; color: var(--texte-3); }
+.px-src a { color: var(--vert); text-underline-offset: 3px; }
+.ocpv .bloc-tete p { max-width: 72ch; }
+.tb-pied { margin-top: 14px; }
+.ocpv { min-width: 0; }

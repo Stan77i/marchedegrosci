@@ -83,7 +83,7 @@
       etapes: ['Pas de réseau : les annonces déjà vues restent affichées. Réessayez quand le réseau revient.', 'L’application semble bloquée : fermez-la complètement, puis rouvrez-la.', 'Toujours un souci : dans le menu, touchez « Écrire au Marché de Gros ». Écrivez votre question : les réponses toutes prêtes s’affichent. Rien ne vous aide ? Touchez « Je veux parler à une personne » : l’équipe vous répond.'],
       conseil: 'Vos annonces publiées restent en ligne, même si votre téléphone s’éteint.', aller: FEN('MDGAide', 'ouvrir') }
   ];
-  const TON = { marche: ['#10392B', '#F2C230'], offre: ['#DDF0E3', '#23744A'], demande: ['#FBEFC4', '#7A5600'], lien: ['#DDE9F6', '#1F5A96'], vous: ['#EFE3F5', '#6B3C86'], aide: ['#F7E1DA', '#9A3B22'] };
+  const TON = { marche: ['#10392B', '#F2C230'], offre: ['#DDF0E3', '#23744A'], demande: ['#FBEFC4', '#7A5600'], lien: ['#E3EDE6', '#10392B'], vous: ['#EFE7D9', '#3B342A'], aide: ['#F7E1DA', '#9A3B22'] };
 
   const CSS = `.gd{position:fixed;inset:0;z-index:9000;background:#F6F1E7;color:#171512;display:flex;flex-direction:column;font:400 17px/1.5 Jost,system-ui,sans-serif;
   transform:translateY(100%);transition:transform .38s cubic-bezier(.22,1,.36,1);padding-top:env(safe-area-inset-top)}

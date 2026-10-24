@@ -42,7 +42,7 @@
 .al-note{margin:12px 0 0;color:#6F6553;font-size:12.5px;line-height:1.45}
 .al-l{display:flex;flex-direction:column;gap:8px}.al-r{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:rgba(23,21,18,.04);box-shadow:inset 0 0 0 1px rgba(23,21,18,.08)}
 .al-r b{display:block;font-size:15px}.al-r small{color:#655C4D;font-size:12.5px}.al-r span{flex:1;min-width:0}
-.al-r button{min-height:40px;padding:0 14px;border:0;border-radius:999px;background:#EFE7D9;color:#171512;font:600 13px Jost,sans-serif;cursor:pointer}
+.al-r button{min-height:44px;padding:0 14px;border:0;border-radius:999px;background:#EFE7D9;color:#171512;font:600 13px Jost,sans-serif;cursor:pointer}
 .al-vide{padding:22px 16px;border:1px dashed rgba(23,21,18,.16);border-radius:18px;text-align:center;color:#655C4D;font-size:14px}
 .al-add{display:flex;gap:8px;margin:0 0 14px}.al-add select{flex:1;min-width:0;height:48px;padding:0 12px;border:1px solid rgba(23,21,18,.16);border-radius:14px;background:#FFFFFF;color:#171512;font:500 15px Jost,sans-serif}
 .al-add button{flex:none;min-height:48px;padding:0 16px;border:0;border-radius:14px;background:#171512;color:#F5F0E6;font:700 14px Jost,sans-serif;cursor:pointer}.al-add button:disabled{opacity:.4;cursor:default}`;

@@ -13,6 +13,7 @@
   const JOURS = 365;  // = dm_duree() (schéma 60 : gardés 1 an, l'équipe peut les lire pour régler un litige)
   const KL = 'mdg-dm:liste';
   const N = () => window.MDGNuage, A = () => window.MDGAvatar;
+  const TI = n => window.MDGIco ? '<span class="ic-t" aria-hidden="true">' + MDGIco.svg(n, 17, 1.9) + '</span>' : '';   // petite icône dessinée devant un texte (plus d'emoji)
   const J = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } };
   const W = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -89,7 +90,7 @@
 .dm-env{flex:none;width:46px;height:46px;border:0;border-radius:50%;background:var(--acc);color:#F3EFE4;display:grid;place-items:center;cursor:pointer;transition:transform .15s,opacity .2s}
 .dm-env svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.dm-env:disabled{opacity:.35;cursor:default}.dm-env:not(:disabled):active{transform:scale(.92)}
 .dm-stop{flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;color:var(--mute);font-size:14px}
-.dm-stop button{flex:none;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:#EFE7D9;color:var(--ink);font:600 13.5px Jost,sans-serif;cursor:pointer}
+.dm-stop button{flex:none;min-height:44px;padding:0 14px;border:0;border-radius:999px;background:#EFE7D9;color:var(--ink);font:600 13.5px Jost,sans-serif;cursor:pointer}
 .dm-menu{position:absolute;right:10px;top:calc(60px + env(safe-area-inset-top));z-index:3;min-width:220px;padding:6px;border-radius:18px;background:#FFFDF8;border:1px solid rgba(23,21,18,.08);box-shadow:0 14px 34px rgba(23,21,18,.18),0 2px 6px rgba(23,21,18,.08);animation:dmPop .2s ease both}
 .dm-menu button{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:0 12px;border:0;border-radius:12px;background:none;color:#171512;font:500 15px Jost,sans-serif;text-align:left;cursor:pointer}
 .dm-menu button:hover{background:rgba(23,21,18,.06)}.dm-menu .rouge{color:#C0442B}
@@ -104,14 +105,14 @@
 .dm-off{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:rgba(16,57,43,.2);color:#10392B;font:700 10.5px/1.6 Jost,sans-serif;letter-spacing:.06em;text-transform:uppercase;vertical-align:2px}
 .dm-act{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
 .dm-act button,.dm-act a{flex:1 1 200px;display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 14px;border:1px solid rgba(23,21,18,.06);border-radius:18px;background:#FFFDF8;color:var(--ink);font:600 14.5px Jost,sans-serif;text-align:left;text-decoration:none;cursor:pointer;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.04)}
-.dm-act small{display:block;color:var(--mute);font-size:12px;font-weight:400}.dm-act a>svg{flex:none;width:34px;height:34px;padding:7px;border-radius:50%;background:rgba(106,174,240,.16);fill:none;stroke:#6AAEF0;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;box-sizing:border-box}
+.dm-act small{display:block;color:var(--mute);font-size:12px;font-weight:400}.dm-act a>svg{flex:none;width:34px;height:34px;padding:7px;border-radius:50%;background:rgba(16,57,43,.1);fill:none;stroke:#10392B;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;box-sizing:border-box}
 .dm-dif{display:flex;flex-direction:column;gap:12px;padding:16px}
 .dm-dif textarea{min-height:160px;padding:14px 16px;border:1px solid rgba(23,21,18,.16);border-radius:18px;background:#FFFFFF;color:var(--ink);font:400 16px/1.45 Jost,sans-serif;resize:vertical}
 .dm-dif textarea:focus{outline:none;border-color:var(--acc)}
 .dm-dif .go{min-height:52px;border:0;border-radius:999px;background:var(--acc);color:#F3EFE4;font:700 15.5px Jost,sans-serif;cursor:pointer}.dm-dif .go:disabled{opacity:.5}
 .dm-dif p{margin:0;color:var(--mute);font-size:13.5px;line-height:1.5}
 .dm-org{display:flex;margin:3px 0 1px;min-width:0}.dm-org:empty{display:none}.dm-org-l{font-style:normal;font-weight:600;color:#10392B}
-.dm-vide{padding:56px 18px;text-align:center;color:var(--mute);line-height:1.55}.dm-vide svg{width:54px;height:54px;margin:0 auto 14px;display:block;fill:none;stroke:#6AAEF0;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.dm-vide{padding:56px 18px;text-align:center;color:var(--mute);line-height:1.55}.dm-vide svg{width:54px;height:54px;margin:0 auto 14px;display:block;fill:none;stroke:#6F6553;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .dm-vide svg.ms{width:auto;height:auto;fill:initial;stroke:none;margin:0 auto 12px}
 .dm-vide b{display:block;margin:0 0 6px;font:600 20px/1.2 Jost,sans-serif;letter-spacing:-.015em;color:var(--ink)}
 .dm-vide button{margin-top:16px;min-height:46px;padding:0 18px;border:0;border-radius:999px;background:#EFE7D9;color:var(--ink);font:600 14.5px Jost,sans-serif;cursor:pointer}
@@ -220,7 +221,7 @@
       const uid = await N().rpc('contact_marche'); if (!uid) throw new Error('Aucun administrateur pour l’instant.');
       if (uid === me()) { N().toast('Vous êtes l’administrateur : écrivez à un membre, ou à tous.'); return false; }
       const id = await N().rpc('dm_ouvrir', { p_autre: uid });
-      await N().rpc('dm_envoyer', { p_discussion: id, p_texte: '🙋 Je veux parler à une personne.\n' + t });
+      await N().rpc('dm_envoyer', { p_discussion: id, p_texte: 'Je veux parler à une personne.\n' + t });
       N().toast('Message envoyé : l’équipe vous répond ici.');
       conversation(id, false, { autre_id: uid, autre_nom: 'Marché de Gros', officiel: true });
       return true;
@@ -320,7 +321,7 @@
       if (c.officiel && !admin() && window.MDGAide) { let tSug = 0; const sug = document.createElement('div'); sug.className = 'dm-sug'; pied.prepend(sug);
         const bouton = (x, cls) => `<button type="button"${cls ? ' class="' + cls + '"' : ''} data-q="${x.id}">${esc(x.q)}</button>`;
         const remplir = () => { const v = ta.value.trim(), r = v.length >= 3 ? MDGAide.chercher(v, 4) : [];
-          sug.innerHTML = '<button type="button" class="dm-sug-aide" data-aide>💡 Aide</button>' + (r.length ? r.map(x => bouton(x, 'trouve')).join('') : (MDGAide.frequentes ? MDGAide.frequentes(4) : []).map(x => bouton(x)).join(''));
+          sug.innerHTML = '<button type="button" class="dm-sug-aide" data-aide>' + TI('bouee') + 'Aide</button>' + (r.length ? r.map(x => bouton(x, 'trouve')).join('') : (MDGAide.frequentes ? MDGAide.frequentes(4) : []).map(x => bouton(x)).join(''));
           sug.setAttribute('aria-label', r.length ? 'Réponses toutes prêtes' : 'Questions fréquentes'); sug.scrollLeft = 0;
           sug.querySelector('[data-aide]').onclick = () => MDGAide.ouvrir({ q: ta.value.trim() });
           sug.querySelectorAll('[data-q]').forEach(bt => bt.onclick = () => MDGAide.ouvrir({ id: bt.dataset.q })); };

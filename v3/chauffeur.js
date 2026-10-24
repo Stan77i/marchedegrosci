@@ -16,6 +16,7 @@
   const W = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const IC = (n, t) => window.MDGIco ? MDGIco.svg(n, t || 18, 1.9) : '';
+  const TI = n => `<span class="ic-t" aria-hidden="true">${IC(n, 17)}</span>`;   // petite icône dessinée devant un texte (plus d'emoji)
   const nf = (v, d) => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: d == null ? 0 : d }).format(v || 0);
   const toast = (t, o) => window.MDGToast ? MDGToast.dire(t, o) : null;
   const sac = (h, t) => window.MDGSac ? MDGSac.svg(h, { t }) : '';
@@ -99,18 +100,18 @@
     if (m.mission === 'acceptee' && avantChargement && prixOuvert !== m.mission_id) B.push(`<button type="button" data-chpx="${m.mission_id}">${m.prix != null ? 'Changer mon prix' : 'Indiquer mon prix'}</button>`);
     const K = m.validation === 'code', go = m.mission === 'acceptee' && m.etat === 'en_cours';
     if (go && K && ['confirmee', 'preparation'].includes(m.etape)) B.push(`<button type="button" class="p" data-tap="${m.commande_id}" data-quoi="prise">Taper le code de prise en charge</button>`,
-      `<button type="button" data-dem="${m.commande_id}">🔐 Demander le code au vendeur</button>`);
+      `<button type="button" data-dem="${m.commande_id}">${TI('cle')}Demander le code au vendeur</button>`);
     if (go && ['transport', 'transbordement', 'arrivee'].includes(m.etape))
       B.push(partage && partage.cmd === m.commande_id ? `<button type="button" data-gps-stop>${IC('localiser', 18)} Arrêter le partage de position</button>`
         : `<button type="button" class="p" data-gps="${m.commande_id}">${IC('localiser', 18)} Partager ma position</button>`);
     if (go && ['transport', 'transbordement'].includes(m.etape))
       B.push(`<button type="button" class="${K ? '' : 'p'}" data-arr="${m.commande_id}">Je suis arrivé</button>`);
     if (go && K && ['transport', 'transbordement', 'arrivee'].includes(m.etape)) B.push(`<button type="button" class="p" data-tap="${m.commande_id}" data-quoi="reception">Taper le code de réception</button>`,
-      `<button type="button" data-dem="${m.commande_id}">🔐 Demander le code à l’acheteur</button>`);
+      `<button type="button" data-dem="${m.commande_id}">${TI('cle')}Demander le code à l’acheteur</button>`);
     // schéma 51 : chacun exige le code de l'autre, sur place ; la demande passe par l'application, jamais par WhatsApp
     const moiCode = moi && moi.code ? ` Montrez-lui aussi votre code transporteur <b>${esc(moi.code)}</b> : il doit le vérifier.` : '';
-    const exige = go && K ? (['confirmee', 'preparation'].includes(m.etape) ? `🔐 Quand la marchandise est chargée, exigez que le vendeur vous montre son code de prise en charge.${moiCode}`
-      : ['transport', 'transbordement', 'arrivee'].includes(m.etape) ? `🔐 À la livraison, exigez que l’acheteur vous montre son code de réception, après sa vérification.${moiCode}` : '') : '';
+    const exige = go && K ? (['confirmee', 'preparation'].includes(m.etape) ? `${TI('cle')}Quand la marchandise est chargée, exigez que le vendeur vous montre son code de prise en charge.${moiCode}`
+      : ['transport', 'transbordement', 'arrivee'].includes(m.etape) ? `${TI('cle')}À la livraison, exigez que l’acheteur vous montre son code de réception, après sa vérification.${moiCode}` : '') : '';
     if (go && ['transport', 'transbordement'].includes(m.etape))
       B.push(K ? `<button type="button" class="m" data-pas="${m.commande_id}">Passer la marchandise à un autre chauffeur</button>` : `<button type="button" class="m" data-trb="${m.commande_id}">Signaler un transbordement</button>`);
     // schéma 57 : l'acheteur refuse la marchandise après réception ; le chauffeur dit ce qu'il a vu à la livraison
@@ -248,7 +249,7 @@
     const age = partage.envoye ? Math.round((Date.now() - partage.envoye) / 1000) : null;
     el.innerHTML = `<span aria-hidden="true" style="width:10px;height:10px;border-radius:50%;background:${partage.erreur ? '#E5604F' : '#6CC58C'};flex:none"></span>
       <span>${partage.erreur ? esc(partage.erreur) : age == null ? 'Partage de position : recherche du GPS…' : 'Position partagée · envoyée il y a ' + (age < 60 ? age + ' s' : Math.round(age / 60) + ' min')}</span>
-      <button type="button" style="min-height:36px;padding:0 12px;border:0;border-radius:18px;background:#F3EFE4;color:#10392B;font:600 13px Jost,sans-serif;cursor:pointer">Arrêter</button>`;
+      <button type="button" style="min-height:44px;padding:0 12px;border:0;border-radius:22px;background:#F3EFE4;color:#10392B;font:600 13px Jost,sans-serif;cursor:pointer">Arrêter</button>`;
     el.querySelector('button').onclick = () => { arreterPartage('Partage arrêté.'); if (bg) peindre(); };
   }
   function arreterPartage(msg) {

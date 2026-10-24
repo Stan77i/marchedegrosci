@@ -50,9 +50,9 @@ mdg-tableau{display:block;padding:6px 16px 24px;font:400 15px/1.45 Jost,system-u
 .tb-dos{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin:4px 0 6px -6px;padding:0 10px;border:0;border-radius:22px;background:none;color:#10392B;font:600 15px Jost,sans-serif;cursor:pointer}
 .tb-seg{display:flex;padding:3px;border-radius:16px;background:rgba(23,21,18,.07);margin:0 0 10px}
 .tb-seg button{flex:1;min-height:46px;border:0;border-radius:13px;background:none;color:#4B4436;font:600 15px Jost,sans-serif;cursor:pointer}
-.tb-seg button[aria-pressed=true].a{background:#10392B;color:#F3EFE4}.tb-seg button[aria-pressed=true].v{background:#F2C230;color:#171512}
+.tb-seg button[aria-pressed=true].a{background:#10392B;color:#F3EFE4}.tb-seg button[aria-pressed=true].v{background:#F2C230;color:#171512}.tb-seg button[aria-pressed=true].v .nbul.d{background:#171512;color:#F2C230}
 .tb-ch{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 10px;padding:0 16px}.tb-ch::-webkit-scrollbar{display:none}
-.tb-ch button{flex:none;min-height:38px;padding:0 14px;border:1px solid rgba(23,21,18,.16);border-radius:19px;background:#FFFDF8;color:#3B342A;font:500 14px Jost,sans-serif;cursor:pointer}
+.tb-ch button{flex:none;min-height:44px;padding:0 14px;border:1px solid rgba(23,21,18,.16);border-radius:19px;background:#FFFDF8;color:#3B342A;font:500 14px Jost,sans-serif;cursor:pointer}
 .tb-ch button[aria-pressed=true]{background:#171512;border-color:#171512;color:#FFFDF8}
 .tb-r{position:relative;display:grid;grid-template-columns:28px 1fr;gap:10px;padding:14px 12px;border-radius:18px;background:#FFFDF8;box-shadow:0 1px 2px rgba(23,21,18,.05);transition:transform .5s cubic-bezier(.2,.8,.2,1)}
 .tb-r.top{box-shadow:inset 0 0 0 2px #F2C230}
@@ -216,9 +216,9 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
       this.poser(`<button type="button" class="tb-dos" data-dos>‹ Tous les produits</button>
         <div class="tb-hd"><h2 class="tb-h">${esc(lab)}</h2>${vignette(s.slug)}</div>
         <p class="tb-s">${ach ? 'Les vendeurs, du moins cher au plus cher. À prix égal, le transport compris passe devant.' : 'Les acheteurs, du meilleur budget au plus bas. Vous avez ce produit ? Vendez au meilleur prix.'}</p>
-        <div class="tb-seg" role="group" aria-label="Je veux"><button type="button" class="a" data-sens="acheter" aria-pressed="${ach}">Acheter · ${nf(no)}</button><button type="button" class="v" data-sens="vendre" aria-pressed="${!ach}">Vendre · ${nf(nd)}</button></div>
+        <div class="tb-seg" role="group" aria-label="Je veux"><button type="button" class="a" data-sens="acheter" aria-pressed="${ach}">Acheter<span class="nbul o">${nf(no)}</span></button><button type="button" class="v" data-sens="vendre" aria-pressed="${!ach}">Vendre<span class="nbul d">${nf(nd)}</span></button></div>
         ${this.choixZone()}
-        ${unites.length > 1 ? `<div class="tb-ch" role="group" aria-label="Unité">${unites.map(u => `<button type="button" data-u="${esc(u)}" aria-pressed="${u === s.unite}">Prix par ${esc(u || 'unité')} · ${nf(parU(u))}</button>`).join('')}</div>` : ''}
+        ${unites.length > 1 ? `<div class="tb-ch" role="group" aria-label="Unité">${unites.map(u => `<button type="button" data-u="${esc(u)}" aria-pressed="${u === s.unite}">Prix par ${esc(u || 'unité')}<span class="nbul">${nf(parU(u))}</span></button>`).join('')}</div>` : ''}
         ${s.err ? this.erreur() : !d ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div></div>'
           : !L.length ? `<div class="tb-vide"><b>${ach ? 'Aucune offre' : 'Aucune demande'}${s.region ? ' dans cette zone' : ''} pour l’instant</b>${ach ? 'Publiez une demande avec « Je cherche » : les vendeurs seront prévenus.' : 'Publiez votre offre avec « J’ai » : les acheteurs seront prévenus.'}</div>`
           : `<ul class="tb-l">${L.map(ligne).join('')}</ul>${coupe ? `<p class="tb-n tb-coupe">Les ${L.length} meilleures sur ${nf(parU(s.unite || ''))}. Choisissez une zone pour affiner.</p>` : ''}`}

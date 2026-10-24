@@ -6,7 +6,7 @@
 ## 1. L'état au moment de la reprise
 
 - **Toutes les PR sont fusionnées** (jusqu'à la PR #247). Aucune PR ouverte, aucun travail en cours. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
-- `main` : cache du service worker `mgci-v234` (`mgci-v239` après les PR de l'audit antislop).
+- `main` : cache du service worker `mgci-v234` (`mgci-v240` après les PR de l'audit antislop).
 - Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **81** appliqués (80 `fil_public`, 81 `site_mesures` / `mesurer` / `mesures_resume`). Mêmes schémas sur le projet de test.
 
 ## 2. Ce qui a été fait (session du 23/10/2026)
@@ -60,7 +60,7 @@
 
 ## 3. Ce qui reste à faire (dans l'ordre conseillé)
 
-**0. Audit antislop de l'application (24/10/2026) : le propriétaire choisit les numéros à corriger** dans `docs/anti-slop/audit-001-2026-10-24.md` (59 constats + 3 décisions A, B, C). Ne rien corriger sans son choix ; ensuite une PR par lot, et noter dans le fichier ce qui est fait. Faits : n° 1 à 26, 31, 32, 34, 35. Conseillé ensuite : n° 27 à 30 (emoji, bleu, pastilles, cibles), puis 33 et 36 à 45, puis les finitions 46 à 59.
+**0. Audit antislop de l'application (24/10/2026) : le propriétaire choisit les numéros à corriger** dans `docs/anti-slop/audit-001-2026-10-24.md` (59 constats + 3 décisions A, B, C). Ne rien corriger sans son choix ; ensuite une PR par lot, et noter dans le fichier ce qui est fait. Faits : n° 1 à 32, 34, 35. Conseillé ensuite : n° 33 et 36 à 45, puis les finitions 46 à 59.
 
 **Le site caché est presque complet côté contenu.** Ce qui bloque maintenant, ce sont les étapes 1 et 3, qui dépendent du propriétaire.
 

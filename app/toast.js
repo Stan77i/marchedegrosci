@@ -58,7 +58,7 @@
 .il-x small{font-size:13.5px;line-height:1.35;color:#5E5546;-webkit-line-clamp:4;margin-top:2px}
 .il-in:not(.sans-a) .il-x b,.il-in:not(.sans-a) .il-x small{max-width:min(240px,calc(100vw - 196px))}
 .il-n{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-right:6px;border-radius:10px;background:#F2C230;color:#10392B;font:700 12px/1 Jost,sans-serif;vertical-align:1px}
-.il-a{flex:none;height:36px;padding:0 15px;border:0;border-radius:18px;background:#F2C230;color:#10392B;font:600 14px/1 Jost,system-ui,sans-serif;cursor:pointer}
+.il-a{position:relative;flex:none;height:36px;padding:0 15px;border:0;border-radius:18px;background:#F2C230;color:#10392B;font:600 14px/1 Jost,system-ui,sans-serif;cursor:pointer}.il-a::after{content:"";position:absolute;inset:-4px -2px}
 .il-a:active{transform:scale(.96)}
 .il-a:focus-visible,.il:focus-visible{outline:2px solid #10392B;outline-offset:2px}
 html[data-theme=sombre] .il{background:rgba(30,27,22,.95);color:rgba(243,239,228,.9);box-shadow:0 14px 36px rgba(0,0,0,.45),0 0 0 1px rgba(243,239,228,.08) inset}

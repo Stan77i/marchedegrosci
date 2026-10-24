@@ -37,7 +37,7 @@
 .dm-k i{width:6px;height:6px;border-radius:50%;background:#171512;animation:dmRec 1.2s ease-in-out infinite}
 @keyframes dmRec{50%{opacity:.25}}
 .dm-n{color:#B9AD98;font:500 12px Jost,sans-serif}
-.dm-passer{margin-left:auto;min-height:36px;padding:0 12px;border:0;border-radius:18px;background:rgba(243,239,228,.1);color:#F3EFE4;font:600 13px Jost,sans-serif;cursor:pointer}
+.dm-passer{margin-left:auto;min-height:44px;padding:0 12px;border:0;border-radius:18px;background:rgba(243,239,228,.1);color:#F3EFE4;font:600 13px Jost,sans-serif;cursor:pointer}
 .dm-ti{margin:8px 0 2px;font:600 16.5px/1.25 Jost,sans-serif}.dm-ti em{font-style:italic;font-weight:900;color:#F2C230}
 .dm-x{margin:0;color:#CFC4B1;font-size:13.5px}
 .dm-bar{height:3px;margin-top:10px;border-radius:2px;background:rgba(243,239,228,.12);overflow:hidden}.dm-bar i{display:block;height:100%;width:100%;background:#F2C230;transform-origin:left;transform:scaleX(0);transition:transform .5s cubic-bezier(.22,1,.36,1)}
@@ -48,7 +48,7 @@
 /* le switch « Démo », en haut à gauche de la roue, en face de « Tout » */
 .dm-sw{position:absolute;z-index:3;top:0;left:10px;display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px 0 8px;border-radius:17px;border:1px solid rgba(245,240,230,.16);
   background:rgba(245,240,230,.07);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#F5F0E6;font:600 13px/1 Jost,sans-serif;cursor:pointer;transition:background .2s,transform .15s}
-.dm-sw:active{transform:scale(.96)}.dm-sw:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
+.dm-sw::before{content:"";position:absolute;inset:-5px -2px}.dm-sw:active{transform:scale(.96)}.dm-sw:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
 .dm-sw .pi{position:relative;width:28px;height:16px;border-radius:8px;background:rgba(245,240,230,.22);transition:background .25s}
 .dm-sw .pi::after{content:"";position:absolute;left:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#F5F0E6;transition:transform .25s cubic-bezier(.22,1,.36,1)}
 html.dm-on .dm-sw{background:rgba(242,194,48,.16);border-color:rgba(242,194,48,.55)}html.dm-on .dm-sw .pi{background:#F2C230}html.dm-on .dm-sw .pi::after{transform:translateX(12px);background:#171512}

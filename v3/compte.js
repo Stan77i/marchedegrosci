@@ -177,7 +177,7 @@ button.cp-idv:active{transform:scale(.985)}div.cp-idv{cursor:default}
 .cp-voix{font:600 26px/1.08 Jost,sans-serif;letter-spacing:-.015em}.cp-voix em{font:900 italic 1em Jost,sans-serif;color:#10392B;letter-spacing:-.02em;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .cp-lab{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:24px 16px 8px;font:600 13px/1.2 Jost,sans-serif;letter-spacing:0;color:var(--faint)}
 .cp-lab em{font-style:normal;letter-spacing:0;color:var(--mute)}
-.cp-lab button{border:0;background:none;padding:6px 0;color:var(--acc-t);font:600 13px Jost,sans-serif;letter-spacing:0;text-transform:none;cursor:pointer}
+.cp-lab-act{margin-left:auto;display:flex;gap:14px}.cp-lab button{border:0;background:none;padding:6px 0;color:var(--acc-t);font:600 13px Jost,sans-serif;letter-spacing:0;text-transform:none;cursor:pointer}
 .cp-note{margin:10px 16px 0;color:var(--faint);font-size:12.5px;line-height:1.45}
 /* trois chiffres réels */
 .cp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -805,15 +805,22 @@ label.cp-r{cursor:pointer}
       if (G) G.refresh().then(() => { if (bg && main.isConnected && JSON.stringify(J('mdg-negoce:liste', [])) !== JSON.stringify(ng.L)) VUES.activite(main); });
     },
     notifs(main) {
-      const L = notifs();
-      main.innerHTML = `<div class="cp-pg"><h2>Notifications</h2><p>Propositions, contre-propositions, accords, refus et expirations. Pour choisir ce que vous recevez sur ce téléphone : Réglages, puis Notifications.</p>
-
-        <h3 class="cp-lab">Récentes${L.some(n => !n.lu) ? '<button type="button" data-lu>Tout marquer comme lu</button>' : ''}</h3>
+      const L = notifs(), cle = n => n.t + '|' + n.texte;
+      main.innerHTML = `<div class="cp-pg"><h2>Notifications</h2>${L.length ? '<p>Glissez une notification vers la gauche pour la retirer.</p>' : ''}
+        <h3 class="cp-lab"><span>Récentes${L.length ? ' <span class="nbul">' + L.length + '</span>' : ''}</span><span class="cp-lab-act">${L.some(n => !n.lu) ? '<button type="button" data-lu>Tout marquer comme lu</button>' : ''}${L.length ? '<button type="button" data-vider>Tout effacer</button>' : ''}</span></h3>
         <div class="cp-grp">${L.length ? L.slice(0, 60).map((n, i) => `<button type="button" class="cp-r cp-it${n.lu ? '' : ' neuf'}" data-i="${i}"><span class="pt${n.lu ? ' lu' : ''}" aria-label="${n.lu ? 'Lue' : 'Non lue'}"></span><b style="white-space:normal">${esc(n.texte)}</b><span></span><small><span>${ago(n.t)}</span></small></button>`).join('')
           : '<p class="cp-vide"><b>Rien de nouveau</b>Les réponses à vos propositions et les accords apparaîtront ici.</p>'}</div></div>`;
-      // les réglages (activer sur ce téléphone, annonces du marché…) sont dans Réglages (app/theme.js), plus ici
+      // les notifications sont gardées sur ce téléphone (v3/negoce.js) : les retirer ne touche à aucune négociation
       const lu = main.querySelector('[data-lu]'); if (lu) lu.onclick = () => { W(KN, notifs().map(n => Object.assign(n, { lu: true }))); bg.rafraichir(); };
-      main.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const all = notifs(), n = all[+b.dataset.i]; if (!n) return; n.lu = true; W(KN, all); if (n.nego && window.MDGNegoce) { fermer(); MDGNegoce.thread(n.nego); } else bg.rafraichir(); });
+      const vd = main.querySelector('[data-vider]'); if (vd) vd.onclick = () => {
+        if (!vd.dataset.ok) { vd.dataset.ok = '1'; vd.textContent = 'Confirmer : tout effacer'; setTimeout(() => { if (vd.isConnected) { delete vd.dataset.ok; vd.textContent = 'Tout effacer'; } }, 4000); return; }
+        W(KN, []); bg.rafraichir(); };
+      main.querySelectorAll('[data-i]').forEach(b => {
+        const k = cle(L[+b.dataset.i]);
+        b.onclick = () => { const all = notifs(), n = all.find(x => cle(x) === k); if (!n) return; n.lu = true; W(KN, all); if (n.nego && window.MDGNegoce) { fermer(); MDGNegoce.thread(n.nego); } else bg.rafraichir(); };
+        // glisser vers la gauche pour retirer (même geste que les négociations et les messages)
+        if (window.MDGNegoce && MDGNegoce.glisser) MDGNegoce.glisser(b, async () => { W(KN, notifs().filter(x => cle(x) !== k)); setTimeout(() => { if (main.isConnected) bg.rafraichir(); }, 380); });
+      });
     },
     prefs(main) {
       const pf = prefs(), p = profil || {}, S = window.MDGSons, sn = S ? S.reglages() : null;

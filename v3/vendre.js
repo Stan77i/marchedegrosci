@@ -162,7 +162,7 @@
     function mineO() {
       const list = store('offres'); $('#vm').hidden = !list.length;
       $('#mineO').innerHTML = list.map(d => `<div class="vm-i"><span><b>${fmt(d.quantity)} ${esc(d.unit || '')} · ${esc(mineLbl(d))}</b><small>${esc(minePlace(d))}${d.agent ? ' · saisie par l’agent' : ''}</small></span><button type="button" data-del="${d.id}">Supprimer</button></div>`).join('');
-      $$('[data-del]', $('#mineO')).forEach(b => b.onclick = () => { store('offres', store('offres').filter(x => x.id !== b.dataset.del)); mineO(); toast('Offre supprimée'); });
+      $$('[data-del]', $('#mineO')).forEach(b => b.onclick = () => { if (window.MDGNuage && MDGNuage.retirer) MDGNuage.retirer('offres', b.dataset.del); store('offres', store('offres').filter(x => x.id !== b.dataset.del)); mineO(); toast('Offre supprimée'); });
     }
 
     // brouillon

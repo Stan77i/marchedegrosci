@@ -22,7 +22,7 @@ var adm=false;try{adm=localStorage.getItem("mdg-site:admin")==="1"}catch(e){}
 if(!adm){try{sessionStorage.removeItem("mdg-app")}catch(e){}location.replace("maintenance.html"+(location.hash||""));return}
 if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.getItem("mdg-app")!=="1")location.replace("index-v3.html"+h)}catch(e){}})();</script>
 <script>/* service worker : vérifie les mises à jour à chaque retour sur l'application ; quand une nouvelle version prend la main, la page se recharge (tout de suite si elle vient de s'ouvrir, sinon au prochain retour, jamais pendant une saisie) */if('serviceWorker' in navigator){(function(){var sw=navigator.serviceWorker,avant=!!sw.controller,t0=Date.now(),attente=false;sw.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(attente)location.reload();else r.update().catch(function(){})}})}).catch(function(){});sw.addEventListener('controllerchange',function(){if(!avant||attente)return;if(Date.now()-t0<6000)location.reload();else attente=true})})()}</script>
-<script src="v3/nuage.js?v=20261124bq"></script>
+<script src="v3/nuage.js?v=20261125tq"></script>
 <script src="app/admin-pc.js?v=20261102a" data-ici="mobile"></script>
 <script src="v3/personnages.js?v=20261124h"></script>
 <script src="v3/avatar.js?v=20261124c"></script>
@@ -1816,7 +1816,7 @@ class Component extends DCLogic {
         pause: () => { const on = !x.pause; A.write('offres', A.read('offres').map(y => y.id === x.id ? Object.assign({}, y, { pause: on, pauseLe: on ? new Date().toISOString() : null }) : y)); this.say(on ? 'Offre en pause' : 'Offre remise en vente', { sous: on ? 'Elle n\u2019est plus proposée. Les négociations en cours continuent.' : 'Elle est de nouveau proposée aux acheteurs.' }); },
         // retirer : cachée partout, une trace est gardée sur le serveur (décision 37)
         del: async () => { if (window.MDGDemande && !(await MDGDemande.oui('Retirer cette publication ? Elle disparaît du marché' + (x.kind === 'offre' ? ' et de votre boutique' : '') + '. Les négociations en cours s\u2019arrêtent.', { ok: 'Retirer', danger: true }))) return;
-          const k = x.kind === 'offre' ? 'offres' : 'demandes'; A.write(k, A.read(k).filter(y => y.id !== x.id)); this.say('Publication retirée'); } }; });
+          const k = x.kind === 'offre' ? 'offres' : 'demandes'; if (window.MDGNuage && MDGNuage.retirer) MDGNuage.retirer(k, x.id); A.write(k, A.read(k).filter(y => y.id !== x.id)); this.say('Publication retirée'); } }; });
 
     const stockMap = {}; mine.filter(x => x.kind === 'offre' && x.qty > 0 && !x.epuise).forEach(x => { const k = x.slug + '|' + x.unit; stockMap[k] = stockMap[k] || { n: this.prod(x.slug).name.toLowerCase(), u: x.unit, q: 0 }; stockMap[k].q += x.qty; });
     const stockSum = Object.values(stockMap).map(k => ({ q: A.fmt(k.q) + ' ' + A.unites(k.q, k.u), n: k.n }));

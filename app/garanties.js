@@ -49,8 +49,7 @@
   // Toutes les phrases d'accroche vivent ici (22/10/2026 : la barre du haut est libérée, elle ne montre plus que le nom 5 s).
   // Garanties, nouveautés et fonctions utiles alternent ; seulement ce que l'application fait vraiment.
   const BANDE = [
-    ['tableau', 'Nouveau : l’onglet ', 'Prix', ', le moins cher en haut', ONGLET('Prix')],
-    ['bouclier', 'Parcours ', 'sécurisé', ' : tout se passe ici'],
+    ['tableau', 'L’onglet ', 'Prix', ' : le moins cher en haut', ONGLET('Prix')],
     ['panier', 'Vendez en ', 'direct', ', sans intermédiaire', PAGE('vendre')],
     ['papier', 'Un ', 'mot secret', ' du vendeur dans chaque colis', FEN('MDGAstuces', 'tour', ['mot', true])],
     ['sceau', 'Identités ', 'vérifiées', ' par l’équipe'],
@@ -77,7 +76,7 @@
   ];
   // la feuille : chaque garantie, ce que l'application fait vraiment
   const DETAIL = [
-    ['sceau', 'Des identités vérifiées', 'Une personne de l’équipe compare la pièce d’identité, encore valide, et un selfie. Le badge bleu n’apparaît qu’après sa décision.'],
+    ['sceau', 'Des identités vérifiées', 'Une personne de l’équipe compare la pièce d’identité, encore valide, et un selfie. Le badge « vérifié » n’apparaît qu’après sa décision.'],
     ['cache', 'Votre numéro reste caché', 'Personne ne voit votre numéro. On vous écrit et on négocie avec vous dans l’application.'],
     ['lien', 'Ni liens, ni arnaques au code', 'Les liens, les adresses e-mail, les numéros et les demandes de code secret sont refusés dans les messages. Le Marché de Gros ne vous demandera jamais votre code.'],
     ['reel', 'Que des annonces réelles', 'Chaque offre et chaque demande a été publiée par un membre. Aucun chiffre n’est inventé : les prix viennent des annonces.'],
@@ -94,8 +93,8 @@
 .gr-l .gr-tx{overflow:hidden;text-overflow:ellipsis}
 .gr-b .gr-c{flex:none;color:rgba(243,239,228,.45)}
 .gr-l.entre{animation:grIn .5s cubic-bezier(.22,1,.36,1) both}.gr-l.sort{animation:grOut .32s cubic-bezier(.55,0,.75,.2) both}
-@keyframes grIn{from{opacity:0;transform:translateY(9px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
-@keyframes grOut{to{opacity:0;transform:translateY(-9px);filter:blur(3px)}}
+@keyframes grIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+@keyframes grOut{to{opacity:0;transform:translateY(-9px)}}
 .gr-ligne{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;margin:0;padding:10px 14px;border:1px solid var(--gr-l-bd,rgba(23,21,18,.1));border-radius:14px;background:var(--gr-l-bg,rgba(16,57,43,.05));color:var(--gr-l-fg,#10392B);font:500 14px/1.35 Jost,system-ui,sans-serif;text-align:left;cursor:pointer}
 .gr-ligne svg{flex:none}.gr-ligne span{flex:1;min-width:0}.gr-ligne b{font-weight:600}
 .gr-ligne:focus-visible{outline:2px solid #10392B;outline-offset:2px}
@@ -110,10 +109,6 @@
 .gr-x{flex:none;width:44px;height:44px;border:0;border-radius:50%;background:rgba(23,21,18,.07);color:#171512;display:grid;place-items:center;cursor:pointer}
 .gr-x:focus-visible{outline:2px solid #10392B;outline-offset:2px}
 .gr-ch{margin:8px 0 18px;font:400 15px/1.5 Jost,system-ui,sans-serif;color:#4D473D}
-.gr-role{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 20px}
-.gr-role div{padding:12px 10px;border-radius:16px;background:#10392B;color:#F3EFE4}
-.gr-role b{display:block;font:900 italic 17px/1 Jost,sans-serif;color:#F2C230;letter-spacing:-.01em}
-.gr-role small{display:block;margin-top:6px;font:400 12.5px/1.35 Jost,system-ui,sans-serif;color:rgba(243,239,228,.82)}
 .gr-li{display:flex;gap:14px;padding:12px 0;border-top:1px solid rgba(23,21,18,.08)}
 .gr-li .gr-i{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:rgba(16,57,43,.08);color:#10392B}
 .gr-li b{display:block;font:600 16px/1.25 Jost,system-ui,sans-serif}.gr-li p{margin:3px 0 0;font:400 14px/1.45 Jost,system-ui,sans-serif;color:#4D473D}
@@ -135,7 +130,6 @@
     fond.innerHTML = `<div class="gr-f" role="dialog" aria-modal="true" aria-labelledby="grT"><div class="gr-poig" aria-hidden="true"></div>
       <div class="gr-hd"><h2 id="grT">Pourquoi le <em>Marché de Gros</em></h2><button type="button" class="gr-x" aria-label="Fermer">${ico('fermer', 20)}</button></div>
       <p class="gr-ch">Nous ne vendons rien : nous mettons en relation les producteurs, les grossistes et les acheteurs, et nous veillons à ce que chacun échange en confiance.</p>
-      <div class="gr-role" aria-label="Notre rôle"><div><b>On connecte</b><small>Ceux qui ont et ceux qui cherchent, partout dans le pays.</small></div><div><b>On vérifie</b><small>Les pièces d’identité, à la main, une par une.</small></div><div><b>On protège</b><small>Les numéros, les échanges, contre les arnaques.</small></div></div>
       ${DETAIL.map(([i, t, d]) => `<div class="gr-li"><span class="gr-i">${ico(i, 20)}</span><div><b>${t}</b><p>${d}</p></div></div>`).join('')}
       <div class="gr-bt">${ico('horloge', 20)}<span><b>Bientôt</b> : le paiement sécurisé par un tiers de confiance, qui garde l’argent jusqu’à la livraison.</span></div>
       <button type="button" class="gr-ok">J’ai compris</button></div>`;
@@ -161,7 +155,7 @@
       // toucher : la fonction annoncée, ou la feuille des garanties (module pas encore chargé : la feuille)
       this.r.querySelector('.gr-b').onclick = () => { const go = BANDE[this.i][4]; if (!go || go() === false) ouvrir(); };
       this.i = Math.floor(Math.random() * BANDE.length); this.montrer(false);
-      this.t = setInterval(() => { if (document.hidden || !this.isConnected) return; this.i = (this.i + 1) % BANDE.length; this.montrer(true); }, 4200);
+      this.t = setInterval(() => { if (document.hidden || !this.isConnected) return; this.i = (this.i + 1) % BANDE.length; this.montrer(true); }, 6500);
     }
     disconnectedCallback() { clearInterval(this.t); this._pret = false; }
     static get observedAttributes() { return []; }

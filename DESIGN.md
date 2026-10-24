@@ -106,7 +106,7 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 16. Pas de capitales espacées pour des titres ou des phrases ; seulement de très courtes étiquettes.
 17. Le mot mis en valeur (la voix du logo) : une fois par écran au plus, et sur le mot qui compte.
 18. Les nombres en chiffres (« 3 signalements », pas « trois »). Unités au pluriel à partir de 2.
-19. Des titres courts qui commencent par ce que la personne fait ; les boutons nomment leur action ; les erreurs disent le problème et la solution.
+19. Des titres courts qui commencent par ce que la personne fait ; les boutons nomment leur action ; les erreurs disent le problème et la solution. Une erreur écrite dans une fenêtre passe par `MDGErreur(e)` (`app/toast.js`) : jamais de texte technique ni d'anglais à l'écran.
 20. Pas de tiret cadratin (—) pour couper une phrase ou séparer deux informations : « · » entre deux informations, « : » pour expliquer. Le « — » seul reste permis pour une valeur vide (case d'un tableau) : c'est la signature d'un texte généré. Préférer « : », « , » ou deux phrases.
 
 **Icônes, images, preuves**
@@ -116,7 +116,7 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 24. Aucune preuve invérifiable : pas de faux avis, de faux chiffres, de faux logos (règle du projet : rien d'inventé).
 
 **Mouvement**
-25. Rien ne bouge en boucle sans raison : pas de point qui clignote, de reflet qui balaie, de bouton qui rebondit en permanence. On anime ce qui change, une fois, en moins de 300 ms à peu près.
+25. Rien ne bouge en boucle sans raison : pas de point qui clignote, de reflet qui balaie, de bouton qui rebondit en permanence. On anime ce qui change, une fois, en moins de 300 ms à peu près. Une animation qui annonce quelque chose (point qui bat, flèche, lueur « à vous d'agir ») se joue 2 ou 3 fois puis s'arrête ; seuls la respiration et le clignement des personnages tournent sans fin.
 26. Pas d'apparition animée sur chaque bloc au défilement. Le contenu est là tout de suite : pas de cascade, pas de fondu du contenu (`mkFade`, `accMonte` retirés le 24/10/2026), pas de chiffre qui repart de 0 ; seule la fenêtre glisse. Un trait ou un tampon se joue une fois par élément, jamais au retour sur la page.
 27. `prefers-reduced-motion` respecté : l'état change, le déplacement disparaît.
 

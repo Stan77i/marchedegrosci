@@ -34,7 +34,7 @@
 .dm-carte.on{opacity:1;transform:none}
 .dm-hd{display:flex;align-items:center;gap:10px}
 .dm-k{flex:none;display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:10px;background:#F2C230;color:#171512;font:700 11px/1.4 Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase}
-.dm-k i{width:6px;height:6px;border-radius:50%;background:#171512;animation:dmRec 1.2s ease-in-out infinite}
+.dm-k i{width:6px;height:6px;border-radius:50%;background:#171512}
 @keyframes dmRec{50%{opacity:.25}}
 .dm-n{color:#B9AD98;font:500 12px Jost,sans-serif}
 .dm-passer{margin-left:auto;min-height:44px;padding:0 12px;border:0;border-radius:18px;background:rgba(243,239,228,.1);color:#F3EFE4;font:600 13px Jost,sans-serif;cursor:pointer}
@@ -64,7 +64,7 @@ html.dm-cache .dm-sw{display:none}
     ['Le meilleur prix, <em>en direct</em>', 'C’est le prix le moins cher publié sur le marché. Il change quand quelqu’un place un meilleur prix. Touchez-le.'],
     ['L’échelle des <em>prix</em>', 'Du moins cher au plus cher : qui a publié, d’où, combien il en a. En vert, les vendeurs ; en jaune, les acheteurs.'],
     ['Votre <em>place</em>', 'Proposez moins que le meilleur prix : votre offre passe en tête. Vous achetez ? Montez votre budget.'],
-    ['À vous de <em>placer</em> votre prix', 'Touchez « Placer mon prix », ou négociez directement avec le vendeur. Le Marché de Gros ne fixe aucun prix.']];
+    ['À vous de <em>placer</em> votre prix', 'Touchez « Placer mon prix de vente » ou « Placer mon budget d’achat », ou négociez directement. Le Marché de Gros ne fixe aucun prix.']];
 
   let actif = false, timers = [], carte = null, anneau = null, depart = 0, tours = 0, exemple = false;
   const attendre = (ms, f) => timers.push(setTimeout(() => { if (actif) f(); }, REDUIT() ? Math.min(ms, ms * .8) : ms));

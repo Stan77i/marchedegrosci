@@ -383,7 +383,7 @@
           <p>Si on vous demande de payer d’avance, arrêtez l’échange et ne payez rien.</p></div>
           <div class="idv-act">${o.bloquer ? '<button type="button" class="idv-go" data-bl>Bloquer aussi ' + qui + '</button>' : ''}<button type="button" class="idv-alt" data-fin>Fermer</button></div>`;
         main.querySelector('[data-fin]').onclick = fermer; const bl = main.querySelector('[data-bl]'); if (bl) bl.onclick = () => { fermer(); o.bloquer(); };
-      } catch (e) { maj(); err.textContent = /schema cache|Could not find the function|Bucket not found/i.test(e.message) ? 'Le signalement n’est pas encore disponible. Écrivez au Marché de Gros.' : !navigator.onLine ? 'Pas de connexion internet : réessayez quand le réseau revient.' : String(e.message || 'Impossible pour l’instant.').replace(/^COMPTE_BANNI : /, ''); }
+      } catch (e) { maj(); err.textContent = /schema cache|Could not find the function|Bucket not found/i.test(e.message) ? 'Le signalement n’est pas encore disponible. Écrivez au Marché de Gros.' : !navigator.onLine ? 'Pas de connexion internet : réessayez quand le réseau revient.' : (window.MDGErreur ? MDGErreur(e) : String(e.message || 'Impossible pour l’instant.').replace(/^COMPTE_BANNI : /, '')); }
     };
   }
 
@@ -562,7 +562,7 @@
         main.querySelector('[data-fin]').onclick = fermer;
       } catch (x) {
         delete bg.dataset.lock;
-        main.innerHTML = `<div class="idv-etat"><div class="rond ko">${IC('info', 32)}</div><h2>L’envoi n’a pas abouti</h2><p class="idv-bad">${!navigator.onLine ? 'Pas de connexion internet.' : esc(x.message)}</p><p>Vos photos sont gardées sur ce téléphone tant que cette fenêtre reste ouverte.</p></div><div class="idv-act"><button type="button" class="idv-go" data-re>Réessayer</button><button type="button" class="idv-alt" data-fin>Fermer</button></div>`;
+        main.innerHTML = `<div class="idv-etat"><div class="rond ko">${IC('info', 32)}</div><h2>L’envoi n’a pas abouti</h2><p class="idv-bad">${!navigator.onLine ? 'Pas de connexion internet.' : esc((window.MDGErreur ? MDGErreur(x) : x.message))}</p><p>Vos photos sont gardées sur ce téléphone tant que cette fenêtre reste ouverte.</p></div><div class="idv-act"><button type="button" class="idv-go" data-re>Réessayer</button><button type="button" class="idv-alt" data-fin>Fermer</button></div>`;
         main.querySelector('[data-re]').onclick = envoyer; main.querySelector('[data-fin]').onclick = fermer;
       }
     }

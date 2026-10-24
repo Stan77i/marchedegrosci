@@ -34,7 +34,7 @@
   const quand = t => { const d = new Date(t), j = (Date.now() - d) / 864e5; return j < 1 && d.getDate() === new Date().getDate() ? heure(t) : j < 2 ? 'hier' : d.toLocaleDateString('fr-FR', { weekday: 'short' }); };
   const reste = t => { const h = Math.max(0, (Date.parse(t) + JOURS * 864e5 - Date.now()) / 36e5); return h < 1 ? 'moins d’une heure' : h < 24 ? Math.round(h) + ' h' : Math.round(h / 24) + ' j'; };
   const err = x => { const m = String(x && x.message || x || ''); return /BLOQUE/.test(m) ? 'Vous ne pouvez plus écrire à cette personne.' : /TROP_VITE/.test(m) ? 'Trop de messages d’un coup. Attendez une minute.'
-    : /Failed to fetch|NetworkError/i.test(m) ? 'Pas de réseau. Le message n’est pas parti.' : /dm_|schema cache|Could not find/i.test(m) ? 'La messagerie n’est pas encore activée sur le serveur.' : m || 'Une erreur est survenue.'; };
+    : /Failed to fetch|NetworkError/i.test(m) ? 'Pas de réseau. Le message n’est pas parti.' : /dm_|schema cache|Could not find/i.test(m) ? 'La messagerie n’est pas encore activée sur le serveur.' : (window.MDGErreur ? MDGErreur(x) : (m || 'Une erreur est survenue.')); };
 
   // ——— la liste des conversations (gardée sur l'appareil pour s'afficher tout de suite) ———
   let liste = J(KL, []), dernierU = -1, premier = true, ouverte = null;

@@ -110,7 +110,7 @@
 .cgl-amas span{display:inline-flex;align-items:center;gap:3px;font-size:13px}.cgl-s{display:inline-block;width:15px;height:15px;background:var(--sym-o) center/contain no-repeat}.cgl-s.d{background-image:var(--sym-d)}.cgl-amas b{font-weight:700}.cgl-amas:hover,.cgl-amas:focus-visible{transform:scale(1.08);outline:2px solid #10392B;outline-offset:2px;box-shadow:0 0 0 2px #FFFDF8}
 .cgl.jour .cgl-amas{background:rgba(255,253,248,.96);color:#171512;box-shadow:0 4px 14px rgba(80,60,30,.25),0 0 0 1px rgba(23,21,18,.08)}
 .cgl-feu{display:flex;align-items:center;gap:4px;height:22px;min-width:22px;padding:0 3px;border-radius:11px;background:rgba(23,21,18,.82);color:#F3A08C;font:600 11px Jost,sans-serif;white-space:nowrap;pointer-events:none;box-shadow:0 0 0 1.5px rgba(226,115,91,.75),0 3px 8px rgba(0,0,0,.35)}
-.cgl-feu b{font-weight:600;padding-left:5px}.cgl-feu span{font-size:12px;line-height:1;display:inline-flex;animation:cglFeu 2.4s ease-in-out infinite;transform-origin:50% 90%}
+.cgl-feu b{font-weight:600;padding-left:5px}.cgl-feu span{font-size:12px;line-height:1;display:inline-flex;animation:cglFeu 2.4s ease-in-out 2;transform-origin:50% 90%}
 .cgl.jour .cgl-feu{background:rgba(255,253,248,.95);color:#B4472F}
 @keyframes cglFeu{50%{transform:scale(1.18)}}
 .cgl-moi{width:18px;height:18px;border-radius:50%;background:#B095F0;box-shadow:0 0 0 4px rgba(255,255,255,.9),0 4px 12px rgba(0,0,0,.4)}

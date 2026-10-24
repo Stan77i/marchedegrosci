@@ -58,7 +58,7 @@
 .sv-haut{position:absolute;left:12px;top:12px;right:12px;display:flex;pointer-events:none}
 .sv-puce{display:inline-flex;align-items:center;gap:8px;min-height:34px;padding:0 14px 0 12px;border-radius:17px;background:#FFFDF8;color:#171512;font:600 13.5px Jost,sans-serif;box-shadow:0 2px 10px rgba(23,21,18,.16)}
 .sv-puce i{width:9px;height:9px;border-radius:50%;background:#2FA36B;box-shadow:0 0 0 0 rgba(47,163,107,.5)}
-.sv-puce.frais i{animation:svPouls 2s ease-out infinite}.sv-puce.vieux i{background:#B5AE9F}
+.sv-puce.frais i{animation:svPouls 2s ease-out 2}.sv-puce.vieux i{background:#B5AE9F}
 @keyframes svPouls{70%{box-shadow:0 0 0 8px rgba(47,163,107,0)}100%{box-shadow:0 0 0 0 rgba(47,163,107,0)}}
 .sv-bas{position:absolute;left:12px;right:12px;bottom:12px;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:#10392B;color:#F3EFE4;box-shadow:0 6px 18px rgba(16,57,43,.32)}
 .sv-bas b{display:block;font:800 22px/1.05 Jost,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
@@ -69,7 +69,7 @@
 .sv-arrivee{display:flex;flex-direction:column;align-items:center;transform:translateY(-4px)}
 .sv-arrivee span{padding:4px 10px;border-radius:12px;background:#F2C230;color:#10392B;font:700 12px Jost,sans-serif;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 .sv-arrivee i{width:3px;height:10px;background:#10392B}.sv-arrivee em{width:12px;height:12px;border-radius:50%;background:#10392B;border:3px solid #FFFDF8;box-shadow:0 1px 3px rgba(0,0,0,.3)}
-.sv.arrive .sv-arrivee em{animation:svOnde 1.6s ease-out infinite}
+.sv.arrive .sv-arrivee em{animation:svOnde 1.6s ease-out 3}
 @keyframes svOnde{0%{box-shadow:0 0 0 0 rgba(242,194,48,.75)}100%{box-shadow:0 0 0 18px rgba(242,194,48,0)}}
 .sv-bas .sac{width:44px;height:44px;flex:none}.sv-bas .sac svg{width:44px;height:44px}
 .sv.arrive .sv-bas .sac{animation:svSaut 1.1s ease-in-out 2}

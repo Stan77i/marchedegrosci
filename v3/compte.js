@@ -7,6 +7,7 @@
    API : MDGCompte.ouvrir(onglet) · bienvenue() · profil() · avatar(uid) · hydrate(root) · prefs() */
 (function () {
   'use strict';
+  const ERR = x => window.MDGErreur ? MDGErreur(x) : String((x && x.message) || x || '');   // l'erreur en phrase simple (app/toast.js)
   const N = () => window.MDGNuage, A = () => window.MDGAvatar;
   const KP = 'mdg-compte:profil', KPF = 'mdg-compte:prefs', KN = 'mdg-notifs', KC = 'mdg-nuage:profils';
   const J = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } };
@@ -232,7 +233,7 @@ summary.cp-r{list-style:none}summary.cp-r::-webkit-details-marker{display:none}
 /* pastilles */
 .cp-n{flex:none;min-width:22px;height:22px;padding:0 7px;border-radius:11px;background:var(--acc);color:#F3EFE4;font:700 12px/22px Jost,sans-serif;text-align:center}
 .cp-tag{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 9px;border-radius:11px;font:600 12px/1 Jost,sans-serif;background:rgba(23,21,18,.07);color:var(--mute);white-space:nowrap}
-.cp-tag.warn{background:var(--warn-bg);color:var(--warn)}.cp-tag.ok{background:var(--ok-bg);color:var(--ok)}.cp-tag.acc{background:rgba(16,57,43,.18);color:var(--acc-t)}.cp-tag.bleu{background:var(--blue-bg);color:var(--blue)}
+.cp-tag.warn{background:var(--warn-bg);color:var(--warn)}.cp-tag.ok{background:var(--ok-bg);color:#31543C}.cp-tag.acc{background:rgba(16,57,43,.18);color:var(--acc-t)}.cp-tag.bleu{background:var(--blue-bg);color:var(--blue)}
 /* réputation */
 .cp-rep{display:flex;align-items:center;gap:12px;width:100%;margin-top:10px;padding:12px 14px;border:0;border-radius:20px;background:linear-gradient(120deg,rgba(242,201,76,.22),var(--card) 62%);color:var(--ink);text-align:left;font:inherit;cursor:pointer;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.04)}
 .cp-rep-n{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:14px;background:rgba(242,201,76,.3);color:#6E5000;font:700 18px/1 Jost,sans-serif}
@@ -246,7 +247,7 @@ summary.cp-r{list-style:none}summary.cp-r::-webkit-details-marker{display:none}
 .cp-it b{font-weight:500;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cp-it small{grid-column:2;display:flex;align-items:center;flex-wrap:wrap;gap:6px;color:var(--mute);font-size:12.5px}
 .cp-it .p{grid-row:span 2;text-align:right;font:600 15px/1.1 Jost,sans-serif;white-space:nowrap}.cp-it .p em{display:block;margin-top:2px;font:400 11.5px Jost,sans-serif;font-style:normal;color:var(--faint)}
-.cp-it.neuf{box-shadow:inset 3px 0 0 var(--acc)}
+
 .cp-it .pt{grid-row:span 2;width:8px;height:8px;margin:0 12px;border-radius:50%;background:var(--acc)}.cp-it .pt.lu{background:transparent}
 /* interrupteur façon iPhone */
 .cp-tog{-webkit-appearance:none;appearance:none;flex:none;position:relative;width:51px;height:31px;margin:0;border-radius:16px;background:rgba(23,21,18,.16);cursor:pointer;transition:background var(--ux-d2,200ms)}
@@ -402,7 +403,7 @@ label.cp-r{cursor:pointer}
   function ouvrir(onglet) {
     if (!N()) return; const u = me(); if (!u) return N().open();
     let page = TITRES[onglet] ? onglet : 'accueil';
-    cadre(`<header class="cp-top"><span></span><span class="cp-top-t"></span><span></span></header><div class="cp-main"></div>`, 'Mon espace');
+    cadre(`<header class="cp-top"><span></span><span class="cp-top-t"></span><span></span></header><div class="cp-main"></div>`, 'Mon compte');
     const main = bg.querySelector('.cp-main'), top = bg.querySelector('.cp-top');
     // calme : le contenu se pose sans fondu (à l'ouverture et quand les données arrivent) ; le fondu ne sert qu'en passant d'une page à l'autre
     const aller = (p, calme) => {
@@ -541,7 +542,7 @@ label.cp-r{cursor:pointer}
       const msg = t => { const m = root.querySelector('[data-st-msg]'); if (m) m.textContent = t || ''; };
       const charge = async (inp, quoi) => { const f = inp.files && inp.files[0]; if (!f) return; if (!navigator.onLine) return msg('Pas de connexion internet : réessayez quand le réseau revient.');
         msg('Envoi de l’image…'); try { const c = await envoyer(f, quoi); const nn = root.querySelector('#cp-stnom'); if (nn) nom = nn.value; if (quoi === 'logo') logo = c; else preuves.push(c); msg(''); dessiner(); }
-        catch (x) { msg(/Bucket not found|not found|403|row-level/i.test(String(x.message)) ? 'Les images ne sont pas encore activées sur le serveur.' : 'Envoi impossible : ' + x.message); } };
+        catch (x) { msg(/Bucket not found|not found|403|row-level/i.test(String(x.message)) ? 'Les images ne sont pas encore activées sur le serveur.' : 'Envoi impossible. ' + ERR(x)); } };
       const il = root.querySelector('[data-logo]'); if (il) il.onchange = () => charge(il, 'logo');
       const ip = root.querySelector('[data-pv]'); if (ip) ip.onchange = () => charge(ip, 'preuve');
       const lx = root.querySelector('[data-logo-x]'); if (lx) lx.onclick = () => { const nn = root.querySelector('#cp-stnom'); if (nn) nom = nn.value; logo = null; dessiner(); };
@@ -597,7 +598,7 @@ label.cp-r{cursor:pointer}
         if (!docs.length) { m('Ajoutez au moins une photo du document.'); return; }
         const go = f.querySelector('.cp-go'); go.disabled = true; go.setAttribute('aria-busy', 'true');
         try { await N().rpc('structure_dossier_envoyer', { p_fonction: fv, p_documents: docs.map(x => x.chemin) }); N().toast('Dossier envoyé.', { sous: 'L’équipe l’examine ; la réponse apparaîtra dans votre profil.' }); badgeStructure(el); }
-        catch (x) { go.disabled = false; go.removeAttribute('aria-busy'); m(String(x.message).replace(/^IDENTITE_REQUISE : /, '')); } };
+        catch (x) { go.disabled = false; go.removeAttribute('aria-busy'); m(ERR(x)); } };
     };
     peindre();
   }
@@ -771,7 +772,7 @@ label.cp-r{cursor:pointer}
         go.disabled = true; go.setAttribute('aria-busy', 'true'); go.textContent = 'Enregistrement…';
         try { await enregistrer(Object.assign({ prenom: f.querySelector('#cp-prenom').value.trim(), nom: f.querySelector('#cp-nom').value.trim() || null, pseudo: f.querySelector('#cp-pseudo').value.trim() || null, role: roleVal(f) }, lieuVal(f)));
           N().toast('Profil enregistré.'); bg.aller('accueil'); }
-        catch (x) { go.disabled = false; go.removeAttribute('aria-busy'); go.textContent = 'Enregistrer'; if (/pseudonyme/i.test(x.message)) { f.querySelector('#cp-pseudo').setAttribute('aria-invalid', 'true'); f.querySelector('#cp-pseudo-e').textContent = x.message; } else msg.innerHTML = `<span class="cp-bad">${esc(x.message)}</span>`; }
+        catch (x) { go.disabled = false; go.removeAttribute('aria-busy'); go.textContent = 'Enregistrer'; if (/pseudonyme/i.test(x.message)) { f.querySelector('#cp-pseudo').setAttribute('aria-invalid', 'true'); f.querySelector('#cp-pseudo-e').textContent = x.message; } else msg.innerHTML = `<span class="cp-bad">${esc(ERR(x))}</span>`; }
       };
     },
     activite(main) {
@@ -849,7 +850,7 @@ label.cp-r{cursor:pointer}
         if (c1 !== c2) return err('cp-c2', 'Les deux codes ne sont pas identiques.');
         go.disabled = true; go.setAttribute('aria-busy', 'true'); go.textContent = 'Vérification…'; msg.textContent = '';
         try { await N().signIn(u.tel, c0); await N().api('/auth/v1/user', { method: 'PUT', auth: true, body: { password: c1 } }); f.reset(); msg.innerHTML = '<span class="cp-ok">✓ Code changé</span>'; }
-        catch (x) { msg.innerHTML = `<span class="cp-bad">${esc(/incorrect/i.test(x.message) ? 'Code actuel incorrect.' : x.message)}</span>`; }
+        catch (x) { msg.innerHTML = `<span class="cp-bad">${esc(/incorrect/i.test(x.message) ? 'Code actuel incorrect.' : ERR(x))}</span>`; }
         go.disabled = false; go.removeAttribute('aria-busy'); go.textContent = 'Enregistrer le nouveau code';
       };
       main.querySelector('[data-sos]').onclick = async e => { if (!confirm('Créer un nouveau code de secours ? L’ancien ne fonctionnera plus.')) return; const b = e.currentTarget; b.disabled = true; try { const c = await N().rpc('creer_secours'); fermer(); N().showSecours ? N().showSecours(c) : alert('Votre code de secours : ' + c); } catch (x) { b.disabled = false; N().toast(x.message); } };
@@ -870,7 +871,7 @@ label.cp-r{cursor:pointer}
       if (!/^\d{6}$/.test(c)) { er.textContent = 'Votre code fait 6 chiffres.'; return; }
       const b = box.querySelector('.cp-go'); b.disabled = true; b.setAttribute('aria-busy', 'true'); b.textContent = 'Suppression';
       try { await N().signIn(me().tel, c); await N().rpc('supprimer_compte'); localStorage.removeItem(KP); fermer(); N().signOut(); N().toast('Votre compte est supprimé. Vos annonces ont été retirées.'); }
-      catch (x) { er.textContent = /incorrect/i.test(x.message) ? 'Code incorrect.' : /supprimer_compte|schema cache|Could not find/i.test(x.message) ? 'La suppression n’est pas encore activée sur le serveur. Contactez le Marché de Gros.' : x.message; b.disabled = false; b.textContent = 'Supprimer définitivement'; }
+      catch (x) { er.textContent = /incorrect/i.test(x.message) ? 'Code incorrect.' : /supprimer_compte|schema cache|Could not find/i.test(x.message) ? 'La suppression n’est pas encore activée sur le serveur. Contactez le Marché de Gros.' : ERR(x); b.disabled = false; b.textContent = 'Supprimer définitivement'; }
     };
   }
 
@@ -993,7 +994,7 @@ label.cp-r{cursor:pointer}
       if (!navigator.onLine) throw new Error('Pas de connexion internet : la photo sera envoyée quand le réseau revient.');
       const blob = await new Promise(r => rendu(384).toBlob(r, 'image/jpeg', .84));
       try { await N().televerser('avatars/' + u.id + '.jpg', blob); }
-      catch (x) { throw new Error(x.status === 404 || /bucket|not found/i.test(x.message) ? 'La photo de profil n’est pas encore activée sur le serveur (supabase/schema-5.sql). Choisissez un portrait en attendant.' : x.status === 413 ? 'Photo trop lourde. Essayez-en une autre.' : x.code === 'auth' ? 'Votre session a expiré : reconnectez-vous.' : 'La photo n’a pas pu être envoyée : ' + x.message); }
+      catch (x) { throw new Error(x.status === 404 || /bucket|not found/i.test(x.message) ? 'La photo de profil n’est pas encore activée sur le serveur. Choisissez un portrait en attendant.' : x.status === 413 ? 'Photo trop lourde. Essayez-en une autre.' : x.code === 'auth' ? 'Votre session a expiré : reconnectez-vous.' : 'La photo n’a pas pu être envoyée. ' + ERR(x)); }
       return 'ph:u=' + u.id + ';v=' + Date.now().toString(36).slice(-6) + ';f=' + fi;
     }
     if (embarque) return finir;
@@ -1014,7 +1015,7 @@ label.cp-r{cursor:pointer}
     bg.dataset.lock = '1'; bg.querySelector('.cp-x').hidden = true;
     const w = bg.querySelector('.cp-w');
     const pas = () => bg.querySelectorAll('.cp-steps i').forEach((x, i) => x.classList.toggle('on', i < etape));
-    const suite = async (champs, fin) => { try { if (champs && navigator.onLine) await enregistrer(champs); } catch (x) { return x.message; } if (fin) { bg.dataset.lock = ''; fermer(); N().toast('Votre compte est prêt. Complétez votre profil quand vous voulez dans « Mon espace ».'); } else { etape++; dessiner(); } return ''; };
+    const suite = async (champs, fin) => { try { if (champs && navigator.onLine) await enregistrer(champs); } catch (x) { return ERR(x); } if (fin) { bg.dataset.lock = ''; fermer(); N().toast('Votre compte est prêt. Complétez votre profil quand vous voulez dans « Mon compte ».'); } else { etape++; dessiner(); } return ''; };
     function dessiner() {
       pas();
       if (etape === 1) {
@@ -1024,7 +1025,7 @@ label.cp-r{cursor:pointer}
       } else if (etape === 2) {
         w.innerHTML = `<h2>Votre avatar</h2><p>Choisissez ce qui vous ressemble, ou gardez vos initiales.</p><div class="cp-avw cp-panel"></div><div class="cp-row" style="margin-top:20px"><button type="button" class="cp-go" data-ok>Continuer</button><button type="button" class="cp-alt" data-ini>Garder mes initiales</button></div>`;
         getAv = choisirAvatar(null, w.querySelector('.cp-avw'));
-        const okb = w.querySelector('[data-ok]'); okb.onclick = async () => { okb.disabled = true; okb.setAttribute('aria-busy', 'true'); let m = ''; try { m = await suite({ avatar: await getAv() }); } catch (x) { m = x.message; } if (m && okb.isConnected) { okb.disabled = false; okb.removeAttribute('aria-busy'); let er = w.querySelector('.cp-msg'); if (!er) { er = document.createElement('span'); er.className = 'cp-msg'; er.setAttribute('role', 'status'); okb.parentNode.appendChild(er); } er.textContent = m; } };
+        const okb = w.querySelector('[data-ok]'); okb.onclick = async () => { okb.disabled = true; okb.setAttribute('aria-busy', 'true'); let m = ''; try { m = await suite({ avatar: await getAv() }); } catch (x) { m = ERR(x); } if (m && okb.isConnected) { okb.disabled = false; okb.removeAttribute('aria-busy'); let er = w.querySelector('.cp-msg'); if (!er) { er = document.createElement('span'); er.className = 'cp-msg'; er.setAttribute('role', 'status'); okb.parentNode.appendChild(er); } er.textContent = m; } };
         w.querySelector('[data-ini]').onclick = () => suite(null);
       } else if (etape === 3) {
         w.innerHTML = `<h2>Ce que vous faites, et où</h2><p>Pour vous montrer d’abord ce qui vous concerne. Vous pouvez passer cette étape.</p><form class="cp-f cp-panel" novalidate>${roleSeg(p())}${lieu(p())}<div class="cp-row"><button class="cp-go">Continuer</button><button type="button" class="cp-alt" data-skip>Plus tard</button></div></form>`;

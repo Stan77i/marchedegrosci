@@ -135,7 +135,7 @@ html[data-theme=sombre] .rg-tours button{background:#25211B;color:#F2C230;border
           else if (k === 'Bouton « Démo » sur l’accueil') { MDGDemo.regler({ bouton: i.checked }); dire(i.checked ? 'Bouton Démo *affiché*' : 'Bouton Démo *caché* : la démo reste ici, dans les réglages'); }
           else if (k === 'Messages à l’écran') { const o = lirePrefs(); o.toasts = i.checked; localStorage.setItem('mdg-compte:prefs', JSON.stringify(o)); dire('Réglage *enregistré*'); }
           else if (k === 'Montrer mon nom de famille' && C && C.regler) { await C.regler({ nom_public: i.checked }); dire('Réglage *enregistré*'); }
-        } catch (x) { i.checked = !i.checked; dire('Impossible : ' + ((x && x.message) || 'réessayez')); }
+        } catch (x) { i.checked = !i.checked; dire((window.MDGErreur ? MDGErreur(x) : 'Impossible : ' + ((x && x.message) || 'réessayez'))); }
         i.disabled = false;
       });
     };

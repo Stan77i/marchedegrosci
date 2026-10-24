@@ -13,7 +13,7 @@
   const jour = t => t ? new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : '';
   const JOURS = ['', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
   const hors = e => navigator.onLine === false || /Failed to fetch|NetworkError|Load failed|network/i.test(String((e && e.message) || e || ''));
-  const errTxt = e => hors(e) ? 'Pas de connexion : rien n’a été envoyé. Réessayez quand le réseau revient.' : String((e && e.message) || 'Une erreur est survenue.').replace(/^[A-Z_]+ : /, '');
+  const errTxt = e => hors(e) ? 'Pas de connexion : rien n’a été envoyé. Réessayez quand le réseau revient.' : (window.MDGErreur ? MDGErreur(e) : String((e && e.message) || 'Une erreur est survenue.').replace(/^[A-Z_]+ : /, ''));
   const toast = (t, o) => window.MDGToast ? MDGToast.dire(t, o) : (N() && N().toast && N().toast(t));
 
   const CSS = `

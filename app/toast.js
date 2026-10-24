@@ -128,6 +128,18 @@ html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme
     [/row-level security|permission denied|violates|constraint|duplicate key|syntax error|pgrst\d|p0001|sqlstate|unexpected token|is not a function|undefined/i, 'Le serveur a refusé l’opération', 'Réessayez ; si ça continue, écrivez à l’équipe.']
   ];
   const tech = t => TECH.find(r => r[0].test(t));
+  // MDGErreur(e) : la phrase à montrer pour une erreur, partout où un module écrit l'erreur dans sa fenêtre (24/10/2026, audit n° 33).
+  // Un message du serveur déjà écrit en français (« Seul l'acheteur peut… ») est gardé ; un texte technique ou en anglais devient
+  // une phrase simple qui dit quoi faire ; le texte brut part seulement dans la console.
+  window.MDGErreur = function (e) {
+    const m = String((e && e.message) || e || '').replace(/^[A-Z_]{3,} : /, '').trim();
+    if (navigator.onLine === false || /failed to fetch|networkerror|load failed|err_internet|network request failed/i.test(m)) return 'Pas de connexion : réessayez quand le réseau revient.';
+    const t = tech(m); if (t) { try { console.warn('[Marché de Gros]', m); } catch (_) {} return t[1] + '. ' + t[2]; }
+    const fr = /[àâçéèêëîïôûùœ’]/i.test(m) || /\b(le|la|les|un|une|vous|votre|pas|est|du|des|au|aux|pour|avec)\b/i.test(m);
+    if (m && fr && !/supabase\/|\.sql\b|schema/i.test(m)) return m;
+    try { if (m) console.warn('[Marché de Gros]', m); } catch (_) {}
+    return 'Impossible pour l’instant. Réessayez dans un instant ; si ça continue, écrivez au Marché de Gros.';
+  };
   function lisible(texte, sous) {
     const t = tech(sous || ''); if (t) { const titre = texte.replace(/\s*[:.]\s*$/, ''); return /^(impossible|erreur)$/i.test(titre) ? [t[1], t[2]] : [titre, t[1] + '. ' + t[2]]; }
     const u = tech(texte); if (u) { const m = texte.match(/^([^:]{3,40}?)\s*:\s/), titre = m && !/^(impossible|erreur)$/i.test(m[1].trim()) ? m[1].trim() : ''; return [titre || u[1], titre ? u[1] + '. ' + u[2] : u[2]]; }

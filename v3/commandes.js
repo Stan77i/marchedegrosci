@@ -112,8 +112,8 @@
 .cm-et li.fait{color:#171512}.cm-et li.fait .pt{background:#10392B;color:#F3EFE4}.cm-et li.fait::before{background:#10392B}
 .cm-et li.ici .pt{background:#F2C230;color:#10392B;box-shadow:0 0 0 5px rgba(242,194,48,.28)}
 .cm-et b{display:block;font-weight:600;line-height:28px}.cm-et small{display:block;font-size:12.5px;color:#5E5546;margin-top:-4px}
-.cm-st{position:relative;margin:12px 0 12px;padding:14px 16px 14px 20px;border-radius:18px;background:#FFFDF8;color:#171512;box-shadow:0 6px 20px rgba(23,21,18,.07),inset 0 0 0 1px rgba(23,21,18,.06);overflow:hidden}
-.cm-st::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#F2C230}
+.cm-st{position:relative;margin:12px 0 12px;padding:14px 16px;border-radius:18px;background:#FFFDF8;color:#171512;box-shadow:0 6px 20px rgba(23,21,18,.07),inset 0 0 0 1px rgba(23,21,18,.06);overflow:hidden}
+
 .cm-st b{display:block;font:600 18px/1.25 Jost,sans-serif}.cm-st b em{font-style:italic;font-weight:900;color:#10392B;background:linear-gradient(transparent 62%,rgba(242,194,48,.55) 62%)}
 .cm-st small{display:block;margin-top:4px;color:#6B6252;font-size:13px}
 .cm-tcode{margin:0 0 10px;padding:8px 12px;border-radius:12px;background:rgba(16,57,43,.08);color:#171512;font:400 13px/1.4 Jost,sans-serif}.cm-tcode b{display:inline;font:800 15px/1 Jost,sans-serif;letter-spacing:.06em;color:#10392B}.cm-garde b{display:inline;font:inherit;font-weight:800;letter-spacing:.04em}
@@ -216,7 +216,7 @@
 .cm-plan .cm-pchip i{width:7px;height:7px;border-radius:50%;background:#9AA59F}
 .cm-plan .rt{stroke-dasharray:100;stroke-dashoffset:0}
 @keyframes cmTrace{from{stroke-dashoffset:100}}
-.cm-plan .pulse{transform-box:fill-box;transform-origin:50% 50%;animation:cmPulse 2.2s ease-out infinite}
+.cm-plan .pulse{transform-box:fill-box;transform-origin:50% 50%;animation:cmPulse 2.2s ease-out 3}
 @keyframes cmPulse{0%{transform:scale(.6);opacity:.55}100%{transform:scale(2.3);opacity:0}}
 .cm-plan .nav{transform-box:fill-box;transform-origin:50% 50%}
 @keyframes cmNav{from{transform:scale(.3);opacity:0}}
@@ -236,7 +236,7 @@
 .cm-pts .o{position:relative;z-index:1;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(243,239,228,.35);color:#10392B}
 .cm-pts li.fait{color:#F3EFE4}.cm-pts li.fait .o{background:#F2C230;box-shadow:none}
 .cm-pts li.ici{color:#F2C230;font-weight:600}.cm-pts li.ici .o{background:#10392B;box-shadow:inset 0 0 0 2px #F2C230}
-.cm-pts li.ici .o::after{content:"";width:8px;height:8px;border-radius:50%;background:#F2C230;animation:cmIci 1.8s ease-in-out infinite}
+.cm-pts li.ici .o::after{content:"";width:8px;height:8px;border-radius:50%;background:#F2C230;animation:cmIci 1.8s ease-in-out 3}
 @keyframes cmIci{50%{transform:scale(.55);opacity:.6}}
 .cm-pts li.off .o{box-shadow:inset 0 0 0 2px rgba(243,239,228,.2)}
 .cm-f2{display:flex;justify-content:space-between;gap:14px;margin:14px 0 0;padding:0 0 14px;border-bottom:1px solid rgba(243,239,228,.1)}
@@ -247,7 +247,7 @@
 .cm-f3 dt{color:rgba(243,239,228,.62);font:400 12.5px/1.3 Jost,sans-serif}.cm-f3 dd{margin:3px 0 0;font:500 15.5px/1.25 Jost,sans-serif;color:#F3EFE4;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .cm-f3 dd.t{color:#F2C230;font-weight:600}
 .cm-prod{position:absolute;right:-12px;top:4px;width:150px;height:150px;pointer-events:none}
-.cm-prod img,.cm-prod svg{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 16px 18px rgba(0,0,0,.35));animation:cmFlotte 5s 1.2s ease-in-out infinite}
+.cm-prod img,.cm-prod svg{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 16px 18px rgba(0,0,0,.35))}
 @keyframes cmProd{from{transform:translateX(30px) rotate(6deg);opacity:0}}
 @keyframes cmFlotte{50%{transform:translateY(-5px) rotate(-1.5deg)}}
 .cm-pers{display:flex;align-items:center;gap:12px;margin:10px 0 0;padding:10px 10px 10px 12px;border-radius:20px;background:rgba(243,239,228,.07)}
@@ -357,7 +357,7 @@
   function fermer() { oublierCarte(); if (!bg) return; bg.remove(); bg = null; if (retourFocus && retourFocus.focus) try { retourFocus.focus({ preventScroll: true }); } catch (_) {} retourFocus = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); }
   const clavier = e => { if (e.key === 'Escape') fermer(); };
   const horsLigne = e => navigator.onLine === false || /Failed to fetch|NetworkError|Load failed|network|ERR_INTERNET/i.test(String((e && e.message) || e || ''));
-  const erreurTxt = e => { if (horsLigne(e)) return 'Pas de connexion : rien n’a été enregistré. Réessayez quand le réseau revient.'; const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : (m.replace(/^[A-Z_]{4,} : /, '') || 'Réessayez dans un instant.'); };
+  const erreurTxt = e => { if (horsLigne(e)) return 'Pas de connexion : rien n’a été enregistré. Réessayez quand le réseau revient.'; const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : (window.MDGErreur ? MDGErreur(e) : (m.replace(/^[A-Z_]{4,} : /, '') || 'Réessayez dans un instant.')); };
 
   const seq = {};           // commande → séquestre (commande_sequestre, schémas 57-58)
   const disc = {};          // commande → discussion à trois pendant un litige (litige_messages_lire, schéma 58)

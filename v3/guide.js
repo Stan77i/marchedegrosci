@@ -24,7 +24,7 @@
   const FICHES = [
     { id: 'accueil', ico: 'apercu', ton: 'marche', t: 'L’accueil et la roue', sert: 'L’accueil montre un produit à la fois, avec ses offres et ses demandes du moment.',
       etapes: ['Glissez le doigt vers la gauche ou la droite pour changer de produit.', 'Touchez le nom de la famille en haut (par exemple « Légumes et fruits ») pour en choisir une autre.', 'Touchez « Voir la fiche » pour tout savoir sur ce produit.'],
-      conseil: 'Le menu (les trois traits en haut à gauche) mène partout dans l’application.' },
+      conseil: 'Le menu (le panier en haut à gauche) mène partout dans l’application.' },
     { id: 'vendre', ico: 'vendre', ton: 'offre', t: 'Vendre : publier une offre', sert: 'Vous avez un produit ? Dites-le, et les acheteurs vous écrivent.',
       etapes: ['Touchez « J’ai » (le bouton vert), ou « Vendre » dans le menu.', 'Choisissez le produit, ajoutez une photo si vous pouvez, puis la quantité. Touchez « Suivant ».', 'Écrivez votre prix, ou laissez « À discuter ». Dites où se trouve la marchandise.', 'Vérifiez, puis touchez « Publier mon offre ».'],
       conseil: 'Une photo et un prix clair attirent beaucoup plus d’acheteurs.', aller: PAGE('vendre') },

@@ -1331,3 +1331,7 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - Le gros bouton jaune « Voir la fiche, les prix et les annonces » devient une rangée fine : pastille maïs avec une courbe de prix, « Voir la fiche » + « Prix, offres et demandes », flèche dans un rond (`.an2-go`, `css/annee-app.css`).
 - **Réseau, « Où êtes-vous ? »** : le grand cadre jaune qui apparaissait au toucher (contour de focus de la liste) est supprimé. La liste native reste, invisible, posée sur toute la pastille ; la pastille montre « Votre zone · Où êtes-vous ? » ou « Vous êtes à · Abidjan ». Le point violet (vous, sur la carte) respire tant qu'aucune zone n'est choisie ; une fois choisie, il s'allume en violet plein. Focus clavier : anneau violet discret (`.cz-moi`, `css/mgci-app.css`).
 - Vérifié dans Chromium (iPhone émulé, sombre). `sw.js` : cache `mgci-v234`. Dépend de la PR « Application plus stable » (#246), à fusionner avant.
+
+## 24/10/2026 — État après les PR #246 et #247
+
+- Les deux PR sont fusionnées (stabilité de l'application ; année du marché et « Où êtes-vous ? »). Cache `mgci-v234`. Aucune PR ouverte. `docs/REPRISE.md` mis à jour.

@@ -34,7 +34,7 @@
       // texte refusé par la base (schéma 22 : liens, e-mails, codes) : seulement la phrase pour le membre
       if (/^TEXTE_REFUSE : /.test(m)) throw Object.assign(new Error(m.replace(/^TEXTE_REFUSE : /, '')), { status: r.status, body: j, code: 'texte' });
       // erreur technique de la base (champ, colonne, fonction…) : une phrase simple pour le membre, le détail reste dans la console
-      if (/record "new"|has no field|column .* does not exist|relation .* does not exist|function .* does not exist|syntax error/i.test(m) && !/^[A-Z_]+ : /.test(m)) {
+      if (/record "new"|has no field|column .* does not exist|could not find the '[a-z_]+' column|relation .* does not exist|function .* does not exist|syntax error/i.test(m) && !/^[A-Z_]+ : /.test(m)) {
         console.warn('[nuage] erreur technique', m);
         throw Object.assign(new Error('Un problème technique a empêché l’envoi. Réessayez dans un instant ; si cela continue, écrivez au Marché de Gros.'), { status: r.status, body: j, code: 'technique', detail: m }); }
       throw Object.assign(new Error(m), { status: r.status, body: j }); }
@@ -219,7 +219,9 @@
           if (!x.productSlug || !x.regionSlug) continue;
           const key = k + ':' + x.id, row = toRow[k](x), h = hash(row);
           if (p[key] && (!em[key] || em[key] === h)) { if (!em[key]) { em[key] = h; W(K.e, em); } continue; } // déjà envoyée, inchangée
-          try { const r = await api('/rest/v1/' + KIND[k] + '?on_conflict=user_id,client_id', { method: 'POST', body: row, auth: true, prefer: 'return=representation,resolution=merge-duplicates' }); if (r && r[0]) { p[key] = r[0].id; em[key] = h; changed = true; W(K.p, p); W(K.e, em);
+          // base sans la colonne pause_le (schéma 86 pas encore appliqué) : l'annonce part quand même, sans la pause
+          const envoyer = c => api('/rest/v1/' + KIND[k] + '?on_conflict=user_id,client_id', { method: 'POST', body: c, auth: true, prefer: 'return=representation,resolution=merge-duplicates' });
+          try { const r = await envoyer(row).catch(e => { if (e.code !== 'technique' || !('pause_le' in row)) throw e; const c = Object.assign({}, row); delete c.pause_le; return envoyer(c); }); if (r && r[0]) { p[key] = r[0].id; em[key] = h; changed = true; W(K.p, p); W(K.e, em);
               // stock à zéro sur le téléphone : l'annonce sort du marché ; stock remis : elle revient (jamais une annonce masquée par l'administration)
               if (k === 'offres') await api('/rest/v1/offres?id=eq.' + r[0].id + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: x.epuise || !(+x.quantity > 0) ? 'retiree' : 'active' }, prefer: 'return=minimal' }).catch(() => {}); } }
           catch (e) { if (e.code === 'auth') throw e; console.warn('[nuage] envoi refusé', e.message); if (/Limite atteinte/.test(e.message)) toast(e.message);

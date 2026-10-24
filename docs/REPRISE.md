@@ -5,11 +5,12 @@
 
 ## 1. L'état au moment de la reprise
 
-- **Toutes les PR sont fusionnées** (jusqu'à la PR #247). Aucune PR ouverte, aucun travail en cours. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
-- `main` : cache du service worker `mgci-v261` après les badges (#271). Les PR suivantes prennent un numéro au-dessus de celui de `main` au moment de leur fusion.
-- Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **85** appliqués (85a à 85d badges, appliqués le 24/10/2026, tâche `mdg-niveaux` chaque nuit à 4 h 37 ; 82 commission transport réservée au service Marché de Gros ; 83a à 83e transport ; 84a à 84f fiabilité, appliqués le 24/10/2026, tâche `mdg-fiabilite` toutes les 15 min). Le projet de test peut avoir en plus les schémas des chantiers en cours (86 boutiques, 87 ville seulement).
+- **PR fusionnées jusqu’à la #285.** Une PR ouverte au 24/10/2026 : #282 (notifications), à part. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
+- `main` : cache du service worker `mgci-v276` après le colis au départ (#285). Les PR suivantes prennent un numéro au-dessus de celui de `main` au moment de leur fusion.
+- Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu’au **90** appliqués (89 vérification 1 h, 90 et 90b colis au départ, le 24/10/2026 ; plus anciens : 85a à 85d badges, appliqués le 24/10/2026, tâche `mdg-niveaux` chaque nuit à 4 h 37 ; 82 commission transport réservée au service Marché de Gros ; 83a à 83e transport ; 84a à 84f fiabilité, appliqués le 24/10/2026, tâche `mdg-fiabilite` toutes les 15 min). Le projet de test peut avoir en plus les schémas des chantiers en cours (86 boutiques, 87 ville seulement).
 - **Ville seulement** (branche `claude/ville-seulement`, 24/10/2026) : schéma 87 appliqué sur le test puis **en production** le 24/10/2026 (fonctions identiques au test, à une ligne de commentaire près). PR #272 fusionnée.
 - **Boutiques** (chantier 4, 24/10/2026) : schéma 86 (86, 86b, 86c) testé puis appliqué en production (fonctions identiques au test, hors commentaires) ; vidéo des animations validée par le propriétaire ; écran dans la PR « Chantier 4 : boutiques ». Cache `mgci-v267`.
+- **Profil, vérification 1 h, colis au départ** (24/10/2026, PR 283, 284, 285 fusionnées) : fiche profil courte (plus de long texte, trois chiffres par rôle, « Déjà publié à », bouton boutique avec icône, délais « Livre en général en… » / « Valide en général en… ») ; clôture automatique **1 h** après la réception sans réclamation (schéma 89) ; avant le chargement, **2 à 4 photos du colis, poids pesé, photo du papier du mot secret avec code au hasard (3 min, équipe seulement)** (schémas 90, 90b). Tous appliqués en production et vérifiés. Nouvelle règle : **captures de validation avant chaque PR**.
 
 ## 2. Ce qui a été fait (session du 23/10/2026)
 

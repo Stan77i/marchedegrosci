@@ -206,6 +206,7 @@
 .cm-rf h3{margin:0 0 4px;font:600 16px/1.2 Jost,sans-serif;color:#8A2414}.cm-rf p{margin:4px 0;font-size:13.5px}
 .cm-ph{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.cm-ph a,.cm-ph span{display:block;width:72px;height:72px;border-radius:12px;overflow:hidden;background:#E7E0CF}.cm-ph img{width:100%;height:100%;object-fit:cover;display:block}
 .cm-dp{margin:0 0 12px;padding:14px;border-radius:18px;background:rgba(16,57,43,.06);box-shadow:inset 0 0 0 1px rgba(16,57,43,.16)}
+.cm-defi{display:flex;gap:8px;margin:6px 0 4px;font:600 30px/1 Jost,sans-serif;letter-spacing:.06em}.cm-defi i{font-style:normal;display:grid;place-items:center;width:46px;height:56px;border-radius:12px;background:#FFFDF8;box-shadow:inset 0 0 0 1.5px rgba(23,21,18,.2)}
 .cm-dp h3{display:flex;align-items:center;gap:8px;margin:0 0 4px;font:600 16px/1.2 Jost,sans-serif}.cm-dp p{margin:4px 0;font-size:13.5px}
 .cm-rf ul{margin:6px 0 0;padding:0;list-style:none;font-size:13px}.cm-rf li{padding:3px 0}
 .cm-wa{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:rgba(37,211,102,.1);font-size:13.5px}.cm-wa b{font-weight:600}.cm-wa a{color:#10392B;font-weight:600}
@@ -471,7 +472,7 @@
     }
     switch (c.etape) {
       case 'confirmee': return V ? ['Préparez la <em>marchandise</em>', (MOTM ? 'Glissez le mot secret (ci-dessous) dans la marchandise. ' : '') + 'Touchez « En préparation », puis « Chargement confirmé » quand le camion est chargé' + (c.mode_transport !== 'reseau' ? ', et « Le camion est parti » au départ.' : '.')] : ['Le vendeur prépare votre <em>marchandise</em>', 'Vous serez prévenu au chargement.'];
-      case 'preparation': return V ? ['Marchandise en <em>préparation</em>', (S && S.depart ? 'Confirmez le chargement quand le camion est chargé.' : 'Photographiez le colis emballé et pesez-le, puis confirmez le chargement.')] : ['Marchandise en <em>préparation</em>', 'Prochaine étape : le chargement.'];
+      case 'preparation': return V ? ['Marchandise en <em>préparation</em>', (S && S.depart && (S.depart.mot_ok || !S.mot) ? 'Confirmez le chargement quand le camion est chargé.' : 'Photographiez le colis emballé et pesez-le, puis confirmez le chargement.')] : ['Marchandise en <em>préparation</em>', 'Prochaine étape : le chargement.'];
       case 'chargement': if (c.mode_transport !== 'reseau') return (V || c.role === c.mode_transport)
         ? ['Marchandise <em>chargée</em>', 'Touchez « Le camion est parti » quand il démarre. Si le chauffeur a ouvert le lien de suivi, le départ se détecte tout seul.']
         : ['Marchandise <em>chargée</em>', 'Le départ du camion sera signalé ici. ' + (MOTM && !V ? 'À l’arrivée, tapez le mot secret du vendeur pour confirmer la réception.' : '')];
@@ -490,7 +491,7 @@
       else {
         const K = c.validation === 'code';
         // schéma 90 : pas de chargement sans les photos du colis et le poids
-        const DEP = !!(seq[c.id] && seq[c.id].depart);
+        const SD = seq[c.id], DEP = !!(SD && SD.depart && (SD.depart.mot_ok || !SD.mot));
         if (c.role === 'vendeur' && c.etape === 'confirmee') { b('preparation', 'En préparation', 'p'); if (!DEP) b('depart', TI('photo') + 'Photographier le colis'); else if (!K) b('chargement', 'Chargement confirmé'); }
         if (c.role === 'vendeur' && c.etape === 'preparation') { if (!DEP) b('depart', TI('photo') + 'Photographier le colis', 'p'); else if (!K) b('chargement', 'Chargement confirmé', 'p'); }
         // schéma 65 : avec son propre transporteur, « Chargée » attend « Le camion est parti » (vendeur, ou celui qui transporte)
@@ -597,18 +598,25 @@
       ? `<section class="cm-dp"><h3>${TI('photo')}Le colis au départ</h3><p>Avant le chargement : 2 à 4 photos du colis emballé et son poids. Sans elles, le chargement ne peut pas être confirmé.</p></section>` : '';
     return `<section class="cm-dp" aria-label="Le colis au départ"><h3>${TI('photo')}Le colis au départ</h3>
       <div class="cm-ph">${(D.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du colis au départ"></span>`).join('')}</div>
-      <p><b>${esc(String(D.poids_kg).replace('.', ','))} kg</b> pesés · photographié ${quand(D.le)}</p></section>`;
+      <p><b>${esc(String(D.poids_kg).replace('.', ','))} kg</b> pesés · photographié ${quand(D.le)}</p>
+      ${D.mot_photo ? `<p style="margin-top:10px"><b>Papier du mot secret</b> (équipe seulement) · code ${esc(D.defi || '')} · mot ${esc(S.mot || '')}</p><div class="cm-ph"><span data-ph="${esc(D.mot_photo)}" role="img" aria-label="Photo du papier du mot secret"></span></div>`
+        : D.mot_ok && c.role === 'vendeur' ? '<p>✓ Papier du mot secret photographié (vu seulement par l’équipe)</p>' : ''}</section>`;
   }
   // le vendeur photographie le colis emballé et indique le poids, avant le chargement
   function depart(c) {
     const box = bg.querySelector('.cm'); box.scrollTop = 0; dernierEcran = 'geste';
-    const fichiers = [];
+    const fichiers = [], S0 = seq[c.id]; let papier = null;
     box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
       <h2>Le colis au <em>départ</em></h2><p class="cm-sous">${esc(c.produit || '')} · ${esc(c.partenaire_nom)} · n° ${esc(c.numero)}</p>
       <form class="cm-f" novalidate>
         <span class="t" style="display:block;margin:4px 0 6px;font-weight:600">Photos du colis emballé (2 à 4)</span>
         <div class="cm-ph" data-apercu></div>
         <label class="cm-pick">${TI('photo')}Ajouter des photos<input type="file" accept="image/*" multiple data-fic></label>
+        ${S0 && S0.mot ? `<span class="t" style="display:block;margin:14px 0 6px;font-weight:600">Le papier du mot secret</span>
+        <p class="cm-note" style="font-size:13.5px;margin-top:0">Écrivez ce code à côté du mot secret, sur le papier, puis prenez le papier en photo. Seule l’équipe du Marché de Gros verra cette photo.</p>
+        <div class="cm-defi" data-defi aria-live="polite">…</div>
+        <div class="cm-ph" data-apmot></div>
+        <label class="cm-pick">${TI('photo')}Photographier le papier<input type="file" accept="image/*" capture="environment" data-ficmot></label>` : ''}
         <label class="t" for="cmDp">Poids pesé (kg)</label>
         <input type="number" id="cmDp" inputmode="decimal" min="0" step="any" placeholder="Ex. : 200">
         <p class="cm-note" style="font-size:13.5px">Montrez la marchandise propre et bien emballée. L’acheteur et le transporteur verront ces photos : en cas de réclamation, elles servent de preuve.</p>
@@ -627,10 +635,18 @@
       }
       e.target.value = ''; apercu();
     };
+    // le code au hasard (schéma 90b) : donné par le serveur, valable 15 minutes
+    const zd = f.querySelector('[data-defi]');
+    if (zd) N().rpc('commande_depart_defi', { p_id: c.id }).then(k => { if (zd.isConnected) zd.innerHTML = String(k || '').split('').map(x => `<i>${esc(x)}</i>`).join(''); zd.setAttribute('aria-label', 'Code ' + k); })
+      .catch(x => { if (zd.isConnected) zd.textContent = erreurTxt(x); });
+    const fm = f.querySelector('[data-ficmot]');
+    if (fm) fm.onchange = async e => { err.textContent = ''; f._mot = null; const fi = e.target.files && e.target.files[0]; e.target.value = ''; if (!fi) return;
+      try { papier = await reduirePhoto(fi); f.querySelector('[data-apmot]').innerHTML = `<span><img src="${URL.createObjectURL(papier)}" alt="Photo du papier"></span>`; } catch (x) { err.textContent = x.message; } };
     f.onsubmit = async e => {
       e.preventDefault();
       const pv = f.querySelector('#cmDp').value.trim(), poids = Number(pv.replace(',', '.'));
       if (fichiers.length < 2) { err.textContent = 'Ajoutez au moins 2 photos du colis emballé.'; return; }
+      if (fm && !papier) { err.textContent = 'Photographiez le papier du mot secret, avec le code écrit à côté.'; return; }
       if (!(poids > 0)) { err.textContent = 'Indiquez le poids pesé, en kilos.'; f.querySelector('#cmDp').focus(); return; }
       const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = 'Envoi des photos…';
       try {
@@ -638,6 +654,8 @@
         if (!f._chemins) { for (let i = 0; i < fichiers.length; i++) { const ch = u + '/depart-' + c.id.slice(0, 8) + '-' + Date.now() + '-' + i + '.jpg'; await N().deposerPrive('preuves', ch, fichiers[i]); chemins.push(ch); } f._chemins = chemins; }
         err.textContent = '';
         await N().rpc('commande_depart_preuves', { p_id: c.id, p_photos: f._chemins, p_poids_kg: poids });
+        if (papier) { if (!f._mot) { f._mot = u + '/motpapier-' + c.id.slice(0, 8) + '-' + Date.now() + '.jpg'; await N().deposerPrive('preuves', f._mot, papier); }
+          await N().rpc('commande_depart_mot', { p_id: c.id, p_photo: f._mot }); }
         await lireJournal(c.id);
         toast('Colis enregistré', { type: 'ok', sous: 'Vous pouvez confirmer le chargement.' });
         peindre();

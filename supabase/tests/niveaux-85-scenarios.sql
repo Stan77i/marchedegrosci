@@ -215,3 +215,191 @@ end $$;
 -- | auto-attribution refusée | journal fermé | seuils fermés | contestations fermées | _niv_appliquer fermé | niveaux_recalculer fermé
 -- | _niv_calculer fermé | niveaux_moi ok=true publics ok=0 criteres=8 | anon publics=0 criteres=8 | anon niveaux_moi refusé
 -- | anon conteste refusé | anon admin refusé | anon table fermée
+
+-- ═════ Relecture (24/10/2026) : tests ajoutés. Les blocs D et E ont tourné avant 85c, les blocs F et G après. ═════
+
+-- Bloc D : valeurs limites, double appel, achat groupé, autre membre, délais et refus de la contestation, refus de l'équipe, visiteur.
+do $$
+declare S uuid := 'f8e1b009-e7c7-4637-b685-c05155f06be9';
+  B uuid[] := array['2e332234-6183-459a-999b-ff6233d95181','af343de8-c7f9-4531-899e-624322b72a38','7162e623-e8cc-43ba-ba3d-73cc08ffe052','b5d74423-02f8-4535-b99e-452c4ad6ac34','66b186ee-6e92-4a0d-8bc9-d5b5699d652f','072428f6-50e3-471c-9256-1439e5b62484']::uuid[];
+  A uuid := '981961d4-25ba-4e1b-a732-8fd68cd6c922'; U uuid := '9a88ae51-03fb-41e9-8197-485763bf74af'; W uuid := 'e0b19df7-ca40-4760-a03b-53dc4109348f';
+  G uuid := gen_random_uuid();
+  cid uuid; i int; res text := ''; n1 int; n2 int; d jsonb; ct uuid; ids uuid[];
+begin
+  for i in 1..9 loop
+    insert into public.commandes (numero, vendeur_id, acheteur_id, cree_par, produit, quantite, unite, prix_unitaire, montant, mode_transport, etat, etape, validation)
+    values ('T85D-' || i, S, case when i <= 7 then B[1] else B[i - 6] end, B[1], 'mais', 1, 'sac', 100000, 100000, 'vendeur', 'en_cours', 'confirmee', 'code') returning id into cid;
+    update public.commandes set etat = 'terminee', etape = 'terminee', termine_le = now(), libere_le = now(), liberation = 'auto' where id = cid;
+  end loop;
+  d := public._niv_calculer(S, 'vendeur');
+  res := res || ' | 9 cmd : ' || coalesce(d->>'niveau','aucun') || ' excellent comptées (plafond 5 par partenaire)=' || (d->'detail'->2->>'commandes');
+  insert into public.annulations (commande_id, vendeur_id, acheteur_id, demandeur_id, imputable_id, role_imputable, chemin, categorie, categorie_auto)
+  values (gen_random_uuid(), S, B[2], S, S, 'vendeur', 'accord', 'abusive', 'abusive');
+  res := res || ' | 10 % pile : ' || coalesce((select niveau || ' sans grâce' from public.niveaux_membres where user_id = S and role = 'vendeur' and grace_jusqua is null), 'EN GRÂCE');
+  select count(*) into n1 from public.niveaux_journal where user_id = S;
+  perform public._niv_appliquer(S, 'vendeur'); perform public._niv_appliquer(S, 'vendeur');
+  select count(*) into n2 from public.niveaux_journal where user_id = S;
+  res := res || ' | double appel : journal ' || n1 || '→' || n2;
+  insert into public.annulations (commande_id, groupe_id, vendeur_id, acheteur_id, demandeur_id, imputable_id, role_imputable, chemin, categorie, categorie_auto)
+  values (gen_random_uuid(), G, S, B[3], S, S, 'vendeur', 'accord', 'abusive', 'abusive');
+  insert into public.annulations (commande_id, groupe_id, vendeur_id, acheteur_id, demandeur_id, imputable_id, role_imputable, chemin, categorie, categorie_auto)
+  values (gen_random_uuid(), G, S, B[4], S, S, 'vendeur', 'accord', 'abusive', 'abusive');
+  d := (select chiffres from public.niveaux_membres where user_id = S and role = 'vendeur');
+  res := res || ' | 2 abusives du même groupe : abus=' || (d->>'abusives') || ' pct=' || (d->>'abus_pct') || ' état=' || (select niveau || ' grâce vers ' || coalesce(grace_vers, 'rien') from public.niveaux_membres where user_id = S and role = 'vendeur');
+  for i in 10..20 loop
+    insert into public.commandes (numero, vendeur_id, acheteur_id, cree_par, produit, quantite, unite, prix_unitaire, montant, mode_transport, etat, etape)
+    values ('T85D-' || i, S, B[1 + (i % 6)], B[1], 'mais', 1, 'sac', 100000, 100000, 'vendeur', 'en_cours', 'confirmee') returning id into cid;
+    update public.commandes set etat = 'terminee', etape = 'terminee', termine_le = now(), libere_le = now(), liberation = 'auto' where id = cid;
+  end loop;
+  res := res || ' | +11 cmd : ' || (select niveau || coalesce(' grâce jusqu''au ' || grace_jusqua::date, ' sans grâce') from public.niveaux_membres where user_id = S and role = 'vendeur')
+    || ' dernier=' || (select evenement from public.niveaux_journal where user_id = S order by at desc limit 1);
+  update public.commandes set termine_le = now() - make_interval(days => (substr(numero, 6)::int % 3) * 35) where numero like 'T85D-%';
+  perform public._niv_appliquer(S, 'vendeur');
+  res := res || ' | 3 mois, 9,1 % : ' || (select niveau from public.niveaux_membres where user_id = S and role = 'vendeur');
+  perform set_config('request.jwt.claims', json_build_object('sub', W, 'role', 'authenticated')::text, true);
+  begin perform public.niveaux_contester('vendeur', 'Je conteste pour lui'); res := res || ' | autre conteste (ERREUR)'; exception when others then res := res || ' | autre membre : rien à contester'; end;
+  begin perform public.admin_niveaux_journal(S); res := res || ' | autre lit journal admin (ERREUR)'; exception when others then res := res || ' | admin_niveaux_journal refusé'; end;
+  res := res || ' | niveaux_moi de W : commandes vendeur=' || (public.niveaux_moi()->'roles'->'vendeur'->'calcul'->>'commandes');
+  insert into public.niveaux_journal (user_id, role, evenement, ancien, nouveau, at) values (U, 'vendeur', 'descend', 'bon', 'fiable', now() - interval '8 days');
+  perform set_config('request.jwt.claims', json_build_object('sub', U, 'role', 'authenticated')::text, true);
+  begin perform public.niveaux_contester('vendeur', 'Baisse injuste de mon niveau'); res := res || ' | 8 jours ACCEPTÉ (ERREUR)'; exception when others then res := res || ' | après 8 jours refusé'; end;
+  insert into public.niveaux_journal (user_id, role, evenement, ancien, nouveau, at) values (U, 'vendeur', 'descend', 'bon', 'fiable', now() - interval '6 days');
+  begin perform public.niveaux_contester('vendeur', 'Appelez-moi au 07 07 07 07 07'); res := res || ' | numéro ACCEPTÉ (ERREUR)'; exception when others then res := res || ' | numéro refusé'; end;
+  begin perform public.niveaux_contester('pirate', 'Baisse injuste de mon niveau'); res := res || ' | rôle pirate ACCEPTÉ (ERREUR)'; exception when others then res := res || ' | rôle inconnu refusé'; end;
+  begin perform public.niveaux_contester('vendeur', repeat('a', 301)); res := res || ' | 301 car. ACCEPTÉ (ERREUR)'; exception when others then res := res || ' | 301 car. refusé'; end;
+  ct := public.niveaux_contester('vendeur', 'Baisse injuste de mon niveau');
+  res := res || ' | 6 jours accepté';
+  perform set_config('request.jwt.claims', json_build_object('sub', A, 'role', 'authenticated')::text, true);
+  begin perform public.admin_niveaux_decider(ct, true, 'ok', 'gros', 30); res := res || ' | gros pour vendeur ACCEPTÉ (ERREUR)'; exception when others then res := res || ' | gros vendeur refusé'; end;
+  begin perform public.admin_niveaux_decider(ct, true, 'ok', 'pirate', 30); res := res || ' | niveau pirate ACCEPTÉ (ERREUR)'; exception when others then res := res || ' | niveau inconnu refusé'; end;
+  begin perform public.admin_niveaux_decider(ct, true, 'ok', 'bon', 0); res := res || ' | 0 j ACCEPTÉ (ERREUR)'; exception when others then res := res || ' | 0 j refusé'; end;
+  begin perform public.admin_niveaux_decider(ct, true, 'ok', 'bon', 366); res := res || ' | 366 j ACCEPTÉ (ERREUR)'; exception when others then res := res || ' | 366 j refusé'; end;
+  begin perform public.admin_niveaux_decider(ct, true, ' ', 'bon', 30); res := res || ' | réponse vide ACCEPTÉE (ERREUR)'; exception when others then res := res || ' | réponse vide refusée'; end;
+  perform public.admin_niveaux_decider(ct, false, 'Les annulations sont bien abusives.');
+  res := res || ' | refusée : ' || (select statut from public.niveaux_contestations where id = ct) || ' niveau U=' || coalesce(public._niv_effectif(U, 'vendeur'), 'aucun')
+    || ' journal force=' || (select count(*) from public.niveaux_journal where user_id = U and evenement = 'force');
+  perform set_config('request.jwt.claims', json_build_object('sub', U, 'role', 'authenticated')::text, true);
+  begin perform public.niveaux_contester('vendeur', 'Je recommence encore'); res := res || ' | re-contester ACCEPTÉ (ERREUR)'; exception when others then res := res || ' | re-contester le même changement refusé'; end;
+  insert into public.niveaux_journal (user_id, role, evenement, ancien, nouveau) values (W, 'acheteur', 'retire', 'fiable', null);
+  insert into public.bannis (user_id, motif) values (W, 'autre');
+  perform set_config('request.jwt.claims', json_build_object('sub', W, 'role', 'authenticated')::text, true);
+  begin perform public.niveaux_contester('acheteur', 'Baisse injuste de mon niveau'); res := res || ' | banni conteste (ERREUR)'; exception when others then res := res || ' | banni refusé'; end;
+  ids := array(select gen_random_uuid() from generate_series(1, 250)) || array[S, S, null]::uuid[];
+  res := res || ' | publics(253 ids, S après 200)=' || (select count(*) from public.niveaux_publics(ids)) || ' publics(S,S,null)=' || (select count(*) from public.niveaux_publics(array[S, S, null]::uuid[]));
+  d := public.reputation_publique(S)::jsonb;
+  res := res || ' | reputation : fiable=' || (d->'vendeur'->>'fiable') || ' terminees=' || (d->'vendeur'->>'terminees') || ' niveau=' || (d->'vendeur'->>'niveau_libelle') || ' acheteur.gros=' || coalesce(d->'acheteur'->>'gros','null')
+    || ' criteres=' || left(d->>'criteres_fiable', 60);
+  raise exception 'TEST D%', res;
+end $$;
+-- Résultat obtenu (24/10/2026) :
+-- TEST D | 9 cmd : fiable excellent comptées (plafond 5 par partenaire)=7 | 10 % pile : fiable sans grâce | double appel : journal 1→1
+-- | 2 abusives du même groupe : abus=2 pct=18.2 état=fiable grâce vers rien | +11 cmd : fiable sans grâce dernier=grace_levee | 3 mois, 9,1 % : fiable
+-- | autre membre : rien à contester | admin_niveaux_journal refusé | niveaux_moi de W : commandes vendeur=0 | après 8 jours refusé | numéro refusé
+-- | rôle inconnu refusé | 301 car. refusé | 6 jours accepté | gros vendeur refusé | niveau inconnu refusé | 0 j refusé | 366 j refusé | réponse vide refusée
+-- | refusée : refusee niveau U=aucun journal force=0 | re-contester le même changement refusé | banni refusé | publics(253 ids, S après 200)=0 publics(S,S,null)=1
+-- | reputation : fiable=true terminees=20 niveau=Vendeur fiable acheteur.gros=false criteres=Niveaux calculés par le serveur sur les commandes terminées
+
+-- Bloc E : « Acheteur en gros » (refus partiel sous le seuil → sursis ; contestation du sursis acceptée → badge gardé 60 jours) ; visiteur ; recalcul de tous.
+do $$
+declare X uuid := '2e332234-6183-459a-999b-ff6233d95181';
+  V uuid[] := array['7162e623-e8cc-43ba-ba3d-73cc08ffe052','b5d74423-02f8-4535-b99e-452c4ad6ac34','072428f6-50e3-471c-9256-1439e5b62484','e0b19df7-ca40-4760-a03b-53dc4109348f','ec35879a-1009-4b40-9c66-53a9b2595eb8','9bdc3a6d-93b3-41f1-bbbd-984b1094f05f']::uuid[];
+  A uuid := '981961d4-25ba-4e1b-a732-8fd68cd6c922'; cid uuid; cids uuid[] := '{}'; i int; res text := ''; ct uuid; t0 timestamptz; n int;
+begin
+  for i in 1..5 loop
+    insert into public.commandes (numero, vendeur_id, acheteur_id, cree_par, produit, quantite, unite, prix_unitaire, montant, mode_transport, etat, etape)
+    values ('T85E-' || i, V[i], X, X, 'igname', 1, 'sac', 600000, 600000, 'vendeur', 'en_cours', 'confirmee') returning id into cid;
+    cids := cids || cid;
+    update public.commandes set etat = 'terminee', etape = 'terminee', termine_le = now(), libere_le = now(), liberation = 'auto' where id = cid;
+  end loop;
+  res := res || ' | 5 × 600 000 : ' || (select coalesce(niveau,'aucun') || ' gros=' || gros from public.niveaux_membres where user_id = X and role = 'acheteur');
+  update public.commandes set montant_refuse = 100001 where id = cids[5];
+  res := res || ' | refus partiel (499 999) : gros=' || (select gros || ' sursis=' || (gros_grace_jusqua is not null) from public.niveaux_membres where user_id = X and role = 'acheteur')
+    || ' public gros=' || (select gros from public.niveaux_publics(array[X]));
+  perform set_config('request.jwt.claims', json_build_object('sub', X, 'role', 'authenticated')::text, true);
+  res := res || ' | contestable=' || coalesce((public.niveaux_moi()->'contestable')::text, 'null');
+  ct := public.niveaux_contester('acheteur', 'Le refus venait du transporteur.');
+  perform set_config('request.jwt.claims', json_build_object('sub', A, 'role', 'authenticated')::text, true);
+  perform public.admin_niveaux_decider(ct, true, 'Vérifié, badge gardé.', null, 60);
+  res := res || ' | acceptée (gros) : ' || (select 'gros=' || gros || ' sursis jusqu''à +' || round(extract(epoch from gros_grace_jusqua - now()) / 86400) || ' j niveau=' || coalesce(niveau, 'aucun') || ' force=' || coalesce(force_niveau, 'aucun') from public.niveaux_membres where user_id = X and role = 'acheteur');
+  perform public._niv_appliquer(X, 'acheteur');
+  res := res || ' | recalcul : gros=' || (select gros from public.niveaux_membres where user_id = X and role = 'acheteur');
+  perform set_config('request.jwt.claims', '', true);
+  set local role anon;
+  begin perform public.niveaux_vu(); res := res || ' | anon niveaux_vu (ERREUR)'; exception when others then res := res || ' | anon niveaux_vu refusé'; end;
+  begin perform public.admin_niveaux_decider(ct, true, 'x'); res := res || ' | anon décide (ERREUR)'; exception when others then res := res || ' | anon décide refusé'; end;
+  res := res || ' | tableau_marche anon ok=' || (public.tableau_marche('mais') is not null);
+  reset role;
+  t0 := clock_timestamp(); n := public.niveaux_recalculer();
+  res := res || ' | recalcul de tous : ' || n || ' en ' || round(extract(epoch from clock_timestamp() - t0) * 1000) || ' ms';
+  raise exception 'TEST E%', res;
+end $$;
+-- Résultat obtenu (24/10/2026) :
+-- TEST E | 5 × 600 000 : fiable gros=true | refus partiel (499 999) : gros=true sursis=true public gros=true
+-- | contestable=[{"role" : "acheteur", "evenement" : "gros_grace", ...}] | acceptée (gros) : gros=true sursis jusqu'à +60 j niveau=fiable force=aucun
+-- | recalcul : gros=true | anon niveaux_vu refusé | anon décide refusé | tableau_marche anon ok=true | recalcul de tous : 83 en 227 ms
+
+-- Bloc F : niveau décidé par l'équipe (fiable) dépassé par le calcul (bon) : fin de la décision puis montée ; en sursis, un calcul plus haut lève le sursis.
+do $$
+declare S uuid := 'f8e1b009-e7c7-4637-b685-c05155f06be9';
+  B uuid[] := array['2e332234-6183-459a-999b-ff6233d95181','af343de8-c7f9-4531-899e-624322b72a38','7162e623-e8cc-43ba-ba3d-73cc08ffe052','b5d74423-02f8-4535-b99e-452c4ad6ac34','66b186ee-6e92-4a0d-8bc9-d5b5699d652f','072428f6-50e3-471c-9256-1439e5b62484']::uuid[];
+  cid uuid; i int; res text := '';
+begin
+  for i in 1..10 loop
+    insert into public.commandes (numero, vendeur_id, acheteur_id, cree_par, produit, quantite, unite, prix_unitaire, montant, mode_transport, etat, etape)
+    values ('T85F-' || i, S, B[1 + (i % 6)], B[1], 'mais', 1, 'sac', 100000, 100000, 'vendeur', 'en_cours', 'confirmee') returning id into cid;
+    update public.commandes set etat = 'terminee', etape = 'terminee', termine_le = now() - make_interval(days => (i % 3) * 35), libere_le = now(), liberation = 'auto' where id = cid;
+  end loop;
+  update public.niveaux_membres set force_niveau = 'fiable', force_jusqua = now() + interval '10 days', niveau = 'fiable' where user_id = S and role = 'vendeur';
+  res := res || ' | forcé fiable : ' || public._niv_effectif(S, 'vendeur');
+  perform public._niv_appliquer(S, 'vendeur');
+  res := res || ' | calcul bon → ' || public._niv_effectif(S, 'vendeur') || ' force=' || coalesce((select force_niveau from public.niveaux_membres where user_id = S and role = 'vendeur'), 'levée')
+    || ' journal=' || (select string_agg(evenement || coalesce(':' || nouveau, ''), ',' order by at) from public.niveaux_journal where user_id = S);
+  update public.niveaux_membres set niveau = 'fiable', grace_jusqua = now() + interval '5 days', grace_vers = null where user_id = S and role = 'vendeur';
+  perform public._niv_appliquer(S, 'vendeur');
+  res := res || ' | sursis + calcul plus haut : ' || (select niveau || case when grace_jusqua is null then ' sans sursis' else ' EN SURSIS' end from public.niveaux_membres where user_id = S and role = 'vendeur');
+  raise exception 'TEST F%', res;
+end $$;
+-- Résultat obtenu (24/10/2026) :
+-- TEST F | forcé fiable : fiable | calcul bon → bon force=levée journal=monte:fiable,monte:bon,force_fin,monte:bon | sursis + calcul plus haut : bon sans sursis
+
+-- Bloc G (après 85c) : un sursis levé ne se conteste plus ; un sursis actif oui ; accepter sans niveau à rendre est refusé.
+do $$
+declare S uuid := 'f8e1b009-e7c7-4637-b685-c05155f06be9'; U uuid := '9a88ae51-03fb-41e9-8197-485763bf74af';
+  B uuid[] := array['2e332234-6183-459a-999b-ff6233d95181','af343de8-c7f9-4531-899e-624322b72a38','7162e623-e8cc-43ba-ba3d-73cc08ffe052']::uuid[];
+  A uuid := '981961d4-25ba-4e1b-a732-8fd68cd6c922'; cid uuid; i int; res text := ''; ct uuid; ann uuid;
+begin
+  for i in 1..3 loop
+    insert into public.commandes (numero, vendeur_id, acheteur_id, cree_par, produit, quantite, unite, prix_unitaire, montant, mode_transport, etat, etape)
+    values ('T85G-' || i, S, B[i], B[1], 'mais', 1, 'sac', 100000, 100000, 'vendeur', 'en_cours', 'confirmee') returning id into cid;
+    update public.commandes set etat = 'terminee', etape = 'terminee', termine_le = now(), libere_le = now(), liberation = 'auto' where id = cid;
+  end loop;
+  insert into public.annulations (commande_id, vendeur_id, acheteur_id, demandeur_id, imputable_id, role_imputable, chemin, categorie, categorie_auto)
+  values (gen_random_uuid(), S, B[2], S, S, 'vendeur', 'accord', 'abusive', 'abusive') returning id into ann;
+  res := res || ' | abusive : ' || (select niveau || ' sursis=' || (grace_jusqua is not null) from public.niveaux_membres where user_id = S and role = 'vendeur');
+  perform set_config('request.jwt.claims', json_build_object('sub', S, 'role', 'authenticated')::text, true);
+  res := res || ' | contestable pendant le sursis=' || coalesce((public.niveaux_moi()->'contestable')::text, 'null');
+  perform set_config('request.jwt.claims', json_build_object('sub', A, 'role', 'authenticated')::text, true);
+  perform public.admin_annulation_classer(ann, 'legitime', null, 'test');
+  perform set_config('request.jwt.claims', json_build_object('sub', S, 'role', 'authenticated')::text, true);
+  res := res || ' | après levée : contestable=' || coalesce((public.niveaux_moi()->'contestable')::text, 'null');
+  begin perform public.niveaux_contester('vendeur', 'Je conteste quand même'); res := res || ' | conteste un sursis levé (ERREUR)'; exception when others then res := res || ' | sursis levé : ' || sqlerrm; end;
+  perform set_config('request.jwt.claims', json_build_object('sub', A, 'role', 'authenticated')::text, true);
+  perform public.admin_annulation_classer(ann, 'abusive', S, 'test');
+  perform set_config('request.jwt.claims', json_build_object('sub', S, 'role', 'authenticated')::text, true);
+  ct := public.niveaux_contester('vendeur', 'Le camion est tombé en panne.');
+  res := res || ' | sursis actif : contestation ' || (select statut from public.niveaux_contestations where id = ct);
+  insert into public.niveaux_journal (user_id, role, evenement, ancien, nouveau) values (U, 'acheteur', 'retire', null, null);
+  perform set_config('request.jwt.claims', json_build_object('sub', U, 'role', 'authenticated')::text, true);
+  cid := public.niveaux_contester('acheteur', 'Je ne comprends pas ce retrait');
+  perform set_config('request.jwt.claims', json_build_object('sub', A, 'role', 'authenticated')::text, true);
+  begin perform public.admin_niveaux_decider(cid, true, 'Accordé'); res := res || ' | niveau vide ACCEPTÉ (ERREUR)'; exception when others then res := res || ' | niveau vide : ' || sqlerrm; end;
+  perform public.admin_niveaux_decider(cid, true, 'Accordé', 'fiable', 30);
+  res := res || ' | avec niveau : ' || public._niv_effectif(U, 'acheteur');
+  perform public.admin_niveaux_decider(ct, true, 'Panne vérifiée.');
+  res := res || ' | S accepté (défaut) : ' || public._niv_effectif(S, 'vendeur') || ' ' || (select round(extract(epoch from force_jusqua - now()) / 86400) || ' j' from public.niveaux_membres where user_id = S and role = 'vendeur');
+  raise exception 'TEST G%', res;
+end $$;
+-- Résultat obtenu (24/10/2026) :
+-- TEST G | abusive : fiable sursis=true | contestable pendant le sursis=[{"role" : "vendeur", "evenement" : "grace", ...}] | après levée : contestable=null
+-- | sursis levé : Rien à contester : on conteste dans les 7 jours qui suivent une baisse de niveau. | sursis actif : contestation ouverte
+-- | niveau vide : Choisissez le niveau à rendre. | avec niveau : fiable | S accepté (défaut) : fiable 90 j

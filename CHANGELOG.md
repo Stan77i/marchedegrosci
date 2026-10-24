@@ -6,6 +6,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Formulaires de publication : une ville d'une autre région n'est plus gardée en mémoire (« Guiglo » ne revient plus sous « Abidjan » à la réouverture de l'application) ; le profil la vide quand sa région change.
 - Transport : « Transport à votre charge » pour l'acheteur, « À la charge de l'acheteur » pour le vendeur, « À ma charge » dans une demande, partout (publication, annonces, tableau du marché, négociation, commande).
 
 

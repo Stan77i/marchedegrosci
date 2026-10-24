@@ -849,8 +849,10 @@ class Component extends DCLogic {
   constructor(p) {
     super(p);
     const me = ls('mdg-app:moi') || {};
+    if (me.city && this.accord(me.region, me.city) !== me.city) { me.city = ''; ls('mdg-app:moi', me); }
     this.me = me;
     const draft = ls('mdg-app:brouillon-offre') || {};
+    if (draft.city && draft.region && this.accord(draft.region, draft.city) !== draft.city) { draft.city = ''; draft.cityAutre = false; }
     this.state = { ready: false, stack: ['home'], fam: 0, rot: 0, dragging: false, slug: 'tomate', vid: null, infoK: 'comment-ca-marche',
       menu: false, sheet: null, sheetDy: 0, pick: null, pq: '', mode: 'jai', mf: this.blankM('tomate'), mErr: {}, done: null,
       aq: '', af: { cat: '', reg: '', qmin: '', pmax: '', vf: false }, fOpen: false,
@@ -860,7 +862,9 @@ class Component extends DCLogic {
       toast: '', toastOn: false, splash: this.props.splash === false ? 'off' : 'on', splashLine: false, vw: window.innerWidth, vh: window.innerHeight, clock: '', tick: 0, accTab: 'marche' };
     this.aRef = React.createRef(); this.pRef = React.createRef(); this.mapRef = React.createRef(); this.hist = 0;
   }
-  blankM(slug) { const m = this.me || {}; return { slug, qty: '', unit: 'kg', region: m.region || '', city: m.city || '', price: '', when: '', name: m.name || '' }; }
+  // une ville qui n'est pas de la région choisie n'a rien à faire là (« Guiglo » gardé alors que la région est Abidjan) : on la vide
+  accord(region, city) { const V = window.MDGVilles; if (!V || !region || !city) return city || ''; const m = /\(près de ([^)]+)\)\s*$/.exec(city), ref = m ? m[1] : city, r = V.region(ref); return r && r !== region ? '' : city; }
+  blankM(slug) { const m = this.me || {}; return { slug, qty: '', unit: 'kg', region: m.region || '', city: this.accord(m.region, m.city), price: '', when: '', name: m.name || '' }; }
   componentDidMount() {
     try { document.documentElement.classList.add('monte'); } catch (_) {}
     // Échap ferme le menu ou la feuille ouverte ; une autre fenêtre ouverte par-dessus (le focus y est) garde son Échap
@@ -951,7 +955,7 @@ class Component extends DCLogic {
     this._carteEnCours = true;
     // toucher un district : la carte zoome, le panneau reste replié ; toucher une bulle : la carte d'annonce s'ouvre en bas
     G.mount(el, { onSelect: s => this.setState({ csel: s, cOpen: false, cPick: null }), onPick: ids => { this.setState({ cPick: ids && ids.length ? ids : null, cOpen: false, cPickI: 0, cPickVu: false }); if (ids && ids.length > 1) this.cPickInvite(); },
-      onLocate: (la, lo) => { const A = window.MDGApp; let best = '', bd = 1e9; Object.keys(A.REG).forEach(k => { const d = A.km([la, lo], A.REG[k]); if (d < bd) { bd = d; best = k; } }); if (best && bd < 400) { this.me.region = best; ls('mdg-app:moi', this.me); this.setState({ cme: best }); } },
+      onLocate: (la, lo) => { const A = window.MDGApp; let best = '', bd = 1e9; Object.keys(A.REG).forEach(k => { const d = A.km([la, lo], A.REG[k]); if (d < bd) { bd = d; best = k; } }); if (best && bd < 400) { this.me.region = best; this.me.city = this.accord(best, this.me.city); ls('mdg-app:moi', this.me); this.setState({ cme: best }); } },
       insets: () => this.carteIns() }).then(api => {
       this._carteEnCours = false;
       if (!api) return simple();
@@ -1216,7 +1220,7 @@ class Component extends DCLogic {
   }
   // le nom d'une annonce = le nom du compte, jamais un autre (demandé le 22/10/2026 ; le serveur l'impose aussi : schéma 56)
   nomCompte() { if (identAdm()) return 'Marché de Gros'; const C = window.MDGCompte, p = C && C.profil && C.profil(); return (p && C.nomAffiche && C.nomAffiche(p)) || ''; }
-  saveMe(f) { this.me = { name: f.name || this.me.name, phone: this.telCompte() || this.me.phone, region: this.me.region || f.region, city: this.me.city || f.city }; ls('mdg-app:moi', this.me); }
+  saveMe(f) { const reg = this.me.region || f.region; this.me = { name: f.name || this.me.name, phone: this.telCompte() || this.me.phone, region: reg, city: this.accord(reg, this.me.city) || this.accord(reg, f.city) }; ls('mdg-app:moi', this.me); }
   // pas de lien, d'e-mail ni de code dans une annonce (supabase/schema-22 ; l'administrateur est libre)
   refusTexte(f) { const N = window.MDGNuage; return N && N.texteRefus ? N.texteRefus([f.name, f.agent, f.city, f.cityAutre && f.city].filter(x => typeof x === 'string').join(' · ')) : ''; }
   pubOffer(f) {
@@ -1553,7 +1557,7 @@ class Component extends DCLogic {
       negocier: (k, i) => { const r = (k === 'offre' ? offres : demandes)[i]; if (r && r.x) { const c = this.card(r.x); if (c.canNeg) c.neg(); else this.openFiche(slug); } } });
   }
   fitName(name, maxW) { const F = fs => 'italic 900 ' + fs + 'px Jost'; for (const fs of [44, 40, 36, 32]) if (this.tw(name, F(fs)) <= maxW) return { fs: fs + 'px', lh: '1' }; return { fs: (this.tw(name, F(30)) > maxW * 1.9 ? 26 : 30) + 'px', lh: '1.04' }; }
-  locate() { const A = window.MDGApp; if (!navigator.geolocation) { this.say('Localisation indisponible : choisissez votre région'); return; } this.say('Recherche de votre position…'); navigator.geolocation.getCurrentPosition(p => { let best = '', bd = 1e9; Object.keys(A.REG).forEach(s => { const d = A.km([p.coords.latitude, p.coords.longitude], A.REG[s]); if (d < bd) { bd = d; best = s; } }); if (bd > 400) { this.say('Vous semblez hors de Côte d\u2019Ivoire'); return; } this.me.region = best; ls('mdg-app:moi', this.me); this.setState({ cme: best, csel: '' }); this.say('Repéré près de ' + A.REG[best][2]); }, () => this.say('Position refusée : choisissez votre région'), { timeout: 8000, maximumAge: 600000 }); }
+  locate() { const A = window.MDGApp; if (!navigator.geolocation) { this.say('Localisation indisponible : choisissez votre région'); return; } this.say('Recherche de votre position…'); navigator.geolocation.getCurrentPosition(p => { let best = '', bd = 1e9; Object.keys(A.REG).forEach(s => { const d = A.km([p.coords.latitude, p.coords.longitude], A.REG[s]); if (d < bd) { bd = d; best = s; } }); if (bd > 400) { this.say('Vous semblez hors de Côte d\u2019Ivoire'); return; } this.me.region = best; this.me.city = this.accord(best, this.me.city); ls('mdg-app:moi', this.me); this.setState({ cme: best, csel: '' }); this.say('Repéré près de ' + A.REG[best][2]); }, () => this.say('Position refusée : choisissez votre région'), { timeout: 8000, maximumAge: 600000 }); }
   doPick(slug) { const k = this.state.pick; this.setState(s => k === 'match' ? { mf: Object.assign({}, s.mf, { slug }), pick: null } : k === 'vendre' ? { vf: Object.assign({}, s.vf, { slug }), vErr: {}, pick: null } : k === 'demande' ? { df: Object.assign({}, s.df, { slug }), dErr: {}, pick: null } : { cprod: slug, csel: '', pick: null, cPick: null }); }
   setVf(patch) { this.setState(s => { const vf = Object.assign({}, s.vf, patch); ls('mdg-app:brouillon-offre', Object.assign({}, vf, { photo: '' })); return { vf, vErr: {} }; }); }
 
@@ -1909,7 +1913,7 @@ class Component extends DCLogic {
       dCity: this.cityUI(df, patchD), dVsEl: window.MDGVilleSeule ? window.MDGVilleSeule.interrupteur(df, 'demande', patchD) : null, df, dfh: { qty: setD('qty'), region: e => patchD(this.regionPatch(S.df, e.target.value)), budget: setD('budget'), name: setD('name'), phone: setD('phone') }, dErr: S.dErr,
       dUnits: A.UNITS.map(u => Object.assign(chip(df.unit === u), { l: u, go: () => this.setState(s => ({ df: Object.assign({}, s.df, { unit: u }) })) })),
       dExi: this.exiBloc('df', true), dTr: this.trBloc('df', 'demande'), dWhen: W_DEM.map(w => Object.assign(chip(df.deadline === w[0]), { l: w[1], go: () => this.setState(s => ({ df: Object.assign({}, s.df, { deadline: w[0] }) })) })), dPublish,
-      cPick: () => this.openPick('carte'), cLocate: () => { if (this.glOn && this.map && this.map.localiser) this.map.localiser(); else this.locate(); }, mapRef: this.mapRef, cLocOn: !this.glOn, cDist, cLeg, cSheet, cZones, cAdmin: isAdm, cZoneAdd: () => this.zoneForm(), cProdL: S.cprod ? this.prod(S.cprod).name : 'Tous les produits', cMe: S.cme, cMeOn: S.cme ? 'oui' : 'non', cMeK: S.cme ? 'Vous êtes à' : 'Votre zone', cMeL: S.cme ? ((M.regions.find(r => r.slug === S.cme) || {}).name || S.cme) : 'Où êtes-vous ?', onMe: e => { const v = e.target.value; this.setState({ cme: v, csel: '' }); if (v) { this.me.region = v; ls('mdg-app:moi', this.me); } },
+      cPick: () => this.openPick('carte'), cLocate: () => { if (this.glOn && this.map && this.map.localiser) this.map.localiser(); else this.locate(); }, mapRef: this.mapRef, cLocOn: !this.glOn, cDist, cLeg, cSheet, cZones, cAdmin: isAdm, cZoneAdd: () => this.zoneForm(), cProdL: S.cprod ? this.prod(S.cprod).name : 'Tous les produits', cMe: S.cme, cMeOn: S.cme ? 'oui' : 'non', cMeK: S.cme ? 'Vous êtes à' : 'Votre zone', cMeL: S.cme ? ((M.regions.find(r => r.slug === S.cme) || {}).name || S.cme) : 'Où êtes-vous ?', onMe: e => { const v = e.target.value; this.setState({ cme: v, csel: '' }); if (v) { this.me.region = v; this.me.city = this.accord(v, this.me.city); ls('mdg-app:moi', this.me); } },
       // plusieurs annonces au même endroit : on voit le bord de la suivante, des points « 1 sur 2 » et des flèches
       cPickMulti: cPicked.length > 1, cPickW: cPicked.length > 1 ? 'calc(100% - 64px)' : 'calc(100% - 28px)',
       cPickDots: cPicked.map((_, i) => ({ on: String(i === (S.cPickI || 0)), lab: 'Annonce ' + (i + 1) + ' sur ' + cPicked.length, go: () => this.cPickAller(i) })),

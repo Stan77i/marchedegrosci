@@ -8,7 +8,8 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 - Transport : « Transport à votre charge » pour l'acheteur, « À la charge de l'acheteur » pour le vendeur, « À ma charge » dans une demande, partout (publication, annonces, tableau du marché, négociation, commande).
 
-- Publication : une ville tapée dans « Autre localité » qui appartient à une autre région (ex. « Guiglo » avec la région Abidjan) est signalée, avec un bouton pour la choisir avec sa vraie région ; l'interrupteur « uniquement à » attend une ville cohérente, et la publication est bloquée tant que la ville et la région se contredisent.
+
+- « Ville uniquement » : pour une localité tapée (« Guiglo » dans la région Abidjan), c'est la ville de rattachement de la région choisie qui compte (« Je vends uniquement à Abidjan »), dans l'application et sur le serveur (schéma 87b) ; la région choisie ne change plus toute seule.
 - Publication d'une offre : le choix « Non inclus » devient « Transport à part » (« son prix se négocie à part »), et l'annonce affiche « Transport à part » au lieu de « Transport à discuter ».
 - Niveaux de confiance (chantier 3) : Vendeur fiable, Bon, Excellent, Grand vendeur, mêmes paliers pour les acheteurs et « Acheteur en gros », calculés par le serveur (schéma 85, appliqué en production), écran « Mes niveaux », tableau de bord de l'administrateur.
 - Connexion : le titre alterne « marché de Gros » et « marché du pays » (3 s, puis 2 s, toutes les 10 s), validé en vidéo par le propriétaire ; le « court film » de connexion a été refusé et n'est pas fusionné.

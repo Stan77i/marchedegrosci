@@ -6,6 +6,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Les communes d'Abidjan (Cocody, Yopougon…) ne sont plus proposées comme villes : dans la région Abidjan, la seule ville est « Abidjan » ; une commune enregistrée avant devient « Abidjan ».
 - Abidjan est une seule ville : avec une commune (Cocody, Yopougon…), l'interrupteur dit « Je vends uniquement à Abidjan » ; une livraison d'une commune à l'autre est « même ville » (schéma 87c, appliqué en production).
 
 - Chantier 4 (branche `claude/chantier-boutiques-p`, schéma 86, 86b et 86c appliqués en production) : boutique par vendeur avec adresse (pseudo ou code court), lien, QR code à télécharger, aperçu de partage (pages `site/boutiques/`, noindex), visites en totaux ; pause d'une offre, retrait sans effacement, quantité obligatoire, verrou contre la survente ; page de maintenance avec le QR de la boutique.

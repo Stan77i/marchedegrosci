@@ -14,7 +14,7 @@
   // la ville qui compte : celle de l'annonce, ou la ville de rattachement d'une localité
   // (« Napié (près de Ferkessédougou) » → « Ferkessédougou » ; même règle que la base, _ville_ref, schéma 87b)
   // une commune d'Abidjan (Cocody, Yopougon…) compte comme Abidjan (MDGVilles.ref)
-  const ABJ = ['abidjan', 'abobo', 'adjame', 'anyama', 'attecoube', 'bingerville', 'cocody', 'koumassi', 'marcory', 'plateau', 'portbouet', 'songon', 'treichville', 'yopougon'];
+  const ABJ = ['abidjan', 'abobo', 'adjame', 'anyama', 'attecoube', 'bingerville', 'brofodoume', 'cocody', 'koumassi', 'marcory', 'plateau', 'leplateau', 'portbouet', 'songon', 'treichville', 'yopougon'];
   const nom = c => { if (window.MDGVilles && MDGVilles.ref) return MDGVilles.ref(c); c = String(c || '').trim(); const m = /\(près de ([^)]+)\)\s*$/.exec(c); c = (m ? m[1] : c).trim(); return ABJ.indexOf(cle(c)) >= 0 ? 'Abidjan' : c; };
   // la même clé que la base (_ville_cle) : sans accent, sans espace ni signe
   const cle = v => String(v || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '');

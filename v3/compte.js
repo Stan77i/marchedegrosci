@@ -467,6 +467,7 @@ label.cp-r{cursor:pointer}
     let ville = m0 ? '' : v0, autre = m0 ? m0[1] : '', proche = m0 ? m0[2] : '', enAutre = !!m0;
     if (!V) { vs.innerHTML = opt('__autre', 'Écrire ma localité', true); box.hidden = false; inp.value = v0; pres.closest('div').hidden = true; return; }
     if (ville && !V.region(ville)) { autre = ville; ville = ''; enAutre = true; }
+    if (ville) ville = V.propre(ville);   // « Cocody » enregistré avant : une commune d'Abidjan, donc « Abidjan »
     function villes() {
       const r = rs.value, L = r ? V.de(r) : V.toutes().sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
       const choisi = enAutre ? '__autre' : ville;

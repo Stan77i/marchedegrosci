@@ -1,10 +1,11 @@
 -- Schéma 87c : Abidjan est une seule ville (règle du propriétaire, 24/10/2026).
--- Une commune d'Abidjan (Cocody, Yopougon…) compte comme « Abidjan » pour « vendre / acheter uniquement à » et pour « même ville ».
+-- Les 13 communes du district (Abobo, Adjamé, Anyama, Attécoubé, Bingerville, Brofodoumé, Cocody, Koumassi, Marcory, Plateau, Port-Bouët, Songon, Treichville, Yopougon) ne sont pas des villes.
+-- Une commune d'Abidjan compte comme « Abidjan » pour « vendre / acheter uniquement à » et pour « même ville ».
 -- Même liste que app/villes.js (région abidjan) et app/ville-seule.js.
 create or replace function public._ville_ref(v text)
 returns text language sql immutable set search_path = public as $$
-  select case when public._ville_cle(r) in ('abidjan', 'abobo', 'adjame', 'anyama', 'attecoube', 'bingerville', 'cocody', 'koumassi',
-      'marcory', 'plateau', 'portbouet', 'songon', 'treichville', 'yopougon') then 'Abidjan' else r end
+  select case when public._ville_cle(r) in ('abidjan', 'abobo', 'adjame', 'anyama', 'attecoube', 'bingerville', 'brofodoume', 'cocody', 'koumassi',
+      'marcory', 'plateau', 'leplateau', 'portbouet', 'songon', 'treichville', 'yopougon') then 'Abidjan' else r end
   from (select btrim(coalesce(substring(coalesce(v, '') from '\(près de ([^)]+)\)\s*$'), coalesce(v, ''))) as r) x
 $$;
 

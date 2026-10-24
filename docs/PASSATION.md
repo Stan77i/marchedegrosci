@@ -1348,3 +1348,21 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
   - tirets longs « — » : 0 visible à l'écran (application et site caché, mesuré dans le navigateur) ; ceux du code sont dans des commentaires ou servent de valeur vide ;
   - mots creux (« révolutionnaire », « en quelques clics », « découvrez »…) : aucun dans le site ni dans l'application.
 - Front : `v3/negoce.js?v=20261124a`, `CACHE` `mgci-v235`.
+
+## 24/10/2026 — Audit antislop complet de l'application (mode « après »)
+
+- Rapport : `docs/anti-slop/audit-001-2026-10-24.md`. **Aucune correction faite** : le propriétaire choisit les numéros.
+- Méthode : navigateur (16 écrans sans compte, iPhone émulé, clair et sombre, 390 et 320 px, mesures automatiques) + relecture des 60 fichiers de l'application par 5 relecteurs, avec antislop et les 32 lois de `DESIGN.md`. Le serveur Supabase était bloqué par le réseau de la session : les écrans avec compte ou données n'ont été vus que dans le code.
+- Résultat : 26 constats HAUTS (6 phrases fausses sur le paiement, dont « Payé sous 24 h » dans la bande de l'accueil ; 14 textes illisibles mesurés entre 1,04:1 et 4,3:1 ; 5 entorses à la règle de stabilité ; 1 problème de clavier), 19 MOYENS, 14 BAS, 3 décisions de goût (accueil vivant, bleu « vérifié », « de Gros » en dégradé).
+- Bon partout : aucune erreur JS, aucun débordement à 320 px, aucun tiret long visible, mode « moins d'animations » presque partout respecté.
+
+## 24/10/2026 — Phrases justes sur le paiement (audit antislop n° 1 à 6)
+
+- Règle : aucun paiement ne passe par l'application (séquestre en construction). Les textes qui disaient le contraire sont corrigés ; quand le séquestre sera actif (`S.actif`), Mes commandes reprend d'elle-même l'ancien texte.
+- Bande de l'accueil (`app/garanties.js`) : « Pas de réclamation ? Payé sous 24 h » → « Marchandise reçue : 24 h pour la vérifier » ; « Pas de remboursement sans preuves » → « Un refus se prouve : mot secret et photos ».
+- Mes commandes (`v3/commandes.js`) : « le paiement est libéré automatiquement » seulement si le séquestre est actif, sinon « la commande est clôturée automatiquement » ; dernière étape « Clôture » au lieu de « Libération » sans séquestre ; reconnaître un refus : « L'acheteur ne doit que la partie acceptée » sans séquestre.
+- Délai : **24 h** partout (le serveur clôt 24 h après la réception, schéma 61). Les « 48 h » de Mes commandes et de l'écran administrateur des transports (`v3/admin-transport.js`) sont corrigés. Les 48 h de la négociation sont une autre règle (délai pour répondre à une proposition) : inchangés.
+- Tutoriels (`v3/astuces.js`) : « Vérifier et libérer » devient « Vérifier la marchandise » (paiement à la livraison, commande clôturée après 24 h) ; « Refuser » : « vous ne devez que la partie acceptée ». Aide (`v3/aide.js`) : « Vais-je être remboursé ? » répond que le paiement se fait à la livraison, entre vous.
+- `app/toast.js` : « L'équipe est prévenue » (faux) → « Réessayez plus tard ». Formulaire J'ai / Je cherche : « Votre offre sera la première du réseau » (parfois faux) → « les acheteurs verront votre offre ».
+- Vérifié (navigateur, iPhone) : les 24 phrases de la bande, les 4 cartes du tutoriel et la phrase du formulaire s'affichent ; aucune erreur JS. Mes commandes n'a pas pu être ouverte (pas d'accès au serveur dans cette session) : vérifié par la relecture et `node --check`.
+- `?v=20261124b` pour garanties, toast, admin-transport, aide, astuces, commandes ; cache `mgci-v236`.

@@ -60,6 +60,8 @@
 
 ## 3. Ce qui reste à faire (dans l'ordre conseillé)
 
+**0. Audit antislop de l'application (24/10/2026) : le propriétaire choisit les numéros à corriger** dans `docs/anti-slop/audit-001-2026-10-24.md` (59 constats + 3 décisions A, B, C). Ne rien corriger sans son choix ; ensuite une PR par lot, et noter dans le fichier ce qui est fait. Les n° 1 à 6 (phrases fausses sur le paiement) sont faits ; conseillé ensuite : n° 7 à 20 (textes illisibles), puis 21 à 25 (stabilité).
+
 **Le site caché est presque complet côté contenu.** Ce qui bloque maintenant, ce sont les étapes 1 et 3, qui dépendent du propriétaire.
 
 1. **Retours du propriétaire sur le site caché** (il doit le regarder par « SEO ») : appliquer ses corrections.

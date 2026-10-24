@@ -72,14 +72,14 @@
       ['✍️', 'Sur un papier, dans le colis', 'Écrivez-le sur un papier et *glissez-le dans la marchandise* avant le chargement.'],
       ['📸', 'C’est votre protection', 'À la réception, l’acheteur *tape ce mot* pour confirmer qu’il a bien reçu votre marchandise. Pour la refuser, il doit aussi le taper et le photographier.'],
       ['🤐', 'Ne le donnez à personne', 'Ni par message, ni au téléphone. Il est *dans le colis*, c’est tout.']] },
-    verifier: { t: 'Vérifier et libérer', insiste: 3, cartes: [
+    verifier: { t: 'Vérifier la marchandise', insiste: 3, cartes: [
       ['🔍', 'Vérifiez la marchandise', 'Quantité, qualité, et le *papier du vendeur* glissé dans le colis.'],
-      ['✅', 'Tout est bon ?', 'Touchez *« Tout est conforme »*. Le vendeur et le transporteur reçoivent leur part.'],
-      ['⏰', 'Sans réponse : 24 h', 'Si vous ne réclamez pas, le paiement est *libéré tout seul 24 h après la réception*. L’heure exacte est affichée.'],
+      ['✅', 'Tout est bon ?', 'Touchez *« Tout est conforme »* : la commande est terminée. Le paiement se fait *à la livraison*, entre vous.'],
+      ['⏰', 'Sans réponse : 24 h', 'Si vous ne réclamez pas, la commande est *clôturée toute seule 24 h après la réception*. L’heure exacte est affichée.'],
       ['⚠️', 'Un problème ?', 'Touchez *« Refuser la marchandise »* avant la fin du délai, avec le mot du vendeur et des photos.']] },
     refus: { t: 'Refuser la marchandise', insiste: 3, cartes: [
       ['🧾', 'Il faut des preuves réelles', 'Le *mot secret du vendeur* (le papier dans le colis) et *1 à 4 photos* : la marchandise et le papier.'],
-      ['🤝', 'Si le vendeur reconnaît', 'La partie refusée vous revient, le reste va au vendeur. Le *transport reste dû* : le chauffeur a fait son travail.'],
+      ['🤝', 'Si le vendeur reconnaît', 'Vous ne devez *que la partie acceptée*. Le *transport reste dû* : le chauffeur a fait son travail.'],
       ['⚖️', 'Sinon, on en parle à trois', 'Vous, le vendeur et le *Marché de Gros*, dans la discussion de la commande. L’équipe juge avec tous les échanges.'],
       ['📄', 'Pas de papier ?', 'Revenez en arrière et touchez *« Signaler un problème »* : rien n’est rendu tout seul, l’équipe juge.']] },
     discussion: { t: 'La discussion à trois', insiste: 2, cartes: [

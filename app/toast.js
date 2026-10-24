@@ -124,7 +124,7 @@ html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme
     [/failed to fetch|networkerror|load failed|err_internet|network request failed|fetch failed/i, 'Pas de réseau', 'Vérifiez la connexion, puis réessayez.'],
     [/\bjwt\b|401|not authenticated|invalid token|session expired/i, 'Reconnectez-vous', 'Votre session a expiré.'],
     [/timeout|timed out|\b50[234]\b|statement_timeout/i, 'Le serveur met trop de temps', 'Réessayez dans un instant.'],
-    [/schema cache|could not find the function|does not exist|not found in the schema/i, 'Pas encore activé sur le serveur', 'L’équipe est prévenue.'],
+    [/schema cache|could not find the function|does not exist|not found in the schema/i, 'Pas encore prêt sur le serveur', 'Réessayez plus tard.'],
     [/row-level security|permission denied|violates|constraint|duplicate key|syntax error|pgrst\d|p0001|sqlstate|unexpected token|is not a function|undefined/i, 'Le serveur a refusé l’opération', 'Réessayez ; si ça continue, écrivez à l’équipe.']
   ];
   const tech = t => TECH.find(r => r[0].test(t));

@@ -2,9 +2,12 @@
    Comme Gmail : quand quelqu'un répond à une négociation, le téléphone affiche la notification même si l'application est fermée,
    et le nombre de réponses à lire s'affiche sur l'icône. Hors réseau, la notification arrive dès que le réseau revient.
    - activer() : demande l'accord (toujours après un geste de la personne), abonne le téléphone, l'enregistre (push_abonner),
-     puis envoie une notification d'essai pour vérifier que tout marche ;
+     puis demande un essai au serveur et rend sa VRAIE réponse ({ telephones, envoyees, raison }) : on ne dit « essai envoyé » que si envoyees > 0 ;
    - à chaque connexion, un téléphone déjà abonné suit le compte connecté ; à la déconnexion, il est retiré (oublier) ;
-   - toucher une notification ouvre la négociation concernée (#/?nego=…).
+   - désactiver ou se déconnecter passe par push_quitter (schéma 88a : laisse une trace pour les statistiques), sinon push_desabonner ;
+   - une permission retirée dans les réglages du téléphone alors que ce téléphone était abonné est signalée une fois (notif_permission_retiree) ;
+   - toucher une notification ouvre l'écran de son adresse (#/?nego=…, #/?commande=…, #/produits/…) ; si personne n'est connecté,
+     l'adresse est gardée le temps de la session (sessionStorage) et rouverte juste après la connexion.
    iPhone : les notifications ne marchent que dans l'application ajoutée à l'écran d'accueil (iOS 16.4 et plus).
    Serveur : supabase/schema-6.sql (table, déclencheur) et supabase/functions/pousser (l'envoi). */
 (function () {
@@ -20,12 +23,21 @@
   const abonnement = async () => { const r = await navigator.serviceWorker.ready; return r.pushManager.getSubscription(); };
 
   // 'actif' | 'inactif' | 'refuse' (refusé dans les réglages du téléphone) | 'installer' (iPhone : ajouter à l'écran d'accueil) | 'impossible'
+  const KA = 'mdg-pousse:abonne';   // « ce téléphone était abonné » : pour remarquer une permission retirée dans les réglages du téléphone
   async function etat() {
     if (!ok) return ios && !installee ? 'installer' : 'impossible';
-    if (Notification.permission === 'denied') return 'refuse';
+    if (Notification.permission === 'denied') { permissionRetiree(); return 'refuse'; }
     const s = await abonnement().catch(() => null);
-    return s && Notification.permission === 'granted' ? 'actif' : 'inactif';
+    const e = s && Notification.permission === 'granted' ? 'actif' : 'inactif';
+    try { if (e === 'actif') localStorage.setItem(KA, '1'); } catch (_) {}
+    return e;
   }
+  function permissionRetiree() {
+    try { if (localStorage.getItem(KA) !== '1' || !N() || !N().session()) return; localStorage.removeItem(KA); } catch (_) { return; }
+    N().rpc('notif_permission_retiree').catch(() => {});
+  }
+  // se retirer en laissant une trace (schéma 88a) ; tant que 88a n'est pas en place, l'ancienne fonction
+  const quitter = (endpoint, origine) => N().rpc('push_quitter', { p_endpoint: endpoint, p_origine: origine }).catch(() => N().rpc('push_desabonner', { p_endpoint: endpoint }));
   async function enregistrer(s) { const j = s.toJSON(); await N().rpc('push_abonner', { p_endpoint: j.endpoint, p_p256dh: j.keys.p256dh, p_auth: j.keys.auth, p_appareil: appareil() }); }
   async function essai() {
     const ss = N() && N().session(); if (!ss) return null;
@@ -40,12 +52,12 @@
     let s = await r.pushManager.getSubscription();
     if (!s) s = await r.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: cle(VAPID) });
     await enregistrer(s);
-    essai();
-    return true;
+    try { localStorage.setItem(KA, '1'); } catch (_) {}
+    return (await essai()) || { telephones: 0, envoyees: 0, raison: 'sans_reponse' };
   }
-  async function desactiver() { const s = await abonnement().catch(() => null); if (!s) return; try { await N().rpc('push_desabonner', { p_endpoint: s.endpoint }); } catch (_) {} try { await s.unsubscribe(); } catch (_) {} }
+  async function desactiver() { const s = await abonnement().catch(() => null); try { localStorage.removeItem(KA); } catch (_) {} if (!s) return; try { await quitter(s.endpoint, 'desabonnement'); } catch (_) {} try { await s.unsubscribe(); } catch (_) {} }
   // à la déconnexion (la session est encore valable) : ce téléphone ne reçoit plus les notifications de ce compte
-  async function oublier() { try { const s = await abonnement(); if (s) await N().rpc('push_desabonner', { p_endpoint: s.endpoint }); } catch (_) {} badge(0); }
+  async function oublier() { try { const s = await abonnement(); if (s) await quitter(s.endpoint, 'deconnexion'); } catch (_) {} badge(0); }
   async function suivre() { try { if (!ok || Notification.permission !== 'granted' || !N() || !N().session()) return; const s = await abonnement(); if (s) await enregistrer(s); } catch (_) {} }
 
   // la pastille sur l'icône : le nombre de réponses à lire (comme le serveur l'envoie avec chaque notification)
@@ -59,7 +71,27 @@
     const go = (k) => { if (window.MDGNegoce && N() && N().session()) MDGNegoce.thread(m[1]); else if (k < 20) setTimeout(() => go(k + 1), 300); };
     setTimeout(() => go(0), 700);
   }
-  if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'mdg-nego' && e.data.nego && window.MDGNegoce) MDGNegoce.thread(e.data.nego); });
+  if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'mdg-nego' && e.data.nego && window.MDGNegoce) MDGNegoce.thread(e.data.nego);
+    if (e.data && e.data.type === 'mdg-pousse-suivre') suivre(); });
+
+  // rejouer l'adresse d'une notification comme le fait sw.js quand l'application est ouverte : les mêmes messages, aux mêmes modules
+  function ouvrirLien(url) {
+    const u = String(url || ''), sw = navigator.serviceWorker; if (!sw || !u) return;
+    const id = k => (new RegExp('[?&]' + k + '=([0-9a-f-]{36})').exec(u) || [])[1], nego = id('nego'), dm = id('dm'), commande = id('commande'), chauffeur = /[?&]chauffeur=1/.test(u);
+    const msg = d => { try { sw.dispatchEvent(new MessageEvent('message', { data: d })); } catch (_) {} };
+    if (nego) msg({ type: 'mdg-nego', nego }); else if (dm) msg({ type: 'mdg-dm', dm }); else if (commande) msg({ type: 'mdg-commande', commande }); else if (chauffeur) msg({ type: 'mdg-chauffeur' });
+    msg({ type: 'mdg-lien', url: u, deja: !!(nego || dm || commande || chauffeur) });
+  }
+  // ouverte depuis une notification sans être connecté : l'écran demandé attend la connexion (30 min au plus, cet onglet seulement)
+  const KL = 'mdg-notif:apres', PRIVE = /[?&](nego|dm|commande|groupe|racheter|besoin|chauffeur|fiabilite|niveaux)=/;
+  function garderSiDeconnecte() {
+    const h = PRIVE.test(location.hash) ? location.hash : String(window.MDGAdresse0 || ''); if (!PRIVE.test(h)) return;
+    setTimeout(() => { try { if (N() && !N().session()) sessionStorage.setItem(KL, JSON.stringify({ h, t: Date.now() })); } catch (_) {} }, 400);
+  }
+  function rejouerApresConnexion() {
+    let x = null; try { x = JSON.parse(sessionStorage.getItem(KL) || 'null'); sessionStorage.removeItem(KL); } catch (_) {}
+    if (x && x.h && Date.now() - x.t < 30 * 60e3) setTimeout(() => ouvrirLien('application.dc.html' + x.h), 1200);
+  }
 
   // une seule fois, peu après la connexion dans l'application : la proposition d'activer (un toucher est nécessaire pour demander l'accord)
   async function inviter() {
@@ -78,13 +110,14 @@
     document.body.appendChild(el);
     const fermer = () => { el.classList.add('is-out'); setTimeout(() => el.remove(), 320); };
     el.querySelector('.pp-non').onclick = fermer;
-    el.querySelector('.pp-oui').onclick = async () => { fermer(); try { await activer(); N() && N().toast('Notifications activées. Une notification d’essai arrive.'); } catch (x) { const c = String((x && x.message) || ''); const T = { REFUS: 'Vous pourrez les activer plus tard dans Mon compte → Notifications.', SANS_REPONSE: 'Pas de réponse du téléphone : réessayez dans Mon compte → Notifications.', INSTALLER: 'Sur iPhone, ajoutez d’abord l’application à l’écran d’accueil (Partager → Sur l’écran d’accueil), puis réessayez.', IMPOSSIBLE: 'Ce téléphone ne reçoit pas les notifications de l’application.' };
+    el.querySelector('.pp-oui').onclick = async () => { fermer(); try { const r = await activer(); N() && N().toast(r && r.envoyees > 0 ? 'Notifications activées. Un essai vient de partir vers ce téléphone.' : 'Notifications activées, mais l’essai n’est pas parti. Réessayez dans Réglages → Notifications.', { type: r && r.envoyees > 0 ? 'ok' : 'info' }); } catch (x) { const c = String((x && x.message) || ''); const T = { REFUS: 'Vous pourrez les activer plus tard dans Réglages → Notifications.', SANS_REPONSE: 'Pas de réponse du téléphone : réessayez dans Réglages → Notifications.', INSTALLER: 'Sur iPhone, ajoutez d’abord l’application à l’écran d’accueil (Partager → Sur l’écran d’accueil), puis réessayez.', IMPOSSIBLE: 'Ce téléphone ne reçoit pas les notifications de l’application.' };
       N() && N().toast(T[c] || (window.MDGErreur ? MDGErreur(x) : c || 'Impossible pour l’instant.'), { type: c === 'REFUS' ? 'info' : 'erreur' }); } };
     setTimeout(() => { if (el.isConnected) fermer(); }, 20000);
   }
 
-  window.MDGPousse = { ok, ios, installee, etat, activer, desactiver, oublier, suivre, badge, essai, inviter };
-  addEventListener('mdg:connecte', () => { setTimeout(suivre, 1500); setTimeout(inviter, 4200); });
+  window.MDGPousse = { ok, ios, installee, etat, activer, desactiver, oublier, suivre, badge, essai, inviter, ouvrirLien };
+  addEventListener('mdg:connecte', () => { setTimeout(suivre, 1500); setTimeout(inviter, 4200); rejouerApresConnexion(); });
+  garderSiDeconnecte();
   addEventListener('mdg:negoce', majBadge); addEventListener('mdg:dm', majBadge);
   addEventListener('hashchange', depuisAdresse);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) majBadge(); });

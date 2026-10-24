@@ -109,6 +109,14 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
   - boutiques : adresse = pseudo ou code court, activée par le vendeur, « retirer » cache sans effacer, quantité obligatoire, aperçu de partage par pages fabriquées en `noindex`.
 - Ordre de construction : transport, fiabilité, badges, boutiques ; une PR par chantier, testée sur le projet de test avant la production.
 
+## Notifications (chantier du 24/10/2026)
+
+- Deux natures : **transactionnelles** (messages, négociations, commandes et livraisons, litiges, sécurité : ne se coupent pas ; fiabilité, niveaux, mes groupes, mes rappels : se coupent) et **commerciales** (nouvelles offres, acheteurs pour mes produits, groupes ouverts, produits à racheter, conseils : réglables, plafonnées).
+- Plafonds réglables par l'administrateur (`notif_regles`) : 6 commerciales par jour et par personne, dont 1 conseil ; rien de commercial entre 21 h et 7 h. Chaque envoi passe par `notif_preparer` (préférence, plafond, heures calmes, clé anti-doublon, journal).
+- Textes : titre de 45 caractères au plus, texte de 80 ; une action claire ; **aucune fausse urgence, aucune promesse non vérifiée** ; jamais dire qu'une notification « arrive » sans la réponse du serveur (`envoyees > 0`).
+- Chaque notification ouvre un écran précis, jamais l'accueil par défaut. Mesures honnêtes : envoyée, ouverte, action ; jamais l'affichage réel ni la notification balayée.
+- Ordre de mise en production : schémas 88a, 88b, 88d, PUIS `pousser` v21. Effacer le journal après 90 jours : seulement avec l'accord du propriétaire.
+
 ## Design
 
 - Une seule police : **Jost**.

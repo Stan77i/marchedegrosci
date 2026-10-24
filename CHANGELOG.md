@@ -6,6 +6,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Notifications (branche `claude/notifications`, pas en production) : audit (`docs/audits/audit-notifications-2026-10-24.md`) ; serveur (schémas 88a, 88b, 88d sur le projet de test, `pousser` v21 non déployée) : catégories, préférences, plafonds, heures calmes, regroupement, anti-doublon, ciblage, groupe à 80 %, produit à racheter, journal et statistiques ; écran : réglages par catégorie, état réel et essai vérifié, toucher qui ouvre le bon écran, ouverture comptée, tableau de bord « Notifications ». Cache `mgci-v262`.
 - Niveaux de confiance (chantier 3) : Vendeur fiable, Bon, Excellent, Grand vendeur, mêmes paliers pour les acheteurs et « Acheteur en gros », calculés par le serveur (schéma 85, appliqué en production), écran « Mes niveaux », tableau de bord de l'administrateur.
 - Connexion : le titre alterne « marché de Gros » et « marché du pays » (3 s, puis 2 s, toutes les 10 s), validé en vidéo par le propriétaire ; le « court film » de connexion a été refusé et n'est pas fusionné.
 

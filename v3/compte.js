@@ -609,7 +609,7 @@ label.cp-r{cursor:pointer}
     const P = window.MDGPousse; if (!el) return;
     const st = P ? await P.etat() : 'impossible';
     const T = {
-      actif: ['Activées sur ce téléphone', 'Une réponse à votre prix, un accord, un refus : vous êtes prévenu tout de suite, même application fermée.', '<button type="button" class="cp-alt" data-pd>Désactiver</button>', 'offre'],
+      actif: ['Activées sur ce téléphone', 'Une réponse à votre prix, un accord, un refus : ce téléphone les affiche même application fermée, dès qu’il a du réseau.', '<button type="button" class="cp-alt" data-pd>Désactiver</button>', 'offre'],
       inactif: ['Être prévenu même application fermée', 'Dès qu’on répond à votre prix, votre téléphone vous le dit, avec le nombre de réponses sur l’icône.', '<button type="button" class="cp-go plein" data-pa>Activer les notifications</button>', 'demande'],
       refuse: ['Bloquées sur ce téléphone', 'Réglages du téléphone → Notifications → Marché de Gros → Autoriser, puis revenez ici.', '', 'bad'],
       installer: ['Sur iPhone : ajoutez d’abord l’application', 'Touchez Partager, puis « Sur l’écran d’accueil ». Ouvrez-la depuis l’icône et activez ici.', '', 'demande'],
@@ -618,9 +618,9 @@ label.cp-r{cursor:pointer}
     el.innerHTML = `<div class="cp-card cp-pousse">${ti('cloche', T[3], true)}<span><b>${T[0]}</b><small>${T[1]}</small></span>${T[2] ? `<div class="cp-row">${T[2]}</div>` : ''}<p class="cp-err" role="status"></p></div>`;
     const msg = el.querySelector('.cp-err'), b = q => el.querySelector(q);
     if (b('[data-pa]')) b('[data-pa]').onclick = async e => { const t = e.currentTarget; t.disabled = true; t.textContent = 'Activation…'; t.setAttribute('aria-busy', 'true');
-      try { await P.activer(); N().toast('Notifications activées. Une notification d’essai arrive.'); cartePousse(el); }
+      try { const r = await P.activer(); N().toast(r && r.envoyees > 0 ? 'Notifications activées. Un essai vient de partir vers ce téléphone.' : 'Notifications activées, mais l’essai n’est pas parti. Réessayez plus tard.'); cartePousse(el); }
       catch (x) { t.disabled = false; t.removeAttribute('aria-busy'); t.textContent = 'Activer les notifications'; const m = String(x.message); msg.textContent = m === 'REFUS' ? 'Vous avez refusé. Autorisez-les dans les réglages du téléphone, puis réessayez.' : m === 'SANS_REPONSE' ? 'Pas de réponse à la demande. Réessayez et touchez « Autoriser ».' : m === 'INSTALLER' ? 'Ajoutez d’abord l’application à l’écran d’accueil.' : 'L’activation n’a pas abouti. Vérifiez la connexion, puis réessayez.'; } };
-    if (b('[data-pe]')) b('[data-pe]').onclick = async () => { msg.textContent = 'Envoi…'; const r = await P.essai(); msg.textContent = r && r.envoyees ? 'Envoyée : elle doit apparaître dans quelques secondes.' : 'L’essai n’est pas parti. Désactivez puis réactivez les notifications.'; };
+    if (b('[data-pe]')) b('[data-pe]').onclick = async () => { msg.textContent = 'Envoi…'; const r = await P.essai(); msg.textContent = r && r.envoyees ? 'Essai parti vers ' + r.envoyees + (r.envoyees > 1 ? ' téléphones.' : ' téléphone.') : 'L’essai n’est pas parti. Désactivez puis réactivez les notifications.'; };
     if (b('[data-pd]')) b('[data-pd]').onclick = async () => { await P.desactiver(); N().toast('Notifications désactivées sur ce téléphone.'); cartePousse(el); };
   }
 
@@ -810,7 +810,7 @@ label.cp-r{cursor:pointer}
     },
     notifs(main) {
       const L = notifs();
-      main.innerHTML = `<div class="cp-pg"><h2>Notifications</h2><p>Propositions, contre-propositions, accords, refus et expirations, et nouvelles annonces sur vos produits.</p>
+      main.innerHTML = `<div class="cp-pg"><h2>Notifications</h2><p>Propositions, contre-propositions, accords, refus et expirations. Pour choisir ce que vous recevez sur ce téléphone : Réglages, puis Notifications.</p>
 
         <h3 class="cp-lab">Récentes${L.some(n => !n.lu) ? '<button type="button" data-lu>Tout marquer comme lu</button>' : ''}</h3>
         <div class="cp-grp">${L.length ? L.slice(0, 60).map((n, i) => `<button type="button" class="cp-r cp-it${n.lu ? '' : ' neuf'}" data-i="${i}"><span class="pt${n.lu ? ' lu' : ''}" aria-label="${n.lu ? 'Lue' : 'Non lue'}"></span><b style="white-space:normal">${esc(n.texte)}</b><span></span><small><span>${ago(n.t)}</span></small></button>`).join('')

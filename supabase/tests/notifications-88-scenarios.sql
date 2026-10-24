@@ -216,3 +216,28 @@ begin
 end $$;
 -- Résultat (24/10/2026) : TEST 50 % : 0 | 80 % : B3:groupes:manque 20,B1:groupe_suivi:manque 20,B2:groupe_suivi:manque 20 | 85 % (pas de doublon) : 3 | veille : 2 puis 0 | renouveler : 1 puis 0 ({"jours": 10, "commandes": 2} application.dc.html#/?racheter=<id>) | lots : B3 groupe_proche groupes n=1, B3 offre offres n=1, B3 renouveler renouveler n=1, B1 groupe_proche groupe_suivi n=1, B1 groupe_veille groupe_suivi n=1, B2 groupe_proche groupe_suivi n=1, B2 groupe_veille groupe_suivi n=1, B4 offre offres n=1 | actions calculées : 1 → proposition, non ouverte : aucune
 -- Lecture : rien à 50 % ; à 80 % les inscrits (groupe_suivi) et le suiveur de la région (groupes), pas celui d'une autre région, avec le vrai manque (20 kg) ; pas de 2e message à 85 % ; veille une seule fois ; produit à racheter calculé une seule fois (écart moyen 10 jours) ; l'action « proposition » est comptée après l'ouverture, rien pour une notification non ouverte.
+
+-- ───────── Bloc 5 (schéma 88d) : statistiques jour par jour, administrateur seulement. Projet de test, 24/10/2026.
+-- Résultat réel : TEST jours={"jour":"2026-10-24","envoyees":1,"ouvertes":1,"actions":1,"desactivations":1} nb=3 membre_refuse=t anon_refuse=t stats_cat_ok=t
+do $$
+declare adm uuid; mb uuid; r json; s json; ok_anon boolean := false; ok_mb boolean := false;
+begin
+  select user_id into adm from public.admins limit 1;
+  select id into mb from auth.users where id not in (select user_id from public.admins) limit 1;
+  insert into public.notif_journal (user_id, cat, nature, cle, resultat, ouvert_le, ouvert_par, action_le, action) values (mb, 'offres', 'com', 'test88d:' || gen_random_uuid(), 'ok', now(), 'push', now(), 'proposition');
+  insert into public.notif_desactivations (user_id, origine) values (mb, 'permission');
+  perform set_config('request.jwt.claims', json_build_object('sub', adm, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  r := public.notif_stats_jours(3);
+  s := public.notif_stats(1);
+  reset role;
+  perform set_config('request.jwt.claims', json_build_object('sub', mb, 'role', 'authenticated')::text, true);
+  set local role authenticated;
+  begin perform public.notif_stats_jours(3); exception when others then ok_mb := sqlerrm like 'Réservé%'; end;
+  reset role;
+  perform set_config('request.jwt.claims', '{"role":"anon"}', true);
+  set local role anon;
+  begin perform public.notif_stats_jours(3); exception when others then ok_anon := sqlstate = '42501'; end;
+  reset role;
+  raise exception 'TEST jours=% nb=% membre_refuse=% anon_refuse=% stats_cat_ok=%', r->0, json_array_length(r), ok_mb, ok_anon, (s->'categories') is not null;
+end $$;

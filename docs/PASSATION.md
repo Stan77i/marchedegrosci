@@ -1705,3 +1705,12 @@ Suite du commit serveur 37518f7 (schémas 88a, 88b, `pousser` v21 ; plan : `docs
 - Les annonces déjà publiées avec « Cocody » ne sont pas modifiées en base (aucune modification des données de production) ; elles comptent déjà comme Abidjan.
 - Puis, à la demande du propriétaire : quand la région est Abidjan, « Abidjan » est mis tout seul et le choix « Ville ou village » est grisé (`cityUI` → `fixe`, attribut `disabled` dans les trois formulaires, `regionPatch`).
 - Vérifié dans Chromium (iPhone 13) : profil « Abidjan + Cocody » ou sans ville → « Abidjan » grisé, « Je vends uniquement à Abidjan » ; passer à Montagnes rend le choix actif, revenir à Abidjan le regrise. Cache `mgci-v273`.
+
+## 24/10/2026 · Notifications : mise en production
+
+- Branche mise à jour avec `main` (boutiques, ville, Abidjan) ; cache `mgci-v274` ; `?v=` de `v3/compte.js`, `v3/pousse.js`, `app/theme.js` en `20261124nt`.
+- Avant : les 3 fonctions remplacées (`push_annonce`, `rappels_envoyer`, `notif_reglage_diffusions`) étaient en production identiques aux fichiers du dépôt (schémas 75, 33, 43 ; md5 sans commentaires) ; fonctions utilisées présentes ; aucune tâche `mdg-notif`.
+- Appliqués en production : 88a, 88b (crée la tâche `mdg-notif`, toutes les 15 min), 88d. Après : les 30 fonctions du chantier ont la même empreinte qu'au test. Droits vérifiés : `notif_preparer` réservé au rôle service, `notif_ouverte` ouverte aux visiteurs, `notif_stats` refusée aux visiteurs, journal non lisible par les visiteurs, préférences non lisibles par les membres.
+- `pousser` déployée ensuite : version 21, puis 22 (le premier envoi avait changé deux espaces spéciaux d'une expression). La version 22 en production est identique au fichier du dépôt (comparée octet par octet). Essais sans envoi : `{lots}` → `{"lots":0,"envoyees":0,"sans_envoi":0}`, rappel et niveau inconnus → `{"rien":true}`, tous en 200.
+- Changement visible pour les membres : les messages commerciaux passent de 30 par jour (ancien rythme) à 6 au plus, dont 1 conseil, et rien entre 21 h et 7 h ; les nouvelles annonces arrivent regroupées, jusqu'à 15 min plus tard.
+- Reste : le propriétaire colle `supabase/schema-88c-droits-a-coller.sql` ; vérifier sur un vrai téléphone (essai, toucher d'une notification, compteur « ouvertes ») ; liste « Notifications » de Mon espace lue dans `notif_journal` ; 3 choix du propriétaire (1 conseil par jour, effacer après 90 jours, secrets push dans le test).

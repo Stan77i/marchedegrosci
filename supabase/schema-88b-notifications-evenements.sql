@@ -4,7 +4,7 @@
 -- corrigées (elles partaient seulement s'il y avait un suiveur), achat groupé proche du seuil et veille de la date limite,
 -- approvisionnement à renouveler (rythme des commandes passées), actions après une ouverture, rappels qui ne se perdent plus.
 -- Rien n'est commandé ni payé par ces messages. Fichier sans les mots interdits par le MCP.
--- Appliqué sur le projet de test le 24/10/2026 (tests : supabase/tests/notifications-88-scenarios.sql). PAS appliqué en production.
+-- Appliqué sur le projet de test le 24/10/2026 (tests : supabase/tests/notifications-88-scenarios.sql). Appliqué en production le 24/10/2026 (fonctions identiques au test).
 
 -- ───────── 1. File d'attente (une ligne par personne et par événement ; la clé unique empêche les doublons)
 create table if not exists public.notif_file (

@@ -1,5 +1,5 @@
 -- Schéma 88d : statistiques des notifications jour par jour, pour l'écran de l'administrateur (admin.html, « Notifications »).
--- Totaux seulement, aucun nom ni numéro. À appliquer après 88a et 88b. Appliqué sur le projet de test le 24/10/2026, PAS en production.
+-- Totaux seulement, aucun nom ni numéro. À appliquer après 88a et 88b. Appliqué sur le projet de test le 24/10/2026, appliqué en production le 24/10/2026.
 create or replace function public.notif_stats_jours(p_jours int default 14)
 returns json language plpgsql stable security definer set search_path = public as $$
 declare n int := greatest(1, least(coalesce(p_jours, 14), 90));

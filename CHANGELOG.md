@@ -6,7 +6,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
-- Notifications (branche `claude/notifications`, pas en production) : audit (`docs/audits/audit-notifications-2026-10-24.md`) ; serveur (schémas 88a, 88b, 88d sur le projet de test, `pousser` v21 non déployée) : catégories, préférences, plafonds, heures calmes, regroupement, anti-doublon, ciblage, groupe à 80 %, produit à racheter, journal et statistiques ; écran : réglages par catégorie, état réel et essai vérifié, toucher qui ouvre le bon écran, ouverture comptée, tableau de bord « Notifications ». Cache `mgci-v262`.
+- Notifications (schémas 88a, 88b, 88d et `pousser` en production le 24/10/2026 ; écran dans la PR « Notifications ») : audit (`docs/audits/audit-notifications-2026-10-24.md`) ; serveur (schémas 88a, 88b, 88d, `pousser` version 22) : catégories, préférences, plafonds, heures calmes, regroupement, anti-doublon, ciblage, groupe à 80 %, produit à racheter, journal et statistiques ; écran : réglages par catégorie, état réel et essai vérifié, toucher qui ouvre le bon écran, ouverture comptée, tableau de bord « Notifications ». Cache `mgci-v274`.
 
 - Les communes d'Abidjan (Cocody, Yopougon…) ne sont plus proposées comme villes : dans la région Abidjan, « Abidjan » est mis tout seul et le choix de la ville est grisé ; une commune enregistrée avant devient « Abidjan ».
 - Abidjan est une seule ville : avec une commune (Cocody, Yopougon…), l'interrupteur dit « Je vends uniquement à Abidjan » ; une livraison d'une commune à l'autre est « même ville » (schéma 87c, appliqué en production).

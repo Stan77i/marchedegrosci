@@ -242,7 +242,7 @@ Toutes actives en production :
 
 | Fonction | Version | Rôle |
 |---|---|---|
-| `pousser` (`supabase/functions/pousser/index.ts`) | 20 en production ; 21 dans le dépôt, **pas déployée** (catégories, préférences, plafonds, journal, `nid` ; à déployer seulement après les schémas 88a et 88b en production) | envoie les notifications Web Push (bibliothèque `web-push`). `verify_jwt` désactivé : protégée par une clé partagée lue dans le coffre, ou par le jeton de session pour l'essai |
+| `pousser` (`supabase/functions/pousser/index.ts`) | 22 en production depuis le 24/10/2026 (= fichier du dépôt ; catégories, préférences, plafonds, journal, `nid`), déployée après les schémas 88a, 88b et 88d | envoie les notifications Web Push (bibliothèque `web-push`). `verify_jwt` désactivé : protégée par une clé partagée lue dans le coffre, ou par le jeton de session pour l'essai |
 | `itineraire` (`supabase/functions/itineraire/index.ts`) | 1 | `verify_jwt` désactivé, mais la fonction exige le jeton de session d'un membre (sinon 401). Calcule une fois le trajet d'une commande avec openrouteservice (offre gratuite), clé dans les secrets Supabase. Appelée par `v3/suivi.js`. Un seul résultat en production, de source « introuvable » : non vérifiée en conditions réelles |
 
 ## 5. Permissions

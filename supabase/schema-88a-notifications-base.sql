@@ -3,7 +3,7 @@
 -- (anti-doublon par clé unique), ouverture signalée par le téléphone, désactivations, statistiques pour l'administrateur.
 -- Toutes les écritures passent par des fonctions security definer (en production, service_role n'écrit pas directement).
 -- Fichier sans les mots interdits par le MCP : create ... if not exists, create or replace, add column if not exists.
--- Appliqué sur le projet de test le 24/10/2026 (tests : supabase/tests/notifications-88-scenarios.sql). PAS appliqué en production.
+-- Appliqué sur le projet de test le 24/10/2026 (tests : supabase/tests/notifications-88-scenarios.sql). Appliqué en production le 24/10/2026 (fonctions identiques au test).
 
 -- ───────── 1. Catégories (référence lisible par tous : libellés de l'écran Réglages)
 create table if not exists public.notif_categories (

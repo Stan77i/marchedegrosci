@@ -116,7 +116,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - Plafonds réglables par l'administrateur (`notif_regles`) : 6 commerciales par jour et par personne, dont 1 conseil ; rien de commercial entre 21 h et 7 h. Chaque envoi passe par `notif_preparer` (préférence, plafond, heures calmes, clé anti-doublon, journal).
 - Textes : titre de 45 caractères au plus, texte de 80 ; une action claire ; **aucune fausse urgence, aucune promesse non vérifiée** ; jamais dire qu'une notification « arrive » sans la réponse du serveur (`envoyees > 0`).
 - Chaque notification ouvre un écran précis, jamais l'accueil par défaut. Mesures honnêtes : envoyée, ouverte, action ; jamais l'affichage réel ni la notification balayée.
-- Ordre de mise en production : schémas 88a, 88b, 88d, PUIS `pousser` v21. Effacer le journal après 90 jours : seulement avec l'accord du propriétaire.
+- En production depuis le 24/10/2026 (88a, 88b, 88d, puis `pousser`). Pour tout changement : schéma d'abord, fonction ensuite. Effacer le journal après 90 jours : seulement avec l'accord du propriétaire.
 
 ## Design
 

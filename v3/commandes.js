@@ -205,6 +205,8 @@
 .cm-rf{margin:0 0 12px;padding:14px;border-radius:18px;background:rgba(196,72,52,.08);box-shadow:inset 0 0 0 1px rgba(196,72,52,.25)}
 .cm-rf h3{margin:0 0 4px;font:600 16px/1.2 Jost,sans-serif;color:#8A2414}.cm-rf p{margin:4px 0;font-size:13.5px}
 .cm-ph{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.cm-ph a,.cm-ph span{display:block;width:72px;height:72px;border-radius:12px;overflow:hidden;background:#E7E0CF}.cm-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.cm-dp{margin:0 0 12px;padding:14px;border-radius:18px;background:rgba(16,57,43,.06);box-shadow:inset 0 0 0 1px rgba(16,57,43,.16)}
+.cm-dp h3{display:flex;align-items:center;gap:8px;margin:0 0 4px;font:600 16px/1.2 Jost,sans-serif}.cm-dp p{margin:4px 0;font-size:13.5px}
 .cm-rf ul{margin:6px 0 0;padding:0;list-style:none;font-size:13px}.cm-rf li{padding:3px 0}
 .cm-wa{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:rgba(37,211,102,.1);font-size:13.5px}.cm-wa b{font-weight:600}.cm-wa a{color:#10392B;font-weight:600}
 .cm-f input[type=number]{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512}
@@ -469,7 +471,7 @@
     }
     switch (c.etape) {
       case 'confirmee': return V ? ['Préparez la <em>marchandise</em>', (MOTM ? 'Glissez le mot secret (ci-dessous) dans la marchandise. ' : '') + 'Touchez « En préparation », puis « Chargement confirmé » quand le camion est chargé' + (c.mode_transport !== 'reseau' ? ', et « Le camion est parti » au départ.' : '.')] : ['Le vendeur prépare votre <em>marchandise</em>', 'Vous serez prévenu au chargement.'];
-      case 'preparation': return V ? ['Marchandise en <em>préparation</em>', 'Confirmez le chargement quand le camion est chargé.'] : ['Marchandise en <em>préparation</em>', 'Prochaine étape : le chargement.'];
+      case 'preparation': return V ? ['Marchandise en <em>préparation</em>', (S && S.depart ? 'Confirmez le chargement quand le camion est chargé.' : 'Photographiez le colis emballé et pesez-le, puis confirmez le chargement.')] : ['Marchandise en <em>préparation</em>', 'Prochaine étape : le chargement.'];
       case 'chargement': if (c.mode_transport !== 'reseau') return (V || c.role === c.mode_transport)
         ? ['Marchandise <em>chargée</em>', 'Touchez « Le camion est parti » quand il démarre. Si le chauffeur a ouvert le lien de suivi, le départ se détecte tout seul.']
         : ['Marchandise <em>chargée</em>', 'Le départ du camion sera signalé ici. ' + (MOTM && !V ? 'À l’arrivée, tapez le mot secret du vendeur pour confirmer la réception.' : '')];
@@ -487,8 +489,10 @@
       if (c.annulation === 'autre') { b('annul-oui', 'Accepter l’annulation', 'p'); b('annul-non', 'Refuser l’annulation'); }
       else {
         const K = c.validation === 'code';
-        if (c.role === 'vendeur' && c.etape === 'confirmee') { b('preparation', 'En préparation', 'p'); if (!K) b('chargement', 'Chargement confirmé'); }
-        if (c.role === 'vendeur' && c.etape === 'preparation' && !K) b('chargement', 'Chargement confirmé', 'p');
+        // schéma 90 : pas de chargement sans les photos du colis et le poids
+        const DEP = !!(seq[c.id] && seq[c.id].depart);
+        if (c.role === 'vendeur' && c.etape === 'confirmee') { b('preparation', 'En préparation', 'p'); if (!DEP) b('depart', TI('photo') + 'Photographier le colis'); else if (!K) b('chargement', 'Chargement confirmé'); }
+        if (c.role === 'vendeur' && c.etape === 'preparation') { if (!DEP) b('depart', TI('photo') + 'Photographier le colis', 'p'); else if (!K) b('chargement', 'Chargement confirmé', 'p'); }
         // schéma 65 : avec son propre transporteur, « Chargée » attend « Le camion est parti » (vendeur, ou celui qui transporte)
         const PARTI = !K && c.etape === 'chargement' && c.mode_transport !== 'reseau' && (c.role === 'vendeur' || c.role === c.mode_transport);
         if (PARTI) b('transport', TI('camion') + 'Le camion est parti', 'p');
@@ -527,7 +531,7 @@
       <div class="cm-st" role="status" aria-live="polite"><b>${titre}</b>${sous ? `<small>${esc(sous)}</small>` : ''}<small>Dernière actualisation : ${ilya(der)}</small></div>
       ${actions(c)}
       ${c.etat === 'terminee' && c.role === 'acheteur' && window.MDGRacheter ? `<div class="cm-act"><button type="button" class="p" data-racheter>Racheter · prix du jour</button></div>` : ''}
-      ${blocMot(c)}${blocRefus(c)}${blocDisc(c)}${blocSequestre(c)}${c.etat === 'litige' || seq[c.id] && seq[c.id].refus ? blocWa(c) : ''}
+      ${blocDepart(c)}${blocMot(c)}${blocRefus(c)}${blocDisc(c)}${blocSequestre(c)}${c.etat === 'litige' || seq[c.id] && seq[c.id].refus ? blocWa(c) : ''}
       ${blocAvis(c)}
       ${c.validation === 'declaration' && c.mode_transport !== 'reseau' && ['a_confirmer', 'en_cours'].includes(c.etat) ? `<p class="cm-info"><b>Réception avec le mot secret du vendeur.</b> Le vendeur glisse un mot secret dans la marchandise ; à l’arrivée, l’acheteur le retrouve et le tape pour confirmer la réception. Le transporteur n’a rien à faire dans l’application.</p>` : ''}
       ${blocCode(c)}
@@ -555,7 +559,7 @@
     const S = seq[c.id]; if (!S || c.etat === 'annulee' || c.etat === 'a_confirmer') return '';
     const r = S.repartition || {}, A = S.actif, V = c.role === 'vendeur';
     const clos = !!S.libere_le, recu = c.etat === 'terminee' || c.etat === 'litige', parti = recu || ['chargement', 'transport', 'transbordement', 'arrivee', 'reception'].includes(c.etape);
-    const pas = [['Commande confirmée', true], ['Livraison', parti], ['Vérification (1 h)', recu], [A ? 'Libération' : 'Clôture', clos]];
+    const pas = [['Commande confirmée', true], ['Livraison', parti], ['Vérification (1\u00a0h)', recu], [A ? 'Libération' : 'Clôture', clos]];
     const ici = pas.findIndex(p => !p[1]);
     const etat = !A ? '<span class="cm-sq-e">Séquestre en construction</span>'
       : S.etat === 'bloque' ? `<span class="cm-sq-e on">${TI('cadenas')}${F(r.total)} bloqués chez ${esc(OPE[S.operateur] || '')}</span>`
@@ -585,6 +589,60 @@
       <div class="cm-ph">${(R.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du refus"></span>`).join('')}</div>
       <ul>${mot ? `<li>${mot}</li>` : ''}${R.chauffeur || c.etat === 'litige' ? `<li>${ch}</li>` : ''}${R.vendeur || c.etat === 'litige' ? `<li>${ve}</li>` : ''}</ul>
       ${c.etat === 'litige' ? `<p style="color:#5E5546;font-size:12.5px">${regle}</p>` : ''}</section>`;
+  }
+  // le colis au départ (schéma 90) : photos et poids du vendeur, vus par l'acheteur, le transporteur et l'équipe
+  function blocDepart(c) {
+    const S = seq[c.id], D = S && S.depart;
+    if (!D) return c.role === 'vendeur' && c.etat === 'en_cours' && ['confirmee', 'preparation'].includes(c.etape)
+      ? `<section class="cm-dp"><h3>${TI('photo')}Le colis au départ</h3><p>Avant le chargement : 2 à 4 photos du colis emballé et son poids. Sans elles, le chargement ne peut pas être confirmé.</p></section>` : '';
+    return `<section class="cm-dp" aria-label="Le colis au départ"><h3>${TI('photo')}Le colis au départ</h3>
+      <div class="cm-ph">${(D.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du colis au départ"></span>`).join('')}</div>
+      <p><b>${esc(String(D.poids_kg).replace('.', ','))} kg</b> pesés · photographié ${quand(D.le)}</p></section>`;
+  }
+  // le vendeur photographie le colis emballé et indique le poids, avant le chargement
+  function depart(c) {
+    const box = bg.querySelector('.cm'); box.scrollTop = 0; dernierEcran = 'geste';
+    const fichiers = [];
+    box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
+      <h2>Le colis au <em>départ</em></h2><p class="cm-sous">${esc(c.produit || '')} · ${esc(c.partenaire_nom)} · n° ${esc(c.numero)}</p>
+      <form class="cm-f" novalidate>
+        <span class="t" style="display:block;margin:4px 0 6px;font-weight:600">Photos du colis emballé (2 à 4)</span>
+        <div class="cm-ph" data-apercu></div>
+        <label class="cm-pick">${TI('photo')}Ajouter des photos<input type="file" accept="image/*" multiple data-fic></label>
+        <label class="t" for="cmDp">Poids pesé (kg)</label>
+        <input type="number" id="cmDp" inputmode="decimal" min="0" step="any" placeholder="Ex. : 200">
+        <p class="cm-note" style="font-size:13.5px">Montrez la marchandise propre et bien emballée. L’acheteur et le transporteur verront ces photos : en cas de réclamation, elles servent de preuve.</p>
+        <p class="cm-err" role="alert"></p>
+        <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">Enregistrer</button><button type="button" data-ann>Retour</button></div>
+      </form>`;
+    box.querySelector('[data-x]').onclick = fermer;
+    box.querySelector('[data-ann]').onclick = () => peindre();
+    const f = box.querySelector('form'), err = f.querySelector('.cm-err'), ap = f.querySelector('[data-apercu]');
+    const apercu = () => { ap.innerHTML = fichiers.map((b, i) => `<span><img src="${URL.createObjectURL(b)}" alt="Photo ${i + 1}"></span>`).join(''); };
+    f.querySelector('[data-fic]').onchange = async e => {
+      err.textContent = ''; f._chemins = null;
+      for (const fi of Array.from(e.target.files || [])) {
+        if (fichiers.length >= 4) { err.textContent = '4 photos au plus.'; break; }
+        try { fichiers.push(await reduirePhoto(fi)); } catch (x) { err.textContent = x.message; }
+      }
+      e.target.value = ''; apercu();
+    };
+    f.onsubmit = async e => {
+      e.preventDefault();
+      const pv = f.querySelector('#cmDp').value.trim(), poids = Number(pv.replace(',', '.'));
+      if (fichiers.length < 2) { err.textContent = 'Ajoutez au moins 2 photos du colis emballé.'; return; }
+      if (!(poids > 0)) { err.textContent = 'Indiquez le poids pesé, en kilos.'; f.querySelector('#cmDp').focus(); return; }
+      const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = 'Envoi des photos…';
+      try {
+        const u = me(), chemins = [];
+        if (!f._chemins) { for (let i = 0; i < fichiers.length; i++) { const ch = u + '/depart-' + c.id.slice(0, 8) + '-' + Date.now() + '-' + i + '.jpg'; await N().deposerPrive('preuves', ch, fichiers[i]); chemins.push(ch); } f._chemins = chemins; }
+        err.textContent = '';
+        await N().rpc('commande_depart_preuves', { p_id: c.id, p_photos: f._chemins, p_poids_kg: poids });
+        await lireJournal(c.id);
+        toast('Colis enregistré', { type: 'ok', sous: 'Vous pouvez confirmer le chargement.' });
+        peindre();
+      } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }
+    };
   }
   // le mot secret : le vendeur l'écrit sur un papier glissé dans la marchandise ; l'acheteur le retrouve à l'arrivée
   function blocMot(c) {
@@ -622,7 +680,7 @@
   function photos(box) {
     box.querySelectorAll('[data-ph]').forEach(async el => {
       const u = await N().lienSigne('preuves', el.dataset.ph, 600).catch(() => null); if (!u || !el.isConnected) return;
-      el.outerHTML = `<a href="${esc(u)}" target="_blank" rel="noopener" aria-label="Agrandir la photo"><img src="${esc(u)}" alt="Photo de la marchandise refusée" loading="lazy"></a>`;
+      el.outerHTML = `<a href="${esc(u)}" target="_blank" rel="noopener" aria-label="Agrandir la photo"><img src="${esc(u)}" alt="${esc(el.getAttribute('aria-label') || 'Photo de la marchandise')}" loading="lazy"></a>`;
     });
   }
   // photo de preuve réduite dans le téléphone (≈ 400 Ko au plus, l'espace « preuves » refuse au-delà de 450 Ko)
@@ -657,7 +715,7 @@
         <span class="t" style="display:block;margin:14px 0 6px;font-weight:600">Photos (1 à 4) : la marchandise, et le papier du vendeur</span>
         <div class="cm-ph" data-apercu></div>
         <label class="cm-pick">${TI('photo')}Ajouter des photos<input type="file" accept="image/*" multiple data-fic></label>
-        <p class="cm-note" style="font-size:13.5px">Pas de remboursement sans preuves réelles : le mot du vendeur et des photos. Le vendeur verra vos photos et répondra. S’il reconnaît le problème, la partie refusée vous est rendue. Sinon, on en discute à trois et l’équipe du Marché de Gros juge. Le transport reste dû : le chauffeur a fait son travail.</p>
+        <p class="cm-note" style="font-size:13.5px">Pas de remboursement sans preuves réelles : le mot du vendeur et des photos. Vos photos sont comparées à celles du colis au départ. Le vendeur verra vos photos et répondra. S’il reconnaît le problème, la partie refusée vous est rendue. Sinon, on en discute à trois et l’équipe du Marché de Gros juge. Le transport reste dû : le chauffeur a fait son travail.</p>
         <p class="cm-err" role="alert"></p>
         <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">Envoyer le refus</button><button type="button" data-ann>Retour</button></div>
       </form>`;
@@ -952,6 +1010,7 @@
       case 'non': return confirmer(c, { titre: 'Refuser la commande', ok: 'Refuser', motifs: true, note: 'Un mot (obligatoire pour « Autre »)', fait: 'Commande refusée',
         texte: 'Avant confirmation, un refus ne compte pas dans votre fiabilité.', fn: v => repondreMotif(c, false, v) });
       case 'preparation': return av('preparation', 'Marchandise en préparation', { gps: false });
+      case 'depart': return depart(c);
       case 'chargement': return av('chargement', 'Chargement confirmé', { texte: c.mode_transport === 'reseau' ? 'Confirmez seulement quand la marchandise est dans le camion. Le transport commence alors.' : 'Confirmez seulement quand la marchandise est dans le camion. Ensuite, touchez « Le camion est parti » au départ (ou laissez le lien de suivi du chauffeur le détecter).' });
       case 'transport': return av('transport', 'Le camion est parti', { texte: 'Touchez quand le camion démarre avec la marchandise. ' + (c.role === 'vendeur' ? 'L’acheteur' : 'Le vendeur') + ' est prévenu.', fait: 'Départ signalé : le camion est en route' });
       case 'transbordement': return av('transbordement', 'Signaler un transbordement', { lieu: 'Où la marchandise change-t-elle de véhicule ?', lieuRequis: true });

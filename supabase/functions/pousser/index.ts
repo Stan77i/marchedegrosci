@@ -27,6 +27,8 @@
 //  7 bis (schéma 57) : refus de la marchandise après réception → le vendeur et le chauffeur inscrit sont prévenus ; clôture → « Commande clôturée ».
 // 15. par la base (déclencheur public.push_litige_msg, schéma 58) pour un message de la discussion à trois, avec { litige_msg_id }.
 // 16. par la base (déclencheur public.push_fiabilite, schéma 84) : { sanction_id } (avertissement, suspension) ou { contestation_id } (réponse).
+// 17. par la base (déclencheur public.push_niveaux, schéma 85) : { niveau_journal_id } (nouveau niveau, grâce, baisse, retrait)
+//     ou { niveau_contestation_id } (réponse de l'équipe à une contestation de niveau).
 // v19 (23/10/2026) : « Le camion est parti » (schéma 65), chargement sans « transport en cours ».
 // v18 (22/10/2026) : titres sans emoji, phrases sans tiret long, conseil « Suivez la livraison » à la place des transporteurs du réseau (en pause, schéma 62).
 // Annonces du marché (schema-43) : achat groupé ouvert, besoin pro, nouvelle offre ou demande → tous les comptes qui ont activé
@@ -297,6 +299,32 @@ Deno.serve(async (req) => {
       if (!t || t.statut === "ouverte") return json({ rien: true });
       return json(await envoyer(t.auteur_id, { title: t.statut === "acceptee" ? "Contestation acceptée" : "Contestation refusée",
         body: t.statut === "acceptee" ? "L'annulation ne compte plus contre vous." : "L'annulation compte toujours. Touchez pour lire la réponse de l'équipe.", tag: "fiabilite", url: "application.dc.html#/?fiabilite=1" }));
+    }
+
+    // 17. niveaux (schéma 85) : seul le membre concerné est prévenu ; le détail est dans « Mes niveaux ».
+    if (corps.niveau_journal_id) {
+      const { data: j } = await sb.from("niveaux_journal").select("id, user_id, role, evenement, ancien, nouveau, raison").eq("id", String(corps.niveau_journal_id)).maybeSingle();
+      if (!j) return json({ rien: true });
+      const { data: rg } = await sb.from("niveaux_regles").select("cle, libelle").eq("role", j.role);
+      const lib = (k: string | null) => (rg || []).find((x: { cle: string }) => x.cle === k)?.libelle || "";
+      const T: Record<string, [string, string]> = {
+        monte: [`Nouveau niveau : ${lib(j.nouveau)}`, "Bravo. Il s'affiche maintenant sur votre profil et vos annonces."],
+        grace: [`Votre niveau ${lib(j.ancien)} est en sursis`, `${j.raison || ""} pour retrouver les critères. Touchez pour voir ce qui manque.`],
+        descend: [`Votre niveau passe à ${lib(j.nouveau)}`, `Les critères de ${lib(j.ancien)} ne sont plus remplis. Vous pouvez contester pendant 7 jours.`],
+        retire: [`Votre niveau ${lib(j.ancien)} est retiré`, "Les critères ne sont plus remplis. Vous pouvez contester pendant 7 jours."],
+        gros: ["Nouveau badge : Acheteur en gros", "Il s'affiche maintenant sur votre profil."],
+        gros_grace: ["Votre badge Acheteur en gros est en sursis", `${j.raison || ""} pour retrouver les critères.`],
+        gros_retire: ["Votre badge Acheteur en gros est retiré", "Les critères ne sont plus remplis. Vous pouvez contester pendant 7 jours."],
+      };
+      const t = T[j.evenement];
+      if (!t) return json({ rien: true });
+      return json(await envoyer(j.user_id, { title: t[0], body: t[1], tag: "niveaux", url: "application.dc.html#/?niveaux=1" }));
+    }
+    if (corps.niveau_contestation_id) {
+      const { data: c } = await sb.from("niveaux_contestations").select("id, user_id, statut").eq("id", String(corps.niveau_contestation_id)).maybeSingle();
+      if (!c || c.statut === "ouverte") return json({ rien: true });
+      return json(await envoyer(c.user_id, { title: c.statut === "acceptee" ? "Contestation de niveau acceptée" : "Contestation de niveau refusée",
+        body: c.statut === "acceptee" ? "L'équipe vous rend votre niveau. Touchez pour voir le détail." : "Votre niveau ne change pas. Touchez pour lire la réponse de l'équipe.", tag: "niveaux", url: "application.dc.html#/?niveaux=1" }));
     }
 
     // 10. un rappel d'achat ({ rappel_id }, pg_cron public.rappels_envoyer, schema-33) : il ouvre l'écran « Racheter », rien n'est envoyé au vendeur

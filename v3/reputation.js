@@ -85,7 +85,8 @@
 .rp-stats b{display:block;font:800 22px/1 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}.rp-stats small{display:block;margin-top:4px;color:#655C4D;font-size:12px;line-height:1.25}
 .rp-rep{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rp-rep-c{background:#FFFDF8;border-radius:14px;padding:11px 12px;min-width:0}.rp-rep-c h4{margin:0 0 4px;font:600 14px/1.2 Jost,sans-serif;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .rp-rep-c p{margin:0 0 6px;font-size:13px;color:#4A4336}.rp-rep-c ul{list-style:none;margin:0;padding:0;font-size:13px;color:#4A4336}.rp-rep-c li{padding:3px 0;border-top:1px solid #ECE6D6}.rp-rep-c li b{color:#171512}
-.rp-fiable{display:inline-flex;align-items:center;min-height:20px;padding:0 8px;border-radius:10px;background:#10392B;color:#F2C230;font:700 11px/1 Jost,sans-serif;letter-spacing:.04em}
+.rp-fiable{display:inline-flex;align-items:center;min-height:20px;padding:0 8px;border-radius:10px;background:#10392B;color:#F2C230;font:700 11px/1 Jost,sans-serif;letter-spacing:.04em}.rp-fiable.rp-gros{background:#F6E2B0;color:#3D2E05}
+.rp-fb-it .st-p{width:max-content;max-width:100%}.rp-fb-it .st-but small{margin-top:0;opacity:1}
 .rp-rep-n{margin:8px 0 0;font-size:12.5px;color:#5E5546}.rp-rep-ens{color:#10392B;font-weight:600;font-size:13.5px}
 .rp-av-r{display:block;margin:2px 0 0 34px;font-size:12px;color:#5E5546}.rp-av-v{flex:none;padding:2px 7px;border-radius:999px;background:rgba(16,57,43,.1);color:#10392B;font-size:11px;font-weight:700}
 @media (max-width:330px){.rp-rep{grid-template-columns:1fr}}
@@ -206,7 +207,8 @@
   function blocReputation(r, moi) {
     if (!r) return '<div class="rp-vide">Réputation indisponible pour l’instant.</div>';
     const col = (t, x) => { x = x || {}; const n = x.terminees || 0;
-      return `<div class="rp-rep-c"><h4>${t}${x.fiable ? ' <span class="rp-fiable">Fiable</span>' : ''}</h4>
+      const nv = x.niveau_libelle ? ` <span class="rp-fiable">${esc(x.niveau_libelle)}</span>` : x.fiable && !('niveau' in x) ? ' <span class="rp-fiable">Fiable</span>' : '';
+      return `<div class="rp-rep-c"><h4>${t}${nv}${x.gros ? ' <span class="rp-fiable rp-gros">Acheteur en gros</span>' : ''}</h4>
         <p>${x.avis ? etoiles(+x.note, x.avis, 13) + ' ' + String(x.note).replace('.', ',') + ' · ' + x.avis + ' avis' : 'Pas encore noté'}</p>
         <ul><li><b>${n}</b> commande${n > 1 ? 's' : ''} honorée${n > 1 ? 's' : ''}</li>${'annulations_abusives' in x ? `<li><b>${x.annulations_abusives}</b> annulation${x.annulations_abusives > 1 ? 's' : ''} abusive${x.annulations_abusives > 1 ? 's' : ''}</li>` : `<li><b>${x.annulations_demandees || 0}</b> annulation${x.annulations_demandees > 1 ? 's' : ''} demandée${x.annulations_demandees > 1 ? 's' : ''}</li>`}<li><b>${x.litiges_contre || 0}</b> litige${x.litiges_contre > 1 ? 's' : ''} ouvert${x.litiges_contre > 1 ? 's' : ''} par l’autre partie</li></ul></div>`; };
     const vide = !(r.vendeur && r.vendeur.total) && !(r.acheteur && r.acheteur.total);
@@ -215,7 +217,7 @@
     return `${fl}${moi && f ? '<button type="button" class="rp-alt rp-fb-btn" data-mafiab>Mon historique de fiabilité</button>' : ''}<div class="rp-rep">${col('Comme vendeur', r.vendeur)}${col('Comme acheteur', r.acheteur)}</div>
       ${r.delai_median_h != null ? `<p class="rp-rep-n">Délai médian entre la confirmation et la réception : <b>${r.delai_median_h < 48 ? r.delai_median_h + ' h' : Math.round(r.delai_median_h / 24) + ' jours'}</b> (${r.delai_n} commandes).</p>` : ''}
       ${!moi && r.ensemble ? `<p class="rp-rep-n rp-rep-ens">Vous avez terminé ${r.ensemble} commande${r.ensemble > 1 ? 's' : ''} ensemble.</p>` : ''}
-      <p class="rp-rep-n">${vide ? 'Aucune commande suivie dans l’application pour l’instant. ' : ''}« Fiable » : ${esc(r.criteres_fiable || '')}. Une identité vérifiée ne veut pas dire fiable : ce sont deux choses différentes.</p>`;
+      <p class="rp-rep-n">${vide ? 'Aucune commande suivie dans l’application pour l’instant. ' : ''}${r.vendeur && 'niveau' in r.vendeur ? esc(r.criteres_fiable || '') : '« Fiable » : ' + esc(r.criteres_fiable || '') + '.'} Une identité vérifiée ne veut pas dire fiable : ce sont deux choses différentes.</p>`;
   }
   async function profil(uid, o = {}) {
     if (!uid) return;
@@ -360,6 +362,75 @@
   // pour Mon compte : le score en une ligne et les nouveaux avertissements
   const fiabResume = () => fiabCache;
 
+  // mes niveaux (schéma 85) : calculés par le serveur ; ici on affiche le niveau, ce qui manque, la grâce, l'historique, la contestation
+  let nivCache = null;
+  async function lireNiveaux() { if (!N() || !N().session()) return null; try { nivCache = await N().rpc('niveaux_moi'); } catch (_) {} return nivCache; }
+  const nivResume = () => nivCache;
+  const EVT = { monte: 'Nouveau niveau', grace: 'En sursis', grace_levee: 'Sursis levé', descend: 'Niveau baissé', retire: 'Niveau retiré', force: 'Décision de l’équipe',
+    force_fin: 'Fin de la décision de l’équipe', gros: 'Badge Acheteur en gros', gros_grace: 'Acheteur en gros en sursis', gros_grace_levee: 'Sursis levé', gros_retire: 'Acheteur en gros retiré' };
+  const fcfa = v => Math.round(+v || 0).toLocaleString('fr-FR').replace(/[\u202f\u00a0 ]/g, '\u00a0') + '\u00a0F\u00a0CFA';
+  const virg = v => String(v).replace('.', ',');
+  async function niveaux() {
+    const bg = feuille(`<h2>Mes niveaux</h2><p>Calculés par le Marché de Gros sur vos commandes terminées, jamais sur vos annonces. Les autres voient seulement le nom du niveau.</p><div data-nv>${nivCache ? '' : (window.MDGSac ? MDGSac.charge('Vos niveaux arrivent…') : '<div class="rp-vide">Chargement…</div>')}</div>`, 'Mes niveaux');
+    const z = bg.querySelector('[data-nv]'), ouvert = {};
+    const peindre = d => {
+      if (!d) { z.innerHTML = `<div class="rp-vide">${navigator.onLine === false ? 'Pas de connexion : vos niveaux s’afficheront quand le réseau revient.' : 'Niveaux indisponibles pour l’instant. Réessayez dans un instant.'}</div>`; return; }
+      const C = d.criteres || {}, NV = C.niveaux || [], R = d.roles || {}, H = d.historique || [], ct = d.contestation, mois = Math.round((C.fenetre_jours || 365) / 30.4);
+      const lib = (role, k) => (NV.find(x => x.role === role && x.cle === k) || {}).libelle || '';
+      const enCours = ct && ct.statut === 'ouverte';
+      const peutContester = role => !enCours && (d.contestable || []).some(x => x.role === role);
+      const carte = (role, titre) => {
+        const r = R[role] || {}, c = r.calcul || {}, L = NV.filter(x => x.role === role).sort((a, b) => a.ordre - b.ordre);
+        const cur = L.find(x => x.cle === r.niveau), suiv = L.find(x => x.ordre === (cur ? cur.ordre : 0) + 1), det = suiv && (c.detail || []).find(x => x.cle === suiv.cle);
+        let h = `<div class="rp-fb-it"><b>${titre}</b>${cur ? `<span class="st-p st-nv${cur.ordre}" style="margin-top:6px">${esc(cur.libelle)}</span>` : '<small>Pas encore de niveau.</small>'}
+          ${role === 'acheteur' && r.gros ? '<span class="st-p st-gros" style="margin:6px 0 0 4px">Acheteur en gros</span>' : ''}`;
+        if (r.force_jusqua) h += `<small>Niveau rendu par l’équipe jusqu’au ${jour(r.force_jusqua)}.</small>`;
+        else if (r.grace_jusqua) h += `<div class="rp-fb-al" style="margin:8px 0 0"><b>En sursis jusqu’au ${jour(r.grace_jusqua)}.</b> ${r.grace_vers ? 'Sans changement, votre niveau passera à ' + esc(lib(role, r.grace_vers)) + '.' : 'Sans changement, votre niveau sera retiré.'}</div>`;
+        if (role === 'acheteur' && r.gros && r.gros_grace_jusqua) h += `<small>Acheteur en gros : en sursis jusqu’au ${jour(r.gros_grace_jusqua)}.</small>`;
+        h += `<small>Sur ${mois} mois : ${c.commandes || 0} commande${c.commandes > 1 ? 's' : ''} terminée${c.commandes > 1 ? 's' : ''}${c.mois ? ' sur ' + c.mois + ' mois' : ''} · ${virg(c.abus_pct || 0)} % d’annulations abusives${c.avis ? ' · note ' + virg(c.note) + '/5' : ''}</small>`;
+        if (suiv && det) {
+          const manque = [];
+          if (det.commandes < suiv.commandes) manque.push([`${det.commandes} sur ${suiv.commandes} commandes${suiv.code_requis ? ' validées par code' : ''}`, det.commandes / suiv.commandes]);
+          if (det.mois < suiv.mois) manque.push([`${det.mois} sur ${suiv.mois} mois différents`, det.mois / suiv.mois]);
+          if ((c.abus_pct || 0) > suiv.abus_max) manque.push([`Annulations abusives : ${virg(c.abus_pct)} %, il faut ${virg(suiv.abus_max)} % au plus`, 0]);
+          if (suiv.note_min != null && !(c.note >= suiv.note_min)) manque.push([c.avis ? `Note ${virg(c.note)}/5, il faut ${virg(suiv.note_min)} au moins` : `Une note d’au moins ${virg(suiv.note_min)}/5`, 0]);
+          if (suiv.volume_min != null && det.volume < suiv.volume_min) manque.push([`${fcfa(det.volume)} sur ${fcfa(suiv.volume_min)} de commandes terminées`, det.volume / suiv.volume_min]);
+          if (suiv.identite_requise && !c.identite) manque.push(['Identité vérifiée par l’équipe', 0]);
+          if (manque.length) h += `<div class="st-but" style="margin-top:10px"><b>Pour ${esc(suiv.libelle)}</b>${manque.map(([t, f]) => `<small>${t}</small>${f > 0 ? `<div class="st-jauge" role="img" aria-label="${t}"><i style="width:${Math.min(100, f * 100)}%"></i></div>` : ''}`).join('')}</div>`;
+        }
+        if (role === 'acheteur' && !r.gros && C.gros) h += `<small>Acheteur en gros : ${c.gros_commandes || 0} sur ${C.gros.commandes} commandes de ${fcfa(C.gros.montant)} ou plus.</small>`;
+        if (peutContester(role)) h += ouvert[role] ? `<form data-nct="${role}" novalidate><textarea maxlength="300" aria-label="Pourquoi ce changement de niveau est-il faux ?" placeholder="Expliquez ce qui s’est passé"></textarea><p class="rp-msg" role="alert"></p><div class="rp-duo"><button type="submit" class="rp-go" style="margin-top:6px">Envoyer</button><button type="button" class="rp-go rp-ecr" style="margin-top:6px" data-nctx="${role}">Retour</button></div></form>`
+          : `<button type="button" class="rp-alt" data-ncto="${role}">Contester ce changement</button>`;
+        return h + '</div>';
+      };
+      let h = carte('vendeur', 'Comme vendeur') + carte('acheteur', 'Comme acheteur');
+      if (ct) h += `<div class="rp-sec"><h3>Ma contestation</h3><div class="rp-fb-it"><small>« ${esc(ct.texte)} »</small><span class="rp-fb-t${ct.statut === 'refusee' ? ' contre' : ''}">${ct.statut === 'ouverte' ? 'En cours : réponse avant le ' + jour(ct.repondre_avant) : ct.statut === 'acceptee' ? 'Acceptée' : 'Refusée'}</span>${ct.reponse ? `<small>Réponse de l’équipe : ${esc(ct.reponse)}</small>` : ''}</div></div>`;
+      h += `<div class="rp-sec"><h3>Historique${H.length ? '<span class="nbul">' + H.length + '</span>' : ''}</h3>${H.length ? H.map(j => `<div class="rp-fb-it"><b>${EVT[j.evenement] || 'Changement'}${j.nouveau && j.nouveau !== 'gros' && /monte|descend|force/.test(j.evenement) ? ' : ' + esc(lib(j.role, j.nouveau)) : ''}</b><small>${j.role === 'vendeur' ? 'Comme vendeur' : 'Comme acheteur'} · le ${jour(j.at)}${j.ancien && j.ancien !== 'gros' && /grace|descend|retire/.test(j.evenement) ? ' · avant : ' + esc(lib(j.role, j.ancien)) : ''}${j.raison ? ' · ' + esc(j.raison) : ''}</small></div>`).join('') : '<div class="rp-vide">Aucun changement pour l’instant.</div>'}</div>`;
+      const ligneN = x => `<li><b>${esc(x.libelle)}</b> : ${x.commandes} commandes${x.mois > 1 ? ' sur ' + x.mois + ' mois différents' : ''}${x.code_requis ? ' validées par code (' + (x.plafond_partenaire || '?') + ' au plus avec le même partenaire)' : ''}, au plus ${virg(x.abus_max)} % d’annulations abusives${x.note_min != null ? ', note d’au moins ' + virg(x.note_min) + '/5' : ''}${x.volume_min != null ? ', au moins ' + fcfa(x.volume_min) : ''}${x.identite_requise ? ', identité vérifiée' : ''}.</li>`;
+      h += `<div class="rp-sec"><h3>Comment ça marche</h3><ul class="rp-fb-reg">${NV.filter(x => x.role === 'vendeur').sort((a, b) => a.ordre - b.ordre).map(ligneN).join('')}
+        <li>Mêmes paliers pour les acheteurs : Acheteur fiable, Bon, Excellent, Grand acheteur.</li>
+        ${C.gros ? `<li><b>Acheteur en gros</b> : au moins ${C.gros.commandes} commandes de ${fcfa(C.gros.montant)} ou plus.</li>` : ''}
+        <li>Seules les commandes terminées des ${mois} derniers mois comptent. Une annulation légitime, un litige en cours ou partagé ne comptent pas.</li>
+        <li>Si vous ne remplissez plus les critères, vous gardez votre niveau ${C.grace_jours || 30} jours, puis il baisse. Vous êtes prévenu.</li>
+        <li>Vous pouvez contester pendant ${C.contestation_jours || 7} jours après une baisse. L’équipe répond en 7 jours au plus.</li></ul></div>`;
+      z.innerHTML = h;
+      z.querySelectorAll('[data-ncto]').forEach(b => b.onclick = () => { ouvert[b.dataset.ncto] = 1; peindre(d); const t = z.querySelector(`[data-nct="${b.dataset.ncto}"] textarea`); if (t) t.focus(); });
+      z.querySelectorAll('[data-nctx]').forEach(b => b.onclick = () => { delete ouvert[b.dataset.nctx]; peindre(d); });
+      z.querySelectorAll('[data-nct]').forEach(f => f.onsubmit = async ev => {
+        ev.preventDefault(); const t = f.querySelector('textarea').value.trim(), m = f.querySelector('.rp-msg'), go = f.querySelector('[type=submit]');
+        if (t.length < 5) { m.textContent = 'Expliquez en quelques mots ce qui s’est passé.'; return; }
+        if (N().texteRefus) { const r = N().texteRefus(t); if (r) { m.textContent = r; return; } }
+        go.disabled = true; m.textContent = '';
+        try { await N().rpc('niveaux_contester', { p_role: f.dataset.nct, p_texte: t }); delete ouvert[f.dataset.nct]; peindre(await lireNiveaux()); }
+        catch (x) { go.disabled = false; m.textContent = window.MDGErreur ? MDGErreur(x) : String(x.message || x); }
+      });
+    };
+    const avant = nivCache ? JSON.stringify(nivCache) : null; if (nivCache) peindre(nivCache);
+    const d = await lireNiveaux(); if (!bg.isConnected) return;
+    if (!avant || JSON.stringify(d) !== avant) peindre(d);   // rien n'a changé : on ne redessine pas
+    if (d && d.non_vus) { N().rpc('niveaux_vu').then(() => { if (nivCache) nivCache.non_vus = 0; dire(); }).catch(() => {}); }
+  }
+
   async function classement() {
     const bg = feuille(`<h2>Les mieux notés</h2><p>Les vendeurs et acheteurs que leurs partenaires recommandent, d’après leurs notes après négociation.</p><div class="rp-cl" data-l><div class="rp-vide">Chargement…</div></div>`, 'Les mieux notés');
     let l = [], rate = false; try { l = await N().rpc('mieux_notes', { n: 50 }, !!N().session()) || []; } catch (_) { rate = true; }
@@ -373,13 +444,13 @@
 
   // notification de fiabilité touchée (schéma 84) : #/?fiabilite=1
   function depuisAdresse(h) {
-    if (!/[?&]fiabilite=1/.test(String(h || location.hash))) return;
-    try { if (!h) history.replaceState(history.state, '', location.hash.replace(/[?&]fiabilite=1/, '').replace(/\?$/, '') || '#/'); } catch (_) {}
-    const go = k => { if (N() && N().session()) fiabilite(); else if (k < 20) setTimeout(() => go(k + 1), 300); };
+    const m = /[?&](fiabilite|niveaux)=1/.exec(String(h || location.hash)); if (!m) return;
+    try { if (!h) history.replaceState(history.state, '', location.hash.replace(/[?&](fiabilite|niveaux)=1/, '').replace(/\?$/, '') || '#/'); } catch (_) {}
+    const go = k => { if (N() && N().session()) (m[1] === 'niveaux' ? niveaux : fiabilite)(); else if (k < 20) setTimeout(() => go(k + 1), 300); };
     setTimeout(() => go(0), 700);
   }
   if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'mdg-lien') depuisAdresse(e.data.url); });
   depuisAdresse();
 
-  window.MDGRep = { etoiles, texteNote, resume, charger, signal, chargerSignal, profil, modifier, noter, classement, signaler, RAISONS, fiabilite, lireFiabilite, fiabResume };
+  window.MDGRep = { etoiles, texteNote, resume, charger, signal, chargerSignal, profil, modifier, noter, classement, signaler, RAISONS, fiabilite, lireFiabilite, fiabResume, niveaux, lireNiveaux, nivResume };
 })();

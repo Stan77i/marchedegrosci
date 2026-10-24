@@ -28,6 +28,7 @@ Les valeurs viennent du code (`css/mgci-tokens.css`, `css/sombre.css`, `css/mgci
 
 Règles :
 - **Plus de bleu ni de violet pour décorer** (24/10/2026) : « transport compris » et le choix retenu sont en vert (`#1F8A55` en bordure, `#10392B` pour le tampon) ; les tuiles « vous » et « lien » du menu sont vert profond et encre chaude. Décision du propriétaire (24/10/2026) : le badge « vérifié » et les négociations sont en **vert profond** `#10392B` ; plus aucun bleu hors du lien « compatible » de la carte.
+- **Niveaux de confiance** (schéma 85, 24/10/2026) : une seule échelle pour les vendeurs et les acheteurs, du plus clair au plus fort : fiable `#DCEFE3` / texte `#10392B`, bon `#6CC58C` / `#0d2a1c`, excellent maïs `#F2C230` / `#10392B`, grand vert profond `#10392B` / maïs `#F2C230` ; « Acheteur en gros » `#F6E2B0` / `#3D2E05` (contrastes mesurés de 7,3:1 à 10,7:1). Classes `.st-nv1` à `.st-nv4` et `.st-gros` (`v3/statuts.js`). « Vendeur de confiance », « Acheteur sérieux » et « Fiable » ne s'affichent plus quand le serveur donne les niveaux.
 - **Une couleur = un sens.** Vert clair = offre, jaune = demande, vert profond = accord, corail = alerte. Ne pas réutiliser ces couleurs pour décorer.
 - Texte sur couleur : contraste 4,5:1 minimum (3:1 pour 18 px gras et plus). Blanc sur corail clair est interdit (3,1:1).
 - Mode nuit : `css/sombre.css` pour les pages, `app/nuit.js` traduit les fenêtres. Une fenêtre qui a ses propres couleurs sombres s'ajoute à la liste `DEJA` de `app/nuit.js`.

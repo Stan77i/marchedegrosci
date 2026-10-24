@@ -1,13 +1,14 @@
 /* ═════════ Marché de Gros CI — statuts des comptes : ce que la communauté peut savoir d'un membre en un coup d'œil ═════════
-   Philosophie : un statut se GAGNE par des faits vérifiables (pièce d'identité, ventes conclues, avis, réponses, activité),
-   jamais en payant ni en le déclarant soi-même. Chaque statut dit ce qu'il prouve, et Mon compte dit comment l'obtenir.
+   Un statut se GAGNE par des faits vérifiables, jamais en payant ni en le déclarant soi-même.
      Identité vérifiée   — l'équipe a comparé la pièce (valide) et le selfie                    (sceau vert, MDGIdentite.badge)
-     Vendeur de confiance — ≥ 3 ventes conclues sur le Marché de Gros, note ≥ 4,2 s'il a ≥ 3 avis  (maïs)
-     Acheteur sérieux     — ≥ 3 achats conclus, note ≥ 4 s'il a ≥ 3 avis                         (vert)
+     Niveaux (schéma 85) : Vendeur fiable, Bon, Excellent, Grand vendeur ; mêmes paliers pour les acheteurs ; « Acheteur en gros ».
+                           Calculés par le serveur sur les commandes terminées des 12 derniers mois (niveaux_publics) :
+                           le téléphone ne fait qu'afficher. Ils remplacent « Vendeur de confiance », « Acheteur sérieux » et « Fiable ».
+                           Ancien serveur (sans niveaux_publics) : on garde les deux anciens statuts.
      Répond vite          — répond en moins de 24 h à 80 % des personnes qui le contactent (≥ 3)  (crème)
      Actif aujourd'hui / cette semaine — a publié ou écrit récemment                              (point vert)
      Nouveau membre       — inscrit depuis moins de 30 jours                                     (neutre)
-   Serveur : supabase/schema-17-statuts.sql → statuts_publics(ids), lisible sans compte, chiffres seulement.
+   Serveur : statuts_publics(ids) et niveaux_publics(ids), lisibles sans compte, sans donnée privée.
    API : MDGStatut.charger(uids) · get(uid) · liste(uid) · puces(uid, { max, sans }) · detail(uid) · progres(uid)
    Événement « mdg:rep » quand de nouveaux chiffres arrivent (l'application et les fenêtres se redessinent déjà sur cet événement).
    Compte officiel (l'administrateur, schéma 20 → officiels()) : un seul statut, « Officiel · Marché de Gros », à la place de tous les autres
@@ -17,7 +18,7 @@
   const N = () => window.MDGNuage;
   const IC = (n, t) => window.MDGIco ? MDGIco.svg(n, t || 13, 2) : '';
   const data = {}, attente = new Set(); let t = 0;
-  const CK = 'mdg-statuts', TTL = 30 * 60e3;
+  const CK = 'mdg-statuts2', TTL = 30 * 60e3;
   try { const c = JSON.parse(localStorage.getItem(CK) || '{}'); if (c.t && Date.now() - c.t < TTL) Object.assign(data, c.d || {}); } catch (_) {}
   const garder = () => { try { localStorage.setItem(CK, JSON.stringify({ t: Date.now(), d: data })); } catch (_) {} };
 
@@ -26,10 +27,16 @@
     if (!attente.size || !N()) return; clearTimeout(t);
     t = setTimeout(async () => {
       const ids = [...attente]; attente.clear(); ids.forEach(u => { if (!(u in data)) data[u] = null; });
+      const co = !!N().session();
+      // les niveaux (schéma 85) : lus en même temps ; un ancien serveur sans la fonction garde les anciens statuts
+      const pn = N().rpc('niveaux_publics', { ids }, co).then(r => r || [], () => null);
       try {
-        const r = await N().rpc('statuts_publics', { ids }, !!N().session());
-        (r || []).forEach(x => { data[x.user_id] = { v: !!x.verifie, a: x.actif_le ? Date.parse(x.actif_le) : 0, ve: x.ventes || 0, ac: x.achats || 0,
-          no: x.note != null ? +x.note : null, av: x.avis || 0, co: x.contacts || 0, r24: x.reponses_24h || 0, m: x.membre_depuis ? Date.parse(x.membre_depuis) : 0 }; });
+        const [r, nv] = await Promise.all([N().rpc('statuts_publics', { ids }, co), pn]);
+        const L = {}; (nv || []).forEach(x => { L[x.user_id] = x; });
+        (r || []).forEach(x => { const y = L[x.user_id];
+          data[x.user_id] = { v: !!x.verifie, a: x.actif_le ? Date.parse(x.actif_le) : 0, ve: x.ventes || 0, ac: x.achats || 0,
+          no: x.note != null ? +x.note : null, av: x.avis || 0, co: x.contacts || 0, r24: x.reponses_24h || 0, m: x.membre_depuis ? Date.parse(x.membre_depuis) : 0,
+          nv: nv ? { vl: y && y.vendeur_libelle || '', vo: y && y.vendeur_ordre || 0, al: y && y.acheteur_libelle || '', ao: y && y.acheteur_ordre || 0, g: !!(y && y.gros) } : null }; });
         garder(); dispatchEvent(new CustomEvent('mdg:rep'));
       } catch (_) {}
     }, 80);
@@ -50,13 +57,18 @@
 
   // les règles (une seule source : l'affichage, le détail et la progression en dépendent)
   const JOUR = 864e5;
+  const CRIT = 'Calculé par le Marché de Gros sur ses commandes terminées des 12 derniers mois, pas sur ses annonces.';
   const REGLES = [
-    { k: 'confiance', t: 'Vendeur de confiance', ico: 'confiance', ok: s => s.ve >= 3 && (s.av < 3 || s.no >= 4.2),
+    { k: 'nvv', c: s => 'nv' + s.nv.vo, t: s => s.nv.vl, ico: 'confiance', ok: s => !!(s.nv && s.nv.vl), s: () => CRIT },
+    { k: 'nva', c: s => 'nv' + s.nv.ao, t: s => s.nv.al, ico: 'acheter', ok: s => !!(s.nv && s.nv.al), s: () => CRIT },
+    { k: 'gros', t: 'Acheteur en gros', ico: 'acheter', ok: s => !!(s.nv && s.nv.g), s: () => 'Plusieurs grosses commandes terminées sur le Marché de Gros ces 12 derniers mois.' },
+    // anciens statuts : seulement si le serveur ne donne pas encore les niveaux
+    { k: 'confiance', t: 'Vendeur de confiance', ico: 'confiance', ok: s => !s.nv && s.ve >= 3 && (s.av < 3 || s.no >= 4.2),
       s: s => s.ve + ' vente' + (s.ve > 1 ? 's' : '') + ' conclue' + (s.ve > 1 ? 's' : '') + ' sur le Marché de Gros' + (s.av ? ' · ' + String(s.no).replace('.', ',') + '/5 sur ' + s.av + ' avis' : ''),
-      but: s => s.ve < 3 ? { t: 'Vendeur de confiance', fait: s.ve, total: 3, txt: 'ventes conclues' } : null },
-    { k: 'serieux', t: 'Acheteur sérieux', ico: 'acheter', ok: s => s.ac >= 3 && (s.av < 3 || s.no >= 4),
+      but: s => !s.nv && s.ve < 3 ? { t: 'Vendeur de confiance', fait: s.ve, total: 3, txt: 'ventes conclues' } : null },
+    { k: 'serieux', t: 'Acheteur sérieux', ico: 'acheter', ok: s => !s.nv && s.ac >= 3 && (s.av < 3 || s.no >= 4),
       s: s => s.ac + ' achat' + (s.ac > 1 ? 's' : '') + ' conclu' + (s.ac > 1 ? 's' : '') + ' sur le Marché de Gros',
-      but: s => s.ac < 3 ? { t: 'Acheteur sérieux', fait: s.ac, total: 3, txt: 'achats conclus' } : null },
+      but: s => !s.nv && s.ac < 3 ? { t: 'Acheteur sérieux', fait: s.ac, total: 3, txt: 'achats conclus' } : null },
     { k: 'rapide', t: 'Répond vite', ico: 'envoyer', ok: s => s.co >= 3 && s.r24 / s.co >= .8,
       s: s => 'Répond en moins de 24 h à ' + Math.round(s.r24 / Math.max(1, s.co) * 100) + ' % des personnes qui le contactent',
       but: s => s.co < 3 ? null : s.r24 / s.co < .8 ? { t: 'Répond vite', fait: s.r24, total: Math.ceil(s.co * .8), txt: 'réponses en moins de 24 h' } : null },
@@ -68,11 +80,11 @@
   const titre = (r, s) => typeof r.t === 'function' ? r.t(s) : r.t;
 
   // statuts gagnés, du plus fort au plus léger (le sceau « vérifié » est à part : MDGIdentite.badge)
-  function liste(uid) { if (estOfficiel(uid)) return [OFFICIEL]; const s = get(uid); if (!s) return []; return REGLES.filter(r => r.ok(s)).map(r => ({ k: r.k, t: titre(r, s), s: r.s(s), ico: r.ico })); }
+  function liste(uid) { if (estOfficiel(uid)) return [OFFICIEL]; const s = get(uid); if (!s) return []; return REGLES.filter(r => r.ok(s)).map(r => ({ k: r.k, c: r.c ? r.c(s) : r.k, t: titre(r, s), s: r.s(s), ico: r.ico })); }
   const estVerifie = uid => { if (estOfficiel(uid)) return false; const s = get(uid); return s ? s.v : !!(window.MDGIdentite && MDGIdentite.estVerifie(uid)); };
 
   const sceauOff = t => window.MDGMarque && MDGMarque.dg ? MDGMarque.dg(t, { fond: 'vert', rond: true }) : '';
-  const puce = x => x.k === 'officiel' ? `<span class="st-p st-officiel" title="${x.s}">${sceauOff(14)}Officiel · Marché de Gros</span>` : `<span class="st-p st-${x.k}" title="${x.s.replace(/"/g, '&quot;')}">${x.k === 'actif' ? '<i></i>' : IC(x.ico, 12)}${x.t}</span>`;
+  const puce = x => x.k === 'officiel' ? `<span class="st-p st-officiel" title="${x.s}">${sceauOff(14)}Officiel · Marché de Gros</span>` : `<span class="st-p st-${x.c || x.k}" title="${x.s.replace(/"/g, '&quot;')}">${x.k === 'actif' ? '<i></i>' : IC(x.ico, 12)}${x.t}</span>`;
   // sur une carte d'annonce : le sceau (si vérifié) + le statut le plus fort ; max = combien de statuts
   function puces(uid, o) { o = o || {}; const L = liste(uid).filter(x => !(o.sans || []).includes(x.k)).slice(0, o.max == null ? 1 : o.max);
     return (o.sceau !== false && estVerifie(uid) && window.MDGIdentite ? MDGIdentite.badge(o.t || 15) : '') + L.map(puce).join(''); }
@@ -84,7 +96,7 @@
     if (!s && !v) return '';
     const ligne = (ico, t, d, k) => `<div class="st-l st-l-${k}"><span class="st-i">${ico}</span><div><b>${t}</b><small>${d}</small></div></div>`;
     return `<div class="st-detail">${v ? ligne(window.MDGIdentite ? MDGIdentite.badge(18) : '', 'Identité vérifiée', 'L’équipe a comparé sa pièce d’identité, encore valide, et son selfie.', 'verifie') : ''}
-      ${L.map(x => ligne(x.k === 'actif' ? '<i class="st-pt"></i>' : IC(x.ico, 16), x.t, x.s, x.k)).join('')}
+      ${L.map(x => ligne(x.k === 'actif' ? '<i class="st-pt"></i>' : IC(x.ico, 16), x.t, x.s, x.c || x.k)).join('')}
       ${!v && !L.length ? '<p class="st-vide">Pas encore de statut : ce membre commence sur le Marché de Gros.</p>' : ''}</div>`;
   }
 
@@ -96,6 +108,7 @@
 .st-confiance{background:#F2C230;color:#10392B}
 .st-serieux{background:#6CC58C;color:#0d2a1c}
 .st-rapide{background:#EFE7D9;color:#10392B}
+.st-nv1{background:#DCEFE3;color:#10392B}.st-nv2{background:#6CC58C;color:#0d2a1c}.st-nv3{background:#F2C230;color:#10392B}.st-nv4{background:#10392B;color:#F2C230}.st-gros{background:#F6E2B0;color:#3D2E05}
 .st-actif{background:rgba(108,197,140,.16);color:inherit}.st-actif i,.st-pt{width:7px;height:7px;border-radius:50%;background:#3FB872;box-shadow:0 0 0 3px rgba(63,184,114,.22);display:inline-block}
 .st-officiel{background:#10392B;color:#F2C230;padding-left:3px;box-shadow:0 0 0 1px rgba(242,194,48,.45) inset}.st-officiel svg{border-radius:50%}
 .st-l-officiel .st-i{background:#10392B}
@@ -107,6 +120,7 @@
 .st-detail{display:flex;flex-direction:column;gap:10px}
 .st-l{display:flex;gap:12px;align-items:flex-start}.st-l b{display:block;font-weight:600}.st-l small{display:block;opacity:.75;font-size:13px;line-height:1.35;margin-top:2px}
 .st-i{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(140,140,140,.14)}
+.st-l-nv1 .st-i{background:#DCEFE3;color:#10392B}.st-l-nv2 .st-i{background:#6CC58C;color:#0d2a1c}.st-l-nv3 .st-i{background:#F2C230;color:#10392B}.st-l-nv4 .st-i{background:#10392B;color:#F2C230}.st-l-gros .st-i{background:#F6E2B0;color:#3D2E05}
 .st-l-confiance .st-i{background:#F2C230;color:#10392B}.st-l-serieux .st-i{background:#6CC58C;color:#0d2a1c}.st-l-rapide .st-i{background:#EFE7D9;color:#10392B}
 .st-l-verifie .st-i{background:rgba(16,57,43,.1)}
 .st-vide{margin:0;opacity:.7;font-size:13.5px}

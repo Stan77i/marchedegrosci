@@ -1445,3 +1445,13 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - `CLAUDE.md` (Design) et `DESIGN.md` (lois 2, 25, couleurs) mis à jour ; le rapport d'audit note les trois décisions.
 - Vérifié (navigateur, iPhone) : au début, 9 effets jouent ; après 14 s, seules les lumières du fond finissent leur 2e passage ; « Produit suivant » → les effets rejouent ; aucune erreur JS.
 - `?v=20261124i` (11 fichiers) ; site refabriqué ; cache `mgci-v243`.
+
+## 24/10/2026 — Documentation officielle : FONCTIONNALITES, ROADMAP, ARCHITECTURE, CHANGELOG
+
+- Quatre fichiers à la racine, écrits après un inventaire du code (`main`) et de la base de production (catalogue et comptages seulement), chacun relu contre le code par un contrôleur :
+  - `FONCTIONNALITES.md` : 195 fonctionnalités, application d'abord, site à part ; 159 opérationnelles (beaucoup jamais servies en vrai, c'est écrit), 25 partielles, 6 prévues, 5 défectueuses ;
+  - `ROADMAP.md` : les 10 sujets demandés, avec leur état, et les décisions du propriétaire à développer ;
+  - `ARCHITECTURE.md` : application, site, Supabase (54 tables, fonctions, RLS, tâches planifiées, fonctions Edge), permissions, intégrations ;
+  - `CHANGELOG.md` : les 607 commits depuis le 03/10/2026, par jour.
+- Défauts trouvés (non corrigés, aucune logique touchée) : limite de 30 annonces qui peut effacer une annonce active au `sync()` ; diffusion « annonce du marché » jamais envoyée sans abonné au produit ; libellés « Paiement libéré » de l'écran admin sans mouvement d'argent ; ancienne note `noter` (code mort) ; refabrication automatique du site non déclenchée par `tools/site-prix.js` et `tools/site-regions.js`.
+- À tenir à jour : chaque PR qui ajoute ou change une fonctionnalité met à jour `FONCTIONNALITES.md` (et `ROADMAP.md` si un élément prévu avance), et ajoute sa ligne au `CHANGELOG.md`.

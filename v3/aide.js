@@ -181,6 +181,12 @@
 .ai-s input::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
 .ai-th{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0}
 .ai-th button{min-height:44px;padding:0 14px;border-radius:22px;border:1px solid rgba(23,21,18,.14);background:#FFFCF6;color:#171512;font:500 15px Jost,sans-serif;display:inline-flex;align-items:center;gap:7px}
+.ai-demo{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;margin:6px 0 4px;border:0;border-radius:14px;background:#F2C230;color:#171512;font:600 15px Jost,sans-serif;cursor:pointer}
+.ai-tours{margin-top:8px}
+.ai-tuto{margin:18px 0 6px;border-radius:18px;background:#FFFCF6;box-shadow:inset 0 0 0 1px rgba(23,21,18,.1);padding:0 14px}
+.ai-tuto summary{list-style:none;display:flex;align-items:center;gap:10px;min-height:56px;font:600 16px Jost,sans-serif;cursor:pointer}
+.ai-tuto summary::-webkit-details-marker{display:none}.ai-tuto summary span:first-of-type{flex:1}.ai-tuto summary>svg:last-child{transition:transform .2s}
+.ai-tuto[open] summary>svg:last-child{transform:rotate(180deg)}.ai-tuto[open]{padding-bottom:14px}
 .ai-th button[aria-pressed=true]{background:#10392B;border-color:#10392B;color:#F3EFE4}
 .ai-sh{margin:22px 0 10px;font:600 13px/1 Jost,sans-serif;letter-spacing:0;color:#6F6553}
 .ai-l{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
@@ -236,6 +242,14 @@
     <div class="ai-r"><p>${gras(e.r)}</p>${e.a && ALLER[e.a] ? `<button type="button" class="ai-go" data-aller="${e.a}">${esc(ALLER[e.a][0])} ${IC('fleche', 18, 2)}</button>` : ''}
     <div class="ai-ok" data-ok><span>Ça vous a aidé ?</span><button type="button" data-oui>Oui</button><button type="button" data-non>Non</button></div></div></li>`;
 
+  // revoir un tutoriel ou la démo de la roue (déplacés de Réglages le 24/10/2026)
+  function tutoriels() {
+    const T = window.MDGAstuces && MDGAstuces.TOURS; if (!T) return '';
+    const n = Object.keys(T).length;
+    return `<details class="ai-tuto"><summary>${IC('comment', 20, 2)}<span>Revoir un tutoriel</span><span class="nbul">${n}</span>${IC('bas', 18, 2)}</summary>
+      ${window.MDGDemo ? `<button type="button" class="ai-demo" data-demo>${IC('suite', 16, 2)}Voir la démo : la roue et les prix</button>` : ''}
+      <div class="ai-th ai-tours">${Object.keys(T).map(k => `<button type="button" data-tour="${k}">${esc(T[k].t)}</button>`).join('')}</div></details>`;
+  }
   function liste() {
     const q = etat.q.trim(), W = mots(q);
     let corps;
@@ -247,7 +261,8 @@
       const th = THEMES.find(x => x[0] === etat.theme);
       corps = `<h2 class="ai-sh">${esc(th ? th[1] : '')}</h2><ul class="ai-l">${QR.filter(e => e.t === etat.theme).map(e => item(e)).join('')}</ul>`;
     } else {
-      corps = `<h2 class="ai-sh">Les questions les plus posées</h2><ul class="ai-l">${FREQ.map(t => QR.find(e => e.q === t)).filter(Boolean).map(e => item(e)).join('')}</ul>`;
+      corps = `<h2 class="ai-sh">Les questions les plus posées</h2><ul class="ai-l">${FREQ.map(t => QR.find(e => e.q === t)).filter(Boolean).map(e => item(e)).join('')}</ul>`
+        + tutoriels();
     }
     return `<h1 class="ai-t">Une <em>question</em> ?</h1>
       <p class="ai-lead">Écrivez-la : les réponses s’affichent pendant que vous tapez. Rien ne vous aide ? Une personne de l’équipe vous répond.</p>
@@ -278,13 +293,16 @@
   function resultats(b) {
     const tmp = document.createElement('div'); tmp.innerHTML = liste();
     const res = b.querySelector('[data-res]'); res.innerHTML = tmp.querySelector('[data-res]').innerHTML;
-    const th = b.querySelector('.ai-th'), thN = tmp.querySelector('.ai-th');
+    const th = b.querySelector('.ai-th:not(.ai-tours)'), thN = tmp.querySelector('.ai-th:not(.ai-tours)');
     if (th && !thN) th.remove(); else if (!th && thN) b.querySelector('.ai-s').after(thN);
     b.querySelector('.ai-eff').hidden = !etat.q.trim();
     brancherRes(b);
   }
   function brancherRes(b) {
-    b.querySelectorAll('.ai-th button').forEach(x => x.onclick = () => { etat.theme = etat.theme === x.dataset.th ? '' : x.dataset.th; etat.ouv = ''; dessiner(); });
+    b.querySelectorAll('[data-tour]').forEach(x => x.onclick = () => { const k = x.dataset.tour; fermer(); setTimeout(() => MDGAstuces.tour(k, true), 400); });
+    const dm = b.querySelector('[data-demo]'); if (dm) dm.onclick = () => { fermer(); if (location.hash && location.hash !== '#/') location.hash = '#/';
+      setTimeout(() => { const o = [...document.querySelectorAll('.acc-ong button')].find(x => x.textContent.trim().startsWith('Marché')); if (o) o.click(); setTimeout(() => MDGDemo.lancer(), 600); }, 450); };
+    b.querySelectorAll('.ai-th button[data-th]').forEach(x => x.onclick = () => { etat.theme = etat.theme === x.dataset.th ? '' : x.dataset.th; etat.ouv = ''; dessiner(); });
     b.querySelectorAll('.ai-it').forEach(li => {
       li.querySelector('.ai-q').onclick = () => { const id = li.dataset.id, ouvre = etat.ouv !== id; etat.ouv = ouvre ? id : '';
         b.querySelectorAll('.ai-it').forEach(x => { const o = x.dataset.id === etat.ouv; x.classList.toggle('ouv', o); x.querySelector('.ai-q').setAttribute('aria-expanded', o); });

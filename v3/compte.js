@@ -758,6 +758,7 @@ label.cp-r{cursor:pointer}
           <h3 class="cp-lab">Comment on vous appelle</h3>
           <div class="cp-fg">${champ('cp-prenom', 'Prénom', p.prenom, { attrs: 'maxlength="40" autocomplete="given-name" required' })}${champ('cp-nom', 'Nom', p.nom, { facultatif: true, attrs: 'maxlength="60" autocomplete="family-name"', aide: 'Les autres ne voient que son initiale, sauf si vous choisissez de le montrer (Confidentialité).' })}
           ${champ('cp-pseudo', 'Pseudonyme', p.pseudo, { facultatif: true, attrs: 'maxlength="24" autocomplete="nickname" spellcheck="false" autocapitalize="off"', aide: 'S’il est rempli, il remplace votre prénom. Unique sur le Marché de Gros.' })}</div>
+          <div class="cp-grp"><label class="cp-r">${ti('oeil', 'vous')}<span class="cp-r-t"><b>Montrer mon nom de famille</b><small>Sinon, les autres voient « ${esc(p.prenom || 'Prénom')} ${esc(p.nom ? p.nom[0] + '.' : 'N.')} »${p.pseudo ? ' (votre pseudonyme passe avant)' : ''}</small></span><input type="checkbox" class="cp-tog" role="switch" data-np ${p.nom_public ? 'checked' : ''}></label></div>
           <h3 class="cp-lab">Ce que vous faites, et où</h3>
           <div class="cp-fg">${roleSeg(p)}${lieu(p)}</div>
           <button type="submit" class="cp-go plein">Enregistrer</button><span class="cp-msg" role="status"></span></form>
@@ -768,6 +769,8 @@ label.cp-r{cursor:pointer}
         <div class="cp-grp">${ligne({ ico: ti('telephone', 'aide'), t: esc(N().fmtTel(u.tel)), s: 'Numéro du compte', cls: 'info', chev: false })}</div>
         <p class="cp-note">Le nom affiché sur chaque annonce (nom de vendeur ou d’exploitation) reste celui de l’annonce.</p></div>`;
       lierRole(main); lierLieu(main, p); badgeStructure(main.querySelector('[data-stv]'));
+      // nom de famille visible ou non (déplacé de Réglages le 24/10/2026 : c'est ce que les autres voient de vous)
+      const np = main.querySelector('[data-np]'); if (np) np.onchange = async e => { try { await enregistrer({ nom_public: e.target.checked }); N().toast('Réglage enregistré.'); } catch (x) { e.target.checked = !e.target.checked; N().toast(x.message); } };
       // la structure (schéma 23)
       const sf = main.querySelector('[data-stform]'), S = formStructure(sf.querySelector('[data-stf]'), p), sok = sf.querySelector('[data-stok]'), sgo = sf.querySelector('.cp-go');
       sf.onsubmit = async e => { e.preventDefault(); sok.textContent = ''; if (!S.verifier()) return; if (!navigator.onLine) { sok.textContent = 'Pas de connexion internet : réessayez quand le réseau revient.'; return; }

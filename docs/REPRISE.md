@@ -35,7 +35,11 @@
 ### Prix officiels de la semaine (OCPV) — site caché
 - Source : la **note de conjoncture hebdomadaire de l'OCPV** (PDF public, `https://ocpv-ci.com/doc/note_de_conjoncture/2026/NOTE_DE_CONJONCTURE_N_<n>_2026.pdf`), prix moyens **au détail** en FCFA le kg, Abidjan et intérieur, plus prix mini-maxi par marché.
 - Données : `tools/site/prix-ocpv.json` (copiées à la main de la note ; seules les variations sont calculées par `tools/site-prix.js`, car les pourcentages de la note contiennent des erreurs). Affichage : un bloc « Le prix officiel au détail » sur 11 pages produits et la page `site/prix-de-la-semaine/` (en bref, prix moyens, où c'est le moins cher, approvisionnement, tableau en direct de l'application).
-- **Chaque semaine** (l'OCPV publie le lundi ou le mardi) : lire la nouvelle note, mettre à jour `prix-ocpv.json` (champs `source` et prix), `node tools/site-public.js`, vérifier, PR. Toujours écrire « prix de détail », jamais les présenter comme des prix de gros.
+- **Chaque semaine, automatiquement** (accord du propriétaire, 24/10/2026) :
+  - le lundi soir et le mardi à 5 h (heure d'Abidjan), la tâche GitHub `.github/workflows/ocpv-note.yml` télécharge la nouvelle note et en garde le texte dans `tools/site/ocpv/note-<année>-<semaine>.txt` (commit dans `main`) ;
+  - le mardi à 8 h 36, la tâche programmée de Claude « Prix OCPV de la semaine » (`trig_01WGBe78AStmSdvS4k9SCfYp`, nouvelle session à chaque fois, notification sur le téléphone) lit ce texte, met à jour `prix-ocpv.json`, refait le site, vérifie et ouvre une PR. Le propriétaire la fusionne.
+  - À la main si besoin : lire la note, mettre à jour `prix-ocpv.json`, `node tools/site-public.js`, vérifier, PR.
+- Toujours écrire « prix de détail », jamais les présenter comme des prix de gros.
 
 ### Dernières corrections de l'application
 - Calendrier des récoltes : sources FAO, Nitidae (plantain), RONGEAD (oignon) ajoutées (`v2/saisons.js`, `A.CAL`) ; cadran de « L'année du marché » : un anneau par produit.

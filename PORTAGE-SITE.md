@@ -90,7 +90,7 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 |---|---|---|
 | Accueil à onglets Marché / Prix / Activité / Alertes, salutation, chiffres réels | `application.dc.html`, méthode `accueil()` | haute |
 | « En cours » : négociations, commandes, messages ; « Reprendre là où vous en étiez » ; un accord et sa commande sur une seule ligne | `app/activite.js` | haute |
-| Fil « Dernières annonces » avec les ventes conclues | `application.dc.html`, `ventesCharger()` (schéma 55) | moyenne |
+| Fil « Dernières annonces » avec les ventes conclues (la carte n'existe que s'il y a au moins une annonce, 23/10/2026) | `application.dc.html`, `ventesCharger()` (schéma 55) | moyenne |
 | Bande d'accroches (garanties, nouveautés) | `app/garanties.js`, `v3/souffle.js` | basse |
 | Roue des produits et sac, scène d'entrée | `app/scene.js`, `app/sac.js`, `app/effets.js` | moyenne |
 | Démo de la roue et des prix | `app/demo-orbite.js` | basse |

@@ -4,6 +4,12 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 
 **Reprise après une discussion vidée : lire d'abord `docs/REPRISE.md`** (état exact, ce qui est fait, ce qui reste, pièges connus).
 
+**Nouvelle discussion : un mot suffit** (règle du propriétaire, 24/10/2026). Le propriétaire vide souvent la discussion et écrit seulement « On reprend », « Continue » ou une courte phrase. Alors, sans lui poser de question :
+1. lire `docs/REPRISE.md` (partie 1 : l'état ; partie 3 : ce qui reste, dans l'ordre) ;
+2. regarder les PR ouvertes (`gh api "repos/Stan77i/marchedegrosci/pulls?state=open" --jq '.[].number'`) et les signaler s'il y en a ;
+3. partir de `origin/main` à jour ;
+4. continuer la prochaine tâche de la partie 3, ou celle que sa phrase désigne, puis lui dire en deux lignes où on en est.
+
 **Compétences : s'en servir sans cesse, dès qu'une tâche en a besoin** (règle du propriétaire, 23/10/2026). Les 19 compétences du dépôt (`.claude/skills/` : design, UX, navigateur, business, marketing, SEO) et leur usage sont listés dans `docs/REPRISE.md`, partie 4.
 
 ## Règle n° 1 : tenir ce fichier à jour

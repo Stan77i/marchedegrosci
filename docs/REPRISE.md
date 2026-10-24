@@ -1,11 +1,11 @@
 # Rapport de reprise : où en est le projet, et la suite
 
-> **À lire au début de la prochaine session, après `CLAUDE.md`.** Mis à jour le 23/10/2026 (après la PR #240). À tenir à jour dans chaque PR.
+> **À lire au début de chaque nouvelle discussion, après `CLAUDE.md`** (le propriétaire écrit seulement « On reprend » : voir la marche à suivre en tête de `CLAUDE.md`). Mis à jour le 24/10/2026 (après la PR #243). À tenir à jour dans chaque PR.
 > Le détail de chaque changement est dans `docs/PASSATION.md` (sections datées du 23/10/2026). Le plan SEO complet est dans `docs/seo/PLAN.md`.
 
 ## 1. L'état au moment de la reprise
 
-- **Toutes les PR sont fusionnées** (jusqu'à la PR #240). Aucune PR ouverte, aucun travail en cours sur une branche.
+- **Toutes les PR sont fusionnées** (jusqu'à la PR #243). Aucune PR ouverte, aucun travail en cours. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
 - `main` : cache du service worker `mgci-v231`.
 - Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **81** appliqués (80 `fil_public`, 81 `site_mesures` / `mesurer` / `mesures_resume`). Mêmes schémas sur le projet de test.
 
@@ -35,6 +35,7 @@
 ### Dernières corrections de l'application
 - Calendrier des récoltes : sources FAO, Nitidae (plantain), RONGEAD (oignon) ajoutées (`v2/saisons.js`, `A.CAL`) ; cadran de « L'année du marché » : un anneau par produit.
 - Onglet Activité : la carte « Dernières annonces » n'existe que s'il y a au moins une annonce (PR #240).
+- Claude Design : un dossier de copies a été ajouté (PR #242) puis **retiré** à la demande du propriétaire (PR #243). Ne pas le recréer (`CLAUDE.md`).
 - Données en direct : `fil_public()` (prénom + initiale, ville, produit, quantité ; le compte admin s'affiche « Marché de Gros ») et `tableau_produits()`.
 
 ### La mesure (schéma 81)
@@ -52,7 +53,7 @@
 **Le site caché est presque complet côté contenu.** Ce qui bloque maintenant, ce sont les étapes 1 et 3, qui dépendent du propriétaire.
 
 1. **Retours du propriétaire sur le site caché** (il doit le regarder par « SEO ») : appliquer ses corrections.
-2. **Contenu** (toujours caché, facultatif) : prix officiels de l'OCPV cités sur les pages produits (date et lien, seulement si une source ouverte existe) ; résumé des prix de la semaine ; d'autres pages produits utiles (photo obligatoire, `LISTE` dans `tools/site-produits.js`) et guides (P2 de `docs/seo/concurrents.md` : fiches des grands marchés comme Gouro d'Adjamé ou Bouaké, **avec sources** ; saisons ; transport). Jamais de pages en série sans valeur propre.
+2. **Contenu** (toujours caché, facultatif) : prix officiels de l'OCPV cités sur les pages produits (date et lien, seulement si une source ouverte existe) ; résumé des prix de la semaine ; d'autres pages produits utiles (photo obligatoire, `LISTE` dans `tools/site-produits.js`) et guides **avec sources** (les guides « grands marchés de gros » et « transporter le vivrier » et le calendrier des récoltes sont déjà faits). Jamais de pages en série sans valeur propre.
 3. **Ouverture du site au public — décision du propriétaire seulement.** Le jour venu :
    - refaire l'**audit de sécurité** (règle de `CLAUDE.md` : avant l'ouverture au public) ;
    - retirer le `noindex` et le voile (`_debut.html`, `site/garde.js`, le script `nuage.js` de `_fin.html`) ;

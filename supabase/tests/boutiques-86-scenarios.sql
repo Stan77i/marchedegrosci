@@ -65,7 +65,8 @@ begin
   perform set_config('request.jwt.claims', json_build_object('sub', w, 'role', 'authenticated')::text, true); set local role authenticated;
   insert into public.offres (client_id, product_slug, region_slug, city, quantity, unit, price, quantite_depart) values ('t-avec-qte', 'igname', 'abidjan', 'Abidjan', 50, 'sac', 100, 9999) returning id into oid;
   select quantite_depart::text into e from public.offres where id = oid; out := out || 'insert depart=' || e;
-  update public.offres set quantity = 60 where id = oid; select quantite_depart::text into e from public.offres where id = oid; out := out || ' | remonte 60 → depart=' || e;
+  -- quantite_vue : le téléphone dit quelle quantité il a vue (garde du schéma 93), sinon l'ancienne quantité est gardée
+  update public.offres set quantity = 60, quantite_vue = 50 where id = oid; select quantite_depart::text into e from public.offres where id = oid; out := out || ' | remonte 60 → depart=' || e;
   begin update public.offres set quantite_depart = 1 where id = oid; out := out || ' | depart à la main PASSE (mauvais)'; exception when others then out := out || ' | depart à la main: ' || sqlerrm; end;
   update public.offres set quantity = 8 where id = oid; select quantite_depart::text into e from public.offres where id = oid; out := out || ' | baisse 8 → depart=' || e;
   r := public.boutique_activer(true); code := r->>'code';
@@ -126,4 +127,4 @@ end $$;
 
 -- Rejoué le 24/10/2026 (étape 7, après 92-96) : blocs A et C identiques ; bloc B « remonte 60 → depart=50 » (noté 60) :
 -- sans quantite_vue, la garde du schéma 93 (_annonce_regles) garde l'ancienne quantité sans message ; avec quantite_vue=50 → 60.
--- Test à mettre à jour : envoyer quantite_vue avec la nouvelle quantité.
+-- Bloc B mis à jour le 25/10/2026 : la remontée à 60 envoie quantite_vue=50.

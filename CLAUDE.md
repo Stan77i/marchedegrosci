@@ -95,6 +95,18 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - **Audit de sécurité** : fait (octobre 2026), toutes les failles trouvées sont corrigées (détail dans `docs/PASSATION.md`). **À refaire** avant l'ouverture au public, avant de brancher le paiement, et après chaque grosse fonction nouvelle.
 - Points restés ouverts : comptes créés sans preuve du numéro (attend le SMS/WhatsApp, donc un budget) ; anti-robot Turnstile pas installé (voir « Décisions en attente »).
 
+## Commandes, transport, fiabilité, badges, boutiques (décisions du 24/10/2026)
+
+- Les 44 réponses de `docs/audits/decisions-chantiers-2026-10-24.md` sont **validées par le propriétaire** : ce sont les règles des 4 chantiers. Les points clés :
+  - même ville : le vendeur organise son livreur, payé par l'acheteur directement, hors Marché de Gros ; retrait par l'acheteur seulement si le vendeur l'accepte ; « même ville » = même ville choisie dans la liste ;
+  - villes différentes : transport inclus ou à part ; le prix à part se donne dans la proposition et se négocie ;
+  - transporteur Marché de Gros : seulement vérifié ; il propose son prix, acheteur et vendeur acceptent, refusent ou contre-proposent (48 h) ; si refus, la commande continue avec le livreur du vendeur ; pas de messages privés avec lui pendant la mission ; le service reste fermé tant qu'il n'y a pas 3 transporteurs vérifiés et l'accord du propriétaire ;
+  - commission 3,5 % sur la marchandise ; 6,9 % sur le transport seulement avec le service Marché de Gros, retenue sur le prix du transporteur ; jamais présentée comme encaissée ;
+  - annulations : motif obligatoire, catégories (abusive, légitime, litige, problème technique), 90 jours glissants, suspension décidée par l'administrateur (7 puis 30 jours), contestation 7 jours, pas de rétroactivité ;
+  - badges : 12 mois glissants, commandes terminées seulement, seuils réglables par l'administrateur, grâce de 30 jours, historique et contestation ;
+  - boutiques : adresse = pseudo ou code court, activée par le vendeur, « retirer » cache sans effacer, quantité obligatoire, aperçu de partage par pages fabriquées en `noindex`.
+- Ordre de construction : transport, fiabilité, badges, boutiques ; une PR par chantier, testée sur le projet de test avant la production.
+
 ## Design
 
 - Une seule police : **Jost**.

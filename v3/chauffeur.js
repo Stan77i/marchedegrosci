@@ -96,8 +96,19 @@
     const q = m.quantite != null ? ' · ' + nf(m.quantite, 2) + ' ' + esc(unites(m.quantite, m.unite)) : '';
     const B = [];
     const avantChargement = ['confirmee', 'preparation', null, undefined].includes(m.etape) && ['a_confirmer', 'en_cours'].includes(m.etat);
-    if (m.mission === 'proposee' && prixOuvert !== m.mission_id) B.push(`<button type="button" class="p" data-acc="${m.mission_id}">Accepter et fixer mon prix</button>`, `<button type="button" data-ref="${m.mission_id}">Refuser</button>`);
-    if (m.mission === 'acceptee' && avantChargement && prixOuvert !== m.mission_id) B.push(`<button type="button" data-chpx="${m.mission_id}">${m.prix != null ? 'Changer mon prix' : 'Indiquer mon prix'}</button>`);
+    // réseau Marché de Gros (schéma 83) : le prix se convient à trois ; le transporteur propose, l'acheteur et le vendeur répondent
+    const R3 = m.mode === 'reseau' ? (m.prix_trois || {}) : null, A3 = R3 && R3.en_attente;
+    if (R3 && avantChargement && R3.convenu == null && prixOuvert !== m.mission_id) {
+      if (A3 && A3.role !== 'transporteur' && !A3.ok_transporteur) B.push(`<button type="button" class="p" data-t3a="${m.mission_id}" data-t3ref="${A3.id}">Accepter ${nf(A3.prix)} F</button>`, `<button type="button" data-acc="${m.mission_id}">Proposer un autre prix</button>`, `<button type="button" class="m" data-t3r="${m.mission_id}" data-t3ref="${A3.id}">Refuser ce prix</button>`);
+      else if (!A3) B.push(`<button type="button" class="p" data-acc="${m.mission_id}">Proposer mon prix</button>`);
+      if (m.mission === 'proposee' && !A3) B.push(`<button type="button" data-ref="${m.mission_id}">Refuser la mission</button>`);
+    } else if (!R3) {
+      if (m.mission === 'proposee' && prixOuvert !== m.mission_id) B.push(`<button type="button" class="p" data-acc="${m.mission_id}">Accepter et fixer mon prix</button>`, `<button type="button" data-ref="${m.mission_id}">Refuser</button>`);
+      if (m.mission === 'acceptee' && avantChargement && prixOuvert !== m.mission_id) B.push(`<button type="button" data-chpx="${m.mission_id}">${m.prix != null ? 'Changer mon prix' : 'Indiquer mon prix'}</button>`);
+    }
+    const etat3 = !R3 ? '' : R3.convenu != null ? `<small style="margin-top:6px;color:inherit"><b>Prix convenu par les trois : ${nf(R3.convenu)} F</b> · il ne change plus, même après un transbordement.</small>`
+      : A3 ? `<small style="margin-top:6px;color:inherit">${A3.role === 'transporteur' ? 'Votre prix' : A3.role === 'acheteur' ? 'L’acheteur propose' : 'Le vendeur propose'} : <b>${nf(A3.prix)} F</b> · acheteur : ${A3.ok_acheteur ? 'accepté' : 'pas encore'} · vendeur : ${A3.ok_vendeur ? 'accepté' : 'pas encore'}</small>`
+      : avantChargement ? '<small style="margin-top:6px;color:#8A6400"><b>Proposez votre prix</b> : la mission démarre quand l’acheteur et le vendeur l’ont accepté (48 h pour répondre).</small>' : '';
     const K = m.validation === 'code', go = m.mission === 'acceptee' && m.etat === 'en_cours';
     if (go && K && ['confirmee', 'preparation'].includes(m.etape)) B.push(`<button type="button" class="p" data-tap="${m.commande_id}" data-quoi="prise">Taper le code de prise en charge</button>`,
       `<button type="button" data-dem="${m.commande_id}">${TI('cle')}Demander le code au vendeur</button>`);
@@ -130,14 +141,14 @@
       <small>Vendeur : ${esc(m.vendeur)} · Acheteur : ${esc(m.acheteur)}</small>
       <small style="margin-top:6px"><span class="cm-tag ${st[1]}">${esc(st[0])}</span> ${m.propose_role === 'admin' ? '· confiée par l’équipe' : m.propose_role === 'acheteur' ? '· choisi par l’acheteur' : m.propose_role === 'vendeur' ? '· choisi par le vendeur' : ''}</small>
       ${m.mission === 'acceptee' && m.prix != null ? `<small style="margin-top:6px;color:inherit"><b>Votre prix : ${nf(m.prix)} F</b> · commission Marché de Gros (6,9 %) : ${nf(m.commission)} F · vous gardez ${nf(m.net)} F</small>` : ''}
-      ${m.mission === 'acceptee' && m.prix == null && avantChargement ? '<small style="margin-top:6px;color:#8A6400"><b>Prix du transport à indiquer</b> : l’acheteur le verra dans sa commande.</small>' : ''}
+      ${!R3 && m.mission === 'acceptee' && m.prix == null && avantChargement ? '<small style="margin-top:6px;color:#8A6400"><b>Prix du transport à indiquer</b> : l’acheteur le verra dans sa commande.</small>' : ''}${etat3}
       ${prixOuvert === m.mission_id ? formPrix(m) : ''}
       ${exige ? `<p class="cm-garde" style="margin:10px 0 0">${exige}</p>` : ''}${refus}
       ${B.length ? `<div class="cm-act" style="margin:10px 0 0">${B.join('')}</div>` : ''}</span></div>`;
   }
   function formPrix(m) {
-    const acc = m.mission === 'proposee';
-    return `<form class="cm-f" data-pxf="${m.mission_id}" data-acc2="${acc ? 1 : ''}" style="margin:10px 0 0">
+    const acc = m.mission === 'proposee' && m.mode !== 'reseau';
+    return `<form class="cm-f" data-pxf="${m.mission_id}" data-acc2="${acc ? 1 : ''}" data-res="${m.mode === 'reseau' ? 1 : ''}" style="margin:10px 0 0">
       <label>Votre prix pour ce transport (F CFA)<input type="number" inputmode="numeric" min="1" step="1" data-pxv value="${m.prix != null ? Math.round(m.prix) : ''}" placeholder="ex. 10000" required></label>
       <small data-pxi style="display:block;margin:6px 0 0;color:#5E5546;line-height:1.4">La commission du Marché de Gros est de 6,9 % de votre prix : comptez-la dedans. L’acheteur paie votre prix à la livraison, avec la marchandise. Rien n’est prélevé dans l’application pour l’instant.</small>
       <p class="cm-err" data-pxe role="alert" style="margin:4px 0 0"></p>
@@ -145,11 +156,11 @@
   }
   function lierPrix(box) {
     const f = box.querySelector('[data-pxf]'); if (!f) return;
-    const v = f.querySelector('[data-pxv]'), info = f.querySelector('[data-pxi]'), err = f.querySelector('[data-pxe]'), go = f.querySelector('[type=submit]'), acc = !!f.dataset.acc2;
+    const v = f.querySelector('[data-pxv]'), info = f.querySelector('[data-pxi]'), err = f.querySelector('[data-pxe]'), go = f.querySelector('[type=submit]'), acc = !!f.dataset.acc2, res = !!f.dataset.res;
     const maj = () => { const p = Math.round(+v.value || 0);
       info.textContent = p > 0 ? `Commission Marché de Gros (6,9 %) : ${nf(comTr(p))} F · vous gardez ${nf(p - comTr(p))} F. L’acheteur paie ${nf(p)} F de transport à la livraison, avec la marchandise. Rien n’est prélevé dans l’application pour l’instant.`
         : 'La commission du Marché de Gros est de 6,9 % de votre prix : comptez-la dedans. L’acheteur paie votre prix à la livraison, avec la marchandise.';
-      go.textContent = p > 0 ? (acc ? `Accepter à ${nf(p)} F` : `Enregistrer ${nf(p)} F`) : (acc ? 'Accepter la mission' : 'Enregistrer le prix'); };
+      go.textContent = res ? (p > 0 ? `Proposer ${nf(p)} F` : 'Proposer mon prix') : p > 0 ? (acc ? `Accepter à ${nf(p)} F` : `Enregistrer ${nf(p)} F`) : (acc ? 'Accepter la mission' : 'Enregistrer le prix'); };
     v.oninput = maj; maj(); setTimeout(() => { try { v.focus(); } catch (_) {} }, 50);
     f.querySelector('[data-pxx]').onclick = () => { prixOuvert = null; peindre(); };
     f.onsubmit = async e => {
@@ -157,9 +168,10 @@
       if (!(p > 0)) { err.textContent = 'Indiquez votre prix, en francs.'; return; }
       go.disabled = true; err.textContent = '';
       try {
-        if (acc) await N().rpc('chauffeur_repondre2', { p_mission: f.dataset.pxf, p_oui: true, p_prix: p });
+        if (res) await N().rpc('transport_agir', { p_mission: f.dataset.pxf, p_action: 'prix', p_prix: p });
+        else if (acc) await N().rpc('chauffeur_repondre2', { p_mission: f.dataset.pxf, p_oui: true, p_prix: p });
         else await N().rpc('chauffeur_prix', { p_mission: f.dataset.pxf, p_prix: p });
-        toast(acc ? 'Mission *acceptée*' : 'Prix *enregistré*', { type: 'ok', sous: acc ? 'L’acheteur et le vendeur sont prévenus. Transport : ' + nf(p) + ' F.' : 'L’acheteur voit le nouveau prix : ' + nf(p) + ' F.' });
+        toast(res ? 'Prix *proposé*' : acc ? 'Mission *acceptée*' : 'Prix *enregistré*', { type: 'ok', sous: res ? 'L’acheteur et le vendeur ont 48 h pour répondre : ' + nf(p) + ' F.' : acc ? 'L’acheteur et le vendeur sont prévenus. Transport : ' + nf(p) + ' F.' : 'L’acheteur voit le nouveau prix : ' + nf(p) + ' F.' });
         prixOuvert = null; await lire(); peindre();
       } catch (x) { go.disabled = false; err.textContent = erreurTxt(x); }
     };
@@ -193,6 +205,15 @@
     box.querySelectorAll('[data-chpx]').forEach(b => b.onclick = () => { prixOuvert = b.dataset.chpx; peindre(); });
     lierPrix(box);
     box.querySelectorAll('[data-ref]').forEach(b => b.onclick = () => repondre(b.dataset.ref, false, b));
+    // réseau : accepter ou refuser le prix proposé par l'acheteur ou le vendeur (schéma 83)
+    const t3 = async (b, action) => {
+      if (action === 'refus' && !await (window.MDGDemande ? MDGDemande.oui('Refuser ce prix ? La mission s’arrête et le livreur du vendeur prend le relais.', { ok: 'Refuser', danger: true }) : Promise.resolve(false))) return;
+      b.disabled = true;
+      try { await N().rpc('transport_agir', { p_mission: b.dataset.t3a || b.dataset.t3r, p_action: action, p_ref: b.dataset.t3ref }); toast(action === 'accord' ? 'Prix *accepté*' : 'Prix *refusé*', { type: 'ok' }); await lire(); peindre(); }
+      catch (x) { b.disabled = false; toast(erreurTxt(x), { type: 'erreur' }); }
+    };
+    box.querySelectorAll('[data-t3a]').forEach(b => b.onclick = () => t3(b, 'accord'));
+    box.querySelectorAll('[data-t3r]').forEach(b => b.onclick = () => t3(b, 'refus'));
     box.querySelectorAll('[data-arr]').forEach(b => b.onclick = () => etape(b.dataset.arr, 'arrivee'));
     box.querySelectorAll('[data-trb]').forEach(b => b.onclick = () => etape(b.dataset.trb, 'transbordement'));
     box.querySelectorAll('[data-tap]').forEach(b => b.onclick = () => taper(b.dataset.tap, b.dataset.quoi));

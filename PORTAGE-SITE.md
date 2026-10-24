@@ -82,6 +82,8 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Racheter en un geste | `v3/racheter.js` | moyenne |
 | Relevés et bons en PDF, tampon du Marché de Gros | `v3/releve.js` (schéma 54) | moyenne |
 | Espace chauffeur et lien de suivi | `v3/chauffeur.js`, `v3/suivi.js`, `suivi.html` | basse (réseau de transporteurs en pause) |
+| Commande : ville de livraison, règle « même ville » (livreur du vendeur, retrait si le vendeur l'accepte), transport à part figé avec le total convenu (schéma 83) | `v3/commandes.js` (`creer`, `ddTransport`) | haute |
+| Prix du transporteur du réseau convenu à trois (proposer, accepter, refuser, contre-proposer), côté commande et côté chauffeur (schéma 83, service fermé) | `v3/commandes.js` (`blocTrois`), `v3/chauffeur.js` | basse (réseau en pause) |
 | Alertes par produit | `v3/alertes.js` (schéma 75) | moyenne |
 
 ### Accueil et navigation

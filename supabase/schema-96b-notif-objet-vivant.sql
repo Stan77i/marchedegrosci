@@ -34,6 +34,8 @@ begin
       d := case when split_part(coalesce(p_regroupe, ''), ':', 2) ~* '^[0-9a-f-]{36}$' then split_part(p_regroupe, ':', 2)::uuid end;
       return exists (select 1 from public.offres o where o.id = u and o.status = 'active' and o.pause_le is null)
         and (d is null or exists (select 1 from public.demandes x where x.id = d and x.status = 'active'));
+    when 'offre_fin' then   -- rappel de fin d'une offre (schéma 93c) : seulement si elle est encore en ligne
+      return exists (select 1 from public.offres o where o.id = u and o.status = 'active');
     when 'demande', 'demande_seule', 'demande_fin', 'contenu_demande' then
       return exists (select 1 from public.demandes x where x.id = u and x.status = 'active');
     when 'relance_prix', 'expire_bientot' then

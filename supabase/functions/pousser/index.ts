@@ -33,7 +33,7 @@
 //     personne et par sujet : « 3 nouvelles offres : Tomate ».
 // v24 (24/10/2026, schéma 96b, NON DÉPLOYÉE) : « N professionnels cherchent » ne compte que les besoins encore actuels
 //     (public.notif_besoins_ouverts). L'objet (offre, demande, négociation…) est revérifié par la base dans notif_preparer et
-//     notif_lots_prendre ; un lot raté repart (notif_resultat). Rien d'autre ne change ici.
+//     notif_lots_prendre ; un lot raté repart (notif_resultat). Texte du rappel « offre_fin » (schéma 93c, équipe B).
 // v22 (24/10/2026, schéma 91) : textes commerciaux relus : accord et pluriel des unités (« 40 caisses », « 5 000 F la caisse »),
 //     élision juste (« de haricot », « d'œufs »), un prix jamais coupé (version plus courte), « Dans votre budget » seulement si
 //     la base l'a vérifié, échéances réelles (aujourd'hui, demain, « jusqu'au 27/10 »), anti-répétition lue par paquets.
@@ -594,6 +594,13 @@ Deno.serve(async (req) => {
               : j ? T45(`Votre demande ${de(lib)} se termine ${j}`, `Votre demande se termine ${j}`)
               : T45(`Votre demande ${de(lib)} arrive à sa fin`, "Votre demande arrive à sa date limite");
             return M(t, "Prolongez-la si vous cherchez encore, sinon fermez-la.");
+          }
+          case "offre_fin": {
+            // schéma 93c : l'offre quitte le marché à sa date de fin (donnees.limite) ; écran : Mes publications, « Prolonger 30 jours »
+            const j = jourDe(d.limite);
+            const t = j ? T45(`Votre offre ${de(lib)} se termine ${j}`, `${lib} : votre offre finit ${j}`, `Votre offre se termine ${j}`)
+              : T45(`Votre offre ${de(lib)} arrive à sa fin`, "Votre offre arrive à sa date de fin");
+            return M(t, "Encore du stock ? Prolongez-la de 30 jours dans Mes publications.");
           }
           case "boutique_visites": {
             const v = Number(d.vues || 0); if (!(v > 0)) return null;

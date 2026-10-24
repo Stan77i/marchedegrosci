@@ -130,8 +130,9 @@
     if (window.MDGScene) MDGScene.css();
     el.innerHTML = (window.MDGScene ? `<div class="ps-fond ps-scene">${MDGScene.svg('ps')}</div>` : `<svg class="ps-fond" viewBox="0 0 400 132" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
       <defs><radialGradient id="psH" cx="50%" cy="100%" r="62%"><stop offset="0" stop-color="#F2C230" stop-opacity=".4"/><stop offset=".55" stop-color="#E9A35E" stop-opacity=".14"/><stop offset="1" stop-color="#E07A3F" stop-opacity="0"/></radialGradient></defs>
-      <ellipse class="ps-halo" cx="200" cy="134" rx="200" ry="104" fill="url(#psH)"/><path d="M0 123.5H400" stroke="rgba(245,240,230,.16)"/></svg>`) +
-      `<p class="pt-sr">Marché de Gros. Le soir, deux commerçantes, l'une à Abidjan, l'autre à Bouaké, commandent depuis leur téléphone ; les villes du pays s'allument et un camion part livrer.</p>`;
+      <ellipse class="ps-halo" cx="200" cy="134" rx="200" ry="104" fill="url(#psH)"/><path d="M0 123.5H400" stroke="rgba(245,240,230,.16)"/></svg>`);
+    // la scène est décorative : rien n'est lu avant le titre de la fenêtre (« Entrez dans le marché de Gros »)
+    el.setAttribute('aria-hidden', 'true');
     // grand écran : la colonne est haute ; on garde tout le marché, calé en bas, et le ciel continue au-dessus
     if (large) { el.classList.add('ps-large'); el.querySelector('.mk')?.setAttribute('preserveAspectRatio', 'xMidYMax meet'); }
     const film = window.MDGScene && MDGScene.lancer ? MDGScene.lancer(el.querySelector('.mk')) : null;

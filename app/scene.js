@@ -16,7 +16,7 @@
    (projection : x = 200 + (lon + 5,55) × 16, y = 2 + (10,74 − lat) × 16).
    Dessin vectoriel (SVG 400 × 190), animé en CSS (transform, opacity, stroke-dashoffset) : aucune bibliothèque.
    Pause quand la scène n'est plus visible (onglet caché, hors de l'écran, porte fermée) : lancer(). Téléphone modeste (≤ 4 cœurs ou ≤ 2 Go) :
-   moins d'impulsions, pas de poussière. Mouvement réduit : une image fixe prise dans le film à 15,2 s (réseau allumé, camion chargé à sa place).
+   moins d'impulsions, sans traîne ni anneaux d'arrivée, pas de poussière. Mouvement réduit : une image fixe prise dans le film à 15,2 s (réseau allumé, camion chargé à sa place).
    Piège : ne JAMAIS poser `transform-box` sur tout le dessin — les attributs SVG transform="…" partiraient de travers.
    API : MDGScene.svg(k) → markup SVG · MDGScene.css() → pose la feuille de style · MDGScene.lancer(svg) → { lier(el), pause(raison, oui), arreter() } */
 (function () {
@@ -45,7 +45,7 @@
   const V = {
     abj: [224.7, 88.1, 'ABIDJAN', 'start', 4.6, 2.5, 7.4, 9.2],
     bke: [208.3, 50.8, 'BOUAKÉ', 'start', 4.6, 2.4, 7.4, 9.7],
-    yam: [204.4, 64.7, 'YAMOUSSOUKRO', 'start', 4.4, 3.8, 6.4, 10.15],
+    yam: [204.4, 64.7, 'YAMOUSSOUKRO', 'start', 5.2, 3.8, 6.4, 10.15],
     dal: [185.6, 63.8, 'DALOA', 'end', -4.2, 4, 6.4, 10.55],
     spd: [182.6, 97.9, 'SAN-PÉDRO', 'end', -4.2, 2.4, 6.4, 10.8],
     kor: [198.7, 22.5, 'KORHOGO', 'start', 4.4, 2.2, 6.4, 10.95],
@@ -137,12 +137,13 @@
   }
 
   // ——— le décor du marché (gardé : étals, vendeuses, vendeur, ampoules) ———
-  const enseigne = (x, y, nom) => `<rect x="${x - 21}" y="${y - 6.4}" width="42" height="9.4" rx="1.6" fill="#2A1D14"/><text x="${x}" y="${y}" text-anchor="middle" ${JOST} font-weight="600" font-size="6.4" letter-spacing=".7" fill="#F3EFE4">${nom}</text>`;
+  // l'enseigne serre son nom : à 320 px de large, la scène est rognée de 64 unités de chaque côté, les enseignes doivent rester dedans
+  const enseigne = (x, y, nom, w) => `<rect x="${x - w / 2}" y="${y - 6.4}" width="${w}" height="9.4" rx="1.6" fill="#2A1D14"/><text x="${x}" y="${y}" text-anchor="middle" ${JOST} font-weight="600" font-size="6.4" letter-spacing=".7" fill="#F3EFE4">${nom}</text>`;
   function etalTerreCuite() {
     return `<g>` +
       `<path d="M14 150V104M128 150V104" stroke="#3B2A1C" stroke-width="2.4"/>` +
       `<path d="M6 102Q71 116 136 102L132 92Q71 103 10 92Z" fill="#B5523B"/><path d="M10 92Q71 103 132 92" stroke="#D07254" stroke-width="1.4" fill="none"/><path d="M6 102Q71 116 136 102" stroke="#8E3C2A" stroke-width="1.2" fill="none"/>` +
-      enseigne(80, 101.4, 'ABIDJAN') +
+      enseigne(85, 101.4, 'ABIDJAN', 38) +
       `<g transform="translate(110 0)"><path d="M-9 132Q-8 116 0 115Q8 116 9 132Z" fill="#2F6B4F"/><path d="M-8 124h16" stroke="#F2C230" stroke-width="1" stroke-dasharray="1.2 2"/>` +
       `<path d="M-1.6 111h3.2v4h-3.2z" fill="${PEAU[0]}"/><ellipse cx="0" cy="107.4" rx="4.3" ry="5" fill="${PEAU[0]}"/><circle cx="2.4" cy="106.4" r=".55" fill="#1A120C"/><path d="M-4.8 107Q-5.2 99.6 0 99.4Q5.4 99.6 4.8 107Q0 103.6 -4.8 107Z" fill="#F2C230"/><path d="M2 99.6q3.6 -2.6 6 .4q-3 -.4 -4.4 2z" fill="#E2A92A"/>` +
       `<path d="M4.4 117.4L10.6 120.4L14.4 120" stroke="${PEAU[0]}" stroke-width="2.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>` +
@@ -157,7 +158,7 @@
     return `<g>` +
       `<path d="M272 150V102M386 150V102" stroke="#3B2A1C" stroke-width="2.4"/>` +
       `<path d="M264 100Q329 113 394 100L390 90Q329 100 268 90Z" fill="#10392B"/><path d="M268 90Q329 100 390 90" stroke="#2F6B4F" stroke-width="1.4" fill="none"/><path d="M264 100Q329 113 394 100" stroke="#F2C230" stroke-width="1.1" fill="none"/>` +
-      enseigne(316, 99.6, 'BOUAKÉ') +
+      enseigne(313, 99.6, 'BOUAKÉ', 36) +
       `<g transform="translate(288 0)"><path d="M-7 134L-6 116Q0 113 6.4 116L7 134Z" fill="#E7DCC4"/><path d="M-1.6 108.6h3.2v4h-3.2z" fill="${PEAU[1]}"/><ellipse cx="-.4" cy="105" rx="4.3" ry="5" fill="${PEAU[1]}"/><circle cx="-2.8" cy="104" r=".55" fill="#1A120C"/>` +
       `<path d="M-4.4 103.4Q-3.4 99 1 99.4Q4.4 99.8 4 102.6Q0 101 -4.4 103.4Z" fill="#1A120C"/><g class="mk-geste"><path d="M-4.8 117L-10 123L-14 124" stroke="${PEAU[1]}" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g></g>` +
       `<path d="M266 134H392V150H266Z" fill="#4E3A26"/><path d="M266 140H392M266 145H392" stroke="rgba(20,12,6,.35)" stroke-width="1"/>` +
@@ -289,8 +290,10 @@
   // le mot sortant monte et s'efface pendant que l'autre monte du bas (14,6 s, quand la lumière arrive) ; le retour fait l'inverse.
   // Le reflet maïs traverse « du pays » de gauche à droite pendant qu'il reste affiché.
   const mot = ([o, y, s]) => `opacity:${o};transform:translateY(${y}%) scale(${s})`;
-  piste('.mk-ta', 'mkTa', mot, [[0, [1, 0, 1]], [14.6, [1, 0, 1], 'io'], [15.1, [0, -90, .96]], [16.2, [0, -90, .96], 'io'], [16.7, [1, 0, 1]], [17, [1, 0, 1]]], 'transform-origin:0 70%');
-  piste('.mk-tb', 'mkTb', mot, [[0, [0, 90, .96]], [14.6, [0, 90, .96], 'io'], [15.1, [1, 0, 1]], [16.2, [1, 0, 1], 'io'], [16.7, [0, 90, .96]], [17, [0, 90, .96]]], 'transform-origin:0 70%');
+  // Relais décalé : le mot sortant s'efface vite (0,22 s) pendant que l'entrant attend 0,18 s avant de monter ; ainsi les deux mots ne se
+  // superposent jamais à moitié transparents (vu sur la vidéo réelle : un fondu croisé simple brouillait le titre au milieu du passage)
+  piste('.mk-ta', 'mkTa', mot, [[0, [1, 0, 1]], [14.6, [1, 0, 1], 'i'], [14.82, [0, -45, .98], 'l'], [15.1, [0, -90, .96]], [16.2, [0, -90, .96]], [16.38, [0, -55, .97], 'o'], [16.7, [1, 0, 1]], [17, [1, 0, 1]]], 'transform-origin:0 70%');
+  piste('.mk-tb', 'mkTb', mot, [[0, [0, 90, .96]], [14.6, [0, 90, .96]], [14.78, [0, 55, .97], 'o'], [15.1, [1, 0, 1]], [16.2, [1, 0, 1], 'i'], [16.42, [0, 45, .98], 'l'], [16.7, [0, 90, .96]], [17, [0, 90, .96]]], 'transform-origin:0 70%');
   piste('.mk-tr', 'mkTr', v => `background-position:${v}% 0`, [[0, 100], [15.1, 100, 'io'], [16, 0], [16.7, 0, 'l'], [16.71, 100], [17, 100]]);
 
   const CSS = `.mk{display:block;width:100%;height:100%}
@@ -307,7 +310,7 @@
 @keyframes mkGeste{from{rotate:-9deg}to{rotate:7deg}}
 .mk-r{stroke-width:.9;stroke-opacity:.62;stroke-dasharray:1 1}.mk-r-ab{stroke-width:1.1;stroke-opacity:.8}
 .mk-iq{stroke:#F2C230;stroke-opacity:.22}.mk-ic{stroke:#FFD86A;stroke-opacity:.9}.mk-ih{stroke:#FFF1C4}
-.mk-leger .mk-x,.mk-leger .mk-poussiere{display:none}.mk-leger .mk-et>g,.mk-leger .mk-vp,.mk-leger .mk-resp,.mk-leger .mk-amp{animation:none}
+.mk-leger .mk-x,.mk-leger .mk-poussiere,.mk-leger .mk-iq,.mk-leger .mk-vh{display:none}.mk-leger .mk-et>g,.mk-leger .mk-vp,.mk-leger .mk-resp,.mk-leger .mk-amp{animation:none}
 .mk-pause,.mk-pause *{animation-play-state:paused!important}
 ${PISTES}
 @media (prefers-reduced-motion:reduce){

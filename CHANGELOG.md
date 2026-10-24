@@ -10,6 +10,7 @@ Audit antislop de l'application, stabilité, prix officiels et reprise de projet
 
 - Connexion : la scène devient un court film de 17 s, « le marché qui relie tout le pays » (deux commerçantes, la commande, la carte de Côte d'Ivoire, le camion, le titre « marché du pays ») ; décision du propriétaire, exception à « l'accueil calmé » limitée à cet écran (branche `claude/scene-connexion`).
 - Connexion, relecture du film : gestes visibles (la main se lève, loin du téléphone), lumière qui part vraiment du téléphone et suit le sol, titre qui roule sans blanc, carte éteinte avant le retour de la caméra, sacs sur le toit du camion.
+- Connexion, finitions de la scène : le titre ne se brouille plus au passage « de Gros » ↔ « du pays » (relais décalé), enseignes entières sur les téléphones de 320 px, scène muette pour le lecteur d'écran, mode allégé plus léger.
 
 - Audit antislop de l'application : rapport complet sans correction (a40b3ca, Stan77i/marchedegrosci#251), puis corrections par lots :
   - phrases justes sur le paiement, n° 1 à 6 (b9143f4, Stan77i/marchedegrosci#251) ;

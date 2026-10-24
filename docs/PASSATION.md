@@ -1615,3 +1615,10 @@ Demande du propriétaire : « Vente uniquement à Guiglo », « Achat uniquement
 - Demande du propriétaire : « non inclus » veut dire que le prix du transport se négocie à part, pas que l'acheteur vient chercher.
 - `application.dc.html` : choix `non` de `TR_OFF` = « Transport à part » / « Mon prix n'inclut pas le transport : son prix se négocie à part » ; étiquette de l'annonce (`trTexte`) « Transport à part » (au lieu de « Transport à discuter », et au lieu de « Transport par l'acheteur » pour une offre « ville seulement »). La valeur enregistrée (`non`) ne change pas. Cache `mgci-v262`.
 - Vu dans Chromium (iPhone 13, sombre) : aucune erreur, texte sur deux lignes sans débordement. Règle ajoutée dans `CLAUDE.md`.
+
+## 24/10/2026 · Ville et région toujours d'accord
+
+- Signalé par le propriétaire (capture) : région Abidjan, « Autre localité » = « Guiglo », et l'interrupteur affichait « Je vends uniquement à Guiglo ». La ville tapée n'était reconnue qu'en quittant le champ.
+- `application.dc.html` : `villeConflit(f)` repère une localité tapée qui est une ville connue d'une autre région. Sous le champ : « Guiglo est dans la région Montagnes, pas dans la région choisie. » et le bouton « Choisir Guiglo (Montagnes) » (ville et région corrigées d'un geste). `vsForm(f)` : l'interrupteur « uniquement à » reste « dans ma ville », grisé, tant que la ville et la région se contredisent. `refusTexte` bloque la publication dans ce cas, avec la même explication. Valable pour les trois formulaires (feuille J'ai / Je cherche, Vendre, Demander).
+- `v3/compte.js` (profil) : une ville connue tapée à la main est enregistrée avec sa vraie région, même sans quitter le champ. `?v=20261124vc`.
+- Vu dans Chromium (iPhone 13, sombre) : alerte affichée, interrupteur grisé, puis après le bouton : région Montagnes, « Je vends uniquement à Guiglo ». Aucune erreur. Contraste du texte 8,9:1 environ (passe), bouton blanc sur vert profond (passe). Cache `mgci-v264`.

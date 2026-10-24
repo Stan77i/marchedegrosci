@@ -394,7 +394,7 @@ label.cp-r{cursor:pointer}
   const ti = (n, ton, lg) => lg ? `<span class="cp-ti lg" data-ton="${ton}" aria-hidden="true">${IC(n, 24)}</span>` : `<span class="cp-ico" aria-hidden="true">${IC(n, 22)}</span>`;
   const CHEV = '<svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
   // une ligne : icône, titre (+ précision), valeur à droite, chevron
-  const ligne = o => `<${o.href ? `a href="${o.href}"` : o.cls === 'info' ? 'div' : 'button type="button"'} class="cp-r${o.cls ? ' ' + o.cls : ''}" ${o.attrs || ''}>${o.ico || ''}<span class="cp-r-t"><b>${o.t}</b>${o.s ? `<small>${o.s}</small>` : ''}</span>${o.v != null && o.v !== '' ? `<span class="cp-r-v${o.vf ? ' fort' : ''}">${o.v}</span>` : ''}${o.n ? `<span class="cp-n" aria-label="${o.n} nouveau${o.n > 1 ? 'x' : ''}">${o.n}</span>` : ''}${o.chev === false ? '' : CHEV}</${o.href ? 'a' : o.cls === 'info' ? 'div' : 'button'}>`;
+  const ligne = o => `<${o.href ? `a href="${o.href}"` : o.cls === 'info' ? 'div' : 'button type="button"'} class="cp-r${o.cls ? ' ' + o.cls : ''}" ${o.attrs || ''}>${o.ico || ''}<span class="cp-r-t"><b>${o.t}</b>${o.s ? `<small>${o.s}</small>` : ''}</span>${o.v != null && o.v !== '' ? `<span class="cp-r-v${o.vf ? ' fort' : ''}">${o.v}</span>` : ''}${o.n ? `<span class="cp-n" aria-label="${o.nl || o.n + ' nouveau' + (o.n > 1 ? 'x' : '')}">${o.n}</span>` : ''}${o.chev === false ? '' : CHEV}</${o.href ? 'a' : o.cls === 'info' ? 'div' : 'button'}>`;
   const TITRES = { accueil: 'Mon compte', profil: 'Profil et avatar', activite: 'Mon activité', notifs: 'Notifications', prefs: 'Réglages', securite: 'Sécurité et compte' };
   const negosDe = () => { const u = me(), L = J('mdg-negoce:liste', []), vive = n => n.statut === 'ouverte' && n.dernier_par && n.expire_le && Date.parse(n.expire_le) > Date.now();
     return { vive, L, env: L.filter(n => vive(n) && n.dernier_par === u.id), rec: L.filter(n => vive(n) && n.dernier_par !== u.id), ok: L.filter(n => n.statut === 'conclue'), fin: L.filter(n => n.statut !== 'conclue' && !vive(n)) }; };
@@ -652,23 +652,10 @@ label.cp-r{cursor:pointer}
       if (window.MDGRep && MDGRep.lireNiveaux && !off0 && navigator.onLine) { const nvv = JSON.stringify(MDGRep.nivResume());
         MDGRep.lireNiveaux().then(f => { if (f && JSON.stringify(f) !== nvv && bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); }).catch(() => {}); }
       // la vérification d'identité, bien en vue tant qu'elle n'est pas faite : 3 annonces gratuites, puis elle est demandée pour publier
-      const idBandeau = (() => {
-        if (!ID || !idC || idC.exempt || off0 || idS === 'verifie') return '';
-        // une seule ligne, discrète : on touche pour ouvrir la vérification (23/10/2026)
-        const CHV = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
-        const T = (cls, ico, t, txt, btn, extra) => btn
-          ? `<button type="button" class="cp-idv ${cls}" data-idv aria-label="${esc(t + ' : ' + txt)}"><span class="cp-idv-i" aria-hidden="true">${ico}</span><span class="cp-idv-x"><b>${t}</b><small>${txt}</small></span>${extra || ''}<span class="cp-idv-c">${CHV}</span></button>`
-          : `<div class="cp-idv ${cls}" role="status"><span class="cp-idv-i" aria-hidden="true">${ico}</span><span class="cp-idv-x"><b>${t}</b><small>${txt}</small></span></div>`;
-        if (idC.banni) return T('ko', IC('fermer', 22), 'Compte banni', 'Il ne peut plus publier, négocier ni écrire.', 1);
-        if (idS === 'en_attente') return T('bleu', IC('horloge', 22), 'Vérification en cours', 'L’équipe examine votre dossier.', '');
-        if (idS === 'verification_manuelle') return T('', IC('photo', 22), 'Photos à refaire', 'Touchez pour les renvoyer.', 1);
-        if (idS === 'expire') return T('ko', IC('horloge', 22), 'Pièce d’identité expirée', 'Refaites la vérification.', 1);
-        if (idS === 'refuse') return T('ko', IC('fermer', 22), 'Vérification refusée', 'Voir le motif.', 1);
-        const r = ID.gratuitesRestantes(idC);
-        return T('', ID.badge(22), idS === 'brouillon' ? 'Terminer ma vérification' : 'Vérifier mon identité',
-          r === null ? 'Gratuit · le badge rassure vos partenaires' : r === 0 ? 'Obligatoire pour publier · gratuit' : `${r} annonce${r > 1 ? 's' : ''} gratuite${r > 1 ? 's' : ''} restante${r > 1 ? 's' : ''} · gratuit`,
-          1);
-      })();
+      // l'identité n'a qu'une place : sa ligne dans « Votre compte » (demande du propriétaire, 24/10/2026 : pas de doublon) ;
+      // en haut, seulement un compte banni
+      const idBandeau = ID && idC && idC.banni && !off0
+        ? `<button type="button" class="cp-idv ko" data-idv aria-label="Compte banni : il ne peut plus publier, négocier ni écrire."><span class="cp-idv-i" aria-hidden="true">${IC('fermer', 22)}</span><span class="cp-idv-x"><b>Compte banni</b><small>Il ne peut plus publier, négocier ni écrire.</small></span></button>` : '';
       // l'activité : ce qui s'est vraiment passé, du plus récent au plus ancien, regroupé par jour
       const montant = t => { const m = /(\d[\d  .]*)\s*F(?:\s*\/\s*([\p{L}]+))?/u.exec(t || ''); return m ? `${m[1].trim()} F${m[2] ? `<em>/ ${esc(m[2])}</em>` : ''}` : ''; };
       const evs = notifs().slice(0, 40).map((n, i) => { const nego = /propos|accord|accept|refus|expir|prix/i.test(n.texte), ok = /accord|accept/i.test(n.texte);
@@ -688,7 +675,6 @@ label.cp-r{cursor:pointer}
       const stBloc = !SG || off0 ? '' : (() => { const gag = SG.liste(u.id), but = SG.progres(u.id), v = idS === 'verifie';
         return `<div class="cp-sh"><h3>Vos statuts</h3><small>Ils se gagnent, ils ne s’achètent pas</small></div>
           <div class="cp-grp cp-statuts">${gag.length || v ? `<div class="cp-st-l">${SG.puces(u.id, { max: 9, t: 18 })}</div>` : '<p class="cp-vide">Pas encore de statut. Votre identité vérifiée, vos commandes terminées et vos réponses rapides en font gagner, et les autres membres les voient partout : annonces, carte, messages.</p>'}
-          ${!v && ID && !(idC && idC.exempt) && !idBandeau ? '<button type="button" class="cp-st-go" data-idv2>' + (ID.badge ? ID.badge(16) : '') + 'Faire vérifier mon identité</button>' : ''}
           ${but.map(x => `<div class="st-but"><b>${x.t}</b><small>${x.fait} sur ${x.total} ${x.txt}</small><div class="st-jauge" role="img" aria-label="${x.fait} sur ${x.total}"><i style="width:${Math.min(100, x.fait / x.total * 100)}%"></i></div></div>`).join('')}</div>`; })();
       main.innerHTML = `<div class="cp-pg">
         <section class="cp-hero" aria-label="Mon identité">
@@ -710,6 +696,8 @@ label.cp-r{cursor:pointer}
           <div class="cp-sh"><h3>Votre compte</h3><small>${esc(N().fmtTel(u.tel))}</small></div>
           <div class="cp-grp">
             ${off0 ? '' : ligne({ ico: mono('compte'), t: 'Profil et avatar', s: nom ? '' : 'Prénom, rôle, lieu', attrs: 'data-go="profil"' })}
+            ${window.MDGRep && !off0 ? ligne({ ico: mono('profil'), t: 'Mon profil public', s: 'Ce que les autres voient de vous', attrs: 'data-profpub' }) : ''}
+            ${!off0 ? ligne({ ico: mono('publications'), t: 'Mes publications', s: off.length + dem.length ? 'Et mon stock' : 'Vos offres et demandes', n: off.length + dem.length || '', nl: (off.length + dem.length) + ' publication' + (off.length + dem.length > 1 ? 's' : ''), attrs: 'data-pubs' }) : ''}
             ${window.MDGBoutique && !off0 ? ligne({ ico: mono('vendre'), t: 'Ma boutique', s: 'Mes offres sur une page à partager, QR code', attrs: 'data-boutique' }) : ''}
             ${window.MDGReleve ? ligne({ ico: mono('barres'), t: 'Mes ventes et achats', s: 'Relevés, bons de transaction, volumes', attrs: 'data-releve' }) : ''}
             ${window.MDGCommandes && !off0 ? (() => { const nC = MDGCommandes.aAgir(); return ligne({ ico: mono('negoce'), t: 'Mes commandes', s: nC ? nC + (nC > 1 ? ' commandes attendent' : ' commande attend') + ' votre action' : 'Suivi du chargement à la réception', n: nC, attrs: 'data-cmds' }); })() : ''}
@@ -718,7 +706,10 @@ label.cp-r{cursor:pointer}
             ${window.MDGAppro && !off0 ? ligne({ ico: mono('tableau'), t: 'Approvisionnement pro', s: 'Besoins réguliers, propositions, comparaison', attrs: 'data-appro' }) : ''}
             ${window.MDGGroupes && !off0 ? ligne({ ico: mono('comptes'), t: 'Achats groupés', s: 'Acheter à plusieurs, moins cher', attrs: 'data-groupes' }) : ''}
             ${window.MDGRacheter && !off0 ? ligne({ ico: mono('echanger'), t: 'Racheter', s: 'Mes achats habituels, prix du jour, rappels', attrs: 'data-racheter' }) : ''}
+            ${window.MDGAlertes && !off0 ? (() => { const nA = MDGAlertes.liste().length; return ligne({ ico: mono('alertes'), t: 'Alertes produits', s: nA ? nA + ' produit' + (nA > 1 ? 's' : '') + ' suivi' + (nA > 1 ? 's' : '') : 'Igname, tomate… : soyez prévenu', attrs: 'data-alertes' }); })() : ''}
             ${window.MDGChauffeur && !off0 ? (() => { const e = MDGChauffeur.etat(); return ligne({ ico: mono('distance'), t: 'Espace chauffeur', s: !e.inscrit ? 'Transporteur ? Inscrivez-vous, c’est gratuit' : e.propositions ? e.propositions + (e.propositions > 1 ? ' missions à accepter' : ' mission à accepter') : e.statut === 'verifie' ? 'Profil vérifié · vos missions' : e.statut === 'en_attente' ? 'Vérification en cours · vos missions' : 'Vos missions', n: e.propositions, attrs: 'data-chauffeur' }); })() : ''}
+            ${ID && !off0 ? (() => { const R = ID.RESUME[idS] || ID.RESUME.non_verifie, rg = idS === 'verifie' || !ID.gratuitesRestantes ? null : ID.gratuitesRestantes(idC);
+              return ligne({ ico: mono('verifie'), t: 'Identité', s: rg === 0 ? 'Obligatoire pour publier · gratuit' : rg ? `${rg} annonce${rg > 1 ? 's' : ''} gratuite${rg > 1 ? 's' : ''} restante${rg > 1 ? 's' : ''} · gratuit` : R[1], v: R[0], vf: idS === 'verifie', attrs: 'data-idv' }); })() : ''}
             ${ligne({ ico: mono('cadenas'), t: 'Sécurité et code secret', attrs: 'data-go="securite"' })}
             ${adm ? (() => { const nI = +(J('mdg-admin:identites', {}).n) || 0; return ligne({ ico: mono('tableau'), t: 'Tableau de bord', s: nI ? nI + (nI > 1 ? ' dossiers' : ' dossier') + ' à examiner' : 'Administration', n: nI, href: nI ? 'admin.html#identites' : 'admin.html' }); })() : ''}
           </div>
@@ -730,7 +721,9 @@ label.cp-r{cursor:pointer}
       if (q('[data-dm]')) q('[data-dm]').onclick = () => { fermer(); M.boite(); };
       q('[data-nego]').onclick = () => { if (G && G.inbox) { fermer(); G.inbox(); } else bg.aller('activite'); };
       if (q('[data-av]')) q('[data-av]').onclick = () => choisirAvatar(() => ouvrir());
-      if (q('[data-idv2]')) q('[data-idv2]').onclick = () => { fermer(); ID.ouvrir(); };
+      if (q('[data-profpub]')) q('[data-profpub]').onclick = () => { fermer(); setTimeout(() => window.MDGRep.profil(u.id, { nom: nom || 'Moi' }), 250); };
+      if (q('[data-pubs]')) q('[data-pubs]').onclick = () => { fermer(); setTimeout(() => { location.hash = '#/mes-publications'; }, 250); };
+      if (q('[data-alertes]')) q('[data-alertes]').onclick = () => { fermer(); setTimeout(() => window.MDGAlertes.gerer(), 250); };
       if (q('[data-marche]')) q('[data-marche]').onclick = () => { fermer(); M.ecrireMarche(); };
       if (q('[data-releve]')) q('[data-releve]').onclick = () => { fermer(); window.MDGReleve.ouvrir(); };
       if (q('[data-boutique]')) q('[data-boutique]').onclick = () => { fermer(); window.MDGBoutique.gerer(); };   // schéma 86

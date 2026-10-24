@@ -244,20 +244,6 @@ Règles données le 24/10/2026. **La plupart ne sont pas encore codées telles q
 - Une **boutique par vendeur**, avec son **lien** et son **QR code**.
 - Construit le 24/10/2026 (schéma 86, projet de test) : page boutique, lien, QR, pause, retrait avec trace, quantité obligatoire, verrou de stock. Reste : production, et la clé `offres.user_id … ON DELETE CASCADE` (proposition, décision du propriétaire).
 
-## Corrections de l'audit du 24/10/2026 (schémas 92 à 96)
-
-État réel : construites par six équipes (PR #292 à #296 fusionnées) et **appliquées sur le projet de test seulement**. La production attend le « OK production » du propriétaire ; la fonction `pousser` v24 n'est pas déployée. Détail : `docs/PASSATION.md`.
-
-| Sujet | État | Ce qui reste |
-|---|---|---|
-| Stock rendu, commandes jamais bloquées, délais, litiges (92) | construit, test seulement | Production ; tests de bout en bout (branche `claude/e2e-corrections`) ; relance `accord_sans_commande` à arrêter après « sans suite » ; litige automatique 24 h après le « livré » du vendeur à confirmer. |
-| Règles sans contournement, expiration des annonces (93) | construit, test seulement | Production ; 7 jours de grâce, rôle acheteur/vendeur et délai de 24 h après un arrêt de négociation à confirmer ; environ 61 600 offres de simulation du test expireront à partir du 31/10/2026. |
-| Confiance : noms réservés, signalements, badges anti-complices, litiges perdus (94) | construit, test seulement | Production ; valeurs des badges et du masquage à confirmer ; comptes supprimés avant 94b à libérer un par un. |
-| Transport et commission calculée (95, 95b) | construit, test seulement | Production ; ouverture du service transport (3 transporteurs vérifiés et accord du propriétaire) ; textes serveur `commande_litige` et `commande_refuser2` à corriger. |
-| Technique : mises à jour légères, prix, notifications, messages (96) | construit, test seulement | Production puis `pousser` v24 ; itinéraires de la carte, pagination, `(select auth.uid())` sur quatre tables, affichage de `stockage_volume()`. |
-| Textes juridiques | projets, pas en ligne | Relecture par un juriste, formalité ARTCI, 32 questions au propriétaire, puis affichage et acceptation à l'inscription. |
-| Paiement dans l'application | absent | Partenaire de paiement, clés de test côté serveur, décisions sur l'argent, audit de sécurité avant de brancher (voir `docs/A-FAIRE-PROPRIETAIRE.md`, dernière partie). |
-
 ---
 
 ## Décisions en attente (reprises de `CLAUDE.md`)

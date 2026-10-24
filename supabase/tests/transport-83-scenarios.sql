@@ -315,3 +315,109 @@ begin
   r := r || 'H4 ' || t || ' alertes+' || (k1 - k0) || ';';
   raise exception 'TEST %', r;
 end $$;
+
+-- I. Relecture : autre membre, valeurs limites, double appel, négociation à trois (refus, contre-propositions, droits)
+do $$
+declare S uuid := 'd56f75b3-463d-484d-9e19-4af3fd3eb8d8'; B uuid := 'efec4ce4-7ab1-4b93-9e90-020bd0007a8c'; ADM uuid := '981961d4-25ba-4e1b-a732-8fd68cd6c922';
+  TU uuid := 'f8e1b009-e7c7-4637-b685-c05155f06be9'; TID uuid := 'd9b2a5a8-5949-48b3-a328-e8d642c3db5d'; X uuid := '035fc2ed-de23-47da-99c6-0cd60fae7d37';
+  o uuid := '94a33186-8a5e-4cf1-a198-d8a7d6c523ab'; n uuid; g public.negociations; c public.commandes; cid uuid; mid uuid; j json; r text := ''; k int; pid uuid; mm public.messages;
+begin
+  perform set_config('request.jwt.claims', json_build_object('sub', B, 'role', 'authenticated')::text, true);
+  -- valeurs limites du prix du transport
+  begin perform public.nego_ouvrir2('offre', o, 440, 100, null, 'apart', 0); r := r || 'I1 KO;'; exception when others then r := r || 'I1 0 refusé;'; end;
+  begin perform public.nego_ouvrir2('offre', o, 440, 100, null, 'apart', -5); r := r || 'I2 KO;'; exception when others then r := r || 'I2 négatif refusé;'; end;
+  begin perform public.nego_ouvrir2('offre', o, 440, 100, null, 'apart', 100000000); r := r || 'I3 KO;'; exception when others then r := r || 'I3 trop grand refusé;'; end;
+  begin perform public.nego_ouvrir2('offre', o, 440, 100, null, 'APART', 1000); r := r || 'I4 KO;'; exception when others then r := r || 'I4 inconnu refusé;'; end;
+  begin perform public.nego_ouvrir2('offre', o, 440, 100, null, 'sans', 1000); r := r || 'I5 KO;'; exception when others then r := r || 'I5 prix avec sans refusé;'; end;
+  n := public.nego_ouvrir2('offre', o, 440, 100, null, 'apart', 24999.6);
+  select * into g from public.negociations where id = n;
+  r := r || 'I6 arrondi=' || g.dernier_prix_transport || ';';
+  -- un autre membre ne touche à rien
+  perform set_config('request.jwt.claims', json_build_object('sub', X, 'role', 'authenticated')::text, true);
+  begin perform public.nego_agir2(n, 'accord', null, null, null, g.dernier_msg); r := r || 'I7 KO;'; exception when others then r := r || 'I7 autre membre refusé;'; end;
+  begin perform public.nego_agir2(n, 'prix', 400, 100, null, null, 'inclus', null); r := r || 'I8 KO;'; exception when others then r := r || 'I8 autre membre refusé;'; end;
+  -- l'acheteur ne peut pas accepter sa propre proposition ; le vendeur contre-propose « inclus » puis l'acheteur accepte
+  perform set_config('request.jwt.claims', json_build_object('sub', B, 'role', 'authenticated')::text, true);
+  begin perform public.nego_agir2(n, 'accord', null, null, null, g.dernier_msg); r := r || 'I9 KO;'; exception when others then r := r || 'I9 pas sa propre proposition;'; end;
+  perform set_config('request.jwt.claims', json_build_object('sub', S, 'role', 'authenticated')::text, true);
+  begin perform public.nego_agir2(n, 'refus', null, null, null, g.dernier_msg, 'inclus', null); r := r || 'I10 KO;'; exception when others then r := r || 'I10 transport sur un refus refusé;'; end;
+  perform public.nego_agir2(n, 'prix', 450, 100, null, null, 'apart', 20000);
+  select * into g from public.negociations where id = n;
+  select * into mm from public.messages where id = g.dernier_msg;
+  r := r || 'I11 contre=' || g.dernier_prix || '/' || g.dernier_prix_transport || ' msg=' || mm.prix_transport || '/vendeur=' || (mm.auteur_id = S)::text || ';';
+  perform set_config('request.jwt.claims', json_build_object('sub', B, 'role', 'authenticated')::text, true);
+  perform public.nego_agir2(n, 'accord', null, null, null, g.dernier_msg);
+  begin perform public.nego_agir2(n, 'accord', null, null, null, g.dernier_msg); r := r || 'I12 KO double;'; exception when others then r := r || 'I12 double accord refusé;'; end;
+  select * into g from public.negociations where id = n;
+  r := r || 'I13 accord ' || g.prix_final || '/' || g.transport_final || '/' || g.prix_transport_final || ';';
+  -- commande : autre membre refusé ; ville arrivée Abidjan ; mode acheteur refusé (transport à part)
+  perform set_config('request.jwt.claims', json_build_object('sub', X, 'role', 'authenticated')::text, true);
+  begin perform public.commande_creer2(n, 'vendeur', null, 'Abidjan'); r := r || 'I14 KO;'; exception when others then r := r || 'I14 autre membre refusé;'; end;
+  perform set_config('request.jwt.claims', json_build_object('sub', B, 'role', 'authenticated')::text, true);
+  begin perform public.commande_creer2(n, 'acheteur', null, 'Abidjan'); r := r || 'I15 KO;'; exception when others then r := r || 'I15 acheteur refusé;'; end;
+  begin perform public.commande_creer2(n, 'camion', null, 'Abidjan'); r := r || 'I16 KO;'; exception when others then r := r || 'I16 mode inconnu refusé;'; end;
+  update public.reglages set valeur = 'true'::jsonb where cle = 'transport_reseau_ouvert';
+  cid := public.commande_creer2(n, 'reseau', null, 'Abidjan');
+  select * into c from public.commandes where id = cid;
+  r := r || 'I17 ' || c.transport_regle || '/' || coalesce(c.prix_transport::text, 'null') || '/' || coalesce(c.total_convenu::text, 'null') || ';';
+  perform set_config('request.jwt.claims', json_build_object('sub', S, 'role', 'authenticated')::text, true);
+  perform public.commande_repondre(cid, true, null);
+  perform set_config('request.jwt.claims', json_build_object('sub', ADM, 'role', 'authenticated')::text, true);
+  perform public.admin_affecter(cid, TID);
+  select id into mid from public.transport_missions where commande_id = cid and statut = 'proposee';
+  -- autre membre : rien
+  perform set_config('request.jwt.claims', json_build_object('sub', X, 'role', 'authenticated')::text, true);
+  begin perform public.transport_agir(mid, 'prix', 9000); r := r || 'I18 KO;'; exception when others then r := r || 'I18 autre membre refusé;'; end;
+  j := public.commande_transport(cid);
+  r := r || 'I19 transport autre=' || coalesce(j::text, 'null') || ';';
+  begin perform public.dm_ouvrir(TU); r := r || 'I20 dm tiers-transporteur permis;'; exception when others then r := r || 'I20 KO ' || sqlerrm || ';'; end;
+  -- transporteur : prix 0 refusé, action inconnue refusée, prix 30000 ; vendeur contre 22000 ; acheteur contre 21000 ; transporteur accepte 21000 ; vendeur accepte (double) → convenu
+  perform set_config('request.jwt.claims', json_build_object('sub', TU, 'role', 'authenticated')::text, true);
+  begin perform public.transport_agir(mid, 'prix', 0); r := r || 'I21 KO;'; exception when others then r := r || 'I21 prix 0 refusé;'; end;
+  begin perform public.transport_agir(mid, 'payer', 1000); r := r || 'I22 KO;'; exception when others then r := r || 'I22 action inconnue refusée;'; end;
+  begin perform public.chauffeur_prix(mid, 5000); r := r || 'I23 KO;'; exception when others then r := r || 'I23 chauffeur_prix refusé;'; end;
+  j := public.transport_agir(mid, 'prix', 30000);
+  begin perform public.transport_agir(mid, 'refus'); r := r || 'I24 KO;'; exception when others then r := r || 'I24 refus de son propre prix refusé;'; end;
+  perform set_config('request.jwt.claims', json_build_object('sub', S, 'role', 'authenticated')::text, true);
+  j := public.transport_agir(mid, 'prix', 22000);
+  pid := (j->'en_attente'->>'id')::uuid;
+  perform set_config('request.jwt.claims', json_build_object('sub', B, 'role', 'authenticated')::text, true);
+  begin perform public.transport_agir(mid, 'accord', null, gen_random_uuid()); r := r || 'I25 KO;'; exception when others then r := r || 'I25 ancienne référence refusée;'; end;
+  j := public.transport_agir(mid, 'prix', 21000);
+  r := r || 'I26 attente=' || (j->'en_attente'->>'prix') || ' ok_v=' || (j->'en_attente'->>'ok_vendeur') || ' ok_a=' || (j->'en_attente'->>'ok_acheteur') || ';';
+  perform set_config('request.jwt.claims', json_build_object('sub', TU, 'role', 'authenticated')::text, true);
+  j := public.transport_agir(mid, 'accord');
+  perform set_config('request.jwt.claims', json_build_object('sub', S, 'role', 'authenticated')::text, true);
+  j := public.transport_agir(mid, 'accord');
+  r := r || 'I27 convenu=' || coalesce(j->>'convenu', 'null') || ';';
+  begin perform public.transport_agir(mid, 'accord'); r := r || 'I28 KO;'; exception when others then r := r || 'I28 double accord refusé;'; end;
+  begin perform public.transport_agir(mid, 'refus'); r := r || 'I29 KO;'; exception when others then r := r || 'I29 refus après accord refusé;'; end;
+  select * into c from public.commandes where id = cid;
+  r := r || 'I30 total=' || c.total_convenu || ' montant=' || c.montant || ' commission marchandise=' || c.commission_montant || ';';
+  select count(*) into k from public.commissions_transport where commande_id = cid and statut = 'prevue' and commission = round(21000 * 0.069);
+  r := r || 'I31 commission transport 6,9 %=' || k || ';';
+  -- messages privés interdits pendant la mission
+  perform set_config('request.jwt.claims', json_build_object('sub', B, 'role', 'authenticated')::text, true);
+  begin perform public.dm_ouvrir(TU); r := r || 'I32 KO;'; exception when others then r := r || 'I32 dm acheteur-transporteur refusé;'; end;
+  -- admin : réglage
+  perform set_config('request.jwt.claims', json_build_object('sub', B, 'role', 'authenticated')::text, true);
+  begin perform public.admin_transport_reseau(true); r := r || 'I33 KO;'; exception when others then r := r || 'I33 réglage réservé admin;'; end;
+  raise exception 'TEST %', r;
+end $$;
+
+-- J. Relecture (schéma 83e) : faux positifs du filtre des numéros (prix, dates, numéro de commande, prix envoyés seuls)
+do $$
+declare S uuid := 'd56f75b3-463d-484d-9e19-4af3fd3eb8d8'; B uuid := 'efec4ce4-7ab1-4b93-9e90-020bd0007a8c'; d uuid; t text; r text := '';
+begin
+  r := r || 'J1 ' || coalesce(public.sortie_motif('Prix : 3 000 / 4 500 / 6 000 / 8 000'), 'rien') || ' / ' || coalesce(public.sortie_motif('livraison 15/10/2026 - 20/10/2026'), 'rien')
+    || ' / ' || coalesce(public.sortie_motif('commande MDG-C-260105-123456'), 'rien') || ' / ' || coalesce(public.texte_refus('Sacs de 3 000 / 4 500 / 6 000 / 8 000 F'), 'accepté') || ';';
+  r := r || 'J2 ' || public.sortie_masquer('appelle 0745123389') || ' / ' || public.sortie_masquer('+2250745123389') || ' / ' || public.sortie_masquer('07.45.12.33.89') || ';';
+  perform set_config('request.jwt.claims', json_build_object('sub', B, 'role', 'authenticated')::text, true);
+  d := public.dm_ouvrir(S);
+  perform public.dm_envoyer(d, '15000');
+  perform public.dm_envoyer(d, '25000');
+  perform public.dm_envoyer(d, '30000');
+  select string_agg(texte, ' | ' order by texte) into t from public.dm where discussion_id = d and created_at = now();
+  r := r || 'J3 ' || t || ';';
+  raise exception 'TEST %', r;
+end $$;

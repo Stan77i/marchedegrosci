@@ -338,13 +338,13 @@
 .ng-tt.is-on .ng-tt-a{animation:ngTtA .55s .12s cubic-bezier(.22,1,.36,1) both}
 .ng-tt.is-on .ng-tt-m>span{animation:ngTtM .8s .26s cubic-bezier(.22,1,.36,1) both}
 .ng-tt.is-on .ng-tt-g{animation:ngTtG .7s .62s cubic-bezier(.65,0,.35,1) both}.ng-tt.is-on .ng-tt-x .ng-tt-t{animation:ngTtS 1.5s 1.45s cubic-bezier(.4,0,.2,1) both}
-/* le titre bascule seul, 3 s après l'apparition, « de Gros » monte et s'efface, « du pays » monte du bas avec un reflet et reste 3 s ; puis le retour, à l'inverse ; la séquence recommence toutes les 10 s */
+/* le titre bascule seul, 3 s après l'apparition, « de Gros » monte et s'efface, « du pays » monte du bas avec un reflet et reste 2 s ; puis le retour, à l'inverse ; la séquence recommence toutes les 10 s */
 .ng-tt.is-on .ng-tt-x{animation:ngTtX 10s cubic-bezier(.65,0,.35,1) infinite}
 .ng-tt.is-on .ng-tt-y{animation:ngTtY 10s cubic-bezier(.65,0,.35,1) infinite}
 .ng-tt.is-on .ng-tt-y .ng-tt-t{animation:ngTtR 10s linear infinite}
-@keyframes ngTtX{0%,30%{transform:none;opacity:1}35%,63%{transform:translateY(-.5em);opacity:0}68%,100%{transform:none;opacity:1}}
-@keyframes ngTtY{0%,32%{transform:translateY(.5em);opacity:0}37%,61%{transform:none;opacity:1}66%,100%{transform:translateY(.5em);opacity:0}}
-@keyframes ngTtR{0%,37%{background-position:100% 0}51%,100%{background-position:0 0}}
+@keyframes ngTtX{0%,30%{transform:none;opacity:1}35%,57%{transform:translateY(-.5em);opacity:0}62%,100%{transform:none;opacity:1}}
+@keyframes ngTtY{0%,32%{transform:translateY(.5em);opacity:0}37%,55%{transform:none;opacity:1}60%,100%{transform:translateY(.5em);opacity:0}}
+@keyframes ngTtR{0%,37%{background-position:100% 0}49%,100%{background-position:0 0}}
 @keyframes ngTtA{from{opacity:0;transform:translateY(8px);filter:blur(3px)}}
 @keyframes ngTtM{from{transform:translateY(105%)}}
 @keyframes ngTtG{from{clip-path:inset(-30% 100% -30% -10%);transform:translateX(-6px)}to{clip-path:inset(-30% -10% -30% -10%);transform:none}}

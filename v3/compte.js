@@ -134,6 +134,8 @@
 .cp-hero-tags span.a{background:#FFE7A8;color:#5B3D00}
 .cp-hero-tags span.cp-adm{background:#F2C230;color:#10392B;height:30px;padding:0 12px 0 4px;border-radius:15px;font-size:13px}.cp-adm svg{border-radius:50%;box-shadow:0 0 0 1.5px #10392B}
 .cp-off-p{max-width:300px;margin-left:auto;margin-right:auto;line-height:1.4}
+.cp-hero-idv{display:inline-flex;align-items:center;gap:8px;margin:14px auto 0;min-height:44px;padding:0 14px 0 12px;border:0;border-radius:22px;background:#F2C230;color:#10392B;font:500 14px/1 Jost,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.18);-webkit-tap-highlight-color:transparent}
+.cp-hero-idv span{opacity:.82}.cp-hero-idv span::after{content:'·';margin-left:8px}.cp-hero-idv b{font-weight:700;font-size:15px}.cp-hero-idv:active{transform:scale(.97)}.cp-hero-idv:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .cp-hero-tags span.idok{background:#fff;color:var(--blue)}
 .cp-idv{display:flex;align-items:center;gap:12px;width:100%;margin:0 0 14px;padding:12px 14px;border:0;border-radius:18px;background:#FFFDF8;box-shadow:0 4px 14px rgba(23,21,18,.06),inset 0 0 0 1px rgba(23,21,18,.07);color:var(--ink);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 button.cp-idv:active{transform:scale(.985)}div.cp-idv{cursor:default}
@@ -683,7 +685,10 @@ label.cp-r{cursor:pointer}
           <p class="cp-off-p">${esc(N().fmtTel(u.tel))} · visible par vous seul. Les membres voient « Marché de Gros », jamais votre nom ni votre numéro.</p>
           <div class="cp-hero-tags"><span class="cp-adm">${window.MDGMarque ? MDGMarque.dg(16, { fond: 'vert', rond: true }) : ''}Administrateur · Officiel</span></div>` : `<h2>${nom ? 'Bonjour, <em>' + esc(p.pseudo || p.prenom || nom) + '</em>' : '<em>Bienvenue</em>'}${idS === 'verifie' ? ' ' + ID.badge(22) : ''}</h2>
           <p>${esc(N().fmtTel(u.tel))}</p>
-          <div class="cp-hero-tags">${p.role ? `<span>${ROLE_TXT[p.role] || ''}</span>` : ''}${lieuTxt ? `<span>${IC('lieu', 13)}${esc(lieuTxt)}</span>` : ''}${!nom ? '<span class="a">Profil à compléter</span>' : ''}${ID && idC && !idC.exempt ? (idS === 'verifie' ? `<span class="idok">${ID.badge(14)}Identité vérifiée</span>` : idC.banni ? '<span class="a">Compte banni</span>' : '<span class="a">Non identifié</span>') : ''}</div>`}
+          <div class="cp-hero-tags">${p.role ? `<span>${ROLE_TXT[p.role] || ''}</span>` : ''}${lieuTxt ? `<span>${IC('lieu', 13)}${esc(lieuTxt)}</span>` : ''}${!nom ? '<span class="a">Profil à compléter</span>' : ''}${ID && idC && !idC.exempt && idS === 'verifie' ? `<span class="idok">${ID.badge(14)}Identité vérifiée</span>` : ID && idC && idC.banni ? '<span class="a">Compte banni</span>' : ''}</div>
+          ${ID && !(idC && (idC.exempt || idC.banni)) && idS !== 'verifie' ? (() => { const R = ID.RESUME[idS] || ID.RESUME.non_verifie, rg = ID.gratuitesRestantes ? ID.gratuitesRestantes(idC) : null;
+            // s'identifier : sous la photo, là où on le voit tout de suite (demande du propriétaire), et plus dans la liste du bas
+            return `<button type="button" class="cp-hero-idv" data-idv aria-label="Non identifié. ${idS === 'non_verifie' ? 'S’identifier' : R[0]}${rg ? ', ' + rg + ' annonce' + (rg > 1 ? 's' : '') + ' gratuite' + (rg > 1 ? 's' : '') + ' restante' + (rg > 1 ? 's' : '') : ''}">${IC('verifie', 18)}<span>Non identifié</span><b>${idS === 'non_verifie' ? 'S’identifier' : esc(R[0])}</b><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>`; })() : ''}`}
           <div class="cp-hero-act">
             ${M ? `<button type="button" data-dm>${IC('messages', 20)}Messages${dmN ? `<em aria-label="${dmN} non lus">${dmN}</em>` : ''}</button>` : ''}
             <button type="button" data-nego>${IC('negoce', 20)}Négociations${ng.rec.length ? `<em aria-label="${ng.rec.length} à vous de répondre">${ng.rec.length}</em>` : ''}</button>
@@ -695,8 +700,6 @@ label.cp-r{cursor:pointer}
           ${stBloc}
           <div class="cp-sh"><h3>Votre compte</h3><small>${esc(N().fmtTel(u.tel))}</small></div>
           <div class="cp-grp">
-            ${ID && !off0 ? (() => { const R = ID.RESUME[idS] || ID.RESUME.non_verifie, rg = idS === 'verifie' || !ID.gratuitesRestantes ? null : ID.gratuitesRestantes(idC);
-              return ligne({ ico: mono('verifie'), t: 'Identité', s: rg === 0 ? 'Obligatoire pour publier · gratuit' : rg ? `${rg} annonce${rg > 1 ? 's' : ''} gratuite${rg > 1 ? 's' : ''} restante${rg > 1 ? 's' : ''}` : R[1], v: R[0], vf: idS === 'verifie', attrs: 'data-idv' }); })() : ''}
             ${off0 ? '' : ligne({ ico: mono('compte'), t: 'Profil et avatar', s: nom ? '' : 'Prénom, rôle, lieu', attrs: 'data-go="profil"' })}
             ${window.MDGRep && !off0 ? ligne({ ico: mono('profil'), t: 'Mon profil public', s: 'Ce que les autres voient de vous', attrs: 'data-profpub' }) : ''}
             ${!off0 ? ligne({ ico: mono('publications'), t: 'Mes publications', s: off.length + dem.length ? 'Et mon stock' : 'Vos offres et demandes', n: off.length + dem.length || '', nl: (off.length + dem.length) + ' publication' + (off.length + dem.length > 1 ? 's' : ''), attrs: 'data-pubs' }) : ''}

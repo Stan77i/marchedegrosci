@@ -6,6 +6,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Mon compte : « S'identifier » devient un bouton maïs sous la photo et le nom (« Non identifié · S'identifier », ou l'étape en cours : « En cours d'examen »…) ; la ligne Identité de la liste est retirée pour ne pas l'avoir deux fois (demande du propriétaire). `v3/compte.js`.
 - Fiche profil : un membre dont l'identité n'est pas vérifiée est marqué « Non identifié » à côté de son nom (demande du propriétaire) ; le haut de Mon compte dit aussi « Non identifié ». Rien n'est affiché avant la réponse du serveur. `v3/reputation.js`, `v3/identite.js` (`connu`), `v3/compte.js`.
 - Mon compte : « Identité » passe en tête de « Votre compte » (demande du propriétaire) ; sous « Vos statuts », le paragraphe est remplacé par une phrase courte. `v3/compte.js`.
 - Notifications de la cloche : on peut enfin les retirer (glisser vers la gauche, comme les négociations) ou « Tout effacer » (deuxième toucher pour confirmer). Elles sont gardées sur le téléphone : les retirer ne touche à aucune négociation. Le texte qui renvoyait vers « Réglages, puis Notifications » (qui n'existe plus) est retiré. `v3/compte.js`.

@@ -122,7 +122,7 @@ html[data-theme=sombre] .bq :focus-visible,html[data-theme=sombre] .bqg :focus-v
 .bqg{position:relative;width:100%;max-width:520px;max-height:min(92dvh,860px);overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;padding:22px 18px calc(22px + env(safe-area-inset-bottom));border-radius:28px 28px 0 0;background:#F4EEE3;color:#171512;font:400 15px/1.45 Jost,system-ui,sans-serif;animation:bqUp .32s cubic-bezier(.22,1,.36,1) both}
 @media (min-width:720px){.bqg{border-radius:28px}}
 @keyframes bqUp{from{transform:translateY(40px)}}
-.bqg h2{margin:0 52px 4px 0;font:600 23px/1.15 Jost,sans-serif;letter-spacing:-.015em;display:flex;align-items:center;gap:8px}
+.bqg h2{margin:0 52px 4px 0;min-height:44px;font:600 23px/1.15 Jost,sans-serif;letter-spacing:-.015em;display:flex;align-items:center;gap:8px}
 .bqg>p{margin:0 0 14px;color:#655C4D;font-size:14.5px}
 .bqg-x{position:absolute;right:14px;top:14px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(23,21,18,.08);color:inherit;cursor:pointer}
 .bqg-x::before,.bqg-x::after{content:"";position:absolute;left:50%;top:50%;width:15px;height:2px;border-radius:2px;background:currentColor;transform:translate(-50%,-50%) rotate(45deg)}.bqg-x::after{transform:translate(-50%,-50%) rotate(-45deg)}

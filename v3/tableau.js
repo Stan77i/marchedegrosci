@@ -98,23 +98,21 @@ html[data-theme=sombre] .tb-rg,html[data-theme=sombre] .tb-t{background:#2A261F;
 .tb-v{position:relative;display:block;width:64px;height:64px;border-radius:20px;background:radial-gradient(120% 90% at 50% 100%,oklch(.9 .07 var(--h)) 0%,oklch(.965 .025 var(--h)) 70%)}
 .tb-v img{position:absolute;left:50%;bottom:3px;width:74px;height:74px;margin-left:-37px;object-fit:contain;filter:drop-shadow(0 6px 6px rgba(23,21,18,.22));transition:transform .35s cubic-bezier(.22,1.4,.36,1)}
 .tb-v.ini{display:grid;place-items:center}.tb-v.ini b{font:900 italic 30px/1 Jost,sans-serif;color:oklch(.42 .09 var(--h));letter-spacing:-.02em}
-.tb-pl.anim .tb-v.ini b{animation:tbSac .7s calc(var(--i,0) * 60ms + 120ms) cubic-bezier(.22,1.5,.36,1) both}
+
 html[data-theme=sombre] .tb-v.ini b{color:oklch(.86 .08 var(--h))}
 .tb-p:hover .tb-v img,.tb-p:active .tb-v img{transform:translateY(-4px) scale(1.06) rotate(-2deg)}
 .tb-p .tb-tx b{display:block;font:600 17px/1.2 Jost,sans-serif;letter-spacing:-.005em}.tb-p .tb-tx small{margin-top:3px}
 /* le nombre d'offres / de demandes : une pastille avec le panier (offre) ou le caddie (demande), demandé le 23/10/2026 */
-.tb-pils{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}.tb-pil{display:inline-flex;align-items:center;gap:5px;min-height:26px;padding:0 10px 0 5px;border-radius:999px;font:700 13.5px/1 Jost,sans-serif;font-variant-numeric:tabular-nums;animation:tbPil .45s cubic-bezier(.3,1.6,.5,1) both}
+.tb-pils{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}.tb-pil{display:inline-flex;align-items:center;gap:5px;min-height:26px;padding:0 10px 0 5px;border-radius:999px;font:700 13.5px/1 Jost,sans-serif;font-variant-numeric:tabular-nums}
 .tb-pil i{width:20px;height:20px;flex:none;background:var(--sym-o) center/contain no-repeat}.tb-pil.d i{background-image:var(--sym-d-jour,var(--sym-d))}
 .tb-pil.o{background:#6CC58C;color:#0E3323}.tb-pil.d{background:#F2C230;color:#171512}
 @keyframes tbPil{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}@media (prefers-reduced-motion:reduce){.tb-pil{animation:none}}
 .tb-p .px b{font:700 17px/1.2 Jost,sans-serif;font-variant-numeric:tabular-nums}.tb-p .px small{margin-top:2px}
 .tb-p .px>span+span{margin-top:6px}.tb-p .px>span{display:block}
-.tb-pl.anim>li{animation:tbIn .55s calc(var(--i,0) * 60ms) cubic-bezier(.22,1,.36,1) both}
-.tb-pl.anim .tb-v img{animation:tbSac .7s calc(var(--i,0) * 60ms + 120ms) cubic-bezier(.22,1.5,.36,1) both}
 @keyframes tbIn{from{opacity:0;transform:translateY(14px)}}
 @keyframes tbSac{from{opacity:0;transform:translateY(10px) scale(.7) rotate(-8deg)}}
 .tb-hd{display:flex;align-items:center;gap:14px;margin:6px 0 4px}.tb-hd .tb-h{margin:0;flex:1;min-width:0}
-.tb-hd .tb-v{width:72px;height:72px;border-radius:22px;flex:none}.tb-hd .tb-v img{width:84px;height:84px;margin-left:-42px;animation:tbSac .7s .05s cubic-bezier(.22,1.5,.36,1) both}
+.tb-hd .tb-v{width:72px;height:72px;border-radius:22px;flex:none}.tb-hd .tb-v img{width:84px;height:84px;margin-left:-42px}
 html[data-theme=sombre] .tb-v{background:radial-gradient(120% 90% at 50% 100%,oklch(.4 .08 var(--h)) 0%,oklch(.27 .035 var(--h)) 72%)}
 html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
 @media (prefers-reduced-motion:reduce){.tb-pl.anim>li,.tb-pl.anim .tb-v img,.tb-hd .tb-v img{animation:none!important}.tb-v img{transition:none}}`;

@@ -113,7 +113,7 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 
 **Mouvement**
 25. Rien ne bouge en boucle sans raison : pas de point qui clignote, de reflet qui balaie, de bouton qui rebondit en permanence. On anime ce qui change, une fois, en moins de 300 ms à peu près.
-26. Pas d'apparition animée sur chaque bloc au défilement. Le contenu est là tout de suite.
+26. Pas d'apparition animée sur chaque bloc au défilement. Le contenu est là tout de suite : pas de cascade, pas de fondu du contenu (`mkFade`, `accMonte` retirés le 24/10/2026), pas de chiffre qui repart de 0 ; seule la fenêtre glisse. Un trait ou un tampon se joue une fois par élément, jamais au retour sur la page.
 27. `prefers-reduced-motion` respecté : l'état change, le déplacement disparaît.
 
 **Finitions qui trahissent l'amateur**

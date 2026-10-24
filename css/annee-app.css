@@ -43,7 +43,7 @@
 .an2-res { margin: -4px 4px 0; font-size: 14px; line-height: 1.45; color: var(--an-mute); text-align: center; }
 
 /* groupes du mois */
-.an2-g { display: flex; flex-direction: column; gap: 10px; animation: mkFade .35s both; }
+.an2-g { display: flex; flex-direction: column; gap: 10px; }
 .an2-gh { display: flex; gap: 10px; align-items: flex-start; padding: 0 2px; }
 .an2-gh > i { flex: none; width: 10px; height: 10px; border-radius: 3px; margin-top: 6px; }
 .an2-gh h2 { margin: 0; font: 600 16px/1.25 var(--f-texte, Jost), sans-serif; }
@@ -70,7 +70,7 @@
 .an2-chev { flex: none; color: var(--an-faint); transition: transform .3s; }
 
 /* une culture dans l'année */
-.an2-det { padding: 4px 14px 16px 70px; display: flex; flex-direction: column; gap: 10px; animation: mkFade .3s both; }
+.an2-det { padding: 4px 14px 16px 70px; display: flex; flex-direction: column; gap: 10px; }
 .an2-dk { font: 600 13px/1.2 var(--f-texte, Jost), sans-serif; letter-spacing: 0; color: var(--an-faint); }
 .an2-frise { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px; }
 .an2-fb { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }

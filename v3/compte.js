@@ -420,13 +420,18 @@ label.cp-r{cursor:pointer}
     bg.aller = aller;
     aller(page, true);
     bg.rafraichir = () => { const y = main.scrollTop; aller(page, true); main.scrollTop = y; };
-    if (navigator.onLine) charger().then(() => bg && bg.rafraichir && bg.rafraichir());
-    const adm0 = J('mdg-nuage:admin', false); if (N().isAdmin) N().isAdmin().then(a => { if (a !== adm0 && bg && bg.rafraichir) bg.rafraichir(); if (a) compterIdent(); });
+    // mise à jour venue du réseau : jamais pendant qu'on écrit, ni si un champ a été modifié (sinon la saisie serait perdue, 24/10/2026)
+    bg.rafraichirAuto = () => { if (!bg || !main.isConnected) return; const a = document.activeElement;
+      if (a && main.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
+      if ([...main.querySelectorAll('input, textarea')].some(x => (x.type === 'checkbox' || x.type === 'radio') ? x.checked !== x.defaultChecked : x.value !== x.defaultValue)) return;
+      bg.rafraichir(); };
+    if (navigator.onLine) charger().then(() => bg && bg.rafraichirAuto && bg.rafraichirAuto());
+    const adm0 = J('mdg-nuage:admin', false); if (N().isAdmin) N().isAdmin().then(a => { if (a !== adm0 && bg && bg.rafraichirAuto) bg.rafraichirAuto(); if (a) compterIdent(); });
     // l'administrateur : dossiers d'identité à examiner (supabase/schema-19), gardés 60 s (même cache que le menu de l'application)
     function compterIdent() {
       const c = J('mdg-admin:identites', {}); if (!navigator.onLine || Date.now() - (c.t || 0) < 60e3) return;
       try { localStorage.setItem('mdg-admin:identites', JSON.stringify({ n: c.n || 0, t: Date.now() })); } catch (_) {}
-      N().rpc('admin_identite_compte').then(n => { n = +n || 0; try { localStorage.setItem('mdg-admin:identites', JSON.stringify({ n, t: Date.now() })); } catch (_) {} if (n !== (c.n || 0) && bg && bg.rafraichir && page === 'accueil') bg.rafraichir(); }).catch(() => {});
+      N().rpc('admin_identite_compte').then(n => { n = +n || 0; try { localStorage.setItem('mdg-admin:identites', JSON.stringify({ n, t: Date.now() })); } catch (_) {} if (n !== (c.n || 0) && bg && bg.rafraichirAuto && page === 'accueil') bg.rafraichirAuto(); }).catch(() => {});
     }
   }
 
@@ -638,7 +643,7 @@ label.cp-r{cursor:pointer}
       const ID = window.MDGIdentite, idC = ID && ID.statutCache(), idS = idC ? idC.statut : 'non_verifie';
       // l'administrateur parle au nom du Marché de Gros (supabase/schema-20) : pas de vérification, pas de nom, pas de numéro visible
       const off0 = !!((idC && (idC.officiel || idC.exempt)) || adm);
-      if (ID && navigator.onLine) ID.statut().then(s => { if (s && JSON.stringify(s) !== JSON.stringify(idC) && bg && bg.rafraichir && main.isConnected) bg.rafraichir(); }).catch(() => {});
+      if (ID && navigator.onLine) ID.statut().then(s => { if (s && JSON.stringify(s) !== JSON.stringify(idC) && bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); }).catch(() => {});
       // la vérification d'identité, bien en vue tant qu'elle n'est pas faite : 3 annonces gratuites, puis elle est demandée pour publier
       const idBandeau = (() => {
         if (!ID || !idC || idC.exempt || off0 || idS === 'verifie') return '';
@@ -672,7 +677,7 @@ label.cp-r{cursor:pointer}
       if (fil) fil += '</div>';
       // vos statuts (v3/statuts.js) : ceux gagnés, et ce qui reste à faire pour les suivants
       const SG = window.MDGStatut;
-      if (SG && !SG.get(u.id)) addEventListener('mdg:rep', function f() { removeEventListener('mdg:rep', f); if (bg && bg.rafraichir && main.isConnected) bg.rafraichir(); });
+      if (SG && !SG.get(u.id)) addEventListener('mdg:rep', function f() { removeEventListener('mdg:rep', f); if (bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); });
       const stBloc = !SG || off0 ? '' : (() => { const gag = SG.liste(u.id), but = SG.progres(u.id), v = idS === 'verifie';
         return `<div class="cp-sh"><h3>Vos statuts</h3><small>Ils se gagnent, ils ne s’achètent pas</small></div>
           <div class="cp-grp cp-statuts">${gag.length || v ? `<div class="cp-st-l">${SG.puces(u.id, { max: 9, t: 18 })}</div>` : '<p class="cp-vide">Pas encore de statut. Votre identité vérifiée, vos ventes conclues et vos réponses rapides en font gagner, et les autres membres les voient partout : annonces, carte, messages.</p>'}

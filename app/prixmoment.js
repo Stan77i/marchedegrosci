@@ -31,14 +31,14 @@
 .pm-hd .im img{position:absolute;left:50%;bottom:2px;width:74px;height:74px;margin-left:-37px;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
 .pm-hd small{display:block;font:600 11px/1.2 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#B9AD98}
 .pm-hd h2{margin:4px 0 0;font:600 23px/1.12 Jost,sans-serif;letter-spacing:-.015em}.pm-hd h2 em{font-style:italic;font-weight:900;color:#F2C230}
-.pm-ac{display:flex;align-items:center;gap:10px;margin:-6px 0 16px;padding:8px 12px 8px 8px;border-radius:16px;background:rgba(243,239,228,.05);box-shadow:inset 0 0 0 1px rgba(243,239,228,.12);animation:pmLi .5s .1s cubic-bezier(.22,1,.36,1) both}
+.pm-ac{display:flex;align-items:center;gap:10px;margin:-6px 0 16px;padding:8px 12px 8px 8px;border-radius:16px;background:rgba(243,239,228,.05);box-shadow:inset 0 0 0 1px rgba(243,239,228,.12)}
 .pm-ac i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:16px;background:rgba(243,239,228,.08)}
 .pm-ac b{display:block;font:700 14px/1.15 Jost,sans-serif;color:#F3EFE4}.pm-ac small{display:block;font-size:12px;line-height:1.3;color:#CFC4B1}
 .pm-ac.vente{box-shadow:inset 0 0 0 1px rgba(159,220,178,.4)}.pm-ac.vente i{background:rgba(159,220,178,.16)}.pm-ac.vente b{color:#9FDCB2}
 .pm-ac.demande{box-shadow:inset 0 0 0 1px rgba(242,194,48,.4)}.pm-ac.demande i{background:rgba(242,194,48,.16)}.pm-ac.demande b{color:#F2C230}
 .pm-ech{position:relative;list-style:none;margin:0;padding:0 0 0 28px}
 .pm-ech::before{content:"";position:absolute;left:9px;top:14px;bottom:14px;width:2px;border-radius:1px;background:linear-gradient(#9FDCB2,rgba(243,239,228,.14))}
-.pm-ech li{position:relative;margin:0 0 8px;animation:pmLi .5s calc(var(--i,0) * 70ms + 150ms) cubic-bezier(.22,1,.36,1) both}
+.pm-ech li{position:relative;margin:0 0 8px}
 @keyframes pmLi{from{opacity:0;transform:translateX(-10px)}}
 .pm-ech li::before{content:"";position:absolute;left:-23px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:#171512;box-shadow:inset 0 0 0 2px rgba(243,239,228,.3)}
 .pm-ech li.top::before{background:#9FDCB2;box-shadow:0 0 0 4px rgba(159,220,178,.18)}
@@ -54,7 +54,7 @@
 .pm-qui b{display:block;font:600 15px/1.2 Jost,sans-serif}.pm-qui small{display:block;color:#B9AD98;font-size:12.5px}
 .pm-moi{display:inline-block;margin-left:6px;padding:0 7px;border-radius:9px;background:rgba(243,239,228,.14);color:#F3EFE4;font:600 11.5px/1.6 Jost,sans-serif}
 /* « Votre prix ? » : la place libre, en pointillé, avec le triangle qui indique où se mettre */
-.pm-vous{position:relative;margin:4px 0 0 28px;padding:12px 14px;border-radius:16px;border:1.5px dashed rgba(159,220,178,.6);color:#F3EFE4;animation:pmLi .5s calc(var(--i,0) * 70ms + 150ms) cubic-bezier(.22,1,.36,1) both}
+.pm-vous{position:relative;margin:4px 0 0 28px;padding:12px 14px;border-radius:16px;border:1.5px dashed rgba(159,220,178,.6);color:#F3EFE4}
 .pm-vous::before{content:"";position:absolute;left:-24px;top:50%;margin-top:-6px;border:6px solid transparent;border-left:9px solid #9FDCB2;animation:pmPointe 1.4s ease-in-out infinite}
 @keyframes pmPointe{50%{transform:translateX(4px)}}
 .pm-vous b{display:flex;align-items:center;gap:8px;font:600 15px/1.3 Jost,sans-serif}.pm-vous small{display:block;margin-top:3px;color:#CFC4B1;font-size:13px;line-height:1.4}
@@ -71,7 +71,7 @@
 .pm-tabs button span{min-width:20px;padding:0 6px;border-radius:10px;background:rgba(243,239,228,.1);font-size:12px;line-height:20px}
 .pm-tabs .v[aria-selected=true]{background:#9FDCB2;color:#0E2A1F}.pm-tabs .a[aria-selected=true]{background:#F2C230;color:#171512}
 .pm-tabs [aria-selected=true] span{background:rgba(0,0,0,.12)}
-.pm-pan.in{animation:pmPan .35s cubic-bezier(.22,1,.36,1) both}@keyframes pmPan{from{opacity:0;transform:translateY(6px)}}
+@keyframes pmPan{from{opacity:0;transform:translateY(6px)}}
 .pm-vide{margin:0 0 8px;padding:12px 14px;border-radius:14px;background:rgba(243,239,228,.05);color:#CFC4B1;font-size:14px}
 .pm-rep{display:flex;align-items:center;gap:8px;margin:12px 0 0;padding:10px 12px;border-radius:14px;background:rgba(243,239,228,.05);font-size:14px;color:#CFC4B1}
 .pm-rep b{color:#F3EFE4}.pm-rep.a{color:#F2C230}.pm-rep.v{color:#9FDCB2}

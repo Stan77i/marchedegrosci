@@ -93,7 +93,8 @@ begin
   update public.notif_file f set etat = 'perime', pris_le = now()
   from public.notif_categories c
   where f.etat = 'attente' and c.cat = f.cat
-    and f.cree_le < now() - case when c.nature = 'com' then interval '18 hours' else interval '36 hours' end;
+    and (f.cree_le < now() - case when c.nature = 'com' then interval '18 hours' else interval '36 hours' end
+      or (f.type in ('expire_bientot', 'relance_prix') and (f.donnees->>'expire') is not null and (f.donnees->>'expire')::timestamptz <= now()));
   select array_agg(x.id) into ids from (
     select f.id from public.notif_file f join public.notif_categories c on c.cat = f.cat
     where f.etat = 'attente' and c.nature = 'trans'

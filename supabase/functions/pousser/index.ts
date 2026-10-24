@@ -596,7 +596,7 @@ Deno.serve(async (req) => {
             const v = Number(d.vues || 0); if (!(v > 0)) return null;
             return [
               M(T45(`${nf(v)} visite${v > 1 ? "s" : ""} sur votre boutique en 7 jours`, `Boutique : ${nf(v)} visite${v > 1 ? "s" : ""} en 7 jours`), "Partagez son lien avec vos clients sur WhatsApp."),
-              M(T45(`Votre boutique ouverte ${nf(v)} fois en 7 jours`, `Boutique ouverte ${nf(v)} fois en 7 jours`), "Gardez vos offres à jour : c'est ce que voient vos visiteurs."),
+              M(T45(`Votre boutique a été ouverte ${nf(v)} fois en 7 jours`, `Boutique ouverte ${nf(v)} fois en 7 jours`), "Gardez vos offres à jour : c'est ce que voient vos visiteurs."),
             ][i(2)];
           }
           case "boutique_ouvrir":
@@ -722,7 +722,7 @@ Deno.serve(async (req) => {
         if (acheteur) {
           const o = offres.filter(libre).sort((a, b) => rang(a, suit) - rang(b, suit))[0];
           if (o) {
-            const lib = coupe(o.libelle, 24), q = qteTxt(o.quantite, o.unite), px = prixU(o.prix, o.unite), vi = o.ville || "";
+            const lib = coupe(o.libelle, 24), q = qteTxt(o.quantite, o.unite || "kg"), px = prixU(o.prix, o.unite || "kg"), vi = o.ville || "";
             choix.push([
               { title: T45(px && vi ? `${lib} à ${vi} : ${px}` : "", px ? `${lib} : ${px}` : "", `Nouvelle offre : ${lib}`, "Nouvelle offre sur le marché"),
                 body: q ? `${q} en ligne. Comparez avant d'acheter.` : "Voyez l'offre et comparez avant d'acheter." },
@@ -746,7 +746,7 @@ Deno.serve(async (req) => {
         if (vendeur) {
           const dmd = demandes.filter(libre).sort((a, b) => rang(a, mes) - rang(b, mes))[0];
           if (dmd) {
-            const lib = coupe(dmd.libelle, 24), q = qteTxt(dmd.quantite, dmd.unite), vi = dmd.ville || "", bu = Number(dmd.prix) > 0 ? "budget " + prixU(dmd.prix, dmd.unite) : "";
+            const lib = coupe(dmd.libelle, 24), q = qteTxt(dmd.quantite, dmd.unite || "kg"), vi = dmd.ville || "", bu = Number(dmd.prix) > 0 ? "budget " + prixU(dmd.prix, dmd.unite || "kg") : "";
             choix.push({ ...[
               { title: T45(q ? `On cherche ${q} ${de(lib)}` : "", `Un acheteur cherche : ${lib}`, `Demande : ${lib}`),
                 body: B80(phrase(vi ? "À " + vi : "", bu) ? `${phrase(vi ? "À " + vi : "", bu)}. Proposez votre prix.` : "", bu ? `${bu.replace(/^b/, "B")}. Proposez votre prix.` : "", "Proposez votre prix, votre numéro reste caché.") },

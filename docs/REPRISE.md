@@ -6,7 +6,7 @@
 ## 1. L'état au moment de la reprise
 
 - **Toutes les PR sont fusionnées** (jusqu'à la PR #247). Aucune PR ouverte, aucun travail en cours. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
-- `main` : cache du service worker `mgci-v234`.
+- `main` : cache du service worker `mgci-v234` (`mgci-v235` après la PR « Compétence antislop »).
 - Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **81** appliqués (80 `fil_public`, 81 `site_mesures` / `mesurer` / `mesures_resume`). Mêmes schémas sur le projet de test.
 
 ## 2. Ce qui a été fait (session du 23/10/2026)
@@ -82,6 +82,7 @@
 - `marche-de-gros-design` : la référence du design du projet (`DESIGN.md`, les 32 lois de la section 8) ;
 - `impeccable` : direction de design, `audit`, `critique`, `polish`, `layout`… et son détecteur anti-« design généré » (`.claude/skills/impeccable/scripts/impeccable detect --json <fichiers>`) ; il lit `PRODUCT.md` ;
 - `ui-ux-pro-max` : règles UX, accessibilité, couleurs, typographie (`python3 .claude/skills/ui-ux-pro-max/scripts/search.py "<sujet>" --domain ux`) ;
+- `antislop` et ses 5 parties (installées le 24/10/2026, voir `.claude/skills/ANTISLOP-NOTICE.md`) : filtre anti « fait par IA » pour les écrans (`antislop-ui`), les **textes** du site, des guides, des PDF et des publications (`antislop-copywriting`), l'accessibilité avec un **calculateur de contraste** (`antislop-human`), l'adaptation aux tailles d'écran (`antislop-layoutmobile`) et les commentaires de code (`antislop-code`). Mode « pendant » sans poser la question ; « après » pour un audit ;
 - `playwright-cli` : vérifier dans un vrai navigateur (iPhone émulé, clair et sombre).
 
 **Business, marketing et SEO** (`founder-skills`, lisent `FOUNDER_CONTEXT.md`) :

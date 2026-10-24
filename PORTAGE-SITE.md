@@ -85,6 +85,7 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Commande : ville de livraison, règle « même ville » (livreur du vendeur, retrait si le vendeur l'accepte), transport à part figé avec le total convenu (schéma 83) | `v3/commandes.js` (`creer`, `ddTransport`) | haute |
 | Prix du transporteur du réseau convenu à trois (proposer, accepter, refuser, contre-proposer), côté commande et côté chauffeur (schéma 83, service fermé) | `v3/commandes.js` (`blocTrois`), `v3/chauffeur.js` | basse (réseau en pause) |
 | Alertes par produit | `v3/alertes.js` (schéma 75) | moyenne |
+| « Ville seulement » (schéma 87) : l'interrupteur « Je vends uniquement à Guiglo » à la publication et dans Mes publications, l'avertissement avant de négocier ou d'écrire, la ville imposée à la commande. Le site montre déjà la pastille « Guiglo uniquement » (fil, carte) | `app/ville-seule.js`, `application.dc.html` (`vsEl`, `vsSw`), `v3/negoce.js`, `v3/messages.js`, `v3/commandes.js` | moyenne |
 
 ### Accueil et navigation
 

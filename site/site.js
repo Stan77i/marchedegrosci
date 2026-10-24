@@ -41,6 +41,14 @@
     return '<b>' + esc(qui) + '</b> ' + verbe + ' ' + esc(q) + esc(prod);
   }
   var photo = function (slug, cls) { return NOMS[slug] ? '<img class="' + (cls || 'ph') + '" src="' + S + 'img/' + esc(slug) + '-160.webp" alt="" width="40" height="40" loading="lazy">' : ''; };
+  // « Vente uniquement à Guiglo » (schéma 87) : une pastille courte « Guiglo uniquement » à la place du nom de la ville ; la phrase complète pour les lecteurs d'écran
+  var PIN = '<svg class="vseule-i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>';
+  function lieu(a) {
+    if (!a.ville_seulement || !a.ville) return esc(a.ville || '');
+    var nom = String(a.ville).replace(/\s*\(près de [^)]*\)\s*$/, ''), ph = (a.sens === 'offre' ? 'Vente' : 'Achat') + ' uniquement à ' + nom;
+    return '<span class="vseule" title="' + esc(ph) + '">' + PIN + '<span class="vseule-t" aria-hidden="true">' + esc(nom) + ' uniquement</span><span class="vh">' + esc(ph) + '</span></span>';
+  }
+  window.MDGSiteLieu = lieu;
   var symb = function (sens, nuit) { return '<i class="sym ' + (sens === 'offre' ? 'sym-o' : 'sym-d' + (nuit ? ' nuit' : '')) + '" aria-hidden="true"></i>'; };
 
   // ——— le fil et la carte ———
@@ -85,7 +93,7 @@
     var court = $('filCourt'), long = $('filLong'), pf = $('filProduit');
     if (pf) {
       var LP = L.filter(function (a) { return REGION ? a.region_slug === REGION : a.product_slug === PROD; });
-      poser(pf, LP.length ? LP.map(function (a) { var h = '#/produits/' + esc(a.product_slug); return '<li><a class="fil-a" href="' + R + 'application.dc.html' + h + '" data-app="' + h + '" data-intention="annonce">' + ((REGION && photo(a.product_slug)) || symb(a.sens)) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></a></li>'; }).join('')
+      poser(pf, LP.length ? LP.map(function (a) { var h = '#/produits/' + esc(a.product_slug); return '<li><a class="fil-a" href="' + R + 'application.dc.html' + h + '" data-app="' + h + '" data-intention="annonce">' + ((REGION && photo(a.product_slug)) || symb(a.sens)) + '<div><span>' + phrase(a) + '</span> <small>' + lieu(a) + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></a></li>'; }).join('')
         : '<li class="fil-vide">Aucune annonce active ' + (REGION ? 'dans ce district' : 'pour ce produit') + ' en ce moment. ' + publier('#/publier?sens=offre' + (PROD ? '&produit=' + encodeURIComponent(PROD) : ''), 'premiere-annonce', 'Publiez la première') + ' : tout le réseau la verra.</li>');
     }
     if (!L.length) {
@@ -94,12 +102,13 @@
       return;
     }
     // chaque annonce s'ouvre dans l'application (fiche du produit) : le parcours voulu, « il clique sur une annonce »
-    var ligne = function (a, nuit) { var h = '#/produits/' + esc(a.product_slug); return '<li><a class="fil-a" href="' + R + 'application.dc.html' + h + '" data-app="' + h + '" data-intention="annonce">' + (photo(a.product_slug) || symb(a.sens, nuit)) + '<div><span>' + phrase(a) + '</span> <small>' + esc(a.ville || '') + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></a></li>'; };
+    var ligne = function (a, nuit) { var h = '#/produits/' + esc(a.product_slug); return '<li><a class="fil-a" href="' + R + 'application.dc.html' + h + '" data-app="' + h + '" data-intention="annonce">' + (photo(a.product_slug) || symb(a.sens, nuit)) + '<div><span>' + phrase(a) + '</span> <small>' + lieu(a) + (a.ville ? ' · ' : '') + quand(a.publie_le) + '</small></div></a></li>'; };
     poser(court, L.slice(0, 3).map(function (a) { return ligne(a, true); }).join(''));
     poser(long, L.slice(0, 40).map(function (a) { return ligne(a, true); }).join(''));
   }
   function lireFil() {
-    return rpc('fil_public', { p_limite: 120 }).then(function (L) { L = L || []; fil(L); points(L); document.dispatchEvent(new CustomEvent('site:fil', { detail: L })); })
+    // fil_public2 (schéma 87) : le même fil, avec « ville seulement » ; serveur plus ancien : fil_public
+    return rpc('fil_public2', { p_limite: 120 }).catch(function () { return rpc('fil_public', { p_limite: 120 }); }).then(function (L) { L = L || []; fil(L); points(L); document.dispatchEvent(new CustomEvent('site:fil', { detail: L })); })
       .catch(function () {
         // le serveur ne répond pas : chaque liste encore vide le dit, au lieu de « Les annonces arrivent… » pour toujours (audit du site n° 10)
         ['filCourt', 'filLong', 'filProduit'].forEach(function (id) { var c = $(id); if (c && /fil-vide/.test(c.innerHTML)) poser(c, '<li class="fil-vide">Les annonces ne s’affichent pas pour l’instant (réseau ?). Réessayez dans un moment.</li>'); });

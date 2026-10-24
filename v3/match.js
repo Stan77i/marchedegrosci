@@ -14,6 +14,8 @@
   const q = s => od.querySelector(s);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const fmt = n => Math.round(n).toLocaleString('fr-FR').replace(/\u202f/g, ' ');
+  // « Vente uniquement à Guiglo » (schéma 87, app/ville-seule.js) : la pastille courte à la place de la ville
+  const lieuVS = (x, sens, txt) => x.villeSeule && x.city && window.MDGVilleSeule ? MDGVilleSeule.pastille(sens, x.city) : esc(txt);
   const regName = s => { const r = CX().regBy[s]; return r ? r.name : ''; };
   const contactBtns = (phone, text) => {
     const t = MK().tel(phone); if (!t) return '';
@@ -36,7 +38,7 @@
   }
   function offList(p, want) {
     const offs = CX().offersOf(p.slug), R = rank(offs, want), full = want.q && R.length && R[0].why[0] && R[0].why[0][0] === 'ok';
-    return R.slice(0, 3).map((x, i) => { const o = x.o; return '<li' + (i === 0 && full ? ' class="is-best"' : '') + '><span class="odv__q">' + fmt(o.quantity) + ' ' + esc(o.unit) + (i === 0 && full ? '<em class="mt-best">la plus adaptée</em>' : '') + '</span><span class="odv__c">' + esc(o.seller || o.producerName || '') + ' · ' + esc(o.city) + '</span><span class="odv__pr">' + (o.price != null ? fmt(o.price) + ' F<small>/ ' + esc(o.unit) + ' · prix vendeur</small>' : 'À discuter') + '</span>'
+    return R.slice(0, 3).map((x, i) => { const o = x.o; return '<li' + (i === 0 && full ? ' class="is-best"' : '') + '><span class="odv__q">' + fmt(o.quantity) + ' ' + esc(o.unit) + (i === 0 && full ? '<em class="mt-best">la plus adaptée</em>' : '') + '</span><span class="odv__c">' + esc(o.seller || o.producerName || '') + ' · ' + lieuVS(o, 'offre', o.city) + '</span><span class="odv__pr">' + (o.price != null ? fmt(o.price) + ' F<small>/ ' + esc(o.unit) + ' · prix vendeur</small>' : 'À discuter') + '</span>'
       + '<span class="mt-why">' + x.why.map(w => '<i' + (w[0] ? ' class="ok"' : '') + '>' + esc(w[1]) + '</i>').join('') + '</span>' + contactBtns(o.phone, 'Bonjour, je cherche du ' + p.name.toLowerCase() + ', votre offre sur Marché de Gros m\'intéresse.') + '</li>'; }).join('');
   }
 
@@ -98,7 +100,7 @@
     q('.odv__fam').textContent = cat ? cat.name : ''; q('.odv__title').textContent = p.name;
     // J'ai : les demandes qui correspondent, puis l'offre (déjà remplie avec le produit)
     q('#mtJai').innerHTML = (dems.length
-      ? '<p class="mt-k">' + dems.length + (dems.length > 1 ? ' demandes correspondent' : ' demande correspond') + '</p><ul class="odv__offers">' + dems.slice(0, 3).map(d => '<li><span class="odv__q">' + fmt(d.quantity) + ' ' + esc(d.unit) + '</span><span class="odv__c">' + esc(d.city || regName(d.regionSlug)) + (d.mine ? ' · votre demande' : '') + '</span>' + (d.phone ? contactBtns(d.phone, 'Bonjour, j\'ai du ' + p.name.toLowerCase() + ' pour votre demande sur Marché de Gros.') : '') + '</li>').join('') + '</ul>'
+      ? '<p class="mt-k">' + dems.length + (dems.length > 1 ? ' demandes correspondent' : ' demande correspond') + '</p><ul class="odv__offers">' + dems.slice(0, 3).map(d => '<li><span class="odv__q">' + fmt(d.quantity) + ' ' + esc(d.unit) + '</span><span class="odv__c">' + lieuVS(d, 'demande', d.city || regName(d.regionSlug)) + (d.mine ? ' · votre demande' : '') + '</span>' + (d.phone ? contactBtns(d.phone, 'Bonjour, j\'ai du ' + p.name.toLowerCase() + ' pour votre demande sur Marché de Gros.') : '') + '</li>').join('') + '</ul>'
       : '<p class="mt-k">Aucune demande pour l\'instant</p>')
       + '<form class="mt-form" data-k="offre" novalidate><div class="odv__row">' + qtyField(p) + regField() + '</div>' + telField()
       + '<details class="odv__more"><summary>Prix, nom, disponibilité</summary>'

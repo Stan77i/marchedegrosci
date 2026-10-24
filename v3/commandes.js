@@ -208,6 +208,7 @@
 .cm-wa{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:rgba(37,211,102,.1);font-size:13.5px}.cm-wa b{font-weight:600}.cm-wa a{color:#10392B;font-weight:600}
 .cm-f input[type=number]{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512}
 .cm-f select{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512;accent-color:#10392B}
+.cm-f input.cm-fige{background:#EFE8DA;color:#171512;font-weight:600;cursor:default}
 .cm-f select:focus-visible{outline:2px solid #10392B;outline-offset:2px}
 .cm-pick{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:16px;border:2px dashed rgba(16,57,43,.35);background:#FFFDF8;color:#10392B;font:600 15px Jost,sans-serif;cursor:pointer}
 .cm-pick input{position:absolute;width:1px;height:1px;opacity:0}
@@ -972,6 +973,9 @@
     return Object.assign({}, t, { modes, defaut: modes.includes(t.defaut) ? t.defaut : modes[0], bientot: t.modes.includes('reseau') });
   }
   const annonceDe = n => { try { return (N().list(n.cible === 'offre' ? 'offres' : 'demandes') || []).find(x => x._rid === n.cible_id) || null; } catch (_) { return null; } };
+  // sa propre annonce (publiée depuis ce téléphone) : retrouvée par son numéro sur le serveur (mdg-nuage:pousse)
+  const mienne = n => { try { const k = n.cible === 'offre' ? 'offres' : 'demandes', p = JSON.parse(localStorage.getItem('mdg-nuage:pousse') || '{}'), cle = Object.keys(p).find(x => x.startsWith(k + ':') && p[x] === n.cible_id);
+    return cle ? (JSON.parse(localStorage.getItem('mdg-v2:' + k) || '[]').find(x => x.id === cle.slice(k.length + 1)) || null) : null; } catch (_) { return null; } };
   const moiVendeur = n => (n.cible === 'offre') === (me() === n.proprio_id);
   function choixTransport0(n, meme) {
     const a = annonceDe(n), t = a && a.transport, pt = n.transport_final === false && +n.prix_transport_final > 0 ? +n.prix_transport_final : 0;
@@ -1043,7 +1047,10 @@
     const offre = n.cible === 'offre', a = annonceDe(n), villeAnn = (a && a.city) || n.ville || '';
     const VL = window.MDGVilles ? MDGVilles.toutes().map(x => x.nom).sort((x, y) => x.localeCompare(y, 'fr')) : [];
     const cle = v => window.MDGVilles ? MDGVilles.cle(v) : String(v || '').toLowerCase();
-    const optV = VL.length ? `<select id="cmVille" required><option value="">Choisir la ville</option>${VL.map(v => `<option${!offre && cle(v) === cle(villeAnn) ? ' selected' : ''}>${esc(v)}</option>`).join('')}</select>`
+    // schéma 87 : annonce « ville seulement » → la ville est imposée (pré-remplie et verrouillée), avec la phrase d'explication
+    const aVs = a || mienne(n), VS = window.MDGVilleSeule, villeSeule = !!(aVs && aVs.villeSeule && aVs.city && VS) ? aVs.city : '';
+    const optV = villeSeule ? `<input type="text" id="cmVille" value="${esc(villeSeule)}" readonly aria-readonly="true" aria-describedby="cmVs" class="cm-fige">`
+      : VL.length ? `<select id="cmVille" required><option value="">Choisir la ville</option>${VL.map(v => `<option${!offre && cle(v) === cle(villeAnn) ? ' selected' : ''}>${esc(v)}</option>`).join('')}</select>`
       : `<input type="text" id="cmVille" maxlength="80" autocomplete="off" placeholder="Ville" value="${offre ? '' : esc(villeAnn)}">`;
     const DESC = { reseau: 'L’équipe du Marché de Gros vous propose un transporteur vérifié. Son prix se convient à trois : lui, l’acheteur et le vendeur.',
       acheteur: 'L’acheteur envoie son camion ou son chauffeur. Rien à installer pour le chauffeur ; un lien de suivi est possible.',
@@ -1054,6 +1061,7 @@
       <form class="cm-f" novalidate>
         <label class="t" for="cmVille">${offre ? 'Ville de livraison' : 'Ville où se trouve la marchandise'}</label>
         ${optV}
+        ${villeSeule ? `<div id="cmVs" style="margin-top:8px">${VS.avertir(offre ? 'offre' : 'demande', villeSeule)}</div>` : ''}
         <p class="cm-note" style="margin:6px 0 0">${offre ? 'La marchandise part de ' + esc(villeAnn || 'la ville de l’annonce') + '.' : 'Livraison à ' + esc(villeAnn || 'la ville de la demande') + '.'}</p>
         <label class="t">Qui transporte la marchandise ?</label>
         <div data-modes></div>

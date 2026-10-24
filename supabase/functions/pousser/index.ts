@@ -59,7 +59,7 @@ async function config() {
   return cfg;
 }
 
-const nf = (n: number | string | null | undefined) => new Intl.NumberFormat("fr-FR").format(Number(n || 0)).replace(/[  ]/g, " ");
+const nf = (n: number | string | null | undefined) => new Intl.NumberFormat("fr-FR").format(Number(n || 0)).replace(/[\u00A0\u202F]/g, " ");
 const F = (n: number | null | undefined) => n == null ? "" : nf(n) + " F";
 const coupe = (t: string, n: number) => t.length > n ? t.slice(0, n - 1).trimEnd() + "…" : t;
 const TITRE = 45, TEXTE = 80;

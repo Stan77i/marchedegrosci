@@ -62,9 +62,9 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/symboles.css?v=20261102d">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261101e">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261102l">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261103b">
 <link rel="stylesheet" href="css/sombre.css?v=20261027f">
-<link rel="stylesheet" href="css/annee-app.css?v=20261027f">
+<link rel="stylesheet" href="css/annee-app.css?v=20261103b">
 <link rel="stylesheet" href="css/categories-app.css?v=20261101e">
 <link rel="stylesheet" href="v3/ux.css?v=20261023f">
 <script src="v2/data.js?v=20261031a"></script>
@@ -427,7 +427,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
     <div style="display:flex;gap:8px;padding:0 12px 10px;pointer-events:auto">
       <sc-if value="{{ cLocOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cLocate }}" aria-label="Me localiser" style="flex:none;width:44px;height:44px;border-radius:19px;border:1px solid rgba(176,149,240,.45);background:rgba(23,21,18,.7);color:var(--vous);display:flex;align-items:center;justify-content:center;padding:0"><svg width="18" height="18" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="localiser"><line x1="2" x2="5" y1="12" y2="12"></line><line x1="19" x2="22" y1="12" y2="12"></line><line x1="12" x2="12" y1="2" y2="5"></line><line x1="12" x2="12" y1="19" y2="22"></line><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="3"></circle></svg></button></sc-if>
       <button onClick="{{ cPick }}" style="flex:1 1 0;min-width:0;height:44px;padding:0 14px;border-radius:19px;border:1px solid rgba(245,240,230,.25);background:rgba(23,21,18,.7);color:var(--ivoire);font-size:var(--t-md);font-weight:500;display:flex;align-items:center;justify-content:space-between;gap:6px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ cProdL }}</span><svg width="10" height="10" stroke="currentColor" stroke-width="2.4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="bas"><path d="m6 9 6 6 6-6"></path></svg></button>
-      <label style="flex:1 1 0;min-width:0;height:44px;padding:0 6px 0 12px;border-radius:19px;border:1px solid rgba(176,149,240,.5);background:rgba(23,21,18,.7);color:var(--ivoire);font-size:var(--t-md);font-weight:500;display:flex;align-items:center;gap:6px"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1l5 9H1z" fill="#B095F0"></path></svg><select aria-label="Où êtes-vous ?" value="{{ cMe }}" onChange="{{ onMe }}" style="flex:1;min-width:0;border:0;background:transparent;color:var(--ivoire);font-size:var(--t-md);min-height:44px"><option value="" style="color:var(--encre)">Où êtes-vous ?</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}" style="color:var(--encre)">{{ r.name }}</option></sc-for></select></label>
+      <label class="cz-moi" data-on="{{ cMeOn }}"><span class="cz-moi-pt" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1l5 9H1z" fill="#B095F0"></path></svg></span><span class="cz-moi-t" aria-hidden="true"><small>{{ cMeK }}</small><b>{{ cMeL }}</b></span><svg class="cz-moi-ch" width="12" height="12" stroke="currentColor" stroke-width="2.4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg><select aria-label="Où êtes-vous ?" value="{{ cMe }}" onChange="{{ onMe }}"><option value="">Où êtes-vous ?</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}">{{ r.name }}</option></sc-for></select></label>
     </div>
   </div>
 
@@ -598,7 +598,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
                   <span class="an2-dk">Ce produit dans l’année</span>
                   <div class="an2-frise" role="img" aria-label="{{ it.fLeg }}"><sc-for list="{{ it.frise }}" as="f" hint-placeholder-count="12"><span class="{{ f.sel }}" title="{{ f.t }}"><span class="an2-fc"><i style="height:{{ f.h }};background:{{ f.c }}"></i></span><small>{{ f.l }}</small></span></sc-for></div>
                   <p class="an2-fl">{{ it.fLeg }} Source : {{ it.src }}.</p>
-                  <button onClick="{{ it.fiche }}" class="an2-go">Voir la fiche, les prix et les annonces<svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
+                  <button onClick="{{ it.fiche }}" class="an2-go"><span class="an2-go-i" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 3 7-8"></path><path d="M14 7h5v5"></path></svg></span><span class="an2-go-t"><b>Voir la fiche</b><small>Prix, offres et demandes</small></span><span class="an2-go-f" aria-hidden="true"><svg width="14" height="14" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span></button>
                 </div>
               </sc-if>
             </div>
@@ -1864,7 +1864,7 @@ class Component extends DCLogic {
       dCity: this.cityUI(df, patchD), df, dfh: { qty: setD('qty'), region: e => patchD(this.regionPatch(S.df, e.target.value)), budget: setD('budget'), name: setD('name'), phone: setD('phone') }, dErr: S.dErr,
       dUnits: A.UNITS.map(u => Object.assign(chip(df.unit === u), { l: u, go: () => this.setState(s => ({ df: Object.assign({}, s.df, { unit: u }) })) })),
       dExi: this.exiBloc('df', true), dTr: this.trBloc('df', 'demande'), dWhen: W_DEM.map(w => Object.assign(chip(df.deadline === w[0]), { l: w[1], go: () => this.setState(s => ({ df: Object.assign({}, s.df, { deadline: w[0] }) })) })), dPublish,
-      cPick: () => this.openPick('carte'), cLocate: () => { if (this.glOn && this.map && this.map.localiser) this.map.localiser(); else this.locate(); }, mapRef: this.mapRef, cLocOn: !this.glOn, cDist, cLeg, cSheet, cZones, cAdmin: isAdm, cZoneAdd: () => this.zoneForm(), cProdL: S.cprod ? this.prod(S.cprod).name : 'Tous les produits', cMe: S.cme, onMe: e => { const v = e.target.value; this.setState({ cme: v, csel: '' }); if (v) { this.me.region = v; ls('mdg-app:moi', this.me); } },
+      cPick: () => this.openPick('carte'), cLocate: () => { if (this.glOn && this.map && this.map.localiser) this.map.localiser(); else this.locate(); }, mapRef: this.mapRef, cLocOn: !this.glOn, cDist, cLeg, cSheet, cZones, cAdmin: isAdm, cZoneAdd: () => this.zoneForm(), cProdL: S.cprod ? this.prod(S.cprod).name : 'Tous les produits', cMe: S.cme, cMeOn: S.cme ? 'oui' : 'non', cMeK: S.cme ? 'Vous êtes à' : 'Votre zone', cMeL: S.cme ? ((M.regions.find(r => r.slug === S.cme) || {}).name || S.cme) : 'Où êtes-vous ?', onMe: e => { const v = e.target.value; this.setState({ cme: v, csel: '' }); if (v) { this.me.region = v; ls('mdg-app:moi', this.me); } },
       // plusieurs annonces au même endroit : on voit le bord de la suivante, des points « 1 sur 2 » et des flèches
       cPickMulti: cPicked.length > 1, cPickW: cPicked.length > 1 ? 'calc(100% - 64px)' : 'calc(100% - 28px)',
       cPickDots: cPicked.map((_, i) => ({ on: String(i === (S.cPickI || 0)), lab: 'Annonce ' + (i + 1) + ' sur ' + cPicked.length, go: () => this.cPickAller(i) })),

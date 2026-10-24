@@ -201,6 +201,7 @@ Stockage (buckets) :
 - **Annonces et marché** : `annonces_version`, `tableau_produits`, `tableau_marche`, `prix_zones`, `produits_activite`, `ventes_recentes`, `fil_public`, `stats_publiques`.
 - **Négociation et messages** : `nego_ouvrir`, `nego_agir`, `nego_transport`, `marquer_lu`, `dm_*`, `contact_marche`, `admin_diffuser`.
 - **Commandes et transport** : `commande_creer`, `commande_repondre`, `commande_avancer`, `commande_annuler`, `mes_commandes2`, `transporteur_*`, `chauffeur_*`, `commande_valider_code`, `suivi_lien_*`.
+- **Colis au départ** (schémas 90, 90b) : `commande_depart_preuves`, `commande_depart_defi`, `commande_depart_mot` ; déclencheur `commande_etapes_chargement_preuves` (pas de chargement sans photos, poids et photo du papier du mot secret).
 - **Commissions** : `_commission_sync`, `mes_commissions`, `admin_commissions`, `mes_commissions_transport`. Elles calculent un montant dû. Rien n'est encaissé.
 - **Séquestre et litiges** : `sequestre_depot_confirme` (réservée au rôle service, aucun appelant réel), `commande_liberer`, `admin_liberer`, `sequestre_liberer_echus`, `commande_litige`, `litige_ecrire`, `admin_litige_trancher`. Aucun argent ne circule.
 - **Achats récurrents, pros, groupés** : `recommande_preparer`, `mes_rappels`, `rappels_envoyer`, `besoin_creer3`, `besoins_liste`, `besoin_repondre`, `groupe_*`, `groupes_echeances`.

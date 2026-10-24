@@ -6,6 +6,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Colis au départ (schémas 90 et 90b) : avant le chargement, le vendeur envoie 2 à 4 photos du colis emballé et le poids pesé, et photographie le papier du mot secret avec un code au hasard (3 minutes, vu par l'équipe seulement). Sans ces preuves, le serveur refuse le chargement. L'acheteur voit les photos du colis ; en cas de refus, ses photos sont comparées à celles du départ.
 - Vérification en 1 h (schéma 89) : sans réclamation de l'acheteur dans l'heure qui suit la réception, la commande se clôt toute seule (avant : 24 h ; tâche toutes les 5 min). L'acheteur est prévenu en confirmant la réception ; textes de l'application, de l'aide, du site et des PDF mis à jour. Fiche profil : « Livre en général en … » dans la carte vendeur, « Valide en général en … » dans la carte acheteur (`delais_publics`).
 - Fiche profil plus courte : plus de long texte sur les niveaux de fiabilité ; « Comme vendeur / Comme acheteur » en trois chiffres (honorée, annulée, litige) ; « Déjà publié à » au lieu de « Où il a publié » ; notes de la structure en une ligne ; « Voir ma boutique » devient un bouton vert avec l'icône boutique, comme « Modifier mon profil public » (`v3/reputation.js`).
 - Les communes d'Abidjan (Cocody, Yopougon…) ne sont plus proposées comme villes : dans la région Abidjan, « Abidjan » est mis tout seul et le choix de la ville est grisé ; une commune enregistrée avant devient « Abidjan ».

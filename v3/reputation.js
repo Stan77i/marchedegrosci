@@ -96,6 +96,13 @@
 .rp-li{display:grid;gap:6px}.rp-li div{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:rgba(23,21,18,.03);box-shadow:inset 0 0 0 1px rgba(23,21,18,.07);font-size:14px}
 .rp-li i{flex:none;width:10px;height:10px}.rp-li i.o, .rp-li i.d{display:inline-grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 11px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.rp-li i.o::before,.rp-li i.d::before{content:"";display:block;width:74%;height:74%;background:var(--sym-o) center/contain no-repeat}.rp-li i.d{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.rp-li i.d::before{content:"";display:block;width:74%;height:74%;background:var(--sym-d) center/contain no-repeat}.rp-li .v{border-radius:30%;background:#F2C94C}
 .rp-li span{flex:1;min-width:0}.rp-li small{color:#6F6553;font-size:12px;white-space:nowrap}
+.rp-fb-l{margin:0 0 10px;font-size:15px;color:#2A251E}.rp-fb-l b{font-weight:700;color:#10392B}.rp-fb-btn{margin:0 0 12px}
+.rp-fb-al{margin:0 0 14px;padding:12px 14px;border-radius:16px;background:#F6E2B0;color:#3D2E05;font-size:14px}.rp-fb-al.fort{background:#F5D5CC;color:#5C1A0E}.rp-fb-al b{font-weight:700}
+.rp-fb-it{padding:12px 14px;border-radius:16px;background:rgba(23,21,18,.03);box-shadow:inset 0 0 0 1px rgba(23,21,18,.07);font-size:14px}
+.rp-fb-it+.rp-fb-it{margin-top:8px}.rp-fb-it b{display:block;font-weight:600}.rp-fb-it small{display:block;margin-top:2px;color:#655C4D;font-size:13px}
+.rp-fb-t{display:flex;align-items:center;min-height:22px;margin-top:6px;padding:0 9px;border-radius:11px;font-size:12px;font-weight:600;background:#DCEFE3;color:#10392B}.rp-fb-t.contre{background:#F5D5CC;color:#5C1A0E}
+.rp-fb-it .rp-alt{display:flex;align-items:center;margin-top:10px;box-shadow:inset 0 0 0 1.5px rgba(23,21,18,.28)}.rp-fb-t{width:max-content;max-width:100%}.rp-fb-it textarea{margin-top:8px;min-height:72px}.rp-fb-reg{margin:0;padding-left:18px;color:#2A251E;font-size:13.5px}.rp-fb-reg li{margin:4px 0}
+.rp-sec h3 .nbul{vertical-align:1px}
 .rp-off{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:rgba(16,57,43,.2);color:#A0492A;font:700 10.5px/1.7 Jost,sans-serif;letter-spacing:.06em;text-transform:uppercase;vertical-align:4px}
 .rp-ed label{display:block;margin:14px 0 6px;font:500 14px Jost,sans-serif;color:#2A251E}.rp-ed label i{font-style:normal;color:#6F6553;font-size:12.5px;margin-left:6px}
 .rp-ed input{width:100%;box-sizing:border-box;height:50px;padding:0 14px;border:1px solid rgba(23,21,18,.16);border-radius:14px;background:#FFFFFF;color:#171512;font:500 16px Jost,sans-serif}
@@ -201,9 +208,11 @@
     const col = (t, x) => { x = x || {}; const n = x.terminees || 0;
       return `<div class="rp-rep-c"><h4>${t}${x.fiable ? ' <span class="rp-fiable">Fiable</span>' : ''}</h4>
         <p>${x.avis ? etoiles(+x.note, x.avis, 13) + ' ' + String(x.note).replace('.', ',') + ' · ' + x.avis + ' avis' : 'Pas encore noté'}</p>
-        <ul><li><b>${n}</b> commande${n > 1 ? 's' : ''} honorée${n > 1 ? 's' : ''}</li><li><b>${x.annulations_demandees || 0}</b> annulation${x.annulations_demandees > 1 ? 's' : ''} demandée${x.annulations_demandees > 1 ? 's' : ''}</li><li><b>${x.litiges_contre || 0}</b> litige${x.litiges_contre > 1 ? 's' : ''} ouvert${x.litiges_contre > 1 ? 's' : ''} par l’autre partie</li></ul></div>`; };
+        <ul><li><b>${n}</b> commande${n > 1 ? 's' : ''} honorée${n > 1 ? 's' : ''}</li>${'annulations_abusives' in x ? `<li><b>${x.annulations_abusives}</b> annulation${x.annulations_abusives > 1 ? 's' : ''} abusive${x.annulations_abusives > 1 ? 's' : ''}</li>` : `<li><b>${x.annulations_demandees || 0}</b> annulation${x.annulations_demandees > 1 ? 's' : ''} demandée${x.annulations_demandees > 1 ? 's' : ''}</li>`}<li><b>${x.litiges_contre || 0}</b> litige${x.litiges_contre > 1 ? 's' : ''} ouvert${x.litiges_contre > 1 ? 's' : ''} par l’autre partie</li></ul></div>`; };
     const vide = !(r.vendeur && r.vendeur.total) && !(r.acheteur && r.acheteur.total);
-    return `<div class="rp-rep">${col('Comme vendeur', r.vendeur)}${col('Comme acheteur', r.acheteur)}</div>
+    // fiabilité (schéma 84) : une seule ligne en public ; le détail, seulement pour soi
+    const f = r.fiabilite, fl = f && f.sur ? `<p class="rp-fb-l">Fiabilité : <b>${f.pourcent}&nbsp;%</b> sur ${f.sur} commande${f.sur > 1 ? 's' : ''}</p>` : f ? '<p class="rp-fb-l">Fiabilité : pas encore de commande comptée</p>' : '';
+    return `${fl}${moi && f ? '<button type="button" class="rp-alt rp-fb-btn" data-mafiab>Mon historique de fiabilité</button>' : ''}<div class="rp-rep">${col('Comme vendeur', r.vendeur)}${col('Comme acheteur', r.acheteur)}</div>
       ${r.delai_median_h != null ? `<p class="rp-rep-n">Délai médian entre la confirmation et la réception : <b>${r.delai_median_h < 48 ? r.delai_median_h + ' h' : Math.round(r.delai_median_h / 24) + ' jours'}</b> (${r.delai_n} commandes).</p>` : ''}
       ${!moi && r.ensemble ? `<p class="rp-rep-n rp-rep-ens">Vous avez terminé ${r.ensemble} commande${r.ensemble > 1 ? 's' : ''} ensemble.</p>` : ''}
       <p class="rp-rep-n">${vide ? 'Aucune commande suivie dans l’application pour l’instant. ' : ''}« Fiable » : ${esc(r.criteres_fiable || '')}. Une identité vérifiée ne veut pas dire fiable : ce sont deux choses différentes.</p>`;
@@ -254,7 +263,8 @@
       if (!off) haut += `<div class="rp-sec"><h3>Avis</h3></div>`;
     }
     bg.querySelector('[data-pp]').innerHTML = haut;
-    repP.then(r => { const z = bg.querySelector('[data-rep]'); if (z) z.innerHTML = blocReputation(r, moi); });
+    repP.then(r => { const z = bg.querySelector('[data-rep]'); if (!z) return; z.innerHTML = blocReputation(r, moi);
+      const mf = z.querySelector('[data-mafiab]'); if (mf) mf.onclick = () => { bg.fermer(); fiabilite(); }; });
     if (window.MDGStatut && bg.querySelector('[data-st]')) { const majSt = () => { const z = bg.querySelector('[data-st]'); if (!bg.isConnected || !z) return removeEventListener('mdg:rep', majSt); z.innerHTML = MDGStatut.detail(uid) || '<div class="rp-vide">Pas encore de statut : ce membre commence sur le Marché de Gros.</div>'; }; addEventListener('mdg:rep', majSt); }
     bg.querySelector('[data-corps]').innerHTML = off ? (moi ? '' : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire au Marché de Gros</button>` : ''}</div>`) : ((nb ? `<div class="rp-score"><strong>${moy.toFixed(1).replace('.', ',')}</strong><span>${etoiles(moy, nb, 15)}${nb} avis</span><div class="rp-barres">${rep.map((c, i) => `<div><em style="font-style:normal">${5 - i}</em><i><b style="width:${nb ? c / nb * 100 : 0}%"></b></i></div>`).join('')}</div></div>
       <div class="rp-av">${liste.map(a => `<article><header>${avatar(a.auteur, a.avatar, a.auteur, 26)}<b>${esc(a.auteur)}</b>${a.verifie ? '<span class="rp-av-v" title="Identité vérifiée par l’équipe">✓ vérifié</span>' : ''}${etoiles(a.note, 1, 11)}<small>${quand(a.quand)}</small></header>${a.role ? `<span class="rp-av-r">comme ${a.role === 'vendeur' ? 'vendeur' : 'acheteur'}${a.produit ? ' · ' + esc(a.produit) : ''}</span>` : ''}${a.texte ? `<p>${esc(a.texte)}</p>` : ''}</article>`).join('')}</div>`
@@ -296,6 +306,60 @@
   }
 
   // les mieux notés
+  // Ma fiabilité (schéma 84) : le score, les annulations qui comptent ou non, les avertissements, la contestation
+  const MOTIF = { stock_epuise: 'Stock épuisé', prix_change: 'Prix changé', sans_reponse: 'L’autre partie ne répond pas', erreur_saisie: 'Erreur de saisie', panne_meteo: 'Panne ou météo', autre: 'Autre' };
+  const CHEMIN = { retrait: 'Retirée avant confirmation', refus: 'Refusée avant confirmation', accord: 'Annulée après confirmation', litige: 'Litige tranché par l’équipe', expiration: 'Expirée sans réponse', autre: 'Annulée' };
+  const SANCTION = { avertissement: 'Avertissement', baisse: 'Score en baisse', examen: 'Compte examiné par l’équipe', suspension: 'Suspension' };
+  let fiabCache = null;
+  const jour = t => new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+  async function lireFiabilite() { if (!N() || !N().session()) return null; try { fiabCache = await N().rpc('ma_fiabilite'); } catch (_) {} return fiabCache; }
+  async function fiabilite() {
+    const bg = feuille(`<h2>Ma fiabilité</h2><p>Les autres voient une seule ligne : votre score. Ce détail n’est visible que par vous.</p><div data-fb>${fiabCache ? '' : (window.MDGSac ? MDGSac.charge('Votre historique arrive…') : '<div class="rp-vide">Chargement…</div>')}</div>`, 'Ma fiabilité');
+    const z = bg.querySelector('[data-fb]'), ouvert = {};
+    const peindre = d => {
+      if (!d) { z.innerHTML = `<div class="rp-vide">${navigator.onLine === false ? 'Pas de connexion : votre historique s’affichera quand le réseau revient.' : 'Historique indisponible pour l’instant. Réessayez dans un instant.'}</div>`; return; }
+      const sc = d.score || {}, se = d.seuils || {}, A = d.annulations || [], S = d.sanctions || [], fen = d.fenetre_jours || 90;
+      let h = '';
+      if (d.suspension) h += `<div class="rp-fb-al fort"><b>Compte suspendu jusqu’au ${jour(d.suspension.fin)}.</b> Vos annonces sont cachées. Vos commandes en cours continuent.${d.suspension.motif ? ' Motif : ' + esc(d.suspension.motif) : ''}</div>`;
+      else if (sc.palier === 'examen') h += `<div class="rp-fb-al fort"><b>Votre compte est examiné par l’équipe.</b> ${sc.n90} annulations comptent contre vous sur ${fen} jours.</div>`;
+      else if (sc.palier === 'baisse') h += `<div class="rp-fb-al"><b>Votre score baisse plus vite.</b> ${sc.n90} annulations comptent contre vous sur ${fen} jours. À ${se.examen}, l’équipe examine votre compte.</div>`;
+      else if (sc.palier === 'avertissement') h += `<div class="rp-fb-al"><b>Avertissement.</b> ${sc.n90} annulation${sc.n90 > 1 ? 's comptent' : ' compte'} contre vous sur ${fen} jours. À ${se.baisse}, votre score baisse plus vite.</div>`;
+      h += sc.sur ? `<div class="rp-score"><strong style="white-space:nowrap">${sc.pourcent}&nbsp;%</strong><span><b style="color:#171512;font-size:15px">Fiabilité sur ${sc.sur} commande${sc.sur > 1 ? 's' : ''}</b>${sc.terminees} réalisée${sc.terminees > 1 ? 's' : ''}, ${sc.imputables} annulation${sc.imputables > 1 ? 's' : ''} contre vous</span></div>`
+        : `<div class="rp-vide">Pas encore de commande comptée. Le comptage a commencé le ${jour(d.debut)}.</div>`;
+      const nA = A.length;
+      h += `<div class="rp-sec"><h3>Annulations${nA ? '<span class="nbul">' + nA + '</span>' : ''}</h3>${nA ? A.map(a => {
+        const contre = a.contre_moi && (a.categorie === 'abusive' || a.categorie === 'litige'), t = a.contestation;
+        const etat = contre ? (a.categorie === 'litige' ? 'Litige perdu : compte contre vous' : 'Compte contre vous') : 'Ne compte pas contre vous';
+        return `<div class="rp-fb-it"><b>${esc(a.produit || 'Commande')}${a.numero ? ' · ' + esc(a.numero) : ''}</b><small>${CHEMIN[a.chemin] || 'Annulée'} le ${jour(a.cree_le)}${a.motif_code ? ' · ' + (MOTIF[a.motif_code] || '') : ''}${a.motif_texte ? ' : « ' + esc(a.motif_texte) + ' »' : ''}</small>
+          <span class="rp-fb-t${contre ? ' contre' : ''}">${etat}</span>${a.note_admin ? `<small>Note de l’équipe : ${esc(a.note_admin)}</small>` : ''}
+          ${t ? `<small>Votre contestation : ${t.statut === 'ouverte' ? 'en cours, réponse avant le ' + jour(t.repondre_avant) : t.statut === 'acceptee' ? 'acceptée' : 'refusée'}${t.reponse ? ' · « ' + esc(t.reponse) + ' »' : ''}</small>` : ''}
+          ${a.contestable ? (ouvert[a.id] ? `<form data-ct="${a.id}" novalidate><textarea maxlength="600" aria-label="Pourquoi cette annulation ne devrait pas compter ?" placeholder="Expliquez ce qui s’est passé"></textarea><p class="rp-msg" role="alert"></p><div class="rp-duo"><button type="submit" class="rp-go" style="margin-top:6px">Envoyer</button><button type="button" class="rp-go rp-ecr" style="margin-top:6px" data-ctx="${a.id}">Retour</button></div></form>` : `<button type="button" class="rp-alt" data-cto="${a.id}">Contester</button>`) : ''}</div>`; }).join('')
+        : '<div class="rp-vide">Aucune annulation pour l’instant.</div>'}</div>`;
+      if (S.length) h += `<div class="rp-sec"><h3>Avertissements et décisions<span class="nbul">${S.length}</span></h3>${S.map(x => `<div class="rp-fb-it"><b>${SANCTION[x.type] || x.type}</b><small>Le ${jour(x.cree_le)}${x.type === 'suspension' ? ' · jusqu’au ' + jour(x.fin) : x.nb_90j ? ' · ' + x.nb_90j + ' sur ' + fen + ' jours' : ''}${x.motif ? ' · ' + esc(x.motif) : ''}</small>${x.levee_le ? `<span class="rp-fb-t">Levé${x.type === 'suspension' ? 'e' : ''} le ${jour(x.levee_le)}${x.levee_motif ? ' · ' + esc(x.levee_motif) : ''}</span>` : ''}</div>`).join('')}</div>`;
+      h += `<div class="rp-sec"><h3>Comment ça marche</h3><ul class="rp-fb-reg"><li>Refuser ou retirer une commande avant confirmation ne compte pas.</li><li>Une commande sans réponse en 48 h expire. Elle ne compte contre personne.</li>
+        <li>Après confirmation, une annulation ne compte pas si l’autre partie est d’accord avec le motif. Sinon, elle compte contre celui qui l’a demandée.</li>
+        <li>Sur ${fen} jours : ${se.avertissement} à ${se.baisse - 1} = avertissement, ${se.baisse} à ${se.examen - 1} = score en baisse, ${se.examen} = examen par l’équipe. Seule l’équipe peut suspendre un compte.</li>
+        <li>Vous pouvez contester pendant ${d.contestation_jours || 7} jours. L’équipe répond en 7 jours au plus.</li></ul></div>`;
+      z.innerHTML = h;
+      z.querySelectorAll('[data-cto]').forEach(b => b.onclick = () => { ouvert[b.dataset.cto] = 1; peindre(d); const t = z.querySelector(`[data-ct="${b.dataset.cto}"] textarea`); if (t) t.focus(); });
+      z.querySelectorAll('[data-ctx]').forEach(b => b.onclick = () => { delete ouvert[b.dataset.ctx]; peindre(d); });
+      z.querySelectorAll('[data-ct]').forEach(f => f.onsubmit = async ev => {
+        ev.preventDefault(); const t = f.querySelector('textarea').value.trim(), m = f.querySelector('.rp-msg'), go = f.querySelector('[type=submit]');
+        if (t.length < 5) { m.textContent = 'Expliquez en quelques mots ce qui s’est passé.'; return; }
+        if (N().texteRefus) { const r = N().texteRefus(t); if (r) { m.textContent = r; return; } }
+        go.disabled = true; m.textContent = '';
+        try { await N().rpc('contester_annulation', { p_annulation: f.dataset.ct, p_texte: t }); delete ouvert[f.dataset.ct]; peindre(await lireFiabilite()); }
+        catch (x) { go.disabled = false; m.textContent = window.MDGErreur ? MDGErreur(x) : String(x.message || x); }
+      });
+    };
+    const avant = fiabCache ? JSON.stringify(fiabCache) : null; if (fiabCache) peindre(fiabCache);
+    const d = await lireFiabilite(); if (!bg.isConnected) return;
+    if (!avant || JSON.stringify(d) !== avant) peindre(d);   // rien n'a changé : on ne redessine pas
+    if (d && d.non_vues) { N().rpc('fiabilite_vu').then(() => { if (fiabCache) fiabCache.non_vues = 0; dire(); }).catch(() => {}); }
+  }
+  // pour Mon compte : le score en une ligne et les nouveaux avertissements
+  const fiabResume = () => fiabCache;
+
   async function classement() {
     const bg = feuille(`<h2>Les mieux notés</h2><p>Les vendeurs et acheteurs que leurs partenaires recommandent, d’après leurs notes après négociation.</p><div class="rp-cl" data-l><div class="rp-vide">Chargement…</div></div>`, 'Les mieux notés');
     let l = [], rate = false; try { l = await N().rpc('mieux_notes', { n: 50 }, !!N().session()) || []; } catch (_) { rate = true; }
@@ -307,5 +371,15 @@
     box.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const x = l[+b.dataset.i]; bg.fermer(); profil(x.user_id, { nom: x.affichage, avatar: x.avatar }); });
   }
 
-  window.MDGRep = { etoiles, texteNote, resume, charger, signal, chargerSignal, profil, modifier, noter, classement, signaler, RAISONS };
+  // notification de fiabilité touchée (schéma 84) : #/?fiabilite=1
+  function depuisAdresse(h) {
+    if (!/[?&]fiabilite=1/.test(String(h || location.hash))) return;
+    try { if (!h) history.replaceState(history.state, '', location.hash.replace(/[?&]fiabilite=1/, '').replace(/\?$/, '') || '#/'); } catch (_) {}
+    const go = k => { if (N() && N().session()) fiabilite(); else if (k < 20) setTimeout(() => go(k + 1), 300); };
+    setTimeout(() => go(0), 700);
+  }
+  if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'mdg-lien') depuisAdresse(e.data.url); });
+  depuisAdresse();
+
+  window.MDGRep = { etoiles, texteNote, resume, charger, signal, chargerSignal, profil, modifier, noter, classement, signaler, RAISONS, fiabilite, lireFiabilite, fiabResume };
 })();

@@ -5,6 +5,12 @@
 
 ## 1. L'état au moment de la reprise
 
+- **REPRISE PRIORITAIRE (24/10/2026, nuit) : corrections de l'audit.** PR #289 à #295 fusionnées ; **#296 (confiance) ouverte**, à fusionner. Schémas **92a-92d, 93a-93e, 94a-94h, 95, 95b, 96a-96f appliqués sur le projet de TEST seulement** : la production attend le « OK production » du propriétaire (puis redéployer `pousser`). À faire ensuite, dans l'ordre :
+  1. refaire l'étape 7 (tests de bout en bout de tous les parcours ensemble sur le test ; le rapport de la première tentative n'a pas été gardé) et corriger ce qui casse (déjà connu : la garde `_annonce_regles` (93) garde l'ancienne quantité avant le message STOCK_EPUISE de `_stock_garde` (92) ; tests `fiabilite-84` bloc H T1 et `niveaux-85` à mettre à jour) ;
+  2. PR de documentation commune : les textes prêts sont dans `docs/audits/suivi-2026-10-24/docs-*.md` (PASSATION, FONCTIONNALITES, CHANGELOG, PORTAGE-SITE, règles pour CLAUDE.md) ;
+  3. rapport complet au propriétaire dans `docs/`, avec la partie « Le jour où vous aurez votre partenaire de paiement » (nom et doc du partenaire, clés de test côté serveur, décisions sur l'argent, audit de sécurité avant) ; ajouter ce point à `docs/A-FAIRE-PROPRIETAIRE.md` ;
+  4. décisions en attente du propriétaire : 7 jours de grâce pour les annonces déjà en ligne ; rôle acheteur/vendeur simple affichage ; litige automatique 24 h après « livré » du vendeur ; valeurs des badges et du masquage ; itinéraires encore par le serveur public OSRM ; lecture des messages par l'équipe ; les 32 questions de `docs/juridique/regles-manquantes.md`.
+
 - **PR fusionnées jusqu’à la #286, puis #282 (notifications).** Aucune autre PR ouverte. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
 - `main` : cache du service worker `mgci-v277` après les notifications (#282). Les PR suivantes prennent un numéro au-dessus de celui de `main` au moment de leur fusion.
 - Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu’au **90** appliqués (88a, 88b, 88d notifications, 89 vérification 1 h, 90 et 90b colis au départ, le 24/10/2026 ; plus anciens : 85a à 85d badges, appliqués le 24/10/2026, tâche `mdg-niveaux` chaque nuit à 4 h 37 ; 82 commission transport réservée au service Marché de Gros ; 83a à 83e transport ; 84a à 84f fiabilité, appliqués le 24/10/2026, tâche `mdg-fiabilite` toutes les 15 min). Le projet de test peut avoir en plus les schémas des chantiers en cours (86 boutiques, 87 ville seulement).

@@ -821,7 +821,7 @@ const T_OFF = 'translate3d(calc(100% + 60px),0,0)', T_IN = 'translate3d(0,0,0)',
 const SHAPE = { offre: ['50%', '#6CC58C'], demande: ['2px', '#F2C94C'] };
 // transport (schéma 48) — règle du marché : entre deux villes le vendeur livre ; dans la même ville, l'acheteur s'en charge
 const TR_OFF = [['hors_ville', 'Inclus hors de ma ville', 'Règle du marché : je livre dans les autres villes ; dans ma ville, l’acheteur s’en charge'],
-  ['inclus', 'Inclus partout', 'Mon prix comprend la livraison, même dans ma ville'], ['non', 'Non inclus', 'L’acheteur vient chercher ou organise le transport']];
+  ['inclus', 'Inclus partout', 'Mon prix comprend la livraison, même dans ma ville'], ['non', 'Transport à part', 'Mon prix n’inclut pas le transport : son prix se négocie à part']];
 const TR_DEM = [['vendeur', 'Le vendeur livre', 'Transport inclus dans son prix'], ['acheteur', 'Je prends le transport', 'Je viens chercher ou j’envoie mon camion']];
 // exigences d'une demande (schéma 47) : mêmes codes que les besoins pro (schémas 38 et 40)
 const EXI_CRIT = [['frais', 'Récolte fraîche'], ['calibre', 'Calibre régulier'], ['trie', 'Trié, sans cailloux'], ['sec', 'Bien sec'], ['emballage', 'Emballage propre'],
@@ -1139,8 +1139,8 @@ class Component extends DCLogic {
   trBloc(key, sens) { const f = this.state[key] || {}, L = sens === 'offre' ? (f.vs && f.city ? TR_OFF.filter(t => t[0] !== 'hors_ville') : TR_OFF) : TR_DEM, cur = L.some(t => t[0] === f.tr) ? f.tr : L[sens === 'offre' && f.vs && f.city ? 1 : 0][0];
     return { opts: L.map(([k, t, sub]) => ({ t, s: sub, on: String(cur === k), go: () => this.setState(st => ({ [key]: Object.assign({}, st[key], { tr: k }) })) })) }; }
   // le transport d'une annonce, en mots (rien pour les anciennes annonces)
-  trTexte(x) { if (x.kind === 'offre' && x.vs && x.tr === 'hors_ville') return 'Transport par l’acheteur';
-    if (x.kind === 'offre') return x.tr === 'inclus' ? 'Transport inclus' : x.tr === 'hors_ville' ? 'Livré hors ' + (x.city ? (/^[aeiouyàâéèêîôh]/i.test(x.city) ? 'd’' : 'de ') + x.city : 'de sa ville') : x.tr === 'non' ? 'Transport à discuter' : '';
+  trTexte(x) { if (x.kind === 'offre' && x.vs && x.tr === 'hors_ville') return 'Transport à part';
+    if (x.kind === 'offre') return x.tr === 'inclus' ? 'Transport inclus' : x.tr === 'hors_ville' ? 'Livré hors ' + (x.city ? (/^[aeiouyàâéèêîôh]/i.test(x.city) ? 'd’' : 'de ') + x.city : 'de sa ville') : x.tr === 'non' ? 'Transport à part' : '';
     return x.tr === 'vendeur' ? 'Transport inclus demandé' : x.tr === 'acheteur' ? 'Transport par l’acheteur' : ''; }
   // les exigences d'une demande, en mots (précisions d'abord, puis les cases, puis le texte libre)
   exiTextes(x) { const L = [], det = x.det || {}; ['choix', 'calibre', 'maturite', 'cond'].forEach(k => { if (det[k] && EXI_LIB[k][det[k]]) L.push(EXI_LIB[k][det[k]]); });

@@ -28,6 +28,7 @@ Les valeurs viennent du code (`css/mgci-tokens.css`, `css/sombre.css`, `css/mgci
 
 Règles :
 - **Plus de bleu ni de violet pour décorer** (24/10/2026) : « transport compris » et le choix retenu sont en vert (`#1F8A55` en bordure, `#10392B` pour le tampon) ; les tuiles « vous » et « lien » du menu sont vert profond et encre chaude. Décision du propriétaire (24/10/2026) : le badge « vérifié » et les négociations sont en **vert profond** `#10392B` ; plus aucun bleu hors du lien « compatible » de la carte.
+- **Exception : l'eau des cartes reste bleue** (fleuves et lacs, `#4F7A8F` / `#3D6476` dans `site/site.css`), décision du propriétaire du 24/10/2026 : ici le bleu dit « eau », il ne décore pas.
 - **Une couleur = un sens.** Vert clair = offre, jaune = demande, vert profond = accord, corail = alerte. Ne pas réutiliser ces couleurs pour décorer.
 - Texte sur couleur : contraste 4,5:1 minimum (3:1 pour 18 px gras et plus). Blanc sur corail clair est interdit (3,1:1).
 - Mode nuit : `css/sombre.css` pour les pages, `app/nuit.js` traduit les fenêtres. Une fenêtre qui a ses propres couleurs sombres s'ajoute à la liste `DEJA` de `app/nuit.js`.

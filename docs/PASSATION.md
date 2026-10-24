@@ -1480,3 +1480,4 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - Reste du n° 20 (rien d'inventé) : trouver une 2e source pour les 5 600 cantines et l'année de la fiche PPPossible.
 - Vérifié (navigateur, 7 pages, 1366 px clair et sombre, 375 px) : aucune erreur, aucun débordement, aucun contraste faible, focus visible au clavier ; carte 966 px à gauche, panneau 400 px à droite.
 - Site refabriqué ; cache `mgci-v246`.
+- **Décision D tranchée par le propriétaire** : l'eau (fleuves, lacs) reste en bleu sur les cartes. Écrit dans `CLAUDE.md`, `DESIGN.md` et le rapport d'audit. Rien à changer dans le code.

@@ -613,10 +613,8 @@
         <div class="cm-ph" data-apercu></div>
         <label class="cm-pick">${TI('photo')}Ajouter des photos<input type="file" accept="image/*" multiple data-fic></label>
         ${S0 && S0.mot ? `<span class="t" style="display:block;margin:14px 0 6px;font-weight:600">Le papier du mot secret</span>
-        <p class="cm-note" style="font-size:13.5px;margin-top:0">Écrivez ce code à côté du mot secret, sur le papier, puis prenez le papier en photo. Seule l’équipe du Marché de Gros verra cette photo.</p>
-        <div class="cm-defi" data-defi aria-live="polite">…</div>
-        <div class="cm-ph" data-apmot></div>
-        <label class="cm-pick">${TI('photo')}Photographier le papier<input type="file" accept="image/*" capture="environment" data-ficmot></label>` : ''}
+        <p class="cm-note" style="font-size:13.5px;margin-top:0">Ayez le papier et un stylo en main. Touchez « Afficher le code » : vous aurez <b>3 minutes</b> pour l’écrire à côté du mot secret et photographier le papier. Seule l’équipe du Marché de Gros verra cette photo.</p>
+        <div data-motz><button type="button" class="cm-pick" data-motgo style="width:100%">Afficher le code</button></div>` : ''}
         <label class="t" for="cmDp">Poids pesé (kg)</label>
         <input type="number" id="cmDp" inputmode="decimal" min="0" step="any" placeholder="Ex. : 200">
         <p class="cm-note" style="font-size:13.5px">Montrez la marchandise propre et bien emballée. L’acheteur et le transporteur verront ces photos : en cas de réclamation, elles servent de preuve.</p>
@@ -635,18 +633,33 @@
       }
       e.target.value = ''; apercu();
     };
-    // le code au hasard (schéma 90b) : donné par le serveur, valable 15 minutes
-    const zd = f.querySelector('[data-defi]');
-    if (zd) N().rpc('commande_depart_defi', { p_id: c.id }).then(k => { if (zd.isConnected) zd.innerHTML = String(k || '').split('').map(x => `<i>${esc(x)}</i>`).join(''); zd.setAttribute('aria-label', 'Code ' + k); })
-      .catch(x => { if (zd.isConnected) zd.textContent = erreurTxt(x); });
-    const fm = f.querySelector('[data-ficmot]');
-    if (fm) fm.onchange = async e => { err.textContent = ''; f._mot = null; const fi = e.target.files && e.target.files[0]; e.target.value = ''; if (!fi) return;
-      try { papier = await reduirePhoto(fi); f.querySelector('[data-apmot]').innerHTML = `<span><img src="${URL.createObjectURL(papier)}" alt="Photo du papier"></span>`; } catch (x) { err.textContent = x.message; } };
+    // le papier du mot secret (schéma 90b) : code au hasard à la demande, 3 minutes pour envoyer la photo
+    const zm = f.querySelector('[data-motz]'); let chrono = null;
+    const motCode = async () => {
+      clearInterval(chrono); zm.innerHTML = '<p class="cm-note">…</p>';
+      let k; try { k = await N().rpc('commande_depart_defi', { p_id: c.id }); } catch (x) { zm.innerHTML = `<p class="cm-err">${esc(erreurTxt(x))}</p><button type="button" class="cm-pick" data-motgo style="width:100%">Afficher le code</button>`; zm.querySelector('[data-motgo]').onclick = motCode; return; }
+      const fin = Date.now() + 180000;
+      zm.innerHTML = `<div class="cm-defi" aria-label="Code ${esc(k)}">${String(k).split('').map(x => `<i>${esc(x)}</i>`).join('')}</div>
+        <p class="cm-note" data-reste aria-live="off" style="margin:4px 0 8px">Reste 3:00</p>
+        <label class="cm-pick">${TI('photo')}Photographier le papier<input type="file" accept="image/*" capture="environment" data-ficmot></label>`;
+      const rz = zm.querySelector('[data-reste]');
+      chrono = setInterval(() => { if (!rz.isConnected) return clearInterval(chrono); const t = Math.max(0, Math.round((fin - Date.now()) / 1000));
+        rz.textContent = 'Reste ' + Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
+        if (!t) { clearInterval(chrono); zm.innerHTML = '<p class="cm-err">Temps écoulé.</p><button type="button" class="cm-pick" data-motgo style="width:100%">Nouveau code</button>'; zm.querySelector('[data-motgo]').onclick = motCode; } }, 1000);
+      zm.querySelector('[data-ficmot]').onchange = async e => { const fi = e.target.files && e.target.files[0]; e.target.value = ''; if (!fi) return;
+        err.textContent = 'Envoi de la photo du papier…';
+        try { const ph = await reduirePhoto(fi), ch = me() + '/motpapier-' + c.id.slice(0, 8) + '-' + Date.now() + '.jpg';
+          await N().deposerPrive('preuves', ch, ph); await N().rpc('commande_depart_mot', { p_id: c.id, p_photo: ch });
+          clearInterval(chrono); papier = ch; err.textContent = '';
+          zm.innerHTML = `<div class="cm-ph"><span><img src="${URL.createObjectURL(ph)}" alt="Photo du papier"></span></div><p class="cm-note" style="margin:4px 0">✓ Papier envoyé à l’équipe</p>`;
+        } catch (x) { err.textContent = erreurTxt(x); } };
+    };
+    if (zm) zm.querySelector('[data-motgo]').onclick = motCode;
     f.onsubmit = async e => {
       e.preventDefault();
       const pv = f.querySelector('#cmDp').value.trim(), poids = Number(pv.replace(',', '.'));
       if (fichiers.length < 2) { err.textContent = 'Ajoutez au moins 2 photos du colis emballé.'; return; }
-      if (fm && !papier) { err.textContent = 'Photographiez le papier du mot secret, avec le code écrit à côté.'; return; }
+      if (zm && !papier) { err.textContent = 'Photographiez le papier du mot secret, avec le code écrit à côté.'; return; }
       if (!(poids > 0)) { err.textContent = 'Indiquez le poids pesé, en kilos.'; f.querySelector('#cmDp').focus(); return; }
       const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = 'Envoi des photos…';
       try {
@@ -654,8 +667,6 @@
         if (!f._chemins) { for (let i = 0; i < fichiers.length; i++) { const ch = u + '/depart-' + c.id.slice(0, 8) + '-' + Date.now() + '-' + i + '.jpg'; await N().deposerPrive('preuves', ch, fichiers[i]); chemins.push(ch); } f._chemins = chemins; }
         err.textContent = '';
         await N().rpc('commande_depart_preuves', { p_id: c.id, p_photos: f._chemins, p_poids_kg: poids });
-        if (papier) { if (!f._mot) { f._mot = u + '/motpapier-' + c.id.slice(0, 8) + '-' + Date.now() + '.jpg'; await N().deposerPrive('preuves', f._mot, papier); }
-          await N().rpc('commande_depart_mot', { p_id: c.id, p_photo: f._mot }); }
         await lireJournal(c.id);
         toast('Colis enregistré', { type: 'ok', sous: 'Vous pouvez confirmer le chargement.' });
         peindre();

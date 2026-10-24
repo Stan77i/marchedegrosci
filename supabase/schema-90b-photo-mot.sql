@@ -1,6 +1,6 @@
 -- ═════════ Marché de Gros CI — schéma 90b : photo du papier du mot secret, avec un code au hasard ═════════
 -- Demandé par le propriétaire le 24/10/2026 : l'équipe doit pouvoir voir le papier du mot secret glissé dans le colis.
--- Le serveur donne un code au hasard (valable 15 min) ; le vendeur l'écrit à côté du mot et photographie le papier.
+-- Le serveur donne un code au hasard quand le vendeur le demande ; il a 3 minutes pour l'écrire à côté du mot et envoyer la photo du papier.
 -- Seule l'équipe voit cette photo (jamais l'acheteur, sinon il connaîtrait le mot). Pas de chargement sans elle.
 
 alter table public.commandes add column if not exists depart_defi text;
@@ -15,7 +15,7 @@ begin
   select * into c from public.commandes where id = p_id for update;
   if c.id is null or me is distinct from c.vendeur_id then raise exception 'Seul le vendeur prépare le colis.'; end if;
   if not (c.etat = 'en_cours' and c.etape in ('confirmee', 'preparation')) then raise exception 'Les photos du départ se prennent avant le chargement.'; end if;
-  if c.depart_defi is not null and c.depart_defi_le > now() - interval '15 minutes' then return c.depart_defi; end if;
+  if c.depart_defi is not null and c.depart_defi_le > now() - interval '3 minutes' then return c.depart_defi; end if;
   for i in 1..4 loop k := k || substr(a, 1 + floor(random() * length(a))::int, 1); end loop;
   update public.commandes set depart_defi = k, depart_defi_le = now() where id = c.id;
   return k;
@@ -23,7 +23,7 @@ end $$;
 revoke all on function public.commande_depart_defi(uuid) from public, anon;
 grant execute on function public.commande_depart_defi(uuid) to authenticated;
 
--- la photo du papier : prise après l'affichage du code, envoyée dans les 15 minutes
+-- la photo du papier : envoyée dans les 3 minutes qui suivent l'affichage du code
 create or replace function public.commande_depart_mot(p_id uuid, p_photo text) returns void
 language plpgsql volatile security definer set search_path = public as $$
 declare me uuid := auth.uid(); c public.commandes; t timestamptz;
@@ -31,12 +31,11 @@ begin
   select * into c from public.commandes where id = p_id for update;
   if c.id is null or me is distinct from c.vendeur_id then raise exception 'Seul le vendeur photographie le papier.'; end if;
   if not (c.etat = 'en_cours' and c.etape in ('confirmee', 'preparation')) then raise exception 'Les photos du départ se prennent avant le chargement.'; end if;
-  if c.depart_defi is null or c.depart_defi_le < now() - interval '15 minutes' then
-    raise exception 'DEFI_EXPIRE : le code a expiré. Revenez en arrière et rouvrez « Photographier le colis » : un nouveau code s''affiche.';
-  end if;
+  if c.depart_defi is null then raise exception 'Affichez d''abord le code.'; end if;
   select o.created_at into t from storage.objects o where o.bucket_id = 'preuves' and o.name = p_photo;
   if t is null or split_part(p_photo, '/', 1) <> me::text or split_part(p_photo, '/', 2) not like 'motpapier-%' then raise exception 'Photo introuvable : renvoyez-la.'; end if;
   if t < c.depart_defi_le then raise exception 'La photo doit être prise après l''affichage du code.'; end if;
+  if t > c.depart_defi_le + interval '3 minutes' then raise exception 'DEFI_EXPIRE : plus de 3 minutes. Demandez un nouveau code.'; end if;
   update public.commandes set depart_mot_photo = p_photo where id = c.id;
 end $$;
 revoke all on function public.commande_depart_mot(uuid, text) from public, anon;

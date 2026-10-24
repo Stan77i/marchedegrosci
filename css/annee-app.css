@@ -56,9 +56,12 @@
 .an2-tx b { font-weight: 600; font-size: 15.5px; line-height: 1.2; }
 .an2-tx small { font-size: 12.5px; color: var(--an-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .an2-od { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
-.an2-od em { font-style: normal; font-size: 11.5px; font-weight: 600; padding: 2px 7px; border-radius: 999px; }
-.an2-od em.o { background: rgba(108, 197, 140, .18); color: #9FE0B5; }
-.an2-od em.d { background: rgba(242, 194, 48, .16); color: #F6D468; }
+/* offres et demandes : le panier (offre) et le caddie (demande) du marché, comme partout dans l'application (css/symboles.css) */
+.an2-od em { display: inline-flex; align-items: center; gap: 5px; font-style: normal; font-size: 12px; font-weight: 600; line-height: 1; padding: 3px 9px 3px 4px; border-radius: 999px; }
+.an2-od em::before { content: ""; flex: none; width: 17px; height: 17px; background: var(--sym-o) center / contain no-repeat; }
+.an2-od em.o { background: rgba(108, 197, 140, .16); color: #9FE0B5; box-shadow: inset 0 0 0 1px rgba(108, 197, 140, .28); }
+.an2-od em.d { background: rgba(242, 194, 48, .14); color: #F6D468; box-shadow: inset 0 0 0 1px rgba(242, 194, 48, .26); }
+.an2-od em.d::before { background-image: var(--sym-d-nuit); }
 .an2-t { flex: none; font-size: 12px; font-weight: 600; line-height: 1.2; text-align: right; white-space: nowrap; color: var(--an-mute); }
 .an2-t.bas { color: #9FE0B5; }
 .an2-t.baisse { color: #CBE9D4; }
@@ -77,7 +80,18 @@
 .an2-fb.sel .an2-fc { box-shadow: inset 0 0 0 1.5px var(--an-mais); }
 .an2-fb.sel small { color: var(--an-mais); }
 .an2-fl { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--an-mute); }
-.an2-go { align-self: flex-start; min-height: 42px; display: inline-flex; align-items: center; gap: 6px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--an-mais); color: #10392B; font: 600 14px var(--f-texte, Jost), sans-serif; }
+/* vers la fiche du produit : une rangée fine (pastille maïs avec la courbe des prix, texte, flèche), pas un gros bouton jaune */
+.an2-go { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; margin-top: 2px; padding: 8px 10px 8px 8px; border: 0; border-radius: 16px;
+  background: linear-gradient(100deg, rgba(242, 194, 48, .13), rgba(242, 194, 48, .04) 70%); box-shadow: inset 0 0 0 1px rgba(242, 194, 48, .3);
+  color: var(--an-ink); text-align: left; font: 500 14px var(--f-texte, Jost), sans-serif; cursor: pointer; transition: background .2s, box-shadow .2s, transform .15s; }
+.an2-go:active { transform: scale(.985); background: rgba(242, 194, 48, .18); }
+.an2-go:focus-visible { outline: 2px solid var(--an-mais); outline-offset: 2px; }
+.an2-go-i { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: var(--an-mais); color: #10392B; }
+.an2-go-t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.an2-go-t b { font-weight: 600; font-size: 15px; line-height: 1.2; color: var(--an-ink); }
+.an2-go-t small { font-size: 12.5px; line-height: 1.3; color: var(--an-mute); }
+.an2-go-f { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; color: var(--an-mais); background: rgba(242, 194, 48, .12); transition: transform .2s; }
+.an2-go:active .an2-go-f { transform: translateX(2px); }
 .an2-src { margin: 4px 6px 0; font-size: 12px; line-height: 1.5; color: var(--an-faint); text-align: center; }
 
 @media (max-width: 370px) {
@@ -87,7 +101,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .an2-g, .an2-det { animation: none; }
-  .an2-chev, .an2-bar { transition: none; }
+  .an2-chev, .an2-bar, .an2-go, .an2-go-f { transition: none; }
   .an2-svg path { animation: none !important; stroke-dashoffset: 0 !important; }
 }
 

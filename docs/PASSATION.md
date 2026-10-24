@@ -1324,3 +1324,10 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - **Messages** (liste relue toutes les 15 s) et **Mes commandes** (toutes les 20 s) : plus de redessin quand rien n'a changé.
 - `?v=` augmentés (`application.dc.html`, `index-v3.html`, `admin.html`), `sw.js` : cache `mgci-v233`.
 - Non vérifiable ici : le vrai rendu de Safari sur iPhone (Chromium seulement) et les écrans qui demandent le serveur (pas d'accès réseau à Supabase depuis la session). À regarder sur le téléphone après la fusion.
+
+## 24/10/2026 — L'année du marché et « Où êtes-vous ? » du réseau
+
+- **L'année du marché** : les pastilles « 1 offre » / « 1 demande » portent maintenant le panier (offre) et le caddie (demande) du marché, comme partout (`css/symboles.css`, caddie au trait crème sur ce fond sombre).
+- Le gros bouton jaune « Voir la fiche, les prix et les annonces » devient une rangée fine : pastille maïs avec une courbe de prix, « Voir la fiche » + « Prix, offres et demandes », flèche dans un rond (`.an2-go`, `css/annee-app.css`).
+- **Réseau, « Où êtes-vous ? »** : le grand cadre jaune qui apparaissait au toucher (contour de focus de la liste) est supprimé. La liste native reste, invisible, posée sur toute la pastille ; la pastille montre « Votre zone · Où êtes-vous ? » ou « Vous êtes à · Abidjan ». Le point violet (vous, sur la carte) respire tant qu'aucune zone n'est choisie ; une fois choisie, il s'allume en violet plein. Focus clavier : anneau violet discret (`.cz-moi`, `css/mgci-app.css`).
+- Vérifié dans Chromium (iPhone émulé, sombre). `sw.js` : cache `mgci-v234`. Dépend de la PR « Application plus stable » (#246), à fusionner avant.

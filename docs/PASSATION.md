@@ -1302,3 +1302,4 @@ Demandé par le propriétaire (notes vocales) : l'argent bloqué chez un partena
 - `PORTAGE-SITE.md` : la ligne « Dernières annonces » précise que la carte disparaît quand elle est vide.
 - `docs/REPRISE.md` : état après la PR #243, branche obsolète signalée.
 - PDF de stratégie : rien à refaire. Aucun de leurs textes ne parle de ce qui a changé ; leurs chiffres se mettent à jour seuls (tâche du lundi). Le nouveau site n'y sera ajouté qu'à son ouverture.
+- `CLAUDE.md` : marche à suivre quand une nouvelle discussion commence par un seul mot (« On reprend ») ; `docs/REPRISE.md` : liste « ce qui reste » corrigée (guides déjà faits retirés).

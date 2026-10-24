@@ -1,9 +1,16 @@
 # Rapport de reprise : où en est le projet, et la suite
 
-> **À lire au début de chaque nouvelle discussion, après `CLAUDE.md`** (le propriétaire écrit seulement « On reprend » : voir la marche à suivre en tête de `CLAUDE.md`). Mis à jour le 24/10/2026 (après la PR #247). À tenir à jour dans chaque PR.
+> **À lire au début de chaque nouvelle discussion, après `CLAUDE.md`** (le propriétaire écrit seulement « On reprend » : voir la marche à suivre en tête de `CLAUDE.md`). Mis à jour le 24/10/2026 (après la PR #296). À tenir à jour dans chaque PR.
 > Le détail de chaque changement est dans `docs/PASSATION.md` (sections datées du 23/10/2026). Le plan SEO complet est dans `docs/seo/PLAN.md`.
 
 ## 1. L'état au moment de la reprise
+
+- **REPRISE PRIORITAIRE (24/10/2026, nuit) : corrections de l'audit.** PR #289 à #296 **fusionnées** (#296, confiance, comprise). Schémas **92a-92d, 93a-93e, 94a-94h, 95, 95b, 96a-96f appliqués sur le projet de TEST seulement** : la production attend le « OK production » du propriétaire (puis redéployer `pousser` v24, qui n'est déployée nulle part). Le détail par équipe est dans `docs/PASSATION.md` (sections « Équipe A » à « Équipe F » du 24/10/2026) ; les règles durables sont dans `CLAUDE.md`. Il reste, dans l'ordre :
+  1. **Étape 7 en cours : tests de bout en bout** de tous les parcours ensemble sur le projet de test (branche `claude/e2e-corrections`), puis corriger ce qui casse (déjà connu : la garde `_annonce_regles` (93) garde l'ancienne quantité avant le message STOCK_EPUISE de `_stock_garde` (92) ; tests `fiabilite-84` bloc H T1 et `niveaux-85` à mettre à jour) ;
+  2. **Production, seulement après « OK production »** du propriétaire : schémas dans l'ordre 92a-92d, 93a-93e, 94a-94h, 95, 95b, 96a-96f (sans les commentaires d'en-tête), tester sur le test avant chaque lot, puis déployer `pousser` v24 ; jamais de test destructif ni de changement de données de production sans accord ;
+  3. **Rapport complet** au propriétaire dans `docs/` ;
+  4. décisions en attente du propriétaire (liste cochable dans `docs/A-FAIRE-PROPRIETAIRE.md`) : 7 jours de grâce pour les annonces déjà en ligne ; rôle acheteur/vendeur (simple affichage ?) ; litige automatique 24 h après le « livré » du vendeur ; valeurs des badges et du masquage ; itinéraires encore par le serveur public OSRM ; lecture des messages par l'équipe ; les 32 questions de `docs/juridique/regles-manquantes.md` ; juriste et formalité ARTCI ; partie « Le jour où vous aurez votre partenaire de paiement ».
+  - Restes techniques connus : relance `accord_sans_commande` encore vivante après un accord « sans suite » ; textes serveur `commande_litige` et `commande_refuser2` à corriger (1 h au lieu de 24 h, « pas de refus ») ; étape « Commande terminée » cochée pendant l'heure de vérification (`LIB.terminee`) ; `(select auth.uid())` sur `offres`, `demandes`, `negociations`, `profils` ; index `sim_tmp_*` du test ; itinéraires de la carte ; pagination carte et recherche ; affichage de `stockage_volume()` dans le tableau de bord ; durée de conservation des photos.
 
 - **PR fusionnées jusqu’à la #286, puis #282 (notifications).** Aucune autre PR ouverte. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
 - `main` : cache du service worker `mgci-v277` après les notifications (#282). Les PR suivantes prennent un numéro au-dessus de celui de `main` au moment de leur fusion.

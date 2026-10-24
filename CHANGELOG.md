@@ -7,6 +7,17 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 ## 24/10/2026
 
 - Notifications (branche `claude/notifications`, pas en production) : audit (`docs/audits/audit-notifications-2026-10-24.md`) ; serveur (schémas 88a, 88b, 88d sur le projet de test, `pousser` v21 non déployée) : catégories, préférences, plafonds, heures calmes, regroupement, anti-doublon, ciblage, groupe à 80 %, produit à racheter, journal et statistiques ; écran : réglages par catégorie, état réel et essai vérifié, toucher qui ouvre le bon écran, ouverture comptée, tableau de bord « Notifications ». Cache `mgci-v262`.
+
+- Les communes d'Abidjan (Cocody, Yopougon…) ne sont plus proposées comme villes : dans la région Abidjan, « Abidjan » est mis tout seul et le choix de la ville est grisé ; une commune enregistrée avant devient « Abidjan ».
+- Abidjan est une seule ville : avec une commune (Cocody, Yopougon…), l'interrupteur dit « Je vends uniquement à Abidjan » ; une livraison d'une commune à l'autre est « même ville » (schéma 87c, appliqué en production).
+
+- Chantier 4 (branche `claude/chantier-boutiques-p`, schéma 86, 86b et 86c appliqués en production) : boutique par vendeur avec adresse (pseudo ou code court), lien, QR code à télécharger, aperçu de partage (pages `site/boutiques/`, noindex), visites en totaux ; pause d'une offre, retrait sans effacement, quantité obligatoire, verrou contre la survente ; page de maintenance avec le QR de la boutique.
+- Formulaires de publication : une ville d'une autre région n'est plus gardée en mémoire (« Guiglo » ne revient plus sous « Abidjan » à la réouverture de l'application) ; le profil la vide quand sa région change.
+- Transport : « Transport à votre charge » pour l'acheteur, « À la charge de l'acheteur » pour le vendeur, « À ma charge » dans une demande, partout (publication, annonces, tableau du marché, négociation, commande).
+
+
+- « Ville uniquement » : pour une localité tapée (« Guiglo » dans la région Abidjan), c'est la ville de rattachement de la région choisie qui compte (« Je vends uniquement à Abidjan »), dans l'application et sur le serveur (schéma 87b) ; la région choisie ne change plus toute seule.
+- Publication d'une offre : le choix « Non inclus » devient « Transport à part » (« son prix se négocie à part »), et l'annonce affiche « Transport à part » au lieu de « Transport à discuter ».
 - Niveaux de confiance (chantier 3) : Vendeur fiable, Bon, Excellent, Grand vendeur, mêmes paliers pour les acheteurs et « Acheteur en gros », calculés par le serveur (schéma 85, appliqué en production), écran « Mes niveaux », tableau de bord de l'administrateur.
 - Connexion : le titre alterne « marché de Gros » et « marché du pays » (3 s, puis 2 s, toutes les 10 s), validé en vidéo par le propriétaire ; le « court film » de connexion a été refusé et n'est pas fusionné.
 

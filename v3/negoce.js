@@ -351,8 +351,8 @@
   }
 
   // transport d'une proposition (schéma 83) : inclus, à part (avec son prix, négocié ici) ou sans ; null = rien de dit
-  const trTag = (v, pt) => v === true ? '<span class="nx-tr oui">' + TI('camion') + 'Transport inclus</span>' : v === false && +pt > 0 ? '<span class="nx-tr oui">' + TI('camion') + 'Transport à part · ' + fmt(pt) + ' F</span>' : v === false ? '<span class="nx-tr">Sans transport</span>' : '';
-  const trTxt = (v, pt) => v === true ? ', transport inclus' : v === false && +pt > 0 ? ', transport à part ' + fmt(pt) + ' F' : v === false ? ', sans transport' : '';
+  const trTag = (v, pt) => v === true ? '<span class="nx-tr oui">' + TI('camion') + 'Transport inclus</span>' : v === false && +pt > 0 ? '<span class="nx-tr oui">' + TI('camion') + 'Transport à part · ' + fmt(pt) + ' F</span>' : v === false ? '<span class="nx-tr">Transport à la charge de l’acheteur</span>' : '';
+  const trTxt = (v, pt) => v === true ? ', transport inclus' : v === false && +pt > 0 ? ', transport à part ' + fmt(pt) + ' F' : v === false ? ', transport à la charge de l’acheteur' : '';
   const trDe = (v, pt) => v === true ? 'inclus' : v === false ? (+pt > 0 ? 'apart' : 'sans') : null;
   // envoi d'une proposition : prix, quantité et transport en un seul appel (nego_ouvrir2, nego_agir2) ; ancien serveur → comme avant
   const sansFn = x => /Could not find|schema cache|PGRST202|does not exist/i.test((x && x.message) || '');
@@ -360,7 +360,7 @@
     try { return await N().rpc(fn + '2', Object.assign({}, args, { p_transport: v.tr, p_prix_transport: v.tr === 'apart' ? v.pt : null })); }
     catch (x) {
       if (!sansFn(x)) throw x;
-      if (v.tr === 'apart') throw new Error('Le transport à part n’est pas encore activé sur le serveur. Choisissez « Inclus » ou « Sans ».');
+      if (v.tr === 'apart') throw new Error('Le transport à part n’est pas encore activé sur le serveur. Choisissez « Inclus » ou le transport à la charge de l’acheteur.');
       const r = await N().rpc(fn, args);
       if (v.tr) await N().rpc('nego_transport', { p_nego: nego || r, p_oui: v.tr === 'inclus' }).catch(() => {});
       return r;
@@ -379,9 +379,9 @@
       <div class="nx-px"><input id="nxP" inputmode="numeric" autocomplete="off" placeholder="${ref ? fmt(chips[1] ? chips[1].v : ref) : '0'}" ${fixe ? `value="${fmt(ref)}" readonly` : ''} aria-describedby="nxD"><span>F / ${esc(u)}</span></div>
       <div class="nx-chips nx-pq" role="group" aria-label="Prix rapides">${ref ? `<button type="button" class="nx-chip" data-v="${ref}" aria-pressed="false"><small>Prix affiché</small>${fmt(ref)}</button>` : ''}${ctx.dernier && ctx.dernier !== ref ? `<button type="button" class="nx-chip" data-v="${ctx.dernier}" aria-pressed="false"><small>Sa proposition</small>${fmt(ctx.dernier)}</button>` : ''}${chips.map(c => `<button type="button" class="nx-chip" data-v="${c.v}" aria-pressed="false"><small>${c.t}</small>${fmt(c.v)}</button>`).join('')}</div>
       <div class="nx-qr"><label class="nx-lbl" for="nxQ">Quantité</label><div class="nx-q"><input id="nxQ" inputmode="decimal" autocomplete="off" value="${ctx.q0 ? fq(ctx.q0) : ''}" placeholder="—"><span>${esc(u)}</span>${qmin && qmin < (ctx.qmax || Infinity) ? `<button type="button" class="nx-chip" data-q="${qmin}">Minimum · ${fq(qmin)}</button>` : ''}${ctx.qmax ? `<button type="button" class="nx-chip" data-q="${ctx.qmax}">Tout le lot · ${fq(ctx.qmax)}</button>` : ''}</div>${qmin ? `<p class="nx-note" style="margin:6px 0 0">Le vendeur vend à partir de ${fq(qmin)} ${esc(uQ(qmin, u))}.</p>` : ''}</div>
-      <div class="nx-trc" role="group" aria-label="Transport"><span class="nx-lbl">Transport</span><div><button type="button" data-tr="inclus" aria-pressed="${ctx.tr0 === 'inclus'}">Inclus</button><button type="button" data-tr="apart" aria-pressed="${ctx.tr0 === 'apart'}">À part</button><button type="button" data-tr="sans" aria-pressed="${ctx.tr0 === 'sans'}">Sans</button></div>
+      <div class="nx-trc" role="group" aria-label="Transport"><span class="nx-lbl">Transport</span><div><button type="button" data-tr="inclus" aria-pressed="${ctx.tr0 === 'inclus'}">Inclus</button><button type="button" data-tr="apart" aria-pressed="${ctx.tr0 === 'apart'}">À part</button><button type="button" data-tr="sans" aria-pressed="${ctx.tr0 === 'sans'}">${ctx.pour === 'vendeur' ? 'À ma charge' : 'À l’acheteur'}</button></div>
         <div class="nx-trp"${ctx.tr0 === 'apart' ? '' : ' hidden'}><label for="nxTP">Prix du transport</label><input id="nxTP" inputmode="numeric" autocomplete="off" placeholder="0" value="${ctx.pt0 ? fmt(ctx.pt0) : ''}"><span>F</span></div>
-        <small>Inclus : le vendeur livre, son prix comprend la livraison. À part : le vendeur livre et le transport s’ajoute, au prix discuté ici. Sans : l’acheteur s’en charge. Dans la même ville, les frais de livraison se règlent au livreur, hors Marché de Gros.</small></div>
+        <small>Inclus : le vendeur livre, son prix comprend la livraison. À part : le vendeur livre et le transport s’ajoute, au prix discuté ici. ${ctx.pour === 'vendeur' ? 'À ma charge : je viens chercher ou j’envoie mon camion.' : 'À l’acheteur : le transport est à sa charge.'} Dans la même ville, les frais de livraison se règlent au livreur, hors Marché de Gros.</small></div>
       <div class="nx-tot" id="nxD" aria-live="polite"></div>
       <div class="nx-prev"></div>
       <label class="nx-lbl" for="nxT" style="margin-top:14px">Conditions (facultatif)</label>
@@ -400,7 +400,7 @@
       go.textContent = p ? (label || 'Proposer') + ' ' + fmt(p) + ' F / ' + u + (q ? ' × ' + fq(q) : '') : (label || 'Envoyer ma proposition');
       box.querySelectorAll('.nx-chip[data-v]').forEach(c => c.setAttribute('aria-pressed', String(+c.dataset.v === p)));
       let h = '';
-      if (p && q) h += `<div class="nx-sum"><span>Total</span><b>${fq(q)} ${esc(uQ(q, u))} × ${fmt(p)} F = ${fmt(p * q)} F${tr === 'inclus' ? ', transport inclus' : tr === 'sans' ? ', sans transport' : ''}</b></div>`;
+      if (p && q) h += `<div class="nx-sum"><span>Total</span><b>${fq(q)} ${esc(uQ(q, u))} × ${fmt(p)} F = ${fmt(p * q)} F${tr === 'inclus' ? ', transport inclus' : tr === 'sans' ? ', transport à la charge de l’acheteur' : ''}</b></div>`;
       if (p && q && tr === 'apart' && pt) h += `<div class="nx-sum"><span>Avec le transport</span><b>${fmt(p * q)} + ${fmt(pt)} = ${fmt(p * q + pt)} F</b></div>`;
       if (tr === 'apart' && !pt) h += `<p class="nx-warn">Indiquez le prix du transport.</p>`;
       if (p && ref) { const e = p - ref, pc = Math.round(Math.abs(e) / ref * 100); h += `<div class="nx-sum"><span>Par rapport au prix affiché</span><b>${Math.abs(e) < 1 ? 'identique' : (e < 0 ? '−' : '+') + fmt(Math.abs(e)) + ' F (' + (e < 0 ? '−' : '+') + pc + ' %)'}${Math.abs(e) >= 1 && q ? `<small> soit ${fmt(Math.abs(e) * q)} F ${e < 0 ? 'de moins' : 'de plus'} au total</small>` : ''}</b></div>`;
@@ -538,7 +538,7 @@
       const P = n.dernier_prix, Q = n.dernier_quantite, prop = (msgs || []).find(m => m.id === n.dernier_msg);
       if (mode === 'edit') h = `<div class="nx-edbox nx-edf"></div><button type="button" class="nx-alt nx-cancel" style="width:100%;margin-top:8px">Annuler</button>`;
       else if (mode === 'accord') h = `<div class="nx-confirm"><b>Vous acceptez :</b><div class="nx-big">${Q ? fq(Q) + ' ' + esc(uQ(Q, u)) + ' × ' : ''}${fmt(P)} F / ${esc(u)}</div>${(() => { const ti = prop ? prop.transport_inclus : n.dernier_transport, tpx = prop ? prop.prix_transport : n.dernier_prix_transport, x = ti === false && +tpx > 0 ? +tpx : 0;
-          return (ti === true || ti === false ? `<div class="nx-dtot">Transport : ${ti ? 'inclus' : x ? 'à part, ' + fmt(x) + ' F' : 'non compris'}</div>` : '') + (Q ? `<div class="nx-dtot">Total${x ? ' avec le transport' : ''} : ${fmt(P * Q + x)} F</div>` : ''); })()}${prop && prop.texte ? `<p class="nx-cond"><span>Conditions</span>${esc(prop.texte)}</p>` : ''}<p>Une fois confirmé, l’accord est figé : il ne pourra plus être modifié. Ce n’est pas un paiement.</p>${window.MDGIdentite && MDGIdentite.gardePaiement ? `<p class="nx-warn" style="margin:0 0 12px">${MDGIdentite.gardePaiement(autreId(n), avDe(n, 40).nom || '')}</p>` : ''}
+          return (ti === true || ti === false ? `<div class="nx-dtot">Transport : ${ti ? 'inclus' : x ? 'à part, ' + fmt(x) + ' F' : 'à la charge de l’acheteur'}</div>` : '') + (Q ? `<div class="nx-dtot">Total${x ? ' avec le transport' : ''} : ${fmt(P * Q + x)} F</div>` : ''); })()}${prop && prop.texte ? `<p class="nx-cond"><span>Conditions</span>${esc(prop.texte)}</p>` : ''}<p>Une fois confirmé, l’accord est figé : il ne pourra plus être modifié. Ce n’est pas un paiement.</p>${window.MDGIdentite && MDGIdentite.gardePaiement ? `<p class="nx-warn" style="margin:0 0 12px">${MDGIdentite.gardePaiement(autreId(n), avDe(n, 40).nom || '')}</p>` : ''}
         <div class="nx-act"><button type="button" class="nx-go" data-g="accord-ok">Confirmer l’accord</button><button type="button" class="nx-alt" data-g="annuler" style="grid-column:1 / -1">Retour</button></div><p class="nx-err" role="alert"></p></div>`;
       else {
         if (n.statut === 'ouverte' && aMoi(n)) h += `<div class="nx-pend"><span>${Le(lui)} propose ${Q ? fq(Q) + ' ' + esc(uQ(Q, u)) + ' × ' : ''}<b>${fmt(P)} F</b>${Q ? ' = ' + fmt(P * Q) + ' F' : ''}${trTxt(n.dernier_transport, n.dernier_prix_transport)} · ${reste(n.expire_le)}</span></div>

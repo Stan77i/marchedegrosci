@@ -24,6 +24,9 @@ p{margin:0 auto;max-width:420px;font:400 17px/1.5 Jost,sans-serif;color:var(--sa
 .go{display:inline-flex;align-items:center;justify-content:center;margin:28px 0 0;min-height:56px;padding:0 30px;border-radius:28px;background:var(--mais);color:#171512;font:700 18px Jost,sans-serif;text-decoration:none}
 .go:focus-visible{outline:3px solid var(--creme);outline-offset:3px}
 </style>
+<script>/* une boutique dont la page d'aperçu n'est pas encore fabriquée (site/boutiques/<adresse>/, schéma 86) : on va tout de suite à la boutique dans l'application */
+(function(){try{var m=/\/site\/boutiques\/([A-Za-z0-9_.-]{3,24})\/?$/.exec(location.pathname);if(!m)return;var q=new URLSearchParams(location.search),o=(q.get('o')||'').replace(/[^a-f0-9]/g,'').slice(0,12);q.delete('o');
+location.replace('/marchedegrosci/application.dc.html'+(q.toString()?'?'+q:'')+'#/boutique/'+m[1].toLowerCase()+(o?'/'+o:''))}catch(e){}})();</script>
 </head>
 <body>
 <main>

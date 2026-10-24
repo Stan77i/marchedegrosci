@@ -1,6 +1,7 @@
 # Refait le nouveau site public (dossier site/) avec tools/site-public.js quand ses gabarits, le catalogue, les photos ou la carte changent.
 # Gratuit (dépôt public). Décision du propriétaire du 23/10/2026 (docs/seo/PLAN.md).
-# Pas de passage programmé : la date « Mis à jour le » ne change que si le contenu change (dates honnêtes).
+# Les pages du site ne sont refaites qu'aux changements (la date « Mis à jour le » ne change que si le contenu change).
+# Les pages d'aperçu des boutiques (site/boutiques/, schéma 86, décision 40) suivent l'activité : passage chaque jour à 5 h 41 (heure d'Abidjan = UTC).
 # N'enregistre un commit que si une page a changé.
 name: Site public
 on:
@@ -11,6 +12,7 @@ on:
       - 'tools/site-public.js'
       - 'tools/site-images.py'
       - 'tools/site-produits.js'
+      - 'tools/site-boutiques.js'
       - 'v2/saisons.js'
       - 'site/*.css'
       - 'site/*.js'
@@ -20,6 +22,8 @@ on:
       - 'app/marque.js'
       - 'app/admin-pc.js'
       - '.github/workflows/site-public.yml'
+  schedule:
+    - cron: '41 5 * * *'
   workflow_dispatch:
 permissions:
   contents: write
@@ -39,11 +43,15 @@ jobs:
         with:
           python-version: '3.12'
       - name: Préparer les photos légères (site/img)
+        if: github.event_name != 'schedule'
         run: |
           pip install --quiet pillow
           python3 tools/site-images.py
       - name: Fabriquer les pages
+        if: github.event_name != 'schedule'
         run: node tools/site-public.js
+      - name: Pages d'aperçu des boutiques (noindex)
+        run: node tools/site-boutiques.js
       - name: Enregistrer si une page a changé
         run: |
           if [ -n "$(git status --porcelain site)" ]; then

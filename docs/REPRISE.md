@@ -10,6 +10,7 @@
 - Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **85** appliqués (85a à 85d badges, appliqués le 24/10/2026, tâche `mdg-niveaux` chaque nuit à 4 h 37 ; 82 commission transport réservée au service Marché de Gros ; 83a à 83e transport ; 84a à 84f fiabilité, appliqués le 24/10/2026, tâche `mdg-fiabilite` toutes les 15 min). Le projet de test peut avoir en plus les schémas des chantiers en cours (86 boutiques, 87 ville seulement).
 - **Notifications** (branche `claude/notifications`, 24/10/2026, pas encore de PR) : schémas 88a, 88b et 88d sur le projet de **test seulement** ; fonction `pousser` v21 dans le dépôt, **pas déployée** ; écran (réglages par catégorie, essai vérifié, toucher qui ouvre le bon écran, statistiques administrateur) ; cache `mgci-v262`. Détail : `docs/PASSATION.md`, section « Notifications : écran, statistiques ».
 - **Ville seulement** (branche `claude/ville-seulement`, 24/10/2026) : schéma 87 appliqué sur le test puis **en production** le 24/10/2026 (fonctions identiques au test, à une ligne de commentaire près). PR #272 fusionnée.
+- **Boutiques** (chantier 4, 24/10/2026) : schéma 86 (86, 86b, 86c) testé puis appliqué en production (fonctions identiques au test, hors commentaires) ; vidéo des animations validée par le propriétaire ; écran dans la PR « Chantier 4 : boutiques ». Cache `mgci-v267`.
 
 ## 2. Ce qui a été fait (session du 23/10/2026)
 
@@ -71,6 +72,8 @@
 **0 quinquies. Notifications** (branche `claude/notifications`) : 1) le propriétaire valide les 3 choix (1 conseil par jour ; effacer journal et file après 90 jours ; copier les secrets push dans le test) ; 2) appliquer en production 88a, 88b, 88d, **puis seulement** déployer `pousser` v21 ; 3) le propriétaire colle `supabase/schema-88c-droits-a-coller.sql` dans l'éditeur SQL ; 4) vérifier sur un vrai téléphone : essai, toucher d'une notification d'offre, de commande et de négociation, compteur « ouvertes » du tableau de bord ; 5) reste à faire : la liste « Notifications » de Mon espace lue dans `notif_journal`.
 
 **0 quater. Ville seulement** : schéma 87 en production ; reste à fusionner la PR, puis à vérifier avec un compte la négociation, les messages et la commande (le navigateur de l'environnement de travail ne joint pas Supabase).
+
+**0 quater. Ville seulement** : schéma 87 et 87b en production, PR fusionnées ; puis à vérifier avec un compte la négociation, les messages et la commande (le navigateur de l'environnement de travail ne joint pas Supabase).
 
 **0. Audit antislop de l'application (24/10/2026) : le propriétaire choisit les numéros à corriger** dans `docs/anti-slop/audit-001-2026-10-24.md` (59 constats + 3 décisions A, B, C). Ne rien corriger sans son choix ; ensuite une PR par lot, et noter dans le fichier ce qui est fait. **Audit terminé** : tout est fait sauf 3 points laissés exprès (50, 54) ou à vérifier avec des données (59). Décisions A, B, C tranchées le 24/10/2026 et appliquées (accueil calmé, « vérifié » en vert, dégradé de « de Gros » gardé). Seul reste le n° 59, à vérifier quand le serveur sera joignable depuis la session.
 

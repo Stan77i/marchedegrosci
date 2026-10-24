@@ -112,6 +112,25 @@ p{margin:0 auto;max-width:440px;font:400 17px/1.5 Jost,sans-serif;color:var(--sa
   } else {
     // ordinateur ou tablette (22/10/2026) : l'application ne s'ouvre pas → « Prenez votre téléphone », QR code et lien
     var lien = location.href.replace(/[?#].*$/, '').replace(/maintenance\.html$/, '');
+    // une boutique (schéma 86) : le QR ouvre CETTE boutique sur le téléphone (adresse et provenance gardées) ; l'ordinateur reste sur cette page
+    var bq = /^#\/boutique\/([A-Za-z0-9_.-]{3,24})(?:\/([a-f0-9]{1,12}))?/.exec(h);
+    if (bq) {
+      lien = lien + 'application.dc.html?' + (u || 'utm_source=boutique&utm_medium=ordinateur') + '#/boutique/' + bq[1].toLowerCase() + (bq[2] ? '/' + bq[2] : '');
+      document.querySelector('.badge').lastChild.textContent = 'Boutique sur l’application';
+      document.querySelector('h1').innerHTML = 'Cette boutique s’ouvre <em>sur votre téléphone</em>.';
+      document.querySelector('main > p').textContent = 'Scannez le code avec l’appareil photo de votre téléphone : la boutique s’ouvre dans l’application du Marché de Gros.';
+      document.querySelector('#telPanneau > b').textContent = 'Scannez pour ouvrir la boutique';
+      go.hidden = true; $('telPanneau').hidden = false; document.title = 'Boutique · Marché de Gros';
+      // le nom de la boutique (prénom et initiale ou pseudo, jamais un numéro), lu sur le serveur ; sans réponse, la page reste juste
+      fetch('https://catmsypctymgkjkfzdkt.supabase.co/rest/v1/rpc/boutique_publique', { method: 'POST', headers: { apikey: 'sb_publishable_KC2au-t8dqasp5ez9Lq6XQ_JvbTtVQ5', Authorization: 'Bearer sb_publishable_KC2au-t8dqasp5ez9Lq6XQ_JvbTtVQ5', 'Content-Type': 'application/json' }, body: JSON.stringify({ p_adresse: bq[1] }) })
+        .then(function (r) { return r.ok ? r.json() : null; }).then(function (b) {
+          if (!b || !b.trouvee || !b.nom) return;
+          var nom = String(b.nom).slice(0, 40), n = (b.catalogue || []).filter(function (x) { return x.etat === 'disponible' || x.etat === 'stock_faible'; }).length;
+          var h1 = document.querySelector('h1'); h1.textContent = 'La boutique ' + (/^[aeiouyàâéèêëîïôûù]/i.test(nom) ? 'd’' : 'de ') + nom + ' s’ouvre '; var em = document.createElement('em'); em.textContent = 'sur votre téléphone'; h1.appendChild(em); h1.appendChild(document.createTextNode('.'));
+          document.querySelector('main > p').textContent = (n ? n + (n > 1 ? ' produits disponibles' : ' produit disponible') + '. ' : '') + 'Scannez le code avec l’appareil photo de votre téléphone : la boutique s’ouvre dans l’application.';
+          document.title = 'Boutique ' + (/^[aeiouyàâéèêëîïôûù]/i.test(nom) ? 'd’' : 'de ') + nom + ' · Marché de Gros';
+        }).catch(function () {});
+    }
     $('telLien').textContent = lien.replace(/^https?:\/\//, '').replace(/\/$/, '');
     try { var q = qrcode(0, 'M'); q.addData(lien); q.make(); $('telQr').innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true }); } catch (_) { $('telQr').hidden = true; }
     $('telCopie').onclick = function () { var b = this; (navigator.clipboard ? navigator.clipboard.writeText(lien) : Promise.reject()).then(function () { b.textContent = 'Copié ✓'; }, function () { b.textContent = 'Copiez le lien'; }); };

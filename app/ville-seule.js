@@ -1,6 +1,6 @@
 /* Marché de Gros CI : « Ville seulement » (schéma 87, 24/10/2026).
    Un vendeur peut dire « je vends uniquement dans ma ville », un acheteur « j'achète uniquement dans ma ville ».
-   La ville de référence est celle de l'annonce (city). La base refuse une commande hors de cette ville (commande_creer2).
+   La ville de référence est celle de l'annonce (city) ; pour une localité « X (près de Ville) », c'est la ville de rattachement. La base refuse une commande hors de cette ville (commande_creer2).
    Règle d'écriture du propriétaire : l'étiquette n'est jamais longue.
    - dans les endroits serrés : une pastille compacte « [épingle] Guiglo uniquement », une seule ligne, largeur fixe, coupée par « … » ;
      la phrase complète (« Vente uniquement à Guiglo ») est lue par les lecteurs d'écran et dans l'info-bulle ;
@@ -11,8 +11,11 @@
   'use strict';
   if (window.MDGVilleSeule) return;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  // « Napié (près de Ferkessédougou) » → « Napié »
-  const nom = c => String(c || '').replace(/\s*\(près de [^)]*\)\s*$/, '').trim();
+  // la ville qui compte : celle de l'annonce, ou la ville de rattachement d'une localité
+  // (« Napié (près de Ferkessédougou) » → « Ferkessédougou » ; même règle que la base, _ville_ref, schéma 87b)
+  // une commune d'Abidjan (Cocody, Yopougon…) compte comme Abidjan (MDGVilles.ref)
+  const ABJ = ['abidjan', 'abobo', 'adjame', 'anyama', 'attecoube', 'bingerville', 'brofodoume', 'cocody', 'koumassi', 'marcory', 'plateau', 'leplateau', 'portbouet', 'songon', 'treichville', 'yopougon'];
+  const nom = c => { if (window.MDGVilles && MDGVilles.ref) return MDGVilles.ref(c); c = String(c || '').trim(); const m = /\(près de ([^)]+)\)\s*$/.exec(c); c = (m ? m[1] : c).trim(); return ABJ.indexOf(cle(c)) >= 0 ? 'Abidjan' : c; };
   // la même clé que la base (_ville_cle) : sans accent, sans espace ni signe
   const cle = v => String(v || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '');
   const offre = s => s === 'offre' || s === 'offres';

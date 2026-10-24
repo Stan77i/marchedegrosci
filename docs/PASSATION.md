@@ -1695,3 +1695,13 @@ Règles appliquées : décisions 34 à 44 de `docs/audits/decisions-chantiers-20
 - « Voir ma boutique / Voir sa boutique » : même bouton vert que « Modifier mon profil public », avec l'icône boutique (`vendre`).
 - Vérifié dans Chromium (iPhone 13) avec des données de test. Cache `mgci-v274`.
 
+## 24/10/2026 · Vérification en 1 h, délais par rôle (schéma 89)
+
+- Demande du propriétaire : « si d'ici une heure l'acheteur ne fait pas signe, les fonds doivent être libérés automatiquement » (avant : 24 h, schéma 61) ; prévenir l'acheteur ; sur le profil, un délai de livraison pour le vendeur et un délai de validation pour l'acheteur.
+- Rappel : aucun paiement ne passe encore par l'application. La « libération » ne change qu'un statut (la commande est clôturée).
+- Serveur, `supabase/schema-89a-verification-1h.sql` : `sequestre_liberer_echus` clôt 1 h après la réception ; la tâche `mdg-liberer-echus` passe toutes les 5 min (au lieu de 15) ; nouvelle fonction `delais_publics(uid)` (médianes, à partir de 3 commandes : livraison du vendeur = confirmation → réception ; validation de l'acheteur = réception → clôture, « conforme » ou « auto »). `schema-89b-echeance-1h.sql` : échéance affichée (`commande_sequestre`) et message de refus (`commande_refuser2`) à 1 h, rien d'autre ne change.
+- Testé sur le projet de test sans rien laisser (bloc annulé) : commande reçue il y a 2 h → clôturée « auto » ; reçue il y a 30 min → ouverte ; échéance = réception + 1 h.
+- Application : avertissement à la confirmation de la réception (« Vous aurez 1 h pour signaler un problème… »), message de l'arrivée du chauffeur, étapes « Vérification (1 h) », aide, astuces, guide, garanties, admin. Site (gabarits `tools/site/`) et PDF (pitch, présentation) refaits.
+- Fiche profil : le délai va dans la carte du rôle (« Livre en général en 30 h », « Valide en général en 20 min »).
+- Captures envoyées au propriétaire avant la PR (nouvelle règle). Production : à appliquer après son accord.
+

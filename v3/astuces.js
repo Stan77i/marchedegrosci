@@ -75,7 +75,7 @@
     verifier: { t: 'Vérifier la marchandise', insiste: 3, cartes: [
       ['🔍', 'Vérifiez la marchandise', 'Quantité, qualité, et le *papier du vendeur* glissé dans le colis.'],
       ['✅', 'Tout est bon ?', 'Touchez *« Tout est conforme »* : la commande est terminée. Le paiement se fait *à la livraison*, entre vous.'],
-      ['⏰', 'Sans réponse : 24 h', 'Si vous ne réclamez pas, la commande est *clôturée toute seule 24 h après la réception*. L’heure exacte est affichée.'],
+      ['⏰', 'Sans réponse : 1 h', 'Si vous ne réclamez pas, la commande est *clôturée toute seule 1 h après la réception*. L’heure exacte est affichée.'],
       ['⚠️', 'Un problème ?', 'Touchez *« Refuser la marchandise »* avant la fin du délai, avec le mot du vendeur et des photos.']] },
     refus: { t: 'Refuser la marchandise', insiste: 3, cartes: [
       ['🧾', 'Il faut des preuves réelles', 'Le *mot secret du vendeur* (le papier dans le colis) et *1 à 4 photos* : la marchandise et le papier.'],
@@ -89,7 +89,7 @@
     sequestre: { t: 'Le paiement sécurisé', insiste: 2, cartes: [
       ['💵', 'Aujourd’hui : à la livraison', 'Vous payez *à la livraison*, après avoir vu la marchandise. Le séquestre est *en construction*.'],
       ['🔒', 'Bientôt : l’argent bloqué', 'Dès la commande confirmée, l’acheteur paiera par Wave, Orange Money ou MTN MoMo. L’argent restera *bloqué* : le vendeur ne fera plus le voyage pour rien.'],
-      ['🔓', 'La libération', 'L’acheteur valide, ou *24 h* passent sans réclamation : chacun reçoit sa part. Vendeur : moins *3,5 %*. Transporteur : moins *6,9 %*.']] },
+      ['🔓', 'La libération', 'L’acheteur valide, ou *1 h* passe sans réclamation : chacun reçoit sa part. Vendeur : moins *3,5 %*. Transporteur : moins *6,9 %*.']] },
     prix: { t: 'Le tableau des prix', insiste: 2, cartes: [
       ['📊', 'Comme au marché', '*Acheter* : les vendeurs, le moins cher en haut. *Vendre* : les acheteurs, le meilleur budget en haut.'],
       ['⬆️', 'Baissez votre prix, vous montez', 'Le tableau se met à jour tout seul. À prix égal, le *transport compris* passe devant.'],

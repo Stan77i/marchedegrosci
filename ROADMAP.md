@@ -106,7 +106,7 @@ Dépendance : trouver de vrais transporteurs, puis rouvrir le réseau (décision
 
 Ce qui existe (mécanique seulement) :
 - Tables `sequestres`, `sequestre_journal`, `sequestre_versements` (schémas 57, 58). La fonction `sequestre_depot_confirme` est réservée au rôle service : aucun écran ne peut l'appeler.
-- `commande_liberer` et la clôture automatique après 24 h (schéma 61) ne changent qu'un **statut**. Aucun argent ne bouge.
+- `commande_liberer` et la clôture automatique après 1 h (schémas 61 et 89) ne changent qu'un **statut**. Aucun argent ne bouge.
 - 0 séquestre en production.
 - Le guide et les astuces de l'application disent bien « paiement à la livraison, séquestre en construction ».
 

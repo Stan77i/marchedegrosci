@@ -195,7 +195,7 @@ Stockage (buckets) :
 279 fonctions dans `public`, dont 240 en `security definer`. Les principales, par sujet :
 
 - **Compte** : `est_admin`, `est_admin_id`, `creer_secours`, `secours_reinitialiser`, `pseudo_libre`, `supprimer_compte`, `admin_reinitialiser`, `admin_comptes`.
-- **Profil public et réputation** : `profils_publics3`, `profil_public`, `reputation_publique`, `notes_publiques`, `avis_de2`, `mieux_notes`, `statuts_publics`, `avis_commande_donner`.
+- **Profil public et réputation** : `profils_publics3`, `profil_public`, `reputation_publique`, `delais_publics` (schéma 89 : livraison du vendeur, validation de l'acheteur), `notes_publiques`, `avis_de2`, `mieux_notes`, `statuts_publics`, `avis_commande_donner`.
 - **Identité** : `identite_commencer`, `identite_soumettre`, `identite_statut`, `identite_ok`, `admin_identite_*`.
 - **Confiance** : `garde_publication`, `limite_annonces`, `annonces_gratuites` (3), `garde_textes` et `texte_refus` (pas de liens ni de numéros), `admin_bannir`, `signaler_membre`.
 - **Annonces et marché** : `annonces_version`, `tableau_produits`, `tableau_marche`, `prix_zones`, `produits_activite`, `ventes_recentes`, `fil_public`, `stats_publiques`.
@@ -228,7 +228,7 @@ Toutes actives en production :
 | Tâche | Quand | Rôle |
 |---|---|---|
 | `mdg-marketing` | toutes les 5 min | `marketing_tick` : messages du marché (30 par jour au plus, de 7 h à 21 h UTC, soit l'heure d'Abidjan ; réglage dans `marketing_reglage`) |
-| `mdg-liberer-echus` | toutes les 15 min | `sequestre_liberer_echus` : marque « libérée » une commande terminée depuis 24 h sans réclamation (écriture dans le journal seulement, aucun argent) |
+| `mdg-liberer-echus` | toutes les 5 min | `sequestre_liberer_echus` : marque « libérée » une commande terminée depuis 1 h (schéma 89) sans réclamation (écriture dans le journal seulement, aucun argent) |
 | `mdg-groupes-echeances` | toutes les 15 min | `groupes_echeances` : fin des achats groupés |
 | `mdg-rappels-achat` | toutes les 15 min | `rappels_envoyer` : rappels des achats récurrents (rien n'est acheté) |
 | `mdg-effacer-messages` | chaque heure, à la minute 23 | `dm_purger` : efface les messages directs et discussions de plus de 365 jours (`dm_duree`) |

@@ -86,7 +86,7 @@
 .rp-rep{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rp-rep-c{background:#FFFDF8;border-radius:14px;padding:11px 12px;min-width:0}.rp-rep-c h4{margin:0 0 4px;font:600 14px/1.2 Jost,sans-serif;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .rp-rep-c p{margin:0 0 8px;font-size:13px;color:#4A4336}
 .rp-rep-k{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:0;padding-top:8px;border-top:1px solid #ECE6D6;text-align:center}.rp-rep-k dd{margin:0}
-.rp-rep-k b{display:block;font:700 17px/1 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;color:#171512}.rp-rep-k small{display:block;margin-top:3px;font-size:11.5px;color:#5E5546}
+.rp-rep-k b{display:block;font:700 17px/1 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;color:#171512}.rp-rep-k small{display:block;margin-top:3px;font-size:11.5px;color:#5E5546}.rp-rep-d{margin:8px 0 0!important;padding-top:8px;border-top:1px solid #ECE6D6;font-size:12.5px!important;line-height:1.3}.rp-rep-d b{color:#171512}
 .rp-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.rp-bq{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px}.rp-bq svg{flex:none}
 .rp-fiable{display:inline-flex;align-items:center;min-height:20px;padding:0 8px;border-radius:10px;background:#10392B;color:#F2C230;font:700 11px/1 Jost,sans-serif;letter-spacing:.04em}.rp-fiable.rp-gros{background:#F6E2B0;color:#3D2E05}
 .rp-fb-it .st-p{width:max-content;max-width:100%}.rp-fb-it .st-but small{margin-top:0;opacity:1}
@@ -211,15 +211,18 @@
   const chiffre = (v, court, un, plus) => { v = v || 0; return `<div><dt class="rp-sr">${v > 1 ? plus : un}</dt><dd><b>${v}</b><small aria-hidden="true">${court}${v > 1 ? 's' : ''}</small></dd></div>`; };
   function blocReputation(r, moi) {
     if (!r) return '<div class="rp-vide">Réputation indisponible pour l’instant.</div>';
+    // délais (schéma 89) : le vendeur livre, l'acheteur valide la marchandise ; rien tant qu'il n'y a pas 3 commandes
+    const D = r.delais || {}, duree = m => m < 60 ? Math.max(1, Math.round(m)) + ' min' : m < 2880 ? Math.round(m / 60) + ' h' : Math.round(m / 1440) + ' jours';
+    const livre = D.livraison_h != null ? D.livraison_h * 60 : !r.delais && r.delai_median_h != null ? r.delai_median_h * 60 : null;
+    const delai = { 'Comme vendeur': livre != null ? 'Livre en général en <b>' + duree(livre) + '</b>' : '', 'Comme acheteur': D.validation_min != null ? 'Valide en général en <b>' + duree(D.validation_min) + '</b>' : '' };
     const col = (t, x) => { x = x || {}; const n = x.terminees || 0;
       const nv = x.niveau_libelle ? ` <span class="rp-fiable">${esc(x.niveau_libelle)}</span>` : x.fiable && !('niveau' in x) ? ' <span class="rp-fiable">Fiable</span>' : '';
       return `<div class="rp-rep-c"><h4>${t}${nv}${x.gros ? ' <span class="rp-fiable rp-gros">Acheteur en gros</span>' : ''}</h4>
         <p>${x.avis ? etoiles(+x.note, x.avis, 13) + ' ' + String(x.note).replace('.', ',') + ' · ' + x.avis + ' avis' : 'Pas encore noté'}</p>
-        <dl class="rp-rep-k">${chiffre(n, 'honorée', 'commande honorée', 'commandes honorées')}${'annulations_abusives' in x ? chiffre(x.annulations_abusives, 'abusive', 'annulation abusive', 'annulations abusives') : chiffre(x.annulations_demandees, 'annulée', 'annulation demandée', 'annulations demandées')}${chiffre(x.litiges_contre, 'litige', 'litige ouvert par l’autre partie', 'litiges ouverts par l’autre partie')}</dl></div>`; };
+        <dl class="rp-rep-k">${chiffre(n, 'honorée', 'commande honorée', 'commandes honorées')}${'annulations_abusives' in x ? chiffre(x.annulations_abusives, 'abusive', 'annulation abusive', 'annulations abusives') : chiffre(x.annulations_demandees, 'annulée', 'annulation demandée', 'annulations demandées')}${chiffre(x.litiges_contre, 'litige', 'litige ouvert par l’autre partie', 'litiges ouverts par l’autre partie')}</dl>${delai[t] ? `<p class="rp-rep-d">${delai[t]}</p>` : ''}</div>`; };
     // fiabilité (schéma 84) : une seule ligne en public ; le détail, seulement pour soi
     const f = r.fiabilite, fl = f && f.sur ? `<p class="rp-fb-l">Fiabilité : <b>${f.pourcent}&nbsp;%</b> sur ${f.sur} commande${f.sur > 1 ? 's' : ''}</p>` : f ? '<p class="rp-fb-l">Fiabilité : pas encore de commande comptée</p>' : '';
     return `${fl}${moi && f ? '<button type="button" class="rp-alt rp-fb-btn" data-mafiab>Mon historique de fiabilité</button>' : ''}<div class="rp-rep">${col('Comme vendeur', r.vendeur)}${col('Comme acheteur', r.acheteur)}</div>
-      ${r.delai_median_h != null ? `<p class="rp-rep-n">Livré en général en <b>${r.delai_median_h < 48 ? r.delai_median_h + ' h' : Math.round(r.delai_median_h / 24) + ' jours'}</b> </p>` : ''}
       ${!moi && r.ensemble ? `<p class="rp-rep-n rp-rep-ens">Vous avez terminé ${r.ensemble} commande${r.ensemble > 1 ? 's' : ''} ensemble.</p>` : ''}`;
   }
   async function profil(uid, o = {}) {
@@ -236,7 +239,8 @@
       const z = bg.querySelector('[data-org]'); if (!z || !st || !st.nom) return;
       z.innerHTML = carteStructure(st, uid); lierPreuves(z, st.preuves || []);
     }).catch(() => {});
-    const repP = N().rpc('reputation_publique', { p_uid: uid }, auth).catch(() => null);
+    const repP = Promise.all([N().rpc('reputation_publique', { p_uid: uid }, auth).catch(() => null), N().rpc('delais_publics', { p_uid: uid }, auth).catch(() => null)])
+      .then(([r, d]) => { if (r && d) r.delais = d; return r; });
     const [liste, pp] = await Promise.all([N().rpc('avis_de2', { p_cible: uid }, auth).catch(() => N().rpc('avis_de', { p_cible: uid }, auth)).catch(() => null), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null)]);
     if (!bg.isConnected) return;
     // schéma 77 : un avis par personne — seul le plus récent de chaque auteur compte dans la note (« compte » absent = ancien serveur : tout compte)

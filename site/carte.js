@@ -14,7 +14,7 @@
     'sassandra-marahoue': [6.88, -6.45, 'Daloa'], savanes: [9.46, -5.63, 'Korhogo'], 'vallee-du-bandama': [7.69, -5.03, 'Bouaké'], woroba: [7.96, -6.67, 'Séguéla'], zanzan: [8.04, -2.8, 'Bondoukou'] } };
   var D = {}; try { D = JSON.parse($('donnees').textContent); } catch (_) {}
   var NOMS = {}; (D.produits || []).forEach(function (p) { NOMS[p[0]] = p[1]; });
-  var tout = [], filtre = 'tout', api = null, choisis = [];
+  var tout = [], filtre = 'tout', api = null, choisis = [], avant = null;
 
   function items() {
     return tout.filter(function (a) { return filtre === 'tout' || a.sens === filtre; }).map(function (a) {
@@ -27,25 +27,31 @@
     var px = a.prix != null ? '<b class="px">' + nf(a.prix) + ' F' + (a.unite ? '/' + esc(a.unite) : '') + '</b>' : '';
     return '<li class="' + (sel ? 'sel' : '') + '">' + img + '<div><span><b>' + esc(a.nom || 'Un membre') + '</b> ' + (a.sens === 'offre' ? 'vend' : 'cherche') + ' ' + esc(nom.toLowerCase()) + '</span>'
       + '<small>' + q + esc(a.ville || (MDGApp.REG[a.region_slug] || [])[2] || '') + '</small>' + px
-      + '<a class="lien" href="application.dc.html#/produits/' + esc(a.product_slug) + '" data-app="' + (a.sens === 'offre' ? '#/produits/' + esc(a.product_slug) : '#/vendre?produit=' + esc(a.product_slug)) + '" data-intention="carte-' + (a.sens === 'offre' ? 'acheter' : 'vendre') + '">' + (a.sens === 'offre' ? 'Acheter' : 'Lui vendre') + '</a></div></li>';
+      + '<a class="lien" href="application.dc.html#/produits/' + esc(a.product_slug) + '" data-app="' + (a.sens === 'offre' ? '#/produits/' + esc(a.product_slug) : '#/vendre?produit=' + esc(a.product_slug)) + '" data-intention="carte-' + (a.sens === 'offre' ? 'acheter' : 'vendre') + '">' + (a.sens === 'offre' ? 'Acheter' : 'Lui vendre') + '<span class="vh"> : ' + esc(nom) + '</span></a></div></li>';
   }
   function liste() {
     var L = tout.filter(function (a) { return filtre === 'tout' || a.sens === filtre; });
-    $('crListe').innerHTML = L.length ? L.map(function (a) { return ligne(a, choisis.indexOf(a.cle) >= 0); }).join('') : '<li class="fil-vide">Aucune annonce ici pour l’instant : la première peut être la vôtre.</li>';
+    var h = L.length ? L.map(function (a) { return ligne(a, choisis.indexOf(a.cle) >= 0); }).join('') : '<li class="fil-vide">Aucune annonce ici pour l’instant : la première peut être la vôtre.</li>'; var cl = $('crListe'); if (cl._h !== h) { cl._h = h; cl.innerHTML = h; }   // seulement si la liste a changé (audit du site n° 3)
     var no = tout.filter(function (a) { return a.sens === 'offre'; }).length;
     $('nTout').textContent = tout.length; $('nOffre').textContent = no; $('nDemande').textContent = tout.length - no;
   }
   function montrer(ids) {
     choisis = ids || []; var c = $('crChoix'), L = tout.filter(function (a) { return choisis.indexOf(a.cle) >= 0; });
     if (!L.length) { c.hidden = true; c.innerHTML = ''; liste(); return; }
+    if (c.hidden) avant = document.activeElement;   // pour rendre le focus après « Fermer » (audit du site n° 29)
     c.hidden = false;
     c.innerHTML = '<div class="cr-choix-t"><b>' + (L.length > 1 ? L.length + ' annonces ici' : 'L’annonce choisie') + '</b><button type="button" class="fermer" aria-label="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><ul class="fil-l cr-liste">' + L.map(function (a) { return ligne(a, false); }).join('') + '</ul>';
-    c.querySelector('.fermer').onclick = function () { montrer([]); };
+    c.querySelector('.fermer').onclick = function () {
+      montrer([]);
+      var cible = avant && avant !== document.body && document.contains(avant) ? avant : document.querySelector('.cr-filtres [aria-pressed="true"]');
+      avant = null; if (cible && cible.focus) cible.focus();
+    };
     liste();
   }
   function poser() { if (api) api.set({ items: items(), me: '', sel: '', zones: [], pts: {}, pairs: [], lier: [] }); }
 
   document.addEventListener('site:fil', function (e) { tout = e.detail || []; liste(); poser(); });
+  document.addEventListener('site:fil-erreur', function () { var cl = $('crListe'); if (cl && !tout.length) { cl._h = ''; cl.innerHTML = '<li class="fil-vide">Les annonces ne s’affichent pas pour l’instant (réseau ?). Réessayez dans un moment.</li>'; } });
   document.querySelectorAll('.cr-filtres [data-f]').forEach(function (b) {
     b.onclick = function () { filtre = b.getAttribute('data-f'); document.querySelectorAll('.cr-filtres [data-f]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); montrer([]); poser(); };
   });

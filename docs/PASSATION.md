@@ -1446,6 +1446,47 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - Vérifié (navigateur, iPhone) : au début, 9 effets jouent ; après 14 s, seules les lumières du fond finissent leur 2e passage ; « Produit suivant » → les effets rejouent ; aucune erreur JS.
 - `?v=20261124i` (11 fichiers) ; site refabriqué ; cache `mgci-v243`.
 
+## 24/10/2026 — Audit antislop du site caché (mode « après »)
+
+- Rapport : `docs/anti-slop/audit-002-2026-10-24-site.md`. **Aucune correction faite** : le propriétaire choisit les numéros.
+- Méthode : 55 pages dans le navigateur (1366 et 1024 px, clair et sombre, 165 mesures, plus 320, 375 et 960 px pour l'en-tête), clavier sur 4 pages, relecture des gabarits et des styles par 2 relecteurs, chiffres comparés à `donnees-marche.json`.
+- Piège pour mesurer le site dans un navigateur de test : sans `localStorage['mdg-site:admin'] = '1'`, chaque page renvoie vers `maintenance.html` (la première mesure avait mesuré 165 fois la page de maintenance) ; poser cette clé avant le chargement, puis retirer la classe `garde`.
+- Résultat : 3 constats HAUTS (prix au détail présentés comme prix d'achat dans un guide, anneau de focus invisible sur fond clair, listes redessinées toutes les 2 minutes), 14 MOYENS, 15 BAS, 1 décision (D : l'eau en bleu). Sur ordinateur : aucune erreur, aucun débordement, aucun contraste de texte faible ; à 320 px l'en-tête déborde.
+
+## 24/10/2026 — Site : prix au détail, focus, listes stables (audit antislop du site n° 1 à 3)
+
+- **Prix au détail** (n° 1, `tools/site/guides/vendre-sa-recolte.html`) : la banane plantain « se vendait au détail » 90 F contre 380 F ; « Ce sont des prix au détail, pas des prix de gros » ; la comparaison avec l'OCPV dit « prix moyens au détail… c'est un repère, pas un prix de gros » ; la source dit « prix moyens au détail (à la consommation) ».
+- **Anneau de focus** (n° 2, `site/site.css`) : vert `#10392B` par défaut (10,8 à 12,6:1 sur les fonds clairs), maïs dans les zones foncées (`:where(.tete, .etal, …)` : `:where` pour ne pas gonfler la priorité ; `#garde` à part), vert sur les portes « J'ai / Je cherche » posées sur le fond clair. `DESIGN.md`, loi 28, précisée.
+- **Listes stables** (n° 3) : `poser(el, html)` dans `site/site.js` n'écrit une liste que si elle a changé (fil court, fil long, fil d'un produit ou d'un district, message d'erreur) ; même chose pour la liste de la page carte (`site/carte.js`). `aria-live` passe du bloc entier (titre compris) à la seule liste `#filCourt`.
+- Vérifié (navigateur, ordinateur 1366 px) : au clavier sur l'accueil et un guide, anneau vert sur fond clair, maïs sur fond foncé ; texte du guide correct ; aucune erreur JS. Le rafraîchissement des listes n'a pas pu être vu avec de vraies annonces (serveur bloqué) : vérifié par la relecture et `node --check`.
+- Site refabriqué par `node tools/site-public.js` (empreintes de `site.css`, `site.js`, `carte.js` mises à jour) ; cache `mgci-v244`.
+
+## 24/10/2026 — Site : textes justes, en-tête, sobriété (audit antislop du site n° 4 à 18)
+
+- **Textes** : « prix au détail » dans le titre de la page des prix, sa description et le lien de l'accueil, « Le prix moyen au détail, relevé par l'OCPV » sur les pages produits (n° 4) ; chiffre du transport daté « étude de 2008 (Mahyao), citée en 2019 » (n° 5) ; plus de promesses de résultat (« de toute la Côte d'Ivoire se trouvent », « les acheteurs vous écrivent », « plusieurs vendeurs vous répondent », « multiplie vos chances ») : on dit ce que fait l'application (« les acheteurs du réseau voient votre offre et peuvent vous écrire ») ; les districts « peuvent publier » (nouvelle donnée `DANS_MAJ` dans `tools/site-regions.js`) (n° 6) ; les portes et liens disent « J'ai · à vendre » et « Je cherche · à acheter », comme l'application (n° 7) ; « Cliquez » au lieu de « Touchez », plus de « sûrement » (n° 8, 19) ; plus de titres passe-partout « Passez à l'action », « Essayez le Marché de Gros » (n° 9) ; « masqué » au lieu de « bloqué » pour un numéro écrit dans un message (n° 18).
+- **États** (n° 10) : si le serveur ne répond pas, chaque liste encore vide dit « Les annonces ne s'affichent pas pour l'instant (réseau ?) » (`site/site.js`, évènement `site:fil-erreur` repris par `site/carte.js`) ; les pastilles de la carte sont vides (donc cachées, `.nbul:empty`) tant que rien n'est chargé.
+- **En-tête** (n° 11, 12) : sous 380 px, le bouton dit « L'application » et le logo rapetisse ; sous 980 px, le menu passe sur une deuxième ligne qui défile au lieu de disparaître. Mesuré : à 320 px la page fait 320 px (366 avant), menu visible à 320, 375 et 960 px.
+- **Sobriété** : l'étal et les points de la carte sont là d'un coup (n° 13) ; la photo des pages produits ne tombe plus, mouvement réduit complété (n° 14) ; plus de halo vert, aplat `--vert` (n° 15) ; deux garanties en avant (numéro caché, mot secret), les quatre autres en liste discrète (n° 16) ; plus de liseré sur les citations (n° 17).
+- Vérifié (navigateur, 7 pages : accueil, produit, district, carte, à propos, guide, prix ; 1366 px clair et sombre, 375 px) : aucune erreur, aucun débordement, aucun contraste faible, aucun texte sous 11,5 px, aucune boucle.
+- Site refabriqué ; cache `mgci-v245`.
+
+## 24/10/2026 — Site : finitions (audit antislop du site n° 19 à 32)
+
+- Fait en une seule opération : 4 équipes sur des fichiers séparés (guides, gabarits, style, scripts), chacune relue par un relecteur, puis intégration et mesure.
+- **Textes** (n° 19 à 24) : affirmations adoucies (« souvent », « une partie », « peut payer ») ; « En 2025 » pour le PAM ; plus de « Voici… » ni de listes de trois dans les chapôs ; phrases de plus de 30 mots coupées (le sens des chiffres sourcés vérifié par le relecteur) ; « Lire la carte » sans jargon, avec une ligne « Fonds de carte : … » ; partout « Marché de Gros CI ».
+- **Pages** : « pas relevé » au lieu de « — » dans les tableaux de prix (n° 25) ; pages produits : une phrase et un lien vers `#etapes` de l'accueil au lieu des 6 étapes recopiées (n° 26) ; listes « à garder » des guides en `<ul>` avec une coche dessinée (n° 27).
+- **Lecteurs d'écran et clavier** (n° 28, 29) : pastilles « 3 offres » en texte caché, images à `alt=""` quand le nom est écrit à côté, « Acheter : Tomate », tableau en lignes et cellules même pendant le chargement ou en cas d'erreur, plus de bulles d'aide sur les points ; page carte : le panneau vient avant la carte dans la page (la grille garde la carte à gauche), le focus revient où il était après « Fermer ».
+- **Style** (n° 30 à 32) : cibles de 44 px (fil d'Ariane, pied, liste et bouton fermer de la carte, mois du calendrier) ; familles du tableau des prix sans capitales ; `--texte-3: #655C4D` (5,4 à 6,5:1 sur tous ses fonds), hausse `#C0442B`, couleurs écrites en jetons ; hauteur de la carte tirée des jetons de l'en-tête. Restent en dur : les teintes transparentes et le bleu de l'eau (décision D, en attente).
+- N° 20 fini : 2e source pour les 5 600 cantines (KOACI, 10/10/2026, chiffres de la Direction des cantines scolaires cités par le ministre) ; la fiche PPPossible n'a aucune date, elle est marquée « sans date, consultée en octobre 2026 ».
+- Vérifié (navigateur, 7 pages, 1366 px clair et sombre, 375 px) : aucune erreur, aucun débordement, aucun contraste faible, focus visible au clavier ; carte 966 px à gauche, panneau 400 px à droite.
+- Site refabriqué ; cache `mgci-v246`.
+- **Décision D tranchée par le propriétaire** : l'eau (fleuves, lacs) reste en bleu sur les cartes. Écrit dans `CLAUDE.md`, `DESIGN.md` et le rapport d'audit. Rien à changer dans le code.
+
+## 24/10/2026 — Liste « À faire par le propriétaire »
+
+- Nouveau `docs/A-FAIRE-PROPRIETAIRE.md` : ce que seul le propriétaire peut faire, avec le mode d'emploi pas à pas. Pour l'instant : autoriser le serveur `catmsypctymgkjkfzdkt.supabase.co` dans l'environnement Claude (remis à plus tard par le propriétaire), puis un compte de test.
+- `CLAUDE.md` : au début d'une discussion, rappeler en une ligne les cases non cochées de cette liste ; « Décisions en attente » mis à jour. `docs/REPRISE.md`, partie 3, point 0 : remplacé par cette liste (l'audit antislop est terminé, PR #250 à #258).
+
 ## 24/10/2026 — Audit des 4 chantiers (transport, fiabilité, badges, boutiques)
 
 - Demande du propriétaire : 4 chantiers (commande et transport ; fiabilité et pénalités d'annulation ; badges évolutifs ; boutiques avec lien et QR code), à auditer avant toute modification.
@@ -1500,3 +1541,21 @@ Règles appliquées : décisions 11 à 21 de `docs/audits/decisions-chantiers-20
 - Tests (blocs annulés, projet de test) : ancien chemin → légitime, 0 sanction ; « pas d'accord » → abusive pour le vendeur + avertissement, 1 seule ligne, second appel refusé ; « d'accord » → légitime ; accepter sans répondre sur le motif refusé ; « autre » sans mot, motif inconnu, texte de 400 caractères refusés ; un tiers ne lit pas le motif et ne peut pas annuler ; le demandeur ne peut pas accepter lui-même ; l'acheteur ne peut pas contester une annulation du vendeur ; l'acheteur ne voit ni la catégorie, ni la contestation, ni la note de l'équipe ; le vendeur les voit ; vendeur suspendu : sa demande d'annulation et l'acceptation par l'acheteur passent, le stock revient sur l'annonce qui reste cachée ; droits réels : `authenticated` et `anon` refusés sur les tables et les fonctions internes, `anon` lit seulement `fiabilite_publique`.
 - Production (lecture seule) : aucune commande « à confirmer » en attente, donc la première expiration ne touchera rien.
 - Ordre pour la production : 83a à 83e, puis 84a, 84b, 84c, 84d, 84e, **84f**.
+
+## 24/10/2026 — Documentation officielle : FONCTIONNALITES, ROADMAP, ARCHITECTURE, CHANGELOG
+
+- Quatre fichiers à la racine, écrits après un inventaire du code (`main`) et de la base de production (catalogue et comptages seulement), chacun relu contre le code par un contrôleur :
+  - `FONCTIONNALITES.md` : 195 fonctionnalités, application d'abord, site à part ; 159 opérationnelles (beaucoup jamais servies en vrai, c'est écrit), 25 partielles, 6 prévues, 5 défectueuses ;
+  - `ROADMAP.md` : les 10 sujets demandés, avec leur état, et les décisions du propriétaire à développer ;
+  - `ARCHITECTURE.md` : application, site, Supabase (54 tables, fonctions, RLS, tâches planifiées, fonctions Edge), permissions, intégrations ;
+  - `CHANGELOG.md` : les 607 commits depuis le 03/10/2026, par jour.
+- Défauts trouvés (non corrigés, aucune logique touchée) : limite de 30 annonces qui peut effacer une annonce active au `sync()` ; diffusion « annonce du marché » jamais envoyée sans abonné au produit ; libellés « Paiement libéré » de l'écran admin sans mouvement d'argent ; ancienne note `noter` (code mort) ; refabrication automatique du site non déclenchée par `tools/site-prix.js` et `tools/site-regions.js`.
+- À tenir à jour : chaque PR qui ajoute ou change une fonctionnalité met à jour `FONCTIONNALITES.md` (et `ROADMAP.md` si un élément prévu avance), et ajoute sa ligne au `CHANGELOG.md`.
+
+## 24/10/2026 — Connexion : titre « de Gros » / « du pays »
+
+- Le propriétaire a demandé un « court film » sur l'écran de connexion (deux commerçantes, carte des villes, camion), puis l'a **refusé** après la vidéo d'aperçu. Le travail reste sur la branche `claude/scene-connexion`, non fusionnée. La scène actuelle ne change pas.
+- Gardé : le titre de la porte. « marché **de Gros** » monte et s'efface 3 s après l'apparition, « marché **du pays** » monte du bas avec le reflet doré, reste 2 s, puis le retour se fait à l'inverse ; la séquence recommence toutes les 10 s. CSS seulement (`v3/nuage.js` : `.ng-tt-pile`, `ngTtX`, `ngTtY`, `ngTtR`), les deux mots empilés dans la même case.
+- Vérifié (Chromium, iPhone 13) : titre et champ du numéro immobiles au pixel pendant 14 s ; aucune erreur ; mouvement réduit : reste « de Gros » ; « du pays » caché aux lecteurs d'écran. Rythme réglé en trois vidéos avec le propriétaire (10 s, puis 3 s, puis « du pays » 2 s), validé.
+- `v3/nuage.js?v=20261124v` (application, ancien site, admin, gabarit du site), site refabriqué ; cache `mgci-v256`.
+- Nouvelle règle dans `CLAUDE.md` : toute animation passe d'abord par une vidéo d'aperçu validée par le propriétaire.

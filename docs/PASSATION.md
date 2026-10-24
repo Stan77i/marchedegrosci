@@ -1452,3 +1452,13 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - Audit en lecture seule (code + base de production, catalogue seulement), chaque chantier relu par un contrôleur : `docs/audits/audit-chantiers-2026-10-24.md`.
 - 44 questions, avec une réponse recommandée pour chacune : `docs/audits/decisions-chantiers-2026-10-24.md`. Rien n'est construit avant l'accord du propriétaire.
 - Deux correctifs de sécurité trouvés (C1 : commission transport de 6,9 % possible avec un transporteur non vérifié, par appel direct ; C2 : droits trop larges sur `alertes`). Aucune mission ni commission transport en production à ce jour.
+
+## 24/10/2026 — Documentation officielle : FONCTIONNALITES, ROADMAP, ARCHITECTURE, CHANGELOG
+
+- Quatre fichiers à la racine, écrits après un inventaire du code (`main`) et de la base de production (catalogue et comptages seulement), chacun relu contre le code par un contrôleur :
+  - `FONCTIONNALITES.md` : 195 fonctionnalités, application d'abord, site à part ; 159 opérationnelles (beaucoup jamais servies en vrai, c'est écrit), 25 partielles, 6 prévues, 5 défectueuses ;
+  - `ROADMAP.md` : les 10 sujets demandés, avec leur état, et les décisions du propriétaire à développer ;
+  - `ARCHITECTURE.md` : application, site, Supabase (54 tables, fonctions, RLS, tâches planifiées, fonctions Edge), permissions, intégrations ;
+  - `CHANGELOG.md` : les 607 commits depuis le 03/10/2026, par jour.
+- Défauts trouvés (non corrigés, aucune logique touchée) : limite de 30 annonces qui peut effacer une annonce active au `sync()` ; diffusion « annonce du marché » jamais envoyée sans abonné au produit ; libellés « Paiement libéré » de l'écran admin sans mouvement d'argent ; ancienne note `noter` (code mort) ; refabrication automatique du site non déclenchée par `tools/site-prix.js` et `tools/site-regions.js`.
+- À tenir à jour : chaque PR qui ajoute ou change une fonctionnalité met à jour `FONCTIONNALITES.md` (et `ROADMAP.md` si un élément prévu avance), et ajoute sa ligne au `CHANGELOG.md`.

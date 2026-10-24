@@ -4,7 +4,7 @@ Mission du propriétaire du 24/10/2026 : un moteur de notifications commerciales
 
 Ce document fait suite à l'audit du matin (`docs/audits/audit-notifications-2026-10-24.md`, PR 282). Méthode : lecture du code (`supabase/schema-88a/88b`, `supabase/functions/pousser/index.ts`, `sw.js`, `v3/pousse.js`, `app/theme.js`, modules `v3/`) et de la base de **production en lecture seule**.
 
-**Rien n'est encore changé dans le code.** Les parties 3 et 4 sont des propositions à valider.
+**Mise à jour du 24/10/2026 (soir)** : le propriétaire a validé le plan avec ses changements (partie 6 bis). Il est **construit** : schéma 91 et fonction `pousser`, **testés sur le projet de test seulement**. La production se fera après l'accord du propriétaire. Les parties 3 et 4 gardent la proposition de départ ; ce qui a été construit autrement est signalé.
 
 ---
 
@@ -37,7 +37,7 @@ Mesuré en production le 24/10/2026 :
 - **Boutiques** : adresse, ouverture par le vendeur, **visites mesurées** (`boutique_passages` : vue, produit, partage, lien, QR ; 1 passage en production).
 - **Fiabilité, niveaux et badges** : sanctions, contestations, changements de niveau.
 - **Messages directs**, avis.
-- **Notifications** (PR 282) : catégories, préférences, plafond de 6 par personne et par jour, heures calmes (21 h à 7 h), anti-doublon, regroupement, journal, ouverture mesurée, statistiques.
+- **Notifications** (PR 282) : catégories, préférences, plafond de 6 par personne et par jour, heures calmes (21 h à 7 h), anti-doublon, regroupement, journal, ouverture mesurée, statistiques (état avant le schéma 91, qui a changé le plafond et retiré les préférences).
 
 ### Présent mais partiel ou jamais utilisé en production
 - **Achats groupés** : code complet, 0 groupe en production.
@@ -61,27 +61,27 @@ Mesuré en production le 24/10/2026 :
 | # | Événement réel | Destinataire | Condition | Écran ouvert | Catégorie | But |
 |---|---|---|---|---|---|---|
 | E1 | Nouvelle offre | Ceux qui suivent le produit, puis ceux qui l'ont déjà acheté, puis les acheteurs de la région | Pas l'auteur ; « ville seulement » respectée | Produit | offres | O, R |
-| **N1** | **Nouvelle offre qui répond à une demande active** | **L'auteur de la demande** | Même produit ; prix ≤ budget (ou pas de budget) ; même ville si l'un des deux est « ville seulement » | L'offre | offres | R |
+| **N1** | **Nouvelle offre qui répond à une demande active** | **L'auteur de la demande** | Offre de moins de 2 jours, même produit ; prix ≤ budget (ou pas de budget, ou unités différentes) ; même ville si l'un des deux est « ville seulement ». « Dans votre budget » n'est écrit que si le budget est vérifié (même unité, prix ≤ budget) | Le produit (`#/produits/<slug>`) | offres | R |
 | E2 | Nouvelle demande | Vendeurs qui ont une offre de ce produit ou en ont vendu (12 mois), même région d'abord | Pas l'auteur | La demande | pour_vendeur | R |
-| **N2** | **Proposition de prix sans réponse** | **Celui qui doit répondre** | 24 h sans réponse, une seule relance, 24 h avant l'expiration | La négociation | negociation | R |
+| **N2** | **Proposition de prix sans réponse** | **Celui qui doit répondre** | Plus de 24 h sans réponse, et encore plus de 6 h avant l'expiration ; une seule relance | La négociation | negociation | R |
 | **N3** | **Proposition qui expire bientôt** | Celui qui doit répondre | 6 h avant `expire_le`, si N2 n'a pas suffi | La négociation | negociation | R |
 | **N9** | **Accord conclu, commande pas créée** | Les deux personnes | 2 h après l'accord, aucune commande ; une seule fois | La négociation (bouton « Créer la commande ») | negociation | C |
-| **N4** | **Offre qui n'a pas bougé** | Le vendeur | Offre active, aucune mise à jour depuis 7 jours ; une fois par offre et par semaine | Son offre | stock | Mise à jour |
+| **N4** | **Offre qui n'a pas bougé** | Le vendeur | Offre active, aucune mise à jour depuis 7 jours ; une fois par offre et par semaine | Son offre | pour_vendeur | Mise à jour |
 | **N5** | **Demande sans offre, mais des offres ailleurs** | L'acheteur | Demande de plus de 48 h, aucune négociation ; au moins 1 offre active du produit ailleurs | Le produit | offres | O, R |
-| **N6** | **Demande qui arrive à sa date limite** | L'acheteur | 1 jour avant `deadline`, aucune commande | La demande | rappel | Prolonger ou fermer |
-| **N7** | **Visites de la boutique cette semaine** | Le vendeur | Au moins 3 visites en 7 jours ; le lundi matin seulement | Sa boutique | boutique | Partage |
-| **N8** | **Boutique pas encore ouverte** | Le vendeur | Au moins 1 offre active, pas de boutique ; **une seule fois dans la vie du compte** | Ouvrir la boutique | boutique | Ouverture |
+| **N6** | **Demande qui arrive à sa date limite** | L'acheteur | Échéance calculée depuis la date de publication (`created_at`) : « vite » + 2 jours, « semaine » + 7 jours, « mois » + 30 jours ; envoi quand elle tombe dans 12 à 36 h ; une fois | La demande | rappel | Prolonger ou fermer |
+| **N7** | **Visites de la boutique cette semaine** | Le vendeur | Au moins 3 visites en 7 jours ; le lundi seulement | Sa boutique (`#/boutique/<code>`) | conseils | Partage |
+| **N8** | **Boutique pas encore ouverte** | Le vendeur | Au moins 1 offre active depuis 1 jour, pas de boutique ; **une seule fois dans la vie du compte** | Ouvrir la boutique (`#/?maboutique=1`) | conseils | Ouverture |
 | E3 | Achat groupé à 80 % | Inscrits, et suiveurs du produit dans la zone | Une fois par groupe | Le groupe | groupes | Rejoindre |
 | E4 | Achat groupé : date limite demain | Inscrits | Une fois | Le groupe | groupe_suivi | Confirmer |
 | E5 | Besoin pro publié | Vendeurs du produit | Pas l'auteur | Le besoin | pour_vendeur | R |
 | E6 | Produit à racheter (rythme des commandes) | L'acheteur | Au moins 2 commandes terminées du même produit | Racheter | renouveler | C |
 | E7 | Rappel d'achat choisi | L'acheteur | Date choisie | Racheter | rappel | C |
-| E8 | Conseil du jour (chiffres réels) | Tous, selon le rôle | Seulement si aucun autre message commercial ce jour | Écran précis | conseils | O |
+| E8 | Contenu du marché (offres, demandes et prix réels) | Tous, selon le rôle | 4 par jour au plus, avec le même écart que les autres messages ; ne montre pas deux fois la même annonce en 3 jours | Écran précis | conseils | O |
 | E9 | Commande, négociation, litige, messages | Les personnes concernées | Toujours (transactionnel) | L'écran précis | trans. | Action |
 
 **Écartés volontairement** : « un acheteur a regardé votre offre » (non mesuré), « X personnes cherchent » sans demande publiée, toute urgence sans date réelle.
 
-**Décision du propriétaire (24/10/2026)** : comme l'application Orange Max it, ces notifications partent **toutes seules**, envoyées par le serveur. Elles sont actives par défaut et **aucun nouveau réglage** n'est ajouté. N4, N7 et N8 entrent dans les catégories qui existent déjà. Seule limite qu'on ne peut pas contourner : la personne doit avoir autorisé les notifications sur son téléphone, une fois, comme pour Max it.
+**Décision du propriétaire (24/10/2026)** : comme l'application Orange Max it, ces notifications partent **toutes seules**, envoyées par le serveur. Elles sont actives par défaut et **aucun nouveau réglage** n'est ajouté. N4 entre dans « pour_vendeur », N7 et N8 dans « conseils » : aucune nouvelle catégorie. Seule limite qu'on ne peut pas contourner : la personne doit avoir autorisé les notifications sur son téléphone, une fois, comme pour Max it.
 
 ---
 
@@ -142,7 +142,7 @@ Règles : titre de 45 caractères au plus, texte de 80 au plus. Chaque champ ent
 1. **Bientôt plus de [produit] ?** · « Vous en prenez tous les [n] jours environ. Voyez les offres du jour. »
 2. **Il y a [n] jours, vous preniez [quantité] de [produit]** · « Les offres du moment sont là. Rien n'est commandé sans vous. »
 
-### E8 · Conseil du jour (une fois par jour au plus, sans autre message ce jour)
+### E8 · Contenu du marché (4 par jour au plus ; à l'origine : « conseil du jour, sans autre message ce jour »)
 - Acheteur : **[Produit] : de [min] à [max] F le [unité]** · « Prix demandés dans [n] offres de votre région. »
 - Vendeur : **[n] professionnels cherchent un fournisseur** · « Restaurants, hôtels, cantines. Voyez leurs besoins. »
 - On retire les conseils sans chiffre ni événement (« Vendez en direct », « Négociez le prix »…) : ils ne donnent pas de vraie raison d'ouvrir l'application.
@@ -154,10 +154,9 @@ Règles : titre de 45 caractères au plus, texte de 80 au plus. Chaque champ ent
 Tout reste gratuit (Postgres, `pg_cron`, `pg_net`, Web Push) et passe par ce qui existe (`notif_preparer`, `notif_file`, `notif_journal`).
 
 1. **Nouveaux déclencheurs** :
-   - une tâche `notif_relances()` toutes les 15 minutes cherche N2 à N9 ;
-   - N1 s'ajoute à `notif_cible_annonce` (les auteurs des demandes compatibles passent en premier) ;
+   - une tâche `notif_relances()` toutes les 15 minutes cherche N1 à N9 (construit ainsi : N1 est dans `notif_relances`, pas dans `notif_cible_annonce` ; l'annonce générale de la même offre est alors mise de côté pour cette personne) ;
    - chacun a une **clé anti-doublon** (exemple : `relance:<message_id>`, `stock:<offre_id>:<semaine>`, `boutique_ouvrir:<user>`).
-2. **Plafond de la plateforme** : nouvelle règle `max_com_plateforme_jour` (30, réglable par l'administrateur). Quand il est atteint, les messages commerciaux attendent le lendemain ou sont abandonnés, jamais forcés.
+2. **Plafond de la plateforme** (proposé, **non construit**) : nouvelle règle `max_com_plateforme_jour` (30, réglable par l'administrateur). Le propriétaire a demandé de ne pas arrêter les envois : on espace seulement (partie 6 bis).
 3. **Priorité** quand le plafond est proche :
    1. N1 (offre pour ma demande) ;
    2. E2 et E5 (acheteur pour mes produits) ;
@@ -170,10 +169,10 @@ Tout reste gratuit (Postgres, `pg_cron`, `pg_net`, Web Push) et passe par ce qui
    9. E8.
 
    Le conseil du jour passe toujours en dernier.
-4. **Plafond par personne** :
-   - Proposition : passer de 6 à **3 messages commerciaux par jour** (à valider). L'objectif de 15 à 30 est un total pour toute la plateforme.
+4. **Plafond par personne** (construit autrement, partie 6 bis) :
+   - Proposition de départ : 3 messages commerciaux par jour. **Construit** : 8 par jour, dont 4 « contenus du marché » au plus, 90 min d'écart.
    - Heures calmes 21 h à 7 h, inchangées.
-   - **Repos** : après 3 notifications commerciales ignorées d'affilée, pause de 3 jours pour cette personne.
+   - Proposition de départ : pause de 3 jours après 3 messages ignorés. **Non construite** : à la place, l'écart passe à 180 min si les 5 derniers messages n'ont pas été ouverts.
 5. **Relances de négociation (N2, N3, N9)** : elles concernent un échange en cours, donc catégorie « Négociations ». Une seule de chaque par proposition.
 6. **Textes** : la bibliothèque de la partie 3 est écrite dans `pousser`. La version est choisie selon la personne et l'objet ; elle est la même en cas de nouvel essai.
 7. **Mesure** (le journal existe déjà) :
@@ -181,7 +180,7 @@ Tout reste gratuit (Postgres, `pg_cron`, `pg_net`, Web Push) et passe par ce qui
    - ajout des **« ignorées »** : envoyée, non ouverte au bout de 48 h ;
    - ajout du **taux par déclencheur** dans le tableau de bord ;
    - « délivrée » n'est pas mesurable avec Web Push, et ne sera pas prétendu.
-8. **Liens** : chaque message ouvre l'écran exact (`?nego=`, `?offre=`, `?demande=`, `#/produits/<slug>`, `?boutique=1`). Les écrans manquants seront vérifiés un par un.
+8. **Liens** : chaque message ouvre l'écran exact (`?nego=`, `?offre=`, `?demande=`, `#/produits/<slug>`, `#/boutique/<code>`, `#/?maboutique=1`). Les écrans manquants seront vérifiés un par un.
 
 ---
 
@@ -191,7 +190,7 @@ Sur le **projet de test**, sans rien laisser (blocs annulés) : pour chaque déc
 - la bonne personne reçoit ;
 - l'auteur ne reçoit pas ;
 - « ville seulement » est respectée ;
-- les préférences coupées, les heures calmes, le plafond par personne et le plafond de la plateforme fonctionnent ;
+- les heures calmes, le plafond par personne et l'écart entre deux messages fonctionnent (les anciennes préférences ne comptent plus ; le plafond de la plateforme n'est pas construit) ;
 - il n'y a pas de doublon ;
 - le lien est le bon.
 
@@ -201,7 +200,7 @@ Les écrans ouverts par chaque lien sont vérifiés dans Chromium (iPhone émul�
 
 ## 6. Ce qui reste bloqué
 
-- **Réception sur un vrai téléphone** : jamais vérifiée. Le serveur répond « envoyé » (HTTP 200), mais seul un essai sur Android et sur iPhone (application installée sur l'écran d'accueil) le prouvera. À faire par le propriétaire : Réglages → Notifications → Essai.
+- **Réception sur un vrai téléphone** : jamais vérifiée. Le serveur répond « envoyé » (HTTP 200), mais seul un essai sur Android et sur iPhone (application installée sur l'écran d'accueil) le prouvera. À faire par le propriétaire : Menu → Réglages → Notifications → Essai.
 - **Projet de test sans clés push** : les envois se testent en SQL (cibles, plafonds, journal), pas jusqu'au téléphone. Copier les clés dans le projet de test est un choix du propriétaire.
 - **Recherches non enregistrées** : impossible de dire « un acheteur recherche… » sans demande publiée.
 - **Volume** : avec 1 compte joignable, le moteur enverra peu. C'est voulu.
@@ -212,15 +211,15 @@ Les écrans ouverts par chaque lien sont vérifiés dans Chromium (iPhone émul�
 
 - **Comme Orange Max it** : envoi automatique, aucun nouveau réglage à activer (seule l'autorisation du téléphone, une fois).
 - **Pas d'arrêt après 2 ou 3 messages** : les membres reçoivent des notifications au fil de la journée, « intelligentes et subtiles », jamais la nuit. Construit (schéma 91) : 8 au plus par jour et par personne, 90 min d'écart (180 si les 5 derniers n'ont pas été ouverts), 7 h à 21 h, 4 « contenus du marché » au plus par jour en plus des événements.
-- Les interrupteurs existants de Réglages sont gardés (pour celui qui veut couper), les messages partent sans rien activer.
+- **Plus aucun réglage par catégorie** : les interrupteurs de Réglages sont retirés, et le serveur ignore les anciennes préférences (`_notif_pref` répond toujours « oui »). Seul choix : activer ou désactiver les notifications sur le téléphone (Menu → Réglages → Notifications).
 - Le reste du plan est validé (« je suis d'accord avec tout ce que tu as fait »).
 
-## 7. À valider par le propriétaire
+## 7. Les points soumis au propriétaire, et ce qu'ils sont devenus
 
-1. Les nouveaux déclencheurs N1 à N9.
-2. Le ton et les phrases de la bibliothèque (partie 3) : à corriger, garder ou retirer.
-3. Plafond de la plateforme : 30 par jour.
-4. Plafond par personne : 3 par jour (au lieu de 6).
-5. Pause de 3 jours après 3 messages ignorés d'affilée.
+1. Les nouveaux déclencheurs N1 à N9 : validés, construits (schéma 91, test seulement).
+2. Le ton et les phrases de la bibliothèque (partie 3) : validés avec le reste du plan.
+3. Plafond de la plateforme (30 par jour) : **non construit** (le propriétaire ne veut pas d'arrêt).
+4. Plafond par personne : 8 par jour, dont 4 contenus du marché, 90 min d'écart (au lieu de 3 par jour).
+5. Pause de 3 jours après 3 messages ignorés : **non construite** ; l'écart passe à 180 min si les 5 derniers ne sont pas ouverts.
 6. ~~Deux nouveaux réglages~~ : refusé par le propriétaire (envoi automatique, sans réglage).
-7. Retrait des conseils sans chiffre ni événement.
+7. Retrait des conseils sans chiffre ni événement : validé.

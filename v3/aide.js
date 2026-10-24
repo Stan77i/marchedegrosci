@@ -133,11 +133,11 @@
     ['chauffeur', 'Chauffeur : l’acheteur refuse la marchandise', 'L’application vous demande ce que vous avez vu. Répondez *honnêtement*. Si vous êtes vérifié par l’équipe, votre réponse compte dans la décision. Votre transport reste dû.', 'chauffeur refus vu temoin confirmer', 'chauffeur'],
     // L'application
     ['appli', 'Comment installer l’application ?', 'Ouvrez le Marché de Gros dans le navigateur du téléphone. Sur iPhone : touchez le bouton *Partager*, puis « *Sur l’écran d’accueil* ». Sur Android : menu du navigateur, puis « *Installer l’application* » ou « Ajouter à l’écran d’accueil ».', 'installer telecharger application ecran accueil icone play store', null],
-    ['appli', 'Je ne reçois pas les notifications', 'Mon compte → *Notifications* : activez-les sur ce téléphone. Vérifiez aussi les réglages du téléphone (Notifications → Marché de Gros). Sur iPhone, l’application doit être installée sur l’écran d’accueil.', 'notification recois pas alerte son prevenu push', 'compte'],
+    ['appli', 'Je ne reçois pas les notifications', 'Menu → « *Réglages* » → Notifications : activez-les sur ce téléphone. Vérifiez aussi les réglages du téléphone (Notifications → Marché de Gros). Sur iPhone, l’application doit être installée sur l’écran d’accueil.', 'notification recois pas alerte son prevenu push', 'reglages'],
     ['appli', 'Comment passer en mode sombre ?', 'Menu → « *Réglages* » : Clair, Sombre, ou Comme le téléphone.', 'mode sombre nuit noir clair theme couleur', 'reglages'],
     ['appli', 'Ça marche sans internet ?', 'Les annonces déjà vues restent affichées. Ce que vous publiez sans réseau est gardé sur le téléphone, puis envoyé dès que le réseau revient.', 'sans internet hors ligne reseau connexion data pas de reseau', null],
     ['appli', 'L’application est bloquée ou lente', 'Fermez-la *complètement*, puis rouvrez-la. Vérifiez le réseau. Après une mise à jour, attendez une minute avant de rouvrir. Toujours un souci ? Écrivez à l’équipe ci-dessous.', 'bloque lent bug plante marche pas erreur page blanche', null],
-    ['appli', 'Revoir les tutoriels', 'Menu → Réglages → « *Aide pour débuter* » : revoir un tutoriel ou tout couper. Le guide complet est dans le menu : « *Comment ça marche* ».', 'tutoriel tuto aide revoir guide comment ca marche explication', 'guide']
+    ['appli', 'Revoir les tutoriels', 'Ici, dans L’aide : effacez la recherche, puis en bas de la page touchez « *Revoir un tutoriel* » (la démo de la roue y est aussi). Le guide complet est dans le menu : « *Comment ça marche* ».', 'tutoriel tuto aide revoir guide comment ca marche explication', 'guide']
   ].map(([t, q, r, m, a], i) => ({ id: 'q' + i, t, q, r, m: m || '', a }));
 
   // les plus utiles d'abord, quand rien n'est encore écrit

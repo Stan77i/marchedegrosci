@@ -140,7 +140,7 @@ html[data-theme=sombre] .rg-ss{color:#E8DFCC}html[data-theme=sombre] .rg-ss smal
           if (k === 'Vibrations au toucher') { MDGVibre.regler(i.checked); dire(i.checked ? 'Vibrations *activées*' : 'Vibrations *coupées*'); }
           else if (k === 'Astuces et tutoriels') { if (i.checked) { MDGAstuces.revoir(); try { localStorage.removeItem('mdg-demo:orbite'); } catch (_) {} } else MDGAstuces.regler(false); dire(i.checked ? 'Astuces *activées* : elles reviennent comme pour un nouveau' : 'Astuces, tutoriels et démo automatique *coupés*'); setTimeout(peindre, 0); }
           else if (k === 'Démo de la roue au démarrage') { MDGDemo.regler({ auto: i.checked }); dire(i.checked ? 'Démo au démarrage *activée*' : 'Démo au démarrage *coupée*'); }
-          else if (k === 'Bouton « Démo » sur l’accueil') { MDGDemo.regler({ bouton: i.checked }); dire(i.checked ? 'Bouton Démo *affiché*' : 'Bouton Démo *caché* : la démo reste ici, dans les réglages'); }
+          else if (k === 'Bouton « Démo » sur l’accueil') { MDGDemo.regler({ bouton: i.checked }); dire(i.checked ? 'Bouton Démo *affiché*' : 'Bouton Démo *caché* : la démo reste dans L’aide (Revoir un tutoriel)'); }
           else if (k === 'Messages à l’écran') { const o = lirePrefs(); o.toasts = i.checked; localStorage.setItem('mdg-compte:prefs', JSON.stringify(o)); dire('Réglage *enregistré*'); }
         } catch (x) { i.checked = !i.checked; dire((window.MDGErreur ? MDGErreur(x) : 'Impossible : ' + ((x && x.message) || 'réessayez'))); }
         i.disabled = false;

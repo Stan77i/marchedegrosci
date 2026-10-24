@@ -13,6 +13,17 @@
 alter table public.notif_regles add column if not exists ecart_min int not null default 90;
 update public.notif_regles set max_com_jour = 8, max_conseils_jour = 4, ecart_min = 90, maj_le = now() where id = 1;
 
+-- Décision du propriétaire « aucun réglage » : les notifications partent toutes seules, seule l'autorisation du téléphone compte.
+-- Les préférences anciennes (notif_prefs, notif_reglages.diffusions) restent en base mais ne sont plus appliquées.
+create or replace function public._notif_pref(p_user uuid, p_cat text)
+returns boolean language sql stable security definer set search_path = public as $$
+  select true
+$$;
+revoke execute on function public._notif_pref(uuid, text) from public, anon, authenticated;
+
+-- N5 cherche les offres déjà annoncées pour une demande par notif_file.regroupe
+create index if not exists notif_file_regroupe_idx on public.notif_file (regroupe);
+
 -- dernier message commercial parti (ou en cours) pour une personne
 create or replace function public._notif_dernier_com(p_user uuid)
 returns timestamptz language sql stable security definer set search_path = public as $$
@@ -86,12 +97,17 @@ begin
   select array_agg(x.id) into ids from (
     select f.id from public.notif_file f join public.notif_categories c on c.cat = f.cat
     where f.etat = 'attente' and c.nature = 'trans'
+      -- les relances automatiques ne partent pas la nuit : elles attendent 7 h
+      and not (calme and coalesce(f.type, '') in ('relance_prix', 'expire_bientot', 'accord_sans_commande', 'demande_fin'))
     union
     select f.id from public.notif_file f
     join (
       select distinct on (f2.user_id) f2.user_id, f2.regroupe
       from public.notif_file f2 join public.notif_categories c2 on c2.cat = f2.cat
       where f2.etat = 'attente' and c2.nature = 'com' and not calme and public._notif_ecart_ok(f2.user_id)
+        -- plafond du jour vérifié avant de prendre : sinon le message serait pris puis refusé « plafond » et perdu
+        and public._notif_com_jour(f2.user_id) < (select r.max_com_jour from public.notif_regles r where r.id = 1)
+        and (f2.cat <> 'conseils' or public._notif_com_jour(f2.user_id, 'conseils') < (select r.max_conseils_jour from public.notif_regles r where r.id = 1))
       order by f2.user_id, public._notif_rang(f2.type), f2.id
     ) choix on choix.user_id = f.user_id and choix.regroupe = f.regroupe
     where f.etat = 'attente'
@@ -195,19 +211,26 @@ declare n1 int := 0; n2 int := 0; n3 int := 0; n4 int := 0; n5 int := 0; n6 int 
 begin
   if public._notif_calme() then return json_build_object('calme', true); end if;
 
-  -- N1 : une offre récente (2 jours) répond à une demande active du même produit (budget respecté si même unité ; ville si « ville seulement »)
+  -- N1 : une offre récente (2 jours) répond à une demande active du même produit (budget respecté si même unité ; ville de
+  -- référence si « ville seulement », règle 87b/87c). La meilleure offre par demande ; celles déjà en file sont écartées avant la limite.
   for r in
-    select distinct on (d.id) d.user_id u, o.id oid, d.id did, o.product_slug slug, coalesce(nullif(o.product_label, ''), o.product_slug) lib,
-      o.quantity q, coalesce(o.unit, 'kg') un, o.price px, o.city vi, d.quantity dq
-    from public.offres o join public.demandes d on d.product_slug = o.product_slug and d.status = 'active' and d.user_id <> o.user_id
-    where o.status = 'active' and o.pause_le is null and o.created_at > now() - interval '2 days' and exists (select 1 from public.push_abonnements s where s.user_id = d.user_id)
-      and (d.budget is null or o.price is null or coalesce(d.unit, 'kg') <> coalesce(o.unit, 'kg') or o.price <= d.budget)
-      and (not (coalesce(o.ville_seulement, false) or coalesce(d.ville_seulement, false)) or public._ville_cle(o.city) = public._ville_cle(d.city))
-    order by d.id, o.price nulls last, o.created_at desc
+    select * from (
+      select distinct on (d.id) d.user_id u, o.id oid, d.id did, o.product_slug slug, coalesce(nullif(o.product_label, ''), o.product_slug) lib,
+        o.quantity q, coalesce(o.unit, 'kg') un, o.price px, o.city vi, d.quantity dq, coalesce(d.unit, 'kg') dun,
+        (d.budget is not null and o.price is not null and coalesce(d.unit, 'kg') = coalesce(o.unit, 'kg') and o.price <= d.budget) bok
+      from public.offres o join public.demandes d on d.product_slug = o.product_slug and d.status = 'active' and d.user_id <> o.user_id
+      where o.status = 'active' and o.pause_le is null and o.created_at > now() - interval '2 days' and exists (select 1 from public.push_abonnements s where s.user_id = d.user_id)
+        and (d.budget is null or o.price is null or coalesce(d.unit, 'kg') <> coalesce(o.unit, 'kg') or o.price <= d.budget)
+        and (not (coalesce(o.ville_seulement, false) or coalesce(d.ville_seulement, false))
+             or public._ville_cle(public._ville_ref(o.city)) = public._ville_cle(public._ville_ref(d.city)))
+      order by d.id, o.price nulls last, o.created_at desc
+    ) m
+    where not exists (select 1 from public.notif_file f where f.cle = 'n1:' || m.oid || ':' || m.did)
     limit 300
   loop
     n1 := n1 + public._notif_mettre(r.u, 'offres', 'offre_pour_demande', 'n1:' || r.oid || ':' || r.did, 'n1:' || r.did, r.oid::text, r.slug, r.lib,
-      'application.dc.html#/produits/' || r.slug, jsonb_build_object('quantite', r.q, 'unite', r.un, 'prix', r.px, 'ville', public._ville_nom(r.vi), 'demande_qte', r.dq));
+      'application.dc.html#/produits/' || r.slug, jsonb_build_object('quantite', r.q, 'unite', r.un, 'prix', r.px, 'ville', public._ville_nom(r.vi), 'demande_qte', r.dq,
+        'demande_unite', r.dun, 'budget_ok', r.bok));
     -- l'annonce générale de la même offre devient inutile pour cette personne (rien n'est effacé)
     update public.notif_file set etat = 'perime', pris_le = now()
     where etat = 'attente' and user_id = r.u and type = 'offre' and objet_id = r.oid::text;
@@ -251,6 +274,7 @@ begin
       o.price px, coalesce(o.maj_le, o.created_at) depuis
     from public.offres o
     where o.status = 'active' and o.pause_le is null and coalesce(o.maj_le, o.created_at) < now() - interval '7 days' and exists (select 1 from public.push_abonnements s where s.user_id = o.user_id)
+      and not exists (select 1 from public.notif_file f where f.cle = 'n4:' || o.id || ':' || sem)
     order by coalesce(o.maj_le, o.created_at)
     limit 300
   loop
@@ -258,14 +282,18 @@ begin
       'application.dc.html#/mes-publications', jsonb_build_object('quantite', r.q, 'unite', r.un, 'prix', r.px, 'depuis', r.depuis));
   end loop;
 
-  -- N5 : demande active de plus de 48 h, sans négociation, alors que le produit est proposé ailleurs → l'acheteur, une fois
+  -- N5 : demande active de plus de 48 h, sans négociation, alors que le produit est proposé dans une autre ville par des offres
+  -- commandables (pas « ville seulement ») → l'acheteur, une fois. nb et villes ne comptent que ces offres.
   for r in
     select d.id, d.user_id u, d.product_slug slug, coalesce(nullif(d.product_label, ''), d.product_slug) lib, d.city,
       count(o.id) nb, (array_agg(distinct public._ville_nom(o.city)) filter (where o.city is not null))[1:2] villes
     from public.demandes d join public.offres o on o.product_slug = d.product_slug and o.status = 'active' and o.pause_le is null and o.user_id <> d.user_id
+      and not coalesce(o.ville_seulement, false)
+      and public._ville_cle(public._ville_ref(o.city)) is distinct from public._ville_cle(public._ville_ref(d.city))
     where d.status = 'active' and d.created_at < now() - interval '48 hours' and exists (select 1 from public.push_abonnements s where s.user_id = d.user_id)
       and not exists (select 1 from public.negociations n where n.cible = 'demande' and n.cible_id = d.id)
       and not exists (select 1 from public.notif_file f where f.regroupe = 'n1:' || d.id)   -- déjà prévenu d'une offre pour cette demande
+      and not exists (select 1 from public.notif_file f where f.cle = 'n5:' || d.id)
       and not coalesce(d.ville_seulement, false)
     group by d.id, d.user_id, d.product_slug, d.product_label, d.city
     limit 300
@@ -274,16 +302,22 @@ begin
       'application.dc.html#/produits/' || r.slug, jsonb_build_object('nb', r.nb, 'villes', to_jsonb(r.villes), 'ville', public._ville_nom(r.city)));
   end loop;
 
-  -- N6 : demande active dont la date limite tombe dans 12 à 36 h → l'acheteur, une fois
+  -- N6 : demande active dont l'échéance tombe dans 12 à 36 h → l'acheteur, une fois. demandes.deadline est un texte libre
+  -- (« vite », « semaine », « mois ») : l'échéance se calcule depuis created_at, le texte n'est jamais converti en date.
   for r in
-    select d.id, d.user_id u, d.product_slug slug, coalesce(nullif(d.product_label, ''), d.product_slug) lib, d.deadline
-    from public.demandes d
-    where d.status = 'active' and d.deadline ~ '^\d{4}-\d{2}-\d{2}' and exists (select 1 from public.push_abonnements s where s.user_id = d.user_id)
-      and (left(d.deadline, 10)::date + time '18:00') at time zone 'UTC' between now() + interval '12 hours' and now() + interval '36 hours'
+    select * from (
+      select d.id, d.user_id u, d.product_slug slug, coalesce(nullif(d.product_label, ''), d.product_slug) lib,
+        d.created_at + case lower(btrim(d.deadline)) when 'vite' then interval '2 days' when 'semaine' then interval '7 days'
+          when 'mois' then interval '30 days' end limite
+      from public.demandes d
+      where d.status = 'active' and exists (select 1 from public.push_abonnements s where s.user_id = d.user_id)
+        and not exists (select 1 from public.notif_file f where f.cle = 'n6:' || d.id)
+    ) e
+    where e.limite between now() + interval '12 hours' and now() + interval '36 hours'
     limit 300
   loop
     n6 := n6 + public._notif_mettre(r.u, 'rappel', 'demande_fin', 'n6:' || r.id, 'n6:' || r.id, r.id::text, r.slug, r.lib,
-      'application.dc.html#/mes-publications', jsonb_build_object('limite', r.deadline));
+      'application.dc.html#/mes-publications', jsonb_build_object('limite', r.limite));
   end loop;
 
   -- N7 : le lundi, visites de la boutique sur 7 jours (3 au moins) → le vendeur, une fois par semaine
@@ -301,10 +335,12 @@ begin
 
   -- N8 : vendeur avec au moins une offre active depuis 1 jour, sans boutique → une seule fois dans la vie du compte
   for r in
-    select distinct o.user_id u, count(*) over (partition by o.user_id) nb
+    select o.user_id u, count(*) nb
     from public.offres o
     where o.status = 'active' and o.created_at < now() - interval '1 day' and exists (select 1 from public.push_abonnements s where s.user_id = o.user_id)
       and not exists (select 1 from public.boutiques b where b.user_id = o.user_id)
+      and not exists (select 1 from public.notif_file f where f.cle = 'n8:' || o.user_id)
+    group by o.user_id
     limit 300
   loop
     n8 := n8 + public._notif_mettre(r.u, 'conseils', 'boutique_ouvrir', 'n8:' || r.u, 'n8:' || r.u, null, null, null,
@@ -323,9 +359,15 @@ begin
   nv := public.notif_groupes_veille();
   if extract(minute from now()) < 15 then nr := public.notif_renouveler_calculer(); end if;
   na := public.notif_actions_calculer();
-  rel := public.notif_relances();
+  -- une erreur dans les relances n'empêche jamais l'envoi des notifications transactionnelles
+  begin
+    rel := public.notif_relances();
+  exception when others then
+    rel := json_build_object('erreur', left(sqlerrm, 200));
+  end;
   select count(*) into attente from public.notif_file f join public.notif_categories c on c.cat = f.cat
-  where f.etat = 'attente' and (c.nature = 'trans' or not public._notif_calme());
+  where f.etat = 'attente' and (not public._notif_calme()
+    or (c.nature = 'trans' and coalesce(f.type, '') not in ('relance_prix', 'expire_bientot', 'accord_sans_commande', 'demande_fin')));
   if attente = 0 then return format('veille %s, renouveler %s, actions %s, relances %s, rien à envoyer', nv, nr, na, rel); end if;
   select decrypted_secret into v_url from vault.decrypted_secrets where name = 'mdg_push_url';
   select decrypted_secret into v_cle from vault.decrypted_secrets where name = 'mdg_push_cle';

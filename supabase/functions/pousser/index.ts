@@ -31,6 +31,9 @@
 // 18. par la base (pg_cron « mdg-notif », public.notif_tick, schéma 88) avec { lots: true } : les messages en file d'attente
 //     (nouvelles offres et demandes, groupe bientôt complet, veille de la date limite, produit à racheter), regroupés par
 //     personne et par sujet : « 3 nouvelles offres : Tomate ».
+// v22 (24/10/2026, schéma 91) : textes commerciaux relus : accord et pluriel des unités (« 40 caisses », « 5 000 F la caisse »),
+//     élision juste (« de haricot », « d'œufs »), un prix jamais coupé (version plus courte), « Dans votre budget » seulement si
+//     la base l'a vérifié, échéances réelles (aujourd'hui, demain, « jusqu'au 27/10 »), anti-répétition lue par paquets.
 // v21 (24/10/2026, schéma 88) : chaque envoi a une catégorie (transactionnel ou commercial), passe par public.notif_preparer
 //     (préférences, plafond de 6 messages commerciaux par jour dont 1 conseil, heures calmes 21 h - 7 h, clé anti-doublon,
 //     journal) et porte un identifiant d'envoi « nid » que le téléphone renvoie au clic (public.notif_ouverte). Le résultat
@@ -145,29 +148,49 @@ const jourUTC = () => new Date().toISOString().slice(0, 10);
 // (la même personne et le même objet donnent toujours la même phrase ; deux objets différents donnent souvent deux phrases différentes)
 const variante = (cle: string, n: number) => { let h = 0; for (const c of cle) h = (h * 31 + c.charCodeAt(0)) >>> 0; return n > 0 ? h % n : 0; };
 const minus = (t: string) => t ? t.charAt(0).toLowerCase() + t.slice(1) : t;
+// élision : « d'igname », « d'œufs », « d'huile », mais « de haricot » (h aspiré) et « de yaourt »
+const H_ASPIRE = /^(haricot|hareng|hachis|haddock|homard|houblon|hamburger|hot)/;
+const elide = (t: string) => { const x = t.toLowerCase(); return /^[aeiouéèêëàâäîïôöûüœæ]/.test(x) || (/^h/.test(x) && !H_ASPIRE.test(x)); };
 // « de tomate », « d'igname »
-const de = (t: string) => (/^[aeiouyhéèêàâîôû]/i.test(t) ? "d'" : "de ") + minus(t);
-// quantité lisible : 2 000 kg → 2 t
+const de = (t: string) => (elide(t) ? "d'" : "de ") + minus(t);
+// « d'Awa K. », « de Koffi » (un nom garde sa majuscule)
+const deNom = (t: string) => (elide(t) ? "d'" : "de ") + t;
+// unités : genre et pluriel (« 2 tonnes », « 40 sacs », « 5 000 F la caisse », « 300 F l'unité »)
+const FEM = new Set(["tonne", "caisse", "cagette", "botte", "unité", "bassine", "boîte", "boite", "douzaine", "barrique", "bouteille", "palette", "cuvette", "calebasse", "assiette", "grappe", "main", "boule", "tine"]);
+const uNom = (u: string) => { const x = String(u || "").trim(); return /^t$/i.test(x) ? "tonne" : /^l$/i.test(x) ? "litre" : x; };
+const plur = (n: number, u: string) => !(n >= 2) || !u || /[sxz]$|^(kg|g|t|l)$/i.test(u) ? u : /(eau|au|eu)$/i.test(u) ? u + "x" : u + "s";
+const art = (u: string) => { const x = uNom(u); return /^[aeiouéèêàâîôûœ]/i.test(x) ? "l'" + x : (FEM.has(x.toLowerCase()) ? "la " : "le ") + x; };
+// quantité lisible : 2 000 kg → 2 t ; « 40 sacs », « 1 caisse »
 const qteTxt = (q: unknown, u: string) => {
   const n = Number(q || 0); if (!(n > 0)) return "";
   if (/^kg$/i.test(u) && n >= 1000) return `${nf(Math.round(n / 100) / 10)} t`;
-  return `${nf(n)} ${u}`;
+  return `${nf(n)} ${plur(n, u)}`;
 };
-const prixU = (p: unknown, u: string) => Number(p) > 0 ? `${nf(p as number)} F le ${u}` : "";
-// « aujourd'hui à 18 h », « demain à 9 h 30 » (heure d'Abidjan = UTC)
+const prixU = (p: unknown, u: string) => Number(p) > 0 ? `${nf(p as number)} F ${art(u)}` : "";
+// la première version qui tient dans la limite : un prix ou un nombre n'est jamais coupé (la dernière version n'en a pas)
+const fit = (n: number, ...c: string[]) => { const ok = c.filter(Boolean); return ok.find((x) => x.length <= n) ?? coupe(ok[ok.length - 1] || "", n); };
+const T45 = (...c: string[]) => fit(TITRE, ...c), B80 = (...c: string[]) => fit(TEXTE, ...c);
+// le jour d'une échéance : « aujourd'hui », « demain », « le 27/10 » (heure d'Abidjan = UTC)
+const jourDe = (t: unknown) => {
+  const x = new Date(String(t)); if (!t || isNaN(+x)) return "";
+  const j = (y: Date) => y.toISOString().slice(0, 10);
+  if (j(x) === j(new Date())) return "aujourd'hui";
+  if (j(x) === j(new Date(Date.now() + 86400e3))) return "demain";
+  return `le ${x.getUTCDate()}/${x.getUTCMonth() + 1}`;
+};
+// « aujourd'hui à 18 h », « demain à 9 h 30 », « le 27/10 à 9 h »
 const quandTxt = (t: unknown) => {
   const x = new Date(String(t)); if (!t || isNaN(+x)) return "";
-  const j = (y: Date) => y.toISOString().slice(0, 10), h = `${x.getUTCHours()} h${x.getUTCMinutes() ? " " + String(x.getUTCMinutes()).padStart(2, "0") : ""}`;
-  if (j(x) === j(new Date())) return "aujourd'hui à " + h;
-  if (j(x) === j(new Date(Date.now() + 86400e3))) return "demain à " + h;
-  return `le ${x.getUTCDate()}/${x.getUTCMonth() + 1} à ${h}`;
+  return `${jourDe(t)} à ${x.getUTCHours()} h${x.getUTCMinutes() ? " " + String(x.getUTCMinutes()).padStart(2, "0") : ""}`;
 };
+// « jusqu'à 18 h », « jusqu'à demain à 9 h », « jusqu'au 27/10 à 9 h »
+const jusqua = (h: string) => !h ? "" : h.startsWith("le ") ? "jusqu'au " + h.slice(3) : "jusqu'à " + h.replace(/^aujourd'hui à /, "");
 const dateCourte = (t: unknown) => { const x = new Date(String(t)); return !t || isNaN(+x) ? "" : `${x.getUTCDate()}/${x.getUTCMonth() + 1}`; };
 const phrase = (...p: string[]) => p.filter(Boolean).join(", ");
-// « d'Awa K. », « de Koffi » (un nom garde sa majuscule)
-const deNom = (t: string) => (/^[aeiouyhéèêàâîôû]/i.test(t) ? "d'" : "de ") + t;
 // « 2 t à Bouaké » (sans virgule entre la quantité et la ville)
 const qteVille = (q: string, v: string) => [q, v ? "à " + v : ""].filter(Boolean).join(" ");
+// « Bouaké », « Bouaké et Daloa », « Bouaké, Daloa et Man »
+const liste = (v: string[]) => v.length > 1 ? v.slice(0, -1).join(", ") + " et " + v[v.length - 1] : v[0] || "";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
@@ -476,93 +499,128 @@ Deno.serve(async (req) => {
         const meta: Meta = { cat: l.cat, cle: "lot:" + l.premier_id, type: l.type, objet: l.objet_id || undefined, slug: l.slug || undefined };
         const tag = l.cat + "-" + (l.slug || l.regroupe), url = l.url;
         const i = (k: number) => variante(l.user_id + ":" + (l.objet_id || l.regroupe), k);
+        // le nom de l'autre partie ; « votre interlocuteur » en minuscules au milieu d'une phrase
         const qui = async () => d.par ? await nomDe(String(d.par)) : "Votre interlocuteur";
+        const milieu = (p: string) => p === "Votre interlocuteur" ? "votre interlocuteur" : p;
         const M = (title: string, body: string, t = tag) => [{ title, body, tag: t, url }, meta] as [Record<string, unknown>, Meta];
         switch (l.type) {
           case "offre_pour_demande": {
             const det = phrase(qteVille(q, ville), px);
+            // la quantité demandée dans l'unité de la demande (jamais celle de l'offre)
+            const dq = d.demande_unite ? qteTxt(d.demande_qte, String(d.demande_unite)) : "";
+            const pour = T45(`Une offre pour votre demande ${de(lib)}`, `${lib} : une offre pour vous`, "Une offre pour votre demande");
             return [
-              M(px && ville ? `${lib} à ${ville} : ${px}` : `Une offre pour votre demande ${de(lib)}`, `Ça répond à votre demande${d.demande_qte ? " de " + qteTxt(d.demande_qte, u) : ""}. Faites votre prix au vendeur.`),
-              M(`Une offre pour votre demande ${de(lib)}`, det ? `${det}. Le vendeur attend votre proposition.` : "Le vendeur attend votre proposition."),
-              M(ville ? `${lib} : un vendeur à ${ville}` : `${lib} : un vendeur pour vous`, px ? `Dans votre budget : ${px}. Ouvrez l'offre et négociez.` : "Ouvrez l'offre et proposez votre prix."),
+              M(T45(px && ville ? `${lib} à ${ville} : ${px}` : "", px ? `${lib} : ${px}` : "", pour), `Ça répond à votre demande${dq ? " de " + dq : ""}. Faites votre prix au vendeur.`),
+              M(pour, B80(det ? `${det}. Le vendeur attend votre proposition.` : "", px ? `${px}. Le vendeur attend votre proposition.` : "", "Le vendeur attend votre proposition.")),
+              // « Dans votre budget » seulement quand la base l'a vérifié
+              M(T45(ville ? `${lib} : un vendeur à ${ville}` : "", `${lib} : un vendeur pour vous`, "Un vendeur pour votre demande"),
+                px ? B80(d.budget_ok === true ? `Dans votre budget : ${px}. Ouvrez l'offre et négociez.` : `${px}. Ouvrez l'offre et négociez.`, "Ouvrez l'offre et négociez.") : "Ouvrez l'offre et proposez votre prix."),
             ][i(3)];
           }
           case "offre": {
-            if (n > 1) return M(`${n} nouvelles offres : ${lib}`, "Comparez les prix et les quantités du jour.");
-            const det = phrase(qteVille(q, ville), px);
+            if (n > 1) return M(T45(`${nf(n)} nouvelles offres : ${lib}`, `${lib} : ${nf(n)} nouvelles offres`, `${nf(n)} nouvelles offres`), "Comparez les prix et les quantités du jour.");
+            const det = phrase(qteVille(q, ville), px), nouv = T45(`Nouvelle offre : ${lib}`, "Nouvelle offre pour vous");
+            const corps = (fin: string, sans: string) => B80(det ? `${det}.${fin}` : "", px ? `${px}.${fin}` : "", q ? `${q}.${fin}` : "", sans);
             return [
-              M(ville ? `${lib} disponible à ${ville}` : `Nouvelle offre : ${lib}`, det ? `${det}. Comparez avec vos prix habituels.` : "Voyez le prix et la quantité."),
-              M(`Nouvelle offre : ${lib}`, d.raison === "deja_achete" ? `Vous en avez déjà acheté. ${det || "Voyez le prix du jour"}.` : det ? `${det}.` : "Voyez le prix et la quantité."),
-              M(px ? `${lib} : ${px}` : `Nouvelle offre : ${lib}`, qteVille(q, ville) ? `${qteVille(q, ville)}. Voyez l'offre et faites votre prix.` : "Voyez l'offre et faites votre prix."),
+              M(T45(ville ? `${lib} en vente à ${ville}` : "", nouv), corps(" Comparez avec vos prix habituels.", "Voyez le prix et la quantité.")),
+              M(nouv, d.raison === "deja_achete" ? B80(`Vous en avez déjà acheté. ${det || "Voyez le prix du jour"}.`, px ? `Vous en avez déjà acheté. ${px}.` : "", "Vous en avez déjà acheté. Voyez le prix du jour.") : corps("", "Voyez le prix et la quantité.")),
+              M(T45(px ? `${lib} : ${px}` : "", nouv), B80(qteVille(q, ville) ? `${qteVille(q, ville)}. Voyez l'offre et faites votre prix.` : "", q ? `${q}. Voyez l'offre et faites votre prix.` : "", "Voyez l'offre et faites votre prix.")),
             ][i(3)];
           }
           case "demande": {
-            if (n > 1) return M(`${lib} : ${n} demandes d'acheteurs`, "Voyez leurs quantités et faites vos prix.");
+            const cherche = T45(`Un acheteur cherche : ${lib}`, `Demande : ${lib}`, "Un acheteur cherche ce produit");
+            if (n > 1) return M(T45(`${lib} : ${nf(n)} demandes d'acheteurs`, `${lib} : ${nf(n)} demandes`, `${nf(n)} demandes d'acheteurs`), "Voyez leurs quantités et faites vos prix.");
             const bu = Number(d.prix) > 0 ? `budget ${prixU(d.prix, u)}` : "";
+            // « Vous en vendez » seulement à un vendeur de ce produit, pas à celui qui le suit
+            const vend = d.raison === "vendeur" || d.raison === "vendeur_region";
             return [
-              M(q ? `On cherche ${q} ${de(lib)}` : `Un acheteur cherche : ${lib}`, "Vous en vendez. Proposez votre prix, votre numéro reste caché."),
-              M(ville ? `${lib} : un acheteur à ${ville}` : `Un acheteur cherche : ${lib}`, bu ? `${phrase(q, bu)}. Votre offre peut lui répondre.` : `${q ? q + ". " : ""}Votre offre peut lui répondre.`),
-              M(`Un acheteur cherche : ${lib}`, phrase(qteVille(q, ville), bu) ? `${phrase(qteVille(q, ville), bu)}. Faites votre proposition.` : "Voyez sa demande et faites votre proposition."),
+              M(T45(q ? `On cherche ${q} ${de(lib)}` : "", cherche), vend ? "Vous en vendez. Proposez votre prix, votre numéro reste caché." : "Proposez votre prix, votre numéro reste caché."),
+              M(T45(ville ? `${lib} : un acheteur à ${ville}` : "", cherche), B80(bu ? `${phrase(q, bu)}. Votre offre peut lui répondre.` : "", `${q ? q + ". " : ""}Votre offre peut lui répondre.`, "Votre offre peut lui répondre.")),
+              M(cherche, B80(phrase(qteVille(q, ville), bu) ? `${phrase(qteVille(q, ville), bu)}. Faites votre proposition.` : "", bu ? `${phrase(q, bu)}. Faites votre proposition.` : "", bu ? `${bu.replace(/^b/, "B")}. Faites votre proposition.` : "", "Voyez sa demande et faites votre proposition.")),
             ][i(3)];
           }
           case "relance_prix": {
-            const p = await qui(), h = quandTxt(d.expire);
+            const p = await qui(), h = quandTxt(d.expire), pm = milieu(p);
             return [
-              M(`${p} attend votre réponse`, `${lib} : ${px || "sa proposition"}. Acceptez, refusez ou faites votre prix.`, "nego-" + l.objet_id),
-              M(`Le prix ${deNom(p)} attend votre avis`, `${lib} à ${px || "son prix"}.${h ? " Sa proposition tient jusqu'à " + h + "." : ""}`, "nego-" + l.objet_id),
+              M(T45(`${p} attend votre réponse`, "Une proposition attend votre réponse"),
+                B80(`${lib} : ${px || "sa proposition"}. Acceptez, refusez ou faites votre prix.`, px ? `${lib} : ${px}. Répondez à sa proposition.` : "", `${lib} : répondez à sa proposition.`), "nego-" + l.objet_id),
+              M(T45(`Le prix ${deNom(pm)} attend votre avis`, "Un prix attend votre avis"),
+                B80(`${lib} à ${px || "son prix"}.${h ? " Sa proposition tient " + jusqua(h) + "." : ""}`, `${lib} à ${px || "son prix"}.`, h ? `Sa proposition tient ${jusqua(h)}.` : "", `${lib} : répondez à sa proposition.`), "nego-" + l.objet_id),
             ][i(2)];
           }
           case "expire_bientot": {
-            const p = await qui(), h = quandTxt(d.expire);
-            return M(h ? `La proposition ${deNom(p)} expire ${h.replace(/^aujourd'hui /, "")}` : `La proposition ${deNom(p)} expire bientôt`, `${phrase(lib, px)}. Après, il faudra tout reprendre.`, "nego-" + l.objet_id);
+            const p = await qui(), h = quandTxt(d.expire), pm = milieu(p), fin = h.replace(/^aujourd'hui /, "");
+            return M(T45(h ? `La proposition ${deNom(pm)} expire ${fin}` : "", h ? `Proposition ${deNom(pm)} : fin ${fin}` : "", h ? `Une proposition expire ${fin}` : "", `La proposition ${deNom(pm)} expire bientôt`, "Une proposition expire bientôt"),
+              B80(`${phrase(lib, px)}. Après, il faudra tout reprendre.`, `${lib}. Après, il faudra tout reprendre.`, "Après, il faudra tout reprendre."), "nego-" + l.objet_id);
           }
           case "accord_sans_commande": {
-            const p = await qui();
+            const p = await qui(), pm = milieu(p);
             return [
-              M(`Accord conclu : ${lib}`, `Avec ${p}${px ? ", " + px : ""}. Créez la commande pour fixer la livraison.`, "nego-" + l.objet_id),
-              M(`${lib} : la commande n'est pas créée`, `Vous êtes d'accord avec ${p}${p.endsWith(".") ? "" : "."} Créez la commande en un geste.`, "nego-" + l.objet_id),
+              M(T45(`Accord conclu : ${lib}`, "Accord conclu"), B80(`Avec ${pm}${px ? ", " + px : ""}. Créez la commande pour fixer la livraison.`, `Avec ${pm}. Créez la commande pour fixer la livraison.`, "Créez la commande pour fixer la livraison."), "nego-" + l.objet_id),
+              M(T45(`${lib} : la commande n'est pas créée`, "Votre commande n'est pas créée"), B80(`Vous êtes d'accord avec ${pm}${pm.endsWith(".") ? "" : "."} Créez la commande en un geste.`, "Vous êtes d'accord. Créez la commande en un geste."), "nego-" + l.objet_id),
             ][i(2)];
           }
           case "stock_ancien": {
-            const k = i(3);
+            const k = i(3), du = dateCourte(d.depuis);
+            // formules sans accord : « Crevettes séchées », « Œufs » restent justes
             return [
-              M(`Votre ${minus(lib)} est toujours disponible ?`, `Offre du ${dateCourte(d.depuis)}${q ? " : " + q : ""}${px ? ", " + px : ""}. Confirmez ou mettez à jour.`),
-              M(`${lib} : votre stock a changé ?`, "Ajustez la quantité ou le prix, ou mettez l'offre en pause."),
-              M(q ? `Encore ${q} ${de(lib)} ?` : `${lib} : toujours en stock ?`, "Une offre à jour évite les appels pour rien. Vérifiez-la."),
+              M(T45(`Votre offre ${de(lib)} est-elle à jour ?`, `${lib} : votre offre est à jour ?`, "Votre offre est-elle à jour ?"),
+                B80(`Offre du ${du}${q ? " : " + q : ""}${px ? ", " + px : ""}. Confirmez ou mettez à jour.`, `Offre du ${du}${q ? " : " + q : ""}. Confirmez ou mettez à jour.`, "Confirmez-la ou mettez-la à jour.")),
+              M(T45(`${lib} : votre stock a changé ?`, "Votre stock a changé ?"), "Ajustez la quantité ou le prix, ou mettez l'offre en pause."),
+              M(T45(q ? `Encore ${q} ${de(lib)} ?` : "", `${lib} : toujours en stock ?`, "Toujours en stock ?"), "Une offre à jour évite les appels pour rien. Vérifiez-la."),
             ][k];
           }
           case "demande_seule": {
-            const nb = Number(d.nb || 0), villes = ((d.villes || []) as string[]).filter(Boolean);
+            // nb : les offres actives de ce produit dans d'autres villes (schéma 91)
+            const nb = Number(d.nb || 0), villes = ((d.villes || []) as string[]).filter((v) => v && v !== ville).slice(0, 3);
+            if (!(nb > 0)) return null;
+            const un = nb === 1, ici = ville ? " à " + ville : " près de vous";
+            const comparer = un ? "Voyez son prix et proposez le vôtre." : "Comparez leurs prix et proposez le vôtre.";
             return [
-              M(`${lib} : ${nb} offre${nb > 1 ? "s" : ""} ailleurs`, villes.length ? `Rien encore${ville ? " à " + ville : " près de vous"}. Voyez ${villes.join(" et ")}.` : "Comparez leurs prix et proposez le vôtre."),
-              M(`Votre demande ${de(lib)} attend`, `${nb} offre${nb > 1 ? "s" : ""} ailleurs en Côte d'Ivoire. Comparez leurs prix.`),
+              M(T45(`${lib} : ${nf(nb)} offre${un ? "" : "s"} ailleurs`, `${nf(nb)} offre${un ? "" : "s"} ailleurs pour vous`),
+                B80(villes.length ? `Rien encore${ici}. Voyez ${liste(villes)}.` : "", villes.length ? `Rien encore${ici}. Voyez ${liste(villes.slice(0, 2))}.` : "", villes.length ? `Voyez ${liste(villes.slice(0, 2))}.` : "", comparer)),
+              M(T45(`Votre demande ${de(lib)} attend`, `${lib} : votre demande attend`, "Votre demande attend"),
+                un ? "Une offre dans une autre ville. Voyez son prix." : `${nf(nb)} offres dans d'autres villes. Comparez leurs prix.`),
             ][i(2)];
           }
-          case "demande_fin":
-            return M(`Votre demande ${de(lib)} se termine demain`, "Prolongez-la si vous cherchez encore, sinon fermez-la.");
+          case "demande_fin": {
+            // l'échéance réelle (donnees.limite) : aujourd'hui, demain ou la date
+            const j = jourDe(d.limite);
+            const t = j === "aujourd'hui" || j === "demain"
+              ? T45(`Votre demande ${de(lib)} se termine ${j}`, `${lib} : votre demande finit ${j}`, `Votre demande se termine ${j}`)
+              : j ? T45(`Votre demande ${de(lib)} se termine ${j}`, `Votre demande se termine ${j}`)
+              : T45(`Votre demande ${de(lib)} arrive à sa fin`, "Votre demande arrive à sa date limite");
+            return M(t, "Prolongez-la si vous cherchez encore, sinon fermez-la.");
+          }
           case "boutique_visites": {
-            const v = Number(d.vues || 0);
+            const v = Number(d.vues || 0); if (!(v > 0)) return null;
             return [
-              M(`${v} visites sur votre boutique cette semaine`, "Partagez son lien avec vos clients sur WhatsApp."),
-              M(`Votre boutique a été ouverte ${v} fois`, "Gardez vos offres à jour : c'est ce que voient vos visiteurs."),
+              M(T45(`${nf(v)} visite${v > 1 ? "s" : ""} sur votre boutique en 7 jours`, `Boutique : ${nf(v)} visite${v > 1 ? "s" : ""} en 7 jours`), "Partagez son lien avec vos clients sur WhatsApp."),
+              M(T45(`Votre boutique ouverte ${nf(v)} fois en 7 jours`, `Boutique ouverte ${nf(v)} fois en 7 jours`), "Gardez vos offres à jour : c'est ce que voient vos visiteurs."),
             ][i(2)];
           }
           case "boutique_ouvrir":
             return M("Une adresse pour toutes vos offres", "Ouvrez votre boutique et partagez-la à vos clients.", "boutique");
           case "groupe_proche": {
             const manque = qteTxt(d.manque, u) || `${nf(d.manque as number)} ${u}`;
-            return M(`${lib} : il manque ${manque} au groupe`, l.cat === "groupes" ? `${px ? "Prix de groupe : " + px + ". " : ""}Rejoignez si ça vous va.` : "Partagez le groupe pour atteindre l'objectif.", "groupe-" + l.objet_id);
+            return M(T45(`${lib} : il manque ${manque} au groupe`, `Groupe : il manque ${manque}`, `${lib} : le groupe est presque complet`, "Le groupe est presque complet"),
+              l.cat === "groupes" ? B80(`${px ? "Prix de groupe : " + px + ". " : ""}Rejoignez si ça vous va.`, "Rejoignez si ça vous va.") : "Partagez le groupe pour atteindre l'objectif.", "groupe-" + l.objet_id);
           }
           case "groupe_veille": {
-            const lim = d.limite ? quandTxt(d.limite) : "";
-            if (d.statut === "seuil_atteint") return M(`${lib} : objectif atteint`, "Le vendeur doit lancer la confirmation. Rien n'est commandé sans vous.", "groupe-" + l.objet_id);
-            return M(`Dernier jour pour le groupe : ${lib}`, `Il manque ${qteTxt(d.manque, u) || nf(d.manque as number) + " " + u}${lim ? ", fin " + lim : ""}. Rien n'est commandé sans vous.`, "groupe-" + l.objet_id);
+            const lim = d.limite ? quandTxt(d.limite) : "", j = jourDe(d.limite);
+            if (d.statut === "seuil_atteint") return M(T45(`${lib} : objectif atteint`, "Groupe : objectif atteint"), "Le vendeur doit lancer la confirmation. Rien n'est commandé sans vous.", "groupe-" + l.objet_id);
+            // le titre suit la vraie échéance : aujourd'hui, demain, ou une date limite proche
+            const t = j === "aujourd'hui" ? T45(`Dernier jour pour le groupe : ${lib}`, `${lib} : dernier jour du groupe`, "Dernier jour pour le groupe")
+              : j === "demain" ? T45(`${lib} : le groupe se termine demain`, "Le groupe se termine demain")
+              : T45(`${lib} : la date limite du groupe approche`, "La date limite du groupe approche");
+            const m = qteTxt(d.manque, u) || nf(d.manque as number) + " " + u;
+            return M(t, B80(`Il manque ${m}${lim ? ", fin " + lim : ""}. Rien n'est commandé sans vous.`, `Il manque ${m}. Rien n'est commandé sans vous.`), "groupe-" + l.objet_id);
           }
           case "renouveler": {
             const j = Number(d.jours || 0);
             return [
-              M(`Bientôt plus ${de(lib)} ?`, `Vous en prenez environ tous les ${nf(j)} jours. Voyez les offres du jour.`, "renouveler-" + l.slug),
-              M(`${lib} : bientôt à racheter ?`, `Vous en commandez environ tous les ${nf(j)} jours. Rien n'est commandé sans vous.`, "renouveler-" + l.slug),
+              M(T45(`Bientôt plus ${de(lib)} ?`, "Bientôt à racheter ?"), `Vous en prenez environ tous les ${nf(j)} jours. Voyez les offres du jour.`, "renouveler-" + l.slug),
+              M(T45(`${lib} : bientôt à racheter ?`, "Bientôt à racheter ?"), `Vous en commandez environ tous les ${nf(j)} jours. Rien n'est commandé sans vous.`, "renouveler-" + l.slug),
             ][i(2)];
           }
         }
@@ -628,10 +686,21 @@ Deno.serve(async (req) => {
       type Annonce = { sens: string; id: string; user_id: string; slug: string; libelle: string; quantite: number | null; unite: string; prix: number | null; ville: string | null; region_slug: string | null; ville_seulement: boolean };
       const A = (((await sb.rpc("notif_annonces_recentes")).data || []) as Annonce[]).filter((a) => !a.ville_seulement);
       const offres = A.filter((a) => a.sens === "offre"), demandes = A.filter((a) => a.sens === "demande");
+      // ce qui a déjà été montré (3 jours) : la base renvoie au plus 1 000 lignes par appel, sans erreur au-delà ;
+      // on demande donc par paquets de 25 personnes (8 messages par jour sur 3 jours : 24 lignes chacune) et on lit page par page.
+      // Si la liste ne peut pas être lue, rien ne part (sinon les mêmes annonces reviendraient).
       const vus: Record<string, Set<string>> = {};
-      for (const v of ((await sb.rpc("notif_deja_vus", { p_users: L.map((x) => x.user_id) })).data || []) as { user_id: string; objet_id: string | null; slug: string | null }[]) {
-        (vus[v.user_id] ||= new Set()).add(v.objet_id || ""); if (v.slug) vus[v.user_id].add("slug:" + v.slug);
-      }
+      const ids = L.map((x) => x.user_id), paquets: string[][] = [];
+      for (let i = 0; i < ids.length; i += 25) paquets.push(ids.slice(i, i + 25));
+      for (let i = 0; i < paquets.length; i += 8) await Promise.all(paquets.slice(i, i + 8).map(async (p) => {
+        for (let a = 0; ; a += 1000) {
+          const { data, error } = await sb.rpc("notif_deja_vus", { p_users: p }).order("user_id").order("objet_id").order("slug").range(a, a + 999);
+          if (error) throw new Error("notif_deja_vus : " + error.message);
+          const rows = (data || []) as { user_id: string; objet_id: string | null; slug: string | null }[];
+          for (const v of rows) { (vus[v.user_id] ||= new Set()).add(v.objet_id || ""); if (v.slug) vus[v.user_id].add("slug:" + v.slug); }
+          if (rows.length < 1000) break;
+        }
+      }));
       // ce que chaque vendeur vend (pour lui montrer les demandes de ses produits d'abord)
       const vend: Record<string, Set<string>> = {};
       const vendeurs = L.filter((x) => x.vend).map((x) => x.user_id);
@@ -655,14 +724,23 @@ Deno.serve(async (req) => {
           if (o) {
             const lib = coupe(o.libelle, 24), q = qteTxt(o.quantite, o.unite), px = prixU(o.prix, o.unite), vi = o.ville || "";
             choix.push([
-              { title: coupe(px && vi ? `${lib} à ${vi} : ${px}` : `Nouvelle offre : ${lib}`, TITRE), body: q ? `${q} en ligne. Comparez avant d'acheter.` : "Voyez l'offre et comparez avant d'acheter." },
-              { title: coupe(vi ? `${lib} disponible à ${vi}` : `${lib} disponible`, TITRE), body: phrase(q, px) ? `${phrase(q, px)}. Faites votre prix au vendeur.` : "Faites votre prix au vendeur." },
+              { title: T45(px && vi ? `${lib} à ${vi} : ${px}` : "", px ? `${lib} : ${px}` : "", `Nouvelle offre : ${lib}`, "Nouvelle offre sur le marché"),
+                body: q ? `${q} en ligne. Comparez avant d'acheter.` : "Voyez l'offre et comparez avant d'acheter." },
+              { title: T45(vi ? `${lib} en vente à ${vi}` : "", `En vente : ${lib}`),
+                body: B80(phrase(q, px) ? `${phrase(q, px)}. Faites votre prix au vendeur.` : "", px ? `${px}. Faites votre prix au vendeur.` : "", "Faites votre prix au vendeur.") },
             ][v(o.id, 2)] as Msg);
             Object.assign(choix[choix.length - 1], { url: APP + "#/produits/" + o.slug, slug: o.slug, objet: o.id, type: "contenu_offre" });
           }
           const f = (await fourchetteDe(x.region_slug)).find((y) => y.nb >= 3 && !deja.has("slug:" + y.slug) && (!x.suit?.length || x.suit.includes(y.slug))) || (await fourchetteDe(x.region_slug)).find((y) => y.nb >= 3 && !deja.has("slug:" + y.slug));
-          if (f && Number(f.prix_max) > 0) choix.push({ title: coupe(`${f.libelle} : de ${nf(f.prix_min)} à ${nf(f.prix_max)} F le ${f.unite}`, TITRE),
-            body: `Prix demandés dans ${f.nb} offres ${f.region ? "de votre région" : "du marché"}. Comparez avant d'acheter.`, url: APP + "#/produits/" + f.slug, slug: f.slug, type: "contenu_prix" });
+          if (f && Number(f.prix_max) > 0) {
+            // la fourchette entière dans le titre si elle tient, sinon dans le texte (un prix n'est jamais coupé)
+            const fl = coupe(f.libelle, 24), fu = art(f.unite || "kg"), zone = f.region ? "de votre région" : "du marché";
+            const ec = Number(f.prix_min) === Number(f.prix_max) ? `${nf(f.prix_max)} F ${fu}` : `de ${nf(f.prix_min)} à ${nf(f.prix_max)} F ${fu}`;
+            const tt = [`${fl} : ${ec}`, `${fl} : ${ec.replace(/^de /, "")}`].find((t) => t.length <= TITRE);
+            choix.push({ title: tt || T45(`Prix ${de(fl)} sur le marché`, `${fl} : les prix du marché`, "Les prix du marché"),
+              body: tt ? `Prix demandés dans ${nf(f.nb)} offres ${zone}. Comparez avant d'acheter.` : B80(`${ec.charAt(0).toUpperCase() + ec.slice(1)} dans ${nf(f.nb)} offres ${zone}.`, `Prix demandés dans ${nf(f.nb)} offres ${zone}. Comparez avant d'acheter.`),
+              url: APP + "#/produits/" + f.slug, slug: f.slug, type: "contenu_prix" });
+          }
           if (grp) choix.push({ title: `${nf(grp)} achat${grp > 1 ? "s" : ""} groupé${grp > 1 ? "s" : ""} en cours`, body: "Achetez à plusieurs au prix de gros. Rien n'est commandé sans vous.", url: APP + "#/groupes", objet: "groupes:" + jourUTC(), type: "contenu_groupes" });
         }
         if (vendeur) {
@@ -670,8 +748,9 @@ Deno.serve(async (req) => {
           if (dmd) {
             const lib = coupe(dmd.libelle, 24), q = qteTxt(dmd.quantite, dmd.unite), vi = dmd.ville || "", bu = Number(dmd.prix) > 0 ? "budget " + prixU(dmd.prix, dmd.unite) : "";
             choix.push({ ...[
-              { title: coupe(q ? `On cherche ${q} ${de(lib)}` : `Un acheteur cherche : ${lib}`, TITRE), body: phrase(vi ? "À " + vi : "", bu) ? `${phrase(vi ? "À " + vi : "", bu)}. Proposez votre prix.` : "Proposez votre prix, votre numéro reste caché." },
-              { title: coupe(vi ? `${lib} : un acheteur à ${vi}` : `${lib} : un acheteur attend`, TITRE), body: `${mes.has(dmd.slug) ? "Vous en vendez. " : ""}Faites votre offre dans l'application.` },
+              { title: T45(q ? `On cherche ${q} ${de(lib)}` : "", `Un acheteur cherche : ${lib}`, `Demande : ${lib}`),
+                body: B80(phrase(vi ? "À " + vi : "", bu) ? `${phrase(vi ? "À " + vi : "", bu)}. Proposez votre prix.` : "", bu ? `${bu.replace(/^b/, "B")}. Proposez votre prix.` : "", "Proposez votre prix, votre numéro reste caché.") },
+              { title: T45(vi ? `${lib} : un acheteur à ${vi}` : "", `${lib} : un acheteur attend`, "Un acheteur attend vos prix"), body: `${mes.has(dmd.slug) ? "Vous en vendez. " : ""}Faites votre offre dans l'application.` },
             ][v(dmd.id, 2)], url: APP + "#/produits/" + dmd.slug, slug: dmd.slug, objet: dmd.id, type: "contenu_demande" });
           }
           if (bes) choix.push({ title: `${nf(bes)} professionnel${bes > 1 ? "s cherchent" : " cherche"} un fournisseur`, body: "Restaurants, hôtels, cantines. Voyez leurs besoins.", url: APP + "#/appro", objet: "besoins:" + jourUTC(), type: "contenu_pro" });

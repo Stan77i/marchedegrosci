@@ -114,11 +114,11 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 
 ## Notifications (chantier du 24/10/2026)
 
-- Deux natures : **transactionnelles** (messages, négociations, commandes et livraisons, litiges, sécurité : ne se coupent pas ; fiabilité, niveaux, mes groupes, mes rappels : se coupent) et **commerciales** (nouvelles offres, acheteurs pour mes produits, groupes ouverts, produits à racheter, conseils : réglables, plafonnées).
-- Plafonds réglables par l'administrateur (`notif_regles`) : 6 commerciales par jour et par personne, dont 1 conseil ; rien de commercial entre 21 h et 7 h. Chaque envoi passe par `notif_preparer` (préférence, plafond, heures calmes, clé anti-doublon, journal).
+- Deux natures : **transactionnelles** (messages, négociations, commandes et livraisons, litiges, sécurité) et **commerciales** (nouvelles offres, acheteurs pour mes produits, groupes ouverts, produits à racheter, contenus du marché : plafonnées). **Plus aucun réglage par catégorie** (schéma 91) : le serveur ignore les anciennes préférences (`_notif_pref` répond toujours « oui ») ; le seul choix est Activer/Désactiver sur le téléphone.
+- Rythme réglable par l'administrateur (`notif_regles`, schéma 91) : 8 commerciales au plus par jour et par personne, dont 4 « contenus du marché » ; 90 min d'écart entre deux (180 si les 5 derniers n'ont pas été ouverts : on espace, on n'arrête pas) ; rien de commercial entre 21 h et 7 h (UTC = heure d'Abidjan). Pas de plafond pour toute la plateforme ni de pause de 3 jours (le propriétaire ne veut pas d'arrêt). Chaque envoi passe par `notif_preparer` (plafond, écart, heures calmes, clé anti-doublon, journal).
 - Textes : titre de 45 caractères au plus, texte de 80 ; une action claire ; **aucune fausse urgence, aucune promesse non vérifiée** ; jamais dire qu'une notification « arrive » sans la réponse du serveur (`envoyees > 0`).
 - Chaque notification ouvre un écran précis, jamais l'accueil par défaut. Mesures honnêtes : envoyée, ouverte, action ; jamais l'affichage réel ni la notification balayée.
-- En production depuis le 24/10/2026 (88a, 88b, 88d, puis `pousser`). Pour tout changement : schéma d'abord, fonction ensuite. Effacer le journal après 90 jours : seulement avec l'accord du propriétaire.
+- En production depuis le 24/10/2026 : 88a, 88b, 88d, puis `pousser`. **Le schéma 91 et la nouvelle `pousser` sont testés sur le projet de test seulement** : la production attend l'accord du propriétaire. Pour tout changement : schéma d'abord, fonction ensuite. Effacer le journal après 90 jours : seulement avec l'accord du propriétaire.
 
 ## Design
 

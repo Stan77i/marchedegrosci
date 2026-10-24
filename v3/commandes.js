@@ -166,6 +166,7 @@
 .cm-opt.off{opacity:.6;cursor:default}
 .cm-f input[type=text],.cm-f textarea{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512}
 .cm-f textarea{min-height:76px;resize:vertical}
+.cm-motif{display:block;border:0;margin:0;padding:0;min-width:0}.cm-motif legend.t{display:block;margin:14px 0 2px;padding:0;font-weight:600}.cm-motif .cm-ck{margin:2px 0 0}
 .cm-ck{display:flex;gap:10px;align-items:center;min-height:44px;margin:10px 0 0;font-size:14px}.cm-ck input{width:20px;height:20px;accent-color:#10392B}
 .cm-err{color:#8A2414;font-size:13.5px;margin:8px 0 0;min-height:1em}
 .cm-note{margin:12px 2px 0;font-size:12.5px;color:#5E5546}
@@ -886,6 +887,11 @@
         <input type="text" id="cmM" maxlength="40" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="MANGUE 47" style="font:700 22px Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase">
         <label class="cm-ck"><input type="checkbox" id="cmS"> Je ne trouve pas le papier du vendeur</label>
         <p class="cm-info" data-sans hidden>Sans le mot, la réception est notée « sans le mot secret du vendeur », visible du vendeur et de l’équipe. Si la marchandise ne va pas, ne confirmez pas : <b>refusez-la avec des photos</b>.</p>` : ''}
+        ${o.motifs ? `<fieldset class="cm-motif"><legend class="t">Motif</legend>${MOTIFS.map(([k, t]) => `<label class="cm-ck"><input type="radio" name="cmMot" value="${k}"> ${t}</label>`).join('')}</fieldset>` : ''}
+        ${o.accord ? `<p class="cm-info" data-motif>Motif donné : …</p><fieldset class="cm-motif"><legend class="t">Êtes-vous d’accord avec ce motif ?</legend>
+          <label class="cm-ck"><input type="radio" name="cmAcc" value="1"> Oui, d’un commun accord</label>
+          <label class="cm-ck"><input type="radio" name="cmAcc" value="0"> J’accepte, mais je ne suis pas d’accord</label></fieldset>
+          <p class="cm-note" style="font-size:13.5px">D’un commun accord, l’annulation ne compte contre personne. Sinon, elle compte dans la fiabilité de l’autre partie, qui peut la contester.</p>` : ''}
         ${o.lieu ? `<label class="t" for="cmL">${o.lieu}</label><input type="text" id="cmL" maxlength="120" autocomplete="off">` : ''}
         ${o.note ? `<label class="t" for="cmN">${o.note}</label><textarea id="cmN" maxlength="300"></textarea>` : ''}
         ${o.gps ? `<label class="cm-ck"><input type="checkbox" id="cmG"> Joindre ma position actuelle (une seule fois)</label>` : ''}
@@ -901,6 +907,10 @@
       e.preventDefault();
       const L = f.querySelector('#cmL'), Nt = f.querySelector('#cmN'), G = f.querySelector('#cmG'), M = f.querySelector('#cmM');
       const lieu = L ? L.value.trim() : null, note = Nt ? Nt.value.trim() : null, mot = M ? M.value.trim() : null, sansMot = !!(Sm && Sm.checked);
+      const mo = f.querySelector('[name=cmMot]:checked'), motif = mo ? mo.value : null, ac = f.querySelector('[name=cmAcc]:checked'), accord = ac ? ac.value === '1' : null;
+      if (o.motifs && !motif) { err.textContent = 'Choisissez un motif.'; f.querySelector('[name=cmMot]').focus(); return; }
+      if (o.motifs && motif === 'autre' && !(note && note.length >= 3)) { err.textContent = 'Motif « Autre » : écrivez quelques mots.'; Nt.focus(); return; }
+      if (o.accord && accord == null) { err.textContent = 'Dites si vous êtes d’accord avec le motif.'; f.querySelector('[name=cmAcc]').focus(); return; }
       if (o.mot && !sansMot && !mot) { err.textContent = 'Tapez le mot secret écrit sur le papier du vendeur.'; M.focus(); return; }
       if (o.lieuRequis && !lieu) { err.textContent = 'Indiquez le lieu.'; L.focus(); return; }
       if (o.noteRequise && !note) { err.textContent = 'Expliquez en quelques mots.'; Nt.focus(); return; }
@@ -908,7 +918,7 @@
       const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = '';
       try {
         const pos = await position(G && G.checked);
-        await o.fn({ lieu, note, pos, mot, sansMot });
+        await o.fn({ lieu, note, pos, mot, sansMot, motif, accord });
         await lireListe(); await lireJournal(c.id);
         if (o.fait) toast(o.fait, { type: 'ok' });
         if (window.MDGSons && MDGSons.signal) try { MDGSons.signal('accord'); } catch (_) {}
@@ -916,7 +926,20 @@
       } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }
     };
     const premier = f.querySelector('input[type=text],textarea'); if (premier && matchMedia('(hover:hover)').matches) premier.focus();
+    // le motif donné par celui qui demande l'annulation (schéma 84), lu sur le serveur
+    const zm = f.querySelector('[data-motif]');
+    if (zm) N().rpc('commande_annulation_motif', { p_id: c.id }).then(m => { if (!zm.isConnected) return; const t = m && m.motif ? (MOTIF_NOM[m.motif] || m.motif) + (m.texte ? ' : « ' + m.texte + ' »' : '') : 'non précisé';
+      zm.innerHTML = 'Motif donné : <b>' + esc(t) + '</b>'; }).catch(() => { if (zm.isConnected) zm.textContent = 'Motif donné : non précisé'; });
   }
+  // motifs d'annulation (décision 11, schéma 84) ; « Autre » demande quelques mots
+  const MOTIFS = [['stock_epuise', 'Stock épuisé'], ['prix_change', 'Prix changé'], ['sans_reponse', 'L’autre partie ne répond pas'], ['erreur_saisie', 'Erreur de saisie'], ['panne_meteo', 'Panne ou météo'], ['autre', 'Autre']];
+  const MOTIF_NOM = Object.fromEntries(MOTIFS);
+  // appel des portes du schéma 84 ; serveur pas encore à jour : l'ancienne fonction, sans motif
+  const ancien = e => /schema cache|Could not find the function|PGRST202/i.test(String(e && e.message));
+  const annulerMotif = (c, oui, v) => N().rpc('commande_annuler_motif', { p_id: c.id, p_oui: oui, p_note: v.note || null, p_motif: v.motif || null, p_motif_texte: v.motif ? v.note || null : null, p_accord: v.accord == null ? null : v.accord })
+    .catch(e => ancien(e) ? N().rpc('commande_annuler', { p_id: c.id, p_oui: oui, p_note: v.note || null }) : Promise.reject(e));
+  const repondreMotif = (c, oui, v) => N().rpc('commande_repondre_motif', { p_id: c.id, p_oui: oui, p_note: v.note || null, p_motif: v.motif || null, p_motif_texte: v.motif ? v.note || null : null })
+    .catch(e => ancien(e) ? N().rpc('commande_repondre', { p_id: c.id, p_oui: oui, p_note: v.note || null }) : Promise.reject(e));
   function geste(c, g) {
     const R = (f, a) => N().rpc(f, a);
     const av = (etape, ok, extra) => confirmer(c, Object.assign({ titre: ok, ok, etape, gps: true, note: 'Un mot (facultatif)', fait: LIB[etape] || ok,
@@ -925,8 +948,8 @@
       case 'oui': return confirmer(c, { titre: 'Confirmer la <em>commande</em>', ok: 'Confirmer', note: 'Un mot (facultatif)', fait: 'Commande confirmée', etape: 'confirmee',
         texte: `Transport : ${esc(MODES[c.mode_transport] || '')}. Livraison : ${esc(c.lieu_livraison || 'à convenir')}.`,
         fn: v => R('commande_repondre', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
-      case 'non': return confirmer(c, { titre: 'Refuser la commande', ok: 'Refuser', note: 'Pourquoi ? (facultatif)', fait: 'Commande refusée',
-        fn: v => R('commande_repondre', { p_id: c.id, p_oui: false, p_note: v.note || null }) });
+      case 'non': return confirmer(c, { titre: 'Refuser la commande', ok: 'Refuser', motifs: true, note: 'Un mot (obligatoire pour « Autre »)', fait: 'Commande refusée',
+        texte: 'Avant confirmation, un refus ne compte pas dans votre fiabilité.', fn: v => repondreMotif(c, false, v) });
       case 'preparation': return av('preparation', 'Marchandise en préparation', { gps: false });
       case 'chargement': return av('chargement', 'Chargement confirmé', { texte: c.mode_transport === 'reseau' ? 'Confirmez seulement quand la marchandise est dans le camion. Le transport commence alors.' : 'Confirmez seulement quand la marchandise est dans le camion. Ensuite, touchez « Le camion est parti » au départ (ou laissez le lien de suivi du chauffeur le détecter).' });
       case 'transport': return av('transport', 'Le camion est parti', { texte: 'Touchez quand le camion démarre avec la marchandise. ' + (c.role === 'vendeur' ? 'L’acheteur' : 'Le vendeur') + ' est prévenu.', fait: 'Départ signalé : le camion est en route' });
@@ -937,13 +960,13 @@
             texte: 'Confirmez seulement après avoir vérifié la quantité et la qualité. La commande sera terminée.',
             fn: v => R('commande_reception_mot', { p_id: c.id, p_mot: v.sansMot ? null : v.mot, p_sans_mot: v.sansMot, p_lat: v.pos ? v.pos[0] : null, p_lon: v.pos ? v.pos[1] : null, p_note: v.note || null }) })
         : av('reception', 'Réception confirmée', { texte: 'Confirmez seulement après avoir vérifié la quantité et la qualité. La commande sera terminée.', fait: 'Réception confirmée : commande terminée' });
-      case 'annuler': return confirmer(c, { titre: c.etat === 'a_confirmer' ? 'Retirer la commande' : 'Demander l’annulation', ok: c.etat === 'a_confirmer' ? 'Retirer' : 'Demander', note: 'Pourquoi ? (facultatif)',
-        texte: c.etat === 'a_confirmer' ? '' : 'L’acheteur doit accepter l’annulation. Le stock reviendra sur l’annonce.',
-        fait: c.etat === 'a_confirmer' ? 'Commande retirée' : 'Demande d’annulation envoyée', fn: v => R('commande_annuler', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
-      case 'annul-oui': return confirmer(c, { titre: 'Accepter l’annulation', ok: 'Accepter', note: 'Un mot (facultatif)', fait: 'Commande annulée', texte: 'Le stock reviendra sur l’annonce.',
-        fn: v => R('commande_annuler', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
+      case 'annuler': return confirmer(c, { titre: c.etat === 'a_confirmer' ? 'Retirer la commande' : 'Demander l’annulation', ok: c.etat === 'a_confirmer' ? 'Retirer' : 'Demander', motifs: true, note: 'Un mot (obligatoire pour « Autre »)',
+        texte: c.etat === 'a_confirmer' ? 'Avant confirmation, un retrait ne compte pas dans votre fiabilité.' : 'L’acheteur doit accepter l’annulation. Le stock reviendra sur l’annonce. S’il n’est pas d’accord avec votre motif, l’annulation comptera dans votre fiabilité.',
+        fait: c.etat === 'a_confirmer' ? 'Commande retirée' : 'Demande d’annulation envoyée', fn: v => annulerMotif(c, true, v) });
+      case 'annul-oui': return confirmer(c, { titre: 'Accepter l’annulation', ok: 'Accepter', accord: true, note: 'Un mot (facultatif)', fait: 'Commande annulée', texte: 'Le stock reviendra sur l’annonce.',
+        fn: v => annulerMotif(c, true, v) });
       case 'annul-non': return confirmer(c, { titre: 'Refuser l’annulation', ok: 'Refuser', note: 'Un mot (facultatif)', fait: 'Annulation refusée',
-        fn: v => R('commande_annuler', { p_id: c.id, p_oui: false, p_note: v.note || null }) });
+        fn: v => annulerMotif(c, false, v) });
       case 'liberer': { const S = seq[c.id], A = S && S.actif;
         return confirmer(c, { titre: A ? 'Libérer le <em>paiement</em>' : 'Tout est <em>conforme</em>', ok: A ? 'Libérer le paiement' : 'Confirmer', fait: A ? 'Paiement libéré : chacun reçoit sa part' : 'Merci ! Commande clôturée',
           texte: A ? 'Confirmez seulement si la quantité et la qualité sont bonnes. Le vendeur et le transporteur reçoivent alors leur part. Cette action ne s’annule pas.' : 'Confirmez seulement si la quantité et la qualité sont bonnes. La commande sera clôturée : vous ne pourrez plus la refuser.',

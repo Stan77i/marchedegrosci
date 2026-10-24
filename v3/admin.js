@@ -101,7 +101,7 @@
 
   /* ——— dessin ——— */
   function paint() {
-    const T = aTraiter(), masq = annonces().filter(a => a.status === 'masquee').length, toDo = T.filter(s => s.a.status === 'active').length + masq;
+    const T = aTraiter(), masq = annonces().filter(a => a.status === 'masquee' && !a.suspension_id).length, toDo = T.filter(s => s.a.status === 'active').length + masq;
     const conclu = D.negos.filter(n => n.statut === 'conclue').length;
     const nav = (k, t, n) => `<a class="nav" href="#${k}" ${view === k ? 'aria-current="page"' : ''}>${ico(k)}<span>${t}</span>${n ? `<em>${n}</em>` : ''}</a>`;
     root.innerHTML = `<div class="app"><nav class="rail" aria-label="Tableau de bord">
@@ -155,7 +155,7 @@
       <section class="sec"><div class="sec-h"><h2>Dernières annonces</h2><a class="btn sm" href="#annonces">Toutes les annonces</a></div>${listeAnnonces(A.slice(0, 6))}</section>`;
     },
     traiter: ({ T }) => {
-      const masq = annonces().filter(a => a.status === 'masquee' && !T.find(s => s.a.id === a.id));
+      const masq = annonces().filter(a => a.status === 'masquee' && !a.suspension_id && !T.find(s => s.a.id === a.id));   // cachées par une suspension (schéma 84) : vues dans « Fiabilité »
       return top('À traiter', 'Annonces signalées par les utilisateurs, et annonces masquées. Trois signalements de comptes différents masquent une annonce automatiquement.') +
         (T.length + masq.length ? `<div class="list">${T.map(s => rowAnnonce(s.a, s)).join('')}${masq.map(a => rowAnnonce(a)).join('')}</div>` : `<div class="list"><div class="empty"><b>Rien à traiter</b>Aucune annonce signalée ni masquée.</div></div>`);
     },

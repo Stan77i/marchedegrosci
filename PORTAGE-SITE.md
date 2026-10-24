@@ -85,6 +85,8 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Commande : ville de livraison, règle « même ville » (livreur du vendeur, retrait si le vendeur l'accepte), transport à part figé avec le total convenu (schéma 83) | `v3/commandes.js` (`creer`, `ddTransport`) | haute |
 | Prix du transporteur du réseau convenu à trois (proposer, accepter, refuser, contre-proposer), côté commande et côté chauffeur (schéma 83, service fermé) | `v3/commandes.js` (`blocTrois`), `v3/chauffeur.js` | basse (réseau en pause) |
 | Alertes par produit | `v3/alertes.js` (schéma 75) | moyenne |
+| Annulation avec motif obligatoire (liste fermée), accord ou non de l'autre partie sur le motif, expiration à 48 h (schéma 84) | `v3/commandes.js` (`confirmer`, `annulerMotif`, `repondreMotif`) | haute |
+| « Ma fiabilité » : score, annulations qui comptent ou non, avertissements, contestation ; ligne « Fiabilité : 96 % sur 25 commandes » du profil (schéma 84) | `v3/reputation.js` (`fiabilite`, commun) et la ligne de `v3/compte.js` (commun) : à vérifier sur le site | moyenne |
 
 ### Accueil et navigation
 

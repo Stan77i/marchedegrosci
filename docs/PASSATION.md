@@ -1477,3 +1477,13 @@ Règles appliquées : décisions 1 à 10 de `docs/audits/decisions-chantiers-202
   - `controle_sortie` : un numéro coupé doit former **exactement** un numéro avec les derniers morceaux, mis bout à bout depuis le dernier message. Avant, trois prix envoyés seuls (« 15000 », « 25000 », « 30000 ») étaient pris pour un numéro, masqués et signalés.
   - `_nego_transport_poser` : ne touche que la proposition de la personne qui vient de l'envoyer (sécurité en plus).
   - Tests ajoutés (blocs I et J) : autre membre refusé partout (négociation, commande, prix à trois, lecture du transport), valeurs limites (0, négatif, 100 000 000, choix inconnu, prix avec « Sans », arrondi), double accord et double commande refusés, contre-propositions à trois (vendeur puis acheteur), ancienne référence refusée, refus après accord refusé, commission 6,9 % sur le prix convenu, visiteur anonyme et membre sans droit sur les tables et fonctions internes, faux positifs du filtre. Les blocs A et H relancés après la correction : résultats inchangés.
+
+## 24/10/2026 — Documentation officielle : FONCTIONNALITES, ROADMAP, ARCHITECTURE, CHANGELOG
+
+- Quatre fichiers à la racine, écrits après un inventaire du code (`main`) et de la base de production (catalogue et comptages seulement), chacun relu contre le code par un contrôleur :
+  - `FONCTIONNALITES.md` : 195 fonctionnalités, application d'abord, site à part ; 159 opérationnelles (beaucoup jamais servies en vrai, c'est écrit), 25 partielles, 6 prévues, 5 défectueuses ;
+  - `ROADMAP.md` : les 10 sujets demandés, avec leur état, et les décisions du propriétaire à développer ;
+  - `ARCHITECTURE.md` : application, site, Supabase (54 tables, fonctions, RLS, tâches planifiées, fonctions Edge), permissions, intégrations ;
+  - `CHANGELOG.md` : les 607 commits depuis le 03/10/2026, par jour.
+- Défauts trouvés (non corrigés, aucune logique touchée) : limite de 30 annonces qui peut effacer une annonce active au `sync()` ; diffusion « annonce du marché » jamais envoyée sans abonné au produit ; libellés « Paiement libéré » de l'écran admin sans mouvement d'argent ; ancienne note `noter` (code mort) ; refabrication automatique du site non déclenchée par `tools/site-prix.js` et `tools/site-regions.js`.
+- À tenir à jour : chaque PR qui ajoute ou change une fonctionnalité met à jour `FONCTIONNALITES.md` (et `ROADMAP.md` si un élément prévu avance), et ajoute sa ligne au `CHANGELOG.md`.

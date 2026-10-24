@@ -118,3 +118,11 @@ begin
   r := r || 'T3 B voit: ' || coalesce((select e::text from json_array_elements(j->'annulations') e where (e->>'id')::uuid = a.id), 'rien') || E'\n';
   raise exception E'TEST\n%', r;
 end $$;
+
+-- Rejoué le 24/10/2026 après le schéma 94f :
+-- • bloc A : identique (A1a « Choisissez un motif », A1d ok, A1e retrait/légitime/personne, A4 panne_meteo d'accord = légitime, A5 abusive + avertissement).
+-- • bloc D/E : D2 7 jours, 2503 annonces masquées ; après la fin simulée, suspensions_echues() rend les 2503 annonces (vérifié dans une
+--   instruction séparée : dans la même expression que fiabilite_tick(), le comptage lit l'état d'avant).
+-- • bloc H : T1 ne passe plus tel quel : l'ancienne commande_annuler demande maintenant un motif (changement d'une autre équipe) ;
+--   T2/T3 : abusive imputée au vendeur + 1 sanction ; l'acheteur ne voit ni catégorie ni contestation ; le vendeur voit tout.
+-- • nouveau (94f) : motif panne_meteo ou stock_epuise refusé par l'autre partie = « à examiner », sans sanction (voir confiance-94, bloc 7b).

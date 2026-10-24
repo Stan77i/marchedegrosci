@@ -1,6 +1,6 @@
 /* ═════════ Marché de Gros CI — pourquoi acheter et vendre ici : nos garanties, dites au bon moment ═════════
    Seulement des promesses que l'application tient déjà (PHILOSOPHIE.md : rien d'inventé) :
-   sceau vert des identités vérifiées par l'équipe, numéros cachés, tout se passe dans l'application, pas de liens ni de demandes de code,
+   sceau vert « vérifié » seulement après contrôle de la pièce par l'équipe, numéros cachés, tout se passe dans l'application, pas de liens ni de demandes de code,
    annonces réelles, statuts qui se gagnent, signalement avec preuves, compte officiel. Le paiement par tiers de confiance : « bientôt ».
    <mdg-garanties></mdg-garanties>                 : la bande fine de l'accueil, une garantie à la fois ; toucher → la feuille
    <mdg-garanties data-mode="ligne" data-t="…">    : une ligne de réassurance (fiche produit, annonce publiée) ; toucher → la feuille
@@ -52,7 +52,7 @@
     ['tableau', 'L’onglet ', 'Prix', ' : le moins cher en haut', ONGLET('Prix')],
     ['panier', 'Vendez en ', 'direct', ' : on vous met en relation', PAGE('vendre')],
     ['papier', 'Un ', 'mot secret', ' du vendeur dans chaque colis', FEN('MDGAstuces', 'tour', ['mot', true])],
-    ['sceau', 'Sceau vert : identité ', 'vérifiée', ' par l’équipe'],
+    ['sceau', 'Sceau vert : pièce ', 'contrôlée', ' par l’équipe'],
     ['main', 'Négociez ici, payez ', 'à la livraison', ''],
     ['horloge', 'Marchandise reçue : ', '1 h', ' pour la vérifier', FEN('MDGAstuces', 'tour', ['verifier', true])],
     ['calendrier', 'L’année du ', 'marché', ' : quoi récolter, et quand', PAGE('annee')],
@@ -76,7 +76,7 @@
   ];
   // la feuille : chaque garantie, ce que l'application fait vraiment
   const DETAIL = [
-    ['sceau', 'Le sceau vert : une identité vérifiée', 'Une personne de l’équipe compare la pièce d’identité, encore valide, et un selfie. Le sceau n’apparaît qu’après sa décision. Tout le monde n’est pas vérifié : regardez-le avant de traiter.'],
+    ['sceau', 'Un sceau vert qui se mérite', 'Le sceau vert « vérifié » apparaît seulement quand une personne de l’équipe a comparé la pièce d’identité, encore valide, et un selfie. Un membre sans sceau n’est pas vérifié : avec lui, ne payez jamais d’avance.'],
     ['cache', 'Votre numéro reste caché', 'Personne ne voit votre numéro. On vous écrit et on négocie avec vous dans l’application.'],
     ['lien', 'Ni liens, ni arnaques au code', 'Les liens, les adresses e-mail, les numéros et les demandes de code secret sont refusés dans les messages. Le Marché de Gros ne vous demandera jamais votre code.'],
     ['reel', 'Que des annonces réelles', 'Chaque offre et chaque demande a été publiée par un membre. Aucun chiffre n’est inventé : les prix viennent des annonces.'],
@@ -168,7 +168,7 @@
       l.className = 'gr-l sort'; setTimeout(poser, 300);
     }
     ligne() {
-      const t = this.dataset.t || 'Sceau vert pour les identités vérifiées, numéros cachés, tout se passe ici.';
+      const t = this.dataset.t || 'Sceau vert après contrôle de la pièce, numéros cachés, tout se passe ici.';
       this.r.innerHTML = `<style>${CSS}</style><button type="button" class="gr-ligne">${ico('bouclier', 20)}<span><b>Achetez en confiance.</b> ${esc(t)}</span>${ico('chev', 16)}</button>`;
       this.r.querySelector('button').onclick = ouvrir;
     }

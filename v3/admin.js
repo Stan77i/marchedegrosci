@@ -60,6 +60,8 @@
       N.rpc('admin_discussions').then(r => { D.discussions = r || []; delete D.err.discussions; }).catch(e => { D.err.discussions = e.message; }),
       // signalements regroupés par compte, avec preuves et priorité (schéma 18) ; sinon l'ancienne liste
       N.rpc('admin_signalements_comptes').then(r => { D.sigc = r || []; }).catch(() => { D.sigc = null; }),
+      // annonces cachées par signalement, avec la contestation du vendeur (schéma 94e)
+      N.rpc('admin_masquages').then(r => { D.masq = r || []; }).catch(() => { D.masq = []; }),
       N.rpc('admin_signalements_membres').then(r => { D.sigm = r || []; delete D.err.sigm; }).catch(e => { D.sigm = []; if (!/admin_signalements_membres|schema cache|Could not find/i.test(e.message)) D.err.sigm = e.message; }),
       // admin_identite_dossiers (schéma 16 : dates d'expiration, numéro) ; sinon l'ancienne liste
       N.rpc('admin_identite_dossiers').catch(e => { if (/admin_identite_dossiers|schema cache|Could not find/i.test(e.message)) return N.rpc('admin_identite_file'); throw e; })
@@ -94,7 +96,7 @@
   const qui = r => r.kind === 'offre' ? (r.seller_name || 'Vendeur') : (r.buyer_name || 'Acheteur');
   const tel = uid => { const c = D.byUser && D.byUser[uid]; return c ? fmtTel(String(c.tel).replace(/^225/, '')) : ''; };
   function signalesParCible() {
-    const m = {}; D.signalements.forEach(s => { const k = s.cible + ':' + s.cible_id; (m[k] = m[k] || { cible: s.cible, id: s.cible_id, n: 0, comptes: new Set(), motifs: [], last: s.created_at }); m[k].n++; if (s.user_id) m[k].comptes.add(s.user_id); if (s.motif) m[k].motifs.push(s.motif); });
+    const m = {}; D.signalements.filter(s => !s.traite).forEach(s => { const k = s.cible + ':' + s.cible_id; (m[k] = m[k] || { cible: s.cible, id: s.cible_id, n: 0, comptes: new Set(), motifs: [], last: s.created_at }); m[k].n++; if (s.user_id) m[k].comptes.add(s.user_id); if (s.motif) m[k].motifs.push(s.motif); });
     return Object.values(m).sort((a, b) => b.n - a.n);
   }
   const aTraiter = () => { const A = annonces(), by = Object.fromEntries(A.map(a => [a.kind + ':' + a.id, a])); return signalesParCible().map(s => Object.assign(s, { a: by[s.cible + ':' + s.id] })).filter(s => s.a); };
@@ -156,7 +158,7 @@
     },
     traiter: ({ T }) => {
       const masq = annonces().filter(a => a.status === 'masquee' && !a.suspension_id && !T.find(s => s.a.id === a.id));   // cachées par une suspension (schéma 84) : vues dans « Fiabilité »
-      return top('À traiter', 'Annonces signalées par les utilisateurs, et annonces masquées. Trois signalements de comptes différents masquent une annonce automatiquement.') +
+      return top('À traiter', 'Annonces signalées et annonces masquées. Seuls trois membres vérifiés, inscrits depuis 30 jours, cachent une annonce en la signalant ; le vendeur est prévenu et peut contester.') +
         (T.length + masq.length ? `<div class="list">${T.map(s => rowAnnonce(s.a, s)).join('')}${masq.map(a => rowAnnonce(a)).join('')}</div>` : `<div class="list"><div class="empty"><b>Rien à traiter</b>Aucune annonce signalée ni masquée.</div></div>`);
     },
     annonces: () => {
@@ -178,7 +180,7 @@
         <div><b>${esc(fmtTel(String(c.tel).replace(/^225/, '')))} ${c.banni ? `<span class="tag bad">banni · ${esc(MOTIF_BAN[c.banni_motif] || c.banni_motif || '')}</span>` : ''} ${c.verifie ? '<span class="tag ok">identité vérifiée</span>' : ''} ${c.admin ? '<span class="tag ok">admin</span>' : ''} ${c.secours ? '' : '<span class="tag acc">sans code de secours</span>'}</b><small>Inscrit le ${date(c.created_at)} · dernière connexion ${ago(c.last_sign_in_at)}</small></div>
         <div class="c3"><small>${fmt(c.offres)} offre(s) · ${fmt(c.demandes)} demande(s)</small><small>${fmt(c.negociations)} négociation(s)${c.publiees != null && !c.verifie && !c.admin ? ' · ' + Math.min(c.publiees, 3) + '/3 gratuites' : ''}</small></div>
         <div class="c4">${c.signale ? `<span class="tag bad">${c.signale} signalement(s)</span>` : ''}</div>
-        <div class="acts">${window.MDGMessages && !c.admin ? `<button class="btn sm" data-ecrire="${c.id}">Écrire</button>` : ''}<button class="btn sm" data-voir="${c.id}">Ses annonces</button><button class="btn sm" data-code="${c.id}" data-tel="${esc(c.tel)}">Nouveau code</button>${c.admin || c.banni == null ? '' : c.banni ? `<button class="btn sm" data-deban="${c.id}">Lever le bannissement</button>` : `<button class="btn sm bad" data-bannir="${c.id}">Bannir</button>`}</div></div>`).join('') : '<div class="empty"><b>Aucun compte</b></div>'}</div>`),
+        <div class="acts">${window.MDGMessages && !c.admin ? `<button class="btn sm" data-ecrire="${c.id}">Écrire</button>` : ''}<button class="btn sm" data-voir="${c.id}">Ses annonces</button><button class="btn sm" data-code="${c.id}" data-tel="${esc(c.tel)}">Nouveau code</button>${c.admin ? '' : `<button class="btn sm" data-numrendre="${c.id}" data-tel="${esc(c.tel)}">Numéro contesté</button>`}${c.admin || c.banni == null ? '' : c.banni ? `<button class="btn sm" data-deban="${c.id}">Lever le bannissement</button>` : `<button class="btn sm bad" data-bannir="${c.id}">Bannir</button>`}</div></div>`).join('') : '<div class="empty"><b>Aucun compte</b></div>'}</div>`),
     negos: () => {
       const L = D.negos;
       return top('Négociations', fmt(L.length) + ' au total : ' + fmt(L.filter(n => n.statut === 'ouverte').length) + ' en cours, ' + fmt(L.filter(n => n.statut === 'conclue').length) + ' conclues.') + `<div class="list">${L.length ? L.map(n => `
@@ -568,13 +570,13 @@
     return `<div class="list">${A.slice(0, showN).map(a => rowAnnonce(a, S[a.kind + ':' + a.id])).join('')}${A.length > showN ? `<button class="more" data-more>Afficher plus (${A.length - showN} restantes)</button>` : ''}</div>`;
   }
   function rowAnnonce(a, s) {
-    const hidden = a.status !== 'active';
+    const hidden = a.status !== 'active', mq = (D.masq || []).find(m => m.cible_id === a.id);
     return `<div class="row${hidden ? ' is-hidden' : ''}"><span class="mk ${a.kind === 'offre' ? 'o' : 'd'}${hidden ? ' off' : ''}" title="${a.kind}"></span>
       <div><b>${esc(nom(a))}${a.quantity ? ' · ' + fmt(a.quantity) + ' ' + esc(a.unit || '') : ''}</b><small>${esc(lieu(a) || '—')} · ${esc(prix(a))}</small></div>
       <div class="c3"><small>${esc(qui(a))}${a.phone ? ' · ' + esc(fmtTel(a.phone)) : ''}</small><small>compte ${esc(tel(a.user_id) || '—')} · ${ago(a.created_at)}</small></div>
       <div class="c4">${hidden ? '<span class="tag bad">masquée</span> ' : ''}${s ? `<span class="tag acc">${s.n} signalement${s.n > 1 ? 's' : ''}</span>` : ''}</div>
-      <div class="acts">${hidden ? `<button class="btn sm" data-act="active" data-k="${a.k}" data-id="${a.id}">Rétablir</button>` : `<button class="btn sm" data-act="masquee" data-k="${a.k}" data-id="${a.id}">Masquer</button>`}<button class="btn sm bad" data-act="supprimer" data-k="${a.k}" data-id="${a.id}">Supprimer</button></div>
-      ${s && s.motifs.length ? `<div class="motifs">${s.motifs.slice(0, 6).map(m => `<span>${esc(m)}</span>`).join('')}</div>` : ''}</div>`;
+      <div class="acts">${hidden ? `<button class="btn sm" data-act="active" data-k="${a.k}" data-id="${a.id}">Rétablir</button>${mq ? `<button class="btn sm" data-garder="${a.id}" data-k="${a.k}">Garder cachée</button>` : ''}` : `<button class="btn sm" data-act="masquee" data-k="${a.k}" data-id="${a.id}">Masquer</button>`}<button class="btn sm bad" data-act="supprimer" data-k="${a.k}" data-id="${a.id}">Supprimer</button></div>
+      ${s && s.motifs.length ? `<div class="motifs">${s.motifs.slice(0, 6).map(m => `<span>${esc(m)}</span>`).join('')}</div>` : ''}${mq && mq.contestation ? `<div class="motifs"><span>Contestée par le vendeur : ${esc(mq.contestation)}</span></div>` : ''}</div>`;
   }
 
   /* ——— actions ——— */
@@ -609,12 +611,27 @@
       try {
         if (act === 'supprimer') await N.api('/rest/v1/' + k + '?id=eq.' + id, { method: 'DELETE', auth: true });
         else {
-          await N.api('/rest/v1/' + k + '?id=eq.' + id, { method: 'PATCH', auth: true, body: { status: act }, prefer: 'return=minimal' });
-          // rétablie : on repart de zéro (sinon le prochain signalement la masquerait de nouveau)
-          if (act === 'active') await N.api('/rest/v1/signalements?cible=eq.' + (k === 'offres' ? 'offre' : 'demande') + '&cible_id=eq.' + id, { method: 'DELETE', auth: true }).catch(() => {});
+          // rétablie (schéma 94e) : le serveur marque les signalements traités (rien n'est effacé) et prévient le vendeur
+          if (act === 'active') await N.rpc('admin_annonce_retablir', { p_cible: k === 'offres' ? 'offre' : 'demande', p_id: id, p_note: null });
+          else await N.api('/rest/v1/' + k + '?id=eq.' + id, { method: 'PATCH', auth: true, body: { status: act }, prefer: 'return=minimal' });
         }
         await load(); paint(); toast(act === 'supprimer' ? 'Annonce supprimée.' : act === 'active' ? 'Annonce rétablie.' : 'Annonce masquée.');
       } catch (e) { b.disabled = false; toast('Action impossible : ' + e.message); }
+    });
+    $$('[data-garder]').forEach(b => b.onclick = async () => {
+      const note = prompt('Pourquoi l’annonce reste cachée ? (le vendeur lira cette phrase)'); if (note == null) return; if (!note.trim()) return toast('Écrivez la raison pour le vendeur.');
+      b.disabled = true;
+      try { await N.rpc('admin_annonce_maintenir', { p_cible: b.dataset.k === 'offres' ? 'offre' : 'demande', p_id: b.dataset.garder, p_note: note.trim() }); await load(); paint(); toast('Annonce gardée cachée. Le vendeur est prévenu.'); }
+      catch (e) { b.disabled = false; toast('Impossible : ' + e.message); }
+    });
+    $$('[data-numrendre]').forEach(b => b.onclick = async () => {
+      const t = fmtTel(String(b.dataset.tel).replace(/^225/, ''));
+      if (!confirm('Numéro contesté : rendre le ' + t + ' à son vrai propriétaire ?\nCe compte ne pourra plus se connecter et ses annonces seront cachées. Rien n’est effacé.')) return;
+      const m = prompt('Comment le propriétaire a-t-il prouvé que le numéro est à lui ? (gardé dans le journal)'); if (m == null) return;
+      if (m.trim().length < 10) return toast('Expliquez en une phrase (10 caractères au moins).');
+      b.disabled = true;
+      try { await N.rpc('admin_numero_rendre', { p_tel: String(b.dataset.tel), p_motif: m.trim() }); await load(); paint(); toast('Numéro libéré : le propriétaire peut créer son compte.'); }
+      catch (e) { b.disabled = false; toast('Impossible : ' + e.message); }
     });
     $$('[data-bannir]').forEach(b => b.onclick = () => bannir(b.dataset.bannir));
     $$('[data-sigvoir]').forEach(b => b.onclick = () => sigExaminer(b.dataset.sigvoir, b.closest('.row')));
@@ -624,8 +641,10 @@
     $$('[data-code]').forEach(b => b.onclick = async () => {
       const c = prompt('Nouveau code secret à 6 chiffres pour le ' + fmtTel(String(b.dataset.tel).replace(/^225/, '')) + ' :\n(Communiquez-le à la personne par téléphone, de vive voix.)');
       if (c == null) return; if (!/^\d{6}$/.test(c.trim())) return toast('Le code doit faire 6 chiffres.');
-      try { await N.rpc('admin_reinitialiser', { compte: b.dataset.code, nouveau: c.trim() }); toast('Nouveau code enregistré. Les connexions ouvertes de ce compte sont fermées.'); }
-      catch (e) { toast(/admin_reinitialiser|schema cache|Could not find/i.test(e.message) ? 'Fonction pas encore installée : lancez supabase/a-lancer-dans-sql-editor.sql.' : 'Impossible : ' + e.message); }
+      const m = prompt('Pourquoi changer ce code ? (gardé dans le journal ; le membre reçoit un message)'); if (m == null) return;
+      if (m.trim().length < 5) return toast('Indiquez la raison en quelques mots.');
+      try { await N.rpc('admin_reinitialiser_journal', { compte: b.dataset.code, nouveau: c.trim(), motif: m.trim() }); toast('Nouveau code enregistré. Les connexions ouvertes de ce compte sont fermées.'); }
+      catch (e) { toast(/admin_reinitialiser|schema cache|Could not find/i.test(e.message) ? 'Fonction pas encore installée : lancez supabase/schema-94b-numero-et-journal.sql.' : 'Impossible : ' + e.message); }
     });
     $$('[data-fil]').forEach(b => b.onclick = async () => {
       const row = root.querySelector(`[data-row="${b.dataset.fil}"]`), next = row.nextElementSibling;

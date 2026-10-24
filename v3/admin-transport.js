@@ -129,7 +129,7 @@
             ${c.sans_reponse ? `<button class="btn sm pri" data-lib="${c.id}">Clôturer la commande</button>` : ''}
             ${c.etat === 'litige' ? `<button class="btn sm ghost" data-ds="${c.id}" aria-expanded="${!!D.disc[c.id]}">Discussion</button>` : ''}
             ${c.etat === 'litige' && c.refus ? `<button class="btn sm ghost" data-rfph="${c.id}">Photos (${(c.refus.photos || []).length})</button><button class="btn sm pri" data-rft="${c.id}" data-q="0">Rejeter le refus</button><button class="btn sm bad" data-rft="${c.id}" data-q="">Accepter le refus</button>` : ''}
-            ${c.etat === 'litige' && !c.refus ? `<button class="btn sm pri" data-lit="${c.id}" data-iss="terminee">Clore : livrée</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee" data-fautif="vendeur">Annulée : faute du vendeur</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee" data-fautif="acheteur">Annulée : faute de l’acheteur</button><button class="btn sm" data-lit="${c.id}" data-iss="annulee" data-fautif="">Annulée : torts partagés</button>` : ''}
+            ${c.etat === 'litige' && !c.refus ? `<button class="btn sm pri" data-lit="${c.id}" data-iss="terminee" data-fautif="">Clore : livrée, sans faute</button><button class="btn sm" data-lit="${c.id}" data-iss="terminee" data-fautif="acheteur">Clore : livrée, réclamation de l’acheteur sans fondement</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee" data-fautif="vendeur">Annulée : faute du vendeur</button><button class="btn sm bad" data-lit="${c.id}" data-iss="annulee" data-fautif="acheteur">Annulée : faute de l’acheteur</button><button class="btn sm" data-lit="${c.id}" data-iss="annulee" data-fautif="">Annulée : torts partagés</button>` : ''}
             ${c.etat === 'litige' && !c.refus && c.quantite != null ? `<button class="btn sm" data-part="${c.id}">Partager</button>` : ''}
             ${['a_confirmer', 'en_cours'].includes(c.etat) ? `<button class="btn sm bad" data-iss2="${c.id}" data-iss="annulee" data-fautif="vendeur">Annuler : faute du vendeur</button><button class="btn sm bad" data-iss2="${c.id}" data-iss="annulee" data-fautif="acheteur">Annuler : faute de l’acheteur</button><button class="btn sm" data-iss2="${c.id}" data-iss="annulee" data-fautif="">Annuler : personne en faute</button>${c.etat === 'en_cours' ? `<button class="btn sm pri" data-iss2="${c.id}" data-iss="terminee" data-fautif="">Clore : livrée</button>` : ''}` : ''}
             <button class="btn sm ghost" data-hist="${c.id}">Historique</button><button class="btn sm ghost" data-tout="${e(c.numero)}">Tout voir</button></div>
@@ -169,8 +169,9 @@
       root.querySelectorAll('[data-lit]').forEach(b => b.onclick = async () => {
         const iss = b.dataset.iss, note = prompt(iss === 'terminee' ? 'Décision : commande considérée comme livrée. Expliquez (les deux parties le verront) :' : 'Décision : commande annulée. Expliquez (les deux parties le verront) :');
         if (!note || !note.trim()) return; b.disabled = true;
-        // schéma 84 : la partie fautive compte dans sa fiabilité (litige perdu) ; torts partagés, ou serveur pas à jour : personne
-        const fa = iss === 'annulee' ? (b.dataset.fautif || null) : null;
+        // schéma 84 : la partie fautive compte dans sa fiabilité (litige perdu) ; torts partagés, ou serveur pas à jour : personne.
+        // schéma 94f : une commande déclarée livrée peut aussi porter un litige perdu (réclamation sans fondement)
+        const fa = b.dataset.fautif || null;
         try { await H.rpc('admin_litige_clore', { p_cmd: b.dataset.lit, p_issue: iss, p_note: note.trim(), p_fautif: fa })
             .catch(e => /schema cache|Could not find the function|PGRST202/i.test(String(e && e.message)) ? H.rpc('admin_litige_trancher', { p_cmd: b.dataset.lit, p_issue: iss, p_note: note.trim() }) : Promise.reject(e));
           H.toast('Litige clos.'); await H.relire(); }

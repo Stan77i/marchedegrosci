@@ -209,7 +209,7 @@
   }
   // réputation par rôle (schéma 32) : calculée par le serveur, sur les commandes ; « vérifié » n'est pas « fiable »
   // un chiffre et un mot ; la phrase entière pour les lecteurs d'écran
-  const chiffre = (v, court, un, plus) => { v = v || 0; return `<div><dt class="rp-sr">${v > 1 ? plus : un}</dt><dd><b>${v}</b><small aria-hidden="true">${court}${v > 1 ? 's' : ''}</small></dd></div>`; };
+  const chiffre = (v, court, un, plus, courts) => { v = v || 0; return `<div><dt class="rp-sr">${v > 1 ? plus : un}</dt><dd><b>${v}</b><small aria-hidden="true">${v > 1 ? courts || court + 's' : court}</small></dd></div>`; };
   function blocReputation(r, moi) {
     if (!r) return '<div class="rp-vide">Réputation indisponible pour l’instant.</div>';
     // délais (schéma 89) : le vendeur livre, l'acheteur valide la marchandise ; rien tant qu'il n'y a pas 3 commandes
@@ -220,7 +220,7 @@
       const nv = x.niveau_libelle ? ` <span class="rp-fiable">${esc(x.niveau_libelle)}</span>` : x.fiable && !('niveau' in x) ? ' <span class="rp-fiable">Fiable</span>' : '';
       return `<div class="rp-rep-c"><h4>${t}${nv}${x.gros ? ' <span class="rp-fiable rp-gros">Acheteur en gros</span>' : ''}</h4>
         <p>${x.avis ? etoiles(+x.note, x.avis, 13) + ' ' + String(x.note).replace('.', ',') + ' · ' + x.avis + ' avis' : 'Pas encore noté'}</p>
-        <dl class="rp-rep-k">${chiffre(n, 'honorée', 'commande honorée', 'commandes honorées')}${'annulations_abusives' in x ? chiffre(x.annulations_abusives, 'abusive', 'annulation abusive', 'annulations abusives') : chiffre(x.annulations_demandees, 'annulée', 'annulation demandée', 'annulations demandées')}${chiffre(x.litiges_contre, 'litige', 'litige ouvert par l’autre partie', 'litiges ouverts par l’autre partie')}</dl>${delai[t] ? `<p class="rp-rep-d">${delai[t]}</p>` : ''}</div>`; };
+        <dl class="rp-rep-k">${chiffre(n, 'honorée', 'commande honorée', 'commandes honorées')}${'annulations_abusives' in x ? chiffre(x.annulations_abusives, 'abusive', 'annulation abusive', 'annulations abusives') : chiffre(x.annulations_demandees, 'annulée', 'annulation demandée', 'annulations demandées')}${'litiges_perdus' in x ? chiffre(x.litiges_perdus, 'litige perdu', 'litige perdu', 'litiges perdus', 'litiges perdus') : chiffre(x.litiges_contre, 'litige', 'litige ouvert par l’autre partie', 'litiges ouverts par l’autre partie')}</dl>${delai[t] ? `<p class="rp-rep-d">${delai[t]}</p>` : ''}</div>`; };
     // fiabilité (schéma 84) : une seule ligne en public ; le détail, seulement pour soi
     const f = r.fiabilite, fl = f && f.sur ? `<p class="rp-fb-l">Fiabilité : <b>${f.pourcent}&nbsp;%</b> sur ${f.sur} commande${f.sur > 1 ? 's' : ''}</p>` : f ? '<p class="rp-fb-l">Fiabilité : pas encore de commande comptée</p>' : '';
     return `${fl}${moi && f ? '<button type="button" class="rp-alt rp-fb-btn" data-mafiab>Mon historique de fiabilité</button>' : ''}<div class="rp-rep">${col('Comme vendeur', r.vendeur)}${col('Comme acheteur', r.acheteur)}</div>
@@ -345,7 +345,7 @@
       const nA = A.length;
       h += `<div class="rp-sec"><h3>Annulations${nA ? '<span class="nbul">' + nA + '</span>' : ''}</h3>${nA ? A.map(a => {
         const contre = a.contre_moi && (a.categorie === 'abusive' || a.categorie === 'litige'), t = a.contestation;
-        const etat = contre ? (a.categorie === 'litige' ? 'Litige perdu : compte contre vous' : 'Compte contre vous') : 'Ne compte pas contre vous';
+        const etat = a.a_examiner ? 'L’équipe examine : rien ne compte pour l’instant' : contre ? (a.categorie === 'litige' ? 'Litige perdu : compte contre vous' : 'Compte contre vous') : 'Ne compte pas contre vous';
         return `<div class="rp-fb-it"><b>${esc(a.produit || 'Commande')}${a.numero ? ' · ' + esc(a.numero) : ''}</b><small>${CHEMIN[a.chemin] || 'Annulée'} le ${jour(a.cree_le)}${a.motif_code ? ' · ' + (MOTIF[a.motif_code] || '') : ''}${a.motif_texte ? ' : « ' + esc(a.motif_texte) + ' »' : ''}</small>
           <span class="rp-fb-t${contre ? ' contre' : ''}">${etat}</span>${a.note_admin ? `<small>Note de l’équipe : ${esc(a.note_admin)}</small>` : ''}
           ${t ? `<small>Votre contestation : ${t.statut === 'ouverte' ? 'en cours, réponse avant le ' + jour(t.repondre_avant) : t.statut === 'acceptee' ? 'acceptée' : 'refusée'}${t.reponse ? ' · « ' + esc(t.reponse) + ' »' : ''}</small>` : ''}
@@ -375,6 +375,31 @@
   }
   // pour Mon compte : le score en une ligne et les nouveaux avertissements
   const fiabResume = () => fiabCache;
+
+  // annonces cachées après signalements (schéma 94e) : seulement par des membres vérifiés ; le vendeur conteste une fois
+  let masqCache = null;
+  async function lireMasquees() { if (!N() || !N().session()) return null; try { masqCache = await N().rpc('mes_annonces_masquees'); } catch (_) {} return masqCache; }
+  const masqResume = () => masqCache;
+  async function masquees() {
+    const bg = feuille(`<h2>Annonce cachée</h2><p>Des membres vérifiés l’ont signalée. L’équipe la regarde et vous répond dans Messages.</p><div data-mq></div>`, 'Annonce cachée');
+    const z = bg.querySelector('[data-mq]');
+    const peindre = L => {
+      if (!L || !L.length) { z.innerHTML = '<div class="rp-vide">Aucune annonce cachée.</div>'; return; }
+      z.innerHTML = L.map(a => `<div class="rp-fb-it"><b>${esc(a.produit || 'Annonce')}</b><small>Cachée le ${jour(a.masquee_le)}</small>
+        ${a.contestee ? '<span class="rp-fb-t">Contestée : l’équipe vous répond</span>' : `<form data-mqf="${esc(a.cible)}:${esc(a.cible_id)}" novalidate><textarea maxlength="500" aria-label="Pourquoi votre annonce ne devrait pas être cachée ?" placeholder="Expliquez ce qui est faux dans les signalements"></textarea><p class="rp-msg" role="alert"></p><button type="submit" class="rp-go" style="margin-top:6px">Contester</button></form>`}</div>`).join('');
+      z.querySelectorAll('[data-mqf]').forEach(f => f.onsubmit = async ev => {
+        ev.preventDefault(); const t = f.querySelector('textarea').value.trim(), m = f.querySelector('.rp-msg'), go = f.querySelector('[type=submit]');
+        if (t.length < 10) { m.textContent = 'Expliquez en quelques mots (10 caractères au moins).'; return; }
+        if (N().texteRefus) { const r = N().texteRefus(t); if (r) { m.textContent = r; return; } }
+        const [cible, id] = f.dataset.mqf.split(':'); go.disabled = true; m.textContent = '';
+        try { await N().rpc('signalement_contester', { p_cible: cible, p_id: id, p_texte: t }); peindre(await lireMasquees()); }
+        catch (x) { go.disabled = false; m.textContent = window.MDGErreur ? MDGErreur(x) : String(x.message || x); }
+      });
+    };
+    if (masqCache) peindre(masqCache);
+    const d = await lireMasquees(); if (!bg.isConnected) return;
+    peindre(d);
+  }
 
   // mes niveaux (schéma 85) : calculés par le serveur ; ici on affiche le niveau, ce qui manque, la grâce, l'historique, la contestation
   let nivCache = null;
@@ -466,5 +491,5 @@
   if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.type === 'mdg-lien') depuisAdresse(e.data.url); });
   depuisAdresse();
 
-  window.MDGRep = { etoiles, texteNote, resume, charger, signal, chargerSignal, profil, modifier, noter, classement, signaler, RAISONS, fiabilite, lireFiabilite, fiabResume, niveaux, lireNiveaux, nivResume };
+  window.MDGRep = { etoiles, texteNote, resume, charger, signal, chargerSignal, profil, modifier, noter, classement, signaler, RAISONS, fiabilite, lireFiabilite, fiabResume, niveaux, lireNiveaux, nivResume, masquees, lireMasquees, masqResume };
 })();

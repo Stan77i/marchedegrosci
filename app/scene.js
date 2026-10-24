@@ -2,20 +2,21 @@
    Décision du propriétaire (24/10/2026) : la scène de la connexion devient un court film en boucle de 17 s,
    « le marché qui relie tout le pays ». C'est une exception assumée à « l'accueil calmé », limitée à cet écran.
    Le film, sur une seule horloge (D = 17 s ; chaque animation dure D et place ses étapes en secondes, voir kf()) :
-     0 → 8,4 s   deux commerçantes, l'une à Abidjan, l'autre à Bouaké, se parlent au téléphone (tête, main, regard, buste) ;
-     7,6 s       Abidjan valide sa commande : une lumière sort de son téléphone, descend au sol puis monte vers le ciel ;
-     8,1 → 9,5 s la caméra monte avec elle (le premier plan descend plus que le ciel) ;
+     0 → 8,4 s   deux commerçantes, l'une à Abidjan, l'autre à Bouaké, se parlent au téléphone (tête, main levée, regard, buste) ;
+     7,6 s       Abidjan valide sa commande : son téléphone s'éclaire, une lumière en sort, file au sol devant le camion puis monte ;
+     8,1 → 9,2 s la caméra monte avec elle (le premier plan descend plus que le ciel) ; la lumière touche Abidjan à 9,2 s ;
      9,2 → 11,1  la carte de Côte d'Ivoire s'allume : Abidjan, Bouaké et leur ligne, puis Yamoussoukro, Daloa, San-Pédro, Korhogo, Man ;
      10 → 11,8   le camion part (phares, roues, caisse qui suit) ; une impulsion fait la même route Abidjan → Yamoussoukro → Bouaké ;
      11 → 13,9   le réseau vit : des impulsions décalées, puis tout converge vers le centre ;
-     12,4 → 14   le camion revient chargé, l'impulsion du retour arrive à Abidjan au même instant ; la lumière fait le tour de la carte ;
-     14,05       une impulsion descend vers le titre du formulaire : « de Gros » laisse la place à « du pays » (v3/nuage.js, .mk-ta / .mk-tb) ;
-     15 → 17     les lignes s'effacent, les étoiles reviennent, la caméra redescend, les deux femmes reprennent leur téléphone : image de départ.
+     12,4 → 14   le camion revient chargé (sacs sur le toit), l'impulsion du retour arrive à Abidjan au même instant ; la lumière fait le tour de la carte ;
+     14,05       une impulsion descend vers le titre du formulaire ; à 14,6 s, « de Gros » roule vers le haut et « du pays » monte du bas (v3/nuage.js, .mk-ta / .mk-tb) ;
+     15,3 → 17   la carte s'éteint, puis la caméra redescend, les étoiles reviennent, les sacs sont déchargés, les femmes reprennent leur téléphone :
+                 image de départ ; « de Gros » revient à 16,2 s par le roulement inverse.
    La carte est juste : contour Natural Earth (app/geo/ci.json, simplifié une fois, domaine public), villes à leurs vraies coordonnées
    (projection : x = 200 + (lon + 5,55) × 16, y = 2 + (10,74 − lat) × 16).
    Dessin vectoriel (SVG 400 × 190), animé en CSS (transform, opacity, stroke-dashoffset) : aucune bibliothèque.
    Pause quand la scène n'est plus visible (onglet caché, hors de l'écran, porte fermée) : lancer(). Téléphone modeste (≤ 4 cœurs ou ≤ 2 Go) :
-   moins d'impulsions, pas de poussière. Mouvement réduit : une image fixe prise dans le film (réseau allumé, camion à sa place).
+   moins d'impulsions, pas de poussière. Mouvement réduit : une image fixe prise dans le film à 15,2 s (réseau allumé, camion chargé à sa place).
    Piège : ne JAMAIS poser `transform-box` sur tout le dessin — les attributs SVG transform="…" partiraient de travers.
    API : MDGScene.svg(k) → markup SVG · MDGScene.css() → pose la feuille de style · MDGScene.lancer(svg) → { lier(el), pause(raison, oui), arreter() } */
 (function () {
@@ -62,9 +63,11 @@
   // le trajet du camion (et de son impulsion) : la progression p au fil des secondes ; Yamoussoukro est à 68 % de la route
   const ALLER = [[10, 0, 'i'], [10.9, .3, 'l'], [11.4, .68, 'l'], [11.8, 1]], RETOUR = [[12.4, 0, 'l'], [12.8, .32, 'l'], [13.3, .7, 'o'], [14, 1]];
   // les impulsions : [id, chemin, début, fin, éclat, léger (cachée sur téléphone modeste), étapes propres]
-  const TEL = 'M148.8 104.3C149.2 124 156 140 170 141C196 143 228 128 224.7 88.1';
+  // la lumière de la commande vit dans le plan du sol (elle descend avec lui quand la caméra monte) : du téléphone de A (148,8 ; 104,3)
+  // jusqu'au sol devant le camion, puis elle monte vers Abidjan ; à 9,2 s, la caméra est arrivée : 64,1 = 88,1 + 6 (ciel) − 30 (sol)
+  const TEL = 'M148.8 104.3C149 124 151 156 168 158C194 160 222 128 224.7 64.1';
   const IMP = [
-    ['tel', TEL, 7.6, 9.2, 1.25],
+    ['tel', TEL, 0, 0, 1.25, 0, [[7.6, 0, 'o'], [8.15, .32, 's'], [9.2, 1]], 1],
     ['va', chemin('ay', 'yb'), 0, 0, 1.3, 0, ALLER],
     ['vr', chemin('-yb', '-ay'), 0, 0, 1.3, 0, RETOUR],
     ['s4', chemin('ab'), 11, 11.6, .8, 1],
@@ -74,12 +77,14 @@
     ['c1', chemin('-bk', '-yb'), 12.6, 13.6, .8, 1],
     ['c2', chemin('-sd', '-yd'), 12.7, 13.7, .9, 1],
     ['c3', chemin('-as'), 12.9, 13.8, .9],
-    ['ti', 'M224.7 88.1C226 120 241 150 236 206', 14.05, 14.6, 1.1]
+    ['ti', 'M224.7 88.1C228 122 250 150 252 196', 14.05, 14.6, 1.4]
   ];
 
+  // une impulsion : une traîne large et pâle, un cœur, une tête ronde plus claire (la comète)
+  const impulsions = sol => IMP.filter(x => !x[7] === !sol).map(([id, d, , , , leger]) => `<g class="mk-i${leger ? ' mk-x' : ''}">${['iq', 'ic', 'ih'].map(c => `<path class="mk-${c} mk-${c}-${id}" d="${d}" pathLength="1"/>`).join('')}</g>`).join('');
   function carte() {
     const routes = ROUTES.map(([id, p, k]) => `<path class="mk-r mk-r-${id}" d="${route(p, k)}" pathLength="1"/>`).join('');
-    const imp = IMP.map(([id, d, , , , leger]) => `<g class="mk-i${leger ? ' mk-x' : ''}"><path class="mk-iq mk-iq-${id}" d="${d}" pathLength="1"/><path class="mk-ic mk-ic-${id}" d="${d}" pathLength="1"/></g>`).join('');
+    const imp = impulsions(false);
     const villes = Object.keys(V).map(id => { const [x, y, nom, an, dx, dy, fs] = V[id];
       return `<g class="mk-v mk-v-${id}"><circle class="mk-vp" cx="${x}" cy="${y}" r="3.4" fill="#F2C230" fill-opacity=".2"/><circle class="mk-vh mk-vh-${id}" cx="${x}" cy="${y}" r="3" fill="none" stroke="#FFE08A" stroke-width=".8"/><circle cx="${x}" cy="${y}" r="1.75" fill="#FFE08A"/>` +
         `<text x="${x + dx}" y="${y + dy}" text-anchor="${an}" ${JOST} font-weight="600" font-size="${fs}" letter-spacing="${fs > 7 ? .7 : .6}" fill="#F3EFE4" stroke="#0B231A" stroke-width="2.4" stroke-linejoin="round" paint-order="stroke">${nom}</text></g>`; }).join('');
@@ -102,9 +107,10 @@
       // la tête : regard vers le téléphone, vers l'autre, vers le ciel
       `<g class="mk-${k}-tete">${tete(-66, peau)}<path d="M-5.2 -66.4Q-5.8 -75.6 .4 -75.8Q6.2 -75.4 5 -66.6Q.4 -70.6 -5.2 -66.4Z" fill="${foulard}"/>` +
       `<path d="M-1 -75.4q2.4 -3.2 5.6 -1.4q-2.4 .2 -2.8 2.4z" fill="${foulard}"/></g>` +
-      // la main libre : elle parle, puis touche l'écran
-      `<g class="mk-${k}-bras"><path d="M-1 -56.6L-1.6 -47L4 -43.6" stroke="${peau}" stroke-width="3.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>` +
-      `<path d="M-2.4 -57.4h3.4l-.3 5.4h-3.2z" fill="${haut}"/><circle cx="4.4" cy="-43.4" r="1.8" fill="${peau}"/></g>` +
+      // la main libre : l'avant-bras se lève quand elle parle (loin du téléphone) ; le bras entier touche l'écran pour commander
+      `<g class="mk-${k}-bras"><path d="M-1 -56.6L-1.6 -47" stroke="${peau}" stroke-width="3.1" fill="none" stroke-linecap="round"/>` +
+      `<g class="mk-${k}-avb"><path d="M-1.6 -47L4 -43.6" stroke="${peau}" stroke-width="3.1" fill="none" stroke-linecap="round"/><path d="M3.2 -45.4l2.6-.6.8 1.4-1 1.8-2 .2z" fill="${peau}"/><circle cx="4.4" cy="-43.4" r="1.8" fill="${peau}"/></g>` +
+      `<path d="M-2.4 -57.4h3.4l-.3 5.4h-3.2z" fill="${haut}"/></g>` +
       `</g></g></g>`;
   }
 
@@ -120,8 +126,9 @@
       `<path d="M-58 -50Q-57 -58 -48 -58H20Q26 -58 26 -52V-16H-58Z" fill="#1F4D3B"/><path d="M-56 -50Q-55 -56 -48 -56H20" stroke="#2F6B4F" stroke-width="1.2" fill="none"/>` +
       `<path d="M-58 -26H26" stroke="#F2C230" stroke-width="2.2"/>` +
       `<circle cx="-16" cy="-40" r="8" fill="#F3EFE4"/><path d="M-19.4 -43.4h6.8l1.4 8.6h-9.6z" fill="#10392B"/><path d="M-18.6 -43.4q2.6 -2.4 5.2 0" stroke="#F2C230" stroke-width="1.2" fill="none"/>` +
-      // le chargement du retour : des sacs à l'arrière
-      `<g class="mk-charge"><ellipse cx="-50" cy="-22" rx="6" ry="4" fill="#B99C72"/><ellipse cx="-50" cy="-30" rx="6" ry="4" fill="#A88A5E"/><ellipse cx="-43" cy="-22" rx="5" ry="3.6" fill="#C9AA78"/></g>` +
+      // le chargement du retour : des sacs sanglés sur le toit
+      `<g class="mk-charge"><ellipse cx="-44" cy="-61.6" rx="8" ry="4" fill="#B99C72"/><ellipse cx="-27" cy="-61.6" rx="8" ry="4" fill="#C9AA78"/><ellipse cx="-10" cy="-61.6" rx="7.4" ry="3.8" fill="#A88A5E"/>` +
+      `<ellipse cx="-35.6" cy="-67.4" rx="7.6" ry="3.8" fill="#C9AA78"/><ellipse cx="-19" cy="-67" rx="7" ry="3.6" fill="#B99C72"/><path d="M-50 -60.4Q-30 -73 -4 -60.4" stroke="#6B4F2E" stroke-width="1" fill="none"/></g>` +
       `<path d="M26 -46H44Q50 -46 53 -40L58 -29V-16H26Z" fill="#10392B"/><path d="M26 -26H58" stroke="#F2C230" stroke-width="2.2"/>` +
       `<path d="M30 -43H43Q47 -43 49.4 -38.6L52 -33H30Z" fill="#2A4A3F"/><path d="M31 -42.4l9 9" stroke="rgba(243,239,228,.18)" stroke-width="2"/>` +
       `<circle cx="38" cy="-37.6" r="2.6" fill="#1A120C"/><path d="M35.4 -34.6q2.6 -2.2 5.2 0v1.6h-5.2z" fill="#1A120C"/>` +
@@ -194,6 +201,7 @@
   <g transform="translate(200 152) scale(.78)"><g class="mk-camion">${camion().replace('PFX', k)}</g></g>
   <g transform="translate(138 150) scale(.86)">${femme('fa', PEAU[0], '#B5523B', '#F2C230', '#E9B23A', '#C2402A')}</g>
   <g transform="translate(262 150) scale(-.86 .86)">${femme('fb', PEAU[1], '#2F6B4F', '#F2C230', '#F3EFE4', '#F2C230')}</g>
+  <circle class="mk-halo" cx="148.8" cy="104.3" r="9" fill="url(#${k}lum)"/><g fill="none" stroke-linecap="round">${impulsions(true)}</g>
   <g class="mk-bulles">${BULLES}</g>
   </g>
   <g class="mk-ciel">${carte()}</g>
@@ -202,19 +210,22 @@
 
   // ——— la chronologie ———
   // la caméra : le premier plan descend de 30, le ciel de 6 (léger effet de profondeur)
-  piste('.mk-sol', 'mkCamS', v => tr(0, v), [[0, 0], [8.1, 0, 'io'], [9.5, 30], [15, 30, 'io'], [16.4, 0], [17, 0]], 'will-change:transform');
-  piste('.mk-ciel', 'mkCamC', v => tr(0, v), [[0, 0], [8.1, 0, 'io'], [9.5, 6], [15, 6, 'io'], [16.4, 0], [17, 0]]);
-  piste('.mk-et', 'mkEtG', op, [[0, 1], [8.6, 1], [9.6, .35], [15.2, .35], [16.4, 1], [17, 1]]);
-  piste('.mk-carte', 'mkCarte', op, [[0, 0], [9, 0], [9.9, 1], [15.2, 1], [16.3, 0], [17, 0]]);
+  // elle est arrivée en haut à 9,2 s, quand la lumière du téléphone touche Abidjan ; elle redescend une fois la carte éteinte
+  piste('.mk-sol', 'mkCamS', v => tr(0, v), [[0, 0], [8.1, 0, 'io'], [9.2, 30], [15.5, 30, 'io'], [16.8, 0], [17, 0]], 'will-change:transform');
+  piste('.mk-ciel', 'mkCamC', v => tr(0, v), [[0, 0], [8.1, 0, 'io'], [9.2, 6], [15.5, 6, 'io'], [16.8, 0], [17, 0]]);
+  piste('.mk-et', 'mkEtG', op, [[0, 1], [8.6, 1], [9.6, .35], [15.4, .35], [16.6, 1], [17, 1]]);
+  piste('.mk-carte', 'mkCarte', op, [[0, 0], [9, 0], [9.9, 1], [15.3, 1], [15.95, 0], [17, 0]]);
+  // le téléphone de A s'éclaire quand elle valide, la lumière en sort
+  piste('.mk-halo', 'mkHalo', ([o, v]) => `opacity:${o};transform:scale(${v})`, [[0, [0, .6]], [7.5, [0, .6], 'o'], [7.66, [1, 1]], [8.3, [0, 1.6]], [8.32, [0, .6]], [17, [0, .6]]], 'transform-box:fill-box;transform-origin:center');
   // les routes se tracent, restent allumées, puis s'effacent
   ROUTES.forEach(([id, , , a, b]) => piste(`.mk-r-${id}`, `mkR${id}`, ([o, d]) => `opacity:${o};stroke-dashoffset:${d}`,
-    [[0, [1, 1]], [a, [1, 1], 'io'], [b, [1, 0]], [15.2, [1, 0]], [16.3, [0, 0]], [16.32, [0, 1]], [17, [1, 1]]]));
+    [[0, [1, 1]], [a, [1, 1], 'io'], [b, [1, 0]], [15.3, [1, 0]], [15.95, [0, 0]], [15.97, [0, 1]], [17, [1, 1]]]));
   // les villes : elles s'allument, battent doucement, s'éclairent quand une impulsion arrive, puis s'éteignent
   // (arrivées des impulsions ; à 14 s, la lumière fait le tour de la carte depuis Abidjan)
   const ECLAT = { abj: [12, 14], bke: [11.8, 14.24], yam: [11.4, 12.8, 14.12], dal: [13.2, 14.24], spd: [14.12], kor: [14.36], man: [14.36] };
   Object.keys(V).forEach(id => {
     const t = V[id][7];
-    piste(`.mk-v-${id}`, `mkV${id}`, op, [[0, 0], [t - .02, 0, 'o'], [t + .25, 1], [15.4, 1], [16.3, 0], [17, 0]]);
+    piste(`.mk-v-${id}`, `mkV${id}`, op, [[0, 0], [t - .02, 0, 'o'], [t + .25, 1], [15.3, 1], [15.95, 0], [17, 0]]);
     // l'éclat : un anneau qui s'élargit et s'efface (pas un disque plein)
     const ev = [t, ...ECLAT[id]].sort((a, b) => a - b).filter((e, i, a) => !i || e >= a[i - 1] + .75), pts = [[0, [0, 1]]];
     ev.forEach(e => { pts.push([e - .01, [0, 1], 'l'], [e, [.95, 1], 'o'], [e + .72, [0, 3.4]], [e + .73, [0, 1]]); });
@@ -224,13 +235,13 @@
   // les impulsions : une tête vive et une traîne, sur le même chemin (tête à la position p du chemin)
   IMP.forEach(([id, , a, b, eclat, , etapes]) => {
     const pts = etapes || [[a, 0, 'io'], [b, 1]], t0 = pts[0][0], t1 = pts[pts.length - 1][0];
-    [['iq', .2, .55 * eclat], ['ic', .05, eclat]].forEach(([c, L]) => {
+    [['iq', .2], ['ic', .06], ['ih', .002]].forEach(([c, L]) => {
       const p = [[0, [0, L]], [t0 - .02, [0, L]], [t0, [1, L], pts[0][2]]];
       pts.slice(1).forEach(([t, v, e]) => p.push([t, [1, L - v], e]));
       p.push([t1 + .22, [0, L - 1 - L]], [t1 + .24, [0, L]], [17, [0, L]]);
       piste(`.mk-${c}-${id}`, `mk${c}${id}`, ([o, d]) => `opacity:${o};stroke-dashoffset:${+d.toFixed(3)}`, p, `stroke-dasharray:${L} 3`);
     });
-    PISTES += `.mk-iq-${id}{stroke-width:${+(3.2 * eclat).toFixed(2)}}.mk-ic-${id}{stroke-width:${+(1.8 * eclat).toFixed(2)}}`;
+    PISTES += `.mk-iq-${id}{stroke-width:${+(3 * eclat).toFixed(2)}}.mk-ic-${id}{stroke-width:${+(1.5 * eclat).toFixed(2)}}.mk-ih-${id}{stroke-width:${+(3 * eclat).toFixed(2)}}`;
   });
 
   // le camion : la même progression que son impulsion (ALLER, RETOUR) ; il sort à droite, revient par la gauche, chargé ;
@@ -242,41 +253,45 @@
     [[0, [0, 0]], [9.7, [0, 0], 'l'], [9.76, [0, .55]], [9.84, [0, 0]], [9.92, [0, .45]], [10, [0, 0], 'o'], [10.25, [-1.4, 0], 's'], [10.8, [0, 0]],
       [13.55, [0, 0], 's'], [13.95, [1.2, 0], 's'], [14.25, [-.4, 0], 's'], [14.55, [0, 0]], [17, [0, 0]]], 'transform-origin:-40px 0px');
   piste('.mk-phare', 'mkPhare', op, [[0, .32], [9.5, .32, 'o'], [9.75, 1], [14.6, 1], [15.3, .32], [17, .32]]);
-  piste('.mk-charge', 'mkCharge', op, [[0, 0], [11.9, 0, 'l'], [11.92, 1], [16, 1], [16.6, 0], [17, 0]]);
+  piste('.mk-charge', 'mkCharge', op, [[0, 0], [11.9, 0, 'l'], [11.92, 1], [15.3, 1], [15.9, 0], [17, 0]]);
   [[10.1, 12.85], [10.4, 13.15], [10.7, 13.45]].forEach(([e1, e2], i) => piste(`.mk-pf${i}`, `mkPf${i}`, ([o, x, y, s]) => `opacity:${o};transform:translate(${x}px,${y}px) scale(${s})`,
     [[0, [0, 0, 0, .4]], [e1 - .01, [0, 0, 0, .4], 'l'], [e1, [.5, 0, 0, .5], 'o'], [e1 + .75, [0, -18, -6, 2.3], 'l'], [e1 + .77, [0, 0, 0, .4]], [e2 - .01, [0, 0, 0, .4], 'l'], [e2, [.45, 0, 0, .5], 'o'], [e2 + .75, [0, -18, -6, 2.3], 'l'], [e2 + .77, [0, 0, 0, .4]], [17, [0, 0, 0, .4]]],
     'transform-box:fill-box;transform-origin:center'));
 
-  // les deux femmes : tête (+ vers l'écran, − vers le ciel), main libre (− vers l'avant), buste penché, écran
-  const geste = (k, tete, bras, buste, ecran) => {
+  // les deux femmes : tête (+ vers l'écran, − vers le ciel), bras entier (− vers le téléphone), avant-bras (− main levée), buste penché, écran
+  const geste = (k, tete, bras, avb, buste, ecran) => {
     piste(`.mk-${k}-tete`, `mk${k}T`, rot, tete, 'transform-origin:0px -61px');
     piste(`.mk-${k}-bras`, `mk${k}B`, rot, bras, 'transform-origin:-1px -56.6px');
+    piste(`.mk-${k}-avb`, `mk${k}A`, rot, avb, 'transform-origin:-1.6px -47px');
     piste(`.mk-${k}-buste`, `mk${k}C`, rot, buste, 'transform-origin:0px -42px');
     piste(`.mk-${k}-ecran`, `mk${k}E`, op, ecran);
   };
-  // Femme A (Abidjan) : « Tu as trouvé les tomates ? » … « Parfait. Moi aussi, je passe ma commande. » (elle valide à 7,6 s)
+  // Femme A (Abidjan) : elle lève les yeux du téléphone et demande « Tu as trouvé les tomates ? » (la main accompagne la question),
+  // écoute en hochant la tête, répond « Parfait. Moi aussi, je passe ma commande. », se penche et touche l'écran à 7,6 s
   geste('fa',
-    [[0, 12], [.75, 12, 'o'], [1.05, 0], [1.4, -3], [1.8, 1], [2.2, -2], [2.55, 0], [2.85, 12], [3.4, 14], [5.6, 14, 'o'], [5.75, 5], [5.9, 13], [6.05, 6], [6.3, 0], [6.95, 0], [7.25, 13], [8.2, 13], [8.95, -14], [15.3, -14], [16.2, 12], [17, 12]],
-    [[0, 0], [.25, 0], [.4, -30], [.5, -26], [.62, -30], [.8, -6], [1.2, -22], [1.6, -8], [2, -20], [2.4, 0], [6.3, 0], [6.55, -20], [6.9, -6], [7.15, -28], [7.5, -31], [7.6, -35], [7.75, -29], [8.1, 0], [17, 0]],
-    [[0, 2], [3.2, 2], [3.6, 5], [5.5, 5], [6, 1], [6.9, 1], [7.2, 4], [8, 4], [8.6, -1], [15.3, -1], [16.2, 2], [17, 2]],
+    [[0, 12], [.3, 12, 'o'], [.6, 0], [1.1, -3], [1.6, 1], [2.1, -2], [2.6, 0], [3, 2], [3.3, -3], [3.6, 2], [4.3, 0], [4.9, 3], [5.2, -2], [5.6, 2], [5.9, -1], [6.3, 0], [7, 0], [7.25, 13], [8.2, 13], [8.95, -14], [15.3, -14], [16.2, 12], [17, 12]],
+    [[0, 0], [.4, 0, 'o'], [.7, 14], [2.6, 14], [2.9, 0], [6.1, 0, 'o'], [6.35, 12], [6.9, 12], [7.1, 0], [7.3, -26], [7.5, -33], [7.6, -36], [7.72, -30], [8.1, 0], [17, 0]],
+    [[0, 0], [.4, 0, 'o'], [.7, -95], [1, -80], [1.35, -100], [1.7, -84], [2.1, -98], [2.6, -90, 'io'], [2.9, 0], [6.1, 0, 'o'], [6.35, -92], [6.6, -78], [6.85, -96], [7.1, 0], [17, 0]],
+    [[0, 3], [.3, 3], [.7, 0], [3, 0], [3.4, 3], [5.8, 3], [6.2, 0], [7, 0], [7.3, 5], [8, 5], [8.6, -1], [15.3, -1], [16.2, 3], [17, 3]],
     [[0, .55], [.4, .55, 'l'], [.48, 1, 'o'], [.9, .62], [3.05, .62, 'l'], [3.12, 1, 'o'], [3.6, .7], [7.56, .7, 'l'], [7.62, 1, 'o'], [8.3, .5], [15.5, .5], [16.4, .55], [17, .55]]);
-  // Femme B (Bouaké) : « Oui ! Je viens de commander sur Marché de Gros. » (petit saut de joie sur « Oui ! »)
+  // Femme B (Bouaké) : elle lit son téléphone, saute de joie sur « Oui ! », lève la main, puis montre son écran sur « Je viens de commander »
   geste('fb',
-    [[0, 12], [2.55, 12, 'o'], [2.8, -3], [3.4, 2], [3.8, -3], [4.3, 2], [4.8, -1], [5.4, 0], [5.7, 12], [7.8, 12], [8.3, -4], [9.05, -14], [15.3, -14], [16.2, 12], [17, 12]],
-    [[0, 0], [3, 0, 'o'], [3.3, -42], [3.8, -18], [4.3, -36], [4.8, -10], [5.3, 0], [17, 0]],
-    [[0, 2], [.55, 2], [.9, 5], [2.5, 5], [2.8, 0], [5.5, 0], [5.9, 4], [7.8, 4], [8.4, -1], [15.3, -1], [16.2, 2], [17, 2]],
-    [[0, .5], [.5, .5, 'l'], [.58, 1, 'o'], [1.2, .7], [3.2, .7], [3.3, 1], [3.8, .7], [6, .7, 'l'], [6.08, 1, 'o'], [6.6, .7], [8.3, .5], [15.5, .5], [16.4, .5], [17, .5]]);
+    [[0, 12], [2.55, 12, 'o'], [2.8, -3], [3.3, 2], [3.7, -3], [4.1, 6], [4.9, 8], [5.4, 0], [5.8, 2], [6.3, -2], [6.9, 2], [7.4, 0], [7.8, 12], [8.3, -4], [9.05, -14], [15.3, -14], [16.2, 12], [17, 12]],
+    [[0, 0], [3.85, 0, 'o'], [4.15, -34], [4.4, -40], [4.6, -34], [4.85, -40], [5.2, -36], [5.5, 0], [17, 0]],
+    [[0, 0], [2.6, 0, 'o'], [2.82, -110], [3.15, -86], [3.45, -104], [3.85, 0], [5.5, 0, 'o'], [5.75, -88], [6.05, -100], [6.4, 0], [17, 0]],
+    [[0, 3], [.55, 3], [.9, 5], [2.5, 5], [2.8, 0], [4, 0], [4.3, 4], [5.3, 4], [5.6, 0], [7.6, 0], [7.9, 4], [8.4, -1], [15.3, -1], [16.2, 3], [17, 3]],
+    [[0, .5], [.5, .5, 'l'], [.58, 1, 'o'], [1.2, .7], [3.2, .7], [3.3, 1], [3.8, .7], [4.1, 1], [5.4, .7], [8.3, .5], [15.5, .5], [16.4, .5], [17, .5]]);
   piste('.mk-fb-saut', 'mkfbS', v => tr(0, v), [[0, 0], [2.7, 0, 'o'], [2.86, -1.6, 's'], [3.06, 0], [17, 0]]);
   // les bulles, une à la fois
   [['a1', .5, 3], ['b1', 3, 6], ['a2', 6, 8.4]].forEach(([id, a, b]) => piste(`.mk-bu-${id}`, `mkBu${id}`, ([o, y]) => `opacity:${o};transform:translateY(${y}px)`,
     [[0, [0, 3]], [a, [0, 3], 'o'], [a + .28, [1, 0]], [b - .25, [1, 0], 's'], [b, [0, -2]], [b + .01, [0, 3]], [17, [0, 3]]]));
-  // le titre du formulaire (v3/nuage.js) : « de Gros » ↔ « du pays », sur la même horloge ; le reflet suit les lettres
-  // un mot sort par le haut, l'autre entre par le bas, presque l'un après l'autre (pas de double exposition), dans la fenêtre du titre
-  piste('.mk-ta', 'mkTa', ([o, y, s]) => `opacity:${o};transform:translateY(${y}%) scale(${s})`,
-    [[0, [1, 0, 1]], [14.5, [1, 0, 1], 'io'], [14.82, [0, -60, .94]], [16.28, [0, -60, .94], 'o'], [16.7, [1, 0, 1]], [17, [1, 0, 1]]], 'transform-origin:0 70%');
-  piste('.mk-tb', 'mkTb', ([o, y, s]) => `opacity:${o};transform:translateY(${y}%) scale(${s})`,
-    [[0, [0, 60, .94]], [14.78, [0, 60, .94], 'o'], [15.2, [1, 0, 1]], [16, [1, 0, 1], 'io'], [16.32, [0, 60, .94]], [17, [0, 60, .94]]], 'transform-origin:0 70%');
-  piste('.mk-tr', 'mkTr', v => `background-position:${v}% 0`, [[0, 100], [14.85, 100, 'io'], [15.85, 0], [16.6, 0, 'l'], [16.61, 100], [17, 100]]);
+  // le titre du formulaire (v3/nuage.js) : « de Gros » ↔ « du pays », sur la même horloge, comme un rouleau dans sa fente :
+  // le mot sortant monte et s'efface pendant que l'autre monte du bas (14,6 s, quand la lumière arrive) ; le retour fait l'inverse.
+  // Le reflet maïs traverse « du pays » de gauche à droite pendant qu'il reste affiché.
+  const mot = ([o, y, s]) => `opacity:${o};transform:translateY(${y}%) scale(${s})`;
+  piste('.mk-ta', 'mkTa', mot, [[0, [1, 0, 1]], [14.6, [1, 0, 1], 'io'], [15.1, [0, -90, .96]], [16.2, [0, -90, .96], 'io'], [16.7, [1, 0, 1]], [17, [1, 0, 1]]], 'transform-origin:0 70%');
+  piste('.mk-tb', 'mkTb', mot, [[0, [0, 90, .96]], [14.6, [0, 90, .96], 'io'], [15.1, [1, 0, 1]], [16.2, [1, 0, 1], 'io'], [16.7, [0, 90, .96]], [17, [0, 90, .96]]], 'transform-origin:0 70%');
+  piste('.mk-tr', 'mkTr', v => `background-position:${v}% 0`, [[0, 100], [15.1, 100, 'io'], [16, 0], [16.7, 0, 'l'], [16.71, 100], [17, 100]]);
 
   const CSS = `.mk{display:block;width:100%;height:100%}
 .mk-amp{fill:#FFE08A;animation:mkAmp 4.25s ease-in-out infinite}
@@ -291,12 +306,12 @@
 .mk-geste{transform-box:fill-box;transform-origin:0 0;animation:mkGeste 2.125s ease-in-out infinite alternate}
 @keyframes mkGeste{from{rotate:-9deg}to{rotate:7deg}}
 .mk-r{stroke-width:.9;stroke-opacity:.62;stroke-dasharray:1 1}.mk-r-ab{stroke-width:1.1;stroke-opacity:.8}
-.mk-iq{stroke:#F2C230;stroke-opacity:.24}.mk-ic{stroke:#FFE08A}
+.mk-iq{stroke:#F2C230;stroke-opacity:.22}.mk-ic{stroke:#FFD86A;stroke-opacity:.9}.mk-ih{stroke:#FFF1C4}
 .mk-leger .mk-x,.mk-leger .mk-poussiere{display:none}.mk-leger .mk-et>g,.mk-leger .mk-vp,.mk-leger .mk-resp,.mk-leger .mk-amp{animation:none}
 .mk-pause,.mk-pause *{animation-play-state:paused!important}
 ${PISTES}
 @media (prefers-reduced-motion:reduce){
-  .mk,.mk *{animation-play-state:paused!important;animation-delay:-15.12s!important}
+  .mk,.mk *{animation-play-state:paused!important;animation-delay:-15.2s!important}
   .mk-ta,.mk-tr{animation:none!important;opacity:1;transform:none}.mk-tb{animation:none!important;opacity:0}
 }`;
   function css() { let st = document.getElementById('mkCss'); if (!st) { st = document.createElement('style'); st.id = 'mkCss'; document.head.appendChild(st); } st.textContent = CSS; }

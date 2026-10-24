@@ -1467,7 +1467,7 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
   - titre du formulaire : « de Gros » sort par le haut, « du pays » entre par le bas (fondu, léger recul), le reflet maïs passe sur les lettres, puis retour ; les deux mots sont empilés dans la même case (`.ng-tt-pile`, `v3/nuage.js`) : le titre ne change jamais de taille ; le lecteur d'écran lit « Entrez dans le marché de Gros » (vérifié avec l'arbre d'accessibilité) ;
   - retour au calme : lignes éteintes, étoiles revenues, caméra redescendue, téléphones repris : l'image de 16,98 s est identique au pixel près à celle de 0 s.
 - **Une seule horloge** : chaque animation dure 17 s, ses étapes sont écrites en secondes (`kf()`, `piste()`), les petites boucles (respiration, étoiles, ampoules) durent 4,25 ou 8,5 s. Le titre est hors du SVG : `MDGScene.lancer(svg).lier(titre)` le recale sur l'horloge de la scène (`v3/porte.js`, `titre()`, appelé par `setMode`).
-- **Pause** : onglet caché (`visibilitychange`), scène hors de l'écran (`IntersectionObserver`), porte « fermée » (hors connexion) → classe `mk-pause` sur la scène et le titre. **Mouvement réduit** : image fixe prise à 15,12 s (réseau allumé, camion à sa place, titre « marché de Gros »). **Téléphone modeste** (≤ 4 cœurs ou ≤ 2 Go) : classe `mk-leger`, 4 impulsions et la poussière en moins, petites boucles arrêtées.
+- **Pause** : onglet caché (`visibilitychange`), scène hors de l'écran (`IntersectionObserver`), porte « fermée » (hors connexion) → classe `mk-pause` sur la scène et le titre. **Mouvement réduit** : image fixe prise à 15,2 s (réseau allumé, camion chargé à sa place, titre « marché de Gros »). **Téléphone modeste** (≤ 4 cœurs ou ≤ 2 Go) : classe `mk-leger`, 4 impulsions et la poussière en moins, petites boucles arrêtées.
 - `v3/porte.js` : plus de `filter` sur le SVG selon l'état du formulaire (une passe de dessin en plus à chaque image) : un voile sombre seulement pour l'erreur et l'absence de réseau. La scène n'est jamais redessinée pendant la saisie (la fenêtre n'est pas dans le moteur de gabarits).
 - **Mesures réelles** (Chromium 1194, iPhone 13 émulé, serveur local) :
   - formulaire : 19 relevés de position, une seconde d'écart, de 0 à 18 s, plus avant et après une saisie : tous identiques (formulaire 0,240,390,424 ; titre 24,244,342,66,27 ; champ 94,39,359,45) ;
@@ -1480,3 +1480,24 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - Contraste mesuré sur le vrai fond : noms des villes crème sur le ciel 10,9 à 14,4:1 (pixels relevés dans la capture) ; bulles 15,9:1 ; enseignes 14,2:1.
 - Versions : `app/scene.js?v=20261124j`, `v3/porte.js?v=20261124j`, `v3/nuage.js?v=20261124j` (application, site caché via `tools/site/_fin.html`, `index-v3.html`, `admin.html`) ; `CACHE` = `mgci-v251`.
 - Reste : le voir sur un vrai téléphone ; la mise en page large (≥ 760 px, `ps-large`) n'a pas pu être ouverte dans le bac à sable.
+
+### 24/10/2026 — Relecture du film (corrections)
+
+Relecture image par image (une capture toutes les 0,5 s sur la boucle, plus fin autour des moments clés, et une vidéo réelle). Défauts vus et corrigés dans `app/scene.js` :
+- **Les gestes ne se voyaient pas** : la main libre finissait posée sur le téléphone. Le bras a maintenant un avant-bras séparé (`.mk-fa-avb`, `.mk-fb-avb`) : quand elles parlent, la main se lève devant le buste, loin du téléphone ; B lève la main sur « Oui ! » puis montre son écran sur « Je viens de commander » ; A hoche la tête en écoutant, puis touche l'écran à 7,6 s.
+- **La lumière du téléphone ressemblait à un bâton qui raye le camion** et glissait par rapport au sol pendant que la caméra montait. Elle vit maintenant dans le plan du sol (elle suit le sol quand la caméra monte), passe devant le camion au ras du sol, puis monte vers Abidjan, qu'elle touche à 9,2 s, quand la caméra arrive. Le téléphone s'éclaire d'un halo au moment de valider. Toutes les impulsions ont une tête ronde plus claire (traîne, cœur, tête), comme une comète.
+- **Le titre se coupait dans sa fente et laissait un blanc** d'environ 0,1 s. Il roule maintenant comme un compteur : « de Gros » monte et s'efface pendant que « du pays » monte du bas, en même temps (14,6 → 15,1 s), et le retour fait l'inverse (16,2 → 16,7 s). Le reflet traverse « du pays » de gauche à droite.
+- **La carte s'effaçait par-dessus les étals** pendant que la caméra redescendait. Elle s'éteint maintenant avant (15,3 → 15,95 s), et la caméra redescend ensuite (15,5 → 16,8 s).
+- **Les sacs du retour étaient collés sur le flanc fermé du fourgon.** Ils sont maintenant sanglés sur le toit ; ils disparaissent quand la carte s'éteint.
+- L'impulsion qui descend vers le titre est un peu plus lumineuse.
+- Mouvement réduit : l'image fixe est prise à 15,2 s.
+- `app/scene.js?v=20261124k`.
+
+Mesures après correction (Chromium 1194, iPhone 13 émulé) :
+- formulaire, titre, champ et scène relevés chaque seconde pendant 19 s en temps réel, avec la saisie d'un numéro à 6 s : positions identiques au pixel (le seul relevé différent est celui de 0,05 s, pendant l'ouverture de la porte, qui fait glisser tout le panneau) ; un seul élément SVG du début à la fin ; l'horloge continue pendant la saisie, et le titre reste calé sur elle (écart 0 ms) ;
+- page large de 390 px pour 390 px d'écran ; aucune erreur JavaScript (mode complet, allégé, mouvement réduit) ;
+- boucle : 17 000 ms ; images calées à 0 s et à 17 s identiques (0 pixel différent), et à 16,98 s aussi ;
+- onglet caché : 99 animations sur 99 en pause, 16,7 ms d'avance en 1 s (une image), reprise au retour ; mode allégé : 85 animations ;
+- mouvement réduit : 99 animations en pause, deux captures à 2 s d'écart identiques ; le titre accessible reste « Entrez dans le marché de Gros » (arbre d'accessibilité de Chromium) ;
+- images par seconde sur 10 s, deux séries : film complet 50,2 et 51,6 i/s, avec le processeur ralenti 4 fois 48,6 et 38,0 ; allégé 56,4 et 54,0, × 4 : 45,3 et 46,3 ; ancienne scène de `main`, même bac à sable : 55,9 et 50,5, × 4 : 43,6 et 39,6. Le film coûte autant que l'ancienne scène. Ces mesures sont faites en rendu logiciel, donc 60 i/s ne sont pas atteints dans le bac à sable : il faut encore mesurer sur un vrai téléphone.
+- Toujours pas fait : le voir sur un vrai téléphone ; la mise en page large (≥ 760 px). Le camion sort à droite et revient par la gauche : c'est le tour de la boucle, et c'est assumé (pour revenir par la droite, il faudrait le retourner pendant qu'on le voit).

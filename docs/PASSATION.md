@@ -1445,3 +1445,10 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - `CLAUDE.md` (Design) et `DESIGN.md` (lois 2, 25, couleurs) mis à jour ; le rapport d'audit note les trois décisions.
 - Vérifié (navigateur, iPhone) : au début, 9 effets jouent ; après 14 s, seules les lumières du fond finissent leur 2e passage ; « Produit suivant » → les effets rejouent ; aucune erreur JS.
 - `?v=20261124i` (11 fichiers) ; site refabriqué ; cache `mgci-v243`.
+
+## 24/10/2026 — Audit antislop du site caché (mode « après »)
+
+- Rapport : `docs/anti-slop/audit-002-2026-10-24-site.md`. **Aucune correction faite** : le propriétaire choisit les numéros.
+- Méthode : 55 pages dans le navigateur (1366 et 1024 px, clair et sombre, 165 mesures, plus 320, 375 et 960 px pour l'en-tête), clavier sur 4 pages, relecture des gabarits et des styles par 2 relecteurs, chiffres comparés à `donnees-marche.json`.
+- Piège pour mesurer le site dans un navigateur de test : sans `localStorage['mdg-site:admin'] = '1'`, chaque page renvoie vers `maintenance.html` (la première mesure avait mesuré 165 fois la page de maintenance) ; poser cette clé avant le chargement, puis retirer la classe `garde`.
+- Résultat : 3 constats HAUTS (prix au détail présentés comme prix d'achat dans un guide, anneau de focus invisible sur fond clair, listes redessinées toutes les 2 minutes), 14 MOYENS, 15 BAS, 1 décision (D : l'eau en bleu). Sur ordinateur : aucune erreur, aucun débordement, aucun contraste de texte faible ; à 320 px l'en-tête déborde.

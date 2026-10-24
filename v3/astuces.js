@@ -150,7 +150,7 @@
       ['🏅', 'Les membres recommandés', 'Classés d’après les *notes réelles* laissées après une négociation.'],
       ['👆', 'Touchez un nom', 'Vous voyez son profil, ses notes et ses statuts. Un statut ne s’achète pas.']] },
     m_alertes: { t: 'Alertes produits', insiste: 2, cartes: [
-      ['🔔', 'Soyez prévenu', 'Choisissez vos produits (igname, tomate…) : une *notification* arrive dès qu’une annonce est publiée.'],
+      ['🔔', 'Soyez prévenu', 'Choisissez vos produits (igname, tomate…) : une *notification* vous prévient des nouvelles annonces, entre 7 h et 21 h.'],
       ['🎯', 'Offres, demandes, ou les deux', 'Vendeur ? Suivez les *demandes*. Acheteur ? Suivez les *offres*.']] },
     m_commandes: { t: 'Mes commandes', insiste: 2, cartes: [
       ['🚚', 'Du « oui » à la livraison', 'Chaque commande, avec ses étapes et leur heure. *En cours* d’un côté, *terminées* de l’autre.'],

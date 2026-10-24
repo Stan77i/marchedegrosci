@@ -201,8 +201,8 @@
   };
 
   // Commissions (schéma 30) : registre calculé par le serveur. Rien n'est encaissé.
-  const KST = { prevue: ['Prévue', 'a'], due: ['Due', 'v'], suspendue: ['Suspendue (litige)', 'r'], annulee: ['Annulée', ''] };
-  // commission transport (schéma 42) : 6,9 % du prix fixé par le chauffeur, due par lui. Rien n'est encaissé.
+  const KST = { prevue: ['Prévue', 'a'], calculee: ['Calculée (jamais réclamée)', 'v'], due: ['Due (argent passé par l’application)', 'v'], suspendue: ['Suspendue (litige)', 'r'], annulee: ['Annulée', ''] };
+  // commission transport (schéma 42, 95, 95b) : 6,9 % du prix du transporteur du service Marché de Gros. « Calculée » : jamais réclamée. Rien n'est encaissé.
   function commTransport(H) {
     const e = H.esc, c = D.comTr; if (!c) return '';
     const t = k => (c.totaux && c.totaux[k]) || { n: 0, transports: 0, commission: 0 };
@@ -210,8 +210,8 @@
     const ligne = k => `<div class="at-r"><div><b>${e(k.produit || 'Commande')} · ${e(k.numero)}</b><small>${e(k.transporteur || 'Chauffeur')} · ${new Date(k.updated_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</small></div>
         <div><b>${H.fmt(k.commission)} F</b><small>6,9 % de ${H.fmt(k.prix_transport)} F</small></div>
         <div class="at-a"><span class="at-t ${KST[k.statut][1]}">${KST[k.statut][0]}</span></div></div>`;
-    return `<section class="sec"><h2 style="margin:6px 0 4px">Transport · 6,9 %</h2><p style="margin:0 0 10px;color:var(--mute,#655C4D)">Calculée sur le prix fixé par le chauffeur, due par lui (il l’inclut dans son prix). L’acheteur paie le transport à la livraison. Rien n’est encaissé.</p>
-      <div class="at-ks">${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div>
+    return `<section class="sec"><h2 style="margin:6px 0 4px">Transport · 6,9 %</h2><p style="margin:0 0 10px;color:var(--mute,#655C4D)">Seulement pour le service transport Marché de Gros, sur le prix du transporteur. Avant le paiement dans l’application, elle est calculée et jamais réclamée. Rien n’est encaissé.</p>
+      <div class="at-ks">${tuile('calculee')}${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div>
       <div class="at-l" style="margin-top:10px">${(c.lignes || []).length ? c.lignes.map(ligne).join('') : '<div class="at-vide"><b>Aucune commission transport</b>Elle s’inscrit quand un chauffeur accepte une mission avec son prix.</div>'}</div></section>`;
   }
   D.com = null; D.comOuv = {};
@@ -225,8 +225,8 @@
           <div><b>${H.fmt(k.commission)} F</b><small>3,5 % de ${H.fmt(k.montant_vente)} F</small></div>
           <div class="at-a"><span class="at-t ${KST[k.statut][1]}">${KST[k.statut][0]}</span><button class="btn sm ghost" data-kj="${k.id}" aria-expanded="${!!D.comOuv[k.id]}">Journal</button></div>
           ${D.comOuv[k.id] ? `<ul class="at-j">${(k.journal || []).map(j => `<li><b>${e(KST[j.statut] ? KST[j.statut][0] : j.statut)}</b> · ${H.fmt(j.commission)} F · ${e(j.motif)} · ${new Date(j.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</li>`).join('')}</ul>` : ''}</div>`;
-      return H.top('Commissions', 'Registre de la commission de 3,5 % sur les ventes de marchandises, calculée par le serveur. Aucun paiement n’existe encore : « due » veut dire « à percevoir plus tard », rien n’a été encaissé.', '') + `
-        <section class="sec"><div class="at-ks">${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div></section>
+      return H.top('Commissions', 'Registre de la commission de 3,5 % sur les ventes de marchandises, calculée par le serveur. Aucun paiement n’existe encore : une vente clôturée donne une commission « calculée », jamais réclamée. « Due » viendra seulement quand l’argent passera par l’application. Rien n’a été encaissé.', '') + `
+        <section class="sec"><div class="at-ks">${tuile('calculee')}${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div></section>
         <section class="sec"><div class="at-l">${(c.lignes || []).length ? c.lignes.map(ligne).join('') : '<div class="at-vide"><b>Aucune commission</b>Elles s’inscrivent seules à chaque commande.</div>'}</div></section>
         ${commTransport(H)}`;
     },

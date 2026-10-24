@@ -6,6 +6,8 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Vérification en 1 h (schéma 89) : sans réclamation de l'acheteur dans l'heure qui suit la réception, la commande se clôt toute seule (avant : 24 h ; tâche toutes les 5 min). L'acheteur est prévenu en confirmant la réception ; textes de l'application, de l'aide, du site et des PDF mis à jour. Fiche profil : « Livre en général en … » dans la carte vendeur, « Valide en général en … » dans la carte acheteur (`delais_publics`).
+- Fiche profil plus courte : plus de long texte sur les niveaux de fiabilité ; « Comme vendeur / Comme acheteur » en trois chiffres (honorée, annulée, litige) ; « Déjà publié à » au lieu de « Où il a publié » ; notes de la structure en une ligne ; « Voir ma boutique » devient un bouton vert avec l'icône boutique, comme « Modifier mon profil public » (`v3/reputation.js`).
 - Les communes d'Abidjan (Cocody, Yopougon…) ne sont plus proposées comme villes : dans la région Abidjan, « Abidjan » est mis tout seul et le choix de la ville est grisé ; une commune enregistrée avant devient « Abidjan ».
 - Abidjan est une seule ville : avec une commune (Cocody, Yopougon…), l'interrupteur dit « Je vends uniquement à Abidjan » ; une livraison d'une commune à l'autre est « même ville » (schéma 87c, appliqué en production).
 

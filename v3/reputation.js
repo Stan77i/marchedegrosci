@@ -84,7 +84,10 @@
 .rp-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 16px}.rp-stats div{padding:12px 10px;border-radius:16px;background:rgba(23,21,18,.04);box-shadow:inset 0 0 0 1px rgba(23,21,18,.08);text-align:center}
 .rp-stats b{display:block;font:800 22px/1 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}.rp-stats small{display:block;margin-top:4px;color:#655C4D;font-size:12px;line-height:1.25}
 .rp-rep{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rp-rep-c{background:#FFFDF8;border-radius:14px;padding:11px 12px;min-width:0}.rp-rep-c h4{margin:0 0 4px;font:600 14px/1.2 Jost,sans-serif;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
-.rp-rep-c p{margin:0 0 6px;font-size:13px;color:#4A4336}.rp-rep-c ul{list-style:none;margin:0;padding:0;font-size:13px;color:#4A4336}.rp-rep-c li{padding:3px 0;border-top:1px solid #ECE6D6}.rp-rep-c li b{color:#171512}
+.rp-rep-c p{margin:0 0 8px;font-size:13px;color:#4A4336}
+.rp-rep-k{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:0;padding-top:8px;border-top:1px solid #ECE6D6;text-align:center}.rp-rep-k dd{margin:0}
+.rp-rep-k b{display:block;font:700 17px/1 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;color:#171512}.rp-rep-k small{display:block;margin-top:3px;font-size:11.5px;color:#5E5546}.rp-rep-d{margin:8px 0 0!important;padding-top:8px;border-top:1px solid #ECE6D6;font-size:12.5px!important;line-height:1.3}.rp-rep-d b{color:#171512}
+.rp-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.rp-bq{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px}.rp-bq svg{flex:none}
 .rp-fiable{display:inline-flex;align-items:center;min-height:20px;padding:0 8px;border-radius:10px;background:#10392B;color:#F2C230;font:700 11px/1 Jost,sans-serif;letter-spacing:.04em}.rp-fiable.rp-gros{background:#F6E2B0;color:#3D2E05}
 .rp-fb-it .st-p{width:max-content;max-width:100%}.rp-fb-it .st-but small{margin-top:0;opacity:1}
 .rp-rep-n{margin:8px 0 0;font-size:12.5px;color:#5E5546}.rp-rep-ens{color:#10392B;font-weight:600;font-size:13.5px}
@@ -187,8 +190,8 @@
       <div class="rp-org-t">${st.logo ? `<img class="rp-org-logo" src="${esc(photoUrl(st.logo))}" alt="Logo de ${esc(st.nom)}">` : `<span class="rp-org-logo vide" aria-hidden="true">${esc((st.nom || '?').trim().charAt(0).toUpperCase())}</span>`}
         <div><small>${esc(TYPE_ORG[st.type] || 'Structure')}${st.verifiee ? ' · <span class="rp-org-ok">vérifiée par l’équipe</span>' : ''}</small><b>${esc(st.nom)}</b>${puces ? `<span class="rp-org-st">${puces}</span>` : ''}</div></div>
       ${pv.length ? `<div class="rp-org-pv">${pv.map((c, i) => `<button type="button" data-pv="${i}" aria-label="Agrandir la preuve ${i + 1}"><img src="${esc(photoUrl(c))}" alt="" loading="lazy"></button>`).join('')}</div>
-        <p class="rp-org-n">Photos publiées par le membre (enseigne, entrepôt, agrément…)${st.verifiee ? '.' : ' : le Marché de Gros ne les a pas vérifiées. Voyez la marchandise avant de payer.'}</p>` : ''}
-      ${st.verifiee ? `<p class="rp-org-n rp-org-v">L’équipe du Marché de Gros a vu un document officiel de la structure et vérifié l’identité de son responsable${st.fonction ? ' (' + esc(st.fonction.toLowerCase()) + ')' : ''}. Vérifiée ne veut pas dire fiable : regardez aussi la réputation.</p>` : ''}
+        ${st.verifiee ? '' : '<p class="rp-org-n">Photos du membre, non vérifiées.</p>'}` : ''}
+      ${st.verifiee ? `<p class="rp-org-n rp-org-v">Document officiel et responsable${st.fonction ? ' (' + esc(st.fonction.toLowerCase()) + ')' : ''} vérifiés par l’équipe.</p>` : ''}
     </section>`;
   }
   // une preuve en grand, avec précédente / suivante ; Échap ou toucher le fond pour fermer
@@ -204,20 +207,23 @@
     });
   }
   // réputation par rôle (schéma 32) : calculée par le serveur, sur les commandes ; « vérifié » n'est pas « fiable »
+  // un chiffre et un mot ; la phrase entière pour les lecteurs d'écran
+  const chiffre = (v, court, un, plus) => { v = v || 0; return `<div><dt class="rp-sr">${v > 1 ? plus : un}</dt><dd><b>${v}</b><small aria-hidden="true">${court}${v > 1 ? 's' : ''}</small></dd></div>`; };
   function blocReputation(r, moi) {
     if (!r) return '<div class="rp-vide">Réputation indisponible pour l’instant.</div>';
+    // délais (schéma 89) : le vendeur livre, l'acheteur valide la marchandise ; rien tant qu'il n'y a pas 3 commandes
+    const D = r.delais || {}, duree = m => m < 60 ? Math.max(1, Math.round(m)) + ' min' : m < 2880 ? Math.round(m / 60) + ' h' : Math.round(m / 1440) + ' jours';
+    const livre = D.livraison_h != null ? D.livraison_h * 60 : !r.delais && r.delai_median_h != null ? r.delai_median_h * 60 : null;
+    const delai = { 'Comme vendeur': livre != null ? 'Livre en général en <b>' + duree(livre) + '</b>' : '', 'Comme acheteur': D.validation_min != null ? 'Valide en général en <b>' + duree(D.validation_min) + '</b>' : '' };
     const col = (t, x) => { x = x || {}; const n = x.terminees || 0;
       const nv = x.niveau_libelle ? ` <span class="rp-fiable">${esc(x.niveau_libelle)}</span>` : x.fiable && !('niveau' in x) ? ' <span class="rp-fiable">Fiable</span>' : '';
       return `<div class="rp-rep-c"><h4>${t}${nv}${x.gros ? ' <span class="rp-fiable rp-gros">Acheteur en gros</span>' : ''}</h4>
         <p>${x.avis ? etoiles(+x.note, x.avis, 13) + ' ' + String(x.note).replace('.', ',') + ' · ' + x.avis + ' avis' : 'Pas encore noté'}</p>
-        <ul><li><b>${n}</b> commande${n > 1 ? 's' : ''} honorée${n > 1 ? 's' : ''}</li>${'annulations_abusives' in x ? `<li><b>${x.annulations_abusives}</b> annulation${x.annulations_abusives > 1 ? 's' : ''} abusive${x.annulations_abusives > 1 ? 's' : ''}</li>` : `<li><b>${x.annulations_demandees || 0}</b> annulation${x.annulations_demandees > 1 ? 's' : ''} demandée${x.annulations_demandees > 1 ? 's' : ''}</li>`}<li><b>${x.litiges_contre || 0}</b> litige${x.litiges_contre > 1 ? 's' : ''} ouvert${x.litiges_contre > 1 ? 's' : ''} par l’autre partie</li></ul></div>`; };
-    const vide = !(r.vendeur && r.vendeur.total) && !(r.acheteur && r.acheteur.total);
+        <dl class="rp-rep-k">${chiffre(n, 'honorée', 'commande honorée', 'commandes honorées')}${'annulations_abusives' in x ? chiffre(x.annulations_abusives, 'abusive', 'annulation abusive', 'annulations abusives') : chiffre(x.annulations_demandees, 'annulée', 'annulation demandée', 'annulations demandées')}${chiffre(x.litiges_contre, 'litige', 'litige ouvert par l’autre partie', 'litiges ouverts par l’autre partie')}</dl>${delai[t] ? `<p class="rp-rep-d">${delai[t]}</p>` : ''}</div>`; };
     // fiabilité (schéma 84) : une seule ligne en public ; le détail, seulement pour soi
     const f = r.fiabilite, fl = f && f.sur ? `<p class="rp-fb-l">Fiabilité : <b>${f.pourcent}&nbsp;%</b> sur ${f.sur} commande${f.sur > 1 ? 's' : ''}</p>` : f ? '<p class="rp-fb-l">Fiabilité : pas encore de commande comptée</p>' : '';
     return `${fl}${moi && f ? '<button type="button" class="rp-alt rp-fb-btn" data-mafiab>Mon historique de fiabilité</button>' : ''}<div class="rp-rep">${col('Comme vendeur', r.vendeur)}${col('Comme acheteur', r.acheteur)}</div>
-      ${r.delai_median_h != null ? `<p class="rp-rep-n">Délai médian entre la confirmation et la réception : <b>${r.delai_median_h < 48 ? r.delai_median_h + ' h' : Math.round(r.delai_median_h / 24) + ' jours'}</b> (${r.delai_n} commandes).</p>` : ''}
-      ${!moi && r.ensemble ? `<p class="rp-rep-n rp-rep-ens">Vous avez terminé ${r.ensemble} commande${r.ensemble > 1 ? 's' : ''} ensemble.</p>` : ''}
-      <p class="rp-rep-n">${vide ? 'Aucune commande suivie dans l’application pour l’instant. ' : ''}${r.vendeur && 'niveau' in r.vendeur ? esc(r.criteres_fiable || '') : '« Fiable » : ' + esc(r.criteres_fiable || '') + '.'} Une identité vérifiée ne veut pas dire fiable : ce sont deux choses différentes.</p>`;
+      ${!moi && r.ensemble ? `<p class="rp-rep-n rp-rep-ens">Vous avez terminé ${r.ensemble} commande${r.ensemble > 1 ? 's' : ''} ensemble.</p>` : ''}`;
   }
   async function profil(uid, o = {}) {
     if (!uid) return;
@@ -225,7 +231,7 @@
     const bg = feuille(`<div class="rp-tete">${avatar(uid, o.avatar, o.nom, 72, o.uri)}<span><b data-nom>${esc(o.nom || 'Membre')}</b><small data-sc>…</small><small data-dep></small></span></div><div data-org></div><div data-pp></div><div data-corps>${window.MDGSac ? MDGSac.charge('Le profil arrive…') : '<div class="rp-vide">Chargement du profil…</div>'}</div><div data-bq></div>`, 'Profil de ' + (o.nom || 'membre'));
     // sa boutique (schéma 86) : un bouton en bas, seulement si elle est ouverte (rien ne bouge au-dessus)
     if (window.MDGBoutique) MDGBoutique.adresseDe(uid).then(a => { const z = bg.querySelector('[data-bq]'); if (!z || !a || !bg.isConnected) return;
-      z.innerHTML = `<button type="button" class="rp-alt" style="width:100%;min-height:48px;margin-top:10px" data-bqv>${moi ? 'Voir ma boutique' : 'Voir sa boutique'}</button>`;
+      z.innerHTML = `<button type="button" class="rp-go rp-bq" data-bqv>${window.MDGIco ? MDGIco.svg('vendre', 20, 2) : ''}<span>${moi ? 'Voir ma boutique' : 'Voir sa boutique'}</span></button>`;
       z.querySelector('[data-bqv]').onclick = () => { bg.fermer(); MDGBoutique.ouvrir(a); }; });
     const auth = !!N().session();
     // la structure qu'il représente (supabase/schema-23) : en tête du profil, avec ses preuves ; jamais pour le compte officiel
@@ -233,7 +239,8 @@
       const z = bg.querySelector('[data-org]'); if (!z || !st || !st.nom) return;
       z.innerHTML = carteStructure(st, uid); lierPreuves(z, st.preuves || []);
     }).catch(() => {});
-    const repP = N().rpc('reputation_publique', { p_uid: uid }, auth).catch(() => null);
+    const repP = Promise.all([N().rpc('reputation_publique', { p_uid: uid }, auth).catch(() => null), N().rpc('delais_publics', { p_uid: uid }, auth).catch(() => null)])
+      .then(([r, d]) => { if (r && d) r.delais = d; return r; });
     const [liste, pp] = await Promise.all([N().rpc('avis_de2', { p_cible: uid }, auth).catch(() => N().rpc('avis_de', { p_cible: uid }, auth)).catch(() => null), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null)]);
     if (!bg.isConnected) return;
     // schéma 77 : un avis par personne — seul le plus récent de chaque auteur compte dans la note (« compte » absent = ancien serveur : tout compte)
@@ -259,7 +266,7 @@
       // ses annonces en ce moment (celles que ce téléphone connaît déjà)
       const L = N().list ? N().list('offres').filter(x => x._uid === uid).map(x => ['o', x]).concat(N().list('demandes').filter(x => x._uid === uid).map(x => ['d', x])) : [];
       if (L.length) haut += `<div class="rp-sec"><h3>En ce moment</h3><div class="rp-li">${L.slice(0, 8).map(([k, x]) => `<div><i class="${k}"></i><span>${esc(x.productLabel || x.productSlug)} · ${fq(x.quantity)} ${esc(x.unit || '')}</span><small>${esc(x.city || REGN(x.regionSlug))}</small></div>`).join('')}</div></div>`;
-      if (pp.lieux && pp.lieux.length) haut += `<div class="rp-sec"><h3>Où il a publié</h3><div class="rp-tags">${pp.lieux.slice(0, 14).map(l => `<span>${esc(REGN(l))}</span>`).join('')}</div></div>`;
+      if (pp.lieux && pp.lieux.length) haut += `<div class="rp-sec"><h3>Déjà publié à</h3><div class="rp-tags">${pp.lieux.slice(0, 14).map(l => `<span>${esc(REGN(l))}</span>`).join('')}</div></div>`;
       // volumes échangés (schéma 24) : jamais de montants en public, seulement des quantités et le nombre de transactions
       const vol = (pp.volumes || []).map(v => { let q = +v.quantite, u = String(v.unite || 'unité'); if (/^(kg|kilo)/i.test(u) && q >= 1000) { q /= 1000; u = 't'; } else if (/^(t|tonne)/i.test(u)) u = 't'; else if (/^kg/i.test(u)) u = 'kg';
         const pl = q > 1 && !/[sx]$|^(kg|t)$/i.test(u) ? u + 's' : u; return fq(Math.round(q * 100) / 100) + ' ' + pl + (v.sens === 'vente' ? ' vendu' : ' acheté') + (/^(t|tonne|unité|caisse|cagette|botte|boîte|bassine)/i.test(u) ? 'e' : '') + (q > 1 ? 's' : ''); });

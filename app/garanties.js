@@ -54,7 +54,7 @@
     ['papier', 'Un ', 'mot secret', ' du vendeur dans chaque colis', FEN('MDGAstuces', 'tour', ['mot', true])],
     ['sceau', 'Identités ', 'vérifiées', ' par l’équipe'],
     ['main', 'Négociez ici, payez ', 'à la livraison', ''],
-    ['horloge', 'Marchandise reçue : ', '24 h', ' pour la vérifier', FEN('MDGAstuces', 'tour', ['verifier', true])],
+    ['horloge', 'Marchandise reçue : ', '1 h', ' pour la vérifier', FEN('MDGAstuces', 'tour', ['verifier', true])],
     ['calendrier', 'L’année du ', 'marché', ' : quoi récolter, et quand', PAGE('annee')],
     ['cadenas', 'Un refus se prouve : ', 'mot secret', ' et photos', FEN('MDGAstuces', 'tour', ['refus', true])],
     ['cache', 'Votre numéro reste ', 'caché', ''],

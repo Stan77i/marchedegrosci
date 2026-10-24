@@ -82,7 +82,7 @@ end $$;
 -- | a19 journal creee,confirmee,chargement,transport,arrivee,reception,terminee.
 
 
--- Blocs (b), (c), (d), (e), (j) : écrits le 24/10/2026 mais PAS ENCORE JOUÉS (appels SQL refusés pendant la session). À jouer et noter.
+-- Blocs (b), (c), (d), (e), (j) : joués le 25/10/2026 vers 0 h ; résultat sous chaque bloc.
 
 -- ══ Parcours (b) : la commande est refusée par le vendeur → le stock revient ══
 do $$
@@ -106,6 +106,8 @@ begin
     ' commission=', (select statut || '/' || statut_registre from public.commissions where commande_id = c));
   raise exception 'TEST: %', res;
 end $$;
+-- Résultat (25/10/2026) : b1 stock=0/retiree | b2 refus sans motif : « Choisissez un motif. » | b3 refus stock_epuise : ok | b4 stock=100/active
+-- mouvement=100/100 annulation=legitime imputable=personne commission=annulee/annulee.
 
 -- ══ Parcours (c) : accord sans commande pendant 72 h → « sans suite », stock rendu ══
 do $$
@@ -119,10 +121,15 @@ begin
   perform pg_temp.qui(S); perform public.nego_agir(n, 'accord', null, null, null, pg_temp.lire(format('select dernier_msg::text from public.negociations where id = %L', n))::uuid);
   execute 'reset role';
   res := concat(res, 'c1 après accord stock=', (select quantity from public.offres where id = oid));
+  -- l'accord est figé (nego_fige) : on recule la date sans déclencheur, dans ce bloc annulé
+  set local session_replication_role = replica;
   update public.negociations set conclu_le = now() - interval '71 hours' where id = n;
+  set local session_replication_role = origin;
   k := public.accords_sans_suite();
   res := concat(res, ' | c2 à 71 h: sans_suite=', k, ' stock=', (select quantity from public.offres where id = oid));
+  set local session_replication_role = replica;
   update public.negociations set conclu_le = now() - interval '73 hours' where id = n;
+  set local session_replication_role = origin;
   perform public.commandes_delais();
   res := concat(res, ' | c3 à 73 h (tâche mdg-commandes-delais): stock=', (select quantity from public.offres where id = oid),
     ' mouvement=', (select pris || '/' || rendu || ' sans_suite=' || (sans_suite_le is not null) from public.stock_mouvements where negociation_id = n),
@@ -131,6 +138,8 @@ begin
   res := concat(res, ' | c4 commande ensuite: ', pg_temp.e(format('select public.commande_creer2(%L, %L, null, %L, null)', n, 'vendeur', 'Daloa')));
   raise exception 'TEST: %', res;
 end $$;
+-- Résultat (25/10/2026) : c1 stock=60 | c2 à 71 h : sans_suite=0 stock=60 | c3 à 73 h : stock=100 mouvement=40/40 sans_suite=true nego=conclue
+-- | c4 commande ensuite : ACCORD_SANS_SUITE.
 
 -- ══ Parcours (d) : commande confirmée, rien chargé en 72 h → l'acheteur annule → fiabilité du vendeur ══
 do $$
@@ -159,11 +168,14 @@ begin
   res := concat(res, ' | d5 acheteur annule: ', pg_temp.e(format('select public.commande_annuler_retard(%L, %L)', c, 'Rien chargé depuis 3 jours')), ' ', pg_temp.cs(c));
   execute 'reset role';
   res := concat(res, ' | d6 stock=', (select quantity from public.offres where id = oid),
-    ' annulation=', (select concat_ws(' ', categorie, 'imputable=' || case imputable_id when S then 'vendeur' when B then 'acheteur' else 'personne' end, 'motif=' || motif) from public.annulations where commande_id = c),
+    ' annulation=', (select concat_ws(' ', categorie, 'imputable=' || case imputable_id when S then 'vendeur' when B then 'acheteur' else 'personne' end, 'chemin=' || chemin) from public.annulations where commande_id = c),
     ' sanction=', coalesce((select string_agg(type, ',') from public.sanctions where user_id = S and annulation_id in (select id from public.annulations where commande_id = c)), 'aucune'));
   res := concat(res, ' | d7 fiab S=', public._fiab_score(S)::text, ' fiab B imputables=', public._fiab_score(B) ->> 'imputables');
   raise exception 'TEST: %', res;
 end $$;
+-- Résultat (25/10/2026) : d1 TROP_TOT (jusqu'au 27/10) | d2 alertes=retard_chargement | d3 peut_annuler_retard=true | d4 vendeur : « Commande introuvable. »
+-- | d5 acheteur annule : ok annulee | d6 stock=100 annulation=abusive imputable=vendeur chemin=accord sanction=avertissement
+-- | d7 fiab S 0 % sur 1, palier avertissement ; fiab B imputables=0.
 
 -- ══ Parcours (e) : « livré » déclaré par le vendeur, acheteur muet 24 h → litige automatique → l'équipe partage ══
 do $$
@@ -209,10 +221,13 @@ begin
     ' annulation=', coalesce((select categorie || ' imputable=' || case imputable_id when S then 'vendeur' when B then 'acheteur' else 'personne' end from public.annulations where commande_id = c), 'aucune'));
   raise exception 'TEST: %', res;
 end $$;
+-- Résultat (25/10/2026) : e1 arrivee | e2 à 13 h : en_cours, rappel_reception | e3 à 25 h : litige par=systeme, échéance posée, commission suspendue
+-- | e4 mot après litige refusé | e5 vendeur : « Réservé à l'administration. » | e6 partage 100/100 refusé | e7 partage 30 : ok
+-- | e8 terminee, 600000 refusés, libérée (admin), commission calculee sur 1400000 = 49000, aucune annulation (stock 0 : la marchandise est partie).
 
 -- ══ (j) deux acceptations sur le même stock (offre, puis demande) → la 2e refusée ══
 do $$
-declare S uuid := '1bfd5713-2525-44a6-8403-084ebb9ddad3'; B uuid := '68345d7a-9d64-410a-a4c7-92a750d9888d'; C uuid := 'e0191bd5-e039-4948-9143-6a30cfdeaf6c';
+declare S uuid := '1bfd5713-2525-44a6-8403-084ebb9ddad3'; B uuid := '68345d7a-9d64-410a-a4c7-92a750d9888d'; C uuid := 'e0191bd5-e039-4948-9143-6a30cfdeaf6c'; D uuid := '86c69f98-e113-4bfb-bb2a-0bd32fba7830';
   oid uuid := gen_random_uuid(); did uuid := gen_random_uuid(); n1 uuid; n2 uuid; n3 uuid; n4 uuid; res text := '';
 begin
   insert into public.verifications (user_id, statut, piece, defi, decide_le, expire_le, numero) values (S, 'verifie', 'cni', '1234', now(), current_date + 365, 'E2E-S');
@@ -226,14 +241,17 @@ begin
   res := concat(res, ' | j2 2e accord: ', pg_temp.e(format('select public.nego_agir(%L, %L, null, null, null, %L)', n2, 'accord', pg_temp.lire(format('select dernier_msg::text from public.negociations where id = %L', n2)))),
     ' stock=', pg_temp.lire(format('select quantity::text from public.offres where id = %L', oid)));
   execute 'reset role';
+  -- demande publiée par D (B a déjà 30 annonces actives sur le projet de test)
+  insert into public.verifications (user_id, statut, piece, defi, decide_le, expire_le, numero) values (D, 'verifie', 'cni', '1234', now(), current_date + 365, 'E2E-D');
   insert into public.demandes (id, user_id, client_id, product_slug, product_label, region_slug, city, quantity, unit, budget, status)
-    values (did, B, 'e2e-j-d-' || did, 'mais', 'Maïs', 'haut-sassandra', 'Daloa', 10, 'sac', 20000, 'active');
+    values (did, D, 'e2e-j-d-' || did, 'mais', 'Maïs', 'san-pedro', 'San-Pédro', 10, 'sac', 20000, 'active');
   perform pg_temp.qui(S); n3 := public.nego_ouvrir('demande', did, 20000, 8, null);
   perform pg_temp.qui(C); n4 := public.nego_ouvrir('demande', did, 20000, 8, null);
-  perform pg_temp.qui(B);
+  perform pg_temp.qui(D);
   res := concat(res, ' | j3 demande 1er accord: ', pg_temp.e(format('select public.nego_agir(%L, %L, null, null, null, %L)', n3, 'accord', pg_temp.lire(format('select dernier_msg::text from public.negociations where id = %L', n3)))),
     ' reste=', pg_temp.lire(format('select quantity::text from public.demandes where id = %L', did)));
   res := concat(res, ' | j4 demande 2e accord: ', pg_temp.e(format('select public.nego_agir(%L, %L, null, null, null, %L)', n4, 'accord', pg_temp.lire(format('select dernier_msg::text from public.negociations where id = %L', n4)))),
     ' reste=', pg_temp.lire(format('select quantity::text from public.demandes where id = %L', did)));
   raise exception 'TEST: %', res;
 end $$;
+-- Résultat (25/10/2026) : j1 stock=2 | j2 « Quantité plus disponible : il reste 2 sur cette annonce. » | j3 demande : ok reste=2 | j4 même refus, reste=2.

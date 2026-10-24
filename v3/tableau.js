@@ -5,7 +5,7 @@
    • À prix égal : transport compris d'abord, puis le membre qui a un niveau (schéma 85), l'identité vérifiée, les commandes honorées, le plus récent.
      Le classement est fait par le serveur (supabase/schema-59-tableau-marche.sql : tableau_produits, tableau_marche).
    • On ne compare que des prix dans la même unité (kg, sac, régime…) ; filtre par zone (région).
-   • Le seul intermédiaire, c'est le Marché de Gros : aucun numéro, aucun contact. « Acheter » / « Vendre » ouvre la négociation
+   • Le Marché de Gros met en relation : aucun numéro, aucun contact. « Acheter » / « Vendre » ouvre la négociation
      dans l'application (connexion demandée si besoin). Lecture publique, sans compte.
    • Couleurs (23/10/2026), comme les boutons « J'ai à vendre » (vert) / « Je cherche » (maïs) : les offres et « Acheter » en vert, les demandes et « Vendre » en maïs.
    • Relu toutes les 30 s quand l'onglet est visible : une annonce qui monte est signalée « ↑ monte ». */
@@ -179,7 +179,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
               ${vignette(p.slug)}<span class="tb-tx"><b>${esc(p.lab || nomProduit(p.slug))}</b><span class="tb-pils">${(p.n_offres ? `<span class="tb-pil o"><i aria-hidden="true"></i>${nf(p.n_offres)} offre${p.n_offres > 1 ? 's' : ''}</span>` : '') + (p.n_demandes ? `<span class="tb-pil d"><i aria-hidden="true"></i>${nf(p.n_demandes)} demande${p.n_demandes > 1 ? 's' : ''}</span>` : '') || '<small>Aucune annonce</small>'}</span></span>
               <span class="px">${p.meilleure_offre != null ? `<span><b>dès ${F(p.meilleure_offre)}</b><small>le ${esc(p.unite_offre || 'kg')} · pour acheter</small></span>` : ''}
                 ${p.meilleure_demande != null ? `<span class="d"><b>jusqu’à ${F(p.meilleure_demande)}</b><small>le ${esc(p.unite_demande || 'kg')} · pour vendre</small></span>` : ''}</span></button></li>`).join('')}</ul>`}
-        <p class="tb-n">Le Marché de Gros est le seul intermédiaire : aucun numéro n’est affiché, tout se négocie dans l’application.</p>`);
+        <p class="tb-n">Le Marché de Gros met en relation : aucun numéro n’est affiché, tout se négocie dans l’application.</p>`);
       this.lier();
     }
     peindreProduit() {
@@ -222,7 +222,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
         ${s.err ? this.erreur() : !d ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div></div>'
           : !L.length ? `<div class="tb-vide"><b>${ach ? 'Aucune offre' : 'Aucune demande'}${s.region ? ' dans cette zone' : ''} pour l’instant</b>${ach ? 'Publiez une demande avec « Je cherche » : les vendeurs seront prévenus.' : 'Publiez votre offre avec « J’ai » : les acheteurs seront prévenus.'}</div>`
           : `<ul class="tb-l">${L.map(ligne).join('')}</ul>${coupe ? `<p class="tb-n tb-coupe">Les ${L.length} meilleures sur ${nf(parU(s.unite || ''))}. Choisissez une zone pour affiner.</p>` : ''}`}
-        <p class="tb-n">Comment c’est classé : le prix d’abord (dans la même unité), puis le transport, la fiabilité, l’identité vérifiée et les commandes honorées. Mis à jour toutes les 30 secondes. Aucun numéro affiché : vous négociez dans l’application, le Marché de Gros est le seul intermédiaire.</p>`);
+        <p class="tb-n">Comment c’est classé : le prix d’abord (dans la même unité), puis le transport, la fiabilité, l’identité vérifiée et les commandes honorées. Mis à jour toutes les 30 secondes. Aucun numéro affiché : vous négociez dans l’application, le Marché de Gros met en relation.</p>`);
       this.lier();
     }
     // relecture toutes les 30 s : seul ce qui a changé est retouché (app/stable.js), les photos ne clignotent plus pendant qu'on fait défiler

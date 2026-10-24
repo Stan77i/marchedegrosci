@@ -26,7 +26,7 @@
   const VEH = [['moto', 'Moto'], ['tricycle', 'Tricycle'], ['camionnette', 'Camionnette'], ['camion', 'Camion'], ['semi', 'Semi-remorque'], ['autre', 'Autre']];
   const VLIB = Object.fromEntries(VEH);
   const STATUT = { en_attente: ['En attente de vérification', 'L’équipe vérifie votre profil. Vous pouvez déjà recevoir une mission d’un acheteur ou d’un vendeur qui vous choisit.', 'mais'],
-    verifie: ['Profil vérifié', 'Vous pouvez vous dire disponible : l’équipe peut alors vous confier des missions du réseau.', ''],
+    verifie: ['Profil vérifié', 'Le service transport Marché de Gros n’est pas encore ouvert : les missions du réseau viendront à son ouverture. Un vendeur ou un acheteur peut déjà vous choisir.', ''],
     refuse: ['Profil refusé', '', 'rouge'], suspendu: ['Profil suspendu', '', 'rouge'] };
   const ETAPE = { confirmee: 'En attente du chargement', preparation: 'Marchandise en préparation', chargement: 'Chargé', transport: 'En route',
     transbordement: 'Transbordement', arrivee: 'Arrivé', reception: 'Reçue', terminee: 'Livraison terminée' };
@@ -34,7 +34,8 @@
 
   let bg = null, moi = null, missions = [], transferts = [], vue = 'accueil', minuteur = null;
   // prix du transport (schéma 42) : le chauffeur le fixe en acceptant, et peut le corriger jusqu'au chargement.
-  // La commission du Marché de Gros (6,9 %) est due par le chauffeur : il l'inclut dans son prix. Rien n'est prélevé dans l'application.
+  // 6,9 % seulement pour une mission du service transport Marché de Gros (mode « reseau », transporteur vérifié, schéma 95).
+  // Le livreur choisi par le vendeur ou l'acheteur ne doit rien. Rien n'est prélevé dans l'application.
   const TAUX_TR = 0.069, comTr = p => Math.round(Math.round(p) * TAUX_TR);
   let prixOuvert = null;   // mission dont le formulaire de prix est ouvert
   function fermer() { if (!bg) return; bg.remove(); bg = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); if (retourFocus && retourFocus.focus) try { retourFocus.focus({ preventScroll: true }); } catch (_) {} retourFocus = null; }
@@ -132,7 +133,7 @@
         <b style="display:block;color:#8A2414">L’acheteur refuse ${Rf.quantite != null ? nf(Rf.quantite, 2) + ' ' + esc(unites(Rf.quantite, m.unite)) : 'toute la marchandise'}</b>
         <small style="display:block;margin-top:2px;color:inherit">« ${esc(Rf.motif || '')} »</small>
         <span style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">${(Rf.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du refus" style="display:block;width:64px;height:64px;border-radius:10px;overflow:hidden;background:#E7E0CF"></span>`).join('')}</span>
-        <small style="display:block;color:#5E5546">${Rf.a_repondre ? 'À la livraison, la marchandise était-elle dans cet état ? Répondez honnêtement : votre réponse est enregistrée avec la commande n° ' + esc(m.numero) + '.' + (Rf.suffit ? ' Vous êtes un chauffeur vérifié du Marché de Gros : si vous confirmez, la partie refusée est rendue à l’acheteur.' : ' L’équipe du Marché de Gros tiendra compte de votre réponse.') + ' Votre prix de transport reste dû dans tous les cas.'
+        <small style="display:block;color:#5E5546">${Rf.a_repondre ? 'À la livraison, la marchandise était-elle dans cet état ? Répondez honnêtement : votre réponse est enregistrée avec la commande n° ' + esc(m.numero) + '.' + (Rf.suffit ? ' Vous êtes un chauffeur vérifié du Marché de Gros : si vous confirmez, l’acheteur ne doit pas la partie refusée.' : ' L’équipe du Marché de Gros tiendra compte de votre réponse.') + ' Votre prix de transport reste dû dans tous les cas.'
           : Rf.reponse === 'confirme' ? 'Vous avez confirmé le refus.' : Rf.reponse === 'conteste' ? 'Vous avez contesté le refus : l’équipe va trancher.' : 'Refus traité.'}</small></div>` : '';
     const st = m.mission === 'proposee' ? ['Nouvelle mission', 'mais'] : m.mission === 'refusee' ? ['Refusée', 'rouge'] : m.etat === 'annulee' ? ['Commande annulée', 'rouge'] : m.etat === 'litige' ? [Rf ? 'Marchandise refusée' : 'Litige en cours', 'rouge'] : [ETAPE[m.etape] || 'Acceptée', ''];
     return `<div class="cm-r" style="cursor:default;grid-template-columns:1fr"><span>
@@ -140,7 +141,7 @@
       <small>${esc(m.ville_depart || 'Départ à préciser')} → ${esc(m.lieu_livraison || 'livraison à préciser')}</small>
       <small>Vendeur : ${esc(m.vendeur)} · Acheteur : ${esc(m.acheteur)}</small>
       <small style="margin-top:6px"><span class="cm-tag ${st[1]}">${esc(st[0])}</span> ${m.propose_role === 'admin' ? '· confiée par l’équipe' : m.propose_role === 'acheteur' ? '· choisi par l’acheteur' : m.propose_role === 'vendeur' ? '· choisi par le vendeur' : ''}</small>
-      ${m.mission === 'acceptee' && m.prix != null ? `<small style="margin-top:6px;color:inherit"><b>Votre prix : ${nf(m.prix)} F</b> · commission Marché de Gros (6,9 %) : ${nf(m.commission)} F · vous gardez ${nf(m.net)} F</small>` : ''}
+      ${m.mission === 'acceptee' && m.prix != null ? `<small style="margin-top:6px;color:inherit"><b>Votre prix : ${nf(m.prix)} F</b>${Number(m.commission) > 0 ? ` · commission du service transport Marché de Gros (6,9 %) : ${nf(m.commission)} F · vous gardez ${nf(m.net)} F` : '<br>Aucune commission : vous gardez tout.'}</small>` : ''}
       ${!R3 && m.mission === 'acceptee' && m.prix == null && avantChargement ? '<small style="margin-top:6px;color:#8A6400"><b>Prix du transport à indiquer</b> : l’acheteur le verra dans sa commande.</small>' : ''}${etat3}
       ${prixOuvert === m.mission_id ? formPrix(m) : ''}
       ${exige ? `<p class="cm-garde" style="margin:10px 0 0">${exige}</p>` : ''}${refus}
@@ -150,7 +151,7 @@
     const acc = m.mission === 'proposee' && m.mode !== 'reseau';
     return `<form class="cm-f" data-pxf="${m.mission_id}" data-acc2="${acc ? 1 : ''}" data-res="${m.mode === 'reseau' ? 1 : ''}" style="margin:10px 0 0">
       <label>Votre prix pour ce transport (F CFA)<input type="number" inputmode="numeric" min="1" step="1" data-pxv value="${m.prix != null ? Math.round(m.prix) : ''}" placeholder="ex. 10000" required></label>
-      <small data-pxi style="display:block;margin:6px 0 0;color:#5E5546;line-height:1.4">La commission du Marché de Gros est de 6,9 % de votre prix : comptez-la dedans. L’acheteur paie votre prix à la livraison, avec la marchandise. Rien n’est prélevé dans l’application pour l’instant.</small>
+      <small data-pxi style="display:block;margin:6px 0 0;color:#5E5546;line-height:1.4"></small>
       <p class="cm-err" data-pxe role="alert" style="margin:4px 0 0"></p>
       <div class="cm-act" style="margin:8px 0 0"><button type="submit" class="p">${acc ? 'Accepter la mission' : 'Enregistrer le prix'}</button><button type="button" data-pxx>Annuler</button></div></form>`;
   }
@@ -158,8 +159,10 @@
     const f = box.querySelector('[data-pxf]'); if (!f) return;
     const v = f.querySelector('[data-pxv]'), info = f.querySelector('[data-pxi]'), err = f.querySelector('[data-pxe]'), go = f.querySelector('[type=submit]'), acc = !!f.dataset.acc2, res = !!f.dataset.res;
     const maj = () => { const p = Math.round(+v.value || 0);
-      info.textContent = p > 0 ? `Commission Marché de Gros (6,9 %) : ${nf(comTr(p))} F · vous gardez ${nf(p - comTr(p))} F. L’acheteur paie ${nf(p)} F de transport à la livraison, avec la marchandise. Rien n’est prélevé dans l’application pour l’instant.`
-        : 'La commission du Marché de Gros est de 6,9 % de votre prix : comptez-la dedans. L’acheteur paie votre prix à la livraison, avec la marchandise.';
+      // service Marché de Gros : 6,9 % ; livreur choisi par un membre : aucune commission
+      info.textContent = !res ? 'Aucune commission : vous êtes choisi par le vendeur ou l’acheteur. Votre prix se règle entre vous, hors application.'
+        : p > 0 ? `Service transport Marché de Gros : commission de 6,9 % (${nf(comTr(p))} F), vous gardez ${nf(p - comTr(p))} F. Rien n’est prélevé dans l’application pour l’instant.`
+        : 'Service transport Marché de Gros : la commission est de 6,9 % de votre prix. Rien n’est prélevé dans l’application pour l’instant.';
       go.textContent = res ? (p > 0 ? `Proposer ${nf(p)} F` : 'Proposer mon prix') : p > 0 ? (acc ? `Accepter à ${nf(p)} F` : `Enregistrer ${nf(p)} F`) : (acc ? 'Accepter la mission' : 'Enregistrer le prix'); };
     v.oninput = maj; maj(); setTimeout(() => { try { v.focus(); } catch (_) {} }, 50);
     f.querySelector('[data-pxx]').onclick = () => { prixOuvert = null; peindre(); };
@@ -184,9 +187,9 @@
     box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
       <h2>Espace <em>chauffeur</em></h2>
       <p class="cm-sous">${esc(moi.nom)} · ${esc(VLIB[moi.vehicule] || '')}${moi.immatriculation ? ' · ' + esc(moi.immatriculation) : ''}</p>
-      <div class="cm-st" role="status"><b>Votre code : <em style="letter-spacing:.06em">${esc(moi.code)}</em></b><small>Votre code de transporteur du réseau Marché de Gros. Montrez-le au vendeur et à l’acheteur au chargement et à la livraison : il prouve que c’est bien vous. Les missions du réseau arrivent ici.</small></div>
+      <div class="cm-st" role="status"><b>Votre code : <em style="letter-spacing:.06em">${esc(moi.code)}</em></b><small>Votre code de transporteur du réseau Marché de Gros. Montrez-le au vendeur et à l’acheteur au chargement et à la livraison : il prouve que c’est bien vous. Les missions du réseau arriveront ici quand le service ouvrira.</small></div>
       <p class="cm-info" style="${cls === 'rouge' ? 'background:rgba(196,72,52,.14)' : ''}"><b>${esc(st)}.</b> ${esc(moi.motif && cls === 'rouge' ? 'Motif : ' + moi.motif : sous)}</p>
-      ${moi.statut === 'verifie' ? `<label class="cm-ck" style="padding:10px 14px;border-radius:16px;background:#FFFDF8;margin:0 0 12px"><input type="checkbox" data-dispo${moi.disponible ? ' checked' : ''}> <span><b>Disponible pour des missions du réseau</b><small style="display:block;color:#5E5546;font-size:12.5px">L’équipe vous propose des missions dans vos régions.</small></span></label>` : ''}
+      ${moi.statut === 'verifie' ? `<label class="cm-ck" style="padding:10px 14px;border-radius:16px;background:#FFFDF8;margin:0 0 12px"><input type="checkbox" data-dispo${moi.disponible ? ' checked' : ''}> <span><b>Disponible pour des missions du réseau</b><small style="display:block;color:#5E5546;font-size:12.5px">À l’ouverture du service, l’équipe vous proposera des missions dans vos régions.</small></span></label>` : ''}
       ${transferts.length ? `<h3 class="cm-h3">Marchandise à recevoir</h3><div class="cm-li">${transferts.map(t => `<div class="cm-r" style="cursor:default;grid-template-columns:1fr"><span>
         <b>${esc(t.produit || 'Marchandise')}${t.quantite != null ? ' · ' + nf(t.quantite, 2) + ' ' + esc(unites(t.quantite, t.unite)) : ''}</b>
         <small>${esc(t.de || 'Un chauffeur')} vous la transmet à ${esc(t.lieu || '?')} · livraison : ${esc(t.lieu_livraison || 'à préciser')}</small>

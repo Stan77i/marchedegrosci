@@ -1445,3 +1445,8 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - `CLAUDE.md` (Design) et `DESIGN.md` (lois 2, 25, couleurs) mis à jour ; le rapport d'audit note les trois décisions.
 - Vérifié (navigateur, iPhone) : au début, 9 effets jouent ; après 14 s, seules les lumières du fond finissent leur 2e passage ; « Produit suivant » → les effets rejouent ; aucune erreur JS.
 - `?v=20261124i` (11 fichiers) ; site refabriqué ; cache `mgci-v243`.
+
+## 24/10/2026 — Liste « À faire par le propriétaire »
+
+- Nouveau `docs/A-FAIRE-PROPRIETAIRE.md` : ce que seul le propriétaire peut faire, avec le mode d'emploi pas à pas. Pour l'instant : autoriser le serveur `catmsypctymgkjkfzdkt.supabase.co` dans l'environnement Claude (remis à plus tard par le propriétaire), puis un compte de test.
+- `CLAUDE.md` : au début d'une discussion, rappeler en une ligne les cases non cochées de cette liste ; « Décisions en attente » mis à jour. `docs/REPRISE.md`, partie 3, point 0 : remplacé par cette liste (l'audit antislop est terminé, PR #250 à #258).

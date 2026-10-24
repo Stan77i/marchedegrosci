@@ -1,6 +1,7 @@
 /* ═════════ Marché de Gros CI — alertes par produit ═════════
    Chacun choisit les produits qui l'intéressent (igname, tomate…) et ce qu'il veut savoir : les nouvelles offres, les nouvelles
-   demandes, ou les deux. À chaque nouvelle annonce de ce produit, son téléphone reçoit une notification (fonction Edge « pousser »).
+   demandes, ou les deux. Une nouvelle annonce de ce produit lui vaut une notification (fonction Edge « pousser ») au rythme réel du
+   serveur (schéma 91) : annonces regroupées, 90 min au moins entre deux, 8 par jour au plus, rien entre 21 h et 7 h.
    Serveur : supabase/schema-12-stock-alertes-profil.sql (table alertes_produits, déclencheur push_annonce).
    API : MDGAlertes.suit(slug) · panneau(slug, nom) · gerer() · refresh() ; événement « mdg:alertes » quand la liste change. */
 (function () {
@@ -63,7 +64,7 @@
   function panneau(slug, nom) {
     if (!N() || !N().session()) { N() && N().open('Connectez-vous pour recevoir les alertes de ce produit.'); return; }
     nom = nom || nomDe(slug); const a = suit(slug); let o = a ? a.offres : true, d = a ? a.demandes : false;
-    const bg = feuille(`<h2>Alertes · ${esc(nom)}</h2><p>Recevez une notification dès qu’une annonce de ${esc(nom.toLowerCase())} est publiée.</p>
+    const bg = feuille(`<h2>Alertes · ${esc(nom)}</h2><p>Une notification quand une annonce de ${esc(nom.toLowerCase())} est publiée. Plusieurs annonces arrivent ensemble, jamais entre 21 h et 7 h.</p>
       <button type="button" class="al-sw" data-k="o"><span>Nouvelles offres<small>Quelqu’un vend ce produit</small></span><i aria-hidden="true"></i></button>
       <button type="button" class="al-sw" data-k="d"><span>Nouvelles demandes<small>Quelqu’un cherche ce produit</small></span><i aria-hidden="true"></i></button>
       <button type="button" class="al-go">Enregistrer</button><p class="al-note">${esc(pousseNote())}</p>`, 'Alertes ' + nom);

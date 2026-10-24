@@ -13,7 +13,7 @@
   'use strict';
   const URL0 = 'https://catmsypctymgkjkfzdkt.supabase.co', KEY = 'sb_publishable_KC2au-t8dqasp5ez9Lq6XQ_JvbTtVQ5';
   const DOMAINE = 'tel.marchedegros.ci'; // le compte Supabase est une adresse construite à partir du numéro (aucun e-mail n'est envoyé)
-  const K = { e: 'mdg-nuage:empreinte', a: 'mdg-nuage:admin', s: 'mdg-nuage:session', o: 'mdg-nuage:offres', d: 'mdg-nuage:demandes', p: 'mdg-nuage:pousse', t: 'mdg-nuage:maj', vu: 'mdg-nuage:attente-vue', v: 'mdg-nuage:version' };
+  const K = { e: 'mdg-nuage:empreinte', a: 'mdg-nuage:admin', s: 'mdg-nuage:session', o: 'mdg-nuage:offres', d: 'mdg-nuage:demandes', p: 'mdg-nuage:pousse', t: 'mdg-nuage:maj', vu: 'mdg-nuage:attente-vue', v: 'mdg-nuage:version', r: 'mdg-nuage:a-retirer' };
   const KIND = { offres: 'offres', demandes: 'demandes' };
   const J = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } };
   const W = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (_) { return false; } };
@@ -258,13 +258,17 @@
             else if (/^STOCK_(EPUISE|VIDE) : /.test(e.message)) { const ks = 'mdg-nuage:stock:' + key; try { if (!sessionStorage.getItem(ks)) { sessionStorage.setItem(ks, '1'); toast(e.message.replace(/^STOCK_[A-Z]+ : /, '')); } } catch (_) {} }   // schéma 92a
             else if (/COMPTE_BANNI/.test(e.message)) refus = 'banni'; else if (/VERIFICATION_REQUISE/.test(e.message) && refus !== 'banni') refus = 'limite'; }
         }
+        const aRetirer = new Set(J(K.r, []));
         for (const key of Object.keys(p)) {
           if (!key.startsWith(k + ':') || ids.has(key.slice(k.length + 1))) continue;
+          // absente du téléphone SANS que le membre l'ait retirée (liste locale limitée à 30, stockage plein…) : on ne touche pas au
+          // serveur ; on l'oublie seulement ici, et « rapatrier » la remettra sur le téléphone si elle est encore en ligne
+          if (!aRetirer.has(key)) { delete p[key]; delete em[key]; W(K.p, p); W(K.e, em); continue; }
           // retirée sur le téléphone : cachée sur le serveur, la ligne reste (schéma 86, décision 37 : jamais d'effacement ; schéma 93a : le serveur le refuse)
           try { const u = '/rest/v1/' + KIND[k] + '?id=eq.' + encodeURIComponent(p[key]);
             await api(u + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: 'retiree', retiree_le: new Date().toISOString() }, prefer: 'return=minimal' });
-            delete p[key]; delete em[key]; changed = true; W(K.p, p); W(K.e, em); }
-          catch (e) { if (e.code === 'auth') throw e; if (e.status === 404) { delete p[key]; W(K.p, p); } }
+            delete p[key]; delete em[key]; changed = true; W(K.p, p); W(K.e, em); aRetirer.delete(key); W(K.r, [...aRetirer]); }
+          catch (e) { if (e.code === 'auth') throw e; if (e.status === 404) { delete p[key]; W(K.p, p); aRetirer.delete(key); W(K.r, [...aRetirer]); } }
         }
       }
     } catch (e) { if (e.code !== 'auth') console.warn('[nuage] synchronisation interrompue', e.message); }
@@ -693,5 +697,7 @@ html.kb .cp,html.kb .nx{height:calc(var(--vvh,100dvh) - 8px)!important}}`;
     return '';
   }
 
-  window.MDGNuage = { prolonger, texteRefus, URL: URL0, televerser, deposerPrive, effacerPrive, lienSigne, list, zones, zoneAjouter, zoneRetirer, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
+  // le membre retire lui-même une de ses annonces (« Retirer ») : seule cette demande cache l'annonce sur le serveur
+  const retirer = (k, id) => { const L = J(K.r, []), key = k + ':' + id; if (!L.includes(key)) { L.push(key); W(K.r, L.slice(-200)); } };
+  window.MDGNuage = { retirer, prolonger, texteRefus, URL: URL0, televerser, deposerPrive, effacerPrive, lienSigne, list, zones, zoneAjouter, zoneRetirer, refresh, sync, session, open, signIn, signUp, signOut, recover, report, waiting, toast, api, rpc, isAdmin, pullMine, esc, fmtTel, style, piege, showSecours, openCompte };
 })();

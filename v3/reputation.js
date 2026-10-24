@@ -292,7 +292,9 @@
   // modifier son profil public : présentation, activités, photos (6 au plus)
   const reduire = file => new Promise((ok, ko) => { const r = new FileReader(); r.onerror = ko; r.onload = () => { const im = new Image(); im.onerror = ko; im.onload = () => {
     const s = Math.min(1, 1000 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * s); c.height = Math.round(im.height * s);
-    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); c.toBlob(b => b ? ok(b) : ko(new Error('Photo illisible')), 'image/jpeg', .74); }; im.src = r.result; }; r.readAsDataURL(file); });
+    // WebP d'abord (28 % plus léger, mesuré sur 5 photos du dépôt) ; le téléphone qui ne sait pas l'écrire (Safari) garde le JPEG
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); c.toBlob(w => w && w.type === 'image/webp' ? ok(w) : c.toBlob(b => b ? ok(b) : ko(new Error('Photo illisible')), 'image/jpeg', .74), 'image/webp', .72); }; im.src = r.result; }; r.readAsDataURL(file); });
+  const ext = b => b && b.type === 'image/webp' ? '.webp' : '.jpg';
   function modifier(pp, apres) {
     const s = N() && N().session(); if (!s) return;
     let photos = (pp.photos || []).filter(photoUrl).slice(0, 6);
@@ -306,7 +308,7 @@
       g.innerHTML = photos.map((p, i) => `<div><img src="${esc(photoUrl(p))}" alt=""><button type="button" class="ui-x" data-rm="${i}" aria-label="Retirer la photo"></button></div>`).join('') + (photos.length < 6 ? `<label class="ajout">+ Ajouter<input type="file" accept="image/*"></label>` : '');
       g.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { photos.splice(+b.dataset.rm, 1); grille(); });
       const inp = g.querySelector('input[type=file]'); if (inp) inp.onchange = async () => { const f = inp.files && inp.files[0]; if (!f) return; msg('Envoi de la photo…');
-        try { const blob = await reduire(f), chemin = s.user.id + '/' + Date.now() + '.jpg'; await N().televerser('activites/' + chemin, blob); photos.push(chemin); msg(''); grille(); }
+        try { const blob = await reduire(f), chemin = s.user.id + '/' + Date.now() + ext(blob); await N().televerser('activites/' + chemin, blob); photos.push(chemin); msg(''); grille(); }
         catch (x) { msg(/Bucket not found|not found|403|row-level/i.test(String(x.message)) ? 'Les photos ne sont pas encore activées sur le serveur.' : 'Envoi impossible. ' + (window.MDGErreur ? MDGErreur(x) : x.message)); } }; };
     grille();
     bg.querySelector('[data-ok]').onclick = async ev => { ev.target.disabled = true; msg('');

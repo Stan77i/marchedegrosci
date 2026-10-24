@@ -36,6 +36,38 @@
   const err = x => { const m = String(x && x.message || x || ''); return /BLOQUE/.test(m) ? 'Vous ne pouvez plus écrire à cette personne.' : /TROP_VITE/.test(m) ? 'Trop de messages d’un coup. Attendez une minute.'
     : /Failed to fetch|NetworkError/i.test(m) ? 'Pas de réseau. Le message n’est pas parti.' : /dm_|schema cache|Could not find/i.test(m) ? 'La messagerie n’est pas encore activée sur le serveur.' : (window.MDGErreur ? MDGErreur(x) : (m || 'Une erreur est survenue.')); };
 
+  // ——— messages pas encore partis (schéma 96c) ———
+  // Chaque message reçoit sur le téléphone un identifiant unique (cid) et attend dans une file gardée sur l'appareil tant que le
+  // serveur ne l'a pas reçu : une coupure de réseau ne le perd pas, et un nouvel essai après une réponse perdue ne crée pas de
+  // doublon (le serveur rend le message déjà arrivé).
+  const KF = 'mdg-dm:file';
+  const cidNeuf = () => ((window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2)).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
+  const fileLire = () => J(KF, []).filter(m => m && m.cid && m.disc && m.texte);
+  const fileEcrire = L => W(KF, L.slice(-100));
+  const fileRetirer = cid => fileEcrire(fileLire().filter(m => m.cid !== cid));
+  // refus du serveur (bloqué, texte refusé, conversation introuvable…) : le message ne repart pas tout seul ; réseau, panne, « trop vite » : il repart
+  const definitif = x => !!x && (x.code === 'texte' || (x.status >= 400 && x.status < 500 && x.code !== 'auth' && !/TROP_VITE/.test(String(x.message))));
+  async function expedier(m) {
+    let r;
+    try { r = await N().rpc('dm_envoyer', { p_discussion: m.disc, p_texte: m.texte, p_client: m.cid }); }
+    catch (x) {   // serveur sans le schéma 96c : envoi comme avant, sans identifiant
+      if ((x.status === 404 || x.status === 400) && /dm_envoyer|schema cache|Could not find|p_client/i.test(String(x.message))) r = await N().rpc('dm_envoyer', { p_discussion: m.disc, p_texte: m.texte });
+      else throw x;
+    }
+    fileRetirer(m.cid); return r;
+  }
+  let vidage = false;
+  async function vider() {
+    if (vidage || !navigator.onLine || !N() || !N().session()) return; vidage = true;
+    try {
+      const u = me();
+      for (const m of fileLire().filter(x => x.auteur_id === u)) {
+        try { const r = await expedier(m); dispatchEvent(new CustomEvent('mdg:dm-parti', { detail: { cid: m.cid, disc: m.disc, r } })); }
+        catch (x) { if (definitif(x)) { fileRetirer(m.cid); dispatchEvent(new CustomEvent('mdg:dm-refuse', { detail: { cid: m.cid, disc: m.disc } })); N().toast(err(x)); } else break; }
+      }
+    } finally { vidage = false; }
+  }
+
   // la liste des conversations (gardée sur l'appareil pour s'afficher tout de suite)
   let liste = J(KL, []), dernierU = -1, premier = true, ouverte = null;
   const unread = () => liste.filter(c => c.non_lu && c.id !== ouverte).length;
@@ -82,7 +114,7 @@
 .dm-m.suite p{border-top-left-radius:20px}.dm-m.me.suite p{border-top-right-radius:20px;border-top-left-radius:20px}
 .dm-m time{display:block;margin-top:2px;text-align:right;font-size:11.5px;color:var(--mute)}.dm-m.me time{color:rgba(245,240,230,.72)}
 .dm-m.envoi p{opacity:.6}.dm-m.rate p{box-shadow:inset 0 0 0 1.5px #E2735B}
-.dm-m.rate time{opacity:1;color:#E2735B;font-weight:600}.dm-m.rate{cursor:pointer}
+.dm-m.rate time{opacity:1;color:#E2735B;font-weight:600}.dm-m.rate{cursor:pointer}.dm-m.file p{opacity:.8}.dm-m.file time{opacity:1;font-weight:600}.dm-m.file{cursor:pointer}
 .dm-m.neuf p{animation:dmPop .3s cubic-bezier(.22,1,.36,1) both}
 .dm-f{flex:none;display:flex;align-items:flex-end;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#EFE7D9}
 .dm-f textarea{flex:1;min-width:0;min-height:46px;max-height:132px;margin:0;padding:12px 16px;border:1px solid rgba(23,21,18,.14);border-radius:23px;background:#FFFFFF;color:var(--ink);font:400 16px/1.35 Jost,sans-serif;resize:none;box-sizing:border-box}
@@ -269,7 +301,12 @@
     b.querySelector('[data-profil]').onclick = () => { if (c.officiel) return; if (window.MDGRep) { fermer(); MDGRep.profil(c.autre_id, { nom: c.autre_nom, avatar: c.autre_avatar }); } };
     if (!c.officiel && window.MDGRep && MDGRep.charger) { const r = MDGRep.resume && MDGRep.resume(c.autre_id); if (r && r.n) b.querySelector('[data-rep]').innerHTML = (window.MDGStatut ? MDGStatut.puces(c.autre_id, { max: 1, sceau: false }) + ' ' : '') + MDGRep.texteNote(r) + ' · voir son profil'; }
 
-    let msgs = [], attente = [];
+    let msgs = [], attente = fileLire().filter(x => x.disc === id && x.auteur_id === u).map(x => Object.assign({ id: 'tmp-' + x.cid, _etat: 'file' }, x));
+    // envoyé depuis la file pendant que la conversation est ouverte (vider) : la bulle « en attente » devient le message du serveur
+    const surParti = e => { if (!b.isConnected) return removeEventListener('mdg:dm-parti', surParti); const d = e.detail || {}; if (d.disc !== id) return;
+      attente = attente.filter(x => x.cid !== d.cid); if (d.r && !msgs.some(x => x.id === d.r.id)) msgs.push(d.r); dessiner(); };
+    const surRefus = e => { if (!b.isConnected) return removeEventListener('mdg:dm-refuse', surRefus); const d = e.detail || {}; const m = d.disc === id && attente.find(x => x.cid === d.cid); if (m) { m._etat = 'rate'; dessiner(); } };
+    addEventListener('mdg:dm-parti', surParti); addEventListener('mdg:dm-refuse', surRefus);
     const enBas = () => corps.scrollHeight - corps.scrollTop - corps.clientHeight < 80;
     const descendre = () => { corps.scrollTop = corps.scrollHeight; };
     function dessiner(neufs) {
@@ -277,12 +314,12 @@
       tout.forEach(m => {
         const jj = jour(m.created_at); if (jj !== j) { j = jj; h += `<div class="dm-jour">${esc(jj)}</div>`; prec = null; }
         const moi = m.auteur_id === u, suite = prec && prec.auteur_id === m.auteur_id && Date.parse(m.created_at) - Date.parse(prec.created_at) < 3e5;
-        const etat = m._etat === 'envoi' ? 'Envoi…' : m._etat === 'rate' ? 'Non envoyé · toucher pour réessayer' : heure(m.created_at);
-        h += `<div class="dm-m${moi ? ' me' : ''}${suite ? ' suite' : ''}${m._etat ? ' ' + m._etat : ''}${neufs && neufs.has(m.id) ? ' neuf' : ''}" data-m="${m.id}"${m._etat === 'rate' ? ' role="button" tabindex="0"' : ''}><p>${(c.officiel && !moi) || (moi && admin()) ? lienOff(m.texte) : esc(m.texte)}<time title="Gardé encore ${reste(m.created_at)}">${etat}</time></p></div>`;
+        const etat = m._etat === 'envoi' ? 'Envoi…' : m._etat === 'rate' ? 'Non envoyé · toucher pour réessayer' : m._etat === 'file' ? 'Partira dès le retour du réseau' : heure(m.created_at);
+        h += `<div class="dm-m${moi ? ' me' : ''}${suite ? ' suite' : ''}${m._etat ? ' ' + m._etat : ''}${neufs && neufs.has(m.id) ? ' neuf' : ''}" data-m="${m.id}"${m._etat === 'rate' || m._etat === 'file' ? ' role="button" tabindex="0"' : ''}><p>${(c.officiel && !moi) || (moi && admin()) ? lienOff(m.texte) : esc(m.texte)}<time title="Gardé encore ${reste(m.created_at)}">${etat}</time></p></div>`;
         prec = m;
       });
       zone.innerHTML = h || `<div class="dm-vide" style="padding:30px 10px">${window.MDGSac ? MDGSac.svg('vide', { t: 60 }) : I.bulle}<b>Dites bonjour</b>Présentez-vous et dites ce que vous cherchez ou proposez.</div>`;
-      zone.querySelectorAll('.dm-m.rate').forEach(el => { el.onclick = () => { const m = attente.find(x => x.id === el.dataset.m); if (m) partir(m); }; el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.onclick(); } }; });
+      zone.querySelectorAll('.dm-m.rate, .dm-m.file').forEach(el => { el.onclick = () => { const m = attente.find(x => x.id === el.dataset.m); if (m) partir(m); }; el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.onclick(); } }; });
     }
     async function charger(premiere) {
       const apres = msgs.length ? msgs[msgs.length - 1].created_at : null;
@@ -299,14 +336,15 @@
     async function partir(m) {
       m._etat = 'envoi'; dessiner(); descendre();
       try {
-        const r = await N().rpc('dm_envoyer', { p_discussion: id, p_texte: m.texte });
-        attente = attente.filter(x => x !== m);
+        const r = await expedier(m);
+        attente = attente.filter(x => x !== m && x.cid !== m.cid);
         if (!msgs.some(x => x.id === r.id)) msgs.push(r);
         const l = liste.find(x => x.id === id);
         if (l) Object.assign(l, { dernier_texte: r.texte.slice(0, 140), dernier_par: u, updated_at: r.created_at }); else liste.unshift(Object.assign({}, c, { dernier_texte: r.texte, dernier_par: u, updated_at: r.created_at, non_lu: false }));
         liste.sort((a, z) => Date.parse(z.updated_at) - Date.parse(a.updated_at)); W(KL, liste);
       } catch (x) {
-        m._etat = 'rate'; N().toast(err(x));
+        if (definitif(x)) { fileRetirer(m.cid); m._etat = 'rate'; N().toast(err(x)); }
+        else { m._etat = 'file'; N().toast(navigator.onLine ? err(x) + ' Il repartira tout seul.' : 'Pas de réseau. Le message partira dès son retour.'); }
         if (/BLOQUE/.test(String(x.message))) { attente = attente.filter(y => y !== m); c.bloque = true; piedDe(); }
       }
       if (bg === b) { dessiner(); descendre(); }
@@ -320,7 +358,8 @@
       const envoyer = () => { const t = ta.value.trim(); if (!t) return;
         // pas de lien, d'e-mail ni de code (supabase/schema-22) : on le dit avant l'envoi, le texte reste dans la case pour être corrigé
         const refus = N().texteRefus ? N().texteRefus(t) : ''; if (refus) { N().toast(refus); ta.focus(); return; }
-        ta.value = ''; grandir(); const sg = pied.querySelector('.dm-sug'); if (sg && sg._remplir) sg._remplir(); const m = { id: 'tmp-' + Date.now(), created_at: new Date().toISOString(), auteur_id: u, texte: t }; attente.push(m); partir(m); ta.focus(); };
+        ta.value = ''; grandir(); const sg = pied.querySelector('.dm-sug'); if (sg && sg._remplir) sg._remplir(); const cid = cidNeuf(), m = { id: 'tmp-' + cid, cid, disc: id, created_at: new Date().toISOString(), auteur_id: u, texte: t };
+        fileEcrire(fileLire().concat([{ cid, disc: id, created_at: m.created_at, auteur_id: u, texte: t }])); attente.push(m); partir(m); ta.focus(); };
       ta.addEventListener('input', grandir);
       // avec le Marché de Gros : une rangée d'aide toujours visible au-dessus de la case (v3/aide.js).
       // Case vide : « Aide » + les questions les plus posées ; pendant qu'on écrit : les réponses toutes prêtes qui correspondent.
@@ -383,5 +422,9 @@
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
   if (document.readyState === 'loading') addEventListener('DOMContentLoaded', depuisAdresse); else depuisAdresse();
   setTimeout(refresh, 2500);
+  setTimeout(vider, 3000);
+  addEventListener('online', () => setTimeout(vider, 1500));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) vider(); });
+  setInterval(() => { if (!document.hidden && fileLire().length) vider(); }, 30000);
   setInterval(() => { if (!document.hidden) refresh(); }, 30000);
 })();

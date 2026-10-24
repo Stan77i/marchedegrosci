@@ -1,7 +1,7 @@
 /* ═════════ Marché de Gros CI — composants de l'application (s'appuient sur css/mgci-tokens.css) ═════════
    .an : la carte d'annonce, la même partout (fiche produit, Acheter). Pensée pour le commerce en gros :
    quoi, combien, à quel prix, où, qui — puis une seule rangée d'actions. */
-.an { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: var(--r-lg); background: var(--carte); box-shadow: 0 0 0 1px var(--trait-doux); animation: mkFade .35s both; }
+.an { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 14px; border-radius: var(--r-lg); background: var(--carte); box-shadow: 0 0 0 1px var(--trait-doux); }
 .an-tete { display: flex; gap: 12px; align-items: flex-start; width: 100%; padding: 0; border: 0; background: none; color: var(--encre); text-align: left; cursor: pointer; font: inherit; }
 .an-tete:focus-visible, .an-act:focus-visible, .an-sig:focus-visible { outline: 2px solid var(--terre); outline-offset: 2px; border-radius: var(--r-sm); }
 .an-img { flex: none; width: 52px; height: 52px; border-radius: 12px; object-fit: cover; background: var(--sable-clair); }
@@ -186,7 +186,7 @@ html[data-theme=sombre] .acc-sc .qd[data-u] { --qd-lis: #171512; }
 .px-filtres button>span:not(.sc-interp){font-size:var(--t-xs);opacity:.78;font-variant-numeric:tabular-nums}
 .px-filtres button[aria-pressed="true"]{background:#10392B;border-color:#10392B;color:#F3EFE4}
 .px-filtres button[aria-pressed="true"]>span:not(.sc-interp){opacity:.85}
-.px-c{background:var(--carte);border-radius:20px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(23,21,18,.05),0 8px 22px rgba(23,21,18,.05);animation:mkFade .35s both}
+.px-c{background:var(--carte);border-radius:20px;padding:14px 14px 12px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(23,21,18,.05),0 8px 22px rgba(23,21,18,.05)}
 .px-c-t{display:flex;align-items:center;gap:12px;border:0;background:none;padding:0;text-align:left;color:inherit;min-height:48px}
 .px-c-t img{width:48px;height:48px;border-radius:14px;flex:none;background:#efe6d6}
 .px-c-n{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
@@ -304,15 +304,9 @@ html[data-theme=sombre] .acc-ong button .acc-n.doux{background:#F2C230;color:#10
 .acc :is(button):focus-visible{outline:3px solid #10392B;outline-offset:2px}
 @media (max-width:340px){.acc-h1{font-size:26px}.acc-k b{font-size:24px}}
 
-/* ——— effets de l'accueil (21 oct. 2026) : indicateur d'onglet qui glisse, arrivée en cascade, appui, décor de cercles ——— */
+/* ——— effets de l'accueil (21 oct. 2026) : indicateur d'onglet qui glisse, appui, décor de cercles ——— */
 .acc-ong-ind{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 4);border-radius:22px;background:#10392B;box-shadow:0 6px 14px rgba(16,57,43,.22);transform:translateX(calc(var(--i,0) * 100%));transition:transform .45s cubic-bezier(.22,1.2,.36,1)}
-@keyframes accMonte{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
-.acc-salut,.acc-orb,.acc-k,.acc-carte,.acc-ligne,.acc-al{animation:accMonte .55s cubic-bezier(.22,1,.36,1) both}
-.acc-orb{animation-delay:.06s}
-.acc-k:nth-child(1){animation-delay:.12s}.acc-k:nth-child(2){animation-delay:.18s}.acc-k:nth-child(3){animation-delay:.24s}
-.acc-ligne:nth-of-type(1),.acc-al:nth-of-type(1){animation-delay:.06s}.acc-ligne:nth-of-type(2),.acc-al:nth-of-type(2){animation-delay:.1s}
-.acc-ligne:nth-of-type(3),.acc-al:nth-of-type(3){animation-delay:.14s}.acc-ligne:nth-of-type(4),.acc-al:nth-of-type(4){animation-delay:.18s}
-.acc-ligne:nth-of-type(n+5),.acc-al:nth-of-type(n+5){animation-delay:.22s}
+/* plus d'arrivée en cascade (24/10/2026, règle de stabilité) : le contenu de l'accueil est là tout de suite */
 .acc-k,.acc-ligne,.acc-al,.acc-r,.acc-mq{transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .2s}
 .acc-k:active,.acc-ligne:active,.acc-al:active{transform:scale(.975)}
 .acc-r:active,.acc-mq:active{transform:scale(.92)}

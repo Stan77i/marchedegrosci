@@ -212,13 +212,13 @@
 .cm-plan svg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .cm-plan .cm-pchip{position:absolute;left:14px;top:12px;display:inline-flex;align-items:center;gap:7px;min-height:30px;padding:0 12px;border-radius:15px;background:rgba(255,253,248,.94);color:#3F3A30;font:500 12.5px Jost,sans-serif;box-shadow:0 2px 8px rgba(23,21,18,.12)}
 .cm-plan .cm-pchip i{width:7px;height:7px;border-radius:50%;background:#9AA59F}
-.cm-plan .rt{stroke-dasharray:100;stroke-dashoffset:0;animation:cmTrace 1.3s .1s cubic-bezier(.65,0,.35,1) both}
+.cm-plan .rt{stroke-dasharray:100;stroke-dashoffset:0}
 @keyframes cmTrace{from{stroke-dashoffset:100}}
 .cm-plan .pulse{transform-box:fill-box;transform-origin:50% 50%;animation:cmPulse 2.2s ease-out infinite}
 @keyframes cmPulse{0%{transform:scale(.6);opacity:.55}100%{transform:scale(2.3);opacity:0}}
-.cm-plan .nav{animation:cmNav .7s 1.1s cubic-bezier(.2,1.3,.4,1) both;transform-box:fill-box;transform-origin:50% 50%}
+.cm-plan .nav{transform-box:fill-box;transform-origin:50% 50%}
 @keyframes cmNav{from{transform:scale(.3);opacity:0}}
-.cm-fiche{position:relative;z-index:2;margin:-28px 0 0;padding:12px 18px 16px;border-radius:26px;background:#10392B;color:#F3EFE4;box-shadow:0 -10px 30px rgba(16,57,43,.18);animation:cmFiche .55s .05s cubic-bezier(.22,1,.36,1) both}
+.cm-fiche{position:relative;z-index:2;margin:-28px 0 0;padding:12px 18px 16px;border-radius:26px;background:#10392B;color:#F3EFE4;box-shadow:0 -10px 30px rgba(16,57,43,.18)}
 @keyframes cmFiche{from{transform:translateY(26px);opacity:0}}
 .cm-poignee{display:block;width:40px;height:4px;margin:0 auto 12px;border-radius:2px;background:rgba(243,239,228,.28)}
 .cm-fiche small{display:block;color:rgba(243,239,228,.62);font:400 12.5px/1.3 Jost,sans-serif}
@@ -244,7 +244,7 @@
 .cm-f3 dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 14px;width:calc(100% - 118px);margin:0}
 .cm-f3 dt{color:rgba(243,239,228,.62);font:400 12.5px/1.3 Jost,sans-serif}.cm-f3 dd{margin:3px 0 0;font:500 15.5px/1.25 Jost,sans-serif;color:#F3EFE4;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .cm-f3 dd.t{color:#F2C230;font-weight:600}
-.cm-prod{position:absolute;right:-12px;top:4px;width:150px;height:150px;pointer-events:none;animation:cmProd .8s .25s cubic-bezier(.22,1,.36,1) both}
+.cm-prod{position:absolute;right:-12px;top:4px;width:150px;height:150px;pointer-events:none}
 .cm-prod img,.cm-prod svg{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 16px 18px rgba(0,0,0,.35));animation:cmFlotte 5s 1.2s ease-in-out infinite}
 @keyframes cmProd{from{transform:translateX(30px) rotate(6deg);opacity:0}}
 @keyframes cmFlotte{50%{transform:translateY(-5px) rotate(-1.5deg)}}

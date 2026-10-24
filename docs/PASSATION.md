@@ -1383,3 +1383,15 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - `DESIGN.md`, loi 5 : gris le plus pâle `#6F6553`, jamais de maïs en texte sur fond clair, pas d'opacité pour pâlir un texte.
 - Vérifié (navigateur, iPhone, clair et sombre, 390 et 320 px) : accueil, connexion, réglages, J'ai, aide : aucun texte sous le minimum (avant : « Réessayer » 3,65:1 et « 6 chiffres » 4,03:1), aucune erreur JS. Les fenêtres qui demandent un compte (négociation, messages, avis, chauffeur) : vérifiées par le calcul, pas à l'écran (serveur bloqué dans cette session).
 - `?v=20261124c` pour les 13 fichiers ; pages du site refabriquées par `tools/site-public.js` (seul le numéro de `nuage.js` change) ; cache `mgci-v237`.
+
+## 24/10/2026 — Stabilité (audit antislop n° 21 à 25)
+
+- Règle du 24/10 : le contenu est là tout de suite, rien ne rejoue. `DESIGN.md`, loi 26, précisée.
+- Accueil : plus d'arrivée en cascade des cartes et des lignes (`accMonte` retiré de `css/mgci-app.css`, cascade `MONTE` retirée d'`app/effets.js`) ; les chiffres (`<mdg-nb>`) s'affichent tout de suite à leur vraie valeur et ne défilent que s'ils changent ; la barre jaune et le tampon se jouent une seule fois par élément (plus au retour sur la page).
+- Plus aucun fondu du contenu `mkFade` : 10 dans `application.dc.html` (fenêtres J'ai / Je cherche, Vendre, Demander…), 2 dans `css/annee-app.css`, 2 dans `css/mgci-app.css`.
+- Mon compte (`v3/compte.js`) : les mises à jour venues du réseau passent par `bg.rafraichirAuto`, qui ne redessine pas pendant qu'un champ a le focus ni si un champ a été modifié (la saisie n'est plus perdue). Les gestes de la personne gardent `bg.rafraichir`.
+- Mes commandes (`v3/commandes.js`) : la fiche, le produit, le tracé et le camion du plan n'ont plus d'entrée animée (ils la rejouaient deux fois à l'ouverture). Les boucles (point qui bat, produit qui flotte) restent : n° 36.
+- « Prix du moment » (`app/prixmoment.js`) : plus de cascade du bandeau, des lignes et de l'encart, ni de fondu à chaque onglet ; seule la fenêtre glisse.
+- Onglet Prix (`v3/tableau.js`) : plus de cascade des lignes, de saut des sacs ni de zoom des pastilles ; le petit « ↑ monte » (vrai changement) reste.
+- Vérifié (navigateur, iPhone, parcours accueil → 4 onglets → J'ai) : 14 animations de cascade avant, 0 après ; aucune erreur JS. Mon compte et Mes commandes : vérifiés par la relecture et `node --check` (serveur bloqué dans cette session).
+- `?v=20261124d` (effets, compte, commandes, prixmoment, tableau, mgci-app.css, annee-app.css) ; cache `mgci-v238`.

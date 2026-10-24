@@ -24,3 +24,16 @@ Guide officiel (en anglais) : https://code.claude.com/docs/en/cloud-environments
 **Comment** : on le décide ensemble le jour venu, de la façon la plus sûre (un compte créé exprès, jamais votre compte à vous). **Ne jamais écrire un code secret dans la discussion.**
 
 - [ ] Fait
+
+## 3. Coller une ligne dans Supabase (notifications, 1 minute)
+
+**Pourquoi** : retirer un droit inutile sur trois tables (alertes, alertes_produits, zones). L'outil de Claude refuse ce mot (« truncate »), il faut le coller à la main. Rien n'est effacé.
+
+**Comment** : Supabase → projet de production `catmsypctymgkjkfzdkt` → **SQL Editor** → coller la ligne ci-dessous → **Run**. Puis dire « 88c collé » : Claude vérifiera.
+
+```
+revoke truncate on public.alertes, public.alertes_produits, public.zones from authenticated;
+```
+
+- [ ] Fait
+

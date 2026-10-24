@@ -168,18 +168,18 @@ _Partie mise à jour automatiquement par `tools/inventaire-site.js` (tâche GitH
 
 | Page | Rôle | Fichiers chargés | Poids chargé |
 |---|---|---|---|
-| `application.dc.html` | Application mobile (la priorité). S’ouvre sur téléphone ; sur ordinateur, seulement pour l’administrateur. | 59 | 2,8 Mo |
-| `index-v3.html` | Site pour ordinateur. Aujourd’hui caché derrière la maintenance, ouvert seulement à l’administrateur. | 64 | 4,6 Mo |
+| `application.dc.html` | Application mobile (la priorité). S’ouvre sur téléphone ; sur ordinateur, seulement pour l’administrateur. | 60 | 2,9 Mo |
+| `index-v3.html` | Site pour ordinateur. Aujourd’hui caché derrière la maintenance, ouvert seulement à l’administrateur. | 65 | 4,7 Mo |
 | `index.html` | Aiguillage : téléphone → application, ordinateur → maintenance (ou site pour l’administrateur). | 0 | 2 ko |
 | `maintenance.html` | Page « site en maintenance » avec QR code vers l’application. | 3 | 83 ko |
 | `suivi.html` | Lien de suivi envoyé au chauffeur (sans compte). | 0 | 12 ko |
-| `admin.html` | Tableau de bord de l’administrateur. | 14 | 408 ko |
+| `admin.html` | Tableau de bord de l’administrateur. | 14 | 409 ko |
 
-### Modules communs à l’application et au site (22)
+### Modules communs à l’application et au site (23)
 
 Ce qu’ils font est déjà sur les deux : une correction dans l’un de ces fichiers profite aux deux.
 
-`app/admin-pc.js` · `app/icones.js` · `app/marque.js` · `app/stable.js` · `app/toast.js` · `css/fonts.css` · `css/symboles.css` · `v2/data.js` · `v2/search.js` · `v3/avatar.js` · `v3/compte.js` · `v3/identite.js` · `v3/messages.js` · `v3/negoce.js` · `v3/nuage.js` · `v3/personnages.js` · `v3/porte.js` · `v3/pousse.js` · `v3/reputation.js` · `v3/sons.js` · `v3/statuts.js` · `v3/ux.css`
+`app/admin-pc.js` · `app/icones.js` · `app/marque.js` · `app/stable.js` · `app/toast.js` · `app/ville-seule.js` · `css/fonts.css` · `css/symboles.css` · `v2/data.js` · `v2/search.js` · `v3/avatar.js` · `v3/compte.js` · `v3/identite.js` · `v3/messages.js` · `v3/negoce.js` · `v3/nuage.js` · `v3/personnages.js` · `v3/porte.js` · `v3/pousse.js` · `v3/reputation.js` · `v3/sons.js` · `v3/statuts.js` · `v3/ux.css`
 
 ### Propres à l’application (37) : ce que le site n’a pas
 

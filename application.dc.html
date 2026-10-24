@@ -29,14 +29,14 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script src="app/icones.js?v=20261025a"></script>
 <script src="app/effets.js?v=20261124d"></script>
 <script src="app/marque.js?v=20261023v"></script>
-<script src="app/sac.js?v=20261124c"></script>
-<script src="app/garanties.js?v=20261124b"></script>
-<script src="app/toast.js?v=20261124f"></script>
+<script src="app/sac.js?v=20261124g"></script>
+<script src="app/garanties.js?v=20261124g"></script>
+<script src="app/toast.js?v=20261124g"></script>
 <script>/* l'adresse d'arrivée (liens d'intention du site : #/publier?…, #/groupes…), gardée avant que l'application ne la remette à #/ */window.MDGAdresse0=location.hash;</script>
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261124f','v3/astuces.js?v=20261124f','app/scene.js?v=20261028d','v3/porte.js?v=20261028c','v3/sons.js?v=20261124c','v3/negoce.js?v=20261124f','v3/compte.js?v=20261124f','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261018u','v3/reputation.js?v=20261124f','v3/statuts.js?v=20261124f','v3/messages.js?v=20261124f','v3/aide.js?v=20261124f','v3/alertes.js?v=20261124f','v3/releve.js?v=20261102a','v3/commandes.js?v=20261124f','v3/tableau.js?v=20261124f','v3/chauffeur.js?v=20261124f','v3/suivi.js?v=20261023f','v3/prixzone.js?v=20261101a','v3/racheter.js?v=20261102a','v3/appro.js?v=20261101a','v3/groupes.js?v=20261101a','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261124f','v3/identite.js?v=20261124e'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261124g','v3/astuces.js?v=20261124g','app/scene.js?v=20261028d','v3/porte.js?v=20261028c','v3/sons.js?v=20261124c','v3/negoce.js?v=20261124g','v3/compte.js?v=20261124g','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261124g','v3/reputation.js?v=20261124g','v3/statuts.js?v=20261124f','v3/messages.js?v=20261124g','v3/aide.js?v=20261124f','v3/alertes.js?v=20261124g','v3/releve.js?v=20261124g','v3/commandes.js?v=20261124g','v3/tableau.js?v=20261124f','v3/chauffeur.js?v=20261124g','v3/suivi.js?v=20261124g','v3/prixzone.js?v=20261101a','v3/racheter.js?v=20261124g','v3/appro.js?v=20261101a','v3/groupes.js?v=20261101a','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261124g','v3/identite.js?v=20261124g'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -50,19 +50,19 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
-<script src="app/theme.js?v=20261124f"></script>
+<script src="app/theme.js?v=20261124g"></script>
 <script src="app/nuit.js?v=20261101a" defer></script>
 <script src="app/stable.js?v=20261103a" defer></script>
 <script src="app/vibre.js?v=20261025a" defer></script>
-<script src="app/prixmoment.js?v=20261124f" defer></script>
-<script src="app/demo-orbite.js?v=20261124f" defer></script>
+<script src="app/prixmoment.js?v=20261124g" defer></script>
+<script src="app/demo-orbite.js?v=20261124g" defer></script>
 <script src="app/activite.js?v=20261101a" defer></script>
 <link rel="preload" href="fonts/jost-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/symboles.css?v=20261102d">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261101e">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261124f">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261124g">
 <link rel="stylesheet" href="css/sombre.css?v=20261027f">
 <link rel="stylesheet" href="css/annee-app.css?v=20261124d">
 <link rel="stylesheet" href="css/categories-app.css?v=20261124f">
@@ -123,7 +123,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
     </div>
     <div style="display:flex;align-items:center;gap:2px;max-width:100%">
       <button onClick="{{ prevFam }}" aria-label="Famille précédente" style="flex:none;width:44px;height:44px;border:0;background:transparent;color:var(--mute-d);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button>
-      <button onClick="{{ openFams }}" style="border:0;background:transparent;color:var(--sable);font-size:var(--t-2xs);letter-spacing:.2em;font-weight:500;padding:8px 6px;display:flex;align-items:center;gap:6px;min-height:44px;min-width:0"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">{{ famName }}</span><svg width="10" height="10" stroke="currentColor" stroke-width="2.4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="bas"><path d="m6 9 6 6 6-6"></path></svg></button>
+      <button onClick="{{ openFams }}" style="border:0;background:transparent;color:var(--sable);font-size:var(--t-sm);letter-spacing:0;font-weight:500;padding:8px 6px;display:flex;align-items:center;gap:6px;min-height:44px;min-width:0"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">{{ famName }}</span><svg width="10" height="10" stroke="currentColor" stroke-width="2.4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="bas"><path d="m6 9 6 6 6-6"></path></svg></button>
       <button onClick="{{ nextFam }}" aria-label="Famille suivante" style="flex:none;width:44px;height:44px;border:0;background:transparent;color:var(--mute-d);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="suite"><path d="m9 18 6-6-6-6"></path></svg></button>
     </div>
   </div>
@@ -1319,7 +1319,8 @@ class Component extends DCLogic {
     // la salutation : par son prénom quand on le connaît
     const prenom = moiS && moiP ? (moiP.pseudo || moiP.prenom || '') : '';
     const titre = h('h1', { className: 'acc-h1' }, prenom ? 'Bonjour, ' : 'Bienvenue au ', h('em', null, prenom || 'marché'), prenom ? ' !' : '');
-    const sous = off.length || dem.length ? ['Aujourd’hui sur le marché : ', h('b', { key: 1 }, pl(off.length, 'offre')), ' et ', h('b', { key: 2 }, pl(dem.length, 'demande')), '.'] : 'Les premières offres arrivent : publiez la vôtre.';
+    // les nombres sont dans les cartes plus bas : la phrase ne les répète pas (audit antislop n° 42)
+    const sous = off.length || dem.length ? 'Choisissez un produit sur la roue, ou publiez le vôtre.' : 'Les premières offres arrivent : publiez la vôtre.';
     const nO = mine.filter(x => x.kind === 'offre').length, nD = mine.length - nO;
     const stats = [
       { cls: 'acc-k', t: 'Offres en ligne', tint: 'v', ico: emo(''), v: String(off.length), s: 'sur ' + pl(nP(off), 'produit'), go: () => this.push('acheter') },
@@ -1835,10 +1836,11 @@ class Component extends DCLogic {
       porteTxt: moiS ? 'Se déconnecter' : 'Se connecter', porteEl: moiS ? tuile('sortir', 'marche') : tuile('compte', 'vous'),
       goPorte: () => { const N = window.MDGNuage; this.setState({ menu: false }); if (!N) return; if (!N.session()) { setTimeout(() => N.open(), 250); return; }
         const fin = () => N.toast('Vous êtes sorti du marché. Vos annonces restent publiées.');
-        setTimeout(() => { if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N.signOut()); else { N.signOut(); fin(); } }, 320); }, moiEl, moiLabel: moiS ? 'Mon compte' : 'Se connecter', sfGo: S.splash !== 'on' && S.ready ? '1' : '0', moiDot: !!(moiS && ((window.MDGNegoce && window.MDGNegoce.unread()) || (window.MDGMessages && window.MDGMessages.unread()))), goMoi: () => { if (!moiN) return; if (moiS && moiC) moiC.ouvrir(); else moiN.open(); }, hasPubs: mine.length > 0,
+        setTimeout(() => { if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N.signOut()); else { N.signOut(); fin(); } }, 320); }, moiEl, moiLabel: moiS ? 'Mon compte' : 'Se connecter', sfGo: S.splash !== 'on' && S.ready ? '1' : '0', moiDot: !!(moiS && ((window.MDGNegoce && window.MDGNegoce.unread()) || (window.MDGMessages && window.MDGMessages.unread()))), goMoi: () => { if (!moiN) return; if (moiS && moiC) moiC.ouvrir(); else moiN.open(); }, hasPubs: false,   // plus de point corail permanent sur le menu : il n'annonçait rien à faire (audit antislop n° 43)
+     
       famPips: this.FAMS.map((f, i) => ({ name: f.name, w: i === S.fam ? '18px' : '6px', bg: i === S.fam ? '#F2C230' : 'rgba(245,240,230,.22)', go: () => this.setState({ fam: i, rot: 0 }) })),
       ...this.toutVoir(S, O, D, F),
-      famName: F.name.toUpperCase(), prevFam: () => this.famStep(-1), nextFam: () => this.famStep(1), openFams: () => { this._famDepuis = +ls('mdg-app:famVu') || Date.now(); ls('mdg-app:famVu', Date.now()); this.setState({ sheet: 'fam', sheetDy: 0 }); },
+      famName: F.name, prevFam: () => this.famStep(-1), nextFam: () => this.famStep(1), openFams: () => { this._famDepuis = +ls('mdg-app:famVu') || Date.now(); ls('mdg-app:famVu', Date.now()); this.setState({ sheet: 'fam', sheetDy: 0 }); },
       wDown: e => this.wDown(e), wMove: e => this.wMove(e), wUp: () => this.wUp(), labels, ticks, sacks,
       jute: { op: act.sack ? 0 : 1, tf: act.sack ? 'scale(.86)' : 'none', mound: act.tint, l1: act.name.toUpperCase(), fs: act.name.length > 14 ? '14px' : act.name.length > 9 ? '17px' : '21px' },
       prev: () => this.snap(Math.round(S.rot) - 1), next: () => this.snap(Math.round(S.rot) + 1),

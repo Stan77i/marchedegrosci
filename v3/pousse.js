@@ -78,7 +78,8 @@
     document.body.appendChild(el);
     const fermer = () => { el.classList.add('is-out'); setTimeout(() => el.remove(), 320); };
     el.querySelector('.pp-non').onclick = fermer;
-    el.querySelector('.pp-oui').onclick = async () => { fermer(); try { await activer(); N() && N().toast('Notifications activées. Une notification d’essai arrive.'); } catch (x) { if (String(x.message) === 'REFUS') N() && N().toast('Vous pourrez les activer plus tard dans Mon compte → Alertes.'); } };
+    el.querySelector('.pp-oui').onclick = async () => { fermer(); try { await activer(); N() && N().toast('Notifications activées. Une notification d’essai arrive.'); } catch (x) { const c = String((x && x.message) || ''); const T = { REFUS: 'Vous pourrez les activer plus tard dans Mon compte → Notifications.', SANS_REPONSE: 'Pas de réponse du téléphone : réessayez dans Mon compte → Notifications.', INSTALLER: 'Sur iPhone, ajoutez d’abord l’application à l’écran d’accueil (Partager → Sur l’écran d’accueil), puis réessayez.', IMPOSSIBLE: 'Ce téléphone ne reçoit pas les notifications de l’application.' };
+      N() && N().toast(T[c] || (window.MDGErreur ? MDGErreur(x) : c || 'Impossible pour l’instant.'), { type: c === 'REFUS' ? 'info' : 'erreur' }); } };
     setTimeout(() => { if (el.isConnected) fermer(); }, 20000);
   }
 

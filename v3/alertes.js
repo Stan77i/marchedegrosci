@@ -72,7 +72,7 @@
     bg.querySelector('.al-go').onclick = async e => { e.target.disabled = true;
       try { await enregistrer(slug, o, d); bg.fermer(); N().toast(o || d ? 'Alerte enregistrée : ' + nom + '.' : 'Plus d’alerte pour ' + nom + '.');
         const P = window.MDGPousse; if ((o || d) && P && P.ok && P.etat && (await P.etat()) !== 'actif' && P.inviter) P.inviter(); }
-      catch (x) { e.target.disabled = false; N().toast(/alertes_produits|schema cache|Could not find/i.test(String(x.message)) ? 'Pas encore activé sur le serveur.' : 'Impossible : ' + x.message); } };
+      catch (x) { e.target.disabled = false; N().toast(/alertes_produits|schema cache|Could not find/i.test(String(x.message)) ? 'Pas encore activé sur le serveur.' : (window.MDGErreur ? MDGErreur(x) : 'Impossible : ' + x.message)); } };
   }
 
   // ——— toutes mes alertes ———

@@ -29,7 +29,7 @@
 .pm-hd{display:flex;align-items:center;gap:14px;margin:0 58px 18px 0}
 .pm-hd .im{flex:none;width:64px;height:64px;border-radius:20px;background:radial-gradient(120% 90% at 50% 100%,rgba(242,194,48,.22),rgba(243,239,228,.05) 70%);position:relative}
 .pm-hd .im img{position:absolute;left:50%;bottom:2px;width:74px;height:74px;margin-left:-37px;object-fit:contain;filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
-.pm-hd small{display:block;font:600 11px/1.2 Jost,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#B9AD98}
+.pm-hd small{display:block;font:500 13px/1.25 Jost,sans-serif;color:#B9AD98}
 .pm-hd h2{margin:4px 0 0;font:600 23px/1.12 Jost,sans-serif;letter-spacing:-.015em}.pm-hd h2 em{font-style:italic;font-weight:900;color:#F2C230}
 .pm-ac{display:flex;align-items:center;gap:10px;margin:-6px 0 16px;padding:8px 12px 8px 8px;border-radius:16px;background:rgba(243,239,228,.05);box-shadow:inset 0 0 0 1px rgba(243,239,228,.12)}
 .pm-ac i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:16px;background:rgba(243,239,228,.08)}.pm-ac i .ico{width:17px;height:17px;color:#F3EFE4}.pm-ac.vente i .ico{color:#9FDCB2}.pm-ac.demande i .ico{color:#F2C230}
@@ -55,7 +55,7 @@
 .pm-moi{display:inline-block;margin-left:6px;padding:0 7px;border-radius:9px;background:rgba(243,239,228,.14);color:#F3EFE4;font:600 11.5px/1.6 Jost,sans-serif}
 /* « Votre prix ? » : la place libre, en pointillé, avec le triangle qui indique où se mettre */
 .pm-vous{position:relative;margin:4px 0 0 28px;padding:12px 14px;border-radius:16px;border:1.5px dashed rgba(159,220,178,.6);color:#F3EFE4}
-.pm-vous::before{content:"";position:absolute;left:-24px;top:50%;margin-top:-6px;border:6px solid transparent;border-left:9px solid #9FDCB2;animation:pmPointe 1.4s ease-in-out infinite}
+.pm-vous::before{content:"";position:absolute;left:-24px;top:50%;margin-top:-6px;border:6px solid transparent;border-left:9px solid #9FDCB2;animation:pmPointe 1.4s ease-in-out 3}
 @keyframes pmPointe{50%{transform:translateX(4px)}}
 .pm-vous b{display:flex;align-items:center;gap:8px;font:600 15px/1.3 Jost,sans-serif}.pm-vous small{display:block;margin-top:3px;color:#CFC4B1;font-size:13px;line-height:1.4}
 .pm-vous b .tri{display:inline-block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent}

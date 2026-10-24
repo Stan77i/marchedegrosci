@@ -99,13 +99,16 @@
   function fermer() { if (!bg) return; bg.remove(); bg = null; document.removeEventListener('keydown', clavier); }
   const clavier = e => { if (e.key === 'Escape') fermer(); };
 
+  let errL = '';
   async function lire() {
     const [d1, d2] = bornes(etat.p, etat.d1, etat.d2), cle = etat.p + '|' + d1 + '|' + d2;
     const c = J(KC, {}); if (c[cle]) liste = c[cle];
-    if (!navigator.onLine) return;
+    // hors connexion ou serveur en panne : on le dit, au lieu d'afficher « aucune vente » (24/10/2026, audit n° 37)
+    if (!navigator.onLine) { if (!c[cle]) { liste = []; errL = 'hors'; peindre(); } return; }
+    errL = '';
     charge = true; peindre();
     try { liste = (await N().rpc('mes_transactions2', { p_debut: d1, p_fin: d2 }).catch(() => N().rpc('mes_transactions', { p_debut: d1, p_fin: d2 }))) || []; c[cle] = liste; const k = Object.keys(c); if (k.length > 8) delete c[k[0]]; W(KC, c); }
-    catch (e) { if (window.MDGToast) MDGToast.dire('Relevé indisponible pour l’instant', { type: 'erreur', sous: /mes_transactions|schema cache|Could not find/i.test(e.message) ? 'Le serveur n’est pas encore à jour.' : e.message }); }
+    catch (e) { if (!c[cle]) errL = 'erreur'; if (window.MDGToast) MDGToast.dire('Relevé indisponible pour l’instant', { type: 'erreur', sous: /mes_transactions|schema cache|Could not find/i.test(e.message) ? 'Le serveur n’est pas encore à jour.' : (window.MDGErreur ? MDGErreur(e) : e.message) }); }
     charge = false; peindre();
   }
   const visibles = () => liste.filter(x => etat.sens === 'tout' || x.sens === etat.sens);
@@ -127,6 +130,7 @@
         : L.length ? L.map((x, i) => `<button type="button" class="rl-r${x.sens === 'achat' ? ' a' : ''}" data-i="${liste.indexOf(x)}"><span class="o" aria-hidden="true">${IC(x.sens === 'vente' ? 'vendre' : 'acheter', 20)}</span>
             <span><b>${esc(x.produit || 'Produit')}${x.quantite != null ? ' · ' + nf(x.quantite, 2) + ' ' + esc(pluriel(x.unite || '', x.quantite)) : ''}</b><small>${x.sens === 'vente' ? 'Vendu à' : 'Acheté à'} ${esc(x.partenaire_nom)} · ${jour(x.conclu_le)}</small></span>
             <span class="m">${x.total != null ? F(x.total) : '—'}<small>${x.prix_unitaire != null ? nf(x.prix_unitaire) + ' F / ' + esc(x.unite || 'u') : ''}</small></span></button>`).join('')
+        : errL && window.MDGSac ? MDGSac.vide(errL === 'hors' ? 'Pas de connexion' : 'Relevé indisponible pour l’instant', errL === 'hors' ? 'Vos ventes et achats s’afficheront quand le réseau revient.' : 'Réessayez dans un instant.')
         : (window.MDGSac ? MDGSac.vide((etat.sens === 'achat' ? 'Aucun achat' : etat.sens === 'vente' ? 'Aucune vente' : 'Aucune vente ni achat') + ' ' + libelle(etat.p, etat.d1, etat.d2), 'Quand une négociation se conclut, elle s’ajoute ici avec son bon de transaction.') : '<p>Aucune transaction sur cette période.</p>')}</div>
       ${L.length ? `<div class="rl-act"><button type="button" class="p" data-pdf>${IC('publications', 18)}Relevé PDF</button><button type="button" data-csv>${IC('barres', 18)}Tableur (CSV)</button></div>` : ''}
       <p class="rl-note">Une transaction compte ici quand la négociation est conclue : prix et quantité acceptés par les deux. Le paiement se fait à la livraison, hors application, pour l’instant.</p>`;

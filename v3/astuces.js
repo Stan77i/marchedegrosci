@@ -232,7 +232,7 @@
 .as-vue{min-height:206px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
 .as-vue.in{animation:asCarte .38s cubic-bezier(.22,1,.36,1) both}
 .as-ill{width:92px;height:92px;border-radius:50%;display:grid;place-items:center;font-size:46px;line-height:1;background:radial-gradient(circle at 35% 30%,#FFF6D6,#F2C230);box-shadow:0 0 0 8px rgba(242,194,48,.18);margin:4px 0 2px}
-.as-ill span{display:block;line-height:0;color:#10392B;animation:asBouge 2.4s ease-in-out infinite}.as-ill span svg{display:block}
+.as-ill span{display:block;line-height:0;color:#10392B}.as-ill span svg{display:block}
 .as-vue h3{margin:0;font:700 22px/1.2 Jost,sans-serif;letter-spacing:-.01em;text-wrap:balance}
 .as-vue p{margin:0;font:400 16px/1.45 Jost,sans-serif;color:#3E382C;text-wrap:pretty}.as-vue p b{color:#10392B;font-weight:600}
 .as-pts{display:flex;justify-content:center;gap:6px;margin:14px 0 12px}.as-pts i{width:7px;height:7px;border-radius:4px;background:rgba(23,21,18,.18);transition:width .3s,background .3s}.as-pts i.on{width:22px;background:#10392B}

@@ -132,7 +132,7 @@
   }
   const messages = id => N().api('/rest/v1/messages?select=*&negociation_id=eq.' + id + '&order=created_at.asc&limit=300', { auth: true });
   const one = async id => { const r = await N().api('/rest/v1/negociations?select=*&id=eq.' + id, { auth: true }); return r && r[0]; };
-  const err = x => x.message === 'Failed to fetch' ? 'Le serveur ne répond pas. Réessayez dans un instant.' : /nego_|schema cache|Could not find/i.test(x.message) ? 'La négociation n’est pas encore activée sur le serveur.' : x.message;
+  const err = x => x.message === 'Failed to fetch' ? 'Le serveur ne répond pas. Réessayez dans un instant.' : /nego_|schema cache|Could not find/i.test(x.message) ? 'La négociation n’est pas encore activée sur le serveur.' : (window.MDGErreur ? MDGErreur(x) : x.message);
 
   /* ——— apparence ——— */
   const CSS = `.nx-bg{position:fixed;inset:0;z-index:8900;background:rgba(10,9,7,.62);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:nxIn .22s ease both}
@@ -148,7 +148,7 @@
 .nx-f{padding:12px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#EFE7D9}
 .nx-go{width:100%;min-height:54px;border:0;border-radius:999px;background:var(--acc);color:#F3EFE4;font:700 16px Jost,sans-serif;cursor:pointer}.nx-go[disabled]{background:#DDE6DE;color:#5C6B61;opacity:1;cursor:default}
 .nx-alt{min-height:48px;padding:0 18px;border:0;border-radius:999px;background:#EFE7D9;color:var(--ink);font:600 15px Jost,sans-serif;cursor:pointer}
-.nx-err{min-height:18px;margin:8px 0 0;color:#10392B;font-size:14px}
+.nx-err{min-height:18px;margin:8px 0 0;color:#8E2A1C;font-size:14px}
 .nx-note{margin:14px 0 0;color:#6F6553;font-size:12.5px;line-height:1.5}
 /* la règle des prix */
 .nx-rail{position:relative;margin:4px 0 6px;padding:46px 6px 34px}

@@ -54,7 +54,7 @@
 .rp-ch button[aria-pressed=true]{background:#171512;border-color:#171512;color:#F5F0E6}
 .rp textarea{width:100%;min-height:84px;margin-top:14px;padding:12px 14px;border:1px solid rgba(23,21,18,.16);border-radius:16px;background:#FFFFFF;color:#171512;font:400 15px/1.45 Jost,sans-serif;resize:vertical;box-sizing:border-box}
 .rp textarea:focus{outline:none;border-color:#10392B;box-shadow:0 0 0 3px rgba(16,57,43,.2)}
-.rp-msg{min-height:20px;margin:8px 2px 0;color:#C0442B;font-size:13.5px}
+.rp-msg{min-height:20px;margin:8px 2px 0;color:#8E2A1C;font-size:13.5px}
 .rp-org{margin:0 0 18px;padding:14px;border-radius:20px;background:#fff;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.05)}
 .rp-org-t{display:flex;align-items:center;gap:14px}.rp-org-t>div{min-width:0}
 .rp-org-logo{flex:none;width:56px;height:56px;border-radius:16px;object-fit:contain;background:#fff;box-shadow:0 0 0 1px rgba(23,21,18,.1)}
@@ -219,7 +219,7 @@
       z.innerHTML = carteStructure(st, uid); lierPreuves(z, st.preuves || []);
     }).catch(() => {});
     const repP = N().rpc('reputation_publique', { p_uid: uid }, auth).catch(() => null);
-    const [liste, pp] = await Promise.all([N().rpc('avis_de2', { p_cible: uid }, auth).catch(() => N().rpc('avis_de', { p_cible: uid }, auth)).catch(() => []), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null)]);
+    const [liste, pp] = await Promise.all([N().rpc('avis_de2', { p_cible: uid }, auth).catch(() => N().rpc('avis_de', { p_cible: uid }, auth)).catch(() => null), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null)]);
     if (!bg.isConnected) return;
     // schéma 77 : un avis par personne — seul le plus récent de chaque auteur compte dans la note (« compte » absent = ancien serveur : tout compte)
     const comptes = (liste || []).filter(a => a.compte !== false);
@@ -258,7 +258,7 @@
     if (window.MDGStatut && bg.querySelector('[data-st]')) { const majSt = () => { const z = bg.querySelector('[data-st]'); if (!bg.isConnected || !z) return removeEventListener('mdg:rep', majSt); z.innerHTML = MDGStatut.detail(uid) || '<div class="rp-vide">Pas encore de statut : ce membre commence sur le Marché de Gros.</div>'; }; addEventListener('mdg:rep', majSt); }
     bg.querySelector('[data-corps]').innerHTML = off ? (moi ? '' : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire au Marché de Gros</button>` : ''}</div>`) : ((nb ? `<div class="rp-score"><strong>${moy.toFixed(1).replace('.', ',')}</strong><span>${etoiles(moy, nb, 15)}${nb} avis</span><div class="rp-barres">${rep.map((c, i) => `<div><em style="font-style:normal">${5 - i}</em><i><b style="width:${nb ? c / nb * 100 : 0}%"></b></i></div>`).join('')}</div></div>
       <div class="rp-av">${liste.map(a => `<article><header>${avatar(a.auteur, a.avatar, a.auteur, 26)}<b>${esc(a.auteur)}</b>${a.verifie ? '<span class="rp-av-v" title="Identité vérifiée par l’équipe">✓ vérifié</span>' : ''}${etoiles(a.note, 1, 11)}<small>${quand(a.quand)}</small></header>${a.role ? `<span class="rp-av-r">comme ${a.role === 'vendeur' ? 'vendeur' : 'acheteur'}${a.produit ? ' · ' + esc(a.produit) : ''}</span>` : ''}${a.texte ? `<p>${esc(a.texte)}</p>` : ''}</article>`).join('')}</div>`
-      : `<div class="rp-vide">${moi ? 'Vous n’avez pas encore d’avis. Ils arrivent quand vos partenaires vous notent après une commande terminée.' : 'Pas encore d’avis. Les avis se donnent après une commande terminée, depuis Mes commandes.'}</div>`)
+      : `<div class="rp-vide">${liste === null ? (navigator.onLine === false ? 'Pas de connexion : les avis s’afficheront quand le réseau revient.' : 'Les avis n’ont pas pu être lus. Réessayez dans un instant.') : moi ? 'Vous n’avez pas encore d’avis. Ils arrivent quand vos partenaires vous notent après une commande terminée.' : 'Pas encore d’avis. Les avis se donnent après une commande terminée, depuis Mes commandes.'}</div>`)
       + (moi ? `<button type="button" class="rp-go" data-modif>Modifier mon profil public</button>` : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire</button>` : ''}</div>`));
     const b = bg.querySelector('[data-noter]'); if (b) b.onclick = () => { bg.fermer(); noter(uid, o.nom, () => profil(uid, o)); };
     const e = bg.querySelector('[data-ecrire]'); if (e) e.onclick = () => { bg.fermer(); MDGMessages.ecrire(uid, { nom: o.nom, avatar: o.avatar }); };
@@ -283,7 +283,7 @@
       g.querySelectorAll('[data-rm]').forEach(b => b.onclick = () => { photos.splice(+b.dataset.rm, 1); grille(); });
       const inp = g.querySelector('input[type=file]'); if (inp) inp.onchange = async () => { const f = inp.files && inp.files[0]; if (!f) return; msg('Envoi de la photo…');
         try { const blob = await reduire(f), chemin = s.user.id + '/' + Date.now() + '.jpg'; await N().televerser('activites/' + chemin, blob); photos.push(chemin); msg(''); grille(); }
-        catch (x) { msg(/Bucket not found|not found|403|row-level/i.test(String(x.message)) ? 'Les photos ne sont pas encore activées sur le serveur.' : 'Envoi impossible : ' + x.message); } }; };
+        catch (x) { msg(/Bucket not found|not found|403|row-level/i.test(String(x.message)) ? 'Les photos ne sont pas encore activées sur le serveur.' : 'Envoi impossible. ' + (window.MDGErreur ? MDGErreur(x) : x.message)); } }; };
     grille();
     bg.querySelector('[data-ok]').onclick = async ev => { ev.target.disabled = true; msg('');
       const corps = { bio: bg.querySelector('#rpBio').value.trim() || null, activites: bg.querySelector('#rpAct').value.trim() || null, photos };
@@ -292,15 +292,16 @@
       try { const r = await N().api('/rest/v1/profils?user_id=eq.' + s.user.id, { method: 'PATCH', auth: true, body: corps, prefer: 'return=representation' });
         if (!r || !r.length) await N().api('/rest/v1/profils', { method: 'POST', auth: true, body: Object.assign({ user_id: s.user.id }, corps), prefer: 'return=minimal' });
         bg.fermer(); N().toast('Profil enregistré.'); dispatchEvent(new CustomEvent('mdg:profil')); apres && apres(); }
-      catch (x) { ev.target.disabled = false; msg('Enregistrement impossible : ' + x.message); } };
+      catch (x) { ev.target.disabled = false; msg('Enregistrement impossible. ' + (window.MDGErreur ? MDGErreur(x) : x.message)); } };
   }
 
   // ——— les mieux notés ———
   async function classement() {
     const bg = feuille(`<h2>Les mieux notés</h2><p>Les vendeurs et acheteurs que leurs partenaires recommandent, d’après leurs notes après négociation.</p><div class="rp-cl" data-l><div class="rp-vide">Chargement…</div></div>`, 'Les mieux notés');
-    let l = []; try { l = await N().rpc('mieux_notes', { n: 50 }, !!N().session()) || []; } catch (_) {}
+    let l = [], rate = false; try { l = await N().rpc('mieux_notes', { n: 50 }, !!N().session()) || []; } catch (_) { rate = true; }
     if (!bg.isConnected) return;
     const box = bg.querySelector('[data-l]');
+    if (rate) { box.innerHTML = '<div class="rp-vide">' + (navigator.onLine === false ? 'Pas de connexion : le classement s’affichera quand le réseau revient.' : 'Le classement n’a pas pu être lu. Réessayez dans un instant.') + '</div>'; return; }
     if (!l.length) { box.innerHTML = '<div class="rp-vide">Personne n’est encore noté. Après une négociation, notez votre partenaire : il apparaîtra ici.</div>'; return; }
     box.innerHTML = l.map((x, i) => `<button type="button" data-i="${i}"><em>${i + 1}</em>${avatar(x.user_id, x.avatar, x.affichage, 44)}<span><b>${esc(x.affichage)}${window.MDGStatut ? ' ' + MDGStatut.puces(x.user_id, { max: 1, t: 14 }) : ''}</b><small>${etoiles(x.moyenne, x.nombre, 12)} ${String(x.moyenne).replace('.', ',')} · ${x.nombre} avis</small></span><i>${x.annonces ? x.annonces + ' annonce' + (x.annonces > 1 ? 's' : '') : ''}</i></button>`).join('');
     box.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const x = l[+b.dataset.i]; bg.fermer(); profil(x.user_id, { nom: x.affichage, avatar: x.avatar }); });

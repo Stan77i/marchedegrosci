@@ -76,8 +76,6 @@
 .ms-plein .ms-monte{animation:msMonte 1.3s .5s cubic-bezier(.22,1,.36,1) both}
 .ms-plein .ms-t{animation:msTombe .72s cubic-bezier(.5,0,.75,1) both}.ms-plein .ms-t2{animation-delay:.14s}.ms-plein .ms-t3{animation-delay:.28s}
 .ms-plein .ms-ombre{transform-box:fill-box;transform-origin:center;animation:msOmbre 1.25s .62s ease both}
-.ms-vide .ms-corps{animation:msBalance 3.4s ease-in-out infinite}
-.ms-vide .ms-regard{transform-box:fill-box;transform-origin:center;animation:msRegard 7s ease-in-out infinite}
 .ms-ferme .ms-corps{animation:msDort 3.8s ease-in-out infinite}
 .ms-ferme .ms-z text{animation:msZ 2.8s ease-in-out infinite}.ms-ferme .ms-z text+text{animation-delay:.7s}
 .ms-charge .ms-t{animation:msTombe 1.25s cubic-bezier(.5,0,.75,1) infinite both}.ms-charge .ms-t2{animation-delay:.2s}.ms-charge .ms-t3{animation-delay:.4s}

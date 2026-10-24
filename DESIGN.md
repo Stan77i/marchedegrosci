@@ -58,6 +58,9 @@ Règles :
 - **Reçu** (accord, commande) : fond blanc chaud, lignes libellé / valeur, total en grand en vert du logo.
 - **Ligne d'alerte discrète** (ex. vérification d'identité) : une seule ligne qu'on touche, pas un gros encadré.
 - **Avatars** : les personnages du marché (`v3/personnages.js`). Calmes au repos, ils sautent seulement quand il y a du nouveau.
+- **Confirmation** : `MDGDemande.oui(texte, { ok, danger })` et `MDGDemande.saisie(texte, { ok })` (`app/toast.js`), feuille de l'application avec mode nuit, Échap et focus. Jamais `confirm()` ni `prompt()` du navigateur.
+- **Feuilles et menu de l'accueil** : Échap ferme ; le focus entre dans la feuille à l'ouverture et revient au bouton d'origine à la fermeture.
+- **Erreur de formulaire** : une phrase sous le champ (« Indiquez la quantité. »), `aria-invalid`, bord `#C0442B` doublé ; jamais la couleur seule.
 
 ## 6. Mouvement
 

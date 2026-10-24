@@ -94,7 +94,7 @@ html[data-theme=sombre] .tb-rg,html[data-theme=sombre] .tb-t{background:#2A261F;
 .tb-l.tb-pl{gap:10px}
 .tb-p{grid-template-columns:64px minmax(0,1fr) auto;gap:4px 14px;min-height:84px;padding:10px 16px 10px 10px;border-radius:22px;transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .2s}
 .tb-p:active{transform:scale(.985)}
-.tb-p:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
+.tb-p:focus-visible{outline:2px solid #10392B;outline-offset:2px}html[data-theme=sombre] .tb-p:focus-visible{outline-color:#F2C230}
 .tb-v{position:relative;display:block;width:64px;height:64px;border-radius:20px;background:radial-gradient(120% 90% at 50% 100%,oklch(.9 .07 var(--h)) 0%,oklch(.965 .025 var(--h)) 70%)}
 .tb-v img{position:absolute;left:50%;bottom:3px;width:74px;height:74px;margin-left:-37px;object-fit:contain;filter:drop-shadow(0 6px 6px rgba(23,21,18,.22));transition:transform .35s cubic-bezier(.22,1.4,.36,1)}
 .tb-v.ini{display:grid;place-items:center}.tb-v.ini b{font:900 italic 30px/1 Jost,sans-serif;color:oklch(.42 .09 var(--h));letter-spacing:-.02em}

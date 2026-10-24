@@ -237,7 +237,7 @@
     b.querySelector('[data-back]').onclick = () => boite();
     const ta = b.querySelector('textarea'), go = b.querySelector('.go');
     ta.oninput = () => { go.disabled = !ta.value.trim(); };
-    go.onclick = async () => { const t = ta.value.trim(); if (!t || !confirm('Envoyer ce message à tous les membres ?')) return; go.disabled = true; go.textContent = 'Envoi…';
+    go.onclick = async () => { const t = ta.value.trim(); if (!t || !await (window.MDGDemande ? MDGDemande.oui('Envoyer ce message à tous les membres ?', { ok: 'Envoyer à tous' }) : Promise.resolve(confirm('Envoyer ce message à tous les membres ?')))) return; go.disabled = true; go.textContent = 'Envoi…';
       try { const n = await N().rpc('admin_diffuser', { p_texte: t }); N().toast('Message envoyé à ' + n + ' membre' + (n > 1 ? 's' : '') + '.'); boite(); }
       catch (x) { go.disabled = false; go.textContent = 'Envoyer à tous les membres'; N().toast(err(x)); } };
     setTimeout(() => ta.focus(), 200);
@@ -275,7 +275,7 @@
         prec = m;
       });
       zone.innerHTML = h || `<div class="dm-vide" style="padding:30px 10px">${window.MDGSac ? MDGSac.svg('vide', { t: 60 }) : I.bulle}<b>Dites bonjour</b>Présentez-vous et dites ce que vous cherchez ou proposez.</div>`;
-      zone.querySelectorAll('.dm-m.rate').forEach(el => el.onclick = () => { const m = attente.find(x => x.id === el.dataset.m); if (m) partir(m); });
+      zone.querySelectorAll('.dm-m.rate').forEach(el => { el.onclick = () => { const m = attente.find(x => x.id === el.dataset.m); if (m) partir(m); }; el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.onclick(); } }; });
     }
     async function charger(premiere) {
       const apres = msgs.length ? msgs[msgs.length - 1].created_at : null;
@@ -347,7 +347,7 @@
         if (a.dataset.a === 'profil') b.querySelector('[data-profil]').click();
         else if (a.dataset.a === 'retirer') { try { await N().rpc('dm_masquer', { p_discussion: id }); liste = liste.filter(x => x.id !== id); W(KL, liste); N().toast('Conversation retirée de votre liste. Elle reviendra si la personne vous écrit.'); depuisBoite ? boite() : fermer(); } catch (x) { N().toast(err(x)); } }
         else if (a.dataset.a === 'signaler') MDGIdentite.signaler(c.autre_id, { nom: c.autre_nom, source: 'dm', ref: id, bloquer: c.je_bloque ? null : () => bloquer(true) });
-        else if (a.dataset.a === 'bloquer') { if (c.je_bloque) bloquer(false); else if (confirm('Bloquer ' + c.autre_nom + ' ? Vous ne pourrez plus vous écrire, ni l’un ni l’autre, tant que vous ne le débloquez pas.')) bloquer(true); } };
+        else if (a.dataset.a === 'bloquer') { if (c.je_bloque) bloquer(false); else (window.MDGDemande ? MDGDemande.oui('Bloquer ' + c.autre_nom + ' ? Vous ne pourrez plus vous écrire, ni l’un ni l’autre, tant que vous ne le débloquez pas.', { ok: 'Bloquer', danger: true }) : Promise.resolve(confirm('Bloquer ' + c.autre_nom + ' ? Vous ne pourrez plus vous écrire, ni l’un ni l’autre, tant que vous ne le débloquez pas.'))).then(v => { if (v) bloquer(true); }); } };
     };
     piedDe(); dessiner(); zone.innerHTML = window.MDGSac ? MDGSac.charge('Vos messages arrivent…') : '<div class="dm-vide" style="padding:30px 10px">Chargement…</div>';
     await charger(true);

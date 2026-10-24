@@ -59,6 +59,7 @@
   const PREUVE = { declaration: 'déclaré', gps: 'déclaré avec position', code: 'validé par code', auto: 'automatique', admin: 'équipe' };
 
   const CSS = `
+.cm-bg button[style*="all:unset"]:focus-visible{outline:2px solid currentColor!important;outline-offset:2px!important;border-radius:6px!important}
 .cm-bg{position:fixed;inset:0;z-index:2147483000;background:rgba(10,24,18,.5);display:flex;align-items:flex-end;justify-content:center;animation:cmIn .2s ease-out}
 @keyframes cmIn{from{opacity:0}}
 .cm{position:relative;width:100%;max-width:560px;max-height:94dvh;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;background:#F3EFE4;color:#171512;border-radius:24px 24px 0 0;padding:22px 18px calc(24px + env(safe-area-inset-bottom));font:400 15px/1.45 Jost,system-ui,sans-serif;color-scheme:light;animation:cmUp .28s cubic-bezier(.2,.8,.2,1)}
@@ -769,7 +770,7 @@
       catch (x) { b.disabled = false; if (err) err.textContent = erreurTxt(x); }
     };
     const v = box.querySelector('[data-code-voir]'); if (v) v.onclick = () => go(v);
-    const n = box.querySelector('[data-code-nv]'); if (n) n.onclick = () => { if (confirm('Créer un nouveau code ? L’ancien ne marchera plus.')) go(n); };
+    const n = box.querySelector('[data-code-nv]'); if (n) n.onclick = async () => { if (await (window.MDGDemande ? MDGDemande.oui('Créer un nouveau code ? L’ancien ne marchera plus.', { ok: 'Nouveau code' }) : Promise.resolve(confirm('Créer un nouveau code ? L’ancien ne marchera plus.')))) go(n); };
   }
 
   // ——— le transport du réseau : qui conduit, sa réponse (son propre transporteur n'apparaît pas ici : pas de code, schéma 63) ———
@@ -802,7 +803,7 @@
     };
     const x = box.querySelector('[data-trx]');
     if (x) x.onclick = async () => {
-      if (!confirm('Retirer ce transporteur de la commande ?')) return;
+      if (!await (window.MDGDemande ? MDGDemande.oui('Retirer ce transporteur de la commande ?', { ok: 'Retirer', danger: true }) : Promise.resolve(confirm('Retirer ce transporteur de la commande ?')))) return;
       try { await N().rpc('commande_retirer_transporteur', { p_cmd: c.id }); toast('Transporteur retiré', { type: 'ok' }); await lireJournal(c.id); peindre(); }
       catch (e) { toast(erreurTxt(e), { type: 'erreur' }); }
     };

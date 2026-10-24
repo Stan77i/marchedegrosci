@@ -10,9 +10,9 @@ function prix(esc) {
   const nf = n => Math.round(n).toLocaleString('fr-FR').replace(/[   ]/g, ' ');
   const vari = ([a, b]) => { const v = Math.round((b - a) / a * 100); return v === 0 ? 'stable' : (v > 0 ? '+' : '−') + Math.abs(v) + ' %'; };
   const sens = ([a, b]) => b > a ? 'hausse' : b < a ? 'baisse' : 'stable';
-  const cellMoy = m => !m ? '<td class="px-rien">—</td>'
+  const cellMoy = m => !m ? '<td class="px-rien"><small>pas relevé</small></td>'
     : `<td><b>${nf(m[1])} F</b><small class="px-${sens(m)}">${vari(m)}<span class="vh"> par rapport à la semaine précédente</span></small><small class="px-avant">${nf(m[0])} F la semaine d’avant</small></td>`;
-  const cellFou = f => !f ? '<td class="px-rien">—</td>'
+  const cellFou = f => !f ? '<td class="px-rien"><small>pas relevé</small></td>'
     : `<td><b>${f[0] === f[1] ? nf(f[0]) + ' F partout' : nf(f[0]) + ' à ' + nf(f[1]) + ' F'}</b>${f[2] ? `<small>Le moins cher : ${esc(f[2])}</small>` : ''}${f[3] ? `<small>Le plus cher : ${esc(f[3])}</small>` : ''}</td>`;
   const lienProduit = (x, vers) => x.produit ? `<a href="${vers}${x.produit}/">${esc(x.nom)}</a>` : esc(x.nom);
   const SRC = `<a href="${esc(S.url)}" rel="noopener" target="_blank">${esc(S.titre)}</a>`;
@@ -27,7 +27,7 @@ function prix(esc) {
     return `<section class="bloc ocpv" aria-labelledby="t-ocpv"><div class="bloc-tete"><h2 id="t-ocpv">Le prix moyen au détail, relevé par l’OCPV : ${esc(nom.toLowerCase())}</h2>
       <p>Prix moyens au détail relevés par l’OCPV sur les marchés, semaine ${esc(S.semaine)}, en ${esc(S.unite)}. Ce sont des prix de détail, pas des prix de gros : un repère pour négocier.</p></div>
       <div class="px-boite"><table class="px-tab"><thead><tr><th scope="col">Produit</th><th scope="col">Abidjan</th><th scope="col">Intérieur du pays</th><th scope="col">Les marchés d’Abidjan</th></tr></thead><tbody>${lignes}</tbody></table></div>
-      <p class="px-src">Source : ${SRC}. Variations calculées par Marché de Gros à partir des prix de la note.</p>
+      <p class="px-src">Source : ${SRC}. Variations calculées par Marché de Gros CI à partir des prix de la note.</p>
       <p><a class="lien" href="../../prix-de-la-semaine/">Tous les prix de la semaine</a></p></section>`;
   };
 

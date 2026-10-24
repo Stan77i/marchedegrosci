@@ -57,7 +57,7 @@
   var calque = null, vus = {};
   function villes() {
     if (!carte || !VB || carte.querySelector('.pts')) return;
-    calque = document.createElement('div'); calque.className = 'pts'; carte.insertBefore(calque, carte.querySelector('.reseau-legende'));
+    calque = document.createElement('div'); calque.className = 'pts'; calque.setAttribute('aria-hidden', 'true'); /* le fil donne déjà ces annonces aux lecteurs d'écran (audit du site n° 28) */ carte.insertBefore(calque, carte.querySelector('.reseau-legende'));
     calque.style.height = carte.querySelector('svg').getBoundingClientRect().height + 'px';
     (D.villes || []).forEach(function (v) { var s = document.createElement('span'); s.className = 'ville'; s.textContent = v.n; s.style.left = (v.x / VB.width * 100) + '%'; s.style.top = (v.y / VB.height * 100) + '%'; calque.appendChild(s); });
   }
@@ -71,7 +71,6 @@
       var el = calque.querySelector('.pt[data-k="' + k + '"]');
       if (!el) { el = document.createElement('span'); el.className = 'pt'; el.dataset.k = k; el.style.left = x.p[0] + '%'; el.style.top = x.p[1] + '%'; el.style.animationDelay = '0ms'; /* tous les points d'un coup, sans cascade (audit du site n° 13) */ calque.appendChild(el); vus[k] = 1; }
       el.className = 'pt' + (sens === 'demande' ? ' d' : ''); el.innerHTML = (photo(x.s, 'pp') || symb(sens)) + (n > 1 ? '<b>' + n + '</b>' : '');
-      el.title = (x.o ? x.o + ' offre' + (x.o > 1 ? 's' : '') : '') + (x.o && x.d ? ' · ' : '') + (x.d ? x.d + ' demande' + (x.d > 1 ? 's' : '') : '');
     });
   }
   // page produit : <main data-produit="tomate">
@@ -120,16 +119,18 @@
       }
       if (!corps) return;
       L = (L || []).slice(0, 8);
-      if (!L.length) { corps.innerHTML = '<p class="tb-attente">Aucun prix publié pour l’instant. ' + publier('#/publier?sens=offre', 'premier-prix', 'Publier mon prix') + '</p>'; return; }
+      if (!L.length) { corps.innerHTML = '<div role="row"><p class="tb-attente" role="cell">Aucun prix publié pour l’instant. ' + publier('#/publier?sens=offre', 'premier-prix', 'Publier mon prix') + '</p></div>'; return; }
       corps.innerHTML = L.map(function (r) {
-        var nom = NOMS[r.slug] || r.lab, img = NOMS[r.slug] ? '<img src="' + S + 'img/' + esc(r.slug) + '-160.webp" alt="' + esc(nom) + '" width="56" height="56" loading="lazy">' : '<span style="width:56px"></span>';
+        var nom = NOMS[r.slug] || r.lab, img = NOMS[r.slug] ? '<img src="' + S + 'img/' + esc(r.slug) + '-160.webp" alt="" width="56" height="56" loading="lazy">' : '<span style="width:56px"></span>';
         var achat = r.n_offres > 0;
         return '<div class="tb-ligne" role="row"><span class="tb-p" role="cell">' + img + esc(nom) + '</span>'
           + '<span role="cell">' + prix(r.meilleure_offre, r.unite_offre) + '</span><span role="cell">' + prix(r.meilleure_demande, r.unite_demande) + '</span>'
-          + '<span class="tb-n" role="cell">' + (r.n_offres ? '<span class="nbul o">' + symb('offre') + r.n_offres + '</span>' : '') + (r.n_demandes ? '<span class="nbul d">' + symb('demande') + r.n_demandes + '</span>' : '') + '</span>'
-          + '<span role="cell"><a class="tb-go" href="' + R + 'application.dc.html#/produits/' + esc(r.slug) + '" data-app="' + (achat ? '#/produits/' + esc(r.slug) : '#/vendre?produit=' + esc(r.slug)) + '" data-intention="' + (achat ? 'acheter' : 'vendre') + '">' + (achat ? 'Acheter' : 'Vendre') + '</a></span></div>';
+          + '<span class="tb-n" role="cell">' + (r.n_offres ? '<span class="nbul o">' + symb('offre') + r.n_offres + '<span class="vh"> offre' + (r.n_offres > 1 ? 's' : '') + '</span></span>' : '') + (r.n_demandes ? '<span class="nbul d">' + symb('demande') + r.n_demandes + '<span class="vh"> demande' + (r.n_demandes > 1 ? 's' : '') + '</span></span>' : '') + '</span>'
+          + '<span role="cell"><a class="tb-go" href="' + R + 'application.dc.html#/produits/' + esc(r.slug) + '" data-app="' + (achat ? '#/produits/' + esc(r.slug) : '#/vendre?produit=' + esc(r.slug)) + '" data-intention="' + (achat ? 'acheter' : 'vendre') + '">' + (achat ? 'Acheter' : 'Vendre') + '<span class="vh"> : ' + esc(nom) + '</span></a></span></div>';
       }).join('');
-    }).catch(function () { [corps, pp].forEach(function (c) { if (c) c.innerHTML = '<p class="tb-attente">Les prix ne répondent pas pour l’instant. Réessayez dans un moment.</p>'; }); });
+    }).catch(function () { var m = '<p class="tb-attente">Les prix ne répondent pas pour l’instant. Réessayez dans un moment.</p>';
+      if (corps) corps.innerHTML = '<div role="row">' + m.replace('<p class="tb-attente">', '<p class="tb-attente" role="cell">') + '</div>';
+      if (pp) pp.innerHTML = m; });
   }
 
   // ——— la mesure (schéma 81) : une vue par page et par visite, un clic par bouton d'action ; sans donnée personnelle ; jamais l'administrateur ———

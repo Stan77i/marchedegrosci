@@ -1469,3 +1469,14 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - **Sobriété** : l'étal et les points de la carte sont là d'un coup (n° 13) ; la photo des pages produits ne tombe plus, mouvement réduit complété (n° 14) ; plus de halo vert, aplat `--vert` (n° 15) ; deux garanties en avant (numéro caché, mot secret), les quatre autres en liste discrète (n° 16) ; plus de liseré sur les citations (n° 17).
 - Vérifié (navigateur, 7 pages : accueil, produit, district, carte, à propos, guide, prix ; 1366 px clair et sombre, 375 px) : aucune erreur, aucun débordement, aucun contraste faible, aucun texte sous 11,5 px, aucune boucle.
 - Site refabriqué ; cache `mgci-v245`.
+
+## 24/10/2026 — Site : finitions (audit antislop du site n° 19 à 32)
+
+- Fait en une seule opération : 4 équipes sur des fichiers séparés (guides, gabarits, style, scripts), chacune relue par un relecteur, puis intégration et mesure.
+- **Textes** (n° 19 à 24) : affirmations adoucies (« souvent », « une partie », « peut payer ») ; « En 2025 » pour le PAM ; plus de « Voici… » ni de listes de trois dans les chapôs ; phrases de plus de 30 mots coupées (le sens des chiffres sourcés vérifié par le relecteur) ; « Lire la carte » sans jargon, avec une ligne « Fonds de carte : … » ; partout « Marché de Gros CI ».
+- **Pages** : « pas relevé » au lieu de « — » dans les tableaux de prix (n° 25) ; pages produits : une phrase et un lien vers `#etapes` de l'accueil au lieu des 6 étapes recopiées (n° 26) ; listes « à garder » des guides en `<ul>` avec une coche dessinée (n° 27).
+- **Lecteurs d'écran et clavier** (n° 28, 29) : pastilles « 3 offres » en texte caché, images à `alt=""` quand le nom est écrit à côté, « Acheter : Tomate », tableau en lignes et cellules même pendant le chargement ou en cas d'erreur, plus de bulles d'aide sur les points ; page carte : le panneau vient avant la carte dans la page (la grille garde la carte à gauche), le focus revient où il était après « Fermer ».
+- **Style** (n° 30 à 32) : cibles de 44 px (fil d'Ariane, pied, liste et bouton fermer de la carte, mois du calendrier) ; familles du tableau des prix sans capitales ; `--texte-3: #655C4D` (5,4 à 6,5:1 sur tous ses fonds), hausse `#C0442B`, couleurs écrites en jetons ; hauteur de la carte tirée des jetons de l'en-tête. Restent en dur : les teintes transparentes et le bleu de l'eau (décision D, en attente).
+- Reste du n° 20 (rien d'inventé) : trouver une 2e source pour les 5 600 cantines et l'année de la fiche PPPossible.
+- Vérifié (navigateur, 7 pages, 1366 px clair et sombre, 375 px) : aucune erreur, aucun débordement, aucun contraste faible, focus visible au clavier ; carte 966 px à gauche, panneau 400 px à droite.
+- Site refabriqué ; cache `mgci-v246`.

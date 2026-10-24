@@ -14,7 +14,7 @@
     'sassandra-marahoue': [6.88, -6.45, 'Daloa'], savanes: [9.46, -5.63, 'Korhogo'], 'vallee-du-bandama': [7.69, -5.03, 'Bouaké'], woroba: [7.96, -6.67, 'Séguéla'], zanzan: [8.04, -2.8, 'Bondoukou'] } };
   var D = {}; try { D = JSON.parse($('donnees').textContent); } catch (_) {}
   var NOMS = {}; (D.produits || []).forEach(function (p) { NOMS[p[0]] = p[1]; });
-  var tout = [], filtre = 'tout', api = null, choisis = [];
+  var tout = [], filtre = 'tout', api = null, choisis = [], avant = null;
 
   function items() {
     return tout.filter(function (a) { return filtre === 'tout' || a.sens === filtre; }).map(function (a) {
@@ -27,7 +27,7 @@
     var px = a.prix != null ? '<b class="px">' + nf(a.prix) + ' F' + (a.unite ? '/' + esc(a.unite) : '') + '</b>' : '';
     return '<li class="' + (sel ? 'sel' : '') + '">' + img + '<div><span><b>' + esc(a.nom || 'Un membre') + '</b> ' + (a.sens === 'offre' ? 'vend' : 'cherche') + ' ' + esc(nom.toLowerCase()) + '</span>'
       + '<small>' + q + esc(a.ville || (MDGApp.REG[a.region_slug] || [])[2] || '') + '</small>' + px
-      + '<a class="lien" href="application.dc.html#/produits/' + esc(a.product_slug) + '" data-app="' + (a.sens === 'offre' ? '#/produits/' + esc(a.product_slug) : '#/vendre?produit=' + esc(a.product_slug)) + '" data-intention="carte-' + (a.sens === 'offre' ? 'acheter' : 'vendre') + '">' + (a.sens === 'offre' ? 'Acheter' : 'Lui vendre') + '</a></div></li>';
+      + '<a class="lien" href="application.dc.html#/produits/' + esc(a.product_slug) + '" data-app="' + (a.sens === 'offre' ? '#/produits/' + esc(a.product_slug) : '#/vendre?produit=' + esc(a.product_slug)) + '" data-intention="carte-' + (a.sens === 'offre' ? 'acheter' : 'vendre') + '">' + (a.sens === 'offre' ? 'Acheter' : 'Lui vendre') + '<span class="vh"> : ' + esc(nom) + '</span></a></div></li>';
   }
   function liste() {
     var L = tout.filter(function (a) { return filtre === 'tout' || a.sens === filtre; });
@@ -38,9 +38,14 @@
   function montrer(ids) {
     choisis = ids || []; var c = $('crChoix'), L = tout.filter(function (a) { return choisis.indexOf(a.cle) >= 0; });
     if (!L.length) { c.hidden = true; c.innerHTML = ''; liste(); return; }
+    if (c.hidden) avant = document.activeElement;   // pour rendre le focus après « Fermer » (audit du site n° 29)
     c.hidden = false;
     c.innerHTML = '<div class="cr-choix-t"><b>' + (L.length > 1 ? L.length + ' annonces ici' : 'L’annonce choisie') + '</b><button type="button" class="fermer" aria-label="Fermer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><ul class="fil-l cr-liste">' + L.map(function (a) { return ligne(a, false); }).join('') + '</ul>';
-    c.querySelector('.fermer').onclick = function () { montrer([]); };
+    c.querySelector('.fermer').onclick = function () {
+      montrer([]);
+      var cible = avant && avant !== document.body && document.contains(avant) ? avant : document.querySelector('.cr-filtres [aria-pressed="true"]');
+      avant = null; if (cible && cible.focus) cible.focus();
+    };
     liste();
   }
   function poser() { if (api) api.set({ items: items(), me: '', sel: '', zones: [], pts: {}, pairs: [], lier: [] }); }

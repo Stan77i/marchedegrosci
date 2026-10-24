@@ -86,7 +86,7 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 
 **Couleur et matière**
 1. Pas de dégradé violet ou bleu, pas de violet « tech » comme couleur de marque (notre violet `--vous` ne sert qu'à « votre position »).
-2. Pas de texte en dégradé. On souligne par la graisse ou la taille. **Exception voulue par le propriétaire (24/10/2026)** : « de Gros » en dégradé avec un reflet, sur la page de connexion seulement (`v3/nuage.js`, `.ng-tt-g`). Nulle part ailleurs.
+2. Pas de texte en dégradé. On souligne par la graisse ou la taille. **Exception voulue par le propriétaire (24/10/2026)** : « de Gros » en dégradé avec un reflet, sur la page de connexion seulement (`v3/nuage.js`, `.ng-tt-g`). Nulle part ailleurs. Sur la porte, « de Gros » alterne avec « du pays » (3 s, puis 2 s, toutes les 10 s), même dégradé, même place : la largeur du titre ne bouge pas.
 3. Pas de halo coloré (ombre sans décalage), pas de néon, pas de quadrillage en fond (un quadrillage n'a sa place que sur une carte).
 4. Pas de verre dépoli décoratif. Le flou seulement pour un élément posé sur du contenu (boutons de la carte, menus).
 5. Pas de gris clair sur fond clair : texte ≥ 4,5:1, gros texte ≥ 3:1. Le gris le plus pâle permis pour un texte est `#6F6553` (plus de `#857A67`, `#7a7064`, `#8a7f72`). Le maïs et le jaune ne sont jamais une couleur de texte sur fond clair (1,4 à 1,7:1) : sur fond clair, l'accent jaune s'écrit `#765802`. Sur une bulle foncée, l'heure et les petits textes en crème à 72 %. Pas d'opacité pour pâlir un texte : une couleur pleine. Sur fond coloré, le texte secondaire prend une teinte de ce fond, pas du gris.

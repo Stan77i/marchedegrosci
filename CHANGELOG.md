@@ -6,6 +6,8 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 24/10/2026
 
+- Connexion : le titre alterne « marché de Gros » et « marché du pays » (3 s, puis 2 s, toutes les 10 s), validé en vidéo par le propriétaire ; le « court film » de connexion a été refusé et n'est pas fusionné.
+
 Audit antislop de l'application, stabilité, prix officiels et reprise de projet.
 
 - Audit antislop de l'application : rapport complet sans correction (a40b3ca, Stan77i/marchedegrosci#251), puis corrections par lots :

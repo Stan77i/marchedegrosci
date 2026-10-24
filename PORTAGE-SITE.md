@@ -155,7 +155,7 @@ Rien n'est supprimé tant que le propriétaire n'a pas dit oui. Les fichiers res
 ## 7. Inventaire automatique
 
 <!-- INVENTAIRE:DEBUT -->
-_Inventaire du 23 octobre 2026_
+_Inventaire du 24 octobre 2026_
 _Partie mise à jour automatiquement par `tools/inventaire-site.js` (tâche GitHub `rapport-site.yml`). Ne pas modifier à la main._
 
 ### Les pages
@@ -167,7 +167,7 @@ _Partie mise à jour automatiquement par `tools/inventaire-site.js` (tâche GitH
 | `index.html` | Aiguillage : téléphone → application, ordinateur → maintenance (ou site pour l’administrateur). | 0 | 2 ko |
 | `maintenance.html` | Page « site en maintenance » avec QR code vers l’application. | 3 | 83 ko |
 | `suivi.html` | Lien de suivi envoyé au chauffeur (sans compte). | 0 | 12 ko |
-| `admin.html` | Tableau de bord de l’administrateur. | 13 | 393 ko |
+| `admin.html` | Tableau de bord de l’administrateur. | 13 | 394 ko |
 
 ### Modules communs à l’application et au site (22)
 

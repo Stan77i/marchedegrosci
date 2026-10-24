@@ -36,7 +36,7 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261125h1','v3/astuces.js?v=20261125h1','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261124c','v3/negoce.js?v=20261124tc','v3/compte.js?v=20261124cm','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261124g','v3/reputation.js?v=20261125h2','v3/statuts.js?v=20261124n1','v3/messages.js?v=20261124vs1','v3/aide.js?v=20261125h1','v3/alertes.js?v=20261124h','v3/releve.js?v=20261124h','v3/commandes.js?v=20261125pd','v3/tableau.js?v=20261124tc','v3/chauffeur.js?v=20261124t1','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261101a','v3/racheter.js?v=20261124h','v3/appro.js?v=20261124n1','v3/groupes.js?v=20261124h','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261124vs1','v3/identite.js?v=20261124i','v3/boutique.js?v=20261125b'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261125h1','v3/astuces.js?v=20261125h1','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261124c','v3/negoce.js?v=20261124tc','v3/compte.js?v=20261124nt','v3/souffle.js?v=20261026b','v3/pousse.js?v=20261124nt','v3/reputation.js?v=20261125h2','v3/statuts.js?v=20261124n1','v3/messages.js?v=20261124vs1','v3/aide.js?v=20261125h1','v3/alertes.js?v=20261124h','v3/releve.js?v=20261124h','v3/commandes.js?v=20261125pd','v3/tableau.js?v=20261124tc','v3/chauffeur.js?v=20261124t1','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261101a','v3/racheter.js?v=20261124h','v3/appro.js?v=20261124n1','v3/groupes.js?v=20261124h','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261124vs1','v3/identite.js?v=20261124i','v3/boutique.js?v=20261125b'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief se télécharge en avance quand tout est calme (pas en économie de données ni en 2G) : l'ouvrir devient presque immédiat */
 function prechargerCarte(){var c=navigator.connection;if(c&&(c.saveData||/2g/.test(c.effectiveType||'')))return;var go=function(){['vendor/maplibre/maplibre-gl.js','vendor/maplibre/maplibre-gl.css','app/geo/ci.json'].forEach(function(u){var l=document.createElement('link');l.rel='prefetch';l.href=u;document.head.appendChild(l);});};(window.requestIdleCallback||function(f){setTimeout(f,2500)})(go,{timeout:6000});}
@@ -50,7 +50,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <helmet>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#171512">
-<script src="app/theme.js?v=20261124h"></script>
+<script src="app/theme.js?v=20261124nt"></script>
 <script src="app/nuit.js?v=20261125b" defer></script>
 <script src="app/stable.js?v=20261103a" defer></script>
 <script src="app/vibre.js?v=20261025a" defer></script>
@@ -921,6 +921,9 @@ class Component extends DCLogic {
     this.onAller = e => { const p = e.detail && e.detail.page; if (p && HASH[p]) { this.setState({ menu: false }); this.push(p); } }; addEventListener('mdg:aller', this.onAller);
     // un lien d'intention ouvert alors que l'application est déjà ouverte (site → application)
     this.onHashIntention = () => { if (/^#\/(publier|groupes|appro|boutique)\b|^#\/[^?]*\?/.test(location.hash)) this.intention(); }; addEventListener('hashchange', this.onHashIntention);   // « Montrer dans l'app » du guide (v3/guide.js)
+    // une notification touchée alors que l'application est déjà ouverte (sw.js → « mdg-lien ») : l'écran de son adresse, pas seulement le premier plan
+    this.onLien = e => { const d = e.data; if (d && d.type === 'mdg-lien' && !d.deja) this.allerLien(d.url); };
+    if (navigator.serviceWorker) navigator.serviceWorker.addEventListener('message', this.onLien);
     addEventListener('resize', this.onResize); addEventListener('storage', this.onData); addEventListener('mdg:change', this.onData); addEventListener('mdg:boutiques', this.onData); addEventListener('mdg:negoce', this.onData); addEventListener('mdg:dm', this.onData); addEventListener('mdg:activite', this.onData); addEventListener('mdg:rep', this.onData); addEventListener('mdg:profil', this.onData); addEventListener('mdg:alertes', this.onData); addEventListener('popstate', this.onPop); addEventListener('mdg:nouvelles', this.onNeuves); window.MDGAnnonceHaut = true;
     const tick = () => { const d = new Date(); this.setState({ clock: d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0') }); }; tick(); this.clk = setInterval(tick, 20000);
     const boot = () => {
@@ -993,7 +996,7 @@ class Component extends DCLogic {
     this.setState({ toast: { k, slug: x.productSlug, t: titre, x: sous } });
     clearTimeout(this._tt); this._tt = setTimeout(() => this.setState({ toast: null }), 6500);
   }
-  componentWillUnmount() { document.removeEventListener('keydown', this.onEsc); document.removeEventListener('keydown', this.onModeCle, true); document.removeEventListener('pointerdown', this.onModeDoigt, true); removeEventListener('mdg:aller', this.onAller); removeEventListener('hashchange', this.onHashIntention); removeEventListener('mdg:nouvelles', this.onNeuves); clearTimeout(this._tt); ['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.removeEventListener(t, this.noZoom)); document.removeEventListener('touchstart', this.tS); document.removeEventListener('touchmove', this.tM); document.removeEventListener('dblclick', this.noDbl); document.removeEventListener('contextmenu', this.noCtx); if (this.map) this.map.destroy(); if (window.visualViewport) { visualViewport.removeEventListener('resize', this.onVV); visualViewport.removeEventListener('scroll', this.onVV); } document.removeEventListener('scroll', this.onAnyScroll, true); removeEventListener('focusin', this.onFocus); removeEventListener('focusout', this.onBlur); removeEventListener('scroll', this.onVV); removeEventListener('resize', this.onResize); removeEventListener('storage', this.onData); removeEventListener('mdg:change', this.onData); removeEventListener('mdg:negoce', this.onData); removeEventListener('mdg:rep', this.onData); removeEventListener('mdg:profil', this.onData); removeEventListener('popstate', this.onPop); clearInterval(this.clk); clearInterval(this.poll); }
+  componentWillUnmount() { document.removeEventListener('keydown', this.onEsc); document.removeEventListener('keydown', this.onModeCle, true); document.removeEventListener('pointerdown', this.onModeDoigt, true); removeEventListener('mdg:aller', this.onAller); removeEventListener('hashchange', this.onHashIntention); if (navigator.serviceWorker && this.onLien) navigator.serviceWorker.removeEventListener('message', this.onLien); removeEventListener('mdg:nouvelles', this.onNeuves); clearTimeout(this._tt); ['gesturestart', 'gesturechange', 'gestureend'].forEach(t => document.removeEventListener(t, this.noZoom)); document.removeEventListener('touchstart', this.tS); document.removeEventListener('touchmove', this.tM); document.removeEventListener('dblclick', this.noDbl); document.removeEventListener('contextmenu', this.noCtx); if (this.map) this.map.destroy(); if (window.visualViewport) { visualViewport.removeEventListener('resize', this.onVV); visualViewport.removeEventListener('scroll', this.onVV); } document.removeEventListener('scroll', this.onAnyScroll, true); removeEventListener('focusin', this.onFocus); removeEventListener('focusout', this.onBlur); removeEventListener('scroll', this.onVV); removeEventListener('resize', this.onResize); removeEventListener('storage', this.onData); removeEventListener('mdg:change', this.onData); removeEventListener('mdg:negoce', this.onData); removeEventListener('mdg:rep', this.onData); removeEventListener('mdg:profil', this.onData); removeEventListener('popstate', this.onPop); clearInterval(this.clk); clearInterval(this.poll); }
   buildFams() {
     const M = window.MDG, A = window.MDGApp;
     this.cats = M.categories.slice().sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -1047,6 +1050,21 @@ class Component extends DCLogic {
     else return;
     // jouée une seule fois : l'adresse redevient propre (sans les paramètres)
     try { history.replaceState(history.state, '', location.pathname + (r === 'vendre' || r === 'demande' ? '#/' + r : '#/')); } catch (_) {}
+  }
+  /* ——— adresse d'une notification (sw.js) quand l'application est déjà ouverte ———
+     #/produits/<slug>, #/catalogue, #/prix, #/vendre… : la page ; #/groupes, #/appro, #/publier… : l'intention ;
+     #/?nego=…, ?commande=…, ?groupe=… : rien ici, chaque module ouvre sa fenêtre (v3/negoce, commandes, groupes, racheter, appro, reputation). */
+  allerLien(url) {
+    const h = '#' + (String(url || '').split('#')[1] || '/'), brut = h.slice(2).split('?'), parts = brut[0].split('/'), r = parts[0];
+    if (!r && brut[1]) return;
+    if (/^(publier|groupes|appro)$/.test(r) || ((r === 'vendre' || r === 'demande') && /[?&]produit=/.test(h))) return this.intention(h);
+    let page = null, extra = {};
+    if (r === 'produits' && parts[1]) { page = 'fiche'; extra.slug = decodeURIComponent(parts[1]); }
+    else if (r === 'producteurs' && parts[1]) { page = 'vendeur'; extra.vid = decodeURIComponent(parts[1]); }
+    else if (INFO[r]) { page = 'info'; extra.infoK = r; }
+    else { const k = Object.keys(HASH).find(k => HASH[k] === '#/' + r); if (k && k !== 'home') page = k; }
+    if (page) return this.push(page, extra);
+    if (!r) this.setState({ stack: ['home'], menu: false, sheet: null, pick: null }, () => { try { history.replaceState(null, '', '#/'); } catch (_) {} });
   }
   attendre(test, fn, n = 0) { if (test()) return fn(); if (n < 40) setTimeout(() => this.attendre(test, fn, n + 1), 250); }
   hashOf(s, st) { st = st || this.state; return s === 'fiche' ? '#/produits/' + st.slug : s === 'vendeur' ? '#/producteurs/' + st.vid : s === 'info' ? '#/' + st.infoK : (HASH[s] || '#/'); }

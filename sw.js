@@ -3,7 +3,7 @@
    installée sur l'écran d'accueil, sans recréer l'icône. Le cache ne sert qu'hors connexion (ou si le réseau met plus de 4 s).
    Les images restent servies depuis le cache (elles changent rarement). Incrémenter CACHE reste utile pour remplacer les images.
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v276';
+const CACHE = 'mgci-v277';
 // tuiles de la carte en relief déjà vues (relief Terrarium, rues OpenFreeMap) : gardées d'une version à l'autre, 1 500 au plus
 const TUILES = 'tuiles-mgci', TUILES_MAX = 1500, HOTES_TUILES = ['s3.amazonaws.com', 'tiles.openfreemap.org'];
 
@@ -249,7 +249,17 @@ self.addEventListener('fetch', e => {
   })());
 });
 
-// ——— Notifications (Web Push) : affichées même application fermée ; chiffre sur l'icône ; toucher = ouvrir la négociation ———
+// ——— Notifications (Web Push) : affichées même application fermée ; chiffre sur l'icône ; toucher = ouvrir l'écran précis ———
+// Signaler l'ouverture (schéma 88a, notif_ouverte) : seulement l'identifiant d'envoi « nid » (uuid aléatoire, sans donnée personnelle),
+// avec la clé PUBLIQUE de l'application (la même que dans v3/nuage.js). Rien de secret ici. Si la fonction manque, l'appel échoue sans gêne.
+// Pas de « keepalive » : l'appel est déjà gardé en vie par e.waitUntil, et keepalive avec un en-tête JSON n'est pas pris partout.
+const API = 'https://catmsypctymgkjkfzdkt.supabase.co', CLE_PUBLIQUE = 'sb_publishable_KC2au-t8dqasp5ez9Lq6XQ_JvbTtVQ5';
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+function signalerOuverture(nid) {
+  if (!nid || !UUID.test(String(nid))) return Promise.resolve();
+  return fetch(API + '/rest/v1/rpc/notif_ouverte', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: CLE_PUBLIQUE },
+    body: JSON.stringify({ p_nid: nid, p_par: 'push' }) }).catch(() => {});
+}
 self.addEventListener('push', e => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch (_) { d = { body: e.data ? e.data.text() : '' }; }
@@ -261,20 +271,51 @@ self.addEventListener('push', e => {
     try { (await self.registration.getNotifications()).forEach(n => { if (String(n.tag || '').split('~')[0] === base) n.close(); }); } catch (_) {}
     await self.registration.showNotification(d.title || 'Marché de Gros', {
       body: d.body || '', tag: base + '~' + Date.now(), renotify: true, icon: 'icons/v2/icon-192.png', badge: 'icons/v2/badge-96.png',
-      vibrate: [70, 40, 70], timestamp: Date.now(), data: { url: d.url || 'application.dc.html#/', nego: d.nego || null, dm: d.dm || null, commande: d.commande || ((/[?&]commande=([0-9a-f-]{36})/.exec(d.url || '') || [])[1]) || null },
+      vibrate: [70, 40, 70], timestamp: Date.now(), data: { url: d.url || 'application.dc.html#/', nid: d.nid || null, cat: d.cat || null, nego: d.nego || null, dm: d.dm || null, commande: d.commande || ((/[?&]commande=([0-9a-f-]{36})/.exec(d.url || '') || [])[1]) || null },
       actions: d.dm ? [{ action: 'repondre', title: 'Répondre' }] : d.nego ? [{ action: 'voir', title: 'Voir la proposition' }] : [],
       image: d.image || undefined
     });
     try { if (self.navigator.setAppBadge) { if (d.badge) await self.navigator.setAppBadge(d.badge); else if (d.badge === 0) await self.navigator.clearAppBadge(); } } catch (_) {}
   })());
 });
+// Toucher la notification (ou l'un de ses boutons, qui mènent au même écran) : l'écran précis de son adresse, jamais l'accueil par défaut.
+// Une page de l'application déjà ouverte reçoit l'adresse par message (pas de rechargement) ; le tableau de bord (admin.html) s'ouvre dans sa
+// propre fenêtre ; sinon une nouvelle fenêtre s'ouvre sur l'adresse complète.
 self.addEventListener('notificationclick', e => {
   e.notification.close();
-  const data = e.notification.data || {}, url = new URL(data.url || 'application.dc.html#/', self.registration.scope).href;
+  const data = e.notification.data || {}, lien = data.url || 'application.dc.html#/', url = new URL(lien, self.registration.scope);
   e.waitUntil((async () => {
+    const ouv = signalerOuverture(data.nid);
     const fen = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-    const app = fen.find(c => /application\.dc\.html/.test(c.url)) || fen[0];
-    if (app) { await app.focus(); if (data.nego) app.postMessage({ type: 'mdg-nego', nego: data.nego }); if (data.dm) app.postMessage({ type: 'mdg-dm', dm: data.dm }); if (data.commande) app.postMessage({ type: 'mdg-commande', commande: data.commande }); if (/[?&]chauffeur=1/.test(data.url || '')) app.postMessage({ type: 'mdg-chauffeur' }); app.postMessage({ type: 'mdg-lien', url: data.url || '' }); return; }
-    await self.clients.openWindow(url);
+    const page = url.pathname.split('/').pop() || 'application.dc.html';
+    if (page !== 'application.dc.html') {   // admin.html#identites…
+      const meme = fen.find(c => new URL(c.url).pathname.split('/').pop() === page);
+      if (meme) { try { await meme.focus(); await meme.navigate(url.href); } catch (_) { await self.clients.openWindow(url.href); } }
+      else await self.clients.openWindow(url.href);
+      return ouv;
+    }
+    const app = fen.find(c => /application\.dc\.html/.test(c.url));
+    if (app) {
+      await app.focus();
+      if (data.nego) app.postMessage({ type: 'mdg-nego', nego: data.nego });
+      else if (data.dm) app.postMessage({ type: 'mdg-dm', dm: data.dm });
+      else if (data.commande) app.postMessage({ type: 'mdg-commande', commande: data.commande });
+      else if (/[?&]chauffeur=1/.test(lien)) app.postMessage({ type: 'mdg-chauffeur' });
+      app.postMessage({ type: 'mdg-lien', url: lien, deja: !!(data.nego || data.dm || data.commande || /[?&]chauffeur=1/.test(lien)) });
+      return ouv;
+    }
+    await self.clients.openWindow(url.href);
+    return ouv;
+  })());
+});
+// Le navigateur renouvelle parfois l'abonnement : on se réabonne avec la même clé ; l'application ouverte l'enregistre au serveur
+// (v3/pousse.js, suivre), sinon ce sera fait à la prochaine ouverture.
+self.addEventListener('pushsubscriptionchange', e => {
+  e.waitUntil((async () => {
+    try {
+      const cle = e.oldSubscription && e.oldSubscription.options && e.oldSubscription.options.applicationServerKey;
+      if (!e.newSubscription && cle) await self.registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: cle });
+    } catch (_) {}
+    (await self.clients.matchAll({ type: 'window', includeUncontrolled: true })).forEach(c => c.postMessage({ type: 'mdg-pousse-suivre' }));
   })());
 });

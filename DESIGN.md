@@ -21,7 +21,7 @@ Les valeurs viennent du code (`css/mgci-tokens.css`, `css/sombre.css`, `css/mgci
 | Maïs (accent, « de Gros ») | `--logo-mais` | `#F2C230` |
 | Offre (vendre) | `--offre` | `#6CC58C` (texte `#31543C`) |
 | Demande (acheter) | `--demande` | `#F2C94C` (texte `#765802`) |
-| Accord conclu | `--ok` (négociations) | `#1F8A55` — **jamais de bleu** |
+| Accord conclu | `--ok` (négociations) | `#1F8A55` — **jamais de bleu**, même en teinte de fond ; formes et bordures seulement (petit texte : 3,98:1, trop faible) |
 | Alerte / erreur | `--alerte` | `#E2735B` ; sous du texte blanc : `#C0442B` |
 | « Vous » (votre position) | `--vous` | `#B095F0` (seulement pour vous situer) |
 | Compatible (lien offre ↔ demande) | `--compat` | `#6AAEF0` (carte seulement) |
@@ -127,4 +127,6 @@ Sources : le socle d'`impeccable` (`.claude/skills/impeccable/reference/craft-fl
 ## 9. Vérifier
 
 - Navigateur (Playwright, iPhone émulé), en clair **et** en sombre, à 390 et 320 px de large.
+- Contraste mesuré, pas estimé : `python3 .claude/skills/antislop-human/contrast-check.py "#texte" "#fond"`, avec le **vrai fond** du texte (une bulle foncée n'est pas la page).
+- Bilan « Delivery Gate » d'`antislop` avant de livrer.
 - Détecteur : `.claude/skills/impeccable/scripts/impeccable detect --json <fichiers modifiés>` (les `<img>` sans `src` des gabarits `{{ … }}` sont de fausses alertes).

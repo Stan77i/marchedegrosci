@@ -204,7 +204,7 @@
 .nx-tk .amt{margin:6px 0 2px;font:800 27px/1 Jost,sans-serif;font-variant-numeric:tabular-nums lining-nums;letter-spacing:-.01em}.nx-tk .amt small{font:400 14px Jost,sans-serif;color:var(--mute)}
 .nx-tk .t{margin-top:6px;font-size:14.5px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
 .nx-tk.is-refus .amt{text-decoration:line-through;text-decoration-thickness:2px;opacity:.6}
-.nx-tk.is-accord{border-color:var(--ok);background:rgba(106,174,240,.08)}
+.nx-tk.is-accord{border-color:var(--ok);background:rgba(31,138,85,.08)}
 .nx-ev{align-self:center;padding:6px 12px;border-radius:999px;background:rgba(23,21,18,.06);color:var(--mute);font-size:12.5px;text-align:center}
 /* l'accord conclu : un reçu net (23/10/2026) */
 .nx-deal{margin:16px 0 0;padding:18px 18px 14px;border-radius:24px;background:#FFFDF8;border:1px solid rgba(23,21,18,.08);box-shadow:0 10px 30px rgba(23,21,18,.08);animation:nxDeal .45s cubic-bezier(.22,1,.36,1) both}

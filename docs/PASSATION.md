@@ -1335,3 +1335,16 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 ## 24/10/2026 — État après les PR #246 et #247
 
 - Les deux PR sont fusionnées (stabilité de l'application ; année du marché et « Où êtes-vous ? »). Cache `mgci-v234`. Aucune PR ouverte. `docs/REPRISE.md` mis à jour.
+
+## 24/10/2026 — Compétence antislop (anti « fait par IA ») installée et essayée
+
+- **Installé** : les 6 compétences de `miqdadbadjuber/anti-slop` (MIT, version 3.2.22) dans `.claude/skills/antislop*` ; origine, réglages et choix assumés dans `.claude/skills/ANTISLOP-NOTICE.md`. `CLAUDE.md` (bloc `antislop`, liste des compétences de design, 25 compétences), `docs/REPRISE.md` partie 4 et `DESIGN.md` section 9 sont à jour.
+- **Réglage** : pas de question « pendant ou après » en début de discussion (règle « un mot suffit ») ; « pendant » par défaut, « après » pour un audit.
+- **Ce qu'elle ajoute** à ce qu'on avait (`DESIGN.md` section 8, `impeccable`, `ui-ux-pro-max`) : un calculateur de contraste exact, une liste de contrôle des **textes** (utile pour le site, les guides, les PDF de `strategie/` et les publications), une liste pour les commentaires de code, et un bilan PASS/FAIL avant de livrer. Le reste recoupe nos 32 lois.
+- **Essai sur le projet (mesuré)** :
+  - couleurs de `DESIGN.md` : 20 paires mesurées ; tous les textes passent, sauf `--ok #1F8A55` en petit texte (3,98:1 sur carte, 4,35:1 en blanc dessus). Il ne sert qu'à des formes et bordures : règle ajoutée à `DESIGN.md` ;
+  - **corrigé** : le ticket « accord conclu » de la négociation (`v3/negoce.js`, `.nx-tk.is-accord`) avait un fond teinté **bleu** (`rgba(106,174,240,.08)`), interdit par `DESIGN.md` : il est maintenant vert (`rgba(31,138,85,.08)`) ;
+  - le corail du message « Non envoyé · toucher pour réessayer » semblait trop pâle (2,7:1 sur la page), mais il s'affiche dans la bulle foncée : 5,9:1, il passe. Laissé tel quel ;
+  - tirets longs « — » : 0 visible à l'écran (application et site caché, mesuré dans le navigateur) ; ceux du code sont dans des commentaires ou servent de valeur vide ;
+  - mots creux (« révolutionnaire », « en quelques clics », « découvrez »…) : aucun dans le site ni dans l'application.
+- Front : `v3/negoce.js?v=20261124a`, `CACHE` `mgci-v235`.

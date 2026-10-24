@@ -10,7 +10,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 3. partir de `origin/main` à jour ;
 4. continuer la prochaine tâche de la partie 3, ou celle que sa phrase désigne, puis lui dire en deux lignes où on en est.
 
-**Compétences : s'en servir sans cesse, dès qu'une tâche en a besoin** (règle du propriétaire, 23/10/2026). Les 19 compétences du dépôt (`.claude/skills/` : design, UX, navigateur, business, marketing, SEO) et leur usage sont listés dans `docs/REPRISE.md`, partie 4.
+**Compétences : s'en servir sans cesse, dès qu'une tâche en a besoin** (règle du propriétaire, 23/10/2026). Les 25 compétences du dépôt (`.claude/skills/` : design, UX, anti-« IA », navigateur, business, marketing, SEO) et leur usage sont listés dans `docs/REPRISE.md`, partie 4.
 
 ## Règle n° 1 : tenir ce fichier à jour
 
@@ -112,9 +112,11 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
   1. `marche-de-gros-design` : lire `DESIGN.md` (la référence du design du projet) ;
   2. `impeccable` : vocabulaire de design, commandes `audit`, `critique`, `layout`, `polish`, `distill`… et son détecteur anti-« design généré » (`.claude/skills/impeccable/scripts/impeccable detect --json <fichiers>`) ;
   3. `ui-ux-pro-max` : règles UX, accessibilité, typographie, couleurs (recherche : `python3 .claude/skills/ui-ux-pro-max/scripts/search.py "<sujet>" --domain ux`) ;
-  4. `playwright-cli` : vérifier dans un navigateur (sinon Playwright de `/opt/node-tools`), iPhone émulé, clair et sombre.
+  4. `antislop` (le cœur) puis la partie utile : `antislop-ui` (écran), `antislop-copywriting` (textes du site, des guides, des PDF, des publications), `antislop-human` (contraste, clavier, focus), `antislop-layoutmobile` (adaptation des tailles d'écran), `antislop-code` (commentaires de code). Le bilan « Delivery Gate » se fait avant de livrer ;
+  5. `playwright-cli` : vérifier dans un navigateur (sinon Playwright de `/opt/node-tools`), iPhone émulé, clair et sombre.
+- **antislop (installé le 24/10/2026)** : ne jamais demander « pendant ou après » en début de discussion. Mode **« pendant »** pour tout travail, mode **« après »** seulement quand on demande un audit (liste dans `docs/anti-slop/`, rien n'est corrigé sans accord). La direction reste `DESIGN.md`. Contraste mesuré avec `python3 .claude/skills/antislop-human/contrast-check.py "#texte" "#fond"`, **sur le vrai fond**. Détails et choix du projet assumés : `.claude/skills/ANTISLOP-NOTICE.md`.
 - « Reverse-engineer any design system » = l'outil `skillui` (`npx skillui@1.3.4`), mode d'emploi dans `.claude/skills/marche-de-gros-design/SKILL.md`.
-- Les compétences sont dans `.claude/skills/` (licences Apache 2.0 et MIT, fichiers `LICENSE` gardés). Les mettre à jour depuis leurs dépôts : `pbakaus/impeccable`, `nextlevelbuilder/ui-ux-pro-max-skill`, `microsoft/playwright-cli`, `amaancoderx/npxskillui`.
+- Les compétences sont dans `.claude/skills/` (licences Apache 2.0 et MIT, fichiers `LICENSE` gardés). Les mettre à jour depuis leurs dépôts : `pbakaus/impeccable`, `nextlevelbuilder/ui-ux-pro-max-skill`, `microsoft/playwright-cli`, `amaancoderx/npxskillui`, `miqdadbadjuber/anti-slop`.
 - **Avant de toucher au design, relire les 32 lois anti-« design généré par IA » et anti-amateur** (`DESIGN.md`, section 8), puis vérifier l'écran rendu contre chacune.
 - Mode « Opérer » : la précision et la retenue d'abord. Quand une règle de `DESIGN.md` change, mettre `DESIGN.md` à jour dans la même PR.
 
@@ -146,3 +148,9 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - En attente : réglage « Voix » (fichiers audio fr_P1.zip) ; rappel du mot secret en notification (fonction `pousser`).
 - **Remotion** (outil pour fabriquer des vidéos) : laissé de côté le 23/10/2026. Pas dans l'application ni sur le site (inutile et trop lourd). Possible plus tard pour des vidéos de présentation ; gratuit jusqu'à 3 personnes, licence payante à partir de 4.
 - Les autres décisions sont dans `docs/PASSATION.md`, section 5.
+
+<!-- antislop:start -->
+## antislop
+Installé dans `.claude/skills/antislop*` (version 3.2.22). Pour l'écran, les textes, l'accessibilité, l'adaptation mobile ou les commentaires de code : lire `.claude/skills/antislop/SKILL.md`, puis la partie utile (`antislop-ui`, `antislop-copywriting`, `antislop-human`, `antislop-layoutmobile`, `antislop-code`).
+Mode réglé par le projet, sans poser la question : « pendant » (during) par défaut ; « après » (after) quand le propriétaire demande un audit. La direction de design est `DESIGN.md`.
+<!-- antislop:end -->

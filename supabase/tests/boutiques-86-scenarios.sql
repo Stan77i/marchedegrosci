@@ -123,3 +123,7 @@ begin
   out := out || ' | passages gardés pour 45 essais=' || (select count(*) from public.boutique_passages p where p.code = kode and p.evenement = 'produit');
   raise exception 'TEST %', out;
 end $$;
+
+-- Rejoué le 24/10/2026 (étape 7, après 92-96) : blocs A et C identiques ; bloc B « remonte 60 → depart=50 » (noté 60) :
+-- sans quantite_vue, la garde du schéma 93 (_annonce_regles) garde l'ancienne quantité sans message ; avec quantite_vue=50 → 60.
+-- Test à mettre à jour : envoyer quantite_vue avec la nouvelle quantité.

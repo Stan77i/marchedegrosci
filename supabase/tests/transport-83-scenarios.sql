@@ -421,3 +421,8 @@ begin
   r := r || 'J3 ' || t || ';';
   raise exception 'TEST %', r;
 end $$;
+
+-- Rejoué le 24/10/2026 (étape 7, après 92-96) : blocs B à J sans « KO » ; bloc A échoue à commande_avancer(chargement) :
+-- « DEPART_PREUVES : le vendeur doit d'abord photographier le colis emballé, le papier du mot secret, et indiquer le poids. »
+-- (règle des schémas 90/90b, pas une interaction 92-96). Test à mettre à jour : commande_depart_preuves (2 photos + poids),
+-- commande_depart_defi puis commande_depart_mot (photo « motpapier-… ») avant le chargement, comme dans e2e-parcours-scenarios.sql (a).

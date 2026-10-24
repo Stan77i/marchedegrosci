@@ -1542,7 +1542,7 @@ Règles appliquées : décisions 11 à 21 de `docs/audits/decisions-chantiers-20
 - Production (lecture seule) : aucune commande « à confirmer » en attente, donc la première expiration ne touchera rien.
 - Ordre pour la production : 83a à 83e, puis 84a, 84b, 84c, 84d, 84e, **84f**.
 
-## 24/10/2026 · Chantier 3 : niveaux de confiance (schéma 85, projet de test seulement)
+## 24/10/2026 · Chantier 3 : niveaux de confiance (schéma 85, appliqué en production)
 
 Règles appliquées : décisions 22 à 33 de `docs/audits/decisions-chantiers-2026-10-24.md`. **Appliqué sur le projet de test seulement** ; la production reste au schéma 82 (le propriétaire applique 83a à 83e, 84a à 84f, puis **85a et 85b**, avant de fusionner l'écran). On parle de « niveaux » dans le code (le mot « badge » sert déjà au compteur de l'icône, `push_badge`).
 
@@ -1554,7 +1554,7 @@ Règles appliquées : décisions 22 à 33 de `docs/audits/decisions-chantiers-20
 - Le volume est la valeur des commandes terminées au prix convenu, jamais de l'argent payé ou encaissé. Aujourd'hui, en production : 0 commande validée par code, donc personne ne peut être Excellent ni Grand tant que le code n'est pas utilisé.
 - Modèles `strategie/sources/pitch.html` et `presentation.html` mis à jour (les PDF seront refaits par la tâche automatique après la fusion).
 - **Relecture (85c, `supabase/schema-85c-niveaux-relecture.sql`, projet de test)** : les 23 fonctions en direct sont identiques au dépôt ; droits, RLS, tâche `mdg-niveaux` et déclencheurs vérifiés. Deux corrections : un sursis déjà levé (niveau ou « Acheteur en gros ») ne se conteste plus, et n'est plus proposé dans « Mes niveaux » (nouvelle fonction interne `_niv_baisse_active`) ; accepter une contestation sans niveau à rendre est refusé (« Choisissez le niveau à rendre. »). Tests ajoutés (blocs D à G de `supabase/tests/niveaux-85-scenarios.sql`) : plafond de 5 commandes par partenaire (7 comptées sur 9), 10 % pile d'annulations abusives = niveau gardé, double recalcul sans ligne en double, achat groupé compté une fois, sursis levé par de nouvelles commandes, un autre membre ne conteste pas et ne lit pas les chiffres, délai de 7 jours, numéro, rôle inconnu et texte trop long refusés, valeurs fausses de l'équipe refusées (gros pour un vendeur, niveau inconnu, 0 ou 366 jours, réponse vide), même changement contesté deux fois refusé, banni refusé, plus de 200 identifiants coupés, contestation du sursis « en gros » acceptée (badge gardé 60 jours), niveau décidé dépassé par le calcul, visiteur refusé sur `niveaux_vu` et les décisions, recalcul de tous en 227 ms.
-- Ordre pour la production : 83a à 83e, 84a à 84f, puis **85a, 85b, 85c**.
+- **Production (24/10/2026)** : 85a, 85b (en deux parties), 85c, puis **85d** (`schema-85d-lecture-pousser.sql` : droit de lecture de la fonction `pousser` sur les tables des chantiers 2 et 3, et sur `code_demandes` et `litige_messages`, oubliés jusque-là). Avant : versions de départ de `reputation_publique` et `tableau_marche` vérifiées identiques (84c, 70). Après : code des 24 fonctions identique au test ; premier calcul : 2 membres, aucun niveau ; tâche `mdg-niveaux` active ; visiteur : `tableau_marche` et `niveaux_publics` répondent, `niveaux_membres` refusée. Reste : redéployer `pousser` (cas 16 et 17).
 
 ## 24/10/2026 — Documentation officielle : FONCTIONNALITES, ROADMAP, ARCHITECTURE, CHANGELOG
 

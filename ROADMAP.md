@@ -151,16 +151,15 @@ Dépendance : aucune. Sans paiement, une pénalité ne peut être qu'une baisse 
 
 ## 8. Badges évolutifs pour vendeurs et acheteurs
 
-**État : partiel.**
+**État : fait (24/10/2026, schéma 85), à tester en vrai.**
 
 Ce qui existe :
-- Statuts gagnés par des faits, calculés par le serveur : Vendeur de confiance, Acheteur sérieux, Répond vite, Actif, Nouveau membre, Officiel (schéma 17, `statuts_publics`, `v3/statuts.js`).
-- Badge « Fiable » (`reputation_publique`, schéma 32).
+- Niveaux de confiance calculés par le serveur : Vendeur fiable → Bon → Excellent → Grand vendeur ; Acheteur fiable → Bon → Excellent → Grand acheteur ; badge « Acheteur en gros » (schéma 85, `v3/statuts.js`, `v3/reputation.js`, `v3/admin-niveaux.js`). Seuils réglables, sursis de 30 jours, historique, contestation.
+- Statuts gardés : Répond vite, Actif, Nouveau membre, Officiel (schéma 17, `statuts_publics`).
 - Badges Coopérative et Marché vérifiés (schéma 39, `v3/compte.js`).
 - Affichage sur les cartes d'annonce et filtre « vérifiés » de l'écran Acheter.
 
 Ce qui manque :
-- Les **niveaux qui progressent** décidés (voir plus bas) : Vendeur fiable → Bon → Excellent → Grand vendeur ; Acheteur fiable → Bon → Excellent → Grand acheteur → Acheteur en gros. Aucun de ces noms n'est dans le code.
 - Peu de données réelles pour les déclencher (1 avis, 0 identité vérifiée en production) : **à tester**.
 
 Dépendance : aucune.

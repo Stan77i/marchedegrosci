@@ -1528,3 +1528,11 @@ Règles appliquées : décisions 1 à 10 de `docs/audits/decisions-chantiers-202
   - `CHANGELOG.md` : les 607 commits depuis le 03/10/2026, par jour.
 - Défauts trouvés (non corrigés, aucune logique touchée) : limite de 30 annonces qui peut effacer une annonce active au `sync()` ; diffusion « annonce du marché » jamais envoyée sans abonné au produit ; libellés « Paiement libéré » de l'écran admin sans mouvement d'argent ; ancienne note `noter` (code mort) ; refabrication automatique du site non déclenchée par `tools/site-prix.js` et `tools/site-regions.js`.
 - À tenir à jour : chaque PR qui ajoute ou change une fonctionnalité met à jour `FONCTIONNALITES.md` (et `ROADMAP.md` si un élément prévu avance), et ajoute sa ligne au `CHANGELOG.md`.
+
+## 24/10/2026 — Connexion : titre « de Gros » / « du pays »
+
+- Le propriétaire a demandé un « court film » sur l'écran de connexion (deux commerçantes, carte des villes, camion), puis l'a **refusé** après la vidéo d'aperçu. Le travail reste sur la branche `claude/scene-connexion`, non fusionnée. La scène actuelle ne change pas.
+- Gardé : le titre de la porte. « marché **de Gros** » monte et s'efface 3 s après l'apparition, « marché **du pays** » monte du bas avec le reflet doré, reste 2 s, puis le retour se fait à l'inverse ; la séquence recommence toutes les 10 s. CSS seulement (`v3/nuage.js` : `.ng-tt-pile`, `ngTtX`, `ngTtY`, `ngTtR`), les deux mots empilés dans la même case.
+- Vérifié (Chromium, iPhone 13) : titre et champ du numéro immobiles au pixel pendant 14 s ; aucune erreur ; mouvement réduit : reste « de Gros » ; « du pays » caché aux lecteurs d'écran. Rythme réglé en trois vidéos avec le propriétaire (10 s, puis 3 s, puis « du pays » 2 s), validé.
+- `v3/nuage.js?v=20261124v` (application, ancien site, admin, gabarit du site), site refabriqué ; cache `mgci-v256`.
+- Nouvelle règle dans `CLAUDE.md` : toute animation passe d'abord par une vidéo d'aperçu validée par le propriétaire.

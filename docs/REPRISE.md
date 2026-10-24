@@ -6,7 +6,7 @@
 ## 1. L'état au moment de la reprise
 
 - **Toutes les PR sont fusionnées** (jusqu'à la PR #243). Aucune PR ouverte, aucun travail en cours. La branche `claude/apercu-claude-design` est vidée et marquée obsolète (à supprimer par le propriétaire dans GitHub → Branches, facultatif).
-- `main` : cache du service worker `mgci-v231`.
+- `main` : cache du service worker `mgci-v232`.
 - Supabase production `catmsypctymgkjkfzdkt` : schémas jusqu'au **81** appliqués (80 `fil_public`, 81 `site_mesures` / `mesurer` / `mesures_resume`). Mêmes schémas sur le projet de test.
 
 ## 2. Ce qui a été fait (session du 23/10/2026)
@@ -32,6 +32,11 @@
   - typographie française automatique (espace insécable avant « : ; ! ? » et entre un nombre et son unité) ;
   - `site/sitemap.xml` (54 adresses) et `404.html` ; liens internes vérifiés (3 819, aucun cassé) ; titres ≤ 65 caractères et descriptions ≤ 160 pour Google.
 
+### Prix officiels de la semaine (OCPV) — site caché
+- Source : la **note de conjoncture hebdomadaire de l'OCPV** (PDF public, `https://ocpv-ci.com/doc/note_de_conjoncture/2026/NOTE_DE_CONJONCTURE_N_<n>_2026.pdf`), prix moyens **au détail** en FCFA le kg, Abidjan et intérieur, plus prix mini-maxi par marché.
+- Données : `tools/site/prix-ocpv.json` (copiées à la main de la note ; seules les variations sont calculées par `tools/site-prix.js`, car les pourcentages de la note contiennent des erreurs). Affichage : un bloc « Le prix officiel au détail » sur 11 pages produits et la page `site/prix-de-la-semaine/` (en bref, prix moyens, où c'est le moins cher, approvisionnement, tableau en direct de l'application).
+- **Chaque semaine** (l'OCPV publie le lundi ou le mardi) : lire la nouvelle note, mettre à jour `prix-ocpv.json` (champs `source` et prix), `node tools/site-public.js`, vérifier, PR. Toujours écrire « prix de détail », jamais les présenter comme des prix de gros.
+
 ### Dernières corrections de l'application
 - Calendrier des récoltes : sources FAO, Nitidae (plantain), RONGEAD (oignon) ajoutées (`v2/saisons.js`, `A.CAL`) ; cadran de « L'année du marché » : un anneau par produit.
 - Onglet Activité : la carte « Dernières annonces » n'existe que s'il y a au moins une annonce (PR #240).
@@ -53,7 +58,7 @@
 **Le site caché est presque complet côté contenu.** Ce qui bloque maintenant, ce sont les étapes 1 et 3, qui dépendent du propriétaire.
 
 1. **Retours du propriétaire sur le site caché** (il doit le regarder par « SEO ») : appliquer ses corrections.
-2. **Contenu** (toujours caché, facultatif) : prix officiels de l'OCPV cités sur les pages produits (date et lien, seulement si une source ouverte existe) ; résumé des prix de la semaine ; d'autres pages produits utiles (photo obligatoire, `LISTE` dans `tools/site-produits.js`) et guides **avec sources** (les guides « grands marchés de gros » et « transporter le vivrier » et le calendrier des récoltes sont déjà faits). Jamais de pages en série sans valeur propre.
+2. **Contenu** (toujours caché) : **mettre à jour les prix OCPV chaque semaine** (voir plus haut) ; d'autres pages produits utiles (photo obligatoire, `LISTE` dans `tools/site-produits.js`) et guides **avec sources** (les guides « grands marchés de gros » et « transporter le vivrier » et le calendrier des récoltes sont déjà faits). Jamais de pages en série sans valeur propre.
 3. **Ouverture du site au public — décision du propriétaire seulement.** Le jour venu :
    - refaire l'**audit de sécurité** (règle de `CLAUDE.md` : avant l'ouverture au public) ;
    - retirer le `noindex` et le voile (`_debut.html`, `site/garde.js`, le script `nuage.js` de `_fin.html`) ;

@@ -13,9 +13,9 @@
 
 ## 0. Avancement (mis à jour le 23/10/2026, après la PR #240)
 
-- **Fait (caché, `noindex`)** : P0 en entier ; P1 n° 6 (7 guides), n° 7 (27 pages produits avec prix en direct et calendrier des récoltes sourcé ; les prix officiels de l'OCPV ne sont pas encore cités), n° 8 (mesure, schéma 81) ; P2 n° 10 (guide des grands marchés de gros, 14 pages de districts) ; P3 en partie (calendrier des récoltes, guide du transport). `sitemap.xml` (54 adresses) et `404.html` prêts.
+- **Fait (caché, `noindex`)** : P0 en entier ; P1 n° 6 (7 guides), n° 7 (27 pages produits avec prix en direct, calendrier des récoltes sourcé et, pour 11 d'entre elles, prix officiels au détail de l'OCPV), n° 8 (mesure, schéma 81) ; P2 n° 10 (guide des grands marchés de gros, 14 pages de districts) ; P3 en partie (calendrier des récoltes, guide du transport, page « Les prix de la semaine » d'après la note de l'OCPV). `sitemap.xml` (55 adresses) et `404.html` prêts.
 - **Reste, côté propriétaire** : regarder le site caché et donner ses retours ; décider l'ouverture (P1 n° 9) ; Search Console et Bing ; partenariats (P2 n° 11) ; affiches et QR codes (P2 n° 12, la mesure est prête).
-- **Reste, côté technique** : audit de sécurité avant l'ouverture ; prix officiels OCPV cités ; résumé des prix de la semaine ; tests de conversion après l'ouverture.
+- **Reste, côté technique** : audit de sécurité avant l'ouverture ; mise à jour chaque semaine des prix OCPV ; tests de conversion après l'ouverture.
 - La partie 1 ci-dessous décrit l'état **avant** les travaux : la garder pour l'historique.
 
 ## 1. État réel (résumé, avant les travaux)

@@ -1687,3 +1687,11 @@ Règles appliquées : décisions 34 à 44 de `docs/audits/decisions-chantiers-20
 - Les annonces déjà publiées avec « Cocody » ne sont pas modifiées en base (aucune modification des données de production) ; elles comptent déjà comme Abidjan.
 - Puis, à la demande du propriétaire : quand la région est Abidjan, « Abidjan » est mis tout seul et le choix « Ville ou village » est grisé (`cityUI` → `fixe`, attribut `disabled` dans les trois formulaires, `regionPatch`).
 - Vérifié dans Chromium (iPhone 13) : profil « Abidjan + Cocody » ou sans ville → « Abidjan » grisé, « Je vends uniquement à Abidjan » ; passer à Montagnes rend le choix actif, revenir à Abidjan le regrise. Cache `mgci-v273`.
+
+## 24/10/2026 · Fiche profil : moins d'explications
+
+- Demande du propriétaire (captures du profil de Lévi) : trop de texte quand on ouvre le profil de quelqu'un ; les explications sont déjà dans les guides.
+- `v3/reputation.js` : le paragraphe des critères (Fiable, Bon, Excellent, Grand…) et « Une identité vérifiée ne veut pas dire fiable… » sont retirés de la fiche (ils restent dans « Mon historique de fiabilité » et les guides). Les colonnes « Comme vendeur / Comme acheteur » montrent trois chiffres avec un mot (honorée, annulée, litige) ; la phrase entière reste pour les lecteurs d'écran. « Délai médian… (N commandes) » devient « Livré en général en 30 h ». « Où il a publié » devient « Déjà publié à ». Les notes de la structure tiennent en une ligne.
+- « Voir ma boutique / Voir sa boutique » : même bouton vert que « Modifier mon profil public », avec l'icône boutique (`vendre`).
+- Vérifié dans Chromium (iPhone 13) avec des données de test. Cache `mgci-v274`.
+

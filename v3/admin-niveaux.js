@@ -20,7 +20,11 @@
     gros: 'Acheteur en gros', gros_grace: 'Gros en sursis', gros_grace_levee: 'Gros : sursis levé', gros_retire: 'Gros retiré' };
   const REG = [['fenetre_jours', 'Période glissante (jours)', 30, 1095], ['grace_jours', 'Grâce avant une baisse (jours)', 0, 365], ['contestation_jours', 'Délai pour contester (jours)', 1, 60],
     ['reponse_jours', 'Délai de réponse de l’équipe (jours)', 1, 60], ['force_jours', 'Niveau rendu après contestation (jours)', 1, 365],
-    ['gros_commandes', 'Acheteur en gros : commandes', 1, 1000], ['gros_montant', 'Acheteur en gros : montant d’une commande (F CFA)', 1, 10000000000]];
+    ['gros_commandes', 'Acheteur en gros : commandes', 1, 1000], ['gros_montant', 'Acheteur en gros : montant d’une commande (F CFA)', 1, 10000000000],
+    // schéma 94d : contre les badges fabriqués à deux
+    ['plafond_partenaire', 'Commandes comptées par partenaire (si le palier n’a pas son plafond)', 1, 1000], ['partenaires_min', 'Partenaires différents au minimum', 1, 100],
+    ['delai_min_minutes', 'Délai minimum entre commande et réception (minutes)', 0, 10080],
+    ['paire_alerte_commandes', 'Alerte paire fermée : commandes', 2, 1000], ['paire_alerte_part', 'Alerte paire fermée : part des commandes (%)', 10, 100]];
   const titre = (t, n) => `<h2 class="fb-h">${t}${n ? `<span class="nbul">${n}</span>` : ''}</h2>`;
   const qui = (H, q) => q ? H.esc(q.nom || 'Membre') + (q.tel ? ' · ' + H.esc(String(q.tel).replace(/^225/, '')) : '') : 'compte supprimé';
 
@@ -29,7 +33,7 @@
     n: () => D.r ? (D.r.contestations || []).filter(t => t.ouverte).length : 0,
     charger: async H => { D.r = await H.rpc('admin_niveaux'); },
     vue(H) {
-      const e = H.esc, r = D.r || {}, RG = r.reglages || {}, RL = r.regles || [], CT = (r.contestations || []), ouv = CT.filter(t => t.ouverte), GR = r.en_grace || [], J = r.journal || [];
+      const e = H.esc, r = D.r || {}, RG = r.reglages || {}, RL = r.regles || [], CT = (r.contestations || []), ouv = CT.filter(t => t.ouverte), GR = r.en_grace || [], J = r.journal || [], PF = r.paires || [];
       const lib = (role, k) => k === 'gros' ? 'Acheteur en gros' : ((RL.find(x => x.role === role && x.cle === k) || {}).libelle || (k ? k : 'aucun niveau'));
       const jour = t => new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
       const opts = (role, cur) => RL.filter(x => x.role === role).map(x => `<option value="${x.cle}"${x.cle === cur ? ' selected' : ''}>${e(x.libelle)}</option>`).join('') + (role === 'acheteur' ? `<option value="gros"${cur === 'gros' ? ' selected' : ''}>Acheteur en gros</option>` : '');
@@ -59,6 +63,7 @@
       return H.top('Niveaux', 'Vendeur fiable, Bon, Excellent, Grand vendeur, et les mêmes paliers pour les acheteurs. Calculés par le serveur sur les commandes terminées. Une baisse attend toujours la fin de la grâce, et le membre est prévenu.')
         + `<section class="sec">${titre('Contestations à traiter', ouv.length)}${cont}</section>
         <section class="sec">${titre('En sursis', GR.length)}${grace}</section>
+        <section class="sec">${titre('Paires fermées', PF.length)}${PF.length ? `<div class="fb-l">${PF.map(p => `<div class="fb-r"><div><b>${qui(H, p.a)} et ${qui(H, p.b)}</b><small>${p.n} commandes terminées entre eux · ${p.part_a} % et ${p.part_b} % de leurs commandes · la plus rapide reçue en ${p.delai_min_minutes} min</small></div></div>`).join('')}</div>` : '<div class="fb-l"><div class="fb-vide">Aucune paire qui commerce presque seulement entre elle.</div></div>'}</section>
         <section class="sec">${titre('Répartition')}${rep}</section>
         <section class="sec">${titre('Paliers')}<p class="acc-sub" style="margin:0 0 10px">Valeurs de départ, à ajuster quand il y aura de l’activité. Un niveau demande aussi tous ceux d’en dessous. Laisser vide : pas de condition.</p>${tab('vendeur')}<div style="height:10px"></div>${tab('acheteur')}</section>
         <section class="sec">${titre('Réglages')}${regl}</section>

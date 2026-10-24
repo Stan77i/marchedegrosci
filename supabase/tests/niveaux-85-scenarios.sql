@@ -1,5 +1,7 @@
 -- Tests du schéma 85 (niveaux), projet de test seulement. Chaque bloc finit par raise exception 'TEST …' : tout est annulé.
 -- Comptes de simulation du projet de test (aucune donnée réelle). A = administrateur.
+-- Rejoué le 24/10/2026 après le schéma 94d (plafond par partenaire, partenaires différents, délai minimum) : blocs A à G
+-- identiques aux résultats écrits ci-dessous. Chaque bloc crée ses commandes « il y a 400 jours » (première ligne du bloc).
 
 -- Bloc A : vendeur. Aucun niveau à 2 commandes, Vendeur fiable à 3, Bon vendeur à 10 sur 3 mois ; une annulation abusive
 -- fait entrer en grâce (le niveau reste affiché) ; requalifiée légitime, la grâce est levée ; fin de la grâce : descente ;
@@ -13,6 +15,8 @@ declare S uuid := 'ec35879a-1009-4b40-9c66-53a9b2595eb8';
   cid uuid; ann uuid; ctid uuid; i int; res text := ''; e text;
   niv text; grace timestamptz;
 begin
+  -- schéma 94d : une commande compte si elle est reçue au moins 60 min après sa création ; les commandes du test sont créées « il y a 400 jours » (annulé avec le reste)
+  alter table public.commandes alter column created_at set default now() - interval '400 days';
   for i in 1..10 loop
     insert into public.commandes (numero, vendeur_id, acheteur_id, cree_par, produit, quantite, unite, prix_unitaire, montant, mode_transport, etat, etape)
     values ('T85A-' || i, S, B[1 + (i % 6)], B[1 + (i % 6)], 'mais', 1, 'sac', 100000, 100000, 'vendeur', 'en_cours', 'confirmee') returning id into cid;
@@ -107,6 +111,8 @@ declare X uuid := '2e332234-6183-459a-999b-ff6233d95181';
   A uuid := '981961d4-25ba-4e1b-a732-8fd68cd6c922';
   cid uuid; cids uuid[] := '{}'; i int; res text := ''; d jsonb;
 begin
+  -- schéma 94d : une commande compte si elle est reçue au moins 60 min après sa création ; les commandes du test sont créées « il y a 400 jours » (annulé avec le reste)
+  alter table public.commandes alter column created_at set default now() - interval '400 days';
   for i in 1..31 loop
     insert into public.commandes (numero, vendeur_id, acheteur_id, cree_par, produit, quantite, unite, prix_unitaire, montant, mode_transport, etat, etape, validation)
     values ('T85B-' || i, V[1 + (i % 6)], X, X, 'igname', 1, 'sac', 100000, case when i <= 5 then 600000 else 100000 end, 'vendeur', 'en_cours', 'confirmee', 'code') returning id into cid;
@@ -170,6 +176,8 @@ declare S uuid := 'ec35879a-1009-4b40-9c66-53a9b2595eb8'; X uuid := '2e332234-61
   B uuid[] := array['9bdc3a6d-93b3-41f1-bbbd-984b1094f05f','af343de8-c7f9-4531-899e-624322b72a38','66b186ee-6e92-4a0d-8bc9-d5b5699d652f']::uuid[];
   A uuid := '981961d4-25ba-4e1b-a732-8fd68cd6c922'; cid uuid; i int; res text := ''; n int;
 begin
+  -- schéma 94d : une commande compte si elle est reçue au moins 60 min après sa création ; les commandes du test sont créées « il y a 400 jours » (annulé avec le reste)
+  alter table public.commandes alter column created_at set default now() - interval '400 days';
   for i in 1..3 loop
     insert into public.commandes (numero, vendeur_id, acheteur_id, cree_par, produit, quantite, unite, prix_unitaire, montant, mode_transport, etat, etape)
     values ('T85C-' || i, S, B[i], B[i], 'mais', 1, 'sac', 100000, 100000, 'vendeur', 'en_cours', 'confirmee') returning id into cid;
@@ -226,6 +234,8 @@ declare S uuid := 'f8e1b009-e7c7-4637-b685-c05155f06be9';
   G uuid := gen_random_uuid();
   cid uuid; i int; res text := ''; n1 int; n2 int; d jsonb; ct uuid; ids uuid[];
 begin
+  -- schéma 94d : une commande compte si elle est reçue au moins 60 min après sa création ; les commandes du test sont créées « il y a 400 jours » (annulé avec le reste)
+  alter table public.commandes alter column created_at set default now() - interval '400 days';
   for i in 1..9 loop
     insert into public.commandes (numero, vendeur_id, acheteur_id, cree_par, produit, quantite, unite, prix_unitaire, montant, mode_transport, etat, etape, validation)
     values ('T85D-' || i, S, case when i <= 7 then B[1] else B[i - 6] end, B[1], 'mais', 1, 'sac', 100000, 100000, 'vendeur', 'en_cours', 'confirmee', 'code') returning id into cid;
@@ -305,6 +315,8 @@ declare X uuid := '2e332234-6183-459a-999b-ff6233d95181';
   V uuid[] := array['7162e623-e8cc-43ba-ba3d-73cc08ffe052','b5d74423-02f8-4535-b99e-452c4ad6ac34','072428f6-50e3-471c-9256-1439e5b62484','e0b19df7-ca40-4760-a03b-53dc4109348f','ec35879a-1009-4b40-9c66-53a9b2595eb8','9bdc3a6d-93b3-41f1-bbbd-984b1094f05f']::uuid[];
   A uuid := '981961d4-25ba-4e1b-a732-8fd68cd6c922'; cid uuid; cids uuid[] := '{}'; i int; res text := ''; ct uuid; t0 timestamptz; n int;
 begin
+  -- schéma 94d : une commande compte si elle est reçue au moins 60 min après sa création ; les commandes du test sont créées « il y a 400 jours » (annulé avec le reste)
+  alter table public.commandes alter column created_at set default now() - interval '400 days';
   for i in 1..5 loop
     insert into public.commandes (numero, vendeur_id, acheteur_id, cree_par, produit, quantite, unite, prix_unitaire, montant, mode_transport, etat, etape)
     values ('T85E-' || i, V[i], X, X, 'igname', 1, 'sac', 600000, 600000, 'vendeur', 'en_cours', 'confirmee') returning id into cid;
@@ -344,6 +356,8 @@ declare S uuid := 'f8e1b009-e7c7-4637-b685-c05155f06be9';
   B uuid[] := array['2e332234-6183-459a-999b-ff6233d95181','af343de8-c7f9-4531-899e-624322b72a38','7162e623-e8cc-43ba-ba3d-73cc08ffe052','b5d74423-02f8-4535-b99e-452c4ad6ac34','66b186ee-6e92-4a0d-8bc9-d5b5699d652f','072428f6-50e3-471c-9256-1439e5b62484']::uuid[];
   cid uuid; i int; res text := '';
 begin
+  -- schéma 94d : une commande compte si elle est reçue au moins 60 min après sa création ; les commandes du test sont créées « il y a 400 jours » (annulé avec le reste)
+  alter table public.commandes alter column created_at set default now() - interval '400 days';
   for i in 1..10 loop
     insert into public.commandes (numero, vendeur_id, acheteur_id, cree_par, produit, quantite, unite, prix_unitaire, montant, mode_transport, etat, etape)
     values ('T85F-' || i, S, B[1 + (i % 6)], B[1], 'mais', 1, 'sac', 100000, 100000, 'vendeur', 'en_cours', 'confirmee') returning id into cid;
@@ -368,6 +382,8 @@ declare S uuid := 'f8e1b009-e7c7-4637-b685-c05155f06be9'; U uuid := '9a88ae51-03
   B uuid[] := array['2e332234-6183-459a-999b-ff6233d95181','af343de8-c7f9-4531-899e-624322b72a38','7162e623-e8cc-43ba-ba3d-73cc08ffe052']::uuid[];
   A uuid := '981961d4-25ba-4e1b-a732-8fd68cd6c922'; cid uuid; i int; res text := ''; ct uuid; ann uuid;
 begin
+  -- schéma 94d : une commande compte si elle est reçue au moins 60 min après sa création ; les commandes du test sont créées « il y a 400 jours » (annulé avec le reste)
+  alter table public.commandes alter column created_at set default now() - interval '400 days';
   for i in 1..3 loop
     insert into public.commandes (numero, vendeur_id, acheteur_id, cree_par, produit, quantite, unite, prix_unitaire, montant, mode_transport, etat, etape)
     values ('T85G-' || i, S, B[i], B[1], 'mais', 1, 'sac', 100000, 100000, 'vendeur', 'en_cours', 'confirmee') returning id into cid;

@@ -36,7 +36,7 @@
     n: () => D.r ? (D.r.contestations || []).filter(t => t.ouverte).length + (D.r.examen || []).filter(x => !x.suspendu).length : 0,
     charger: async H => { D.r = await H.rpc('admin_fiabilite'); },
     vue(H) {
-      const e = H.esc, r = D.r || {}, CT = (r.contestations || []), ouv = CT.filter(t => t.ouverte), EX = r.examen || [], SU = r.suspensions || [], AN = r.annulations || [], RG = r.reglages || {};
+      const e = H.esc, r = D.r || {}, CT = (r.contestations || []), ouv = CT.filter(t => t.ouverte), EX = r.examen || [], SU = r.suspensions || [], AN = (r.annulations || []).slice().sort((x, y) => (y.a_examiner ? 1 : 0) - (x.a_examiner ? 1 : 0)), RG = r.reglages || {}, NX = AN.filter(a => a.a_examiner).length;
       const jour = t => new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
       const cont = ouv.length ? `<div class="fb-l">${ouv.map(t => `<div class="fb-r"><div><b>${e(t.produit || 'Commande')}${t.numero ? ' · ' + e(t.numero) : ''}</b>
           <small>${qui(H, t.qui)} · ${CHEMIN[t.chemin] || ''}${t.motif_code ? ' · ' + (MOTIF[t.motif_code] || '') : ''}${t.motif_texte ? ' « ' + e(t.motif_texte) + ' »' : ''} · répondre avant le ${jour(t.repondre_avant)}</small><q>${e(t.texte)}</q></div>
@@ -56,7 +56,7 @@
       const ann = AN.length ? `<div class="fb-l">${AN.slice(0, 60).map(a => `<div class="fb-r"><div><b>${e(a.produit || 'Commande')}${a.numero ? ' · ' + e(a.numero) : ''}</b>
           <small>${jour(a.cree_le)} · ${CHEMIN[a.chemin] || ''} · vendeur ${qui(H, a.vendeur)} · acheteur ${qui(H, a.acheteur)}</small>
           <small>${a.motif_code ? MOTIF[a.motif_code] : 'Sans motif'}${a.motif_texte ? ' « ' + e(a.motif_texte) + ' »' : ''}${a.accord != null ? ' · l’autre partie ' + (a.accord ? 'était d’accord' : 'n’était pas d’accord') : ''}${a.groupe_id ? ' · achat groupé' : ''}${a.note_admin ? ' · note : ' + e(a.note_admin) : ''}</small></div>
-          <div class="fb-a"><span class="fb-t ${(CAT[a.categorie] || [])[1] || ''}">${(CAT[a.categorie] || [a.categorie])[0]}${a.role_imputable ? ' · ' + a.role_imputable : ''}</span></div>
+          <div class="fb-a">${a.a_examiner ? '<span class="fb-t">À examiner : aucune sanction avant votre choix</span> ' : ''}<span class="fb-t ${(CAT[a.categorie] || [])[1] || ''}">${(CAT[a.categorie] || [a.categorie])[0]}${a.role_imputable ? ' · ' + a.role_imputable : ''}</span></div>
           <div class="fb-f"><select data-acat="${a.id}" aria-label="Catégorie">${opt('abusive', 'Abusive', a.categorie)}${opt('legitime', 'Légitime', a.categorie)}${opt('litige', 'Litige', a.categorie)}${opt('technique', 'Panne ou météo', a.categorie)}</select>
           <select data-aimp="${a.id}" aria-label="Compte contre">${opt('', 'Personne', a.role_imputable || '')}${opt('vendeur', 'Le vendeur', a.role_imputable || '')}${opt('acheteur', 'L’acheteur', a.role_imputable || '')}</select>
           <input type="text" maxlength="300" data-anote="${a.id}" aria-label="Note" placeholder="Note (facultatif)"><button class="btn sm" data-acl="${a.id}">Enregistrer</button></div></div>`).join('')}</div>`
@@ -67,7 +67,7 @@
         + `<section class="sec">${titre('Contestations à traiter', ouv.length)}${cont}</section>
         <section class="sec">${titre('Comptes à examiner', EX.filter(x => !x.suspendu).length)}${exam}</section>
         <section class="sec">${titre('Suspensions en cours', SU.length)}${susp}</section>
-        <section class="sec">${titre('Dernières annulations')}${ann}</section>
+        <section class="sec">${titre('Dernières annulations', NX)}${NX ? '<p class="acc-sub" style="margin:0 0 10px">Panne, météo ou stock épuisé refusés par l’autre partie : rien ne compte avant que vous les classiez.</p>' : ''}${ann}</section>
         <section class="sec">${titre('Réglages')}<p class="acc-sub" style="margin:0 0 10px">Valeurs de départ, à ajuster quand il y aura de l’activité. ${RG.debut ? 'Le comptage a commencé le ' + jour(RG.debut) : ''}</p>${regl}</section>`;
     },
     lier(root, H) {

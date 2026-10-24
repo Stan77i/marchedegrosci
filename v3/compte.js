@@ -651,6 +651,9 @@ label.cp-r{cursor:pointer}
       // fiabilité (schéma 84) : relue en fond ; la ligne se met à jour seulement si quelque chose a changé
       if (window.MDGRep && MDGRep.lireFiabilite && !off0 && navigator.onLine) { const fv = JSON.stringify(MDGRep.fiabResume());
         MDGRep.lireFiabilite().then(f => { if (f && JSON.stringify(f) !== fv && bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); }).catch(() => {}); }
+      // annonces cachées après signalements (schéma 94e) : la ligne n'apparaît que s'il y en a
+      if (window.MDGRep && MDGRep.lireMasquees && !off0 && navigator.onLine) { const mqv = JSON.stringify(MDGRep.masqResume());
+        MDGRep.lireMasquees().then(f => { if (f && JSON.stringify(f) !== mqv && bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); }).catch(() => {}); }
       if (window.MDGRep && MDGRep.lireNiveaux && !off0 && navigator.onLine) { const nvv = JSON.stringify(MDGRep.nivResume());
         MDGRep.lireNiveaux().then(f => { if (f && JSON.stringify(f) !== nvv && bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); }).catch(() => {}); }
       // la vérification d'identité, bien en vue tant qu'elle n'est pas faite : 3 annonces gratuites, puis elle est demandée pour publier
@@ -706,6 +709,7 @@ label.cp-r{cursor:pointer}
             ${window.MDGBoutique && !off0 ? ligne({ ico: mono('vendre'), t: 'Ma boutique', s: 'Mes offres sur une page à partager, QR code', attrs: 'data-boutique' }) : ''}
             ${window.MDGReleve ? ligne({ ico: mono('barres'), t: 'Mes ventes et achats', s: 'Relevés, bons de transaction, volumes', attrs: 'data-releve' }) : ''}
             ${window.MDGCommandes && !off0 ? (() => { const nC = MDGCommandes.aAgir(); return ligne({ ico: mono('negoce'), t: 'Mes commandes', s: nC ? nC + (nC > 1 ? ' commandes attendent' : ' commande attend') + ' votre action' : 'Suivi du chargement à la réception', n: nC, attrs: 'data-cmds' }); })() : ''}
+            ${window.MDGRep && MDGRep.masquees && !off0 && (MDGRep.masqResume() || []).length ? (() => { const L = MDGRep.masqResume(), nC = L.filter(a => !a.contestee).length; return ligne({ ico: mono('alertes'), t: L.length > 1 ? 'Annonces cachées' : 'Annonce cachée', s: nC ? 'Signalée : vous pouvez contester' : 'Contestée : l’équipe vous répond', n: L.length, nl: L.length + (L.length > 1 ? ' annonces cachées' : ' annonce cachée'), attrs: 'data-masq' }); })() : ''}
             ${window.MDGRep && MDGRep.fiabilite && !off0 ? (() => { const f = MDGRep.fiabResume(), sc = f && f.score, nv = f ? +f.non_vues || 0 : 0; return ligne({ ico: mono('tendance'), t: 'Ma fiabilité', s: f && f.suspension ? 'Compte suspendu pour l’instant' : sc && sc.sur ? 'Fiabilité : ' + sc.pourcent + ' % sur ' + sc.sur + ' commande' + (sc.sur > 1 ? 's' : '') : 'Votre score et votre historique', n: nv, attrs: 'data-fiab' }); })() : ''}
             ${window.MDGRep && MDGRep.niveaux && !off0 ? (() => { const f = MDGRep.nivResume(), R = f && f.roles || {}, L = ['vendeur', 'acheteur'].map(k => R[k] && R[k].libelle).filter(Boolean), sursis = ['vendeur', 'acheteur'].some(k => R[k] && R[k].grace_jusqua); return ligne({ ico: mono('confiance'), t: 'Mes niveaux', s: sursis ? 'Un niveau est en sursis : voyez ce qui manque' : L.length ? L.join(' · ') : 'Vendeur fiable, Bon, Excellent, Grand : ce qui manque', n: f ? +f.non_vus || 0 : 0, attrs: 'data-niv' }); })() : ''}
             ${window.MDGAppro && !off0 ? ligne({ ico: mono('tableau'), t: 'Approvisionnement pro', s: 'Besoins réguliers, propositions, comparaison', attrs: 'data-appro' }) : ''}
@@ -732,6 +736,7 @@ label.cp-r{cursor:pointer}
       if (q('[data-boutique]')) q('[data-boutique]').onclick = () => { fermer(); window.MDGBoutique.gerer(); };   // schéma 86
       if (q('[data-cmds]')) q('[data-cmds]').onclick = () => { fermer(); window.MDGCommandes.ouvrir(); };
       if (q('[data-fiab]')) q('[data-fiab]').onclick = () => { fermer(); window.MDGRep.fiabilite(); };
+      if (q('[data-masq]')) q('[data-masq]').onclick = () => { fermer(); window.MDGRep.masquees(); };
       if (q('[data-niv]')) q('[data-niv]').onclick = () => { fermer(); window.MDGRep.niveaux(); };
       if (q('[data-appro]')) q('[data-appro]').onclick = () => { fermer(); window.MDGAppro.ouvrir(); };
       if (q('[data-groupes]')) q('[data-groupes]').onclick = () => { fermer(); window.MDGGroupes.ouvrir('miens'); };

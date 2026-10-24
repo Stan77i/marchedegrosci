@@ -1459,3 +1459,13 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - **C1** (`supabase/schema-82-commission-transport-mgci.sql`) : `_ctr_sync` ne crée ou ne garde une commission transport de 6,9 % que pour une commande en mode `reseau` avec un transporteur `verifie` ; sinon elle passe à `annulee` avec le motif « livreur hors service Marché de Gros ». `chauffeur_repondre` refuse qu'un transporteur non vérifié accepte une mission du réseau (refuser reste possible).
 - Testé sur le projet de test (fonctions identiques à la production, empreintes comparées) dans un bloc annulé : hors réseau → annulée ; réseau vérifié → gardée ; réseau non vérifié → annulée ; acceptation refusée au non vérifié ; refus possible. Appliqué en production (0 mission, 0 commission transport : aucune donnée changée).
 - **C2** : droits retirés sur `alertes`, `alertes_produits`, `zones` (visiteurs : seulement la lecture de `zones` ; membres : plus de REFERENCES ni TRIGGER). Vérifié en production. Un dernier droit des membres ne peut pas être retiré par l'outil (mot interdit) : la ligne à coller est dans le fichier des décisions.
+
+## 24/10/2026 — Documentation officielle : FONCTIONNALITES, ROADMAP, ARCHITECTURE, CHANGELOG
+
+- Quatre fichiers à la racine, écrits après un inventaire du code (`main`) et de la base de production (catalogue et comptages seulement), chacun relu contre le code par un contrôleur :
+  - `FONCTIONNALITES.md` : 195 fonctionnalités, application d'abord, site à part ; 159 opérationnelles (beaucoup jamais servies en vrai, c'est écrit), 25 partielles, 6 prévues, 5 défectueuses ;
+  - `ROADMAP.md` : les 10 sujets demandés, avec leur état, et les décisions du propriétaire à développer ;
+  - `ARCHITECTURE.md` : application, site, Supabase (54 tables, fonctions, RLS, tâches planifiées, fonctions Edge), permissions, intégrations ;
+  - `CHANGELOG.md` : les 607 commits depuis le 03/10/2026, par jour.
+- Défauts trouvés (non corrigés, aucune logique touchée) : limite de 30 annonces qui peut effacer une annonce active au `sync()` ; diffusion « annonce du marché » jamais envoyée sans abonné au produit ; libellés « Paiement libéré » de l'écran admin sans mouvement d'argent ; ancienne note `noter` (code mort) ; refabrication automatique du site non déclenchée par `tools/site-prix.js` et `tools/site-regions.js`.
+- À tenir à jour : chaque PR qui ajoute ou change une fonctionnalité met à jour `FONCTIONNALITES.md` (et `ROADMAP.md` si un élément prévu avance), et ajoute sa ligne au `CHANGELOG.md`.

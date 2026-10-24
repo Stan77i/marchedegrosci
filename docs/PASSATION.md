@@ -1445,3 +1445,10 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - `CLAUDE.md` (Design) et `DESIGN.md` (lois 2, 25, couleurs) mis à jour ; le rapport d'audit note les trois décisions.
 - Vérifié (navigateur, iPhone) : au début, 9 effets jouent ; après 14 s, seules les lumières du fond finissent leur 2e passage ; « Produit suivant » → les effets rejouent ; aucune erreur JS.
 - `?v=20261124i` (11 fichiers) ; site refabriqué ; cache `mgci-v243`.
+
+## 24/10/2026 — Audit des 4 chantiers (transport, fiabilité, badges, boutiques)
+
+- Demande du propriétaire : 4 chantiers (commande et transport ; fiabilité et pénalités d'annulation ; badges évolutifs ; boutiques avec lien et QR code), à auditer avant toute modification.
+- Audit en lecture seule (code + base de production, catalogue seulement), chaque chantier relu par un contrôleur : `docs/audits/audit-chantiers-2026-10-24.md`.
+- 44 questions, avec une réponse recommandée pour chacune : `docs/audits/decisions-chantiers-2026-10-24.md`. Rien n'est construit avant l'accord du propriétaire.
+- Deux correctifs de sécurité trouvés (C1 : commission transport de 6,9 % possible avec un transporteur non vérifié, par appel direct ; C2 : droits trop larges sur `alertes`). Aucune mission ni commission transport en production à ce jour.

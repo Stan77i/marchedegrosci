@@ -1,13 +1,15 @@
 # Décisions à prendre pour les 4 chantiers (24/10/2026)
 
+**Validé par le propriétaire le 24/10/2026 (« OK » pour tout) : ces réponses sont maintenant les règles du projet.**
+
 Chaque question vient de l'audit (`docs/audits/audit-chantiers-2026-10-24.md`). La réponse **recommandée** est écrite après la flèche. Le propriétaire répond « OK » ou change les numéros qu'il veut. Tant qu'une décision n'est pas validée, rien n'est construit.
 
 Les chiffres (seuils, durées) sont des **valeurs de départ réglables** par l'administrateur, sans toucher au code. Ils ne viennent d'aucune étude : ils sont à ajuster quand il y aura de l'activité.
 
 ## À corriger avant tout (sécurité)
 
-- **C1. Commission de 6,9 % ouverte à tous.** Aujourd'hui, un acheteur ou un vendeur peut, par un appel direct au serveur, faire accepter une mission par n'importe quel membre inscrit comme transporteur (même non vérifié). Une commission transport de 6,9 % est alors enregistrée hors du service MGCI. Il n'y a encore aucune mission en production. → Fermer ce chemin : seule une mission du service MGCI, avec un transporteur vérifié, crée une commission transport.
-- **C2. Droits trop larges sur la table `alertes`.** Les visiteurs et les membres ont des droits techniques inutiles (dont TRUNCATE). L'application ne permet pas de s'en servir, mais ces droits passent outre les protections. → Retirer ces droits (`revoke`, aucune donnée touchée). Demande l'accord du propriétaire.
+- **C1. Commission de 6,9 % ouverte à tous.** Aujourd'hui, un acheteur ou un vendeur peut, par un appel direct au serveur, faire accepter une mission par n'importe quel membre inscrit comme transporteur (même non vérifié). Une commission transport de 6,9 % est alors enregistrée hors du service MGCI. Il n'y a encore aucune mission en production. → Fermer ce chemin : seule une mission du service MGCI, avec un transporteur vérifié, crée une commission transport. **Fait le 24/10/2026** (`supabase/schema-82-commission-transport-mgci.sql`, testé puis appliqué en production).
+- **C2. Droits trop larges sur la table `alertes`.** Les visiteurs et les membres ont des droits techniques inutiles (dont TRUNCATE). L'application ne permet pas de s'en servir, mais ces droits passent outre les protections. → Retirer ces droits (`revoke`, aucune donnée touchée). **Fait le 24/10/2026**, sauf un droit des membres que l'outil refuse de retirer (son nom contient un mot interdit). L'application ne permet pas de s'en servir. Pour le retirer, le propriétaire peut coller cette ligne dans l'éditeur SQL de Supabase : `revoke truncate on public.alertes, public.alertes_produits, public.zones from authenticated;`
 
 ## Chantier 1 : commande et transport
 

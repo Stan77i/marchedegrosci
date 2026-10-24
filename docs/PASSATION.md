@@ -1452,3 +1452,10 @@ Demande du propriétaire : supprimer les petits défauts visibles (« ça doit �
 - Audit en lecture seule (code + base de production, catalogue seulement), chaque chantier relu par un contrôleur : `docs/audits/audit-chantiers-2026-10-24.md`.
 - 44 questions, avec une réponse recommandée pour chacune : `docs/audits/decisions-chantiers-2026-10-24.md`. Rien n'est construit avant l'accord du propriétaire.
 - Deux correctifs de sécurité trouvés (C1 : commission transport de 6,9 % possible avec un transporteur non vérifié, par appel direct ; C2 : droits trop larges sur `alertes`). Aucune mission ni commission transport en production à ce jour.
+
+## 24/10/2026 — Correctifs C1 et C2 (schéma 82) et décisions des 4 chantiers validées
+
+- Le propriétaire a validé les 44 réponses recommandées (« OK ») : elles sont écrites comme règles dans `CLAUDE.md`.
+- **C1** (`supabase/schema-82-commission-transport-mgci.sql`) : `_ctr_sync` ne crée ou ne garde une commission transport de 6,9 % que pour une commande en mode `reseau` avec un transporteur `verifie` ; sinon elle passe à `annulee` avec le motif « livreur hors service Marché de Gros ». `chauffeur_repondre` refuse qu'un transporteur non vérifié accepte une mission du réseau (refuser reste possible).
+- Testé sur le projet de test (fonctions identiques à la production, empreintes comparées) dans un bloc annulé : hors réseau → annulée ; réseau vérifié → gardée ; réseau non vérifié → annulée ; acceptation refusée au non vérifié ; refus possible. Appliqué en production (0 mission, 0 commission transport : aucune donnée changée).
+- **C2** : droits retirés sur `alertes`, `alertes_produits`, `zones` (visiteurs : seulement la lecture de `zones` ; membres : plus de REFERENCES ni TRIGGER). Vérifié en production. Un dernier droit des membres ne peut pas être retiré par l'outil (mot interdit) : la ligne à coller est dans le fichier des décisions.

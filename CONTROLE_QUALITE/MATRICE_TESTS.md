@@ -42,6 +42,8 @@ Fichiers : `regles-93` = `supabase/tests/regles-93-scenarios.sql`, etc. ; `e2e` 
 
 Trous à combler en priorité : U01 panne, U02 erreur, U04 panne, U07 panne, U08 erreur et concurrent, U10 malveillant, U13 limite et erreur, U14 normal ; et partout la vraie concurrence à deux connexions.
 
+Scénarios de commande (`SCN-01` à `SCN-37`, unités U01, U05, U06) : partie 5.
+
 ## 3. Listes A à K et unités
 
 | Liste (`LISTES_DE_CONTROLE.md`) | Unités |
@@ -63,4 +65,48 @@ Trous à combler en priorité : U01 panne, U02 erreur, U04 panne, U07 panne, U08
 - Contrôle statique : `STA-01` à `STA-14` (fixés dans `tools/controle/unites.json`).
 - Après modification : `APM-01` à `APM-08`, `APM-SQL-<schéma>`, `APM-FN-<fonction>`.
 - Tests SQL du dépôt : `SQL-<nom du fichier>` (bloc entre parenthèses).
-- Batteries du contrôle qualité : préfixe court de l'unité et numéro, fichier `CONTROLE_QUALITE/tests/sql/Uxx-<sujet>.sql` ou `CONTROLE_QUALITE/tests/navigateur/Uxx-<sujet>.js`. Préfixes pris : `LOG` (U01), `SEC` (U02), `ARG` (U03), `STK` (U04), `CMD` (U05), `TRA` (U06), `PRO` (U07), `NOT` (U08), `BDD` (U09), `FIA` (U10), `ADM` (U11), `CMP` (U12), `DOC` (U13), `EXT` (U14). Un nouveau test prend le numéro libre suivant ; un ID n'est jamais réutilisé.
+- Batteries du contrôle qualité : préfixe court de l'unité et numéro, fichier `CONTROLE_QUALITE/tests/sql/Uxx-<sujet>.sql` ou `CONTROLE_QUALITE/tests/navigateur/Uxx-<sujet>.js`. Préfixes pris : `SCN` (scénarios de commande, U01, U05, U06 : partie 5), `LOG` (U01), `SEC` (U02), `ARG` (U03), `STK` (U04), `CMD` (U05), `TRA` (U06), `PRO` (U07), `NOT` (U08), `BDD` (U09), `FIA` (U10), `ADM` (U11), `CMP` (U12), `DOC` (U13), `EXT` (U14). Un nouveau test prend le numéro libre suivant ; un ID n'est jamais réutilisé.
+
+## 5. Scénarios de commande (`SCN-xx`)
+
+Tirés de `docs/regles/SCENARIOS-COMMANDE.md` (25/10/2026) : chaque scénario renvoie aux cases du tableau des combinaisons. Statut : nom du test existant, ou « à écrire ». Un « à écrire » qui attend une proposition (P1 à P19) s'écrit après la réponse du propriétaire.
+
+| ID | Unité | Type | Scénario | Cases | Test existant ou statut |
+|---|---|---|---|---|---|
+| SCN-01 | U05 | normal | Parcours complet : accord, commande, confirmation, preuves, chargement, « arrivé », mot secret, clôture 1 h après | A-01, C-01, D-01, E-01, F-05, I-01 | `e2e` (a) |
+| SCN-02 | U05 | limite | Accord sans commande pendant 72 h : « sans suite », quantité rendue ; commande créée après refusée | B-01, B-02 | `e2e` (c) |
+| SCN-03 | U05 | erreur | Commande refusée par l'autre partie (motif obligatoire) : quantité rendue, ne compte contre personne | C-02 | `e2e` (b) ; `stock-commandes` A |
+| SCN-04 | U05 | limite | Commande sans réponse 48 h : expirée, ne compte contre personne | C-04 | `stock-commandes` A |
+| SCN-05 | U05 | limite | Vendeur ne charge pas : rappel 12 h avant, annulation de l'acheteur à 72 h, « abusive » contre le vendeur ; avant 72 h « TROP_TOT » | D-04, D-05 | `e2e` (d) ; `stock-commandes` B |
+| SCN-06 | U06 | erreur | Chargement sans photos, sans poids, sans photo du papier ; papier après 3 min ; photos d'une autre commande | D-01, D-02, D-03 | LOG-02 ; TRA-13 |
+| SCN-07 | U01 | régression | Marchandise en route 10 jours sans « arrivé » : aucun rappel, aucun litige, aucune clôture (règle du 25/10) | E-03 | à écrire (échouera avec la version actuelle de 99a) |
+| SCN-08 | U06 | normal | Vendeur signale un retard avec motif et nouvelle date : journal et avis à l'acheteur | E-04 | à écrire (fonction absente) |
+| SCN-09 | U06 | limite | Acheteur demande des nouvelles deux fois en moins de 6 h : la 2e est refusée ; à 6 h acceptée | E-05 | à écrire (fonction absente) |
+| SCN-10 | U06 | normal | « Arrivé » du vendeur, confirmation avec le bon mot dans l'heure | F-01, F-05 | `litige-quantites-97` L2 ; `e2e` (a) |
+| SCN-11 | U06 | limite | « Arrivé », acheteur muet : rappel à 30 min, litige à 60 min, clôture vendeur à 120 min, commission « calculée », litige perdu de l'acheteur | F-12, G-01, G-04 | `litige-quantites-97` L1, L4 ; TRA-11 |
+| SCN-12 | U06 | normal | Pendant le litige automatique : message, refus avec photos ou mot secret ; plus de clôture automatique | G-02, G-03 | `litige-quantites-97` L2 |
+| SCN-13 | U06 | normal | Délai justifié 2 h, 6 h, 24 h : pas de litige pendant le délai, même suite après | F-10 | à écrire (fonction absente) |
+| SCN-14 | U06 | erreur | 2e demande de délai refusée | F-11 | à écrire (fonction absente) |
+| SCN-15 | U06 | erreur | Mot faux, 5 essais, mot bloqué, alerte aux deux et à l'équipe | F-06, F-07 | TRA-12 ; `stock-commandes` C |
+| SCN-16 | U01 | limite | Mot bloqué pendant l'heure puis litige automatique : l'acheteur ne doit pas perdre automatiquement | F-08 | à écrire (attend la réponse à la proposition P4) |
+| SCN-17 | U06 | normal | Mot oublié : réception « sans le mot » ; refus sans mot non accepté | F-09 | TRA-12 |
+| SCN-18 | U06 | normal | Refus partiel avec photos et mot, chauffeur et vendeur répondent, refus tranché par l'équipe | F-14, H-04 | à écrire (refus partiel jusqu'à `admin_refus_trancher`) |
+| SCN-19 | U05 | normal | Issues du litige : vendeur, acheteur, partage ; fiabilité (partage ne compte contre personne) ; commission | H-01, H-02, H-03 | `stock-commandes` C (partage) ; `e2e` (e) ; vendeur et acheteur : à écrire |
+| SCN-20 | U05 | normal | Demande d'annulation du vendeur : acceptée (d'accord / pas d'accord), refusée, redemandée, 2 refus puis équipe | D-06, D-07 | `stock-commandes` B ; `fiabilite-84` A |
+| SCN-21 | U05 | concurrent | Vendeur demande l'annulation puis charge : demande retirée | D-09 | CMD-09 [É] ; `corrections-99` 99-B (branche) |
+| SCN-22 | U05 | limite | Demande d'annulation du vendeur sans réponse jusqu'à 72 h : qui est compté en faute ? | D-08 | à écrire (attend la réponse à P8) |
+| SCN-23 | U01 | malveillant | Vendeur banni avant le chargement : l'acheteur annule tout de suite, compte contre le vendeur | D-10 | `corrections-99` 99-C (branche) ; EXT-06 [É] |
+| SCN-24 | U01 | limite | Vendeur banni pendant le trajet : la commande ne doit pas rester sans fin | E-09 | à écrire (attend P5) |
+| SCN-25 | U01 | limite | Acheteur banni avant et après le chargement, et pendant l'heure après « arrivé » | D-11, E-10, F-17 | à écrire (attend P6) |
+| SCN-26 | U01 | erreur | Membre suspendu : plus de proposition ni d'accord ; ses commandes en cours continuent | A-06, D-12, E-11 | `controle-corrections-98` blocs 3, 4 ; `fiabilite-84` D/E |
+| SCN-27 | U01 | erreur | Suppression du compte avec commande, litige, accord récent ou suspension : refusée | B-06, D-15, J-03 | `controle-corrections-98` blocs 1, 2 |
+| SCN-28 | U05 | concurrent | Commande créée deux fois (double appui, coupure) | B-03 | CMD-04 |
+| SCN-29 | U05 | concurrent | Message de l'acheteur dans le litige à l'instant de la clôture automatique | G-05 | à écrire [A : deux connexions] |
+| SCN-30 | U01 | limite | « Arrivé » déclaré à 23 h : quand part l'heure ? | F-04, G-07, J-04 | LOG-13 [É] ; à écrire après la réponse à P3 |
+| SCN-31 | U05 | panne | Confirmation de réception renvoyée après une coupure | F-19 | à écrire |
+| SCN-32 | U05 | normal | Achat groupé : commandes confirmées, transport de l'offre, annulation comptée une fois | J-01 | à écrire |
+| SCN-33 | U05 | erreur | Prix ou quantité changés pendant la négociation ; ancienne proposition acceptée ; annonce figée ; prix 0 F, montant énorme | A-01, A-02, A-03 | CMD-03 ; `regles-93` ; `litige-quantites-97` L4 ; `corrections-99` 99-D (branche) |
+| SCN-34 | U06 | normal | Les 4 transports : livreur du vendeur (même ville), retrait accepté, inclus, à part, à la charge de l'acheteur ; total et commission | C-05 à C-09, A-04 | `transport-95` ; LOG-03, LOG-05 ; CMD-11b |
+| SCN-35 | U06 | erreur | Transporteur Marché de Gros choisi : refusé, service fermé | A-05, C-10 | LOG-04 ; `transport-95` |
+| SCN-36 | U06 | normal | L'acheteur dit « arrivé » lui-même : quel délai démarre ? | F-03 | `stock-commandes` D (règle d'avant) ; `corrections-99` 99-A (branche) ; à écrire après P2 |
+| SCN-37 | U05 | normal | Clôture « en faveur du vendeur » : l'avis part bien aux deux | G-04 | à écrire (écart lu dans le code : `push_commande` ignore « terminee ») |

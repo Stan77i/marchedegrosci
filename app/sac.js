@@ -122,7 +122,10 @@
   let bulle = null, tRetour = 0, coupe = false;
   function horsLigne() {
     if (!document.body) return;
-    clearTimeout(tRetour); coupe = true;
+    clearTimeout(tRetour);
+    // déjà affiché : on ne redessine rien (pas de clignotement si le navigateur répète « offline » ou si un écran le signale aussi)
+    if (coupe && bulle && bulle.classList.contains('on') && !bulle.classList.contains('ok')) return;
+    coupe = true;
     if (!bulle) { bulle = document.createElement('div'); bulle.className = 'ms-hl'; bulle.setAttribute('role', 'alert'); document.body.appendChild(bulle); }
     bulle.classList.remove('ok');
     bulle.innerHTML = WI + '<b>Pas de connexion</b><button type="button">' + REC + 'Réessayer</button>';

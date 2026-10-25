@@ -18,7 +18,7 @@ Fiche lue par les compétences « founder-skills » (`.claude/skills/`). Les dé
 ## Modèle économique
 
 - Inscription, annonces et négociation gratuites. Pas d'abonnement, pas de publicité.
-- Commissions (voir `strategie/sources/parametres.json`) : 3,5 % du prix de la marchandise sur une vente définitive (0 quand le vendeur est le Marché de Gros), 6,9 % du prix du transport fait par un transporteur vérifié du réseau Marché de Gros, retenue sur son prix. Aucune commission sur le livreur du vendeur ou de l'acheteur. Rien n'est encaissé : aucun paiement ne passe par l'application.
+- Commissions prévues (voir `strategie/sources/parametres.json`) : 3,5 % du prix de la marchandise sur une vente définitive (0 quand le vendeur est le Marché de Gros), 6,9 % du prix du transport fait par un transporteur vérifié du réseau Marché de Gros, à retenir sur son prix une fois le paiement intégré. Aucune commission sur le livreur du vendeur ou de l'acheteur. Rien n'est encaissé ni prélevé : aucun paiement ne passe par l'application.
 - Transport (schéma 83) : même ville, le vendeur organise son livreur et l'acheteur paie les frais au livreur, hors Marché de Gros (retrait possible si le vendeur l'accepte) ; villes différentes, le transport est inclus ou à part, son prix se négocie dans la même proposition que la marchandise et le total est figé. Le transporteur du réseau (prix convenu à trois) est construit mais fermé.
 - **Aucun paiement n'est encore opérationnel** : ne jamais écrire qu'un paiement ou une commission a été encaissé.
 

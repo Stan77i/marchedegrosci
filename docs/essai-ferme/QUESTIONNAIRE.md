@@ -57,7 +57,7 @@ Réglages du formulaire : ne pas collecter les adresses e-mail ; une réponse pa
 
 ## La grille pour décider
 
-Remplir après avoir lu les réponses et le relevé de `SUIVI.md`. Les seuils sont des **propositions à valider** par le propriétaire avant le début de l'essai (`CRITERES-DE-REUSSITE.md`).
+Remplir après avoir lu les réponses et le relevé de `SUIVI.md`. Les seuils sont **validés par le propriétaire le 25/10/2026** (`CRITERES-DE-REUSSITE.md`).
 
 | Question | Bon signe (ouvrir) | Signal d'alerte (corriger d'abord) |
 |---|---|---|

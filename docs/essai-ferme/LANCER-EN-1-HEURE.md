@@ -9,7 +9,7 @@ Les autres fichiers de ce dossier :
 - `GUIDE-PARTICIPANT.md` : le mode d'emploi à envoyer ;
 - `SUIVI.md` : le tableau de suivi et où lire les chiffres ;
 - `QUESTIONNAIRE.md` : les questions de la fin ;
-- `CRITERES-DE-REUSSITE.md` : quand on peut ouvrir au public ;
+- `CRITERES-DE-REUSSITE.md` : quand on peut ouvrir au public (seuils validés par vous le 25/10/2026) ;
 - `PLAN.md` : le plan complet (règles, quand arrêter).
 
 ---
@@ -24,7 +24,8 @@ Le plan (`PLAN.md`, partie 2) demande de cocher ces cases avant d'inviter. Voici
 | Litige en 1 h après « livré », quantité minimale (schémas 97b, 97c, 97d) | **Fait** : en production depuis le 25/10/2026 (PR #308). |
 | Conditions d'utilisation acceptées à l'inscription | **Pas fait** : les textes sont des projets (`docs/juridique/`), aucune case dans l'application |
 | Audit de sécurité refait | **Pas fait** |
-| Vos décisions (délais, annonces, badges…) | **En attente** : `docs/A-FAIRE-PROPRIETAIRE.md`, partie 4. Les valeurs actuelles marchent pour l'essai |
+| Vos décisions (délais, annonces, badges, questions juridiques) | **Prises le 25/10/2026** (« ok pour tout » : `docs/juridique/DECISIONS-A-PRENDRE.md`, PR #309). Une partie reste à construire dans l'application ; les valeurs actuelles marchent pour l'essai |
+| Seuils de réussite (`CRITERES-DE-REUSSITE.md`) | **Validés le 25/10/2026** : on ne les change plus pendant l'essai |
 | Une personne de l'équipe disponible chaque jour | **À vous** |
 
 Vous avez dit « vas-y ». Si vous lancez sans les cases « Pas fait », écrivez-le dans `SUIVI.md` (case « Décision de lancer ») avec la date : c'est votre décision, et l'essai reste petit et accompagné.
@@ -142,6 +143,6 @@ Suivez **la première vente de chaque vendeur et le premier achat de chaque ache
 
 1. Envoyez le message **« Fin de l'essai »** avec le lien du questionnaire (`QUESTIONNAIRE.md` : à copier dans un Google Forms gratuit).
 2. Relevez les chiffres une dernière fois.
-3. Remplissez la grille de `CRITERES-DE-REUSSITE.md`.
+3. Remplissez la grille de `CRITERES-DE-REUSSITE.md` avec les seuils validés le 25/10/2026 (au moins 10 commandes clôturées, 5 vendeurs et 5 acheteurs différents, 0 commande bloquée, litiges en 72 h ou moins…). Un critère obligatoire manqué : on corrige d'abord.
 4. Décidez : **on ouvre au public** ou **on corrige d'abord**. Écrivez la décision et la date dans `SUIVI.md`.
 5. Dites aux participants ce que vous avez décidé. Leurs comptes et leurs annonces restent.

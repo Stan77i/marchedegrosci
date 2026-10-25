@@ -1,6 +1,6 @@
 # Critères de réussite de l'essai fermé
 
-Quand peut-on ouvrir au public ? Ce fichier reprend les critères de `PLAN.md` (partie 8). Le plan ne donnait pas de chiffres (« [N] ») : les chiffres ci-dessous sont des **propositions pour 20 participants**, à **valider ou changer par le propriétaire avant le premier jour**. Ensuite, on ne les change plus pendant l'essai.
+Quand peut-on ouvrir au public ? Ce fichier reprend les critères de `PLAN.md` (partie 8). Le plan ne donnait pas de chiffres (« [N] ») : les chiffres ci-dessous, prévus pour 20 participants, sont **validés par le propriétaire le 25/10/2026** (« ok pour tout »). On ne les change plus pendant l'essai.
 
 Les chiffres viennent du relevé de `SUIVI.md`. Ce qui n'a pas été mesuré compte comme **non tenu**.
 
@@ -8,7 +8,7 @@ Les chiffres viennent du relevé de `SUIVI.md`. Ce qui n'a pas été mesuré com
 
 ## 1. Critères obligatoires (tous doivent être tenus)
 
-| # | Critère (du plan) | Seuil proposé | Où le lire | Tenu ? |
+| # | Critère (du plan) | Seuil validé | Où le lire | Tenu ? |
 |---|---|---|---|---|
 | 1 | Commandes menées jusqu'à la clôture | **au moins 10** | Commandes → Toutes, « Terminée » | |
 | 2 | Vendeurs différents qui ont reçu une commande | **au moins 5 sur 10** | `SUIVI.md`, partie 1 | |
@@ -21,7 +21,7 @@ Les chiffres viennent du relevé de `SUIVI.md`. Ce qui n'a pas été mesuré com
 
 ## 2. Critères à surveiller (le propriétaire juge)
 
-| # | Critère | Seuil proposé | Où le lire |
+| # | Critère | Seuil validé | Où le lire |
 |---|---|---|---|
 | 9 | Participants qui ont fait au moins une action (annonce ou proposition de prix) | **au moins 14 sur 20** | `SUIVI.md`, partie 1 |
 | 10 | Temps d'équipe par commande | **30 minutes ou moins en moyenne** en semaines 3 et 4 | journal (heures) ÷ commandes de la semaine |

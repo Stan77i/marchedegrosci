@@ -96,9 +96,9 @@ Proposition **[À VALIDER]** : **4 semaines**.
 - Semaines 2 et 3 : commandes en autonomie, l'équipe observe.
 - Semaine 4 : bilan, décision.
 
-## 8. Critères de réussite proposés **[À VALIDER]**
+## 8. Critères de réussite
 
-Aucun seuil chiffré n'est inventé ici : le propriétaire fixe les nombres avant le début.
+Les seuils chiffrés sont dans `CRITERES-DE-REUSSITE.md`, **validés par le propriétaire le 25/10/2026** (« ok pour tout »). Les [N] ci-dessous y sont remplacés par des nombres.
 
 - [ ] Au moins [N] commandes menées jusqu'à la clôture.
 - [ ] Au moins [N] vendeurs différents ont reçu une commande, [N] acheteurs différents en ont passé.

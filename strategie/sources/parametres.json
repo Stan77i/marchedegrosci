@@ -10,6 +10,7 @@
     { "modele": "pitch.html", "pdf": "1-Pitch.pdf", "titre": "Pitch", "format": "diapo" },
     { "modele": "presentation.html", "pdf": "2-Presentation.pdf", "titre": "Présentation du projet", "format": "a4" },
     { "modele": "probleme-solution.html", "pdf": "3-Probleme-et-solution.pdf", "titre": "Le problème et notre solution", "format": "a4" },
-    { "modele": "marketing.html", "pdf": "4-Marketing.pdf", "titre": "Plan marketing", "format": "a4" }
+    { "modele": "marketing.html", "pdf": "4-Marketing.pdf", "titre": "Plan marketing", "format": "a4" },
+    { "modele": "cube.html", "pdf": "cube-marche-de-gros.pdf", "titre": "Le cube du Marché de Gros", "format": "a4" }
   ]
 }

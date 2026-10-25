@@ -74,7 +74,9 @@ function remplir(html, V, marche) {
   let navigateur = null;
   for (const d of docs) {
     const brut = lire(d.modele);
-    const corps = remplir(brut, V, marche);
+    // briques du cube : {{nb_a}}, {{nb_v}}… = nombre de codes A1, V1… écrits dans le modèle
+    const nb = {}; for (const m of brut.matchAll(/class="pc f-([a-z])">[A-Z]\d+</g)) nb['nb_' + m[1]] = (nb['nb_' + m[1]] || 0) + 1;
+    const corps = remplir(brut, Object.assign({}, V, nb), marche);
     const h = crypto.createHash('sha256').update(style + corps).digest('hex').slice(0, 16);
     const pdf = path.join(SORTIE, d.pdf);
     if (emp[d.pdf] && emp[d.pdf].h === h && fs.existsSync(pdf)) { console.log('inchangé :', d.pdf); continue; }

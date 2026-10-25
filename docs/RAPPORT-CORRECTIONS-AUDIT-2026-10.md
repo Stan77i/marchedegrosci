@@ -12,7 +12,7 @@ Règle de ce rapport : rien n'est inventé. Ce qui n'a pas été vérifié est �
 1. L'audit du 24/10 donnait **49 sur 100** : bon pour un essai fermé, pas pour le grand public.
 2. Les corrections sont **faites, testées sur le projet de TEST, puis appliquées sur le vrai serveur le 25/10/2026** (schémas 92 à 97a, puis 97b à 98b ; fonction des notifications `pousser` v25), avec votre « OK production ».
 3. Depuis : litige en 1 h après « livré », quantité minimale, contrôle qualité permanent (premier bilan : 0 défaut très grave, 4 graves), décisions juridiques triées, kit de l'essai fermé (partie 9).
-4. À faire maintenant : fusionner les PR #309 (juridique) puis #310 (essai fermé) ; répondre aux décisions de `docs/juridique/DECISIONS-A-PRENDRE.md` ; choisir les corrections du contrôle qualité.
+4. Vos décisions juridiques sont prises (« ok pour tout », 25/10/2026, PR #311). À faire maintenant : fusionner #311 puis la PR du tableau de bord ; choisir les corrections du contrôle qualité.
 5. Ensuite : lancer l'essai fermé.
 
 ---
@@ -157,12 +157,12 @@ Chaque lot est d'abord revérifié sur le test. Jamais de test destructif ni de 
 
 ## 5. Vos décisions en attente
 
-> **Mise à jour du 25/10/2026** : la liste à jour, avec un conseil pour chaque point, est `docs/juridique/DECISIONS-A-PRENDRE.md` (PR #309). Depuis cette nuit :
+> **Mise à jour du 25/10/2026** : vous avez répondu « ok pour tout » : toutes les décisions sont prises. La liste, avec ce qu'il faut construire pour chacune, est `docs/juridique/DECISIONS-A-PRENDRE.md` (PR #309 fusionnée, puis PR #311). En plus de ce « ok pour tout » :
 > - n° 1 : la vieille quantité n'est plus gardée sans rien dire ; l'application affiche « La quantité a changé, vérifiez votre annonce. » (schéma 97d, en production) ;
 > - n° 5 : tranché autrement : après « livré », **1 h** (et non 24 h) pour répondre, sinon litige, puis 1 h plus tard clôture pour le vendeur ; l'acheteur muet perd un litige (schémas 97b et 97d, en production) ;
 > - n° 11 : tranché : **l'équipe peut lire tous les messages** (« l'app n'est pas un WhatsApp, c'est une mise en relation ») ; écrit dans les projets de textes (PR #309) ;
 > - n° 17 : la commission des ventes d'avant le paiement n'est jamais réclamée (règle déjà en service, schéma 95b). Le n° 16 (les 51 lignes « due » du test) reste à corriger : défaut ANO-013 du contrôle qualité.
-> Les autres lignes restent ouvertes et sont reprises dans `DECISIONS-A-PRENDRE.md`. Le texte ci-dessous est celui de la nuit.
+> Le texte ci-dessous est celui de la nuit.
 
 Chaque ligne : la question, puis mon conseil.
 
@@ -310,13 +310,13 @@ Rien n'est inventé ici : chaque point renvoie au document qui le prouve.
 - Ce qui tourne tout seul : contrôle à chaque PR (déjà vu tourner sur GitHub), chaque jour et tous les 3 jours. La tâche Claude tous les 3 jours n'a pas l'accès au serveur : à recréer par vous avec le connecteur Supabase.
 - Vous choisissez les corrections par numéros : `CONTROLE_QUALITE/DERNIER_RAPPORT.md`, partie 8.
 
-### 5) Juridique (PR #309, ouverte)
+### 5) Juridique (PR #309 fusionnée, PR #311 ouverte)
 
-- Votre décision : **l'équipe peut lire tous les messages** ; les projets de textes le disent clairement.
-- Les 32 questions sont triées : **17 tranchées, 15 restent**, chacune avec un conseil, plus 4 points de l'audit (A à D). Fichier : `docs/juridique/DECISIONS-A-PRENDRE.md`. Répondre « ok pour tout » ou « ok sauf n° X ».
+- Votre décision : **l'équipe peut lire tous les messages** ; les projets de textes le disent clairement (PR #309).
+- Les 32 questions ont été triées (17 déjà tranchées), puis vous avez répondu **« ok pour tout »** aux 15 autres et aux points A à D (PR #311). Fichier : `docs/juridique/DECISIONS-A-PRENDRE.md`, avec une partie « À construire » (ce que chaque décision demande dans l'application).
 - Les textes restent des **projets** : rien n'est en ligne, aucun juriste ne les a encore relus.
 
-### 6) Essai fermé (PR #310, ouverte)
+### 6) Essai fermé (PR #310, fusionnée)
 
 - Kit pour le lancer vous-même en une heure : `docs/essai-ferme/LANCER-EN-1-HEURE.md`, avec les messages à copier, le guide des participants, le suivi, le questionnaire et des critères de réussite proposés (à valider avant le premier jour).
 - Conseil gardé : 20 personnes (10 vendeurs, 10 acheteurs), 2 produits, 1 ville, 4 semaines.
@@ -324,4 +324,4 @@ Rien n'est inventé ici : chaque point renvoie au document qui le prouve.
 
 ### 7) Ordre de fusion
 
-#309, puis #310, puis la PR « Tableau de bord du propriétaire : une seule page à lire » (qui porte ce rapport).
+#309 et #310 sont fusionnées. Reste : #311, puis #312 « Tableau de bord du propriétaire : une seule page à lire » (qui porte ce rapport).

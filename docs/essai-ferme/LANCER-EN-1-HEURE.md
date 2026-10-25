@@ -21,7 +21,7 @@ Le plan (`PLAN.md`, partie 2) demande de cocher ces cases avant d'inviter. Voici
 | Condition | État |
 |---|---|
 | Stock rendu, commande jamais bloquée, noms réservés, numéro contesté, textes d'argent, service worker | **Fait** : schémas 92 à 96 en production depuis le 25/10/2026 |
-| Litige en 1 h après « livré », quantité minimale (schémas 97b, 97c, 97d) | **À vérifier** : sur le projet de test ; accord de production déjà donné. Demandez à Claude : « 97b, 97c, 97d sont-ils en production ? » |
+| Litige en 1 h après « livré », quantité minimale (schémas 97b, 97c, 97d) | **Fait** : en production depuis le 25/10/2026 (PR #308). |
 | Conditions d'utilisation acceptées à l'inscription | **Pas fait** : les textes sont des projets (`docs/juridique/`), aucune case dans l'application |
 | Audit de sécurité refait | **Pas fait** |
 | Vos décisions (délais, annonces, badges…) | **En attente** : `docs/A-FAIRE-PROPRIETAIRE.md`, partie 4. Les valeurs actuelles marchent pour l'essai |

@@ -244,21 +244,20 @@ Toutes actives en production :
 |---|---|---|
 | `mdg-marketing` | toutes les 5 min | `marketing_tick` : messages du marché (30 par jour au plus, de 7 h à 21 h UTC, soit l'heure d'Abidjan ; réglage dans `marketing_reglage`) |
 | `mdg-liberer-echus` | toutes les 5 min | `sequestre_liberer_echus` : marque « libérée » une commande terminée depuis 1 h (schéma 89) sans réclamation (écriture dans le journal seulement, aucun argent) |
-| `mdg-commandes-delais` | toutes les 15 min en production ; toutes les 5 min avec le schéma 97b (**projet de test seulement**) | `commandes_delais` : rappels et retard de chargement, rappel de réception à mi-délai, litige ouvert tout seul 1 h après « livré » sans réaction de l'acheteur (`litige_auto_le`), puis clôture en faveur du vendeur 1 h plus tard sans réaction (schéma 97b ; rien n'est versé), litiges en retard, accords sans suite |
+| `mdg-commandes-delais` | toutes les 5 min (schéma 97b, en production depuis le 25/10/2026) | `commandes_delais` : rappels et retard de chargement, rappel de réception à mi-délai, litige ouvert tout seul 1 h après « livré » sans réaction de l'acheteur (`litige_auto_le`), puis clôture en faveur du vendeur 1 h plus tard sans réaction (schéma 97b ; rien n'est versé), litiges en retard, accords sans suite |
 | `mdg-groupes-echeances` | toutes les 15 min | `groupes_echeances` : fin des achats groupés |
 | `mdg-rappels-achat` | toutes les 15 min | `rappels_envoyer` : rappels des achats récurrents (rien n'est acheté) |
 | `mdg-effacer-messages` | chaque heure, à la minute 23 | `dm_purger` : efface les messages directs et discussions de plus de 365 jours (`dm_duree`) |
 | `mdg-purger-positions` | chaque nuit, 3 h 23 UTC | `positions_purger` : effacement des positions GPS |
 | `mdg-niveaux` | chaque nuit, 4 h 37 UTC | `niveaux_recalculer` : niveaux de confiance (fenêtre de 12 mois, fin des sursis) |
 | `mdg-identites-matin` | chaque matin, 7 h 45 UTC | `push_resume_identites` : résumé des identités à examiner pour l'admin |
-| `mdg-commandes-delais` | toutes les 15 min (schéma 92b, **test seulement**) | `commandes_delais` : rappel de chargement, retard, rappel de réception, litige automatique, litiges en retard, accords sans suite |
 | `mdg-annonces-expirer` | toutes les 15 min (schéma 93c, **test seulement**) | `annonces_expirer` : annonces de plus de 30 jours cachées (par lots de 500, jamais effacées), rappel 3 jours avant |
 | `mdg-prix` | toutes les 5 min (schéma 96a, **test seulement**) | `tableau_prix_calculer` : recalcule `tableau_prix_cache` |
-| `mdg-notif` | toutes les 15 min en production ; envoi toutes les 5 min avec le schéma 97d (**projet de test seulement**), calculs toujours un passage sur trois | `notif_tick` : alertes regroupées, groupes bientôt complets, produits à racheter, actions après ouverture. Avec le schéma 91 (**projet de test seulement**, production après l'accord du propriétaire), il appelle aussi `notif_relances` (9 déclencheurs commerciaux, de 7 h à 21 h) |
+| `mdg-notif` | envoi toutes les 5 min (schéma 97d, en production depuis le 25/10/2026), calculs toujours un passage sur trois | `notif_tick` : alertes regroupées, groupes bientôt complets, produits à racheter, actions après ouverture. Avec le schéma 91 (**projet de test seulement**, production après l'accord du propriétaire), il appelle aussi `notif_relances` (9 déclencheurs commerciaux, de 7 h à 21 h) |
 
 ### 4.8 Fonctions Edge
 
-Le fichier `supabase/functions/pousser/index.ts` du dépôt est en **v24** (textes de rappels de commande, rappel `offre_fin`, `notif_besoins_ouverts`) : **non déployé**, ni en production ni sur le test. La ligne ci-dessous décrit ce qui tourne en production.
+Le fichier `supabase/functions/pousser/index.ts` du dépôt est en **v25** (textes du litige en 1 h, schéma 97b ; v24 : rappels de commande, rappel `offre_fin`, `notif_besoins_ouverts`) : **déployé en production le 25/10/2026** (version 25, code relu identique au dépôt). La ligne ci-dessous peut décrire une version plus ancienne.
 
 | Fonction | Version | Rôle |
 |---|---|---|

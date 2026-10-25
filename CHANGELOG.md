@@ -4,6 +4,10 @@ Cet historique vient de `git log origin/main` du dépôt (607 commits) et des se
 
 Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22, 23 et 24 octobre 2026), 607 commits. Aucun commit les 20/10 et entre le 5 et le 9, le 13 et le 16 octobre.
 
+## 25/10/2026
+
+- Production : les corrections de l'audit (schémas 92a à 96f) et le schéma 97a (message privé envoyé deux fois : doublon cherché dans la même conversation) sont appliqués sur la base de production, avec l'accord du propriétaire ; fonction `pousser` v24 déployée. Données touchées : 2 accords notés dans `stock_mouvements`, 1 date de confirmation remplie ; aucune ligne effacée, comptes de lignes identiques avant et après. 97b et 97c restent sur le projet de test. Détail : `docs/PASSATION.md`.
+
 ## 24/10/2026
 
 - Corrections de l'audit (schémas 92 à 96) : **appliquées sur le projet de test seulement**, la production attend l'accord du propriétaire, la fonction `pousser` v24 n'est pas déployée. Détail par équipe ci-dessous et dans `docs/PASSATION.md`.

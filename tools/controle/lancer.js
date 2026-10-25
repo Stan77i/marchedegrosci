@@ -194,11 +194,14 @@ function batteriesSql() {
   const l = [];
   for (const [f, i] of Object.entries(CARTE.testsSql)) if (existe(f)) l.push({ fichier: f, unites: i.unites, schemas: i.schemas });
   const d = path.join(CQ, 'tests', 'sql');
-  if (fs.existsSync(d)) for (const f of fs.readdirSync(d).filter(x => /\.sql$/.test(x)).sort()) {
-    const u = (/^(U\d\d)/i.exec(f) || [])[1];
+  // les fichiers qui ne commencent pas par Uxx (ex. _outils.sql) sont des outils communs, pas des batteries
+  if (fs.existsSync(d)) for (const f of fs.readdirSync(d).filter(x => /^U\d\d.*\.sql$/i.test(x)).sort()) {
+    const u = (/^(U\d\d)/i.exec(f) || [])[1].toUpperCase();
+    const rel = 'CONTROLE_QUALITE/tests/sql/' + f;
+    const decl = (CARTE.batteries || {})[rel] || {};
     const src = fs.readFileSync(path.join(d, f), 'utf8');
-    const sch = [...new Set((src.match(/sch[ée]mas?\s+(\d+[a-z]?)/gi) || []).map(x => x.replace(/sch[ée]mas?\s+/i, '').toLowerCase()))];
-    l.push({ fichier: 'CONTROLE_QUALITE/tests/sql/' + f, unites: u ? [u.toUpperCase()] : [], schemas: sch });
+    const sch = [...new Set((src.match(/sch[ée]mas?\s+(\d+[a-z]?)/gi) || []).map(x => x.replace(/sch[ée]mas?\s+/i, '').toLowerCase()).concat(decl.schemas || []))];
+    l.push({ fichier: rel, unites: [...new Set([u].concat(decl.unites || []))], schemas: sch });
   }
   return l;
 }
@@ -230,7 +233,7 @@ function serveurStatique() {
 async function batteriesNavigateur(filtreUnite) {
   const d = path.join(CQ, 'tests', 'navigateur');
   const fichiers = fs.existsSync(d) ? fs.readdirSync(d).filter(f => /^U\d\d.*\.(js|mjs|cjs)$/i.test(f)).sort() : [];
-  const choisis = fichiers.filter(f => !filtreUnite || f.toUpperCase().startsWith(filtreUnite));
+  const choisis = fichiers.filter(f => !filtreUnite || f.toUpperCase().startsWith(filtreUnite) || (((CARTE.batteries || {})['CONTROLE_QUALITE/tests/navigateur/' + f] || {}).unites || []).includes(filtreUnite));
   if (!choisis.length) {
     if (!filtreUnite || ['U10', 'U12'].includes(filtreUnite))
       noter({ id: 'NAV-00', unite: filtreUnite || 'U10, U12', scenario: 'Batteries navigateur de CONTROLE_QUALITE/tests/navigateur/', attendu: 'au moins une batterie', obtenu: 'aucune batterie trouvée (à ajouter par l’intégration)', statut: 'non exécuté', preuve: 'CONTROLE_QUALITE/tests/navigateur/' });

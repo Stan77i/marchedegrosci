@@ -7,15 +7,20 @@
 
 **« Lance le contrôle général MGCI »** : Claude suit `procedures/CONTROLE_GENERAL.md` (script, tests SQL sur le projet de test en équipes d’agents, navigateur, jugement, rapport daté, PR avec seulement les rapports).
 
+Premier contrôle général complet : **25/10/2026**, `rapports/2026-10-25-controle-general.md` (238 tests : 148 réussis, 69 échoués, 1 bloqué, 4 non exécutés, 16 en attente ; 0 P0, 4 P1). Les anomalies sont dans `REGISTRE_ANOMALIES.md`.
+
 ## Les commandes
 
 | Je veux… | Commande | Durée |
 |---|---|---|
 | tout ce qui est automatique | `bash tools/controle/lancer.sh tout` | ~10 s |
 | le contrôle du code et des textes seulement | `bash tools/controle/lancer.sh statique` | ~5 s |
-| ouvrir l’application dans le navigateur (iPhone émulé) et les batteries d’écran | `bash tools/controle/lancer.sh navigateur` | ~15 s + batteries |
+| ouvrir l’application dans le navigateur (iPhone émulé) et les batteries d’écran | `bash tools/controle/lancer.sh navigateur` | ~9 min (U10 ~8 min, U12 ~40 s) |
 | une seule unité | `bash tools/controle/lancer.sh unite U04` | ~5 s (+ SQL listé) |
 | contrôler ce que je viens de changer | `bash tools/controle/lancer.sh apres-modif` (`procedures/APRES_MODIFICATION.md`) | ~10 s (+ SQL lié) |
+| les batteries SQL d’une unité (sur le projet de **test**) | Claude via MCP : coller `CONTROLE_QUALITE/tests/sql/_outils.sql` puis un bloc de `CONTROLE_QUALITE/tests/sql/Uxx-*.sql` dans le même appel (U02, U07, U09, U11 ont leurs outils en tête) | ~2 min par bloc |
+| une batterie navigateur seule | `python3 -m http.server 8765` depuis le dépôt, puis `CQ_URL=http://127.0.0.1:8765/ node CONTROLE_QUALITE/tests/navigateur/U10-fiabilite.js` (ou `U12-parcours.js`) | U10 ~8 min, U12 ~40 s |
+| lire la dernière définition d’une fonction SQL du dépôt | `python3 tools/controle/fn.py <fonction>` | 1 s |
 | l’audit complet avant publication | `procedures/AVANT_PRODUCTION.md` | une demi-journée |
 | après un incident | `procedures/APRES_INCIDENT.md` | variable |
 
@@ -38,7 +43,7 @@ Gravité :
 
 Statut d’un test : **réussi** (vu, avec preuve) · **échoué** · **bloqué** (n’a pas pu tourner : ce n’est **pas** réussi) · **non exécuté** (pas lancé, par exemple le SQL par le script) · **en attente : <prérequis>** (paiement, SMS, clé, vrai téléphone).
 
-Statut d’une anomalie : **ouverte** · **corrigée non vérifiée** · **vérifiée** · **risque accepté par le propriétaire** (seulement avec sa phrase écrite).
+Statut d’une anomalie : **ouverte** · **correction en cours** (PR ouverte) · **corrigée non vérifiée** · **vérifiée** · **risque accepté par le propriétaire** (seulement avec sa phrase écrite).
 
 Le propriétaire lit « En bref », puis les P0 et P1, puis « Corrections proposées », et répond par les numéros (« corrige 1, 3 et 4 »).
 
@@ -50,26 +55,32 @@ Le propriétaire lit « En bref », puis les P0 et P1, puis « Corrections propo
 4. Après fusion : rejouer le test de non-régression (`bash tools/controle/lancer.sh unite Uxx`, ou le fichier SQL via MCP) ; statut « vérifiée » avec date et preuve.
 5. Un rouge corrigé : retirer sa clé de `tools/controle/reference-rouges.json`.
 
-## Les 14 unités (état au 25/10/2026)
+## Les 14 unités (état au 25/10/2026, après le premier contrôle général)
 
-| Unité | Automatique (script) | Tests SQL existants (Claude, MCP) | Batteries du contrôle qualité | État |
+| Unité | Automatique (script) | Tests SQL anciens (`supabase/tests/`) | Batteries du contrôle qualité (`tests/`) | Résultat du 25/10/2026 (réussis / échoués / bloqués / non exécutés / en attente) |
 |---|---|---|---|---|
-| U01 Logique métier | STA-04 | `regles-93`, `e2e-parcours` | à intégrer | partiel |
-| U02 Sécurité | — | `confiance-94`, `transport-83` G, `fiabilite-84` E, `regles-93` | à intégrer (SQL) | manuel seulement |
-| U03 Transactions et argent | STA-03 | `commission-95b`, `transport-95`, `e2e-parcours` | à intégrer (SQL) | partiel ; vrais paiements **impossibles** (aucun branché) |
-| U04 Stocks et produits | — | `boutiques-86`, `tableau-prix`, `stock-commandes`, `regles-93`, `e2e-parcours` | à intégrer (SQL) | manuel seulement |
-| U05 Commandes et négociations | — | `e2e-parcours`, `stock-commandes`, `fiabilite-84`, `dm-anti-doublon` | à intégrer (SQL) | manuel seulement |
-| U06 Transport et livraison | — | `transport-83`, `transport-95`, `stock-commandes`, `e2e-parcours` | à intégrer (SQL) | manuel seulement |
-| U07 Profils et confiance | — | `confiance-94`, `niveaux-85`, `fiabilite-84`, `boutiques-86` | à intégrer (SQL) | manuel seulement |
-| U08 Notifications | — | `notifications-88`, `notif-objet-vivant`, `alertes-ciblage` | à intégrer (SQL) | manuel ; envoi réel (`pousser`) **en attente : clés push** |
-| U09 Base de données | STA-12 | `stockage-volume` ; listes G | à intégrer (SQL) | partiel |
-| U10 Fiabilité technique | STA-01, 02, 06, 07, 14 ; APM-02 à 07 | `dm-anti-doublon` | à intégrer (navigateur) | automatique en grande partie |
-| U11 Administration | — | `stockage-volume`, `commission-95b`, `confiance-94` | à intégrer (SQL) | manuel seulement |
-| U12 Compréhension | STA-05, 08 à 11 | — | à intégrer (navigateur) | partiel (repérage automatique, jugement par Claude) |
-| U13 Cohérence documentaire et commerciale | STA-03, 09, 13 | — | — (jugement) | partiel |
-| U14 Situations extrêmes | — | `alertes-ciblage` (250 abonnés) | à intégrer (SQL) | manuel ; charge simultanée **jamais testée** |
+| U01 Logique métier | STA-04 | `regles-93`, `e2e-parcours` | LOG-01 à 16 (jugement, `tools/controle/fn.py`) | 10 / 6 / 0 / 0 / 1 |
+| U02 Sécurité | — | `confiance-94`, `transport-83` G, `fiabilite-84` E, `regles-93` | `sql/U02-securite.sql` (SEC) | 8 / 2 / 0 / 0 / 1 |
+| U03 Transactions et argent | STA-03 | `commission-95b`, `transport-95`, `e2e-parcours` | `sql/U03-argent.sql` (ARG) | 10 / 3 / 0 / 0 / 4 ; vrais paiements **impossibles** (aucun branché) |
+| U04 Stocks et produits | — | `boutiques-86`, `tableau-prix`, `stock-commandes`, `regles-93`, `e2e-parcours` | `sql/U04-stocks.sql` (STK) | 8 / 2 / 0 / 1 / 1 |
+| U05 Commandes et négociations | — | `e2e-parcours`, `stock-commandes`, `fiabilite-84`, `dm-anti-doublon` | `sql/U05-commandes.sql` (CMD) | 11 / 4 / 0 / 0 / 1 |
+| U06 Transport et livraison | — | `transport-83`, `transport-95`, `stock-commandes`, `e2e-parcours` | `sql/U06-transport.sql` (TRA) | 12 / 0 / 0 / 0 / 1 |
+| U07 Profils et confiance | — | `confiance-94`, `niveaux-85`, `fiabilite-84`, `boutiques-86` | `sql/U07-profils.sql` (PRO) | 3 / 1 / 0 / 1 / 0 |
+| U08 Notifications | — | `notifications-88`, `notif-objet-vivant`, `alertes-ciblage` | `sql/U08-notifications.sql` (NOT) | 5 / 4 / 0 / 1 / 1 ; envoi réel **en attente : clés push** |
+| U09 Base de données | STA-12 | `stockage-volume` ; listes G | `sql/U09-base.sql` (BDD) | 3 / 3 / 0 / 0 / 1 |
+| U10 Fiabilité technique | STA-01, 02, 06, 07, 14 ; APM-02 à 07 | `dm-anti-doublon` | `navigateur/U10-fiabilite.js` (FIA, automatique) | 57 / 18 / 0 / 0 / 3 |
+| U11 Administration | — | `stockage-volume`, `commission-95b`, `confiance-94` | `sql/U11-admin.sql` (ADM) | 3 / 2 / 0 / 0 / 0 |
+| U12 Compréhension | STA-05, 08 à 11 | — | `navigateur/U12-parcours.js` (CMP-21+, automatique) ; CMP-01 à 11 (jugement sur captures) | 10 / 11 / 1 / 0 / 0 |
+| U13 Cohérence documentaire et commerciale | STA-03, 09, 13 | — | DOC-01 à 12 (jugement) | 2 / 11 / 0 / 0 / 1 |
+| U14 Situations extrêmes | — | `alertes-ciblage` (250 abonnés) | `sql/U14-extremes.sql` (EXT) | 6 / 2 / 0 / 1 / 1 ; charge simultanée **jamais testée** |
 
 Détail par type de situation : `MATRICE_TESTS.md`.
+
+## Ce que le propriétaire doit faire (une fois)
+
+1. **Recréer la tâche programmée avec l’accès Supabase** : la tâche Claude tous les 3 jours (`trig_01KLjPRL3kuCrSEjgNVCPkxg`) a été créée sans l’outil Supabase, donc elle ne peut pas jouer les tests SQL. Sur claude.ai : ouvrir les tâches programmées, supprimer l’ancienne, en créer une nouvelle (tous les 3 jours, même texte : « Lance le contrôle général MGCI ») **en cochant le connecteur Supabase**. Sans cela, les lignes SQL restent « bloqué : outil Supabase absent ».
+2. **Vérifier que GitHub Actions est actif** : sur github.com, dépôt `Stan77i/marchedegrosci`, onglet « Actions » : les tâches « Contrôle des PR », « Contrôle quotidien » et « Gardiens » doivent être activées (si GitHub affiche « I understand my workflows, go ahead and enable them », cliquer). Au lendemain de la fusion, une issue « Contrôle quotidien » doit apparaître.
+3. **Facultatif : le contrôle avant chaque commit** sur votre ordinateur (ou celui de Claude) : `cp tools/controle/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit`. Il refuse un commit avec une erreur de syntaxe ou un front changé sans `CACHE` monté.
 
 ## Automatique, manuel, impossible
 
@@ -94,8 +105,9 @@ Détail par type de situation : `MATRICE_TESTS.md`.
 | `DERNIER_RAPPORT.md`, `HISTORIQUE.md`, `rapports/` | les résultats |
 | `modeles/RAPPORT.md` | gabarit de rapport |
 | `procedures/` | contrôle général, après modification, avant production, après incident |
-| `tests/sql/`, `tests/navigateur/` | batteries des unités (ajoutées par l’intégration ; noms `Uxx-<sujet>`) |
-| `tools/controle/` (hors de ce dossier) | les scripts : `lancer.sh`, `controle.js`, `unites.json`, `reference-rouges.json`, `exceptions.json`, `pre-commit` |
+| `tests/sql/`, `tests/navigateur/` | batteries des unités (noms `Uxx-<sujet>` ; outils communs commençant par `_` : `_outils.sql`, `_faux-serveur.js`) |
+| `rapports/annexes/` | résultats bruts des équipes d’un contrôle général (sans captures) |
+| `tools/controle/` (hors de ce dossier) | les scripts : `lancer.sh`, `controle.js`, `unites.json`, `reference-rouges.json`, `exceptions.json`, `pre-commit`, `fn.py` |
 
 ## Règles qui ne changent jamais
 

@@ -86,7 +86,6 @@
 .pm-act .lien{min-height:44px;border:0;background:none;color:#CFC4B1;font-weight:500;font-size:14.5px}
 .pm-act button:active{transform:scale(.985)}
 .pm-ex{display:flex;align-items:center;gap:8px;margin:-6px 0 14px;padding:8px 12px;border-radius:12px;background:rgba(242,194,48,.14);color:#F2C230;font:600 13px/1.35 Jost,sans-serif}
-.pm-n{margin:14px 0 0;color:#8F846F;font-size:12.5px;line-height:1.5;text-align:center}
 @media (prefers-reduced-motion:reduce){.pm-bg,.pm,.pm-ech li,.pm-vous,.pm-vous::before,.pm-pan.in{animation:none!important}}`;
   function css() { if (document.getElementById('pmCss')) return; const s = document.createElement('style'); s.id = 'pmCss'; s.textContent = CSS; document.head.appendChild(s); }
 
@@ -125,8 +124,7 @@
       ${o.exemple ? '<p class="pm-ex">Exemple de démonstration : ces prix et ces noms ne sont pas réels.</p>' : ''}
       ${o.activite ? `<div class="pm-ac ${esc(o.activite.cls || '')}" role="status"><i aria-hidden="true">${(() => { const n = { '🔥': 'chaleur', '📈': 'tendance', '✅': 'verifie', '🤝': 'negoce', '🛒': 'panier' }[o.activite.ico]; return n && window.MDGIco ? MDGIco.svg(n, 17, 1.9) : esc(o.activite.ico); })()}</i><span><b>${esc(o.activite.t)}</b><small>${esc(o.activite.s)}</small></span></div>` : ''}
       <div class="pm-tabs" role="tablist" aria-label="Vendeurs ou acheteurs"><button type="button" role="tab" class="v" data-c="v">▼ Vendeurs <span class="nbul o">${O.length}</span></button><button type="button" role="tab" class="a" data-c="a">▲ Acheteurs <span class="nbul d">${D.length}</span></button></div>
-      <div class="pm-pan" role="tabpanel"></div>
-      <p class="pm-n">Le Marché de Gros ne fixe aucun prix : les vendeurs placent leur prix, les acheteurs leur budget. Le vendeur le moins cher et l’acheteur le plus généreux passent en tête.</p></div>`;
+      <div class="pm-pan" role="tabpanel"></div></div>`;
     document.body.appendChild(bg);
     const pan = bg.querySelector('.pm-pan');
     const montrer = c => { cote = c;

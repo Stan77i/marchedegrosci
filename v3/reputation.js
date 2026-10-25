@@ -43,7 +43,7 @@
 @media (min-width:720px){.rp-bg{align-items:center;padding:24px}}
 .rp{position:relative;width:100%;max-width:520px;max-height:min(90dvh,820px);overflow-x:hidden;overflow-y:auto;background:#F4EEE3;color:#171512;border-radius:28px 28px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));font:400 15px/1.5 Jost,system-ui,sans-serif;box-shadow:0 -10px 50px rgba(0,0,0,.5);animation:rpUp .36s cubic-bezier(.22,1,.36,1) both;overscroll-behavior:contain}
 @media (min-width:720px){.rp{border-radius:28px}}
-.rp h2{margin:0 44px 4px 0;font:600 23px/1.1 Jost,sans-serif;letter-spacing:-.015em}.rp>p{margin:0 0 16px;color:#655C4D;font-size:14px}
+.rp>h2+p{margin-top:-10px}.rp h2{margin:0 44px 14px 0;font:600 23px/1.1 Jost,sans-serif;letter-spacing:-.015em}.rp>p{margin:0 0 16px;color:#655C4D;font-size:14px}
 .rp-x{position:absolute;right:14px;top:14px;width:42px;height:42px;border:0;border-radius:50%;background:rgba(23,21,18,.08);color:#171512;font-size:0;cursor:pointer}
 .rp-x::before,.rp-x::after{content:"";position:absolute;left:50%;top:50%;width:15px;height:2px;border-radius:2px;background:currentColor;transform:translate(-50%,-50%) rotate(45deg)}.rp-x::after{transform:translate(-50%,-50%) rotate(-45deg)}
 .rp-go{width:100%;min-height:54px;margin-top:16px;border:0;border-radius:999px;background:#10392B;color:#F3EFE4;font:700 16px Jost,sans-serif;cursor:pointer}.rp-go:disabled{opacity:.45;cursor:default}
@@ -160,7 +160,7 @@
     let deja = null; try { deja = await N().rpc('peut_noter', { p_cible: uid }); } catch (_) {}
     if (deja && !deja.peut) return N().toast(deja.raison === 'apres_commande' ? 'Les avis se donnent après une commande terminée, depuis Mes commandes.' : 'Vous pourrez noter ' + (nom || 'ce membre') + ' après une commande terminée ensemble.');
     const star = '<svg viewBox="0 0 20 20"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8L10 14.9 4.8 17.6l1-5.8L1.6 7.7l5.8-.8z"/></svg>';
-    const bg = feuille(`<h2>Noter ${esc(nom || 'ce membre')}</h2><p>Votre note aide les autres à choisir avec qui échanger. Vous pourrez la changer plus tard.</p>
+    const bg = feuille(`<h2>Noter ${esc(nom || 'ce membre')}</h2>
       <div class="rp-big" role="radiogroup" aria-label="Note">${[1, 2, 3, 4, 5].map(i => `<button type="button" role="radio" aria-checked="false" aria-label="${i} étoile${i > 1 ? 's' : ''}" data-n="${i}">${star}</button>`).join('')}</div>
       <p class="rp-lib" aria-live="polite"></p><textarea maxlength="300" placeholder="Un mot sur l’échange (facultatif) : ponctualité, qualité, respect du prix…">${esc(deja && deja.texte || '')}</textarea><p class="rp-msg" role="alert"></p>
       <button type="button" class="rp-go" disabled>Publier ma note</button>`, 'Noter');
@@ -298,7 +298,7 @@
   function modifier(pp, apres) {
     const s = N() && N().session(); if (!s) return;
     let photos = (pp.photos || []).filter(photoUrl).slice(0, 6);
-    const bg = feuille(`<h2>Mon profil public</h2><p>Ce que les autres membres voient en touchant votre nom : qui vous êtes, ce que vous faites, ce que vous avez.</p>
+    const bg = feuille(`<h2>Mon profil public</h2>
       <div class="rp-ed"><label for="rpBio">Présentation <i>600 caractères</i></label><textarea id="rpBio" maxlength="600" placeholder="ex. Coopérative de 40 producteurs d’igname à Bouaké. Livraison possible à Abidjan.">${esc(pp.bio || '')}</textarea>
       <label for="rpAct">Activités <i>séparées par des virgules</i></label><input id="rpAct" maxlength="200" placeholder="ex. Igname, manioc, transport, stockage" value="${esc(pp.activites || '')}">
       <label>Photos <i>6 au plus : champ, stock, magasin…</i></label><div class="grille" data-g></div>
@@ -471,7 +471,7 @@
   }
 
   async function classement() {
-    const bg = feuille(`<h2>Les mieux notés</h2><p>Les vendeurs et acheteurs que leurs partenaires recommandent, d’après leurs notes après négociation.</p><div class="rp-cl" data-l><div class="rp-vide">Chargement…</div></div>`, 'Les mieux notés');
+    const bg = feuille(`<h2>Les mieux notés</h2><div class="rp-cl" data-l><div class="rp-vide">Chargement…</div></div>`, 'Les mieux notés');
     let l = [], rate = false; try { l = await N().rpc('mieux_notes', { n: 50 }, !!N().session()) || []; } catch (_) { rate = true; }
     if (!bg.isConnected) return;
     const box = bg.querySelector('[data-l]');

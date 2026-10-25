@@ -56,6 +56,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
   - une fois le public ouvert : une mise en ligne par jour au plus.
 - **Documentation officielle** (demande du propriétaire, 24/10/2026) : `FONCTIONNALITES.md`, `ROADMAP.md`, `ARCHITECTURE.md`, `CHANGELOG.md` à la racine. Chaque PR qui ajoute ou change une fonctionnalité les met à jour (état réel, fichiers, tables, fonctions) ; ne jamais présenter une idée comme faite.
 - **Rapport de passation à chaque fois** (règle du propriétaire, 23/10/2026) : chaque PR ajoute sa section dans `docs/PASSATION.md` et met à jour tout ce qui doit l'être (`docs/REPRISE.md` : état, ce qui est fait, ce qui reste ; `docs/seo/PLAN.md` pour le site ; `PORTAGE-SITE.md`, `FOUNDER_CONTEXT.md`, modèles de `strategie/sources/`, `DESIGN.md` quand ils sont concernés). Sans attendre qu'il le demande.
+- **Gardiens** (règle du propriétaire, 24/10/2026) : tous les 3 jours, contrôle automatique et session Claude programmée (dossier `docs/gardiens/`) ; chaque nouvelle règle, fonction, test ou écran ajoute ce qu'il faut vérifier dans `docs/gardiens/LISTES-DE-CONTROLE.md` et `REGISTRE-DES-TESTS.md`, dans la même PR.
 - **Mesurer, ne pas supposer.** Aucune donnée inventée. Ne jamais dire qu'un test, un déploiement ou une migration a réussi sans l'avoir vérifié.
 - Vérifier dans un vrai navigateur :
   - Playwright : `/opt/node-tools/node_modules/playwright` ;

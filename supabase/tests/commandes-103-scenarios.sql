@@ -386,3 +386,9 @@ end $$;
 --     refus partiel accepté (4 sur 10) : acheteur paie 120 000, non dû 110 000, vendeur net 115 800, transport payé par le vendeur.
 --     Journal : « 200000 F de marchandise non dus par l'acheteur ; transport à la charge du vendeur ».
 -- Transport par un transporteur choisi (mission avec prix) : calcul relu, pas joué (pas de mission dans ce test).
+-- Avec la participation de l'acheteur (schémas 102, autre équipe) : test participation-102-scenarios.sql rejoué le 25/10/2026 avec
+-- 103 en place (même projet de test) : litige automatique puis proposition → pas de clôture pour le vendeur ; partage de l'équipe →
+-- proposition caduque ; « transport » 3 000 F acceptée → _seq_repartition : acheteur paie 3 000, transport payé par l'acheteur,
+-- vendeur net 3 000, non dû 200 000. Écarts du côté 102 sur le test (vendeur qui propose, 4e proposition, réglages participation
+-- absents) : signalés à l'équipe participation, sans lien avec 103.
+

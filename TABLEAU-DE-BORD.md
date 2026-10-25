@@ -117,6 +117,7 @@ Ce sont vos décisions. Chaque ligne est une règle en service ou à respecter.
 - Accord sans commande : 72 h. Chargement : 72 h. L'équipe tranche un litige en 72 h.
 - Réception : 1 h pour réclamer, puis clôture toute seule.
 - Après « livré » : 1 h pour répondre, sinon litige ; 1 h de plus sans réponse, clôture pour le vendeur.
+- Marchandise cassée, gâtée, manquante ou non conforme : l'acheteur ne paie rien (ni marchandise ni transport) ; le risque reste au vendeur jusqu'à la réception. S'il le veut, l'acheteur propose de participer (transport seulement, partie gardée, ou un montant) ; le vendeur accepte ou refuse, sinon l'équipe tranche. Aucun argent ne bouge (serveur prêt sur le test, écran à faire).
 - Pas de chargement sans photos du colis et poids ; un acheteur qui dit « cassé » face à des photos propres doit le prouver.
 - « Arrivé » déclaré la nuit (21 h - 7 h) : l'heure de l'acheteur commence à 7 h.
 - Le vendeur demande l'annulation et l'acheteur ne répond pas en 24 h : annulée, personne en faute. L'acheteur peut aussi demander une annulation avant le chargement.
@@ -188,6 +189,7 @@ Dans l'ordre conseillé.
 | 2 | Construire ce que demandent vos décisions juridiques, une PR par point avec captures : aide (casse en route), textes du transport en cas de refus, écran du compte banni, journal de tous les gestes de l'équipe, trajets de la carte par notre serveur, profil public sans compte limité aux totaux… L'effacement automatique après les durées seulement avec votre accord | Claude |
 | 3 | Corrections du contrôle qualité (en cours, accord donné) | Claude |
 | 3 bis | Vos 15 propositions du 25/10 : faites sur le serveur de test (branche `claude/commandes-15-propositions`, schémas 103a à 103c). Restent : les écrans (boutons d'annulation, « Signaler un problème » en 5 choix, avertissements), puis votre « OK production » | Claude, puis vous |
+| 3 ter | Participation de l'acheteur : répondre aux propositions P20 à P23 (24 h pour le vendeur, 3 propositions, « partie » sans transport, commission) ; puis l'écran et la mise en production | Vous, puis Claude |
 | 4 | Rejouer les tests des dernières corrections (suppression de compte, membre suspendu) et lire les commissions du vrai serveur (avec votre accord, en lecture seule) | Claude |
 | 5 | Faire les corrections choisies, une PR par lot, avec captures | Claude |
 | 6 | Petits restes connus : relance envoyée après un accord « sans suite » ; étape « Commande terminée » cochée trop tôt ; carte limitée à 500 annonces | Claude |

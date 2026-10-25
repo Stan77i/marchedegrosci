@@ -18,6 +18,9 @@
 -- dépasse la partie de marchandise gardée paie le transport (transport_paye_par peut valoir « partage »).
 -- Projet de TEST d'abord ; production seulement après fusion et accord du propriétaire. Rien n'est effacé.
 
+-- colonne de la participation (schéma 102a, même définition) : 103c marche que 102a soit appliqué avant ou après
+alter table public.commandes add column if not exists participation_montant numeric;
+
 create or replace function public._seq_repartition(p_cmd uuid)
 returns json language plpgsql stable security definer set search_path = public as $$
 declare c public.commandes; m public.transport_missions; marchandise numeric; tr numeric := 0; ta numeric := 0; refuse numeric; vb numeric; vk numeric; tk numeric := 0;

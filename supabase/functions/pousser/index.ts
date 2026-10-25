@@ -31,10 +31,16 @@
 // 18. par la base (pg_cron « mdg-notif », public.notif_tick, schéma 88) avec { lots: true } : les messages en file d'attente
 //     (nouvelles offres et demandes, groupe bientôt complet, veille de la date limite, produit à racheter), regroupés par
 //     personne et par sujet : « 3 nouvelles offres : Tomate ».
+// v30 (25/10/2026, schémas 102a à 102d et 103a à 103c réunis, NON DÉPLOYÉE) : réunit les textes de la v28 (commandes, 103)
+//     et de la v29 (participation négociée, 102d). Aucun texte retiré.
 // v29 (25/10/2026, schéma 102d, NON DÉPLOYÉE) : la participation devient une négociation à trois : « Le vendeur contre-propose
 //     N F » (cmd_participation_contre), « L'équipe propose N F » (cmd_participation_equipe, aux deux), « Le vendeur accepte »
 //     (cmd_participation_un_accord : une partie a accepté la proposition de l'équipe), « Accord à N F » (aux deux) ; refus, retrait
 //     et expiration disent qui a proposé. Numéro 29 : la v28 est celle des schémas 103 (autre branche, claude/commandes-15-propositions).
+// v28 (25/10/2026, schémas 103a à 103c, NON DÉPLOYÉE) : « livré » déclaré entre 21 h et 7 h : « Vous aurez 1 h dès 7 h » ;
+//     retrait par l'acheteur : « Marchandise remise : vérifiez-la » ; annulation acceptée sans réponse en 24 h ; annulation d'un
+//     commun accord demandée par l'acheteur ; clôtures avec une note (équipe, refus, partage) annoncées aux deux, note coupée ;
+//     au chauffeur inscrit, plus de « Le transport reste dû » : refus accepté = transport payé par le vendeur, sinon par l'acheteur.
 // v27 (25/10/2026, schéma 102, NON DÉPLOYÉE) : participation de l'acheteur après un problème : « L'acheteur propose N F »
 //     (cmd_participation, au vendeur), « Participation acceptée » / « refusée » (à l'acheteur), « Proposition retirée » (au
 //     vendeur), « Proposition sans réponse » (aux deux, 24 h). Aucun argent ne bouge : le montant est seulement noté.
@@ -274,7 +280,7 @@ Deno.serve(async (req) => {
     if (corps.commande_etape_id) {
       const { data: e } = await sb.from("commande_etapes").select("id, commande_id, evenement, par, lieu, note").eq("id", String(corps.commande_etape_id)).maybeSingle();
       if (!e) return json({ erreur: "étape introuvable" }, 404);
-      const { data: k } = await sb.from("commandes").select("id, numero, vendeur_id, acheteur_id, produit, validation, transporteur_id, refus_le, etat").eq("id", e.commande_id).maybeSingle();
+      const { data: k } = await sb.from("commandes").select("id, numero, vendeur_id, acheteur_id, produit, validation, transporteur_id, refus_le, etat, transport_regle").eq("id", e.commande_id).maybeSingle();
       if (!k) return json({ erreur: "commande introuvable" }, 404);
       const dests = [k.vendeur_id, k.acheteur_id].filter((u: string) => u && u !== e.par);
       const qui = e.par ? await nomDe(e.par) : "Marché de Gros", produit = coupe(k.produit || "votre commande", 30);
@@ -295,8 +301,17 @@ Deno.serve(async (req) => {
         annulation_refusee: e.par && e.par === k.vendeur_id ? ["Annulation retirée par le vendeur", `${produit} · La marchandise est chargée.`] : ["Annulation refusée", produit],
         annulee: ["Commande annulée", produit],
         litige: [`${qui} a ouvert un litige`, `${produit}. L'équipe va examiner.`],
-        terminee: ["Commande clôturée", `${produit}${e.note ? " · " + String(e.note) : ""}`],
+        terminee: ["Commande clôturée", `${coupe(produit, 22)}${e.note ? " · " + coupe(String(e.note), 52) : ""}`],
       };
+      // schéma 103a : « livré » déclaré entre 21 h et 7 h (heure d'Abidjan = UTC) : l'heure de l'acheteur part à 7 h
+      const hUTC = new Date().getUTCHours(), nuit = hUTC >= 21 || hUTC < 7;
+      if (e.evenement === "arrivee" && e.par && e.par !== k.acheteur_id) {
+        // schéma 103b : retrait par l'acheteur lui-même, la remise au départ vaut « arrivé »
+        if (k.transport_regle === "retrait") T.arrivee = [`Marchandise remise : ${coupe(k.produit || "commande", 16)}`, "Vérifiez-la sur place, puis confirmez avec le mot secret."];
+        else if (nuit) T.arrivee = [`Livraison déclarée : ${coupe(k.produit || "commande", 22)}`, "Vous aurez 1 h dès 7 h pour confirmer ou signaler un problème."];
+      }
+      // schéma 103b : annulation d'un commun accord demandée par l'acheteur, acceptée par le vendeur
+      if (e.evenement === "annulee" && String(e.note || "").includes("demandée par l'acheteur")) T.annulee = ["Annulation acceptée", `${produit} · Personne n'est en faute.`];
       // schéma 57 : l'acheteur refuse la marchandise après réception (photos) → le vendeur doit répondre
       if (e.evenement === "litige" && k.refus_le) T.litige = [`${qui} refuse la marchandise`, `${produit}. Voyez les photos et répondez.`];
       const [title, body] = T[e.evenement] || ["Votre commande avance", produit];
@@ -321,6 +336,10 @@ Deno.serve(async (req) => {
         if (e.evenement === "terminee" && !e.par && String(e.note || "").startsWith("En faveur du vendeur")) return ach
           ? ["Commande close pour le vendeur", `${produit} · Pas de réponse de votre part dans l'heure.`]
           : ["Commande close en votre faveur", `${produit} · L'acheteur n'a pas répondu.`];
+        // schéma 103a : demande d'annulation du vendeur restée sans réponse 24 h → acceptée, personne en faute
+        if (e.evenement === "annulee" && !e.par && String(e.note || "").startsWith("Annulation acceptée")) return ach
+          ? ["Commande annulée", `${coupe(produit, 22)} · Sans réponse en 24 h. Personne en faute.`]
+          : ["Votre annulation est acceptée", `${coupe(produit, 22)} · Pas de réponse en 24 h. Personne en faute.`];
         return null;
       };
       const meta = (d: string): Meta => ({ cat: e.evenement === "litige" ? "litige" : "commande", cle: `cmd:${e.id}:${d}`, type: e.evenement, objet: k.id });
@@ -328,7 +347,7 @@ Deno.serve(async (req) => {
       // schéma 57 : le chauffeur inscrit est prévenu du refus, pour dire ce qu'il a vu à la livraison
       if (e.evenement === "litige" && k.refus_le && k.transporteur_id) {
         const { data: t } = await sb.from("transporteurs").select("user_id").eq("id", k.transporteur_id).maybeSingle();
-        if (t?.user_id && t.user_id !== e.par) res.push(await envoyer(t.user_id, { title: "L'acheteur refuse la marchandise", body: `${produit} · Répondez dans l'Espace chauffeur. Le transport reste dû.`, tag: "mission-cmd-" + k.id, url: APP + "#/?chauffeur=1" },
+        if (t?.user_id && t.user_id !== e.par) res.push(await envoyer(t.user_id, { title: "L'acheteur refuse la marchandise", body: "Refus accepté : transport payé par le vendeur. Sinon, par l'acheteur.", tag: "mission-cmd-" + k.id, url: APP + "#/?chauffeur=1" },
           { cat: "litige", cle: `cmd:${e.id}:chauffeur:${t.user_id}`, type: "refus", objet: k.id }));
       }
       // le chauffeur inscrit (schéma 51) : on lui rappelle d'exiger le code au bon moment

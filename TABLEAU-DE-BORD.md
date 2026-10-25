@@ -129,6 +129,10 @@ Ce sont vos décisions. Chaque ligne est une règle en service ou à respecter.
 - Marchandise cassée, gâtée, manquante ou non conforme : l'acheteur ne paie rien (ni marchandise ni transport) ; le risque reste au vendeur jusqu'à la réception. S'il le veut, l'acheteur propose de participer (transport seulement, partie gardée au prix à l'unité, ou un montant) ; le vendeur accepte, refuse ou contre-propose, l'acheteur aussi ; l'équipe peut proposer un arrangement que les deux doivent accepter. Accord des deux : la commande se termine avec ce montant. 24 h pour répondre, sinon l'équipe tranche. Aucun argent ne bouge (serveur prêt sur le test, écran à faire).
 - Prix à l'unité obligatoire pour toute offre, demande, proposition et commande (« Indiquez le prix au sac ») (serveur prêt sur le test, écran à faire).
 - Pas de chargement sans photos du colis et poids ; un acheteur qui dit « cassé » face à des photos propres doit le prouver.
+- « Arrivé » déclaré la nuit (21 h - 7 h) : l'heure de l'acheteur commence à 7 h.
+- Le vendeur demande l'annulation et l'acheteur ne répond pas en 24 h : annulée, personne en faute. L'acheteur peut aussi demander une annulation avant le chargement.
+- Membre banni : plus de commande ni d'accord avec lui ; ses commandes en route vont à l'équipe. Membre suspendu ou banni : ses accords sans commande s'arrêtent tout de suite.
+- « Signaler un problème » : 5 choix, photo obligatoire pour « cassé » et « mauvaise qualité ». Fausse déclaration « arrivé » : litige perdu pour le vendeur.
 
 **Transport**
 - Même ville : le livreur du vendeur, payé par l'acheteur, hors Marché de Gros.
@@ -138,8 +142,8 @@ Ce sont vos décisions. Chaque ligne est une règle en service ou à respecter.
 
 **Juridique et comptes (« ok pour tout », 25/10/2026)**
 - Le Marché de Gros met en relation : il n'est ni vendeur, ni acheteur.
-- Casse en route (règle du 25/10/2026, remplace la n° 10) : le vendeur en répond jusqu'à la réception conforme, quel que soit le transport. Marchandise gâtée ou cassée : l'acheteur ne paie ni la marchandise ni le transport. « Transport à la charge de l'acheteur » veut seulement dire que le transport n'est pas dans le prix.
-- Transport d'une marchandise refusée : payé par le vendeur si le refus est accepté ; par l'acheteur (avec la marchandise) si le refus est rejeté parce que la marchandise était conforme.
+- Casse en route : le risque reste au vendeur jusqu'à la réception conforme, même quand le transport est à la charge de l'acheteur (ça veut seulement dire que le transport n'est pas compris dans le prix). Marchandise gâtée ou cassée : l'acheteur ne paie ni la marchandise ni le transport. Seul le retrait par l'acheteur lui-même fait de la remise au départ l'« arrivée ». Les photos de départ servent à trancher.
+- Marchandise refusée : refus accepté, l'acheteur ne paie ni la marchandise ni le transport ; refus rejeté (marchandise conforme), il paie tout ; refus en partie accepté, il paie la partie gardée et le vendeur paie le transport.
 - Force majeure : une photo ou une information publique (radio, presse, autorités) ; l'équipe juge.
 - Achat groupé : le transport suit la règle écrite dans l'offre.
 - Numéro contesté : pièce d'identité vue et appel de l'équipe sur ce numéro, tout est noté.
@@ -198,7 +202,8 @@ Dans l'ordre conseillé.
 | 3 ter | Après la fusion de #321 : mettre 101c, 101z et la fonction des trajets sur le vrai serveur | Claude |
 | 2 | Décisions juridiques : les écrans sont faits (aide « cassé en route », transport en cas de refus, « Panne ou météo » avec la source, écran « Compte banni » avec « Contester », carte sans service extérieur inconnu, profil sans compte, numéro contesté, conservation des données) : PR « écrans juridiques » à fusionner après #314, en même temps que la PR du serveur juridique. Restent : mettre en service le nouveau calcul de trajet de la carte et la contestation du bannissement sur le vrai serveur (avec votre accord), la photo pour « Panne ou météo » | Vous (fusionner), puis Claude |
 | 3 | Corrections du contrôle qualité (en cours, accord donné) ; les écrans du suivi de livraison sont faits (retard, nouvelles, délai, fil du suivi) (serveur 99a déjà en production) : PR à fusionner | Claude |
-| 3 bis | Participation négociée à trois et prix à l'unité obligatoire : serveur prêt sur le test (102c, 102d) ; fusionner la PR #322, puis l'écran (avec captures) et la mise en production | Vous, puis Claude |
+| 3 bis | Vos 15 propositions du 25/10 : faites sur le serveur de test (branche `claude/commandes-15-propositions`, schémas 103a à 103c). Restent : les écrans (boutons d'annulation, « Signaler un problème » en 5 choix, avertissements), puis votre « OK production » | Claude, puis vous |
+| 3 ter | Participation négociée à trois et prix à l'unité obligatoire : serveur prêt sur le test (102a à 102d, vos réponses P20 à P23 appliquées) ; écran en cours (avec captures), puis votre « OK production » | Claude, puis vous |
 | 4 | Rejouer les tests des dernières corrections (suppression de compte, membre suspendu) et lire les commissions du vrai serveur (avec votre accord, en lecture seule) | Claude |
 | 5 | Faire les corrections choisies, une PR par lot, avec captures | Claude |
 | 6 | Petits restes connus : relance envoyée après un accord « sans suite » ; étape « Commande terminée » cochée trop tôt ; carte limitée à 500 annonces | Claude |
@@ -303,4 +308,4 @@ Attention : un défaut noté aujourd'hui « gênant » (un 2e paiement ignoré s
 - **23/10/2026** : nouveau site public construit et caché ; PDF de stratégie mis à jour tout seuls.
 - **24/10/2026** : les 4 chantiers (transport, fiabilité, badges, boutiques), « ville seulement », notifications automatiques, preuves au départ. L'audit donne 49 sur 100 : bon pour un essai fermé, pas pour le public.
 - **Nuit du 24 au 25/10/2026** : toutes les corrections de l'audit sont faites et testées.
-- **25/10/2026** : corrections mises sur le vrai serveur ; litige en 1 h et quantité minimale ; contrôle qualité permanent (premier bilan) ; décisions juridiques toutes prises (« ok pour tout ») ; kit de l'essai fermé ; ce tableau de bord. Puis les corrections du contrôle qualité et le journal de l'équipe mis sur le vrai serveur (schémas 99 à 101, sauf 101c, 101z et 101e).
+- **25/10/2026** : vos 15 propositions sur les commandes (nuit, bannis, annulations, problème en 5 choix, transport payé par le vendeur quand un refus est accepté) et la participation négociée à trois avec le prix à l'unité obligatoire, faites sur le serveur de test ; corrections mises sur le vrai serveur ; litige en 1 h et quantité minimale ; contrôle qualité permanent (premier bilan) ; décisions juridiques toutes prises (« ok pour tout ») ; kit de l'essai fermé ; ce tableau de bord. Puis les corrections du contrôle qualité et le journal de l'équipe mis sur le vrai serveur (schémas 99 à 101, sauf 101c, 101z et 101e).

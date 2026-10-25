@@ -92,7 +92,11 @@ Colonnes : **N°** · **Situation** (qui fait quoi) · **Ce qui doit se passer**
 | C-06 | Même ville, l'acheteur veut retirer lui-même | Seulement si le vendeur l'accepte. | le vendeur | 48 h | — | ✅ règle « retrait » ; l'accord du vendeur = sa confirmation (ou il crée lui-même la commande) |
 | C-07 | Villes différentes, transport inclus | Le vendeur transporte, obligatoirement. | — | — | commission sur la marchandise | ✅ `commande_creer` refuse un autre mode |
 | C-08 | Villes différentes, transport à part | Le vendeur livre ; le prix du transport s'ajoute au total, sans commission. | — | — | total = marchandise + transport | ✅ 93b, 95 (`a_part`, `total_convenu`) |
+<<<<<<< HEAD
 | C-09 | Transport à la charge de l'acheteur | L'acheteur organise et paie le transport (pas compris dans le prix). **Règle du 25/10/2026 : le risque reste au vendeur jusqu'à la réception conforme** (remplace « la casse est à la charge de l'acheteur dès le chargement », n° 10). | — | — | — | ✅ règle « acheteur » ; la casse se règle par le litige et la participation (partie K) |
+=======
+| C-09 | Transport à la charge de l'acheteur | L'acheteur organise et paie le transport (le prix n'est pas dans le total). La casse en route reste au **vendeur** jusqu'à la réception conforme : marchandise non conforme, l'acheteur ne paie ni la marchandise ni le transport (règle du 25/10/2026, remplace la n° 10). | — | — | — | ✅ règle « acheteur » ; ⚠️ la règle de la casse n'est nulle part dans le serveur (l'équipe juge à la main) |
+>>>>>>> origin/main
 | C-10 | Transport Marché de Gros choisi | Refusé : service fermé. | celui qui choisit | — | — | ✅ `_cmd_reseau_pause` (62) |
 | C-11 | Confirmer et annuler en même temps | Une seule action passe. | — | — | — | ✅ verrou `for update` (CMD-10, joué dans une seule transaction) |
 
@@ -127,7 +131,11 @@ Colonnes : **N°** · **Situation** (qui fait quoi) · **Ce qui doit se passer**
 | E-05 | L'acheteur demande des nouvelles | Un avis part au vendeur ; au plus une fois toutes les 6 h. | le vendeur | 6 h entre deux | aucun | ❌ manquant (seuls les messages privés existent) |
 | E-06 | Le vendeur ne répond pas aux demandes de nouvelles | Rien d'automatique ; l'acheteur peut signaler un problème. | — | — | — | ✅ `commande_litige` possible pendant le trajet ; ❌ la demande de nouvelles n'existe pas (P14) |
 | E-07 | Transbordement, changement de chauffeur | Lieu noté ; le prix convenu ne change pas (n° 8). | l'acheteur | — | — | ✅ étape « transbordement » (92b) |
+<<<<<<< HEAD
 | E-08 | Marchandise cassée en route | Vendeur responsable jusqu'à la réception conforme, quel que soit le transport (règle du 25/10/2026) ; l'acheteur ne paie rien, ou participe s'il le veut (partie K) ; sinon l'équipe juge avec les photos de départ. | l'équipe | — | — | ✅ 102a (participation) ; ⚠️ l'aide et l'écran restent à faire |
+=======
+| E-08 | Marchandise cassée en route | Vendeur responsable jusqu'à la réception conforme, **quel que soit le transport** ; l'acheteur ne paie ni la marchandise ni le transport (exemple : tomate 100 F + transport 50 F, gâtée : 0 F). L'équipe juge avec les photos de départ si le refus est contesté. (Règle du 25/10/2026, remplace la n° 10.) | l'équipe | — | — | ⚠️ dans l'aide (branche `claude/juridique-ecrans`) ; pas dans le serveur : l'équipe l'applique à la main |
+>>>>>>> origin/main
 | E-09 | Vendeur banni pendant le trajet | ? | — | — | — | ⚠️ trou : il ne peut plus déclarer « arrivé » (refus `COMPTE_BANNI`) ; avec la règle du 25/10 la commande reste sans fin, sauf si l'acheteur confirme ou signale lui-même (P5) |
 | E-10 | Acheteur banni pendant le trajet | ? | — | — | — | ❌ trou : voir F-17 et P6 |
 | E-11 | Vendeur ou acheteur suspendu pendant le trajet | La commande continue. | — | — | — | ✅ |
@@ -152,7 +160,11 @@ Colonnes : **N°** · **Situation** (qui fait quoi) · **Ce qui doit se passer**
 | F-12 | Acheteur absent, téléphone éteint, sans réseau | Sans rien dans l'heure : litige automatique. | l'acheteur | 1 h | — | ✅ 97b ; il peut contester le litige perdu pendant 7 jours (84b) |
 | F-13 | L'acheteur signale un problème : cassé, manquant, mauvaise qualité, pas la bonne quantité | Litige ouvert par lui ; l'équipe tranche. | le vendeur, l'équipe | l'équipe a 72 h | commission « suspendue » | ✅ `commande_litige` ; ⚠️ motif en texte libre, pas de catégories ni de photos obligatoires (P16) |
 | F-14 | L'acheteur refuse la marchandise (tout ou partie) | 1 à 4 photos et le mot secret ; litige ; l'équipe compare avec les photos de départ ; le chauffeur constate, le vendeur répond. | le vendeur, le chauffeur, l'équipe | — | commission « suspendue » | ✅ `commande_refuser2` (92b, 97b), `commande_refus_vendeur`, `commande_refus_chauffeur` (57, 58) |
+<<<<<<< HEAD
 | F-15 | Qui paie le transport quand la marchandise est refusée | Marchandise non conforme : l'acheteur ne paie ni la marchandise ni le transport (règle du 25/10/2026) ; il peut proposer de payer le transport seulement (K-03). Refus rejeté par l'équipe : l'acheteur paie (n° 11). | — | — | hors application | ✅ 102a (« transport ») ; ⚠️ l'aide dit encore « le transport reste dû » |
+=======
+| F-15 | Qui paie le transport quand la marchandise est refusée | Refus rejeté (marchandise conforme) : l'acheteur paie la marchandise et le transport (n° 11). Refus accepté : l'acheteur ne paie ni l'une ni l'autre ; le vendeur paie le transport (règle du 25/10/2026). | — | — | hors application | ⚠️ textes de l'aide, du refus et de l'espace chauffeur changés sur la branche `claude/juridique-ecrans` ; rien dans le serveur (paiement à la livraison, hors application) |
+>>>>>>> origin/main
 | F-16 | Le vendeur déclare « arrivé » alors que rien n'est arrivé | L'acheteur signale un problème ; l'équipe tranche. | l'équipe | 1 h pour réagir | — | ✅ possible ; ⚠️ aucune conséquence prévue pour une fausse déclaration (P12) |
 | F-17 | Acheteur banni avant d'avoir confirmé | ? | — | — | — | ⚠️ trou : il ne peut ni confirmer, ni signaler, ni écrire dans le litige ; le litige automatique le fait perdre et lui compte un « litige perdu » (P6) |
 | F-18 | « Arrivé » et confirmation au même instant | Une seule action passe, l'autre reçoit un message. | — | — | — | ✅ verrou `for update` |
@@ -295,7 +307,11 @@ Proposition : à la suspension, les accords sans commande de ce membre passent �
 
 **P11. Transport à la charge de l'acheteur ou retrait : qui dit « arrivé » ? (C-09, E-12)** — validé **pour le retrait seulement** (règle du 25/10 ci-dessus).
 Le vendeur remet la marchandise au départ ; pourtant l'heure de vérification se compte à « arrivé ».
+<<<<<<< HEAD
 Proposition : dans ces deux cas, la remise au chauffeur de l'acheteur (ou à l'acheteur) vaut « arrivé » : le vendeur la déclare après le chargement, l'acheteur ou son chauffeur vérifie sur place et confirme avec le mot. — **validé le 25/10 pour le retrait par l'acheteur lui-même seulement, fait sur le test** (schéma 103b). L'ancienne raison (« la casse est à la charge de l'acheteur dès le chargement ») ne tient plus depuis la règle du 25/10/2026 : le risque reste au vendeur jusqu'à la réception conforme ; le simple « transport à la charge de l'acheteur » garde l'heure comptée depuis l'arrivée.
+=======
+Proposition : dans ces deux cas, la remise au chauffeur de l'acheteur (ou à l'acheteur) vaut « arrivé » : le vendeur la déclare après le chargement, l'acheteur ou son chauffeur vérifie sur place et confirme avec le mot. ~~(La casse en route est à la charge de l'acheteur dès le chargement, règle n° 10 : la vérification se fait donc au départ.)~~ **À revoir (25/10/2026)** : la règle n° 10 est remplacée, le risque reste au vendeur jusqu'à la réception conforme chez l'acheteur, même quand le transport est à sa charge ; « arrivé » devrait donc rester l'arrivée chez l'acheteur, pas la remise au départ (sauf retrait sur place par l'acheteur). — à valider par le propriétaire (touche la responsabilité de la marchandise).
+>>>>>>> origin/main
 
 **P12. Fausse déclaration « arrivé » (F-16).**
 Rien n'est prévu contre un vendeur qui déclare « arrivé » trop tôt.
@@ -352,6 +368,7 @@ Le propriétaire peut répondre « ok pour tout » ou « ok sauf n° X ».
 2. « Arrivé » dit par l'acheteur : même heure et même suite que s'il venait du vendeur.
 3. « Arrivé » entre 21 h et 7 h : l'heure part à 7 h. — **validé le 25/10, fait sur le test** (103a).
 4. Un essai de mot secret compte comme une réaction ; mot bloqué : litige pour l'équipe, sans clôture automatique.
+<<<<<<< HEAD
 5. Vendeur banni pendant le trajet : litige pour l'équipe. — **validé le 25/10, fait sur le test** (103a).
 6. Acheteur banni : avant chargement, le vendeur annule (contre l'acheteur) ; après, litige pour l'équipe, sans « litige perdu » automatique. — **validé le 25/10, fait sur le test** (103a).
 7. Pas de commande avec un membre banni ; la quantité revient tout de suite. — **validé le 25/10, fait sur le test** (103a).
@@ -362,6 +379,18 @@ Le propriétaire peut répondre « ok pour tout » ou « ok sauf n° X ».
 12. Fausse déclaration « arrivé » constatée : litige perdu pour le vendeur. — **validé le 25/10, fait sur le test** (103b).
 13. Retards annoncés sans limite, tous visibles ; date passée : « Signaler un problème » mis en avant. — **validé le 25/10, fait sur le test** (103b).
 14. Après 2 demandes de nouvelles sans réponse : « Signaler un problème » proposé. — **validé le 25/10, fait sur le test** (103b).
+=======
+5. Vendeur banni pendant le trajet : litige pour l'équipe.
+6. Acheteur banni : avant chargement, le vendeur annule (contre l'acheteur) ; après, litige pour l'équipe, sans « litige perdu » automatique.
+7. Pas de commande avec un membre banni ; la quantité revient tout de suite.
+8. Demande d'annulation du vendeur sans réponse en 24 h : acceptée, personne en faute.
+9. L'acheteur peut demander une annulation d'un commun accord avant le chargement.
+10. Membre suspendu : ses accords sans commande passent « sans suite » tout de suite.
+11. Transport à la charge de l'acheteur ou retrait : la remise au départ vaut « arrivé ». (À revoir : la règle du 25/10/2026 laisse le risque au vendeur jusqu'à la réception chez l'acheteur.)
+12. Fausse déclaration « arrivé » constatée : litige perdu pour le vendeur.
+13. Retards annoncés sans limite, tous visibles ; date passée : « Signaler un problème » mis en avant.
+14. Après 2 demandes de nouvelles sans réponse : « Signaler un problème » proposé.
+>>>>>>> origin/main
 15. Délai justifié seulement dans l'heure après « arrivé » ; ensuite même suite.
 16. Problème signalé : 5 choix et une photo pour « cassé » et « mauvaise qualité ». — **validé le 25/10, fait sur le test** (103b).
 17. Envoyer l'avis de clôture « en faveur du vendeur » aux deux. — **validé le 25/10, fait sur le test** (103b).

@@ -68,7 +68,7 @@
 - Aujourd'hui : en pratique toujours le vendeur ; le transporteur est payé en entier.
 - Proposition : le vendeur jusqu'à la réception quand il livre (inclus, à part, son livreur) ; l'acheteur dès le chargement quand le transport est à sa charge.
 - **Question : d'accord avec ce partage ?**
-- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : le vendeur répond de la casse jusqu'à la réception quand il livre (inclus, à part, son livreur) ; l'acheteur dès le chargement quand le transport est à sa charge ; les photos de départ tranchent. À faire valider par un juriste.
+- **Statut (25/10/2026)** : **remplacé le 25/10/2026** par la règle du propriétaire : « Transport à la charge de l'acheteur » veut seulement dire que le vendeur n'a pas mis le prix du transport dans le total ; le risque de la marchandise reste au vendeur jusqu'à la réception conforme chez l'acheteur, quel que soit le transport ; marchandise non conforme : l'acheteur ne paie ni la marchandise ni le transport. Exemple du propriétaire : « Je vends ma tomate à 100, le transport est 50 F. Si la tomate est gâtée en route ou arrive pourrie, l'acheteur ne paie ni les 100 ni les 50 : ce n'est pas ce qu'il a commandé. » La n° 11 reste. À faire valider par un juriste. (Première réponse, abandonnée : l'acheteur en répondait dès le chargement quand le transport était à sa charge.)
 
 ### 11. Qui paie le transport en cas de refus de la marchandise
 - Aujourd'hui : l'aide dit « le transport reste dû ».

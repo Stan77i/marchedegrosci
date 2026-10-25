@@ -792,7 +792,7 @@
         <span class="t" style="display:block;margin:14px 0 6px;font-weight:600">Photos (1 à 4) : la marchandise, et le papier du vendeur</span>
         <div class="cm-ph" data-apercu></div>
         <label class="cm-pick">${TI('photo')}Ajouter des photos<input type="file" accept="image/*" multiple data-fic></label>
-        <p class="cm-note" style="font-size:13.5px">Preuves : le mot du vendeur et vos photos, comparées à celles du départ. Vendeur d’accord : la partie refusée n’est pas due. Sinon, l’équipe juge. Le transport reste dû.</p>
+        <p class="cm-note" style="font-size:13.5px">Preuves : le mot du vendeur et vos photos, comparées à celles du départ. Refus accepté : vous ne payez ni la partie refusée, ni le transport. Refus rejeté : vous payez tout.</p>
         <p class="cm-err" role="alert"></p>
         <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">Envoyer le refus</button><button type="button" data-ann>Retour</button></div>
       </form>`;
@@ -1027,7 +1027,10 @@
         ${o.essais != null ? `<p class="cm-note" style="margin:6px 0 0;font-size:13px">${o.essais === 0 ? 'Mot secret bloqué après trop d’essais faux. L’équipe est prévenue.' : `Essais restants <span class="nbul">${o.essais}</span>`}</p>` : ''}
         <label class="cm-ck"><input type="checkbox" id="cmS"> Je ne trouve pas le papier du vendeur</label>
         <p class="cm-info" data-sans hidden>Sans le mot, la réception est notée « sans le mot secret du vendeur », visible du vendeur et de l’équipe. Si la marchandise ne va pas, ne confirmez pas : <b>refusez-la avec des photos</b>.</p>` : ''}
-        ${o.motifs ? `<fieldset class="cm-motif"><legend class="t">Motif</legend>${MOTIFS.map(([k, t]) => `<label class="cm-ck"><input type="radio" name="cmMot" value="${k}"> ${t}</label>`).join('')}</fieldset>` : ''}
+        ${o.motifs ? `<fieldset class="cm-motif"><legend class="t">Motif</legend>${MOTIFS.map(([k, t]) => `<label class="cm-ck"><input type="radio" name="cmMot" value="${k}"> ${t}</label>`).join('')}</fieldset>
+        <div data-preuve hidden><label class="t" for="cmP">Source publique (facultatif)</label>
+        <input type="text" id="cmP" maxlength="120" autocomplete="off" placeholder="Ex. : radio, presse, autorités, avec la date">
+        <p class="cm-note" style="margin:6px 0 0;font-size:13.5px">L’équipe examine ce motif.</p></div>` : ''}
         ${o.accord ? `<p class="cm-info" data-motif>Motif donné : …</p><fieldset class="cm-motif"><legend class="t">Êtes-vous d’accord avec ce motif ?</legend>
           <label class="cm-ck"><input type="radio" name="cmAcc" value="1"> Oui, d’un commun accord</label>
           <label class="cm-ck"><input type="radio" name="cmAcc" value="0"> J’accepte, mais je ne suis pas d’accord</label></fieldset>
@@ -1042,14 +1045,19 @@
     box.querySelector('[data-x]').onclick = fermer;
     box.querySelector('[data-ann]').onclick = () => peindre();
     const f = box.querySelector('form'), err = f.querySelector('.cm-err');
+    // n° 12 (25/10/2026) : « Panne ou météo » propose d'écrire la source publique ; la photo attend une place sur le serveur
+    const Zp = f.querySelector('[data-preuve]'); if (Zp) f.querySelectorAll('[name=cmMot]').forEach(r => r.onchange = () => { Zp.hidden = r.value !== 'panne_meteo' || !r.checked; });
     const Sm = f.querySelector('#cmS'); if (Sm) Sm.onchange = () => { f.querySelector('[data-sans]').hidden = !Sm.checked; f.querySelector('#cmM').disabled = Sm.checked; };
     f.onsubmit = async e => {
       e.preventDefault();
       const L = f.querySelector('#cmL'), Nt = f.querySelector('#cmN'), G = f.querySelector('#cmG'), M = f.querySelector('#cmM');
-      const lieu = L ? L.value.trim() : null, note = Nt ? Nt.value.trim() : null, mot = M ? M.value.trim() : null, sansMot = !!(Sm && Sm.checked);
+      const P = f.querySelector('#cmP'), src = P && !P.closest('[hidden]') ? P.value.trim() : '';
+      let note = Nt ? Nt.value.trim() : null;
+      const lieu = L ? L.value.trim() : null, mot = M ? M.value.trim() : null, sansMot = !!(Sm && Sm.checked);
       const mo = f.querySelector('[name=cmMot]:checked'), motif = mo ? mo.value : null, ac = f.querySelector('[name=cmAcc]:checked'), accord = ac ? ac.value === '1' : null;
       if (o.motifs && !motif) { err.textContent = 'Choisissez un motif.'; f.querySelector('[name=cmMot]').focus(); return; }
       if (o.motifs && motif === 'autre' && !(note && note.length >= 3)) { err.textContent = 'Motif « Autre » : écrivez quelques mots.'; Nt.focus(); return; }
+      if (motif === 'panne_meteo' && src) note = ((note ? note + ' · ' : '') + 'Source : ' + src).slice(0, 300);
       if (o.accord && accord == null) { err.textContent = 'Dites si vous êtes d’accord avec le motif.'; f.querySelector('[name=cmAcc]').focus(); return; }
       if (o.mot && !sansMot && !mot) { err.textContent = 'Tapez le mot secret écrit sur le papier du vendeur.'; M.focus(); return; }
       if (o.lieuRequis && !lieu) { err.textContent = 'Indiquez le lieu.'; L.focus(); return; }
@@ -1125,7 +1133,7 @@
           fn: () => R('commande_liberer', { p_id: c.id }) }); }
       case 'refuser': return refuser(c);
       case 'rf-oui': return confirmer(c, { titre: 'Reconnaître le <em>problème</em>', ok: 'Je reconnais', note: 'Un mot (facultatif)', fait: 'Refus accepté : la commande est clôturée',
-        texte: seq[c.id] && seq[c.id].actif ? 'La partie refusée n’est pas due. Le reste de la commande vous revient, et le transporteur garde le prix de son transport.' : 'L’acheteur ne doit que la partie acceptée. Le transporteur garde le prix de son transport.',
+        texte: seq[c.id] && seq[c.id].actif ? 'La partie refusée n’est pas due. Le reste de la commande vous revient. Vous payez le transport.' : 'L’acheteur ne paie que la partie acceptée. Vous payez le transport.',
         fn: v => R('commande_refus_vendeur', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
       case 'rf-non': return confirmer(c, { titre: 'Contester le <em>refus</em>', ok: 'Contester', note: 'Pourquoi ?', noteRequise: true, fait: 'Contestation envoyée : l’équipe va trancher',
         texte: 'L’équipe du Marché de Gros tranche avec l’accord, la négociation, vos messages, les photos et la réponse du chauffeur.',

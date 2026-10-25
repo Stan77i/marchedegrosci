@@ -11,7 +11,11 @@
 - Les 15 tranchées le 25/10/2026 :
 
 1. **n° 8, commission le jour du paiement intégré** : prélevée par le partenaire de paiement sur l'argent versé au vendeur, à la clôture de la commande ; rien avant. (Détails le jour où il y aura un partenaire.)
+<<<<<<< HEAD
 2. **n° 10, casse en route** : ~~l'acheteur dès le chargement quand le transport est à sa charge~~ remplacé le 25/10/2026 par le propriétaire : **le risque reste au vendeur jusqu'à la réception conforme** ; « transport à la charge de l'acheteur » veut seulement dire que le transport n'est pas compris dans le prix ; seul le retrait par l'acheteur lui-même fait de la remise au départ l'« arrivé ». Les photos de départ servent à trancher. *(Juriste.)*
+=======
+2. **n° 10, casse en route** : *remplacé le 25/10/2026 par la règle du propriétaire* : « Transport à la charge de l'acheteur » veut seulement dire que le prix du transport n'est pas dans le total ; le risque de la marchandise reste au vendeur jusqu'à la réception conforme chez l'acheteur, quel que soit le transport ; marchandise non conforme : l'acheteur ne paie ni la marchandise ni le transport. Exemple : tomate à 100 F, transport 50 F, tomate gâtée en route : l'acheteur ne paie ni 100 ni 50. La n° 11 reste : refus rejeté parce que la marchandise était conforme, l'acheteur paie. *(Juriste.)* ~~Ancienne règle : l'acheteur en répond dès le chargement quand le transport est à sa charge.~~
+>>>>>>> origin/main
 3. **n° 11, transport quand la marchandise est refusée** : payé par l'acheteur si l'équipe rejette le refus, par le vendeur si le refus est accepté.
 4. **n° 12, preuves de force majeure** : une photo (route coupée, pluie) ou une information publique (radio, presse, autorités) ; l'équipe juge, comme aujourd'hui.
 5. **n° 14, achat groupé, le point qui restait** : le transport suit la même règle que la commande normale (celle écrite dans l'offre).
@@ -57,8 +61,13 @@ Légende : **Tranché** (par quelle règle, quelle date) · **Tranché le 25/10/
 |---|---|---|
 | 8 | Comment prélever la commission | **Tranché le 25/10/2026 (« ok pour tout »)** : prélevée par le partenaire de paiement sur l'argent versé au vendeur, à la clôture ; à finir le jour du partenaire. |
 | 9 | Commission des ventes d'avant | **Tranché** : seulement « calculée », jamais réclamée (règle du propriétaire du 24/10/2026, schéma 95b). |
+<<<<<<< HEAD
 | 10 | Casse en route | **Tranché le 25/10/2026, précisé le même jour** : le risque reste au vendeur jusqu'à la réception conforme, même avec un transport à la charge de l'acheteur ; seul le retrait par l'acheteur lui-même fait de la remise au départ l'« arrivé ». *(Juriste)* |
 | 11 | Transport en cas de refus | **Tranché le 25/10/2026 (« ok pour tout »)** : acheteur si le refus est rejeté, vendeur si le refus est accepté ; refus partiel accepté : l'acheteur paie la partie acceptée, le vendeur le transport. Calcul serveur fait (schéma 103c, projet de test). |
+=======
+| 10 | Casse en route | **Remplacé le 25/10/2026** par la règle du propriétaire : le risque de la marchandise reste au vendeur jusqu'à la réception conforme chez l'acheteur, quel que soit le transport ; marchandise non conforme : l'acheteur ne paie ni la marchandise ni le transport (l'ancienne réponse « acheteur dès le chargement quand le transport est à sa charge » est abandonnée). *(Juriste)* |
+| 11 | Transport en cas de refus | **Tranché le 25/10/2026 (« ok pour tout »)** : acheteur si le refus est rejeté, vendeur si le refus est accepté. |
+>>>>>>> origin/main
 | 12 | Preuves de force majeure | **Tranché le 25/10/2026 (« ok pour tout »)** : une photo ou une information publique ; l'équipe juge (déjà « l'équipe examine », schéma 94f). |
 | 13 | Litiges abusifs | **Tranché** : un litige perdu compte contre celui qui le perd ; le profil montre les « litiges perdus » (24/10/2026, schéma 94f) ; l'acheteur qui ne répond jamais perd le litige (25/10/2026, schéma 97d). |
 | 14 | Achat groupé | **Tranché le 25/10/2026 (« ok pour tout »)** : « ville seulement », suspension, stock et offre retirée réglés (24/10/2026, schéma 93d) ; le transport suit la règle de l'offre, comme une commande normale. |
@@ -103,7 +112,7 @@ Ce que chaque décision demande dans l'application. Vérifié dans le code le 25
 | N° | Ce qui existe déjà | Ce qu'il faut construire |
 |---|---|---|
 | 8 | Commission seulement « calculée » (`encaissement = 'aucun'`, schéma 30). | Rien maintenant. Le jour du partenaire de paiement : prélèvement par le partenaire sur l'argent versé au vendeur, à la clôture. |
-| 10 | Photos de départ (schémas 90, 94g) ; aucune question de l'aide sur la casse. | Une question dans l'aide (`v3/aide.js`) : « Qui paie si c'est cassé en route ? » avec la règle. |
+| 10 | Photos de départ (schémas 90, 94g) ; question de l'aide « Qui paie si c'est cassé en route ? » (`v3/aide.js`, branche `claude/juridique-ecrans`, texte validé le 25/10/2026). | Vérifier qu'aucune fonction du serveur ne met la perte à la charge de l'acheteur quand le transport est à sa charge (voir `docs/PASSATION.md`, section du 25/10/2026). |
 | 11 | L'aide dit encore « Le transport reste dû » (`v3/aide.js`, 4 réponses : « Je refuse une partie », « Qui paie le transport si je refuse ? », deux réponses « Chauffeur »). | Changer ces 4 textes : acheteur si le refus est rejeté, vendeur si le refus est accepté. |
 | 12 | Motif « Panne ou météo » (`commande_annuler_motif`), examiné par l'équipe (schéma 94f) ; texte seulement. | Proposer de joindre une photo ou d'écrire la source publique (radio, presse, autorités) quand on choisit « Panne ou météo ». |
 | 14 | La commande d'un achat groupé est toujours notée « livré par le vendeur » (`mode_transport = 'vendeur'`, schéma 93d) ; frais de transport mutualisés en estimation (schéma 35). | La commande d'un achat groupé reprend le transport écrit dans l'offre (inclus, à part, à la charge de l'acheteur). |

@@ -4,7 +4,7 @@
 > Pour chaque point : ce qui se passe aujourd'hui, une proposition simple, et la question à trancher.
 > Sources : audit du 24/10/2026 (partie 5 « Règles manquantes », partie 7 « Risques juridiques ») et lecture du code pour ces textes.
 > Les délais marqués « (par défaut) » sont ceux retenus par le chef d'équipe pour les travaux en cours ; ils restent à confirmer.
-> **Point du 25/10/2026** : 17 questions tranchées, 15 restent. Chaque question a une ligne « Statut ». Résumé et conseils : `DECISIONS-A-PRENDRE.md`.
+> **Point du 25/10/2026** : **les 32 questions sont tranchées.** 17 l'étaient déjà ; les 15 autres l'ont été le 25/10/2026 par le propriétaire (« ok pour tout », avec les conseils de `DECISIONS-A-PRENDRE.md`). Chaque question a une ligne « Statut ». Ce qui reste à construire dans l'application : `DECISIONS-A-PRENDRE.md`, partie « À construire ».
 
 ## A. Commandes et délais
 
@@ -42,7 +42,7 @@
 - Aujourd'hui : aucune expiration. La date limite d'une demande est un texte sans effet.
 - Proposition : 30 jours (par défaut), prolongeable d'un geste ; la date limite d'une demande devient une vraie date.
 - **Question : 30 jours pour les deux ?**
-- **Statut (25/10/2026)** : Tranché : 30 jours, rappel 3 jours avant, « Prolonger 30 jours » (24/10/2026, schémas 93a et 93c, en production). Reste à confirmer : 7 jours de grâce pour les annonces déjà en ligne.
+- **Statut (25/10/2026)** : Tranché : 30 jours, rappel 3 jours avant, « Prolonger 30 jours » (24/10/2026, schémas 93a et 93c, en production). 7 jours de grâce pour les annonces déjà en ligne : gardés, tranché le 25/10/2026 (« ok pour tout », point A).
 
 ### 7. Ce qu'on peut changer pendant une négociation
 - Aujourd'hui : le vendeur peut changer produit, unité et ville pendant qu'on négocie.
@@ -56,7 +56,7 @@
 - Aujourd'hui : 3,5 % calculée au nom du vendeur, notée « due » à la fin de la commande, **jamais encaissée**. Aucun moyen de la payer.
 - Proposition : tant que le paiement intégré n'existe pas, ne rien demander ; les textes disent « calculée, non encaissée ».
 - **Question : comment sera-t-elle prélevée le jour du paiement intégré ?**
-- **Statut (25/10/2026)** : Reste. Conseil : prélevée par le partenaire de paiement sur l'argent versé au vendeur, à la clôture ; à finir le jour du partenaire.
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : le partenaire de paiement prélève la commission sur l'argent versé au vendeur, à la clôture de la commande ; rien avant. Détails le jour du partenaire.
 
 ### 9. Commission des ventes d'avant le paiement intégré
 - Aujourd'hui : rien n'est dit. Les réclamer sans contrat serait contestable (audit, partie 7).
@@ -68,19 +68,19 @@
 - Aujourd'hui : en pratique toujours le vendeur ; le transporteur est payé en entier.
 - Proposition : le vendeur jusqu'à la réception quand il livre (inclus, à part, son livreur) ; l'acheteur dès le chargement quand le transport est à sa charge.
 - **Question : d'accord avec ce partage ?**
-- **Statut (25/10/2026)** : Reste. Conseil : le partage proposé. À confirmer par un juriste.
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : le vendeur répond de la casse jusqu'à la réception quand il livre (inclus, à part, son livreur) ; l'acheteur dès le chargement quand le transport est à sa charge ; les photos de départ tranchent. À faire valider par un juriste.
 
 ### 11. Qui paie le transport en cas de refus de la marchandise
 - Aujourd'hui : l'aide dit « le transport reste dû ».
 - Proposition : dû par l'acheteur si le refus est rejeté ; par le vendeur si le refus est accepté.
 - **Question : on garde « toujours dû », ou ce partage ?**
-- **Statut (25/10/2026)** : Reste. Conseil : le partage proposé (et changer « le transport reste dû » dans l'aide).
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : l'acheteur paie le transport si l'équipe rejette le refus ; le vendeur s'il est reconnu ou accepté. À changer dans l'aide : « le transport reste dû ».
 
 ### 12. Force majeure (pluies, route coupée)
 - Aujourd'hui : le motif « panne ou météo » existe ; l'équipe peut classer l'annulation « légitime », sans règle écrite.
 - Proposition : légitime si l'équipe l'accepte sur preuve (photo, information publique).
 - **Question : quelles preuves suffisent ?**
-- **Statut (25/10/2026)** : Reste. Conseil : une photo ou une information publique ; l'équipe juge (schéma 94f : « l'équipe examine »).
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : une photo (route coupée, pluie) ou une information publique (radio, presse, autorités) ; l'équipe juge.
 
 ### 13. Acheteur qui disparaît ou ouvre des litiges abusifs
 - Aujourd'hui : un litige perdu ne compte pas contre son auteur ; le vendeur garde « litiges ouverts par l'autre partie », même gagnés.
@@ -92,13 +92,13 @@
 - Aujourd'hui : qui paie le transport affiché n'est pas dit ; un groupe dont le stock baisse ou dont l'offre est retirée reste bloqué. La règle « ville seulement » et la suspension n'y sont pas appliquées.
 - Proposition : mêmes règles que la commande normale ; un groupe bloqué est annulé après 72 h.
 - **Question : d'accord ?**
-- **Statut (25/10/2026)** : Reste en partie : ville seulement, suspension, stock et offre retirée réglés (24/10/2026, schéma 93d). Conseil pour le transport : la règle de l'offre, comme une commande normale.
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : ville seulement, suspension, stock et offre retirée réglés (24/10/2026, schéma 93d) ; le transport suit la règle écrite dans l'offre, comme une commande normale.
 
 ### 15. Le service de transport Marché de Gros
 - Aujourd'hui : fermé.
 - Proposition : MGCI reste intermédiaire ; le transporteur répond de la marchandise pendant le transport.
 - **Question : à son ouverture, MGCI se dit-il transporteur ou seulement intermédiaire ?**
-- **Statut (25/10/2026)** : Reste. Conseil : seulement intermédiaire. À confirmer par un juriste.
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : le Marché de Gros reste seulement intermédiaire ; le transporteur répond de la marchandise pendant le transport. À faire valider par un juriste.
 
 ## C. Comptes et données
 
@@ -106,25 +106,25 @@
 - Aujourd'hui : aucun moyen. Quelqu'un peut s'inscrire avec le numéro d'un autre (pas de SMS).
 - Proposition : sur preuve (puce à son nom, présence), l'équipe rend le numéro et le note dans un journal.
 - **Question : quelle preuve demander ?**
-- **Statut (25/10/2026)** : Reste en partie : l'outil « Numéro contesté » existe (schéma 94b). Conseil : pièce d'identité et appel de l'équipe sur ce numéro.
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : outil « Numéro contesté » en place (schéma 94b) ; preuve : pièce d'identité montrée à l'équipe et appel de l'équipe sur ce numéro, tout noté dans le journal.
 
 ### 17. Changement de numéro et numéro après suppression du compte
 - Aujourd'hui : changer passe par un message à l'équipe ; après suppression, le numéro est bloqué à vie.
 - Proposition : le numéro est libéré 90 jours après la suppression.
 - **Question : 90 jours, ou jamais ?**
-- **Statut (25/10/2026)** : Tranché : numéro libéré dès la suppression, sauf banni (schéma 94b, en production le 25/10/2026). Comptes supprimés avant : à libérer sur demande.
+- **Statut (25/10/2026)** : Tranché : numéro libéré dès la suppression, sauf banni (schéma 94b, en production le 25/10/2026). Comptes supprimés avant : libérés un par un, sur demande, par « Numéro contesté » (tranché le 25/10/2026, « ok pour tout », point D).
 
 ### 18. Ce que voit un compte banni
 - Aujourd'hui : un banni peut encore se connecter.
 - Proposition : il voit seulement un message « compte banni » et comment contester.
 - **Question : d'accord, et combien de jours pour contester ?**
-- **Statut (25/10/2026)** : Reste. Conseil : d'accord ; 7 jours pour contester, réponse en 7 jours.
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : il voit seulement « Compte banni » et comment contester ; 7 jours pour contester, réponse de l'équipe en 7 jours.
 
 ### 19. Trace des actions de l'équipe
 - Aujourd'hui : un changement de code fait par l'administrateur n'est pas noté.
 - Proposition : chaque geste de l'administrateur sur un compte est noté (qui, quand, pourquoi).
 - **Question : d'accord ?**
-- **Statut (25/10/2026)** : Reste en partie : journal de l'équipe en place pour le numéro et le code (schéma 94b). Conseil : y noter chaque geste.
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : chaque geste de l'équipe sur un compte est noté (qui, quand, pourquoi), pas seulement le numéro et le code.
 
 ### 20. Lecture des messages par l'équipe
 - Aujourd'hui : l'équipe peut techniquement lire **toutes** les conversations, sans condition (`admin_discussions`, `admin_dm`).
@@ -142,19 +142,19 @@
 - Aujourd'hui : fixées pour les messages (1 an), les positions (30 jours), les dossiers d'identité (5 ans). Rien pour les commandes, négociations, signalements, sanctions, photos, journal des notifications, mesures.
 - Proposition : commandes et négociations 5 ans (preuve en cas de litige) ; journal des notifications 90 jours ; signalements et sanctions 2 ans ; photos de preuve 1 an après la clôture.
 - **Question : ces durées vous vont ? (à confirmer par le juriste)**
-- **Statut (25/10/2026)** : Reste. Conseil : les durées proposées. À confirmer par un juriste.
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : commandes et négociations 5 ans ; signalements et sanctions 2 ans ; photos de preuve 1 an après la clôture ; journal des notifications 90 jours. À faire valider par un juriste. Effacement automatique à construire seulement avec l'accord explicite du propriétaire.
 
 ### 23. Trajet par la route envoyé à un service public extérieur
 - Aujourd'hui : sur la carte, les deux points du trajet (parfois la position GPS du membre) partent vers le serveur public de démonstration OSRM.
 - Proposition : arrêter cet envoi, ou passer par le serveur (openrouteservice, déjà utilisé pour les commandes).
 - **Question : on garde, on arrête, ou on passe par le serveur ?**
-- **Statut (25/10/2026)** : Reste. Conseil : passer par le serveur.
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : le trajet passe par notre serveur (service d'itinéraire déjà utilisé pour les commandes).
 
 ### 24. Délai de réponse aux demandes sur les données
 - Aujourd'hui : non fixé.
 - Proposition : 30 jours.
 - **Question : 30 jours ? (à confirmer par le juriste)**
-- **Statut (25/10/2026)** : Reste. Conseil : 30 jours. À confirmer par un juriste.
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : 30 jours. À faire valider par un juriste.
 
 ## D. Textes de l'application à mettre d'accord avec les conditions
 
@@ -195,15 +195,15 @@ Ces textes contredisent les règles. Ils doivent être corrigés avant de publie
 ### 30. ARTCI
 - Aujourd'hui : déclaration notée « à faire » (MISE-A-JOUR.md, ligne 188) ; état réel inconnu.
 - **Question : qui fait la démarche, et quand ?**
-- **Statut (25/10/2026)** : Reste. Conseil : le propriétaire, avec le juriste, avant l'ouverture au public.
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : le propriétaire fait la démarche avec le juriste, avant l'ouverture au public.
 
 ### 31. Acceptation des conditions
 - Aujourd'hui : aucune case à l'inscription.
 - Proposition : une case « J'accepte les conditions et la politique de confidentialité » à la création du compte ; les membres déjà inscrits acceptent à leur prochaine ouverture.
 - **Question : d'accord, après la relecture du juriste ?**
-- **Statut (25/10/2026)** : Reste. Conseil : d'accord, après la relecture du juriste.
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : oui, après la relecture du juriste ; les membres déjà inscrits acceptent à leur prochaine ouverture.
 
 ### 32. Juriste
 - L'audit le dit : ces textes demandent une relecture juridique, donc un budget ou une aide (association, clinique juridique, chambre de commerce).
 - **Question : quelle piste pour trouver un juriste ?**
-- **Statut (25/10/2026)** : Reste. Conseil : aide gratuite d'abord (clinique juridique, chambre de commerce).
+- **Statut (25/10/2026)** : Tranché le 25/10/2026 (« ok pour tout ») : aide gratuite d'abord (clinique juridique d'une faculté de droit, chambre de commerce) ; un juriste payé quand il y aura un budget.

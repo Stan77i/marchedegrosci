@@ -70,10 +70,10 @@ Quand vous signalez quelqu'un : le motif, votre précision, d'où vient le signa
 
 ### 2.7 Votre position (GPS)
 La position n'est jamais prise sans votre geste :
-- **Sur la carte**, le bouton « me localiser » sert à trouver votre région. Si vous tracez un trajet, votre point de départ et d'arrivée sont envoyés à un **service public de calcul d'itinéraire (OSRM)**, hors du Marché de Gros. **Décision du propriétaire (25/10/2026)** : ce trajet passera par notre serveur (le service d'itinéraire déjà utilisé pour les commandes) ; plus rien ne sera envoyé à un service inconnu. [À VÉRIFIER AVANT PUBLICATION : le changement est à construire ; aujourd'hui, `app/carte-gl.js` appelle encore OSRM.]
+- **Sur la carte**, le bouton « me localiser » sert à trouver votre région. Si vous tracez un trajet, votre point de départ et d'arrivée, arrondis à environ 100 mètres, passent par **notre serveur**, qui demande le trajet par la route à **openrouteservice** (le même service que pour les commandes). Le trajet n'est pas gardé dans la base ; seuls les trajets récents restent un moment en mémoire du serveur pour ne pas les redemander.
 - **Dans une commande**, vous pouvez joindre votre position à une étape (chargement, arrivée, réception). Elle est notée dans le journal de la commande.
 - **Le chauffeur** peut partager sa position pendant le transport, seulement quand l'application est ouverte. Une position est gardée toutes les 15 secondes au plus. Ces positions sont **effacées 30 jours après la fin de la commande**.
-<!-- source: app/carte-gl.js lignes 326-357 (navigator.geolocation, appel router.project-osrm.org) ; application.dc.html locate() ; v3/commandes.js position() et commande_avancer (p_lat, p_lon) ; v3/chauffeur.js chauffeur_position ; supabase/schema-29-gps.sql (table positions, 15 s, effacement à 30 jours, tâche mdg-purger-positions) -->
+<!-- source: app/carte-gl.js lignes 326-357 (navigator.geolocation, appel de la fonction itineraire avec { points } arrondis à 0,001°) ; supabase/functions/itineraire/index.ts (mode points : rien n'est rangé, cache en mémoire), déployée en production le 25/10/2026 ; application.dc.html locate() ; v3/commandes.js position() et commande_avancer (p_lat, p_lon) ; v3/chauffeur.js chauffeur_position ; supabase/schema-29-gps.sql (table positions, 15 s, effacement à 30 jours, tâche mdg-purger-positions) -->
 
 ### 2.8 Les notifications
 - Si vous les activez sur votre téléphone : l'adresse technique d'envoi fournie par votre navigateur, ses clés, le type d'appareil.
@@ -145,12 +145,11 @@ Vous pouvez aussi vous adresser à l'**ARTCI** (Autorité de Régulation des Té
 | **Supabase** | Base de données, comptes, fichiers (photos), tâches automatiques, envoi des notifications | Toutes les données du compte. Région du serveur : [À VÉRIFIER dans le tableau de bord Supabase]. |
 | **GitHub Pages** | Héberge les pages de l'application et du site (`stan77i.github.io/marchedegrosci`) | Aucune donnée de compte ; le service reçoit l'adresse IP des visiteurs, comme tout hébergeur. |
 | **OpenFreeMap** et **Amazon S3** (relief) | Fonds de carte | Le téléphone demande les morceaux de carte affichés. |
-| **OSRM** (serveur public de démonstration) | Trajet par la route sur la carte | Les deux points du trajet (voir 2.7). À retirer : le trajet passera par notre serveur (décision du 25/10/2026). |
-| **openrouteservice** | Calcul de l'itinéraire d'une commande, par le serveur | Les lieux de départ et de livraison de la commande. |
+| **openrouteservice** | Calcul des trajets, toujours par notre serveur : itinéraire d'une commande, trajet tracé sur la carte | Les lieux de départ et de livraison de la commande ; pour la carte, les deux points du trajet arrondis à environ 100 m (voir 2.7). |
 | Service de notification du navigateur | Achemine les notifications | Titre et texte de la notification. |
 
 Certains de ces services sont hors de Côte d'Ivoire. [À VALIDER PAR LE JURISTE : règles du transfert de données hors du pays.]
-<!-- source: ARCHITECTURE.md lignes 30 et 89 (GitHub Pages + Supabase) ; v3/boutique.js SITE = stan77i.github.io ; app/carte-gl.js (tiles.openfreemap.org, s3.amazonaws.com/elevation-tiles-prod, router.project-osrm.org) ; v3/suivi.js (openfreemap) ; supabase/functions/itineraire/index.ts (api.openrouteservice.org) ; supabase/functions/pousser/index.ts (web-push) ; police Jost hébergée dans le dépôt (ARCHITECTURE.md ligne 263) ; aucun outil de suivi publicitaire trouvé (recherche googletagmanager, google-analytics, facebook.net : aucun résultat) -->
+<!-- source: ARCHITECTURE.md lignes 30 et 89 (GitHub Pages + Supabase) ; v3/boutique.js SITE = stan77i.github.io ; app/carte-gl.js (tiles.openfreemap.org, s3.amazonaws.com/elevation-tiles-prod ; plus d'appel à un service d'itinéraire depuis le téléphone) ; v3/suivi.js (openfreemap) ; supabase/functions/itineraire/index.ts (api.openrouteservice.org) ; supabase/functions/pousser/index.ts (web-push) ; police Jost hébergée dans le dépôt (ARCHITECTURE.md ligne 263) ; aucun outil de suivi publicitaire trouvé (recherche googletagmanager, google-analytics, facebook.net : aucun résultat) -->
 
 ## 7. Sécurité
 

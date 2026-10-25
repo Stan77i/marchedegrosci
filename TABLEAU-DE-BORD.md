@@ -5,7 +5,7 @@
 C'est **la seule page à lire**. Tout ce qui est important est ici, en français simple. Les détails sont dans les documents cités tout en bas.
 
 **Où on en est, en 3 lignes :**
-1. L'application marche sur le vrai serveur, avec toutes les corrections de l'audit (depuis le 25/10/2026). Il y a encore très peu de vrais membres.
+1. L'application marche sur le vrai serveur, avec toutes les corrections de l'audit et du contrôle qualité (schémas jusqu'au 101, le 25/10/2026). Il y a encore très peu de vrais membres.
 2. Aucun argent ne passe par l'application. La commission est seulement calculée, jamais encaissée.
 3. Vos décisions sont prises (« ok pour tout », 25/10/2026). Prochaine grande étape : l'essai fermé (20 personnes, 4 semaines). Il attend votre « on lance ».
 
@@ -24,6 +24,9 @@ Une « PR », c'est une proposition de changement : vous la fusionnez sur GitHub
 5. **Demain matin (26/10)** : sur GitHub, onglet « Issues », vérifier qu'une fiche « Contrôle quotidien » est apparue. Si rien n'apparaît, le dire à Claude.
 6. **Préparer l'essai fermé** : ouvrir `docs/essai-ferme/LANCER-EN-1-HEURE.md`. Choisir la ville, les 2 produits, votre numéro d'aide et vos horaires. Valider les critères de réussite. Puis dire « on lance » ou « on attend ».
 7. **Chercher une aide juridique gratuite** (clinique juridique d'une faculté de droit, chambre de commerce) pour relire les textes et la déclaration à l'ARTCI (l'autorité des données personnelles).
+
+8. **Coller le fichier « 101e » dans Supabase** (5 minutes) : la dernière pièce des durées de conservation. Mode d'emploi pas à pas : `docs/A-FAIRE-PROPRIETAIRE.md`, partie 4 ter (d'abord le serveur d'essai, puis le vrai).
+9. **Après la fusion de la PR #321 (écrans juridiques)** : dire « #321 fusionnée » à Claude. Il mettra alors sur le vrai serveur les deux morceaux qui l'attendent (cases « pièce vue » et « appel fait » du numéro contesté, et les trajets de la carte par notre serveur).
 
 Plus tard, quand vous aurez 10 minutes :
 - autoriser le serveur de l'application dans l'environnement Claude (mode d'emploi : `docs/A-FAIRE-PROPRIETAIRE.md`, partie 1) ;
@@ -61,7 +64,9 @@ Le 25/10/2026, le vrai serveur compte 3 profils, 4 offres, 3 demandes et 2 comma
 - Un accord sans commande pendant 72 h devient « sans suite » : la marchandise revient sur l'annonce.
 - Commande : le vendeur confirme, puis a 72 h pour charger (rappel 12 h avant). Sinon l'acheteur peut annuler.
 - La marchandise revient toujours sur l'annonce si la vente tombe avant le chargement.
-- Achats groupés, approvisionnement pro, « Racheter » et rappels d'achat existent (non essayés en vrai).
+- Achats groupés, approvisionnement pro, « Racheter » et rappels d'achat existent (non essayés en vrai). Un achat groupé reprend maintenant le transport écrit dans l'offre.
+- Pendant le trajet, **rien ne se déclenche tout seul** : le vendeur peut signaler un retard, l'acheteur peut demander des nouvelles autant qu'il veut ; après l'arrivée, l'acheteur peut demander un délai de 2, 6 ou 24 h (une fois). Le serveur est prêt ; les boutons arrivent avec les prochains écrans.
+- Une commande ne peut pas dépasser 1 milliard F CFA ; le prix est d'au moins 1 F ; un sac, un carton, une caisse se comptent en nombres entiers.
 
 **Transport**
 - Même ville : le vendeur organise son livreur, payé par l'acheteur, hors Marché de Gros.
@@ -89,13 +94,15 @@ Le 25/10/2026, le vrai serveur compte 3 profils, 4 offres, 3 demandes et 2 comma
 - Un seul choix pour le membre : Activer ou Désactiver.
 
 **Argent**
-- Commission de 3,5 % sur la marchandise : **calculée seulement**. Rien n'est prélevé.
+- Commission de 3,5 % sur la marchandise : **calculée seulement**. Rien n'est prélevé. La seule vente d'avant la règle est marquée « d'avant la règle : non réclamée ».
 - 6,9 % sur le transport : seulement avec le service de transport Marché de Gros (fermé).
 
 **Ce qui tourne tout seul sur le serveur**
 - Les délais des commandes et les notifications : toutes les 5 minutes.
 - L'expiration des annonces et la fiabilité : toutes les 15 minutes.
 - Le tableau des prix : toutes les 5 minutes. Les badges : chaque nuit.
+- Les durées de conservation : chaque nuit à 2 h 41. Pour l'instant, elle **compte seulement** ce qui serait trop vieux (rien aujourd'hui) ; elle n'effacera qu'après le collage du fichier « 101e ».
+- Chaque geste de l'équipe (suspendre, bannir, trancher un litige, changer un réglage…) est noté dans un journal ; un membre de l'équipe qui est vendeur ou acheteur d'une commande ne peut pas trancher son litige.
 
 **Le site web**
 - Sur ordinateur, le public voit une page de maintenance avec un QR code. Le nouveau site est construit mais **caché** : seul vous le voyez (bouton « SEO »).
@@ -183,6 +190,10 @@ Dans l'ordre conseillé.
 | # | Quoi | Qui |
 |---|---|---|
 | 1 | Fusionner #311, puis #312 (ce tableau de bord) | Vous |
+| 2 | Construire ce que demandent vos décisions juridiques, une PR par point avec captures : aide (casse en route), textes du transport en cas de refus, écran du compte banni, journal de tous les gestes de l'équipe, trajets de la carte par notre serveur, profil public sans compte limité aux totaux… L'effacement automatique après les durées seulement avec votre accord | Claude |
+| 3 | Corrections du contrôle qualité : le serveur est fait et en service (25/10/2026) ; restent les écrans (retard, nouvelles, délai, dépôts en double, commission « d'avant la règle ») | Claude |
+| 3 bis | Coller le fichier « 101e » (test, puis vrai serveur) | Vous |
+| 3 ter | Après la fusion de #321 : mettre 101c, 101z et la fonction des trajets sur le vrai serveur | Claude |
 | 2 | Décisions juridiques : les écrans sont faits (aide « cassé en route », transport en cas de refus, « Panne ou météo » avec la source, écran « Compte banni » avec « Contester », carte sans service extérieur inconnu, profil sans compte, numéro contesté, conservation des données) : PR « écrans juridiques » à fusionner après #314, en même temps que la PR du serveur juridique. Restent : mettre en service le nouveau calcul de trajet de la carte et la contestation du bannissement sur le vrai serveur (avec votre accord), la photo pour « Panne ou météo » | Vous (fusionner), puis Claude |
 | 3 | Corrections du contrôle qualité (en cours, accord donné) | Claude |
 | 3 bis | Participation négociée à trois et prix à l'unité obligatoire : serveur prêt sur le test (102c, 102d) ; fusionner la PR #322, puis l'écran (avec captures) et la mise en production | Vous, puis Claude |
@@ -289,4 +300,4 @@ Attention : un défaut noté aujourd'hui « gênant » (un 2e paiement ignoré s
 - **23/10/2026** : nouveau site public construit et caché ; PDF de stratégie mis à jour tout seuls.
 - **24/10/2026** : les 4 chantiers (transport, fiabilité, badges, boutiques), « ville seulement », notifications automatiques, preuves au départ. L'audit donne 49 sur 100 : bon pour un essai fermé, pas pour le public.
 - **Nuit du 24 au 25/10/2026** : toutes les corrections de l'audit sont faites et testées.
-- **25/10/2026** : corrections mises sur le vrai serveur ; litige en 1 h et quantité minimale ; contrôle qualité permanent (premier bilan) ; décisions juridiques toutes prises (« ok pour tout ») ; kit de l'essai fermé ; ce tableau de bord.
+- **25/10/2026** : corrections mises sur le vrai serveur ; litige en 1 h et quantité minimale ; contrôle qualité permanent (premier bilan) ; décisions juridiques toutes prises (« ok pour tout ») ; kit de l'essai fermé ; ce tableau de bord. Puis les corrections du contrôle qualité et le journal de l'équipe mis sur le vrai serveur (schémas 99 à 101, sauf 101c, 101z et 101e).

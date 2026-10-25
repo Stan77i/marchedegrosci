@@ -18,8 +18,8 @@ Une « PR », c'est une proposition de changement : vous la fusionnez sur GitHub
 1. **Fusionner les PR, dans cet ordre :**
    - [#311 Textes juridiques : décisions « ok pour tout » et liste « À construire »](https://github.com/Stan77i/marchedegrosci/pull/311)
    - [#312 Tableau de bord du propriétaire : une seule page à lire](https://github.com/Stan77i/marchedegrosci/pull/312) (cette page).
-2. **Dire à Claude quoi construire en premier** parmi ce que demandent vos décisions juridiques (liste « À construire » de `docs/juridique/DECISIONS-A-PRENDRE.md`, après la fusion de #311), ou écrire simplement « construis dans l'ordre ».
-3. **Choisir les corrections du contrôle qualité** : lire la partie 8 de `CONTROLE_QUALITE/DERNIER_RAPPORT.md` (11 lots numérotés), puis écrire par exemple « corrige 1, 2 et 4 ».
+2. **Rien à choisir pour la construction** : vous avez dit « ok pour tout » ; Claude construit déjà ce que demandent vos décisions juridiques (liste « À construire » de `docs/juridique/DECISIONS-A-PRENDRE.md`).
+3. **Rien à choisir pour les corrections du contrôle** : vous avez dit « Arrange » ; Claude corrige déjà les défauts (écrans, commandes, sécurité). Vous recevrez les captures, puis les PR à fusionner.
 4. **Recréer la tâche des gardiens avec l'accès au serveur** (10 minutes, une seule fois) : sur claude.ai, ouvrir les tâches programmées, supprimer l'ancienne tâche « Lance le contrôle général MGCI », en créer une nouvelle avec le même texte, tous les 3 jours, **en cochant le connecteur Supabase**. Sans cela, les tests du serveur ne tournent pas tout seuls.
 5. **Demain matin (26/10)** : sur GitHub, onglet « Issues », vérifier qu'une fiche « Contrôle quotidien » est apparue. Si rien n'apparaît, le dire à Claude.
 6. **Préparer l'essai fermé** : ouvrir `docs/essai-ferme/LANCER-EN-1-HEURE.md`. Choisir la ville, les 2 produits, votre numéro d'aide et vos horaires. Valider les critères de réussite. Puis dire « on lance » ou « on attend ».
@@ -182,7 +182,7 @@ Dans l'ordre conseillé.
 |---|---|---|
 | 1 | Fusionner #311, puis #312 (ce tableau de bord) | Vous |
 | 2 | Construire ce que demandent vos décisions juridiques, une PR par point avec captures : aide (casse en route), textes du transport en cas de refus, écran du compte banni, journal de tous les gestes de l'équipe, trajets de la carte par notre serveur, profil public sans compte limité aux totaux… L'effacement automatique après les durées seulement avec votre accord | Claude |
-| 3 | Choisir les corrections du contrôle qualité (numéros 1 à 11) | Vous |
+| 3 | Corrections du contrôle qualité (en cours, accord donné) | Claude |
 | 4 | Rejouer les tests des dernières corrections (suppression de compte, membre suspendu) et lire les commissions du vrai serveur (avec votre accord, en lecture seule) | Claude |
 | 5 | Faire les corrections choisies, une PR par lot, avec captures | Claude |
 | 6 | Petits restes connus : relance envoyée après un accord « sans suite » ; étape « Commande terminée » cochée trop tôt ; carte limitée à 500 annonces | Claude |

@@ -88,7 +88,7 @@
     catch (e) { if (!bg) return; box.innerHTML = tete('Achats', 'groupés') + `<p class="gr-err" role="alert">${esc(errTxt(e))}</p><button class="gr-b s" data-re>Réessayer</button>`; box.querySelector('[data-re]').onclick = () => ouvrir(vue); return; }
     if (!bg) return;
     box.innerHTML = tete('Achats', 'groupés') +
-      `<p class="gr-lead">À plusieurs, on achète plus gros, moins cher, et on partage le transport. Chacun confirme sa part : rien n’est commandé sans vous.</p>
+      `<p class="gr-lead">Chacun confirme sa part : rien n’est commandé sans vous.</p>
       <div class="gr-seg" role="group" aria-label="Afficher"><button data-v="ouverts" aria-pressed="${vue === 'ouverts'}">Groupes ouverts</button><button data-v="miens" aria-pressed="${vue === 'miens'}">Mes groupes</button></div>` +
       (L.length ? L.map(g => `<button class="gr-c" data-g="${g.id}"><b>${esc(g.produit)} · ${esc(g.zone)}</b>
           <small>${esc(g.vendeur)} · ${g.participants} participant${g.participants > 1 ? 's' : ''} · ${nf(g.total)} / ${nf(g.objectif)} ${esc(g.unite)}</small>

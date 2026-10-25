@@ -145,7 +145,7 @@
     catch (e) { if (!bg) return; box.innerHTML = tete('Approvisionnement', 'pro') + `<p class="ap-err" role="alert">${esc(errTxt(e))}</p><button class="ap-b s" data-re>Réessayer</button>`; box.querySelector('[data-re]').onclick = () => ouvrir(vue); return; }
     if (!bg) return;
     box.innerHTML = tete('Approvisionnement', 'pro') +
-      `<p class="ap-lead">Restaurants, hôtels, cantines, revendeurs : publiez vos besoins réguliers, recevez des propositions, comparez, choisissez.</p>
+      `<p class="ap-lead">Publiez vos besoins réguliers, recevez des propositions.</p>
       <div class="ap-seg" role="group" aria-label="Afficher"><button data-v="miens" aria-pressed="${vue === 'miens'}">Mes besoins</button><button data-v="ouverts" aria-pressed="${vue === 'ouverts'}">Besoins des pros</button></div>` +
       (L.length ? L.map(x => `<button class="ap-c" data-b="${x.id}"><b>${esc(x.titre)}</b><small>${esc(TYPES[x.type] || '')} · ${esc(regNom(x.region))}${x.ville ? ', ' + esc(x.ville) : ''}</small>
           <small>${esc(x.produits || '')}</small>
@@ -170,7 +170,7 @@
     const v = (k, d) => esc(etat[k] != null ? etat[k] : d);
     const peindre = () => {
       box.innerHTML = tete('Publier un', 'besoin', 'miens') +
-        `<p class="ap-lead">Un besoin n’engage à rien : vous recevez des propositions et vous choisissez. Chaque produit compte comme une annonce (3 gratuites, puis identité vérifiée).</p>
+        `<p class="ap-lead">Chaque produit compte comme une annonce (3 gratuites, puis identité vérifiée).</p>
         <datalist id="apProds">${prods().map(p => `<option value="${esc(p.name)}"></option>`).join('')}</datalist>
         <form class="ap-f" novalidate>
           <label>Votre établissement<input data-k="titre" maxlength="80" required placeholder="ex. Restaurant Chez Ama" value="${v('titre', '')}"></label>

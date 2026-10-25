@@ -38,7 +38,7 @@
 
   const CSS = `
 mdg-tableau{display:block;padding:6px 16px 24px;font:400 15px/1.45 Jost,system-ui,sans-serif;color:#171512}
-.tb-h{margin:10px 0 2px;font:600 26px/1.15 Jost,sans-serif;letter-spacing:-.01em}.tb-h em{font-style:italic;font-weight:900;color:#10392B}
+.tb-h.seul{margin-bottom:12px}.tb-h{margin:10px 0 2px;font:600 26px/1.15 Jost,sans-serif;letter-spacing:-.01em}.tb-h em{font-style:italic;font-weight:900;color:#10392B}
 .tb-s{margin:0 0 12px;color:#5E5546;font-size:14px}
 .tb-zone{display:flex;align-items:center;gap:8px;margin:0 0 12px}.tb-zone label{font-size:13px;color:#5E5546}
 .tb-zone select{flex:1;min-height:44px;border:1px solid rgba(23,21,18,.18);border-radius:14px;background:#FFFDF8;padding:0 12px;font:500 15px Jost,sans-serif;color:#171512}
@@ -170,16 +170,14 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
       const P = s.produits;
       // la cascade ne se joue qu'à la première apparition de la liste (ou après un changement de zone), pas à chaque relecture de 30 s
       const cle = 'l:' + (s.region || ''), anim = !!(P && P.length) && this._anim !== cle; if (anim) this._anim = cle;
-      this.poser(`<h2 class="tb-h">Le tableau du <em>marché</em></h2>
-        <p class="tb-s">Les meilleurs prix du moment. Pour acheter, le moins cher est en haut ; pour vendre, le meilleur budget est en haut. Baissez votre prix : vous montez.</p>
+      this.poser(`<h2 class="tb-h seul">Le tableau du <em>marché</em></h2>
         ${this.choixZone()}
         ${s.err ? this.erreur() : !P ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div><div class="tb-charge"></div></div>'
           : !P.length ? `<div class="tb-vide"><b>Aucune annonce${s.region ? ' dans cette zone' : ''} pour l’instant</b>Publiez la première avec « J’ai » ou « Je cherche » sur l’onglet Marché.</div>`
           : `<ul class="tb-l tb-pl${anim ? ' anim' : ''}">${P.map((p, i) => `<li style="--i:${Math.min(i, 10)}"><button type="button" class="tb-p" data-slug="${esc(p.slug)}" aria-label="${esc(p.lab || nomProduit(p.slug))} : voir le tableau">
               ${vignette(p.slug)}<span class="tb-tx"><b>${esc(p.lab || nomProduit(p.slug))}</b><span class="tb-pils">${(p.n_offres ? `<span class="tb-pil o"><i aria-hidden="true"></i>${nf(p.n_offres)} offre${p.n_offres > 1 ? 's' : ''}</span>` : '') + (p.n_demandes ? `<span class="tb-pil d"><i aria-hidden="true"></i>${nf(p.n_demandes)} demande${p.n_demandes > 1 ? 's' : ''}</span>` : '') || '<small>Aucune annonce</small>'}</span></span>
               <span class="px">${p.meilleure_offre != null ? `<span><b>dès ${F(p.meilleure_offre)}</b><small>le ${esc(p.unite_offre || 'kg')} · pour acheter</small></span>` : ''}
-                ${p.meilleure_demande != null ? `<span class="d"><b>jusqu’à ${F(p.meilleure_demande)}</b><small>le ${esc(p.unite_demande || 'kg')} · pour vendre</small></span>` : ''}</span></button></li>`).join('')}</ul>`}
-        <p class="tb-n">Le Marché de Gros met en relation : aucun numéro n’est affiché, tout se négocie dans l’application.</p>`);
+                ${p.meilleure_demande != null ? `<span class="d"><b>jusqu’à ${F(p.meilleure_demande)}</b><small>le ${esc(p.unite_demande || 'kg')} · pour vendre</small></span>` : ''}</span></button></li>`).join('')}</ul>`}`);
       this.lier();
     }
     peindreProduit() {

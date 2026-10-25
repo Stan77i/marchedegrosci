@@ -435,7 +435,6 @@
     const L = liste.filter(x => filtre === 'cours' ? enCours(x) : !enCours(x));
     box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
       <h2>Mes <em>commandes</em></h2>
-      <p class="cm-sous">Du « oui » à la livraison : chaque étape, avec son heure.</p>
       <div class="cm-seg" role="group" aria-label="Afficher">${[['cours', 'En cours'], ['fini', 'Clôturées et annulées']].map(([k, l]) => `<button type="button" data-f="${k}" aria-pressed="${filtre === k}">${l}</button>`).join('')}</div>
       <div class="cm-li">${charge && !liste.length ? (window.MDGSac ? MDGSac.charge('Vos commandes arrivent…') : '<p>Chargement…</p>')
         : L.length ? L.map(ligneCmd).join('')
@@ -877,7 +876,7 @@
       const rf = t && N().texteRefus ? N().texteRefus(t) : ''; if (rf) { err.textContent = rf; return; }
       ok.disabled = true; err.textContent = '';
       try { await N().rpc('avis_commande_donner', { p_cmd: c.id, p_note: n, p_texte: t || null }); delete avisNote[c.id];
-        avis[c.id] = await N().rpc('avis_commande_moi', { p_cmd: c.id }).catch(() => avis[c.id]); toast('Merci, votre avis est publié', { type: 'ok', sous: 'Il aide les autres à choisir avec qui échanger.' }); peindre(); }
+        avis[c.id] = await N().rpc('avis_commande_moi', { p_cmd: c.id }).catch(() => avis[c.id]); toast('Merci, votre avis est publié', { type: 'ok' }); peindre(); }
       catch (x) { ok.disabled = false; err.textContent = x.code === 'texte' ? x.message : erreurTxt(x); }
     };
   }

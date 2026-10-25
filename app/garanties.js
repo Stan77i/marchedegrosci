@@ -163,8 +163,9 @@
       l.className = 'gr-l sort'; setTimeout(poser, 300);
     }
     ligne() {
-      const t = this.dataset.t || 'Sceau vert après contrôle de la pièce, numéros cachés, tout se passe ici.';
-      this.r.innerHTML = `<style>${CSS}</style><button type="button" class="gr-ligne">${ico('bouclier', 20)}<span><b>Achetez en confiance.</b> ${esc(t)}</span>${ico('chev', 16)}</button>`;
+      // sans data-t : « Achetez en confiance » seul, le détail est derrière (pas de long texte sur l'écran, règle du 24/10/2026)
+      const t = this.dataset.t || '';
+      this.r.innerHTML = `<style>${CSS}</style><button type="button" class="gr-ligne"${t ? '' : ' aria-label="Achetez en confiance : nos garanties"'}>${ico('bouclier', 20)}<span>${t ? `<b>Achetez en confiance.</b> ${esc(t)}` : '<b>Achetez en confiance</b>'}</span>${ico('chev', 16)}</button>`;
       this.r.querySelector('button').onclick = ouvrir;
     }
   }

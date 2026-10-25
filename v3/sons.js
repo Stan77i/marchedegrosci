@@ -111,7 +111,7 @@
 @media (min-width:720px){.snp{border-radius:28px;padding-bottom:24px}.snp::before{visibility:hidden}}
 .snp::before{content:"";display:block;width:38px;height:5px;margin:0 auto 10px;border-radius:3px;background:rgba(23,21,18,.16)}
 .snp-x{position:absolute;right:14px;top:16px;width:44px;height:44px;border:0;border-radius:50%;background:rgba(23,21,18,.07);color:#171512;cursor:pointer}
-.snp h2{margin:8px 60px 4px 4px;font:500 32px/1.08 Jost,system-ui,sans-serif}
+.snp h2{margin:8px 60px 16px 4px;font:500 32px/1.08 Jost,system-ui,sans-serif}
 .snp>p{margin:0 4px 16px;color:#655C4D;font-size:14px;line-height:1.5}
 .snp-lab{margin:22px 16px 8px;font:600 13px/1.2 Jost,sans-serif;letter-spacing:0;color:#6F6553}
 .snp-grp{background:#FFFDF8;border-radius:20px;overflow:hidden;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.04);transition:opacity .2s}
@@ -147,7 +147,7 @@
     if (!document.getElementById('snpCss')) { const st = document.createElement('style'); st.id = 'snpCss'; st.textContent = PCSS; document.head.appendChild(st); }
     const bg = document.createElement('div'); bg.className = 'snp-bg';
     bg.innerHTML = `<div class="snp" role="dialog" aria-modal="true" aria-labelledby="snpT"><button type="button" class="snp-x ui-x" aria-label="Fermer"></button>
-      <h2 id="snpT">Sons</h2><p>De courtes notes de balafon pour ce qui compte. Chaque son s’accompagne toujours d’un message à l’écran.</p>
+      <h2 id="snpT">Sons</h2>
       <div class="snp-grp"><label class="snp-r"><span class="snp-ti" aria-hidden="true">${IC('son')}</span><span class="snp-t"><b>Sons du marché</b><small>Notes de balafon</small></span><input type="checkbox" class="snp-tog" role="switch" data-on ${r.on ? 'checked' : ''}></label></div>
       <p class="snp-lab">Quand jouer</p>
       <div class="snp-grp${r.on ? '' : ' off'}" data-cats>${Object.entries(CATS).map(([k, c]) => `<div class="snp-r"><span class="snp-ti" aria-hidden="true">${EMO[k] || IC('cloche')}</span><label class="snp-t" for="snp-${k}"><b>${esc(c.nom)}</b><small>${esc(SOUS[k] || '')}</small></label><button type="button" class="snp-ec" data-k="${k}" aria-label="Écouter : ${esc(c.nom)}" title="Écouter" ${r.on ? '' : 'disabled'}>${IC('son', 16)}</button><input id="snp-${k}" type="checkbox" class="snp-tog" role="switch" data-k="${k}" ${r.cats[k] !== false ? 'checked' : ''} ${r.on ? '' : 'disabled'}></div>`).join('')}</div>

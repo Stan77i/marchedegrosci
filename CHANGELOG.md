@@ -7,6 +7,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 ## 25/10/2026
 
 - Production : les corrections de l'audit (schémas 92a à 96f) et le schéma 97a (message privé envoyé deux fois : doublon cherché dans la même conversation) sont appliqués sur la base de production, avec l'accord du propriétaire ; fonction `pousser` v24 déployée. Données touchées : 2 accords notés dans `stock_mouvements`, 1 date de confirmation remplie ; aucune ligne effacée, comptes de lignes identiques avant et après. 97b et 97c restent sur le projet de test. Détail : `docs/PASSATION.md`.
+- Moins de texte dans l'application (demande du propriétaire : « ça sur-explique ») : slogans, phrases morales et sous-titres qui redisent le titre retirés ou raccourcis (Demander, Prix, Accueil, Mes commandes, Mon compte, « Pourquoi le Marché de Gros », tableau du marché, Sons, Alertes produits, Achats groupés, Approvisionnement pro, Racheter, Prix par zone, Messages). Les règles qui protègent restent (argent, quotas, vérification). Corrigé au passage : la feuille des garanties ne cite plus les anciens statuts « Vendeur de confiance » et « Acheteur sérieux » ; « Ma réputation » ne dit plus que les avis arrivent après les négociations (ils viennent après une commande terminée). Cache `mgci-v291`.
 
 ## 24/10/2026
 

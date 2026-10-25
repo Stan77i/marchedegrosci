@@ -1,7 +1,7 @@
 # Les gardiens : tous les 3 jours, vérifient qu'il n'y a ni doublons, ni sur-explications, ni bugs, ni incohérences,
 # puis envoient le rapport au propriétaire dans une issue GitHub « Rapport des gardiens » (une seule, mise à jour à chaque passage).
 # Gratuit (dépôt public, GitHub Actions). Demandé par le propriétaire le 25/10/2026. N'enregistre rien dans main.
-# Mode d'emploi : tools/gardiens/README.md.
+# Mode d'emploi : tools/controle/README.md. Centre de commande : CONTROLE_QUALITE/README.md.
 name: Gardiens
 on:
   schedule:
@@ -29,21 +29,21 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.1
           npx playwright install --with-deps chromium
       - name: Lancer les gardiens
-        run: node tools/gardiens/controle.js
+        run: node tools/controle/controle.js
       - name: Envoyer le rapport (issue « Rapport des gardiens »)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
         run: |
           titre="Rapport des gardiens · $(date -u +%d/%m/%Y)"
-          bref="$(grep -m1 '^\*\*En bref\*\*' rapport-gardiens.md || echo 'Nouveau rapport.')"
+          bref="$(grep -m1 '^\*\*En bref\*\*' rapport-controle.md || echo 'Nouveau rapport.')"
           numero="$(gh issue list --state open --limit 100 --json number,title \
             --jq '[.[] | select(.title | startswith("Rapport des gardiens"))][0].number // empty')"
           if [ -n "$numero" ]; then
-            gh issue edit "$numero" --title "$titre" --body-file rapport-gardiens.md
+            gh issue edit "$numero" --title "$titre" --body-file rapport-controle.md
             # un commentaire, pour que la notification arrive (modifier le texte d'une issue ne prévient personne)
             gh issue comment "$numero" --body "Nouveau rapport du $(date -u +%d/%m/%Y). $bref Le détail est en haut de cette page."
             echo "Issue n° $numero mise à jour."
           else
-            gh issue create --title "$titre" --body-file rapport-gardiens.md
+            gh issue create --title "$titre" --body-file rapport-controle.md
           fi

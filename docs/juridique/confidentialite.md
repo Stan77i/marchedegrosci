@@ -1,7 +1,7 @@
 # Politique de confidentialité du Marché de Gros CI
 
 > **PROJET, à faire relire par un juriste. Rien n'est en ligne.**
-> Version de travail du 24/10/2026. Chaque ligne décrit ce que fait vraiment l'application ; les commentaires `<!-- source: … -->` disent où le vérifier. Ils seront retirés de la version publiée.
+> Version de travail du 24/10/2026, mise à jour le 25/10/2026 (lecture des messages par l'équipe). Chaque ligne décrit ce que fait vraiment l'application ; les commentaires `<!-- source: … -->` disent où le vérifier. Ils seront retirés de la version publiée.
 
 ## 1. Qui est responsable de vos données
 
@@ -52,9 +52,17 @@ Le responsable du traitement est : [À REMPLIR : nom de la personne ou de la soc
 ### 2.5 Vos messages
 - Les messages privés entre membres sont gardés **1 an**, puis effacés automatiquement.
 - **Un numéro de téléphone écrit dans un message est masqué.** Une tentative de donner un numéro, un lien ou une autre messagerie crée une **alerte pour l'équipe**, avec un extrait du message.
-- **L'équipe du Marché de Gros peut techniquement lire toutes les conversations.** Règle proposée : elle ne les lit qu'en cas de **litige**, de **signalement** ou d'**alerte** de sortie de l'application. [DÉCISION DU PROPRIÉTAIRE] [À VALIDER PAR LE JURISTE]
+- **Le Marché de Gros n'est pas une messagerie privée comme WhatsApp.** Il met en relation un vendeur et un acheteur. Les messages servent à cette mise en relation.
+- **L'équipe du Marché de Gros peut lire tous les messages**, y compris les messages privés entre membres et les négociations. Elle s'en sert pour :
+  - la **sécurité** des membres (menaces, demandes d'argent d'avance, faux comptes) ;
+  - les **litiges** (comprendre ce qui a été convenu) ;
+  - la **lutte contre la fraude** (arnaques, tentatives de sortir de l'application) ;
+  - le **bon fonctionnement de la mise en relation** (aider un membre, corriger un problème).
+- **N'écrivez dans les messages que ce qui concerne votre achat ou votre vente.** N'y mettez pas d'informations sans rapport (vie privée, santé, codes, mots de passe, numéros de compte).
 - Pendant un litige, l'équipe lit la négociation, les messages, les photos et le mot secret pour juger.
-<!-- source: supabase/schema-60-echanges-visibles.sql dm_duree() = 365 jours ; schema-8-effacement.sql dm_purger() + tâche mdg-effacer-messages (toutes les heures) ; schema-10-admin-messages.sql sortie_motif(), table alertes (extrait), admin_discussions() et admin_dm() (lecture de toutes les conversations par un admin, sans condition) ; v3/aide.js « C'est quoi, la discussion à trois ? » -->
+- Ce que l'équipe lit reste dans l'équipe. Elle ne le vend pas et ne le montre pas aux autres membres.
+[À VALIDER PAR LE JURISTE : formulation de cette lecture, finalités et information des membres, au regard de la loi n° 2013-450 sur les données personnelles et des règles de l'ARTCI.]
+<!-- source: supabase/schema-60-echanges-visibles.sql dm_duree() = 365 jours ; schema-8-effacement.sql dm_purger() + tâche mdg-effacer-messages (toutes les heures) ; schema-10-admin-messages.sql sortie_motif(), table alertes (extrait), admin_discussions() et admin_dm() (lecture de toutes les conversations par un admin, sans condition) ; décision du propriétaire du 25/10/2026 : « L'équipe peut lire tout, l'app n'est pas un WhatsApp, c'est une mise en relation d'un vendeur et d'un acheteur. » ; v3/aide.js « C'est quoi, la discussion à trois ? » -->
 
 ### 2.6 Les signalements
 Quand vous signalez quelqu'un : le motif, votre précision, d'où vient le signalement. **La personne signalée ne sait pas qui l'a signalée.** Des photos de preuve peuvent être jointes ; seule l'équipe les voit.
@@ -88,7 +96,7 @@ L'application garde sur votre téléphone : vos annonces en attente d'envoi, vos
 | **Tout le monde, même sans compte** | Vos annonces actives (produit, quantité, prix, ville, région) avec votre **nom public** ; votre profil public (présentation, photos d'activité, totaux de ventes, fiabilité). Le site public montre seulement le **prénom et l'initiale**, la ville, le produit, la quantité, le prix. |
 | **Les membres connectés** | En plus : l'heure de votre dernière activité. |
 | **L'autre partie d'une négociation ou d'une commande** | Vos propositions, vos messages, les étapes de la commande, les photos du colis. |
-| **L'équipe du Marché de Gros** | Tout ce qui est utile à la modération : profils, numéros, dossiers d'identité (chaque ouverture notée), conversations, alertes, signalements, commandes, photo du papier du mot secret. |
+| **L'équipe du Marché de Gros** | Tout ce qui est utile à la sécurité, aux litiges, à la lutte contre la fraude et à la mise en relation : profils, numéros, dossiers d'identité (chaque ouverture notée), **tous les messages** (privés et de négociation), alertes, signalements, commandes, photo du papier du mot secret. |
 | **Personne d'autre** | Votre numéro n'est **jamais** affiché aux autres membres. |
 
 - **Nom public** : votre pseudonyme s'il existe ; sinon votre prénom et l'initiale du nom (« Awa K. »). Votre nom de famille entier n'est montré que si vous l'activez (Réglages → Montrer mon nom de famille).

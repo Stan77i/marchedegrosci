@@ -31,6 +31,10 @@
 // 18. par la base (pg_cron « mdg-notif », public.notif_tick, schéma 88) avec { lots: true } : les messages en file d'attente
 //     (nouvelles offres et demandes, groupe bientôt complet, veille de la date limite, produit à racheter), regroupés par
 //     personne et par sujet : « 3 nouvelles offres : Tomate ».
+// v26 (25/10/2026, schéma 99a, NON DÉPLOYÉE) : rien ne se déclenche avant « arrivé » ; « Retard en route » (cmd_retard),
+//     « L'acheteur demande des nouvelles » (cmd_nouvelles), « L'acheteur demande N h » (cmd_delai), « Confirmez la réception »
+//     quand l'arrivée vient de l'acheteur ; « Annulation retirée par le vendeur » quand il charge ; le texte « close dans l'heure »
+//     ne sert qu'au litige de réception (1 h après l'arrivée) ; le litige du mot bloqué va à l'équipe.
 // v25 (déployée en production le 25/10/2026, schéma 97b) : litige en 1 h après « livré » : « Confirmez la réception ou
 //     signalez un problème dans l'heure. », « Litige ouvert : réception non confirmée », « Commande close pour le vendeur » /
 //     « en votre faveur ». Aucun paiement n'est branché : jamais d'argent versé dans les textes.
@@ -280,7 +284,8 @@ Deno.serve(async (req) => {
         arrivee: e.par && e.par === k.acheteur_id ? ["La marchandise est arrivée", `${produit} · L'acheteur vérifie.`] : [`Livraison déclarée : ${coupe(k.produit || "commande", 22)}`, "Confirmez la réception ou signalez un problème dans l'heure."],
         reception: ["Réception confirmée, commande terminée", produit],
         annulation_demandee: [`${qui} demande l'annulation`, `${produit}. Touchez pour répondre.`],
-        annulation_refusee: ["Annulation refusée", produit],
+        // schéma 99a : le vendeur charge alors qu'il avait demandé l'annulation → sa demande est retirée (ligne écrite à son nom)
+        annulation_refusee: e.par && e.par === k.vendeur_id ? ["Annulation retirée par le vendeur", `${produit} · La marchandise est chargée.`] : ["Annulation refusée", produit],
         annulee: ["Commande annulée", produit],
         litige: [`${qui} a ouvert un litige`, `${produit}. L'équipe va examiner.`],
         terminee: ["Commande clôturée", `${produit}${e.note ? " · " + String(e.note) : ""}`],
@@ -301,7 +306,9 @@ Deno.serve(async (req) => {
       // Aucun paiement n'est branché : on ne parle jamais d'argent versé.
       const auto = (d: string): [string, string] | null => {
         const ach = d === k.acheteur_id;
-        if (e.evenement === "litige" && !e.par && !k.refus_le) return ach
+        // schéma 99a : les autres litiges ouverts par le système (livraison jamais déclarée, arrivée sans réception, mot bloqué)
+        // sont traités par l'équipe, sans clôture automatique : ils gardent le texte général « Marché de Gros a ouvert un litige ».
+        if (e.evenement === "litige" && !e.par && !k.refus_le && String(e.note || "").startsWith("Pas de réponse de l'acheteur")) return ach
           ? ["Litige ouvert : réception non confirmée", "Répondez dans l'heure, sinon la commande sera close pour le vendeur."]
           : ["Litige ouvert : l'acheteur n'a pas confirmé", "Sans réponse de sa part dans l'heure, la commande sera close pour vous."];
         if (e.evenement === "terminee" && !e.par && String(e.note || "").startsWith("En faveur du vendeur")) return ach
@@ -592,8 +599,26 @@ Deno.serve(async (req) => {
               : M(T45(`${lib} : pas encore chargé`, "Pas encore chargé"), B80("Vous pouvez annuler la commande, ou signaler un problème.", "Vous pouvez annuler ou signaler un problème."), "cmd-" + l.objet_id);
           case "cmd_rappel_reception": {
             const h = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
+            // schéma 99a : l'arrivée a été dite par l'acheteur lui-même
+            if (d.arrivee_acheteur === true) return M(T45(`${lib} : confirmez la réception`, "Confirmez la réception"),
+              B80(h ? `Tapez le mot secret avant ${h}, ou signalez un problème.` : "", "Tapez le mot secret, ou signalez un problème."), "cmd-" + l.objet_id);
             return M(T45(`${lib} : le vendeur dit avoir livré`, "Livraison déclarée"),
               B80(h ? `Vérifiez et confirmez la réception, ou refusez, avant ${h}.` : "", "Vérifiez, puis confirmez la réception ou refusez."), "cmd-" + l.objet_id);
+          }
+          // schéma 99a : suivi pendant le transport et délai après l'arrivée (rien d'automatique avant « arrivé »)
+          case "cmd_retard": {
+            const M2: Record<string, string> = { panne: "panne", route: "route difficile", pluie: "pluie", controle: "contrôle routier", autre: "imprévu" };
+            const cause = M2[String(d.motif)] || "imprévu", jr = d.date ? dateCourte(d.date) : "";
+            return M(T45(`${lib} : retard en route`, "Retard en route"),
+              B80(jr ? `Cause : ${cause}. Arrivée estimée le ${jr}.` : "", `Cause : ${cause}. Touchez pour voir la commande.`, `Cause : ${cause}.`), "cmd-" + l.objet_id);
+          }
+          case "cmd_nouvelles":
+            return M(T45(`${lib} : l'acheteur demande des nouvelles`, "L'acheteur demande des nouvelles"),
+              "Dites où en est la livraison, ou signalez un retard.", "cmd-" + l.objet_id);
+          case "cmd_delai": {
+            const h = Number(d.heures || 0), fin = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
+            return M(T45(`${lib} : l'acheteur demande ${h} h`, "L'acheteur demande un délai"),
+              B80(fin ? `Il vérifie la marchandise avant ${fin}.` : "", "Il vérifie la marchandise un peu plus tard."), "cmd-" + l.objet_id);
           }
           case "cmd_mot_bloque":
             return M(T45(`${lib} : mot secret bloqué`, "Mot secret bloqué"),

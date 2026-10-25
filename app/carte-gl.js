@@ -340,15 +340,17 @@
         const el = document.createElement('div'); el.className = 'cgl-dist'; el.textContent = '≈ ' + d + ' km à vol d’oiseau';
         distM = new ml.Marker({ element: el, anchor: 'top', offset: [0, 10] }).setLngLat(mid).addTo(map);
         if (!enLigne() || d < 2) return;
-        // en ligne : le trajet par la route (OSRM), entre les points affichés — donc approché lui aussi
-        const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 6000);
-        fetch('https://router.project-osrm.org/route/v1/driving/' + a[0].toFixed(5) + ',' + a[1].toFixed(5) + ';' + xy[0].toFixed(5) + ',' + xy[1].toFixed(5) + '?overview=simplified&geometries=geojson', { signal: ctl.signal })
-          .then(r => r.ok ? r.json() : Promise.reject(r.status)).then(j => { clearTimeout(t); if (!alive || n !== trajetN || !j.routes || !j.routes[0]) return;
-            const r = j.routes[0], h = r.duration / 3600;
-            map.getSource('trajet').setData({ type: 'FeatureCollection', features: [{ type: 'Feature', properties: { route: 1 }, geometry: r.geometry }] });
-            const c = r.geometry.coordinates[Math.floor(r.geometry.coordinates.length / 2)];
-            el.textContent = '≈ ' + Math.round(r.distance / 1000) + ' km par la route · ' + (h < 1 ? Math.round(h * 60) + ' min' : Math.floor(h) + ' h ' + String(Math.round((h % 1) * 60)).padStart(2, '0'));
-            distM.setLngLat(c); })
+        // en ligne et connecté : le trajet par la route, calculé par notre fonction « itineraire » (n° 23, 25/10/2026) ;
+        // plus rien n'est envoyé au service public OSRM. Pas de réponse : la ligne à vol d'oiseau reste, sans repli.
+        const N = window.MDGNuage, ses = N && N.session && N.session();
+        if (!ses || !N.api) return;
+        let fini = false; const t = setTimeout(() => { fini = true; }, 8000);
+        N.api('/functions/v1/itineraire', { method: 'POST', body: { points: [[+a[0].toFixed(3), +a[1].toFixed(3)], [+xy[0].toFixed(3), +xy[1].toFixed(3)]] }, auth: true })
+          .then(j => { clearTimeout(t); if (fini || !alive || n !== trajetN || !j || !Array.isArray(j.ligne) || j.ligne.length < 2) return;
+            const L = j.ligne, h = (j.duree_s || 0) / 3600;
+            map.getSource('trajet').setData({ type: 'FeatureCollection', features: [{ type: 'Feature', properties: { route: 1 }, geometry: { type: 'LineString', coordinates: L } }] });
+            el.textContent = '≈ ' + Math.round((j.distance_m || 0) / 1000) + ' km par la route' + (j.duree_s ? ' · ' + (h < 1 ? Math.round(h * 60) + ' min' : Math.floor(h) + ' h ' + String(Math.round((h % 1) * 60)).padStart(2, '0')) : '');
+            distM.setLngLat(L[Math.floor(L.length / 2)]); })
           .catch(() => clearTimeout(t));
       }
       function localiser() {

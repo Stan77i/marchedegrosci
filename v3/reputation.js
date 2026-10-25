@@ -273,7 +273,9 @@
         const pl = q > 1 && !/[sx]$|^(kg|t)$/i.test(u) ? u + 's' : u; return fq(Math.round(q * 100) / 100) + ' ' + pl + (v.sens === 'vente' ? ' vendu' : ' acheté') + (/^(t|tonne|unité|caisse|cagette|botte|boîte|bassine)/i.test(u) ? 'e' : '') + (q > 1 ? 's' : ''); });
       if (pp.transactions) haut += `<div class="rp-sec"><h3>Volumes échangés</h3><div class="rp-tags"><span>${fq(pp.transactions)} transaction${pp.transactions > 1 ? 's' : ''} conclue${pp.transactions > 1 ? 's' : ''}</span>${vol.map(t => `<span>${esc(t)}</span>`).join('')}</div></div>`;
       if (pp.historique && pp.historique.length) haut += `<div class="rp-sec"><h3>Ventes et achats conclus</h3><div class="rp-li">${pp.historique.map(h => `<div><i class="${h.sens === 'vente' ? 'o' : 'v'}"></i><span>${h.sens === 'vente' ? 'Vendu' : 'Acheté'} : ${esc(h.produit || 'produit')}${h.quantite ? ' · ' + fq(h.quantite) + ' ' + esc(h.unite || '') : ''}${h.ville ? ' · ' + esc(h.ville) : ''}</span><small>${quand(h.quand)}</small></div>`).join('')}</div></div>`;
-      else if (!moi) haut += `<div class="rp-sec"><h3>Ventes et achats conclus</h3><div class="rp-vide">Aucune vente conclue dans l’application pour l’instant.</div></div>`;
+      // sans compte (schéma 101a, décision n° 21) : seulement les totaux ; le détail est réservé aux membres connectés
+      else if (pp.detail === false) { if (pp.transactions) haut += `<div class="rp-sec"><h3>Ventes et achats conclus</h3><div class="rp-vide">Connectez-vous pour voir le détail.</div></div>`; }
+      else if (!moi && !pp.transactions) haut += `<div class="rp-sec"><h3>Ventes et achats conclus</h3><div class="rp-vide">Aucune vente conclue dans l’application pour l’instant.</div></div>`;
       if (!off) haut += `<div class="rp-sec"><h3>Avis</h3></div>`;
     }
     bg.querySelector('[data-pp]').innerHTML = haut;

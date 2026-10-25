@@ -1,0 +1,42 @@
+name: PR à jour de main
+# Après chaque fusion dans main, remet à jour les PR ouvertes des branches claude/*.
+# Les documents de suivi (.gitattributes : merge=union) gardent les deux textes ;
+# un conflit dans le code n'est jamais forcé : la PR reçoit un commentaire.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: pr-a-jour
+  cancel-in-progress: false
+jobs:
+  maj:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Mettre à jour les PR ouvertes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # La branche d'une PR n'a pas forcément le .gitattributes de main : on l'impose ici.
+          mkdir -p .git/info && git show origin/main:.gitattributes > .git/info/attributes
+          gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName|startswith("claude/")) | "\(.number) \(.headRefName)"' |
+          while read -r num ref; do
+            git fetch -q origin "$ref"
+            git checkout -q -B "$ref" "origin/$ref"
+            if git merge-base --is-ancestor origin/main HEAD; then echo "#$num déjà à jour"; continue; fi
+            if git merge --no-edit origin/main; then
+              git push -q origin "HEAD:$ref" && echo "#$num mise à jour"
+            else
+              git merge --abort
+              gh pr comment "$num" --body "Conflit dans le code avec main : à régler à la main (les documents de suivi se règlent tout seuls)."
+              echo "#$num conflit"
+            fi
+          done

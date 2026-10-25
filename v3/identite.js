@@ -490,7 +490,7 @@
     function dessiner() {
       pas(); const e = liste()[i];
       if (e === 'intro') {
-        main.innerHTML = `<h2>Faites vérifier votre identité</h2><p>Les acheteurs et les vendeurs échangent plus volontiers avec une personne vérifiée. Le badge apparaît sur votre profil et à côté de votre nom.</p>
+        main.innerHTML = `<h2>Faites vérifier votre identité</h2><p>Le badge apparaît sur votre profil et à côté de votre nom.</p>
           <div class="idv-card">
             <div class="idv-li">${IC('photo')}<span><b>Trois photos</b> : votre pièce (recto et verso) et un selfie en tenant un code écrit sur un papier.</span></div>
             <div class="idv-li">${IC('comptes')}<span><b>Examinées par une personne</b> de l’équipe du Marché de Gros, jamais par une machine seule. Comptez quelques jours.</span></div>

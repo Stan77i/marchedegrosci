@@ -114,8 +114,8 @@
 .cp-main{flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;padding:4px 16px calc(36px + env(safe-area-inset-bottom));overscroll-behavior:contain;scroll-padding-top:72px}
 @media (min-width:760px){.cp-main{padding:4px 28px 40px}}
 .cp.sur-hero .cp-main{padding-top:0}
-.cp-main>h2,.cp-pg>h2,.cp-w>h2{margin:2px 4px 4px;font:600 26px/1.08 Jost,sans-serif;letter-spacing:-.015em;letter-spacing:-.005em}
-.cp-main>h2+p,.cp-pg>h2+p,.cp-w>h2+p{margin:0 4px 18px;color:var(--mute);font-size:14px;line-height:1.5}
+.cp-main>h2,.cp-pg>h2,.cp-w>h2{margin:2px 4px 14px;font:600 26px/1.08 Jost,sans-serif;letter-spacing:-.015em;letter-spacing:-.005em}
+.cp-main>h2+p,.cp-pg>h2+p,.cp-w>h2+p{margin:-10px 4px 18px;color:var(--mute);font-size:14px;line-height:1.5}
 .cp-pg{animation:cpFade var(--ux-d2,200ms) ease both}
 /* l'en-tête de l'accueil : un champ de terre chaude, l'avatar au centre */
 .cp-hero{position:relative;margin:0 -16px;padding:64px 20px 44px;color:#fff;text-align:center;overflow:hidden;
@@ -636,9 +636,9 @@ label.cp-r{cursor:pointer}
     (async () => { let r = null; try { r = (await N().rpc('notes_publiques', { ids: [u.id] }))[0]; } catch (_) {}
       if (!b.isConnected) return;
       b.querySelector('[data-repn]').textContent = r ? String(r.moyenne).replace('.', ',') : '—';
-      b.querySelector('[data-rept]').innerHTML = r ? R.etoiles(r.moyenne, r.nombre, 13) + ' <span>' + r.nombre + ' avis</span>' : 'Pas encore d’avis : ils arrivent après vos négociations.'; })();
+      b.querySelector('[data-rept]').innerHTML = r ? R.etoiles(r.moyenne, r.nombre, 13) + ' <span>' + r.nombre + ' avis</span>' : 'Pas encore d’avis'; })();
   }
-  const repBtn = '<button type="button" class="cp-rep" data-rep><span class="cp-rep-n" data-repn aria-hidden="true">—</span><span><b>Ma réputation</b><small data-rept>Ce que vos partenaires disent de vous</small></span>' + CHEV + '</button>';
+  const repBtn = '<button type="button" class="cp-rep" data-rep><span class="cp-rep-n" data-repn aria-hidden="true">—</span><span><b>Ma réputation</b><small data-rept></small></span>' + CHEV + '</button>';
 
   const VUES = {
     accueil(main) {
@@ -706,7 +706,7 @@ label.cp-r{cursor:pointer}
           <div class="cp-sh"><h3>Votre compte</h3><small>${esc(N().fmtTel(u.tel))}</small></div>
           <div class="cp-grp">
             ${off0 ? '' : ligne({ ico: mono('compte'), t: 'Profil et avatar', s: nom ? '' : 'Prénom, rôle, lieu', attrs: 'data-go="profil"' })}
-            ${window.MDGRep && !off0 ? ligne({ ico: mono('profil'), t: 'Mon profil public', s: 'Ce que les autres voient de vous', attrs: 'data-profpub' }) : ''}
+            ${window.MDGRep && !off0 ? ligne({ ico: mono('profil'), t: 'Mon profil public', attrs: 'data-profpub' }) : ''}
             ${!off0 ? ligne({ ico: mono('publications'), t: 'Mes publications', s: off.length + dem.length ? 'Et mon stock' : 'Vos offres et demandes', n: off.length + dem.length || '', nl: (off.length + dem.length) + ' publication' + (off.length + dem.length > 1 ? 's' : ''), attrs: 'data-pubs' }) : ''}
             ${window.MDGBoutique && !off0 ? ligne({ ico: mono('vendre'), t: 'Ma boutique', s: 'Mes offres sur une page à partager, QR code', attrs: 'data-boutique' }) : ''}
             ${window.MDGReleve ? ligne({ ico: mono('barres'), t: 'Mes ventes et achats', s: 'Relevés, bons de transaction, volumes', attrs: 'data-releve' }) : ''}
@@ -715,9 +715,9 @@ label.cp-r{cursor:pointer}
             ${window.MDGRep && MDGRep.fiabilite && !off0 ? (() => { const f = MDGRep.fiabResume(), sc = f && f.score, nv = f ? +f.non_vues || 0 : 0; return ligne({ ico: mono('tendance'), t: 'Ma fiabilité', s: f && f.suspension ? 'Compte suspendu pour l’instant' : sc && sc.sur ? 'Fiabilité : ' + sc.pourcent + ' % sur ' + sc.sur + ' commande' + (sc.sur > 1 ? 's' : '') : 'Votre score et votre historique', n: nv, attrs: 'data-fiab' }); })() : ''}
             ${window.MDGRep && MDGRep.niveaux && !off0 ? (() => { const f = MDGRep.nivResume(), R = f && f.roles || {}, L = ['vendeur', 'acheteur'].map(k => R[k] && R[k].libelle).filter(Boolean), sursis = ['vendeur', 'acheteur'].some(k => R[k] && R[k].grace_jusqua); return ligne({ ico: mono('confiance'), t: 'Mes niveaux', s: sursis ? 'Un niveau est en sursis : voyez ce qui manque' : L.length ? L.join(' · ') : 'Vendeur fiable, Bon, Excellent, Grand : ce qui manque', n: f ? +f.non_vus || 0 : 0, attrs: 'data-niv' }); })() : ''}
             ${window.MDGAppro && !off0 ? ligne({ ico: mono('tableau'), t: 'Approvisionnement pro', s: 'Besoins réguliers, propositions, comparaison', attrs: 'data-appro' }) : ''}
-            ${window.MDGGroupes && !off0 ? ligne({ ico: mono('comptes'), t: 'Achats groupés', s: 'Acheter à plusieurs, moins cher', attrs: 'data-groupes' }) : ''}
+            ${window.MDGGroupes && !off0 ? ligne({ ico: mono('comptes'), t: 'Achats groupés', attrs: 'data-groupes' }) : ''}
             ${window.MDGRacheter && !off0 ? ligne({ ico: mono('echanger'), t: 'Racheter', s: 'Mes achats habituels, prix du jour, rappels', attrs: 'data-racheter' }) : ''}
-            ${window.MDGAlertes && !off0 ? (() => { const nA = MDGAlertes.liste().length; return ligne({ ico: mono('alertes'), t: 'Alertes produits', s: nA ? nA + ' produit' + (nA > 1 ? 's' : '') + ' suivi' + (nA > 1 ? 's' : '') : 'Igname, tomate… : soyez prévenu', attrs: 'data-alertes' }); })() : ''}
+            ${window.MDGAlertes && !off0 ? (() => { const nA = MDGAlertes.liste().length; return ligne({ ico: mono('alertes'), t: 'Alertes produits', s: nA ? nA + ' produit' + (nA > 1 ? 's' : '') + ' suivi' + (nA > 1 ? 's' : '') : '', attrs: 'data-alertes' }); })() : ''}
             ${window.MDGChauffeur && !off0 ? (() => { const e = MDGChauffeur.etat(); return ligne({ ico: mono('distance'), t: 'Espace chauffeur', s: !e.inscrit ? 'Transporteur ? Inscrivez-vous, c’est gratuit' : e.propositions ? e.propositions + (e.propositions > 1 ? ' missions à accepter' : ' mission à accepter') : e.statut === 'verifie' ? 'Profil vérifié · vos missions' : e.statut === 'en_attente' ? 'Vérification en cours · vos missions' : 'Vos missions', n: e.propositions, attrs: 'data-chauffeur' }); })() : ''}
             ${ligne({ ico: mono('cadenas'), t: 'Sécurité et code secret', attrs: 'data-go="securite"' })}
             ${adm ? (() => { const nI = +(J('mdg-admin:identites', {}).n) || 0; return ligne({ ico: mono('tableau'), t: 'Tableau de bord', s: nI ? nI + (nI > 1 ? ' dossiers' : ' dossier') + ' à examiner' : 'Administration', n: nI, href: nI ? 'admin.html#identites' : 'admin.html' }); })() : ''}
@@ -752,7 +752,7 @@ label.cp-r{cursor:pointer}
     },
     profil(main) {
       const p = profil || {}, u = me();
-      main.innerHTML = `<div class="cp-pg"><h2>Profil et avatar</h2><p>Ce que les autres voient quand vous publiez ou négociez : votre avatar et ${p.pseudo ? 'votre pseudonyme' : 'votre prénom'}${p.nom_public ? ' et votre nom' : ', avec l’initiale de votre nom'}.</p>
+      main.innerHTML = `<div class="cp-pg"><h2>Profil et avatar</h2>
         <div class="cp-avz"><div class="cp-avbig">${A().svg(p.avatar, { size: 108, nom: nomAffiche(p) || '?', seed: u.id })}</div><div class="cp-row"><button type="button" class="cp-alt" data-av>${p.avatar ? 'Changer d’avatar' : 'Choisir mon avatar'}</button>${p.avatar ? '<button type="button" class="cp-alt" data-av0>Mes initiales</button>' : ''}</div></div>
         <form class="cp-f" novalidate>
           <h3 class="cp-lab">Comment on vous appelle</h3>
@@ -799,7 +799,7 @@ label.cp-r{cursor:pointer}
         return `<button type="button" class="cp-r cp-it" data-nego="${n.id}"><span class="mk" aria-hidden="true">${av.svg}</span><b>${esc(n.produit || 'Annonce')}</b><span class="p">${v ? fmt(v) + ' F' : '—'}</span><small><span class="cp-tag ${e[1]}">${e[0]}</span>${av.nom ? '<span>avec ' + esc(av.nom) + '</span>' : ''}</small></button>`; };
       const dms = J('mdg-dm:liste', []), dm = c => `<button type="button" class="cp-r cp-it${c.non_lu ? ' neuf' : ''}" data-dm="${c.id}"><span class="mk" aria-hidden="true">${avatar(c.autre_id, { size: 32, nom: c.autre_nom }).svg}</span><b>${esc(c.autre_nom)}</b><span class="p">${c.non_lu ? '<span class="cp-tag acc">Nouveau</span>' : ''}</span><small><span>${c.dernier_par === u.id ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</span></small></button>`;
       const sec = (t, L, f, vide) => `<h3 class="cp-lab">${t}${L.length ? '<span class="nbul">' + L.length + '</span>' : ''}</h3><div class="cp-grp">${L.length ? L.slice(0, 20).map(f).join('') : `<p class="cp-vide">${vide}</p>`}</div>`;
-      main.innerHTML = `<div class="cp-pg"><h2>Mon activité</h2><p>Vos annonces, vos négociations, vos messages et vos notifications.</p>
+      main.innerHTML = `<div class="cp-pg"><h2>Mon activité</h2>
         ${ng.rec.length ? sec('À vous de répondre', ng.rec, neg, '') : ''}
         ${sec('Mes offres', off, x => ann('offres', x), '<b>Aucune offre</b>Publiez ce que vous avez avec « J’ai ».')}
         ${sec('Mes demandes', dem, x => ann('demandes', x), '<b>Aucune demande</b>Dites ce qu’il vous faut avec « Je cherche ».')}
@@ -851,7 +851,7 @@ label.cp-r{cursor:pointer}
     securite(main) {
       const u = me();
       const acc = (ico, t, s, corps, cls) => `<details class="cp-acc"><summary class="cp-r${cls ? ' ' + cls : ''}">${ico}<span class="cp-r-t"><b>${t}</b><small>${s}</small></span>${CHEV}</summary><div class="cp-acc-c">${corps}</div></details>`;
-      main.innerHTML = `<div class="cp-pg"><h2>Sécurité et compte</h2><p>Votre numéro et votre code secret à 6 chiffres protègent votre compte.</p>
+      main.innerHTML = `<div class="cp-pg"><h2>Sécurité et compte</h2>
         <h3 class="cp-lab">Connexion</h3>
         <div class="cp-grp">${ligne({ ico: ti('telephone', 'aide'), t: esc(N().fmtTel(u.tel)), s: 'Votre numéro de connexion. Pour en changer, écrivez au Marché de Gros.', cls: 'info', chev: false })}
           ${acc(ti('cle', 'vous'), 'Changer mon code secret', 'Il vous faut votre code actuel', `<form class="cp-f cp-code" novalidate>${champ('cp-c0', 'Code actuel', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}${champ('cp-c1', 'Nouveau code (6 chiffres)', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}${champ('cp-c2', 'Retapez le nouveau code', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}<button type="submit" class="cp-go plein">Enregistrer le nouveau code</button><span class="cp-msg" role="status"></span></form>`)}
@@ -928,7 +928,7 @@ label.cp-r{cursor:pointer}
         + p.map(([x, y]) => '<circle cx="' + x + '" cy="' + y + '" r="' + (n === 1 ? 5.6 : 4) + '" fill="' + (n === 1 ? '#E2412F' : '#10392B') + '"/><circle cx="' + (x - 1.2) + '" cy="' + (y - 1.2) + '" r="1.1" fill="#fff" opacity=".35"/>').join('') + '</svg>'; };
     const html = () => '<div class="avx"><aside class="avx-pv"><div class="avx-big"></div><b class="avx-nom">' + esc(nom) + '</b><div class="avx-mini" aria-hidden="true"><span><i class="m36"></i><small>Négociation</small></span><span><i class="m24"></i><small>Annonce</small></span></div>' + (PG ? '<button type="button" class="avx-de" data-mgd aria-label="Tirer un personnage au hasard"><span class="avx-de3d">' + de(5) + '</span><small>Au hasard</small></button><span class="avx-pop" aria-live="polite"></span>' : '') + '</aside>'
       + '<div class="avx-c"><div class="avx-mode" role="tablist" aria-label="Type d’avatar">' + (PG ? [['mg', 'Personnage']] : []).concat(cur.mode === 'v1' || !PG ? [['v1', 'Portrait']] : [], [['ph', 'Photo'], ['ini', 'Initiales']]).map(([k, t]) => '<button type="button" role="tab" data-mode="' + k + '" aria-selected="' + (mode === k) + '">' + t + '</button>').join('') + '</div><div class="avx-p"></div></div></div>';
-    const zone = embarque || (cadre('<div class="cp-main" style="grid-column:1 / -1"><h2>Mon avatar</h2><p>Il apparaît sur votre profil, à côté de vos annonces et dans vos négociations.</p><div class="cp-avw"></div><div class="cp-row avx-act"><button type="button" class="cp-go" data-ok>Enregistrer</button><button type="button" class="cp-alt" data-no>Annuler</button><span class="cp-msg" role="status"></span></div></div>', 'Mon avatar'), bg.querySelector('.cp-avw'));
+    const zone = embarque || (cadre('<div class="cp-main" style="grid-column:1 / -1"><h2>Mon avatar</h2><div class="cp-avw"></div><div class="cp-row avx-act"><button type="button" class="cp-go" data-ok>Enregistrer</button><button type="button" class="cp-alt" data-no>Annuler</button><span class="cp-msg" role="status"></span></div></div>', 'Mon avatar'), bg.querySelector('.cp-avw'));
     zone.innerHTML = html();
     const P = zone.querySelector('.avx-p'), big = zone.querySelector('.avx-big'), m36 = zone.querySelector('.m36'), m24 = zone.querySelector('.m24');
     function apercu() {
@@ -1054,7 +1054,7 @@ label.cp-r{cursor:pointer}
     function dessiner() {
       pas();
       if (etape === 1) {
-        w.innerHTML = `<h2>Comment vous appelle-t-on&nbsp;?</h2><p>C’est ce que verront les vendeurs et les acheteurs avec qui vous échangez.</p><form class="cp-f cp-panel" novalidate>${champ('cp-prenom', 'Prénom', p().prenom, { attrs: 'maxlength="40" autocomplete="given-name"' })}${champ('cp-nom', 'Nom', p().nom, { facultatif: true, attrs: 'maxlength="60" autocomplete="family-name"', aide: 'Les autres ne voient que son initiale, sauf si vous choisissez de le montrer.' })}<div class="cp-row"><button class="cp-go">Continuer</button><span class="cp-msg" role="status"></span></div></form>`;
+        w.innerHTML = `<h2>Comment vous appelle-t-on&nbsp;?</h2><p>Visible par ceux avec qui vous échangez.</p><form class="cp-f cp-panel" novalidate>${champ('cp-prenom', 'Prénom', p().prenom, { attrs: 'maxlength="40" autocomplete="given-name"' })}${champ('cp-nom', 'Nom', p().nom, { facultatif: true, attrs: 'maxlength="60" autocomplete="family-name"', aide: 'Les autres ne voient que son initiale, sauf si vous choisissez de le montrer.' })}<div class="cp-row"><button class="cp-go">Continuer</button><span class="cp-msg" role="status"></span></div></form>`;
         const f = w.querySelector('form'); setTimeout(() => f.querySelector('#cp-prenom').focus(), 60);
         f.onsubmit = async e => { e.preventDefault(); if (!valider(f, ['prenom', 'nom'])) return; const m = await suite({ prenom: f.querySelector('#cp-prenom').value.trim(), nom: f.querySelector('#cp-nom').value.trim() || null }); if (m) f.querySelector('.cp-msg').textContent = m; };
       } else if (etape === 2) {
@@ -1069,7 +1069,7 @@ label.cp-r{cursor:pointer}
         w.querySelector('[data-skip]').onclick = () => suite(null);
       } else {
         // la structure : coopérative, groupement, entreprise… (schéma 23) — elle rassure ceux qui vous écrivent
-        w.innerHTML = `<h2 class="cp-voix">Vous représentez <em>qui ?</em></h2><p>Une coopérative, un groupement ou une entreprise inspire confiance : son nom et son logo apparaissent sur vos annonces et votre profil.</p><form class="cp-f cp-panel" novalidate><div data-stf></div><div class="cp-row"><button class="cp-go">Terminer</button><button type="button" class="cp-alt" data-skip>Plus tard</button></div></form>`;
+        w.innerHTML = `<h2 class="cp-voix">Vous représentez <em>qui ?</em></h2><p>Son nom et son logo apparaissent sur vos annonces et votre profil.</p><form class="cp-f cp-panel" novalidate><div data-stf></div><div class="cp-row"><button class="cp-go">Terminer</button><button type="button" class="cp-alt" data-skip>Plus tard</button></div></form>`;
         const f = w.querySelector('form'), S = formStructure(f.querySelector('[data-stf]'), p());
         f.onsubmit = async e => { e.preventDefault(); if (!S.verifier()) return; const v = S.val(); const m = await suite(v.structure_type ? v : null, true); if (m) { const x = f.querySelector('.cp-row'); x.insertAdjacentHTML('beforebegin', `<p class="cp-msg" role="alert">${esc(m)}</p>`); } };
         w.querySelector('[data-skip]').onclick = () => suite(null, true);

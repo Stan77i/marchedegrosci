@@ -8,7 +8,7 @@
 | Gardien | Rythme | Heure conseillée | Réglage |
 |---|---|---|---|
 | Contrôle automatique (script) | Tous les 3 jours | Celle écrite dans `.github/workflows/gardiens.yml` | Tâche GitHub, gratuite. Lancement à la main possible depuis l'onglet « Actions ». |
-| Session Claude programmée | Tous les 3 jours, **après** le script | 6 h 41, heure d'Abidjan (avant le début des notifications de 7 h) | Tâche programmée de Claude, nouvelle session à chaque passage, notification sur le téléphone. Expression : `CRON_TZ=Africa/Abidjan 41 6 */3 * *`. Identifiant de la tâche : **à noter ici quand elle sera créée**. |
+| Session Claude programmée | Tous les 3 jours, **après** le script | 6 h 43, heure d'Abidjan (avant le début des notifications de 7 h) | Tâche programmée de Claude, nouvelle session à chaque passage, notification sur le téléphone. Expression : `43 6 */3 * *` (UTC = heure d'Abidjan ; jours 1, 4, 7… du mois). Identifiant de la tâche : `trig_01KLjPRL3kuCrSEjgNVCPkxg` (créée le 25/10/2026, sans accès Supabase pour l'instant : à recréer depuis claude.ai pour lui donner cet accès). |
 
 Note : `*/3` compte les jours du mois (1, 4, 7… 28, 31). En fin de mois, deux passages peuvent tomber à 1 ou 2 jours d'écart : c'est voulu (plus simple qu'un compteur).
 

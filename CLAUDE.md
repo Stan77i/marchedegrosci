@@ -6,6 +6,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 
 **Nouvelle discussion : un mot suffit** (règle du propriétaire, 24/10/2026, relue le 24/10/2026 au soir). Le propriétaire vide souvent la discussion et écrit seulement « On reprend », « Continue » ou une courte phrase. Alors, sans lui poser de question :
 1. lire `docs/REPRISE.md` (partie 1 : l'état ; partie 3 : ce qui reste, dans l'ordre) ;
+   lire aussi `TABLEAU-DE-BORD.md` (la page du propriétaire : ce qu'il doit faire, ce qui reste) ;
    puis rappeler en une ligne ce qui attend le propriétaire dans `docs/A-FAIRE-PROPRIETAIRE.md` (s'il reste des cases non cochées) ;
 2. regarder les PR ouvertes (`gh api "repos/Stan77i/marchedegrosci/pulls?state=open" --jq '.[].number'`) et les signaler s'il y en a ;
 3. partir de `origin/main` à jour ;
@@ -33,6 +34,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - Il n'a **pas d'argent pour l'instant** : aucune solution payante (SMS, WhatsApp, plan Supabase Pro, service ou abonnement payant, dépendance inutile).
 - Envoyer les captures d'écran avec SendUserFile.
 - Simplicité avant tout.
+- **Penser à sa place, puis proposer** (règle du propriétaire, 25/10/2026) : « pense logique, mets-toi à la place » mais « tu ne traites pas sans m'en parler : tu proposes ». Pour chaque règle, se mettre à la place de l'acheteur, du vendeur et de l'équipe, mettre les cas dans un scénario avec toutes les combinaisons (`docs/regles/`), trouver les trous logiques et **proposer** pour chacun la solution la plus simple et juste, avec la raison en une ligne, en liste numérotée (il répond « ok pour tout » ou « ok sauf n° X »). Ne rien construire de nouveau avant son accord.
 
 ## Le projet
 
@@ -44,6 +46,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 
 ## Façon de travailler
 
+- **Tableau de bord** (règle du propriétaire, 25/10/2026) : `TABLEAU-DE-BORD.md` est la page unique du propriétaire, en français simple sans code ; chaque PR qui change l'état, une règle ou ce qui reste à faire le met à jour dans la même PR.
 - **Une PR par mise à jour. Ne jamais fusionner** : c'est le propriétaire qui fusionne. Quand une PR dépend d'une autre, indiquer l'ordre de fusion.
 - **Avant d'ajouter un commit à une PR existante, vérifier qu'elle est encore ouverte** (`gh api repos/Stan77i/marchedegrosci/pulls/<n> --jq .state,.merged`). Fusionnée ou fermée : nouvelle branche depuis `origin/main` et nouvelle PR. Le propriétaire fusionne vite : dans le doute, toujours une nouvelle PR.
 - **Toujours travailler en équipe d'agents** (règle du propriétaire, 24/10/2026, mode permanent) : pour aller très vite, chaque tâche passe par des sous-agents lancés directement en parallèle (outil Agent, en arrière-plan), plutôt que par l'outil workflow (qui ne fait tourner que 2 agents à la fois sur cette machine ; l'outil Agent n'a pas cette limite) ; équipes sur des fichiers séparés, chacune relue. Le travail simple et répétitif (recherches, vérifications mécaniques, remplacements en série, captures, mises à jour de documents) va au modèle **Sonnet** ; le travail difficile ou délicat (textes sans rien inventer, sécurité, serveur, accessibilité, design, relecture finale) va au modèle **Opus**. Seuls les gestes très courts (une commande, une petite correction) restent faits directement.

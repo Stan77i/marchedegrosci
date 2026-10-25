@@ -43,6 +43,10 @@ revoke truncate on public.alertes, public.alertes_produits, public.zones from au
 Les corrections de l'audit (schémas 92 à 96, plus 97a) sont **en production depuis le 25/10/2026**, avec la fonction `pousser` v24. Les schémas 97b, 97c, 97d, 98a et 98b (litige en 1 h, quantité minimale, suppression du compte, suspension) sont aussi **en production depuis le 25/10/2026**, avec `pousser` v25.
 
 - [x] Donner le « OK production » pour les schémas 92 à 96 (fait le 25/10/2026 ; Claude les a appliqués avec 97a, puis a déployé `pousser` v24).
+  - [x] litige automatique après le « livré » du vendeur : tranché le 25/10/2026 (1 h, puis clôture en faveur du vendeur, schéma 97b) ;
+  - [ ] valeurs des badges et du masquage d'une annonce (point C) ;
+  - [x] lecture des messages par l'équipe : tranché le 25/10/2026 (l'équipe peut tout lire ; écrit dans les textes) ;
+  - [ ] les 15 questions restantes des 32 de `docs/juridique/regles-manquantes.md` (17 déjà tranchées).
 - [x] Donner le « OK production » pour les schémas 97b à 98b (fait le 25/10/2026 : « C'EST FAIT, MET EN PRODUCTION » ; Claude les a appliqués, puis a déployé `pousser` v25).
 - [ ] Répondre aux décisions en attente :
   - [ ] annonces déjà en ligne : 7 jours de grâce avant leur expiration (30 jours de vie, rappel 3 jours avant) ;

@@ -59,11 +59,13 @@ begin perform pg_temp.preuves(s, c);
   perform public.commande_avancer(c, 'transport', null, null, null, null);
   execute 'reset role'; end $f$;
 
--- ══ Bloc 99-A (ANO-023, CMD-12b/c/d) : en route sans livraison, « arrivée » de l'acheteur sans réception, mot bloqué ══
+-- ══ Bloc 99-A (ANO-023, règle du propriétaire du 25/10/2026 : rien ne se déclenche avant « arrivé ») ══
+-- c1 en route depuis un an (rien), retard du vendeur, relances de l'acheteur ; c2 « arrivée » de l'acheteur (règle de 1 h) ;
+-- c3 mot bloqué après « livré » (équipe tout de suite) ; c4 délai de 6 h demandé par l'acheteur après « livré ».
 do $$
 declare S uuid := '1bfd5713-2525-44a6-8403-084ebb9ddad3'; B uuid := '68345d7a-9d64-410a-a4c7-92a750d9888d'; ADM uuid := '981961d4-25ba-4e1b-a732-8fd68cd6c922';
-  o uuid; n uuid; c1 uuid; c2 uuid; c3 uuid; k int; res text := '';
-  q_etat text := $q$select concat_ws(' ', etat || '/' || etape, 'litige_par=' || coalesce(litige_par::text, 'personne'), 'auto=' || (litige_auto_le is not null), 'echeance=' || (litige_echeance is not null)) from public.commandes where id = %L$q$;
+  o uuid; n uuid; c1 uuid; c2 uuid; c3 uuid; c4 uuid; k int; res text := '';
+  q_etat text := $q$select concat_ws(' ', etat || '/' || etape, 'auto=' || (litige_auto_le is not null)) from public.commandes where id = %L$q$;
 begin
   perform pg_temp.verif(S);
   o := pg_temp.offre(S, 1000, 20000, 'c99a');
@@ -71,48 +73,73 @@ begin
   n := pg_temp.accord(S, B, o, 20000, 10); c2 := pg_temp.cmd(S, B, n, true); perform pg_temp.partir(S, c2);
   perform pg_temp.qui(B); perform public.commande_avancer(c2, 'arrivee', null, null, null, null);
   n := pg_temp.accord(S, B, o, 20000, 10); c3 := pg_temp.cmd(S, B, n, true); perform pg_temp.partir(S, c3);
+  perform pg_temp.qui(S); perform public.commande_avancer(c3, 'arrivee', null, null, null, null);
   perform pg_temp.qui(B);
   for k in 1..5 loop perform public.commande_reception_mot(c3, 'faux' || k, false, null, null, null); end loop;
+  n := pg_temp.accord(S, B, o, 20000, 10); c4 := pg_temp.cmd(S, B, n, true); perform pg_temp.partir(S, c4);
+  perform pg_temp.qui(S); perform public.commande_avancer(c4, 'arrivee', null, null, null, null);
   execute 'reset role';
   res := 'règles=' || pg_temp.l2('select public.commandes_regles()::text');
-  -- 1er passage : c1 parti depuis 49 h, c2 « arrivée » depuis 2 h, c3 bloqué depuis 23 h
-  update public.commande_etapes set at = at - interval '49 hours' where commande_id = c1;
-  update public.commande_etapes set at = at - interval '2 hours' where commande_id = c2;
-  update public.commandes set mot_bloque_le = now() - interval '23 hours' where id = c3;
+  update public.commande_etapes set at = at - interval '365 days' where commande_id = c1;
+  update public.commandes set confirme_le = confirme_le - interval '365 days', created_at = created_at - interval '365 days' where id = c1;
   perform public.commandes_delais();
-  res := res || ' | 1er passage : c1 ' || pg_temp.cs(c1) || ' rappel_livraison=' || pg_temp.l2(format('select (rappel_livraison_le is not null)::text from public.commandes where id = %L', c1))
-     || ' ; c2 ' || pg_temp.cs(c2) || ' rappel_arrivee=' || pg_temp.l2(format('select (rappel_reception_le is not null)::text from public.commandes where id = %L', c2))
-     || ' ; c3 ' || pg_temp.cs(c3);
-  -- 2e passage : c1 parti depuis 97 h, c2 « arrivée » depuis 25 h, c3 bloqué depuis 25 h
-  update public.commande_etapes set at = at - interval '48 hours' where commande_id = c1;
-  update public.commande_etapes set at = at - interval '23 hours' where commande_id = c2;
-  update public.commandes set mot_bloque_le = now() - interval '25 hours' where id = c3;
-  perform public.commandes_delais();
-  res := res || ' | 2e passage : c1 ' || pg_temp.l2(format(q_etat, c1)) || ' ; c2 ' || pg_temp.l2(format(q_etat, c2)) || ' ; c3 ' || pg_temp.l2(format(q_etat, c3))
-     || ' ; journal c1=' || coalesce((select note from public.commande_etapes where commande_id = c1 and evenement = 'litige' order by at desc limit 1), 'aucun');
-  -- 3 h plus tard, toutes les tâches : aucune clôture d'argent automatique
-  update public.commandes set litige_le = litige_le - interval '3 hours' where id in (c1, c2, c3);
-  perform public.commandes_delais(); perform public.sequestre_liberer_echus();
-  res := res || ' | +3 h : ' || pg_temp.cs(c1) || ', ' || pg_temp.cs(c2) || ', ' || pg_temp.cs(c3)
-     || ' commission c1=' || (select coalesce(statut_registre, statut) from public.commissions where commande_id = c1)
-     || ' libérées=' || (select count(*) from public.commandes where id in (c1, c2, c3) and libere_le is not null);
-  -- réglages de l'équipe
-  perform pg_temp.qui(ADM);
-  res := res || ' | admin livraison_litige_heures=120: ' || pg_temp.e($q$select public.admin_commandes_regler('{"livraison_litige_heures": 120}')$q$)
-     || ' ; rappel 200 h ≥ litige: ' || pg_temp.e($q$select public.admin_commandes_regler('{"livraison_rappel_heures": 200}')$q$)
-     || ' ; montant_max 5 milliards: ' || pg_temp.e($q$select public.admin_commandes_regler('{"montant_max": 5000000000}')$q$)
-     || ' ; montant_max 10: ' || pg_temp.e($q$select public.admin_commandes_regler('{"montant_max": 10}')$q$);
+  res := res || ' | c1 en route depuis 1 an: ' || pg_temp.cs(c1);
+  perform pg_temp.qui(S);
+  res := res || ' ; retard vendeur (panne, +2 j): ' || pg_temp.e(format('select public.commande_retard_signaler(%L, %L, now() + interval %L, null)', c1, 'panne', '2 days'))
+     || ' ; retard « autre » sans texte: ' || pg_temp.e(format('select public.commande_retard_signaler(%L, %L, null, null)', c1, 'autre'))
+     || ' ; le vendeur demande des nouvelles: ' || pg_temp.e(format('select public.commande_nouvelles_demander(%L)', c1));
   perform pg_temp.qui(B);
-  res := res || ' | membre règle: ' || pg_temp.e($q$select public.admin_commandes_regler('{"mot_bloque_heures": 1}')$q$);
+  res := res || ' ; relance 1: ' || public.commande_nouvelles_demander(c1)
+     || ' ; relance 2 dans la minute: ' || public.commande_nouvelles_demander(c1);
+  execute 'reset role';
+  update public.commandes set nouvelles_le = nouvelles_le - interval '2 minutes' where id = c1;
+  perform pg_temp.qui(B);
+  res := res || ' ; relance 3 (2 min après): ' || public.commande_nouvelles_demander(c1)
+     || ' ; acheteur signale un retard: ' || pg_temp.e(format('select public.commande_retard_signaler(%L, %L, null, null)', c1, 'route'))
+     || ' ; suivi lu=' || pg_temp.l2(format('select json_array_length(public.commande_suivi_lire(%L))::text', c1))
+     || ' ; écran: ' || pg_temp.l2(format('select concat_ws(%L, %L || (j ->> %L), %L || (j ->> %L)) from (select public.commande_delais(%L) j) x', ' ', 'nouvelles=', 'peut_demander_nouvelles', 'estimée=', 'arrivee_estimee', c1));
+  execute 'reset role';
+  res := res || ' ; file cmd_nouvelles=' || (select count(*) from public.notif_file where objet_id = c1::text and type = 'cmd_nouvelles')
+     || ' cmd_retard=' || (select count(*) from public.notif_file where objet_id = c1::text and type = 'cmd_retard') || ' (0 sans abonnement push)';
+  update public.commande_etapes set at = at - interval '31 minutes' where commande_id = c2;
+  perform public.commandes_delais();
+  res := res || ' | c2 arrivée acheteur +31 min: ' || pg_temp.cs(c2) || ' rappel=' || (select (rappel_reception_le is not null)::text from public.commandes where id = c2)
+     || ' note=' || coalesce((select left(note, 40) from public.commande_alertes where commande_id = c2 and evenement = 'rappel_reception'), '-');
+  update public.commande_etapes set at = at - interval '30 minutes' where commande_id = c2;
+  perform public.commandes_delais();
+  res := res || ' ; +61 min: ' || pg_temp.l2(format(q_etat, c2)) || ' journal=' || coalesce((select left(note, 60) from public.commande_etapes where commande_id = c2 and evenement = 'litige'), '-');
+  update public.commandes set litige_auto_le = litige_auto_le - interval '61 minutes' where id = c2;
+  perform public.commandes_delais();
+  res := res || ' ; litige +61 min sans réponse: ' || pg_temp.cs(c2);
+  perform public.commandes_delais();
+  res := res || ' | c3 mot bloqué après livré: ' || pg_temp.l2(format(q_etat, c3));
+  perform pg_temp.qui(B);
+  res := res || ' | c4 délai 6 h: ' || pg_temp.e(format('select public.commande_delai_demander(%L, 6, %L, null)', c4, 'pas_sur_place'))
+     || ' ; 2e délai: ' || pg_temp.e(format('select public.commande_delai_demander(%L, 2, %L, null)', c4, 'controle'))
+     || ' ; 5 h demandées: ' || pg_temp.e(format('select public.commande_delai_demander(%L, 5, %L, null)', c4, 'controle'));
+  execute 'reset role';
+  update public.commandes set livre_le = livre_le - interval '61 minutes' where id = c4;
+  perform public.commandes_delais();
+  res := res || ' ; +61 min: ' || pg_temp.cs(c4);
+  update public.commandes set livre_le = livre_le - interval '6 hours' where id = c4;
+  perform public.commandes_delais();
+  res := res || ' ; +7 h 01: ' || pg_temp.l2(format(q_etat, c4))
+     || ' ; suivi=' || (select string_agg(genre || ':' || coalesce(motif, '-') || ':' || coalesce(heures::text, '-'), ',' order by at) from public.commande_suivi where commande_id in (c1, c4));
+  perform pg_temp.qui(ADM);
+  res := res || ' | ancien réglage livraison_litige_heures: ' || pg_temp.e($q$select public.admin_commandes_regler('{"livraison_litige_heures": 120}')$q$)
+     || ' ; montant_max 5 milliards: ' || pg_temp.e($q$select public.admin_commandes_regler('{"montant_max": 5000000000}')$q$);
   raise exception 'TEST 99-A: %', res;
 end $$;
--- Avant (25/10/2026, projet de test) : règles sans les nouveaux délais ; 1er passage : rien (colonne rappel_livraison_le absente) ;
--- 2e passage (97 h, 25 h, 25 h) : c1, c2, c3 toujours en_cours, aucun litige, aucun journal ; +3 h : rien ; réglages inconnus.
--- Après (99a) : règles livraison_rappel_heures 48, livraison_litige_heures 96, arrivee_litige_heures 24, mot_bloque_heures 24, montant_max 1 000 000 000 ;
--- 1er passage : c1 rappel_livraison=true, c2 rappel_arrivee=true, c3 en_cours ; 2e passage : c1, c2, c3 en litige, litige_par=personne,
--- auto=false (pas de clôture automatique), échéance posée, journal « Livraison pas déclarée 96 h après le départ… L'équipe du Marché de Gros examine » ;
--- +3 h : toujours en litige, commission suspendue, 0 libérée ; admin 120 h ok, rappel ≥ litige refusé, montant_max 5 milliards ok, 10 refusé ; membre refusé.
-
+-- Première version (avant la règle « rien avant arrivé ») : sans 99a, rien ; avec, c1 en route basculait en litige à 96 h (retiré).
+-- Résultat (25/10/2026, projet de test, règle « rien avant arrivé ») : règles sans les délais de livraison, montant_max 1 000 000 000 ;
+-- c1 en route depuis 1 an : en_cours/transport (rien) ; retard vendeur ok ; « autre » sans texte refusé ; vendeur ne peut pas demander
+-- de nouvelles ; relance 1 « nouvelles_demandees », relance 2 dans la minute « nouvelles_deja », relance 3 deux minutes plus tard
+-- « nouvelles_demandees » ; l'acheteur ne peut pas signaler un retard ; suivi lu 3 lignes ; écran : nouvelles=true, arrivée estimée posée ;
+-- file 0 (pas d'abonnement push sur les comptes de test). c2 « arrivée » de l'acheteur : rappel à 31 min (« Arrivée signalée par
+-- l'acheteur… »), litige automatique à 61 min (« Pas de réponse de l'acheteur 60 min après l'arrivée qu'il a signalée… »), clôture
+-- en faveur du vendeur 61 min plus tard sans réponse. c3 mot bloqué après « livré » : litige pour l'équipe tout de suite (auto=false).
+-- c4 délai de 6 h ok, 2e délai refusé (DELAI_DEJA) ; à +61 min toujours en_cours ; à +7 h 01 litige automatique.
+-- Ancien réglage livraison_litige_heures refusé (inconnu) ; montant_max 5 milliards accepté.
 -- ══ Bloc 99-B (ANO-024, CMD-09) : le vendeur demande l'annulation, puis charge ══
 do $$
 declare S uuid := '1bfd5713-2525-44a6-8403-084ebb9ddad3'; B uuid := '68345d7a-9d64-410a-a4c7-92a750d9888d';
@@ -273,4 +300,4 @@ end $$;
 -- Avant : prix 0,001 F accepté, 0,5 sac accepté, unité « camion » acceptée, même texte renvoyé → 2 lignes.
 -- Après (99d) : prix 0,001 F refusé, 0,5 sac refusé, 2,5 kg accepté, « camion » refusé (offres_unite_connue), « tonne » accepté ;
 -- même texte renvoyé → 1 ligne. Version sans vieillir() (tous les messages du bloc à la même heure) : le texte répété après un autre
--- message était aussi écarté (1 ligne au lieu de 2) ; vieillir() reproduit deux envois séparés. Cette version corrigée n'a pas encore été rejouée.
+-- message était aussi écarté (1 ligne au lieu de 2) ; vieillir() reproduit deux envois séparés. Rejouée le 25/10/2026 : 1 ligne, puis 2.

@@ -31,9 +31,10 @@
 // 18. par la base (pg_cron « mdg-notif », public.notif_tick, schéma 88) avec { lots: true } : les messages en file d'attente
 //     (nouvelles offres et demandes, groupe bientôt complet, veille de la date limite, produit à racheter), regroupés par
 //     personne et par sujet : « 3 nouvelles offres : Tomate ».
-// v26 (25/10/2026, schéma 99a, NON DÉPLOYÉE) : rappels « Livraison pas encore déclarée » / « Toujours en route ? »
-//     (cmd_rappel_livraison) et « Confirmez la réception » (cmd_rappel_arrivee) ; « Annulation retirée par le vendeur » quand il
-//     charge ; le texte « close dans l'heure » ne sert plus qu'au litige de réception de 97b (les autres litiges du système vont à l'équipe).
+// v26 (25/10/2026, schéma 99a, NON DÉPLOYÉE) : rien ne se déclenche avant « arrivé » ; « Retard en route » (cmd_retard),
+//     « L'acheteur demande des nouvelles » (cmd_nouvelles), « L'acheteur demande N h » (cmd_delai), « Confirmez la réception »
+//     quand l'arrivée vient de l'acheteur ; « Annulation retirée par le vendeur » quand il charge ; le texte « close dans l'heure »
+//     ne sert qu'au litige de réception (1 h après l'arrivée) ; le litige du mot bloqué va à l'équipe.
 // v25 (déployée en production le 25/10/2026, schéma 97b) : litige en 1 h après « livré » : « Confirmez la réception ou
 //     signalez un problème dans l'heure. », « Litige ouvert : réception non confirmée », « Commande close pour le vendeur » /
 //     « en votre faveur ». Aucun paiement n'est branché : jamais d'argent versé dans les textes.
@@ -598,23 +599,26 @@ Deno.serve(async (req) => {
               : M(T45(`${lib} : pas encore chargé`, "Pas encore chargé"), B80("Vous pouvez annuler la commande, ou signaler un problème.", "Vous pouvez annuler ou signaler un problème."), "cmd-" + l.objet_id);
           case "cmd_rappel_reception": {
             const h = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
+            // schéma 99a : l'arrivée a été dite par l'acheteur lui-même
+            if (d.arrivee_acheteur === true) return M(T45(`${lib} : confirmez la réception`, "Confirmez la réception"),
+              B80(h ? `Tapez le mot secret avant ${h}, ou signalez un problème.` : "", "Tapez le mot secret, ou signalez un problème."), "cmd-" + l.objet_id);
             return M(T45(`${lib} : le vendeur dit avoir livré`, "Livraison déclarée"),
               B80(h ? `Vérifiez et confirmez la réception, ou refusez, avant ${h}.` : "", "Vérifiez, puis confirmez la réception ou refusez."), "cmd-" + l.objet_id);
           }
-          // schéma 99a : marchandise partie depuis 48 h sans livraison déclarée (vendeur et acheteur), puis litige pour l'équipe
-          case "cmd_rappel_livraison": {
-            const h = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
-            return d.role === "vendeur"
-              ? M(T45(`${lib} : livraison pas déclarée`, "Livraison pas encore déclarée"),
-                  B80(h ? `Déclarez la livraison avant ${h}, ou signalez un problème.` : "", "Déclarez la livraison, ou signalez un problème."), "cmd-" + l.objet_id)
-              : M(T45(`${lib} : toujours en route ?`, "Marchandise toujours en route ?"),
-                  B80(h ? `Reçue ? Confirmez la réception avant ${h}, ou signalez un problème.` : "", "Reçue ? Confirmez la réception, ou signalez un problème."), "cmd-" + l.objet_id);
+          // schéma 99a : suivi pendant le transport et délai après l'arrivée (rien d'automatique avant « arrivé »)
+          case "cmd_retard": {
+            const M2: Record<string, string> = { panne: "panne", route: "route difficile", pluie: "pluie", controle: "contrôle routier", autre: "imprévu" };
+            const cause = M2[String(d.motif)] || "imprévu", jr = d.date ? dateCourte(d.date) : "";
+            return M(T45(`${lib} : retard en route`, "Retard en route"),
+              B80(jr ? `Cause : ${cause}. Arrivée estimée le ${jr}.` : "", `Cause : ${cause}. Touchez pour voir la commande.`, `Cause : ${cause}.`), "cmd-" + l.objet_id);
           }
-          // schéma 99a : l'acheteur a dit « arrivée » sans confirmer la réception
-          case "cmd_rappel_arrivee": {
-            const h = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
-            return M(T45(`${lib} : confirmez la réception`, "Confirmez la réception"),
-              B80(h ? `Tapez le mot secret avant ${h}, ou signalez un problème.` : "", "Tapez le mot secret, ou signalez un problème."), "cmd-" + l.objet_id);
+          case "cmd_nouvelles":
+            return M(T45(`${lib} : l'acheteur demande des nouvelles`, "L'acheteur demande des nouvelles"),
+              "Dites où en est la livraison, ou signalez un retard.", "cmd-" + l.objet_id);
+          case "cmd_delai": {
+            const h = Number(d.heures || 0), fin = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
+            return M(T45(`${lib} : l'acheteur demande ${h} h`, "L'acheteur demande un délai"),
+              B80(fin ? `Il vérifie la marchandise avant ${fin}.` : "", "Il vérifie la marchandise un peu plus tard."), "cmd-" + l.objet_id);
           }
           case "cmd_mot_bloque":
             return M(T45(`${lib} : mot secret bloqué`, "Mot secret bloqué"),

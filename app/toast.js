@@ -131,8 +131,16 @@ html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme
   // MDGErreur(e) : la phrase à montrer pour une erreur, partout où un module écrit l'erreur dans sa fenêtre (24/10/2026, audit n° 33).
   // Un message du serveur déjà écrit en français (« Seul l'acheteur peut… ») est gardé ; un texte technique ou en anglais devient
   // une phrase simple qui dit quoi faire ; le texte brut part seulement dans la console.
+  // codes du serveur qui ont leur propre phrase (schémas 99a, 99b, 99d) ; le plafond lu dans le message, 1 milliard par défaut
+  const CODES = {
+    MONTANT_MAX: m => { const n = +((m.match(/(\d[\d\s  ]{5,})\s*F/) || [])[1] || '').replace(/\D/g, '') || 1e9;
+      return 'Montant trop élevé : ' + (n % 1e9 === 0 ? (n / 1e9) + (n > 1e9 ? ' milliards' : ' milliard') : n.toLocaleString('fr-FR')) + ' F CFA au plus.'; },
+    DELAI_DEJA: () => 'Délai déjà demandé : un seul par commande.'
+  };
   window.MDGErreur = function (e) {
-    const m = String((e && e.message) || e || '').replace(/^[A-Z_]{3,} : /, '').trim();
+    const brut = String((e && e.message) || e || ''), code = (brut.match(/^([A-Z_]{3,}) : /) || [])[1];
+    if (code && CODES[code]) return CODES[code](brut);
+    const m = brut.replace(/^[A-Z_]{3,} : /, '').trim();
     if (navigator.onLine === false || /failed to fetch|networkerror|load failed|err_internet|network request failed/i.test(m)) return 'Pas de connexion : réessayez quand le réseau revient.';
     const t = tech(m); if (t) { try { console.warn('[Marché de Gros]', m); } catch (_) {} return t[1] + '. ' + t[2]; }
     const fr = /[àâçéèêëîïôûùœ’]/i.test(m) || /\b(le|la|les|un|une|vous|votre|pas|est|du|des|au|aux|pour|avec)\b/i.test(m);

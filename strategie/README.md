@@ -6,6 +6,7 @@
 | `2-Presentation.pdf` | Le projet en détail : pour qui, comment ça marche, modèle économique, état. |
 | `3-Probleme-et-solution.pdf` | Le problème précis auquel le projet répond, chiffres sourcés à l'appui, et la réponse de l'application. |
 | `4-Marketing.pdf` | Comment remplir le marché sans budget : cibles, messages, canaux, plan en trois temps, indicateurs. |
+| `cube-marche-de-gros.pdf` | Le cube : les briques du cœur de l'application (acheteur `A`, vendeur `V`, juge `J`, étapes et temps `E`, contexte `C`) et les piliers. Le propriétaire combine les briques pour trouver les scénarios. Modèle `sources/cube.html` ; le nombre de briques de chaque face est compté tout seul (`{{nb_a}}`…). Seulement des règles réelles ; « bientôt » = décidé, pas encore dans l'application. |
 
 Le détail du modèle économique (exemples, grille de calcul, questions pour les professionnels) est dans `docs/Marche-de-Gros-application-et-modele-economique.pdf`.
 

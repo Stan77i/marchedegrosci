@@ -288,6 +288,7 @@ Attention : un défaut noté aujourd'hui « gênant » (un 2e paiement ignoré s
 | [Lancer l'essai fermé en une heure](docs/essai-ferme/LANCER-EN-1-HEURE.md) | vous préparez l'essai |
 | [Plan de l'essai fermé](docs/essai-ferme/PLAN.md) | vous voulez les règles complètes de l'essai |
 | [À faire par le propriétaire](docs/A-FAIRE-PROPRIETAIRE.md) | vous voulez la liste à cocher, avec les modes d'emploi |
+| [Le cube du Marché de Gros (PDF)](strategie/cube-marche-de-gros.pdf) | vous voulez les briques du cœur de l'application (acheteur, vendeur, juge, étapes, contexte) et les règles d'or, pour chercher vous-même toutes les combinaisons |
 | [Fonctionnalités](FONCTIONNALITES.md) | vous voulez la liste complète de ce que fait l'application |
 | [Historique des changements](CHANGELOG.md) | vous cherchez ce qui a changé un jour précis |
 

@@ -1,0 +1,391 @@
+<style>
+/* Le cube : styles propres à ce document (le reste vient de style.css) */
+.cube{--a:#F2C94C;--a-t:#3D2E05;--v:#6CC58C;--v-t:#0D2A1C;--j:#10392B;--j-t:#F2C230;--e:#171512;--e-t:#F3EFE4;--c:#E4DAC4;--c-t:#171512}
+.une-tete{background:var(--vert);color:var(--creme);margin:-16mm -16mm 0;padding:14mm 18mm 12mm;display:flex;justify-content:space-between;align-items:flex-end}
+.une-tete .logo{font-size:15pt}
+.une-tete h1{font-size:30pt;margin-top:5mm}
+.une-tete h1 .g{color:var(--mais);font-style:italic;font-weight:800}
+.une-tete svg{width:46mm;height:46mm;flex:none}
+.phrase{font-size:13.5pt;line-height:1.4;margin:8mm 0 6mm;max-width:165mm}
+.phrase b{color:var(--vert)}
+.mode{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm;margin:0 0 6mm}
+.mode div{border-top:2px solid var(--vert);padding-top:2mm;font-size:10pt}
+.mode b{display:block;font-size:11pt;color:var(--vert);margin-bottom:.5mm}
+.faces{width:100%;margin:0 0 6mm}
+.faces td{padding:2mm 2mm;vertical-align:middle}
+.faces td:first-child{width:16mm}
+.faces .n{color:var(--doux);text-align:right;white-space:nowrap}
+.exemple{background:var(--carte);border:1px solid var(--trait);border-radius:3mm;padding:3.5mm 5mm;font-size:10.4pt}
+.exemple .combi{display:flex;gap:2mm;align-items:center;margin-bottom:2mm}
+.exemple .plus{color:var(--doux)}
+.legende{margin-top:5mm;font-size:9.2pt;color:var(--doux);display:flex;gap:6mm;flex-wrap:wrap}
+
+.pc{display:inline-block;min-width:11mm;text-align:center;font-weight:700;font-size:9.2pt;line-height:1;padding:1.1mm 1.8mm;border-radius:99px;font-variant-numeric:tabular-nums lining-nums;letter-spacing:.02em}
+.pc.gros{font-size:15pt;min-width:13mm;padding:2.2mm 3mm;border-radius:2.6mm}
+.f-a{background:var(--a);color:var(--a-t)}
+.f-v{background:var(--v);color:var(--v-t)}
+.f-j{background:var(--j);color:var(--j-t)}
+.f-e{background:var(--e);color:var(--e-t)}
+.f-c{background:var(--c);color:var(--c-t)}
+.bt{display:inline-block;font-size:7.8pt;font-weight:600;color:#765802;border:1px solid #C9A12A;border-radius:99px;padding:.2mm 1.8mm;margin-left:1.5mm;vertical-align:1px;white-space:nowrap}
+
+.face-tete{display:flex;align-items:center;gap:5mm;margin:0 0 4mm}
+.face-tete h2{margin:0;font-size:20pt;color:var(--vert)}
+.face-tete p{margin:.8mm 0 0;color:var(--doux);font-size:10pt}
+.a4 table.briques{margin:0;font-size:10pt;break-inside:auto}
+table.briques td{padding:.8mm 2mm;border-bottom:1px solid #ECE5D5;vertical-align:middle}
+table.briques td.c{width:15mm;padding-left:0}
+table.briques tr.g td{border-bottom:1.5px solid var(--vert);color:var(--vert);font-weight:600;font-size:9.6pt;padding-top:2.4mm;padding-left:0}
+table.briques tr.g:first-child td{padding-top:0}
+
+.piliers{column-count:2;column-gap:7mm;column-fill:auto}
+.pil{break-inside:avoid;margin:0 0 2.8mm}
+.pil h3{font-size:10.8pt;color:var(--vert);margin:0 0 1.5mm;padding-bottom:1mm;border-bottom:1.5px solid var(--vert)}
+.pil ul{list-style:none;padding:0;margin:0}
+.pil li{font-size:8.8pt;line-height:1.28;margin:0 0 .5mm;padding-left:3.2mm;position:relative}
+.pil li::before{content:"";position:absolute;left:0;top:2.1mm;width:1.4mm;height:1.4mm;border-radius:50%;background:var(--mais)}
+
+table.grille{font-size:9.6pt}
+table.grille th{font-size:9.2pt}
+table.grille td{height:12.5mm;border-bottom:1px solid var(--trait)}
+table.grille th:nth-child(-n+5){width:12mm;text-align:center}
+.fin{font-size:9pt;color:var(--doux);margin-top:4mm}
+</style>
+
+<div class="cube">
+
+<!-- ===== Page 1 : le cube, en une page ===== -->
+<div class="une-tete">
+  <div>
+    <div class="logo">marché<span class="g">de Gros</span></div>
+    <h1>Le cube du marché <span class="g">de Gros</span></h1>
+  </div>
+  <svg viewBox="0 0 120 120" role="img" aria-label="Un cube : le juge dessus, l'acheteur à gauche, le vendeur à droite">
+    <polygon points="60,8 108,34 60,60 12,34" fill="#10392B" stroke="#F3EFE4" stroke-width="2"/>
+    <polygon points="12,34 60,60 60,112 12,86" fill="#F2C94C" stroke="#F3EFE4" stroke-width="2"/>
+    <polygon points="108,34 60,60 60,112 108,86" fill="#6CC58C" stroke="#F3EFE4" stroke-width="2"/>
+    <text x="60" y="39" text-anchor="middle" font-family="Jost" font-weight="700" font-size="15" fill="#F2C230">J</text>
+    <text x="36" y="80" text-anchor="middle" font-family="Jost" font-weight="700" font-size="17" fill="#3D2E05">A</text>
+    <text x="84" y="80" text-anchor="middle" font-family="Jost" font-weight="700" font-size="17" fill="#0D2A1C">V</text>
+  </svg>
+</div>
+
+<p class="phrase">Le cœur de l'application en <b>briques</b> : ce que chaque acteur peut faire, les étapes d'une commande et les situations possibles. <b>On prend une brique sur chaque face, on les assemble : c'est un scénario.</b></p>
+
+<div class="mode">
+  <div><b>1. Choisir</b>une brique sur chaque face (ou sur deux ou trois faces seulement).</div>
+  <div><b>2. Raconter</b>la scène en une phrase : qui fait quoi, quand, dans quelle situation.</div>
+  <div><b>3. Vérifier</b>avec les piliers (page 7) : la règle dit-elle ce qui doit se passer ?</div>
+</div>
+
+<table class="faces">
+  <tr><td><span class="pc gros f-a">A</span></td><td><b>L'acheteur</b> · ce qu'il peut faire, ou ne pas faire</td><td class="n">{{nb_a}} briques</td></tr>
+  <tr><td><span class="pc gros f-v">V</span></td><td><b>Le vendeur</b> · ce qu'il peut faire, ou ne pas faire</td><td class="n">{{nb_v}} briques</td></tr>
+  <tr><td><span class="pc gros f-j">J</span></td><td><b>Le juge</b> · l'administrateur, le propriétaire</td><td class="n">{{nb_j}} briques</td></tr>
+  <tr><td><span class="pc gros f-e">E</span></td><td><b>Les étapes et le temps</b> · de l'accord à la clôture</td><td class="n">{{nb_e}} briques</td></tr>
+  <tr><td><span class="pc gros f-c">C</span></td><td><b>Le contexte</b> · ville, transport, marchandise, état du membre</td><td class="n">{{nb_c}} briques</td></tr>
+</table>
+<p class="petit" style="margin-top:-3mm">Les 4 faces : les 3 acteurs et le temps. Le contexte est le dessous du cube : il change le décor de chaque scène.</p>
+
+<div class="exemple">
+  <div class="combi"><span class="pc f-v ex">V20</span><span class="plus">+</span><span class="pc f-e ex">E14</span><span class="plus">+</span><span class="pc f-a ex">A23</span><span class="plus">+</span><span class="pc f-c ex">C9</span></div>
+  « Le vendeur déclare “arrivé” à 22 h, l'acheteur ne répond pas, la tomate est gâtée. » Que doit-il se passer, et qui perd ?
+</div>
+
+<div class="legende">
+  <span><span class="bt" style="margin-left:0">bientôt</span> décidé et prêt sur le serveur d'essai ou sur une branche, pas encore dans l'application</span>
+  <span>Sans marque : en service</span>
+</div>
+
+<!-- ===== Face A : l'acheteur ===== -->
+<section class="page">
+  <div class="face-tete"><span class="pc gros f-a">A</span><div><h2>L'acheteur</h2><p>Il cherche, négocie, commande, reçoit, et peut aussi se taire.</p></div></div>
+  <table class="briques">
+    <tr class="g"><td colspan="2">Avant la commande</td></tr>
+    <tr><td class="c"><span class="pc f-a">A1</span></td><td>Publier une demande (« Je cherche ») : quantité obligatoire, minimum facultatif</td></tr>
+    <tr><td class="c"><span class="pc f-a">A2</span></td><td>Proposer un prix à l'unité, contre-proposer (chaque proposition vaut 48 h)</td></tr>
+    <tr><td class="c"><span class="pc f-a">A3</span></td><td>Accepter la dernière proposition : c'est l'accord</td></tr>
+    <tr><td class="c"><span class="pc f-a">A4</span></td><td>Arrêter la négociation (l'autre attend 24 h avant de reproposer)</td></tr>
+    <tr><td class="c"><span class="pc f-a">A5</span></td><td>Acheter à plusieurs (achat groupé)</td></tr>
+    <tr class="g"><td colspan="2">La commande</td></tr>
+    <tr><td class="c"><span class="pc f-a">A6</span></td><td>Créer la commande après l'accord, ou confirmer celle du vendeur</td></tr>
+    <tr><td class="c"><span class="pc f-a">A7</span></td><td>Refuser la commande, ou retirer la sienne avant confirmation (motif obligatoire)</td></tr>
+    <tr><td class="c"><span class="pc f-a">A8</span></td><td>Demander une annulation d'un commun accord avant le chargement (2 fois au plus)<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-a">A9</span></td><td>Accepter ou refuser la demande d'annulation du vendeur</td></tr>
+    <tr><td class="c"><span class="pc f-a">A10</span></td><td>Annuler seul : rien chargé après 72 h (compte contre le vendeur)</td></tr>
+    <tr class="g"><td colspan="2">Pendant le trajet</td></tr>
+    <tr><td class="c"><span class="pc f-a">A11</span></td><td>Demander des nouvelles, autant qu'il veut<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-a">A12</span></td><td>Déclarer lui-même « arrivé »</td></tr>
+    <tr class="g"><td colspan="2">À l'arrivée (1 h)</td></tr>
+    <tr><td class="c"><span class="pc f-a">A13</span></td><td>Confirmer la réception avec le mot secret (5 essais)</td></tr>
+    <tr><td class="c"><span class="pc f-a">A14</span></td><td>Confirmer sans le mot secret (oublié, papier perdu) : noté comme une déclaration</td></tr>
+    <tr><td class="c"><span class="pc f-a">A15</span></td><td>Demander un délai justifié : 2, 6 ou 24 h, une seule fois<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-a">A16</span></td><td>Signaler un problème (litige), possible dès la confirmation</td></tr>
+    <tr><td class="c"><span class="pc f-a">A17</span></td><td>Choisir le problème : cassé · manquant · mauvaise qualité · mauvaise quantité · autre<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-a">A18</span></td><td>Refuser la marchandise, en tout ou en partie : 1 à 4 photos et le mot secret</td></tr>
+    <tr><td class="c"><span class="pc f-a">A19</span></td><td>Participer quand même : le transport seulement · la partie gardée · un montant<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-a">A20</span></td><td>Retirer sa participation avant la réponse du vendeur<span class="bt">bientôt</span></td></tr>
+    <tr class="g"><td colspan="2">Après</td></tr>
+    <tr><td class="c"><span class="pc f-a">A21</span></td><td>Écrire dans le litige, répondre à l'équipe</td></tr>
+    <tr><td class="c"><span class="pc f-a">A22</span></td><td>Réclamer dans l'heure qui suit la réception confirmée</td></tr>
+    <tr><td class="c"><span class="pc f-a">A23</span></td><td>Se taire</td></tr>
+    <tr><td class="c"><span class="pc f-a">A24</span></td><td>Contester un litige perdu ou une annulation comptée contre lui (7 jours)</td></tr>
+    <tr><td class="c"><span class="pc f-a">A25</span></td><td>Donner un avis sur la commande (une fois)</td></tr>
+    <tr><td class="c"><span class="pc f-a">A26</span></td><td>Signaler une annonce ou une personne, bloquer quelqu'un</td></tr>
+  </table>
+</section>
+
+<!-- ===== Face V : le vendeur ===== -->
+<section class="page">
+  <div class="face-tete"><span class="pc gros f-v">V</span><div><h2>Le vendeur</h2><p>Il publie, négocie, charge avec preuves, livre, et peut aussi se taire.</p></div></div>
+  <table class="briques">
+    <tr class="g"><td colspan="2">Avant la commande</td></tr>
+    <tr><td class="c"><span class="pc f-v">V1</span></td><td>Publier une offre (« J'ai ») : quantité obligatoire, prix à l'unité</td></tr>
+    <tr><td class="c"><span class="pc f-v">V2</span></td><td>Fixer un minimum par acheteur (facultatif) : l'offre se vend par parties</td></tr>
+    <tr><td class="c"><span class="pc f-v">V3</span></td><td>Choisir le transport : inclus · à part (prix ajouté) · à la charge de l'acheteur</td></tr>
+    <tr><td class="c"><span class="pc f-v">V4</span></td><td>Vendre uniquement dans sa ville</td></tr>
+    <tr><td class="c"><span class="pc f-v">V5</span></td><td>Négocier : proposer, contre-proposer, accepter, arrêter</td></tr>
+    <tr><td class="c"><span class="pc f-v">V6</span></td><td>Changer prix ou quantité ; produit, unité et ville figés pendant une négociation</td></tr>
+    <tr><td class="c"><span class="pc f-v">V7</span></td><td>Mettre sa boutique en pause, retirer une offre, la prolonger de 30 jours</td></tr>
+    <tr class="g"><td colspan="2">La commande</td></tr>
+    <tr><td class="c"><span class="pc f-v">V8</span></td><td>Créer ou confirmer la commande ; la refuser (motif obligatoire)</td></tr>
+    <tr><td class="c"><span class="pc f-v">V9</span></td><td>Accepter que l'acheteur vienne retirer lui-même (même ville)</td></tr>
+    <tr><td class="c"><span class="pc f-v">V10</span></td><td>Charger avec preuves : 2 à 4 photos, poids, photo du papier du mot secret (3 min)</td></tr>
+    <tr><td class="c"><span class="pc f-v">V11</span></td><td>Ne pas charger dans les 72 h (rappel 12 h avant)</td></tr>
+    <tr><td class="c"><span class="pc f-v">V12</span></td><td>Demander l'annulation avec un motif (2 fois au plus, puis l'équipe)</td></tr>
+    <tr><td class="c"><span class="pc f-v">V13</span></td><td>Charger malgré sa demande d'annulation : la demande est retirée</td></tr>
+    <tr><td class="c"><span class="pc f-v">V14</span></td><td>Accepter ou refuser la demande d'annulation de l'acheteur<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-v">V15</span></td><td>Annuler tout de suite si l'acheteur est banni avant le chargement<span class="bt">bientôt</span></td></tr>
+    <tr class="g"><td colspan="2">Pendant le trajet</td></tr>
+    <tr><td class="c"><span class="pc f-v">V16</span></td><td>Signaler un retard : cause et nouvelle date estimée<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-v">V17</span></td><td>Répondre aux demandes de nouvelles</td></tr>
+    <tr><td class="c"><span class="pc f-v">V18</span></td><td>Noter un transbordement (le prix convenu ne change pas)</td></tr>
+    <tr><td class="c"><span class="pc f-v">V19</span></td><td>Signaler un problème (litige)</td></tr>
+    <tr class="g"><td colspan="2">À l'arrivée et après</td></tr>
+    <tr><td class="c"><span class="pc f-v">V20</span></td><td>Déclarer « arrivé », une seule fois</td></tr>
+    <tr><td class="c"><span class="pc f-v">V21</span></td><td>Retrait : déclarer « remis à l'acheteur » au départ<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-v">V22</span></td><td>Répondre à un refus : le reconnaître ou le contester</td></tr>
+    <tr><td class="c"><span class="pc f-v">V23</span></td><td>Accepter ou refuser la participation de l'acheteur (24 h)<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-v">V24</span></td><td>Écrire dans le litige, répondre à l'équipe</td></tr>
+    <tr><td class="c"><span class="pc f-v">V25</span></td><td>Se taire</td></tr>
+    <tr><td class="c"><span class="pc f-v">V26</span></td><td>Contester un litige perdu ou une annulation comptée contre lui (7 jours)</td></tr>
+    <tr><td class="c"><span class="pc f-v">V27</span></td><td>Donner un avis sur la commande (une fois)</td></tr>
+  </table>
+</section>
+
+<!-- ===== Face J : le juge ===== -->
+<section class="page">
+  <div class="face-tete"><span class="pc gros f-j">J</span><div><h2>Le juge</h2><p>L'administrateur, le propriétaire. Il tranche avec les preuves, et chaque geste est noté.</p></div></div>
+  <table class="briques">
+    <tr class="g"><td colspan="2">Trancher une commande</td></tr>
+    <tr><td class="c"><span class="pc f-j">J1</span></td><td>Donner raison au vendeur : commande livrée</td></tr>
+    <tr><td class="c"><span class="pc f-j">J2</span></td><td>Donner raison à l'acheteur : commande annulée</td></tr>
+    <tr><td class="c"><span class="pc f-j">J3</span></td><td>Partager : une partie de la marchandise « n'est pas due »</td></tr>
+    <tr><td class="c"><span class="pc f-j">J4</span></td><td>Trancher un refus : la quantité refusée retenue (0 = refus rejeté)</td></tr>
+    <tr><td class="c"><span class="pc f-j">J5</span></td><td>Constater une fausse arrivée : annulée pour l'acheteur, litige perdu au vendeur<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-j">J6</span></td><td>Sortir une commande bloquée : annulée (avec ou sans faute) ou livrée, avec une note</td></tr>
+    <tr><td class="c"><span class="pc f-j">J7</span></td><td>Désigner qui perd le litige (il compte dans sa fiabilité)</td></tr>
+    <tr><td class="c"><span class="pc f-j">J8</span></td><td>Classer une annulation : abusive · légitime · litige · problème technique</td></tr>
+    <tr><td class="c"><span class="pc f-j">J9</span></td><td>Juger la force majeure (panne, météo) sur une photo ou une information publique</td></tr>
+    <tr class="g"><td colspan="2">Sanctionner et lever</td></tr>
+    <tr><td class="c"><span class="pc f-j">J10</span></td><td>Suspendre 7 jours, puis 30 jours ; lever la suspension</td></tr>
+    <tr><td class="c"><span class="pc f-j">J11</span></td><td>Bannir à vie ; lever le bannissement</td></tr>
+    <tr><td class="c"><span class="pc f-j">J12</span></td><td>Répondre à une contestation en 7 jours : maintenir ou lever</td></tr>
+    <tr><td class="c"><span class="pc f-j">J13</span></td><td>Garder cachée ou rétablir une annonce signalée</td></tr>
+    <tr class="g"><td colspan="2">Vérifier</td></tr>
+    <tr><td class="c"><span class="pc f-j">J14</span></td><td>Vérifier une identité : accepter, refuser (motif, date du prochain essai), photos à refaire</td></tr>
+    <tr><td class="c"><span class="pc f-j">J15</span></td><td>Vérifier une coopérative ou un marché</td></tr>
+    <tr><td class="c"><span class="pc f-j">J16</span></td><td>Rendre un numéro contesté : pièce d'identité vue et appel fait sur ce numéro</td></tr>
+    <tr><td class="c"><span class="pc f-j">J17</span></td><td>Remettre un nouveau code secret (motif, message au membre)</td></tr>
+    <tr><td class="c"><span class="pc f-j">J18</span></td><td>Vérifier un transporteur ; le service reste fermé sans 3 vérifiés et l'accord du propriétaire</td></tr>
+    <tr><td class="c"><span class="pc f-j">J19</span></td><td>Lire les messages et les négociations</td></tr>
+    <tr class="g"><td colspan="2">Régler et se tenir</td></tr>
+    <tr><td class="c"><span class="pc f-j">J20</span></td><td>Régler les seuils des badges</td></tr>
+    <tr><td class="c"><span class="pc f-j">J21</span></td><td>Régler les délais des commandes depuis un écran<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-j">J22</span></td><td>Trancher un litige en 72 h (au-delà : « en retard »)</td></tr>
+    <tr><td class="c"><span class="pc f-j">J23</span></td><td>Ne jamais juger une commande où il est vendeur ou acheteur</td></tr>
+    <tr><td class="c"><span class="pc f-j">J24</span></td><td>Chaque geste noté dans le journal : qui, quand, quoi, pourquoi</td></tr>
+  </table>
+</section>
+
+<!-- ===== Face E : les étapes et le temps ===== -->
+<section class="page">
+  <div class="face-tete"><span class="pc gros f-e">E</span><div><h2>Les étapes et le temps</h2><p>La vie d'une commande, dans l'ordre, avec ses délais.</p></div></div>
+  <table class="briques">
+    <tr class="g"><td colspan="2">Dans l'ordre</td></tr>
+    <tr><td class="c"><span class="pc f-e">E1</span></td><td>Négociation : chaque proposition vaut 48 h</td></tr>
+    <tr><td class="c"><span class="pc f-e">E2</span></td><td>Accord : 72 h pour créer la commande, sinon « sans suite » et la quantité revient</td></tr>
+    <tr><td class="c"><span class="pc f-e">E3</span></td><td>Commande à confirmer : 48 h, sinon elle expire, sans faute pour personne</td></tr>
+    <tr><td class="c"><span class="pc f-e">E4</span></td><td>Confirmée : le mot secret est tiré ; 72 h pour charger, rappel 12 h avant</td></tr>
+    <tr><td class="c"><span class="pc f-e">E5</span></td><td>Chargée, en route : plus d'annulation, seulement « Signaler un problème »</td></tr>
+    <tr><td class="c"><span class="pc f-e">E6</span></td><td>Trajet : rien d'automatique, même si c'est très long</td></tr>
+    <tr><td class="c"><span class="pc f-e">E7</span></td><td>« Arrivé » : l'acheteur a 1 h (rappel à 30 min)</td></tr>
+    <tr><td class="c"><span class="pc f-e">E8</span></td><td>Délai justifié demandé : l'heure repoussée de 2, 6 ou 24 h<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-e">E9</span></td><td>1 h sans réponse : un litige s'ouvre tout seul</td></tr>
+    <tr><td class="c"><span class="pc f-e">E10</span></td><td>1 h de plus sans réponse : clos pour le vendeur, litige perdu pour l'acheteur</td></tr>
+    <tr><td class="c"><span class="pc f-e">E11</span></td><td>Réception confirmée : 1 h pour réclamer, puis clôture toute seule</td></tr>
+    <tr><td class="c"><span class="pc f-e">E12</span></td><td>Litige : l'équipe a 72 h pour trancher</td></tr>
+    <tr><td class="c"><span class="pc f-e">E13</span></td><td>Clôture : commission calculée, fiabilité mise à jour, avis possible</td></tr>
+    <tr class="g"><td colspan="2">Les horloges à part</td></tr>
+    <tr><td class="c"><span class="pc f-e">E14</span></td><td>La nuit (21 h à 7 h) : « arrivé » déclaré la nuit, l'heure part à 7 h<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-e">E15</span></td><td>La nuit : aucune notification commerciale ; les avis de commande partent quand même</td></tr>
+    <tr><td class="c"><span class="pc f-e">E16</span></td><td>Négociation arrêtée : 24 h avant de pouvoir reproposer</td></tr>
+    <tr><td class="c"><span class="pc f-e">E17</span></td><td>Demande d'annulation du vendeur sans réponse en 24 h : acceptée, sans faute<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-e">E18</span></td><td>Participation proposée : le vendeur a 24 h, sinon l'équipe tranche<span class="bt">bientôt</span></td></tr>
+    <tr><td class="c"><span class="pc f-e">E19</span></td><td>Contestation : 7 jours pour contester, 7 jours pour la réponse de l'équipe</td></tr>
+    <tr><td class="c"><span class="pc f-e">E20</span></td><td>Fiabilité : 90 jours glissants ; badges : 12 mois glissants</td></tr>
+    <tr><td class="c"><span class="pc f-e">E21</span></td><td>Annonce : 30 jours, rappel 3 jours avant, « Prolonger 30 jours »</td></tr>
+  </table>
+</section>
+
+<!-- ===== Face C : le contexte ===== -->
+<section class="page">
+  <div class="face-tete"><span class="pc gros f-c">C</span><div><h2>Le contexte</h2><p>Le décor de la scène : il ne fait rien, mais il change la règle.</p></div></div>
+  <table class="briques">
+    <tr class="g"><td colspan="2">Ville et transport</td></tr>
+    <tr><td class="c"><span class="pc f-c">C1</span></td><td>Même ville : livreur du vendeur, payé par l'acheteur, hors Marché de Gros</td></tr>
+    <tr><td class="c"><span class="pc f-c">C2</span></td><td>Même ville : retrait par l'acheteur lui-même, si le vendeur l'accepte</td></tr>
+    <tr><td class="c"><span class="pc f-c">C3</span></td><td>Villes différentes : transport inclus dans le prix</td></tr>
+    <tr><td class="c"><span class="pc f-c">C4</span></td><td>Villes différentes : transport à part, prix ajouté et négocié</td></tr>
+    <tr><td class="c"><span class="pc f-c">C5</span></td><td>Transport à la charge de l'acheteur</td></tr>
+    <tr><td class="c"><span class="pc f-c">C6</span></td><td>Transporteur Marché de Gros (service fermé)</td></tr>
+    <tr><td class="c"><span class="pc f-c">C7</span></td><td>Annonce « ville seulement », acheteur d'une autre ville</td></tr>
+    <tr class="g"><td colspan="2">La marchandise</td></tr>
+    <tr><td class="c"><span class="pc f-c">C8</span></td><td>Conforme</td></tr>
+    <tr><td class="c"><span class="pc f-c">C9</span></td><td>Cassée ou gâtée</td></tr>
+    <tr><td class="c"><span class="pc f-c">C10</span></td><td>Manquante, ou pas la bonne quantité</td></tr>
+    <tr><td class="c"><span class="pc f-c">C11</span></td><td>Mauvaise qualité</td></tr>
+    <tr><td class="c"><span class="pc f-c">C12</span></td><td>Pas arrivée du tout, alors que « arrivé » est déclaré</td></tr>
+    <tr><td class="c"><span class="pc f-c">C13</span></td><td>En partie bonne, en partie abîmée</td></tr>
+    <tr class="g"><td colspan="2">Le membre</td></tr>
+    <tr><td class="c"><span class="pc f-c">C14</span></td><td>Normal, « Non identifié »</td></tr>
+    <tr><td class="c"><span class="pc f-c">C15</span></td><td>« Identité vérifiée »</td></tr>
+    <tr><td class="c"><span class="pc f-c">C16</span></td><td>Suspendu (il finit ses commandes, aucun nouvel accord)</td></tr>
+    <tr><td class="c"><span class="pc f-c">C17</span></td><td>Banni</td></tr>
+    <tr><td class="c"><span class="pc f-c">C18</span></td><td>Veut supprimer son compte (refusé tant qu'une commande ou un litige est ouvert)</td></tr>
+    <tr class="g"><td colspan="2">Les accidents</td></tr>
+    <tr><td class="c"><span class="pc f-c">C19</span></td><td>Réseau coupé, téléphone éteint</td></tr>
+    <tr><td class="c"><span class="pc f-c">C20</span></td><td>Double appui, ou deux actions au même instant : une seule passe</td></tr>
+    <tr><td class="c"><span class="pc f-c">C21</span></td><td>Mot secret oublié, papier perdu</td></tr>
+    <tr><td class="c"><span class="pc f-c">C22</span></td><td>Mot secret bloqué après 5 essais faux</td></tr>
+    <tr><td class="c"><span class="pc f-c">C23</span></td><td>Achat groupé</td></tr>
+  </table>
+</section>
+
+<!-- ===== Les piliers ===== -->
+<section class="page">
+  <h2>Les piliers</h2>
+  <p class="doux" style="margin-top:-2mm;margin-bottom:5mm">Les règles d'or qui tiennent l'application. Une scène qui les contredit est un trou à signaler.</p>
+  <div class="piliers">
+    <div class="pil"><h3>Confiance et identité</h3><ul>
+      <li>Le Marché de Gros met en relation : il n'est ni vendeur, ni acheteur.</li>
+      <li>À côté de chaque nom : « Non identifié » ou « Identité vérifiée ».</li>
+      <li>Une pièce d'identité ne vérifie qu'un seul compte.</li>
+      <li>3 annonces gratuites, puis l'identité vérifiée est demandée.</li>
+      <li>Le numéro n'est jamais montré ; numéros et liens sont refusés dans les messages.</li>
+      <li>Mise en relation, pas WhatsApp : l'équipe peut lire tous les messages.</li>
+      <li>« Marché de Gros », « admin », « support »… refusés comme noms.</li>
+      <li>Le numéro n'est pas encore prouvé par SMS : il faudra un budget.</li>
+    </ul></div>
+    <div class="pil"><h3>Argent</h3><ul>
+      <li>Aucun paiement dans l'application pour l'instant ; jamais « payé ».</li>
+      <li>Aucune commande ni dépense sans la confirmation de l'acheteur.</li>
+      <li>Commission 3,5 % sur la marchandise : calculée, jamais encaissée ni réclamée.</li>
+      <li>6,9 % sur le transport : seulement avec le service Marché de Gros.</li>
+      <li>L'acheteur ne paie rien tant que la marchandise n'est pas arrivée conforme.</li>
+      <li>Refus accepté : ni marchandise, ni transport. Refus rejeté : il paie tout.</li>
+      <li>Refus en partie accepté : la partie gardée ; le vendeur paie le transport.<span class="bt">bientôt</span></li>
+    </ul></div>
+    <div class="pil"><h3>Transport</h3><ul>
+      <li>Même ville : le livreur du vendeur, payé par l'acheteur, hors Marché de Gros.</li>
+      <li>« À la charge de l'acheteur » : le transport n'est pas compris dans le prix. Rien d'autre.</li>
+      <li>Le risque reste au vendeur jusqu'à la réception conforme, quel que soit le transport.</li>
+      <li>Seul le retrait par l'acheteur lui-même fait du départ l'« arrivée ».<span class="bt">bientôt</span></li>
+      <li>Service de transport Marché de Gros fermé : 3 transporteurs vérifiés et l'accord du propriétaire.</li>
+    </ul></div>
+    <div class="pil"><h3>Preuves</h3><ul>
+      <li>Pas de chargement sans 2 à 4 photos du colis, le poids et la photo du papier du mot secret.</li>
+      <li>Seule l'équipe voit la photo du papier.</li>
+      <li>Le mot secret prouve la réception.</li>
+      <li>Photos de départ propres : l'acheteur qui dit « cassé » doit le prouver.</li>
+      <li>Refus : 1 à 4 photos et le mot secret.</li>
+      <li>Force majeure : une photo ou une information publique ; l'équipe juge.</li>
+    </ul></div>
+    <div class="pil"><h3>Temps</h3><ul>
+      <li>Rien d'automatique avant « arrivé ».</li>
+      <li>Après « arrivé » : 1 h. Le silence ouvre un litige, puis clôt pour le vendeur.</li>
+      <li>La nuit compte à partir de 7 h pour l'acheteur.<span class="bt">bientôt</span></li>
+      <li>Les délais se règlent par l'administrateur.</li>
+    </ul></div>
+    <div class="pil"><h3>Fiabilité et sanctions</h3><ul>
+      <li>Toute annulation a un motif ; elle est classée et comptée sur 90 jours.</li>
+      <li>Un litige perdu compte contre celui qui le perd ; seuls les litiges perdus sont publics.</li>
+      <li>Suspension décidée par l'équipe : 7 jours, puis 30 jours.</li>
+      <li>Suspendu : il finit ses commandes, mais aucun nouvel accord.</li>
+      <li>Banni : il ne voit plus que « Compte banni » et « Contester ».</li>
+      <li>Banni ou suspendu : ses accords sans commande s'arrêtent tout de suite.<span class="bt">bientôt</span></li>
+      <li>Toute sanction se conteste en 7 jours ; réponse de l'équipe en 7 jours.</li>
+      <li>Pas de rétroactivité.</li>
+    </ul></div>
+    <div class="pil"><h3>Badges</h3><ul>
+      <li>Fiable, Bon, Excellent, Grand ; « Acheteur en gros » à part.</li>
+      <li>Calculés sur 12 mois, avec les commandes terminées seulement.</li>
+      <li>Montée tout de suite, baisse après 30 jours de grâce ; historique et contestation.</li>
+      <li>Commandes comptées par partenaire limitées : pas de badge entre complices.</li>
+    </ul></div>
+    <div class="pil"><h3>Ville</h3><ul>
+      <li>On vend et on achète uniquement dans la ville de l'annonce ; le serveur refuse le reste.</li>
+      <li>Abidjan est une seule ville : ses communes ne sont jamais des villes.</li>
+      <li>Un village tapé compte pour la ville de rattachement de sa région.</li>
+    </ul></div>
+    <div class="pil"><h3>Notifications</h3><ul>
+      <li>Transactionnelles (messages, commandes, litiges) : toujours.</li>
+      <li>Commerciales : 8 par jour au plus, 90 min d'écart, de 7 h à 21 h.</li>
+      <li>Seulement sur un fait réel : aucune fausse urgence.</li>
+      <li>Un seul choix pour le membre : Activer ou Désactiver.</li>
+      <li>Chaque notification ouvre un écran précis.</li>
+    </ul></div>
+    <div class="pil"><h3>Données</h3><ul>
+      <li>Commandes et négociations : 5 ans. Signalements et sanctions : 2 ans.</li>
+      <li>Photos de preuve : 1 an. Journal des notifications : 90 jours.</li>
+      <li>Annonce retirée ou expirée : cachée, jamais effacée.</li>
+      <li>Rien n'est effacé sans l'accord du propriétaire.</li>
+      <li>Demande sur ses données : réponse en 30 jours.</li>
+    </ul></div>
+    <div class="pil"><h3>Le juge</h3><ul>
+      <li>Il juge avec les preuves : photos, poids, mot secret, messages.</li>
+      <li>Chaque geste est noté : qui, quand, quoi, pourquoi.</li>
+      <li>Il ne juge jamais sa propre commande.</li>
+      <li>Un administrateur ne peut pas être banni.</li>
+      <li>Les textes juridiques restent des projets jusqu'à la relecture d'un juriste.</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- ===== La grille ===== -->
+<section class="page">
+  <h2>Mes combinaisons</h2>
+  <p class="doux" style="margin-top:-2mm">Une ligne par scène. Écrire les codes, puis ce qui doit se passer.</p>
+  <table class="grille">
+    <tr><th>A</th><th>V</th><th>J</th><th>E</th><th>C</th><th>Ce qui doit se passer</th></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </table>
+  <p class="fin">Toutes les combinaisons déjà vérifiées, avec l'état du code : <b>docs/regles/SCENARIOS-COMMANDE.md</b>. Ce cube est mis à jour quand une règle d'acteur, d'étape ou de pilier change. Version du {{date}}.</p>
+</section>
+
+</div>

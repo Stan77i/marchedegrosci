@@ -18,13 +18,13 @@ Le propriétaire a mis le travail en pause (plus de crédit). Voici l'état exac
 | #326 (si pas encore fusionnée) | Écrans du suivi de livraison | Maintenant |
 | #322 | Participation de l'acheteur, négociation à trois, prix à l'unité obligatoire (serveur) | Maintenant |
 | #327 | PDF « Le cube du Marché de Gros » | Maintenant |
-| #323 | Les 15 règles des commandes, transport retiré si refus accepté (serveur) | **Pas avant que Claude ait vérifié** : des marques de conflit avaient été laissées par erreur dans des documents |
+| #323 | Les 15 règles des commandes, transport retiré si refus accepté (serveur) | Après #322 (marques de conflit retirées et vérifiées) |
 
 ## 3. Interrompu, à reprendre en premier
 
-1. Vérifier que la branche de #323 n'a plus aucune marque de conflit (`<<<<<<<`), puis la débloquer.
-2. Écrans de « participer » et des 15 règles (branche `claude/participer-ecrans`, travail partiel possible) : finir, captures, PR.
-3. Mettre en production 102a à 102d et 103a à 103c, puis `pousser` (version de main), après fusion de #322 et #323.
+1. (Fait : #323 débloquée et vérifiée.)
+2. Écrans de « participer » et des 15 règles (branche `claude/participer-ecrans` : rien de codé ; la liste de ce qui reste est dans sa section de `docs/PASSATION.md`) : finir, captures, PR.
+3. Mettre en production 102a, 102b, 102c, 102d, 103a, 103b, 103c, puis `pousser` v30, après fusion de #322 et #323.
 4. Ajouter au cube la brique du juge « proposer un arrangement ».
 5. Contrôle général complet (« Lance le contrôle général MGCI »).
 

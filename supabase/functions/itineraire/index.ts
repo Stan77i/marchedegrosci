@@ -7,9 +7,13 @@
 // • si le trajet routier échoue : une ligne « à vol d'oiseau », clairement marquée comme telle (source 'vol_oiseau') ;
 // • si un lieu est introuvable : source 'introuvable' (nouvel essai possible après 24 h).
 // La clé ORS_API_KEY est lue dans les secrets Supabase (Edge Functions → Secrets) : jamais dans le code ni dans l'application.
+// • n° 23 (25/10/2026) : la carte de l'application envoie { points: [[lon, lat], [lon, lat]] } (sa position et l'annonce choisie)
+//   au lieu du service public OSRM ; points arrondis à 0,001° (≈ 100 m), en Côte d'Ivoire seulement, rien n'est rangé.
+//   Un petit cache en mémoire évite de redemander le même trajet.
 // Offre gratuite openrouteservice : 2 000 trajets et 1 000 géocodages par jour ; ici, 1 trajet et 2 géocodages par commande.
 import { createClient } from "npm:@supabase/supabase-js@2.45.4";
 
+const CACHE = new Map<string, unknown>();
 const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, { auth: { persistSession: false } });
 const ORS = Deno.env.get("ORS_API_KEY") || "";
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "authorization, apikey, content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
@@ -52,6 +56,23 @@ Deno.serve(async (req) => {
     const { data: u } = await sb.auth.getUser(jeton);
     if (!u?.user) return json({ erreur: "connexion" }, 401);
     let corps: Record<string, unknown> = {}; try { corps = await req.json(); } catch (_) { /* vide */ }
+    if (Array.isArray(corps.points)) {
+      const P = corps.points as unknown[];
+      const pt = (x: unknown): Pt | null => Array.isArray(x) && x.length === 2 && x.every(n => typeof n === "number" && Number.isFinite(n))
+        ? [Math.round((x[0] as number) * 1e3) / 1e3, Math.round((x[1] as number) * 1e3) / 1e3] : null;
+      const dansCI = (p: Pt) => p[0] > -8.7 && p[0] < -2.4 && p[1] > 4.2 && p[1] < 10.8;
+      const a = pt(P[0]), b = pt(P[1]);
+      if (P.length !== 2 || !a || !b || !dansCI(a) || !dansCI(b)) return json({ erreur: "points" }, 400);
+      const k = a.join() + ";" + b.join();
+      if (CACHE.has(k)) return json(CACHE.get(k));
+      if (!ORS) return json({ erreur: "La clé openrouteservice n'est pas configurée (secret ORS_API_KEY)." }, 503);
+      const t = await trajet(a, b);
+      if (!t) return json({ erreur: "trajet" }, 502);
+      const r = { source: "ors", ligne: t.ligne, distance_m: t.distance_m, duree_s: t.duree_s };
+      if (CACHE.size > 500) CACHE.clear();
+      CACHE.set(k, r);
+      return json(r);
+    }
     const id = String(corps.commande_id || "");
     if (!/^[0-9a-f-]{36}$/.test(id)) return json({ erreur: "commande" }, 400);
     const { data: c } = await sb.from("commandes").select("id, vendeur_id, acheteur_id, transporteur_id, ville_depart, lieu_livraison").eq("id", id).maybeSingle();

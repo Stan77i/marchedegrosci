@@ -133,7 +133,7 @@
         <b style="display:block;color:#8A2414">L’acheteur refuse ${Rf.quantite != null ? nf(Rf.quantite, 2) + ' ' + esc(unites(Rf.quantite, m.unite)) : 'toute la marchandise'}</b>
         <small style="display:block;margin-top:2px;color:inherit">« ${esc(Rf.motif || '')} »</small>
         <span style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">${(Rf.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du refus" style="display:block;width:64px;height:64px;border-radius:10px;overflow:hidden;background:#E7E0CF"></span>`).join('')}</span>
-        <small style="display:block;color:#5E5546">${Rf.a_repondre ? 'À la livraison, la marchandise était-elle dans cet état ? Répondez honnêtement : votre réponse est enregistrée avec la commande n° ' + esc(m.numero) + '.' + (Rf.suffit ? ' Vous êtes un chauffeur vérifié du Marché de Gros : si vous confirmez, l’acheteur ne doit pas la partie refusée.' : ' L’équipe du Marché de Gros tiendra compte de votre réponse.') + ' Votre prix de transport reste dû dans tous les cas.'
+        <small style="display:block;color:#5E5546">${Rf.a_repondre ? 'À la livraison, la marchandise était-elle dans cet état ? Répondez honnêtement : votre réponse est enregistrée avec la commande n° ' + esc(m.numero) + '.' + (Rf.suffit ? ' Vous êtes un chauffeur vérifié du Marché de Gros : si vous confirmez, l’acheteur ne doit pas la partie refusée.' : ' L’équipe du Marché de Gros tiendra compte de votre réponse.') + ' Votre transport est payé par l’acheteur si le refus est rejeté, par le vendeur s’il est accepté.'
           : Rf.reponse === 'confirme' ? 'Vous avez confirmé le refus.' : Rf.reponse === 'conteste' ? 'Vous avez contesté le refus : l’équipe va trancher.' : 'Refus traité.'}</small></div>` : '';
     const st = m.mission === 'proposee' ? ['Nouvelle mission', 'mais'] : m.mission === 'refusee' ? ['Refusée', 'rouge'] : m.etat === 'annulee' ? ['Commande annulée', 'rouge'] : m.etat === 'litige' ? [Rf ? 'Marchandise refusée' : 'Litige en cours', 'rouge'] : [ETAPE[m.etape] || 'Acceptée', ''];
     return `<div class="cm-r" style="cursor:default;grid-template-columns:1fr"><span>
@@ -235,7 +235,7 @@
       else if (!await (window.MDGDemande ? MDGDemande.oui('Vous confirmez que la marchandise était dans cet état à la livraison ?', { ok: 'Je confirme' }) : Promise.resolve(confirm('Vous confirmez que la marchandise était dans cet état à la livraison ?')))) return;
       b.disabled = true;
       try { const r = await N().rpc('commande_refus_chauffeur', { p_id: id, p_oui: oui, p_note: (note || '').trim() || null });
-        toast(oui ? 'Merci, refus confirmé' : 'Merci, votre réponse est enregistrée', { type: 'ok', sous: r === 'applique' ? 'La partie refusée est rendue à l’acheteur. Votre transport reste dû.' : 'L’équipe du Marché de Gros va juger.' });
+        toast(oui ? 'Merci, refus confirmé' : 'Merci, votre réponse est enregistrée', { type: 'ok', sous: r === 'applique' ? 'La partie refusée est rendue à l’acheteur. Votre transport est payé par le vendeur.' : 'L’équipe du Marché de Gros va juger.' });
         await lire(); peindre(); }
       catch (e) { toast('Réponse impossible', { type: 'erreur', sous: erreurTxt(e) }); b.disabled = false; }
     };

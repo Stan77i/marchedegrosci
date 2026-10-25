@@ -62,6 +62,8 @@
       N.rpc('admin_signalements_comptes').then(r => { D.sigc = r || []; }).catch(() => { D.sigc = null; }),
       // annonces cachées par signalement, avec la contestation du vendeur (schéma 94e)
       N.rpc('admin_masquages').then(r => { D.masq = r || []; }).catch(() => { D.masq = []; }),
+      // contestations de bannissement (n° 18, schéma 101z) : 7 jours pour répondre
+      N.rpc('admin_bannissements_contestes').then(r => { D.bnc = r || []; }).catch(() => { D.bnc = []; }),
       N.rpc('admin_signalements_membres').then(r => { D.sigm = r || []; delete D.err.sigm; }).catch(e => { D.sigm = []; if (!/admin_signalements_membres|schema cache|Could not find/i.test(e.message)) D.err.sigm = e.message; }),
       // admin_identite_dossiers (schéma 16 : dates d'expiration, numéro) ; sinon l'ancienne liste
       N.rpc('admin_identite_dossiers').catch(e => { if (/admin_identite_dossiers|schema cache|Could not find/i.test(e.message)) return N.rpc('admin_identite_file'); throw e; })
@@ -175,7 +177,11 @@
         ${filt.user ? `<button class="btn sm" data-clearuser>Compte ${esc(tel(filt.user))} ×</button>` : ''}</div>
         ${listeAnnonces(A)}`;
     },
-    comptes: () => top('Comptes', D.err.comptes ? '' : fmt(D.comptes.length) + ' comptes, du plus récent au plus ancien.') + (D.err.comptes ? '' : `<div class="list">${D.comptes.length ? D.comptes.map(c => `
+    comptes: () => top('Comptes', D.err.comptes ? '' : fmt(D.comptes.length) + ' comptes, du plus récent au plus ancien.') + ((D.bnc || []).length ? `<h2 style="margin:18px 0 8px;font-size:17px">Bannissements contestés</h2><div class="list" style="margin-bottom:18px">${D.bnc.map(x => `
+      <div class="row"><span class="mk off" style="border-radius:50%"></span>
+        <div><b>${esc(tel(x.user_id) || 'compte')} <span class="tag bad">banni · ${esc(MOTIF_BAN[x.motif] || x.motif || '')}</span></b><small>Banni le ${date(x.banni_le)} · répondre avant le ${date(x.repondre_avant)}</small></div>
+        <div class="c3"><small>« ${esc(x.texte)} »</small></div><div class="c4"></div>
+        <div class="acts"><button class="btn sm" data-bnc="${x.id}" data-lever="0">Maintenir</button><button class="btn sm pri" data-bnc="${x.id}" data-lever="1">Lever le bannissement</button></div></div>`).join('')}</div>` : '') + (D.err.comptes ? '' : `<div class="list">${D.comptes.length ? D.comptes.map(c => `
       <div class="row"><span class="mk ${c.admin ? 'o' : 'off'}" style="border-radius:50%" title="${c.admin ? 'administrateur' : ''}"></span>
         <div><b>${esc(fmtTel(String(c.tel).replace(/^225/, '')))} ${c.banni ? `<span class="tag bad">banni · ${esc(MOTIF_BAN[c.banni_motif] || c.banni_motif || '')}</span>` : ''} ${c.verifie ? '<span class="tag ok">identité vérifiée</span>' : ''} ${c.admin ? '<span class="tag ok">admin</span>' : ''} ${c.secours ? '' : '<span class="tag acc">sans code de secours</span>'}</b><small>Inscrit le ${date(c.created_at)} · dernière connexion ${ago(c.last_sign_in_at)}</small></div>
         <div class="c3"><small>${fmt(c.offres)} offre(s) · ${fmt(c.demandes)} demande(s)</small><small>${fmt(c.negociations)} négociation(s)${c.publiees != null && !c.verifie && !c.admin ? ' · ' + Math.min(c.publiees, 3) + '/3 gratuites' : ''}</small></div>
@@ -638,6 +644,13 @@
     $$('[data-sigtout]').forEach(b => b.onclick = async () => { b.disabled = true; try { await N.rpc('admin_signalements_cible_traites', { p_cible: b.dataset.sigtout }); await load(); paint(); toast('Signalements marqués traités.'); } catch (e) { b.disabled = false; toast('Impossible : ' + e.message); } });
     $$('[data-sigok]').forEach(b => b.onclick = async () => { b.disabled = true; try { await N.rpc('admin_signalement_membre_traite', { p_id: b.dataset.sigok }); const x = D.sigm.find(y => y.id === b.dataset.sigok); if (x) x.traite = true; paint(); } catch (e) { b.disabled = false; toast('Impossible : ' + e.message); } });
     $$('[data-deban]').forEach(b => b.onclick = () => lever(b.dataset.deban));
+    $$('[data-bnc]').forEach(b => b.onclick = async () => {
+      const lev = b.dataset.lever === '1', m = prompt((lev ? 'Lever le bannissement. ' : 'Maintenir le bannissement. ') + 'Réponse lue par le membre :'); if (m == null) return;
+      if (m.trim().length < 5) return toast('Écrivez la réponse en une phrase.');
+      b.disabled = true;
+      try { await N.rpc('admin_bannissement_decider', { p_id: b.dataset.bnc, p_lever: lev, p_reponse: m.trim() }); await load(); paint(); toast(lev ? 'Bannissement levé.' : 'Bannissement maintenu.'); }
+      catch (e) { b.disabled = false; toast('Impossible : ' + e.message); }
+    });
     $$('[data-code]').forEach(b => b.onclick = async () => {
       const c = prompt('Nouveau code secret à 6 chiffres pour le ' + fmtTel(String(b.dataset.tel).replace(/^225/, '')) + ' :\n(Communiquez-le à la personne par téléphone, de vive voix.)');
       if (c == null) return; if (!/^\d{6}$/.test(c.trim())) return toast('Le code doit faire 6 chiffres.');

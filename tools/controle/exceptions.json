@@ -1,0 +1,101 @@
+{
+  "_lisez-moi": "Exceptions connues des gardiens. Chaque entrée met de côté les constats d'un contrôle : « fichier » (motif avec *), « contient » (texte cherché dans le constat). Toujours écrire la « raison ». Mode d'emploi : tools/gardiens/README.md.",
+  "seuils": {
+    "motsMax": 25,
+    "doublonMin": 40,
+    "doublonMax": 30,
+    "parGroupe": 25
+  },
+  "documentsLiens": [
+    "CLAUDE.md"
+  ],
+  "ignorer": [
+    {
+      "controle": "long-texte",
+      "fichier": "v3/aide.js",
+      "raison": "L'aide : les explications ont leur place dans les guides (règle « Pas de long texte d'explication »)."
+    },
+    {
+      "controle": "long-texte",
+      "fichier": "v3/guide.js",
+      "raison": "Tutoriels : explications voulues."
+    },
+    {
+      "controle": "long-texte",
+      "fichier": "v3/astuces.js",
+      "raison": "Astuces et tutoriels : explications voulues."
+    },
+    {
+      "controle": "long-texte",
+      "fichier": "v3/admin*.js",
+      "raison": "Écrans de l'administrateur (le propriétaire), pas des membres."
+    },
+    {
+      "controle": "long-texte",
+      "fichier": "app/admin-pc.js",
+      "raison": "Écran de l'administrateur sur ordinateur."
+    },
+    {
+      "controle": "bleu",
+      "contient": "#6AAEF0",
+      "raison": "--compat : le lien « compatible » offre ↔ demande (exception de CLAUDE.md)."
+    },
+    {
+      "controle": "bleu",
+      "fichier": "app/carte-app.js",
+      "contient": "#9FCBF5",
+      "raison": "Points qui courent sur le lien « compatible » de la carte."
+    },
+    {
+      "controle": "bleu",
+      "fichier": "app/carte-gl.js",
+      "contient": "#BCDBE6",
+      "raison": "Mer de la carte en relief (l'eau reste bleue)."
+    },
+    {
+      "controle": "bleu",
+      "fichier": "app/carte-gl.js",
+      "contient": "#A9D0DE",
+      "raison": "Lacs de la carte en relief."
+    },
+    {
+      "controle": "bleu",
+      "fichier": "app/carte-gl.js",
+      "contient": "#86BDD0",
+      "raison": "Fleuves de la carte en relief."
+    },
+    {
+      "controle": "bleu",
+      "fichier": "app/carte-gl.js",
+      "contient": "#CFE6F2",
+      "raison": "Ciel de la carte en relief (vue inclinée)."
+    },
+    {
+      "controle": "bleu",
+      "fichier": "v3/commandes.js",
+      "contient": "#D2E2EA",
+      "raison": "Rivière du petit plan de livraison (l'eau reste bleue)."
+    },
+    {
+      "controle": "liens",
+      "contient": "claude-design/",
+      "raison": "Dossier retiré exprès ; CLAUDE.md le cite pour dire de ne pas le recréer."
+    },
+    {
+      "controle": "liens",
+      "fichier": "CONTROLE_QUALITE/INVENTAIRE_OUTILS.md",
+      "contient": "package.json",
+      "raison": "Cité exprès pour dire qu'il n'existe pas."
+    },
+    {
+      "controle": "liens",
+      "contient": "rapport-controle.md",
+      "raison": "Sortie du contrôle statique, écrite à la demande et ignorée par .gitignore."
+    },
+    {
+      "controle": "liens",
+      "contient": "DERNIER_RAPPORT.md",
+      "raison": "Écrit par tools/controle/lancer.sh au premier passage."
+    }
+  ]
+}

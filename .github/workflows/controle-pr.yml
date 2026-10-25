@@ -1,0 +1,37 @@
+# Contrôle de chaque PR et de chaque fusion dans main (centre de commande : CONTROLE_QUALITE/README.md).
+# Ce qu'il fait : node --check sur les JS changés, contrôle statique complet, CACHE de sw.js et ?v= montés si le front change,
+# YAML et JSON changés lisibles. Il échoue seulement sur un NOUVEAU rouge (absent de tools/controle/reference-rouges.json),
+# une erreur de syntaxe, ou un front changé sans CACHE / ?v= montés. Les oranges déjà connus ne le font jamais échouer.
+# Les tests SQL ne tournent pas ici (aucun accès à la base, aucun secret Supabase dans GitHub) : ils sont listés « à lancer par Claude ».
+# Gratuit (dépôt public). N'écrit rien dans le dépôt.
+name: Contrôle des PR
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: controle-pr-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  controle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Contrôle après modification (syntaxe, statique, cache)
+        env:
+          BASE_PR: ${{ github.base_ref }}
+          AVANT: ${{ github.event.before }}
+        run: |
+          if [ -n "$BASE_PR" ]; then base="origin/$BASE_PR"
+          elif [ -n "$AVANT" ] && [ "$AVANT" != "0000000000000000000000000000000000000000" ] && git cat-file -e "$AVANT^{commit}" 2>/dev/null; then base="$AVANT"
+          else base="HEAD~1"; fi
+          echo "Base de comparaison : $base"
+          bash tools/controle/lancer.sh pr --base "$base"

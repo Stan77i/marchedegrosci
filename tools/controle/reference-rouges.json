@@ -1,0 +1,5 @@
+{
+  "_lisez-moi": "Rouges déjà connus du contrôle statique au 25/10/2026 (référence). Le contrôle des PR (tools/controle/lancer.sh pr) échoue seulement sur un rouge ABSENT de cette liste. Un rouge corrigé : retirer sa ligne. Un rouge listé ici reste une anomalie ouverte du registre (CONTROLE_QUALITE/REGISTRE_ANOMALIES.md), jamais une anomalie acceptée sans l'accord écrit du propriétaire. Clé : contrôle|fichier|texte trouvé.",
+  "rouges": [],
+  "_historique": "25/10/2026 : « mots-interdits|v3/commandes.js|L’acheteur vient chercher la marchandise » retiré (corrigé par la PR #306, plus aucun rouge au contrôle statique ; ANO-001 vérifiée)."
+}

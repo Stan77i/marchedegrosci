@@ -522,8 +522,8 @@ controle('liens', () => {
   const docsCQ = (function tous(dir) {
     if (!existe(dir)) return [];
     return fs.readdirSync(path.join(RACINE, dir), { withFileTypes: true }).flatMap(e =>
-      e.isDirectory() ? (e.name === 'rapports' ? [] : tous(dir + '/' + e.name)) : (/\.md$/.test(e.name) ? [dir + '/' + e.name] : []));
-  })('CONTROLE_QUALITE');   // les rapports datés sont des photos d'un jour : leurs liens ne sont pas relus
+      e.isDirectory() ? (e.name === 'rapports' ? [] : tous(dir + '/' + e.name)) : (/\.md$/.test(e.name) && e.name !== 'DERNIER_RAPPORT.md' ? [dir + '/' + e.name] : []));
+  })('CONTROLE_QUALITE');   // les rapports datés (et DERNIER_RAPPORT.md, leur copie) sont des photos d'un jour : leurs liens ne sont pas relus
   const docs = [...(EXC.documentsLiens || ['CLAUDE.md']), ...docsCQ].filter(existe);
   // nom de fichier seul (« regles-93-scenarios.sql ») : il suffit qu'un fichier du dépôt porte ce nom
   let noms = new Set();

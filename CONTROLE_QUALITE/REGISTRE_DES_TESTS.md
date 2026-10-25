@@ -3,7 +3,7 @@
 > Tous les tests du serveur, ce qu'ils vérifient, leur dernier résultat connu. **Un test qui n'a pas tourné est « non rejoué », jamais « passe ».**
 > Source des résultats au 25/10/2026 : rapport de bout en bout de l'étape 7 (session du 24/10/2026 au soir, rejeux de 22 h 50 au 25/10/2026 à 0 h 30, projet de test), notes écrites dans chaque fichier et `docs/PASSATION.md`.
 > Centre de commande : `README.md` de ce dossier. Classement par unité et par type : `MATRICE_TESTS.md`.
-> Contrôle général du 25/10/2026 : les 16 fichiers de la partie 1 **n'ont pas été rejoués** (le temps est allé aux nouvelles batteries, partie 1 bis) : leurs résultats restent ceux des dates écrites.
+> Contrôle général du 25/10/2026 : les 18 fichiers de la partie 1 **n'ont pas été rejoués** (le temps est allé aux nouvelles batteries, partie 1 bis) : leurs résultats restent ceux des dates écrites.
 > Mise à jour : la session de contrôle propose les nouveaux résultats dans son rapport ; ce fichier est corrigé dans une PR à part (ou dans la PR qui ajoute le test).
 
 ## 1. Fichiers `supabase/tests/*.sql`
@@ -27,6 +27,8 @@ Tous se jouent sur le **projet de test** `yowdymdnoiubatxlwhfv`, jamais sur la p
 | `tableau-prix-scenarios.sql` | Schéma 96a : prix aberrant écarté, offres de plus de 30 jours hors prix, recalcul, lecture du tableau gardé. | Test | **Passe** (24/10/2026, soir) |
 | `transport-83-scenarios.sql` | Schéma 83 : même ville (livreur du vendeur, retrait), villes différentes, transport inclus ou à part, transporteur réseau, droits des rôles. | Test | A échouait (`DEPART_PREUVES`, test périmé depuis 90/90b), mis à jour sur `claude/e2e-corrections` puis **passe** (25/10/2026) ; B à J **passent** |
 | `transport-95-scenarios.sql` | Schéma 95 : service transport fermé, seuil de transporteurs vérifiés, 6,9 % seulement avec le réseau, 0 % pour le livreur du vendeur, transport à part (270 000 + 30 000), arrondis FCFA, textes de clôture. | Test | **Passe** (24/10/2026, soir) |
+| `controle-corrections-98-scenarios.sql` (PR #305) | Schémas 98a et 98b : pas de suppression du compte avec une commande en cours, un litige, un accord sans commande ou une suspension ; un membre suspendu (ou son partenaire) ne propose plus de prix ni ne conclut d'accord. | Test | Résultats écrits sous chaque bloc par l'équipe de correction (25/10/2026) ; **non rejoué** par le contrôle |
+| `litige-quantites-97-scenarios.sql` (PR #306) | Schémas 97b, 97c, 97d : litige en 1 h après « livré », quantité minimale et achat par parties, litige perdu pour l'acheteur muet, garde 93 qui prévient. | Test | Résultats écrits sous chaque bloc par l'équipe (25/10/2026) ; **non rejoué** par le contrôle |
 | `e2e-parcours-scenarios.sql` (dans `main` depuis la PR #300) | Les parcours complets de bout en bout (partie 2). | Test | Voir partie 2 |
 
 `claude/e2e-corrections` est fusionnée (PR #300) : les mises à jour notées ci-dessus « sur `claude/e2e-corrections` » sont dans `main`. Les résultats « passe » restent ceux des dates écrites : **non rejoué** depuis.

@@ -12,7 +12,7 @@
 | Carte des unités | `tools/controle/unites.json` | unités, contrôles par unité, tests SQL par unité et par schéma, chantiers en cours | lu par `lancer.js` |
 | Rouges connus | `tools/controle/reference-rouges.json` | référence : la PR échoue seulement sur un rouge nouveau | lu par `lancer.js` |
 | Hook facultatif | `tools/controle/pre-commit` | `node --check`, JSON, CACHE si front changé | lancé à la main (partie 4), **non installé** |
-| Tests SQL | `supabase/tests/*.sql` (16 fichiers) | scénarios en blocs annulés (`raise exception 'TEST…'`) | listés ; ils ne tournent qu'avec un accès à la base |
+| Tests SQL | `supabase/tests/*.sql` (18 fichiers) | scénarios en blocs annulés (`raise exception 'TEST…'`) | listés ; ils ne tournent qu'avec un accès à la base |
 | Listes A à K | `LISTES_DE_CONTROLE.md` | cases à vérifier à la main ou au navigateur | lu |
 | Registre des tests | `REGISTRE_DES_TESTS.md` | dernier résultat connu de chaque fichier SQL | lu |
 | Autres scripts | `tools/site-public.js`, `tools/site-produits.js`, `tools/site-boutiques.js`, `tools/site-prix.js`, `tools/site-regions.js`, `tools/site-images.py`, `tools/inventaire-site.js`, `tools/glyphes-carte.js`, `strategie/sources/construire.js` | fabrication du site caché, inventaire, PDF | `ls tools` ; ce ne sont pas des contrôles |
@@ -58,6 +58,8 @@ Le navigateur de la machine ne joint pas Supabase (proxy) : l'application s'ouvr
 |---|---|
 | `bash tools/controle/lancer.sh statique` | code 0 ; 6 réussis, 7 échoués (oranges connus et 1 rouge connu), 1 non exécuté (navigateur désactivé) ; aucun échec bloquant |
 | `bash tools/controle/lancer.sh navigateur` | code 0 ; application ouverte en iPhone 13 émulé, aucune erreur JavaScript ; batteries navigateur : aucune encore (à ajouter) |
+| `bash tools/controle/lancer.sh navigateur` (25/10/2026, après l'intégration des batteries) | code 0 (pas d'échec bloquant) ; STA-14 réussi ; `U10-fiabilite.js` code 1 (52 réussis, 18 échoués, 3 en attente : anomalies réelles, voir `REGISTRE_ANOMALIES.md`) ; `U12-parcours.js` code 0 (6 réussis) ; environ 9 minutes au total |
+| `python3 -m http.server 8765` puis `CQ_URL=http://127.0.0.1:8765/ node CONTROLE_QUALITE/tests/navigateur/U12-parcours.js` | code 0, 6 réussis (la batterie marche aussi seule) |
 | `bash tools/controle/lancer.sh unite U04` | code 0 ; 5 tests SQL listés « non exécuté » |
 | `bash tools/controle/lancer.sh unite U10` avec une batterie d'essai temporaire | code 0 ; la batterie a tourné (code 0) ; batterie d'essai retirée ensuite |
 | `bash tools/controle/lancer.sh apres-modif` | code 0 ; JS, JSON et YAML changés relus |

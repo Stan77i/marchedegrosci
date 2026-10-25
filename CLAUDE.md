@@ -6,6 +6,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 
 **Nouvelle discussion : un mot suffit** (règle du propriétaire, 24/10/2026, relue le 24/10/2026 au soir). Le propriétaire vide souvent la discussion et écrit seulement « On reprend », « Continue » ou une courte phrase. Alors, sans lui poser de question :
 1. lire `docs/REPRISE.md` (partie 1 : l'état ; partie 3 : ce qui reste, dans l'ordre) ;
+   lire aussi `TABLEAU-DE-BORD.md` (la page du propriétaire : ce qu'il doit faire, ce qui reste) ;
    puis rappeler en une ligne ce qui attend le propriétaire dans `docs/A-FAIRE-PROPRIETAIRE.md` (s'il reste des cases non cochées) ;
 2. regarder les PR ouvertes (`gh api "repos/Stan77i/marchedegrosci/pulls?state=open" --jq '.[].number'`) et les signaler s'il y en a ;
 3. partir de `origin/main` à jour ;
@@ -33,6 +34,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - Il n'a **pas d'argent pour l'instant** : aucune solution payante (SMS, WhatsApp, plan Supabase Pro, service ou abonnement payant, dépendance inutile).
 - Envoyer les captures d'écran avec SendUserFile.
 - Simplicité avant tout.
+- **Penser à sa place, puis proposer** (règle du propriétaire, 25/10/2026) : « pense logique, mets-toi à la place » mais « tu ne traites pas sans m'en parler : tu proposes ». Pour chaque règle, se mettre à la place de l'acheteur, du vendeur et de l'équipe, mettre les cas dans un scénario avec toutes les combinaisons (`docs/regles/`), trouver les trous logiques et **proposer** pour chacun la solution la plus simple et juste, avec la raison en une ligne, en liste numérotée (il répond « ok pour tout » ou « ok sauf n° X »). Ne rien construire de nouveau avant son accord.
 
 ## Le projet
 
@@ -44,6 +46,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 
 ## Façon de travailler
 
+- **Tableau de bord** (règle du propriétaire, 25/10/2026) : `TABLEAU-DE-BORD.md` est la page unique du propriétaire, en français simple sans code ; chaque PR qui change l'état, une règle ou ce qui reste à faire le met à jour dans la même PR.
 - **Une PR par mise à jour. Ne jamais fusionner** : c'est le propriétaire qui fusionne. Quand une PR dépend d'une autre, indiquer l'ordre de fusion.
 - **Avant d'ajouter un commit à une PR existante, vérifier qu'elle est encore ouverte** (`gh api repos/Stan77i/marchedegrosci/pulls/<n> --jq .state,.merged`). Fusionnée ou fermée : nouvelle branche depuis `origin/main` et nouvelle PR. Le propriétaire fusionne vite : dans le doute, toujours une nouvelle PR.
 - **Toujours travailler en équipe d'agents** (règle du propriétaire, 24/10/2026, mode permanent) : pour aller très vite, chaque tâche passe par des sous-agents lancés directement en parallèle (outil Agent, en arrière-plan), plutôt que par l'outil workflow (qui ne fait tourner que 2 agents à la fois sur cette machine ; l'outil Agent n'a pas cette limite) ; équipes sur des fichiers séparés, chacune relue. Le travail simple et répétitif (recherches, vérifications mécaniques, remplacements en série, captures, mises à jour de documents) va au modèle **Sonnet** ; le travail difficile ou délicat (textes sans rien inventer, sécurité, serveur, accessibilité, design, relecture finale) va au modèle **Opus**. Seuls les gestes très courts (une commande, une petite correction) restent faits directement.
@@ -100,6 +103,28 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - **Audit de sécurité** : fait (octobre 2026), toutes les failles trouvées sont corrigées (détail dans `docs/PASSATION.md`). **À refaire** avant l'ouverture au public, avant de brancher le paiement, et après chaque grosse fonction nouvelle.
 - **Lecture des messages par l'équipe** (décision du propriétaire, 25/10/2026) : « L'équipe [peut] lire tout, l'app n'est pas un WhatsApp, c'est une mise en relation d'un vendeur et d'un acheteur. » L'équipe peut lire tous les messages (privés et négociations), sans condition, pour la sécurité, les litiges, la lutte contre la fraude et le bon fonctionnement de la mise en relation. Les textes le disent clairement (`docs/juridique/confidentialite.md` 2.5, `conditions-utilisation.md` partie 1) et conseillent de n'écrire que ce qui concerne l'achat ou la vente. Ne jamais présenter les messages comme une messagerie privée ou secrète. Formulation à faire valider par un juriste.
 - Points restés ouverts : comptes créés sans preuve du numéro (attend le SMS/WhatsApp, donc un budget) ; anti-robot Turnstile pas installé (voir « Décisions en attente »).
+
+## Règles juridiques et de compte (25/10/2026)
+
+Le propriétaire a répondu « ok pour tout » le 25/10/2026 : les 32 questions de `docs/juridique/regles-manquantes.md` et les points A à D sont tranchés. Détail et ce qui reste à construire dans le code : `docs/juridique/DECISIONS-A-PRENDRE.md` (partie « À construire »). Les textes juridiques restent des projets : tout point de droit est **à faire valider par un juriste** avant publication.
+- Commission, le jour du paiement intégré : prélevée par le partenaire de paiement sur l'argent versé au vendeur, à la clôture ; rien avant.
+- Casse en route : le vendeur en répond jusqu'à la réception quand il livre (inclus, à part, son livreur) ; l'acheteur dès le chargement quand le transport est à sa charge ; les photos de départ tranchent. (Juriste.)
+- Transport quand la marchandise est refusée : l'acheteur le paie si l'équipe rejette le refus, le vendeur si le refus est accepté. Ne plus écrire « le transport reste dû ».
+- Force majeure : preuve par une photo ou une information publique (radio, presse, autorités) ; l'équipe juge.
+- Achat groupé : le transport suit la règle écrite dans l'offre, comme une commande normale.
+- Service de transport Marché de Gros : le Marché de Gros reste seulement intermédiaire ; le transporteur répond de la marchandise pendant le transport. (Juriste.)
+- Numéro contesté : pièce d'identité montrée à l'équipe, puis appel de l'équipe sur ce numéro ; tout est noté dans le journal. Les numéros des comptes supprimés avant le 25/10/2026 sont libérés un par un, sur demande, par cette procédure.
+- Compte banni : il voit seulement « Compte banni » et comment contester ; 7 jours pour contester, réponse de l'équipe en 7 jours.
+- Journal de l'équipe : chaque geste de l'équipe sur un compte est noté (qui, quand, pourquoi).
+- Durées de conservation : commandes et négociations 5 ans ; signalements et sanctions 2 ans ; photos de preuve 1 an après la clôture ; journal des notifications 90 jours. (Juriste.) L'effacement automatique supprime des données : le construire seulement avec un accord explicite du propriétaire à ce moment-là.
+- Itinéraires : le trajet de la carte passe par notre serveur (fonction `itineraire`), plus par le service public OSRM.
+- Demandes sur les données personnelles : réponse en 30 jours au plus. (Juriste.)
+- ARTCI : le propriétaire fait la démarche avec le juriste, avant l'ouverture au public.
+- Case « J'accepte les conditions et la politique de confidentialité » à l'inscription : après la relecture du juriste ; les membres déjà inscrits acceptent à leur prochaine ouverture.
+- Juriste : d'abord une aide gratuite (clinique juridique d'une faculté de droit, chambre de commerce) ; un juriste payé quand il y aura un budget.
+- Annonces déjà en ligne : 7 jours de grâce gardés avant l'expiration à 30 jours.
+- Rôle acheteur / vendeur : simple affichage ; tout membre peut acheter et vendre.
+- Badges et masquage : valeurs de départ gardées (3 commandes comptées par partenaire, 3 partenaires différents, 60 minutes ; annonce cachée par 3 membres vérifiés inscrits depuis 30 jours), réglables par l'administrateur.
 
 ## Commandes, transport, fiabilité, badges, boutiques (décisions du 24/10/2026)
 
@@ -195,7 +220,6 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 
 - **Vérification anti-robot (Cloudflare Turnstile)** : le propriétaire la veut **sur le site web seulement**, pas dans l'application. Attention : dans Supabase, la protection CAPTCHA vaut pour tout le projet, donc l'application serait bloquée. Le conseil donné est de l'activer partout en mode invisible. Rien n'est fait : lui reposer la question au moment de le faire. Il faudra un compte Cloudflare gratuit.
 - **Serveur bloqué dans l'environnement Claude** : le propriétaire doit autoriser `catmsypctymgkjkfzdkt.supabase.co` (mode d'emploi : `docs/A-FAIRE-PROPRIETAIRE.md`). Remis à plus tard le 24/10/2026.
-- **Décisions attendues du propriétaire** : `docs/juridique/DECISIONS-A-PRENDRE.md` (25/10/2026) : 17 des 32 questions juridiques tranchées, 15 restent avec un conseil chacune, plus 4 points de l'audit (7 jours de grâce, rôle acheteur/vendeur, valeurs des badges et du masquage, numéros des comptes supprimés avant 94b). Le propriétaire répond « ok pour tout » ou change un numéro. Liste cochable : `docs/A-FAIRE-PROPRIETAIRE.md`.
 - **Vérification du numéro par SMS/WhatsApp** : quand il y aura un budget.
 - Limite de connexion Supabase Auth : 20 par 5 minutes et par IP (réglée par le propriétaire).
 - En attente : réglage « Voix » (fichiers audio fr_P1.zip) ; rappel du mot secret en notification (fonction `pousser`).

@@ -429,7 +429,7 @@
       verifie: ['ok', badge(40), 'Identité vérifiée', `Vérifiée le ${dateFr(s.decide_le)}. Le badge apparaît sur votre profil et à côté de votre nom sur vos annonces.${s.expire_le ? (s.sans_fin ? ` Votre permis n’a pas de date de fin : le badge reste valable jusqu’au ${dateFr(s.expire_le)}, puis une nouvelle vérification sera demandée.` : ` Il reste valable jusqu’à l’expiration de votre pièce, le ${dateFr(s.expire_le)}.`) : ''}`],
       refuse: ['ko', IC('fermer', 34), 'Vérification refusée', 'Motif donné par l’équipe :'],
       expire: ['ko', IC('horloge', 34), 'Votre pièce a expiré', `Votre pièce n’est plus valide depuis le ${dateFr(s.expire_le)}. Le badge « Identité vérifiée » est retiré. Refaites la vérification avec une pièce en cours de validité.`],
-      banni: ['ko', IC('fermer', 34), 'Ce compte est banni', 'L’équipe du Marché de Gros a banni ce compte à vie, à la suite d’abus (arnaque, mauvais produits répétés ou insultes). Ses annonces ne sont plus visibles et il ne peut plus publier, négocier ni écrire. Si vous pensez qu’il s’agit d’une erreur, contactez l’équipe du Marché de Gros.']
+      banni: ['ko', IC('fermer', 34), 'Ce compte est banni', 'L’équipe du Marché de Gros a banni ce compte à vie, à la suite d’abus (arnaque, mauvais produits répétés ou insultes). Ses annonces ne sont plus visibles et il ne peut plus publier, négocier ni écrire. Vous pouvez contester dans les 7 jours qui suivent le bannissement.']
     }[s.statut] || ['', '', 'Statut inconnu', ''];
     main.innerHTML = `<div class="idv-etat"><div class="rond ${V[0]}">${V[1]}</div><h2>${V[2]}</h2><p>${V[3]}</p>${s.motif && s.statut !== 'banni' ? `<div class="idv-motif">${esc(s.motif)}</div>` : ''}
       ${s.statut === 'refuse' && s.nouvel_essai_le ? `<p>Vous pourrez refaire une demande à partir du ${dateFr(s.nouvel_essai_le)}.</p>` : ''}</div>
@@ -575,6 +575,82 @@
 
   // vider le cache de statut quand on change de compte
   addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte') { const u = me(), c = J(KS, null); if (!u || (c && c.uid !== u.id)) { try { localStorage.removeItem(KS); } catch (_) {} dire(); } } });
+
+  /* ——— n° 18 (25/10/2026) : un compte banni voit seulement « Compte banni » et peut contester (7 jours ; l'équipe répond en 7 jours).
+     Serveur : supabase/schema-101z-bannissement-contester.sql. Le reste de l'application lui est fermé : le serveur refuse déjà
+     publier, négocier, écrire et agir sur une commande (COMPTE_BANNI) ; seule la lecture de ses commandes reste ouverte. ——— */
+  const MOTIF_BAN = { arnaque: 'Arnaque', mauvais_produits: 'Mauvais produits à répétition', insultes: 'Insultes dans les discussions', autre: 'Autre raison' };
+  const CSS_BN = `.bn{position:fixed;inset:0;z-index:2147482000;overflow-y:auto;background:#F4EEE3;color:#171512;font:400 16px/1.5 Jost,system-ui,sans-serif;--mute:#5E5546;--line:rgba(23,21,18,.16);--card:#FFFDF8;--focus:#10392B}
+.bn-in{box-sizing:border-box;min-height:100%;max-width:480px;margin:0 auto;padding:calc(48px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+.bn-rond{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:rgba(192,68,43,.12);color:#A8361F}
+.bn h1{margin:6px 0 0;font:600 30px/1.1 Jost,sans-serif;letter-spacing:-.015em}
+.bn p{margin:0;color:var(--mute)}.bn p b{color:#171512;font-weight:600}
+.bn-rep{padding:12px 14px;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);color:#171512}
+.bn label{font-weight:600;margin-top:6px}
+.bn textarea{box-sizing:border-box;width:100%;min-height:132px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fff;color:#171512;font:400 16px/1.45 Jost,sans-serif;resize:vertical}
+.bn-err{color:#A8361F;font-size:14.5px;min-height:1px}
+.bn-act{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-top:14px}
+.bn-go{min-height:54px;border:0;border-radius:27px;background:#10392B;color:#F3EFE4;font:600 16px Jost,sans-serif;cursor:pointer}.bn-go[disabled]{opacity:.55;cursor:default}
+.bn-lien{min-height:44px;border:0;background:none;color:#171512;font:500 15px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.bn button:focus-visible,.bn textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+html[data-theme=sombre] .bn{background:#171512;color:#F3EFE4;--mute:#B9AD98;--line:rgba(243,239,228,.18);--card:#25211B;--focus:#F2C230}
+html[data-theme=sombre] .bn p b,html[data-theme=sombre] .bn-rep,html[data-theme=sombre] .bn-lien{color:#F3EFE4}
+html[data-theme=sombre] .bn-rond{background:rgba(227,138,115,.16);color:#E38A73}
+html[data-theme=sombre] .bn textarea{background:#25211B;color:#F3EFE4}
+html[data-theme=sombre] .bn-err{color:#E38A73}`;
+  let bn = null, bnRendre = null, bnCss = false;
+  function bnRetirer() { if (!bn) return; bn.remove(); bn = null; if (bnRendre) { bnRendre(); bnRendre = null; } }
+  // e : réponse de bannissement_etat() ; undefined = fonction pas encore installée sur ce serveur
+  function bnPeindre(e, ecrire) {
+    if (!bnCss) { const st = document.createElement('style'); st.textContent = CSS_BN; document.head.appendChild(st); bnCss = true; }
+    if (!bn) { bn = document.createElement('div'); bn.className = 'bn'; bn.setAttribute('role', 'alertdialog'); bn.setAttribute('aria-modal', 'true'); bn.setAttribute('aria-labelledby', 'bnT'); document.body.appendChild(bn); bnRendre = N() && N().piege ? N().piege(bn) : null; }
+    const c = e && e !== 'hors' && e.contestation, avant = e && e.contester_avant, peut = e && !c && avant && Date.parse(avant) > Date.now();
+    const motif = e && e !== 'hors' && e.motif ? MOTIF_BAN[e.motif] || '' : '';
+    let corps;
+    if (e === 'hors') { e = null; corps = '<p>Pas de connexion : réessayez quand le réseau revient.</p>'; }
+    else if (e === undefined) corps = '<p>La contestation n’est pas encore disponible. Réessayez plus tard.</p>';
+    else if (c && c.statut === 'ouverte') corps = `<p>Contestation envoyée le ${dateFr(c.cree_le)}. L’équipe répond avant le <b>${dateFr(c.repondre_avant)}</b>.</p>`;
+    else if (c) corps = `<p>Bannissement maintenu le ${dateFr(c.decide_le)}.</p>${c.reponse ? `<div class="bn-rep">${esc(c.reponse)}</div>` : ''}`;
+    else if (peut && ecrire) corps = `<label for="bnTx">Pourquoi contestez-vous ?</label><textarea id="bnTx" maxlength="500" placeholder="Expliquez ce qui s’est passé."></textarea><p class="bn-err" role="alert"></p>`;
+    else if (peut) corps = `<p>Vous pouvez contester jusqu’au <b>${dateFr(avant)}</b>. L’équipe répond sous 7 jours.</p>`;
+    else corps = '<p>Le délai pour contester (7 jours) est passé.</p>';
+    const cmd = window.MDGCommandes && MDGCommandes.ouvrir;
+    bn.innerHTML = `<div class="bn-in"><div class="bn-rond" aria-hidden="true">${IC('fermer', 32)}</div><h1 id="bnT">Compte banni</h1>
+      ${motif ? `<p>Motif : <b>${esc(motif)}</b></p>` : ''}${corps}
+      <div class="bn-act">${peut ? `<button type="button" class="bn-go" data-bn-ok>${ecrire ? 'Envoyer la contestation' : 'Contester'}</button>` : ''}
+      ${ecrire ? '<button type="button" class="bn-lien" data-bn-ret>Retour</button>' : `${cmd ? '<button type="button" class="bn-lien" data-bn-cmd>Mes commandes</button>' : ''}<button type="button" class="bn-lien" data-bn-out>Se déconnecter</button>`}</div></div>`;
+    const q = x => bn.querySelector(x);
+    if (q('[data-bn-out]')) q('[data-bn-out]').onclick = () => { bnRetirer(); if (N()) N().signOut(); };
+    if (q('[data-bn-cmd]')) q('[data-bn-cmd]').onclick = () => MDGCommandes.ouvrir();
+    if (q('[data-bn-ret]')) q('[data-bn-ret]').onclick = () => bnPeindre(e, false);
+    const ok = q('[data-bn-ok]');
+    if (ok && !ecrire) ok.onclick = () => { bnPeindre(e, true); const t = bn.querySelector('#bnTx'); if (t) t.focus(); };
+    if (ok && ecrire) ok.onclick = async () => {
+      const t = bn.querySelector('#bnTx'), err = bn.querySelector('.bn-err'), v = t.value.trim();
+      if (v.length < 10) { err.textContent = 'Expliquez en quelques mots (10 caractères au moins).'; t.focus(); return; }
+      const r = N().texteRefus ? N().texteRefus(v) : ''; if (r) { err.textContent = r; return; }
+      ok.disabled = true; err.textContent = '';
+      try { await N().rpc('bannissement_contester', { p_texte: v }); bnPeindre(await N().rpc('bannissement_etat'), false); }
+      catch (x) { ok.disabled = false; err.textContent = window.MDGErreur ? MDGErreur(x) : 'Impossible pour l’instant. Réessayez.'; }
+    };
+  }
+  let bnEnCours = false;
+  async function gardeBanni() {
+    if (bnEnCours) return; const u = me(); if (!u) { bnRetirer(); return; }
+    const s = statutCache(); if (!s) return;
+    if (!s.banni || s.exempt) { bnRetirer(); return; }
+    if (bn && bn.querySelector('#bnTx')) return;   // il écrit sa contestation : on ne repeint pas
+    bnEnCours = true;
+    let e, hors = false;
+    try { e = await N().rpc('bannissement_etat'); } catch (x) { if (/schema cache|Could not find the function|PGRST202/i.test(String(x && x.message))) e = undefined; else hors = true; }
+    bnEnCours = false;
+    if (!hors && e === null) { statut(true).catch(() => {}); bnRetirer(); return; }   // plus banni : le statut gardé était ancien
+    if (hors && bn) return;   // hors connexion : l'écran déjà là reste
+    bnPeindre(hors ? 'hors' : e, false);
+  }
+  addEventListener('mdg:identite', gardeBanni);
+  addEventListener('mdg:nuage', ev => { if (ev.detail && ev.detail.kind === 'compte') { if (!me()) bnRetirer(); else statut(true).then(gardeBanni, () => {}); } });
+  setTimeout(() => { if (me()) statut().then(gardeBanni, () => {}); }, 0);
 
   window.MDGIdentite = { ouvrir, inviter, gratuitesRestantes, signaler, gardePaiement, statut, statutCache, RESUME, estVerifie, connu, badge, lireMRZ, analyserMRZ, retirer };
 })();

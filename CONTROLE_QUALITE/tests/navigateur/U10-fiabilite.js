@@ -194,7 +194,7 @@ async function ouvrirEcran(p, e, base = URLB) {
       const p = await ctx.newPage(); const err = []; p.on('pageerror', x => err.push(x.message));
       await ouvrirEcran(p, ECRANS[0]);
       await ctx.setOffline(true); await p.evaluate(() => dispatchEvent(new Event('offline'))); await p.waitForTimeout(1500);
-      const bandeau = await p.evaluate(() => (document.documentElement.innerText.match(/[^\n]*(hors connexion|sans réseau|pas de réseau|pas d.internet|connexion (perdue|coupée)|hors ligne)[^\n]*/i) || [null])[0]);
+      const bandeau = await p.evaluate(() => (document.documentElement.innerText.match(/[^\n]*(hors connexion|pas de connexion|sans réseau|pas de réseau|pas d.internet|connexion (perdue|coupée)|hors ligne)[^\n]*/i) || [null])[0]);
       await p.screenshot({ path: path.join(CAP, 'coupure-accueil.png') });
       T({ type: 'panne', scenario: 'Coupure du réseau sur l’accueil', attendu: 'un message clair « hors connexion » (ou équivalent), l’app reste utilisable', obtenu: bandeau ? 'message : « ' + bandeau.trim().slice(0, 120) + ' »' : 'aucun message visible de coupure ; ' + (err.length ? 'exceptions : ' + err.slice(0, 2).join(' | ') : 'pas d’exception'), statut: bandeau ? 'réussi' : 'échoué', preuve: 'captures/coupure-accueil.png' });
       // négociation : écrire hors connexion

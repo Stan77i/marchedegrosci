@@ -129,8 +129,8 @@ Ce sont vos décisions. Chaque ligne est une règle en service ou à respecter.
 
 **Juridique et comptes (« ok pour tout », 25/10/2026)**
 - Le Marché de Gros met en relation : il n'est ni vendeur, ni acheteur.
-- Casse en route : le vendeur en répond jusqu'à la réception quand il livre ; l'acheteur dès le chargement quand le transport est à sa charge. Les photos de départ servent à trancher.
-- Transport d'une marchandise refusée : payé par l'acheteur si le refus est rejeté, par le vendeur s'il est accepté.
+- Casse en route (règle du 25/10/2026, remplace la n° 10) : le vendeur en répond jusqu'à la réception conforme, quel que soit le transport. Marchandise gâtée ou cassée : l'acheteur ne paie ni la marchandise ni le transport. « Transport à la charge de l'acheteur » veut seulement dire que le transport n'est pas dans le prix.
+- Transport d'une marchandise refusée : payé par le vendeur si le refus est accepté ; par l'acheteur (avec la marchandise) si le refus est rejeté parce que la marchandise était conforme.
 - Force majeure : une photo ou une information publique (radio, presse, autorités) ; l'équipe juge.
 - Achat groupé : le transport suit la règle écrite dans l'offre.
 - Numéro contesté : pièce d'identité vue et appel de l'équipe sur ce numéro, tout est noté.
@@ -183,7 +183,7 @@ Dans l'ordre conseillé.
 | # | Quoi | Qui |
 |---|---|---|
 | 1 | Fusionner #311, puis #312 (ce tableau de bord) | Vous |
-| 2 | Construire ce que demandent vos décisions juridiques, une PR par point avec captures : aide (casse en route), textes du transport en cas de refus, écran du compte banni, journal de tous les gestes de l'équipe, trajets de la carte par notre serveur, profil public sans compte limité aux totaux… L'effacement automatique après les durées seulement avec votre accord | Claude |
+| 2 | Décisions juridiques : les écrans sont faits (aide « cassé en route », transport en cas de refus, « Panne ou météo » avec la source, écran « Compte banni » avec « Contester », carte sans service extérieur inconnu, profil sans compte, numéro contesté, conservation des données) : PR « écrans juridiques » à fusionner après #314, en même temps que la PR du serveur juridique. Restent : mettre en service le nouveau calcul de trajet de la carte et la contestation du bannissement sur le vrai serveur (avec votre accord), la photo pour « Panne ou météo » | Vous (fusionner), puis Claude |
 | 3 | Corrections du contrôle qualité (en cours, accord donné) | Claude |
 | 3 bis | Participation négociée à trois et prix à l'unité obligatoire : serveur prêt sur le test (102c, 102d) ; fusionner la PR #322, puis l'écran (avec captures) et la mise en production | Vous, puis Claude |
 | 4 | Rejouer les tests des dernières corrections (suppression de compte, membre suspendu) et lire les commissions du vrai serveur (avec votre accord, en lecture seule) | Claude |

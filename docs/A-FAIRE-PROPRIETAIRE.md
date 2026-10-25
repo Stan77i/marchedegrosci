@@ -40,9 +40,10 @@ revoke truncate on public.alertes, public.alertes_produits, public.zones from au
 
 ## 4. Corrections de l'audit : la production et les décisions (24/10/2026)
 
-Les corrections de l'audit (schémas 92 à 96, plus 97a) sont **en production depuis le 25/10/2026**, avec la fonction `pousser` v24. Les schémas 97b et 97c restent sur le projet de test.
+Les corrections de l'audit (schémas 92 à 96, plus 97a) sont **en production depuis le 25/10/2026**, avec la fonction `pousser` v24. Les schémas 97b, 97c, 97d, 98a et 98b (litige en 1 h, quantité minimale, suppression du compte, suspension) sont aussi **en production depuis le 25/10/2026**, avec `pousser` v25.
 
 - [x] Donner le « OK production » pour les schémas 92 à 96 (fait le 25/10/2026 ; Claude les a appliqués avec 97a, puis a déployé `pousser` v24).
+- [x] Donner le « OK production » pour les schémas 97b à 98b (fait le 25/10/2026 : « C'EST FAIT, MET EN PRODUCTION » ; Claude les a appliqués, puis a déployé `pousser` v25).
 - [ ] Répondre aux décisions en attente :
   - [ ] annonces déjà en ligne : 7 jours de grâce avant leur expiration (30 jours de vie, rappel 3 jours avant) ;
   - [ ] rôle acheteur / vendeur : simple affichage (un membre peut acheter et vendre) ou bloquer selon le rôle ;

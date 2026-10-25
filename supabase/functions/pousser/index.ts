@@ -31,7 +31,10 @@
 // 18. par la base (pg_cron « mdg-notif », public.notif_tick, schéma 88) avec { lots: true } : les messages en file d'attente
 //     (nouvelles offres et demandes, groupe bientôt complet, veille de la date limite, produit à racheter), regroupés par
 //     personne et par sujet : « 3 nouvelles offres : Tomate ».
-// v24 (24/10/2026, schéma 96b, NON DÉPLOYÉE) : « N professionnels cherchent » ne compte que les besoins encore actuels
+// v25 (déployée en production le 25/10/2026, schéma 97b) : litige en 1 h après « livré » : « Confirmez la réception ou
+//     signalez un problème dans l'heure. », « Litige ouvert : réception non confirmée », « Commande close pour le vendeur » /
+//     « en votre faveur ». Aucun paiement n'est branché : jamais d'argent versé dans les textes.
+// v24 (24/10/2026, schéma 96b, déployée en production le 25/10/2026) : « N professionnels cherchent » ne compte que les besoins encore actuels
 //     (public.notif_besoins_ouverts). L'objet (offre, demande, négociation…) est revérifié par la base dans notif_preparer et
 //     notif_lots_prendre ; un lot raté repart (notif_resultat). Texte du rappel « offre_fin » (schéma 93c, équipe B).
 // v22 (24/10/2026, schéma 91) : textes commerciaux relus : accord et pluriel des unités (« 40 caisses », « 5 000 F la caisse »),

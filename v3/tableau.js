@@ -220,7 +220,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
         ${s.err ? this.erreur() : !d ? '<div class="tb-l"><div class="tb-charge"></div><div class="tb-charge"></div></div>'
           : !L.length ? `<div class="tb-vide"><b>${ach ? 'Aucune offre' : 'Aucune demande'}${s.region ? ' dans cette zone' : ''} pour l’instant</b>${ach ? 'Publiez une demande avec « Je cherche » : les vendeurs seront prévenus.' : 'Publiez votre offre avec « J’ai » : les acheteurs seront prévenus.'}</div>`
           : `<ul class="tb-l">${L.map(ligne).join('')}</ul>${coupe ? `<p class="tb-n tb-coupe">Les ${L.length} meilleures sur ${nf(parU(s.unite || ''))}. Choisissez une zone pour affiner.</p>` : ''}`}
-        <p class="tb-n">Comment c’est classé : le prix d’abord (dans la même unité), puis le transport, la fiabilité, l’identité vérifiée et les commandes honorées. Mis à jour toutes les 30 secondes. Aucun numéro affiché : vous négociez dans l’application, le Marché de Gros met en relation.</p>`);
+        <p class="tb-n">Classé par prix (même unité), puis transport, fiabilité, identité vérifiée et commandes honorées. Mis à jour toutes les 30 secondes. Aucun numéro affiché : vous négociez ici.</p>`);
       this.lier();
     }
     // relecture toutes les 30 s : seul ce qui a changé est retouché (app/stable.js), les photos ne clignotent plus pendant qu'on fait défiler

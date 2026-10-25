@@ -11,7 +11,7 @@
   <h2>En une page</h2>
   <p><b>Ce que c'est.</b> Une application mobile, en français, qui met en relation les vendeurs (producteurs, coopératives, grossistes, intermédiaires) et les acheteurs (grossistes, restaurants, cantines, revendeurs) de produits vivriers en gros, partout en Côte d'Ivoire.</p>
   <p><b>Pourquoi.</b> Aujourd'hui, l'acheteur et le vendeur se trouvent surtout par le bouche-à-oreille et par une chaîne d'intermédiaires. Les prix sont mal connus d'une région à l'autre et le transport se fait sans suivi. Le document « Le problème et notre solution » donne les chiffres.</p>
-  <p><b>Comment il gagne de l'argent.</b> Une commission seulement quand un achat est conclu : {{commission_vente}} du prix de la marchandise, et {{commission_transport}} du transport quand il est fait par un transporteur du réseau Marché de Gros. L'inscription, les annonces et la négociation sont gratuites.</p>
+  <p><b>Comment il gagne de l'argent.</b> Une commission prévue, seulement quand un achat est conclu, et prélevée une fois le paiement intégré : {{commission_vente}} du prix de la marchandise, et {{commission_transport}} du transport quand il est fait par un transporteur du réseau Marché de Gros. L'inscription, les annonces et la négociation sont gratuites.</p>
   <div class="chiffres">
     <div><b>{{produits}}</b><span>produits au catalogue, en {{familles}} familles</span></div>
     <div><b>{{regions}}</b><span>régions et districts couverts</span></div>
@@ -60,11 +60,11 @@
   <h2>Le modèle économique</h2>
   <table>
     <tr><th>Commission</th><th>Taux</th><th>Sur quoi</th><th>Quand</th></tr>
-    <tr><td>Vente</td><td><b>{{commission_vente}}</b></td><td>Le prix de la marchandise, retenu sur la part du vendeur</td><td>Quand la vente est définitive</td></tr>
+    <tr><td>Vente</td><td><b>{{commission_vente}}</b></td><td>Le prix de la marchandise (commission prévue, à la charge du vendeur)</td><td>Quand la vente est définitive</td></tr>
     <tr><td>Transport</td><td><b>{{commission_transport}}</b></td><td>Le prix du transporteur du réseau Marché de Gros</td><td>À la fin du transport</td></tr>
   </table>
   <p>Pas d'abonnement, pas de publicité, pas de frais d'inscription. Rien n'est dû sans achat conclu, ni en cas d'annulation avant chargement ou de refus prouvé.</p>
-  <div class="note">Aucun paiement n'est encore branché. Les commissions sont calculées et inscrites dans un registre que personne ne peut modifier, mais rien n'est encaissé. Le paiement bloqué jusqu'à la réception (séquestre) est construit côté serveur. Il attend un partenaire de paiement agréé (Wave, Orange Money, MTN MoMo, Moov Money ou un agrégateur) et la validation du cadre légal BCEAO.</div>
+  <div class="note">Aucun paiement n'est encore branché. Les commissions sont calculées à chaque commande, mais rien n'est encaissé ni prélevé : elles ne le seront qu'une fois le paiement intégré. Le paiement bloqué jusqu'à la réception (séquestre) est construit côté serveur. Il attend un partenaire de paiement agréé (Wave, Orange Money, MTN MoMo, Moov Money ou un agrégateur) et la validation du cadre légal BCEAO.</div>
   <p class="petit">Le détail chiffré (exemples, grille de calcul, questions pour les professionnels) est dans <i>docs/Marche-de-Gros-application-et-modele-economique.pdf</i>.</p>
 </section>
 

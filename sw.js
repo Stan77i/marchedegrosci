@@ -10,7 +10,7 @@
    Le code (pages, JS, CSS, manifeste) sans « ?v= » part du RÉSEAU D'ABORD : une mise à jour publiée arrive aussi dans l'application
    installée sur l'écran d'accueil. Le cache ne sert qu'hors connexion (ou si le réseau traîne).
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v291';
+const CACHE = 'mgci-v294';
 const FICHIERS = 'fichiers-mgci', INVENTAIRE = 'mgci-inventaire.json';
 // tuiles de la carte en relief déjà vues (relief Terrarium, rues OpenFreeMap) : gardées d'une version à l'autre, 1 500 au plus
 const TUILES = 'tuiles-mgci', TUILES_MAX = 1500, HOTES_TUILES = ['s3.amazonaws.com', 'tiles.openfreemap.org'];

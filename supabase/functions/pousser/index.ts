@@ -31,6 +31,13 @@
 // 18. par la base (pg_cron « mdg-notif », public.notif_tick, schéma 88) avec { lots: true } : les messages en file d'attente
 //     (nouvelles offres et demandes, groupe bientôt complet, veille de la date limite, produit à racheter), regroupés par
 //     personne et par sujet : « 3 nouvelles offres : Tomate ».
+// v29 (25/10/2026, schéma 102d, NON DÉPLOYÉE) : la participation devient une négociation à trois : « Le vendeur contre-propose
+//     N F » (cmd_participation_contre), « L'équipe propose N F » (cmd_participation_equipe, aux deux), « Le vendeur accepte »
+//     (cmd_participation_un_accord : une partie a accepté la proposition de l'équipe), « Accord à N F » (aux deux) ; refus, retrait
+//     et expiration disent qui a proposé. Numéro 29 : la v28 est celle des schémas 103 (autre branche, claude/commandes-15-propositions).
+// v27 (25/10/2026, schéma 102, NON DÉPLOYÉE) : participation de l'acheteur après un problème : « L'acheteur propose N F »
+//     (cmd_participation, au vendeur), « Participation acceptée » / « refusée » (à l'acheteur), « Proposition retirée » (au
+//     vendeur), « Proposition sans réponse » (aux deux, 24 h). Aucun argent ne bouge : le montant est seulement noté.
 // v26 (25/10/2026, schéma 99a, NON DÉPLOYÉE) : rien ne se déclenche avant « arrivé » ; « Retard en route » (cmd_retard),
 //     « L'acheteur demande des nouvelles » (cmd_nouvelles), « L'acheteur demande N h » (cmd_delai), « Confirmez la réception »
 //     quand l'arrivée vient de l'acheteur ; « Annulation retirée par le vendeur » quand il charge ; le texte « close dans l'heure »
@@ -620,6 +627,42 @@ Deno.serve(async (req) => {
             return M(T45(`${lib} : l'acheteur demande ${h} h`, "L'acheteur demande un délai"),
               B80(fin ? `Il vérifie la marchandise avant ${fin}.` : "", "Il vérifie la marchandise un peu plus tard."), "cmd-" + l.objet_id);
           }
+          // schémas 102 et 102d : participation après un problème, négociée à trois (acheteur, vendeur, équipe) ;
+          // aucun argent ne bouge : le montant est seulement noté
+          case "cmd_participation":
+          case "cmd_participation_contre":
+          case "cmd_participation_equipe": {
+            const m = F(Number(d.montant || 0)), fin = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
+            const qg = d.quantite ? qteTxt(d.quantite, String(d.unite || "")) : "";
+            const moi = d.role === "acheteur";
+            const quoi = d.mode === "transport" ? (moi ? "Vous payez le transport seulement." : "L'acheteur paie le transport seulement.")
+              : d.mode === "partie" && qg ? (moi ? `Vous gardez ${qg}.` : `L'acheteur garde ${qg}.`) : "";
+            const qui = d.auteur === "vendeur" ? "le vendeur" : d.auteur === "equipe" ? "l'équipe" : "l'acheteur";
+            const Qui = qui.charAt(0).toUpperCase() + qui.slice(1);
+            const verbe = l.type === "cmd_participation_contre" ? "contre-propose" : "propose";
+            const rep = l.type === "cmd_participation_equipe" ? "Acceptez ou refusez" : "Acceptez, refusez ou contre-proposez";
+            return M(T45(`${lib} : ${qui} ${verbe} ${m}`, `${Qui} ${verbe} ${m}`, "Nouvelle proposition"),
+              B80(fin ? `${quoi} ${rep} avant ${fin}.`.trim() : "", `${quoi} ${rep}.`.trim(), `${rep}.`), "cmd-" + l.objet_id);
+          }
+          case "cmd_participation_un_accord":
+            return M(T45(`${lib} : ${d.role === "vendeur" ? "l'acheteur" : "le vendeur"} accepte`, "Une partie accepte"),
+              B80(`${d.role === "vendeur" ? "L'acheteur" : "Le vendeur"} accepte la proposition de l'équipe. À vous de répondre.`, "À vous de répondre à la proposition de l'équipe."),
+              "cmd-" + l.objet_id);
+          case "cmd_participation_acceptee": {
+            const m = F(Number(d.montant || 0));
+            return M(T45(`${lib} : accord à ${m}`, `Accord à ${m}`, "Participation acceptée"),
+              B80(`Accord trouvé à ${m}. La commande est terminée.`, "Accord trouvé. La commande est terminée."), "cmd-" + l.objet_id);
+          }
+          case "cmd_participation_refusee":
+            return M(T45(`${lib} : proposition refusée`, "Proposition refusée"),
+              "Faites une autre proposition, ou l'équipe du Marché de Gros tranche.", "cmd-" + l.objet_id);
+          case "cmd_participation_retiree":
+            return M(T45(`${lib} : proposition retirée`, "Proposition retirée"),
+              B80(`${d.auteur === "vendeur" ? "Le vendeur" : d.auteur === "equipe" ? "L'équipe" : "L'acheteur"} a retiré sa proposition. Le litige continue.`, "Proposition retirée. Le litige continue."),
+              "cmd-" + l.objet_id);
+          case "cmd_participation_expiree":
+            return M(T45(`${lib} : proposition sans réponse`, "Proposition sans réponse"),
+              "Pas de réponse à temps : l'équipe du Marché de Gros tranche le litige.", "cmd-" + l.objet_id);
           case "cmd_mot_bloque":
             return M(T45(`${lib} : mot secret bloqué`, "Mot secret bloqué"),
               B80("Trop d'essais faux. L'équipe du Marché de Gros va regarder la commande.", "Trop d'essais faux. L'équipe va regarder."), "cmd-" + l.objet_id);

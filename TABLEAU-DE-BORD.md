@@ -126,6 +126,8 @@ Ce sont vos décisions. Chaque ligne est une règle en service ou à respecter.
 - Accord sans commande : 72 h. Chargement : 72 h. L'équipe tranche un litige en 72 h.
 - Réception : 1 h pour réclamer, puis clôture toute seule.
 - Après « livré » : 1 h pour répondre, sinon litige ; 1 h de plus sans réponse, clôture pour le vendeur.
+- Marchandise cassée, gâtée, manquante ou non conforme : l'acheteur ne paie rien (ni marchandise ni transport) ; le risque reste au vendeur jusqu'à la réception. S'il le veut, l'acheteur propose de participer (transport seulement, partie gardée au prix à l'unité, ou un montant) ; le vendeur accepte, refuse ou contre-propose, l'acheteur aussi ; l'équipe peut proposer un arrangement que les deux doivent accepter. Accord des deux : la commande se termine avec ce montant. 24 h pour répondre, sinon l'équipe tranche. Aucun argent ne bouge (serveur prêt sur le test, écran à faire).
+- Prix à l'unité obligatoire pour toute offre, demande, proposition et commande (« Indiquez le prix au sac ») (serveur prêt sur le test, écran à faire).
 - Pas de chargement sans photos du colis et poids ; un acheteur qui dit « cassé » face à des photos propres doit le prouver.
 
 **Transport**
@@ -196,6 +198,7 @@ Dans l'ordre conseillé.
 | 3 ter | Après la fusion de #321 : mettre 101c, 101z et la fonction des trajets sur le vrai serveur | Claude |
 | 2 | Décisions juridiques : les écrans sont faits (aide « cassé en route », transport en cas de refus, « Panne ou météo » avec la source, écran « Compte banni » avec « Contester », carte sans service extérieur inconnu, profil sans compte, numéro contesté, conservation des données) : PR « écrans juridiques » à fusionner après #314, en même temps que la PR du serveur juridique. Restent : mettre en service le nouveau calcul de trajet de la carte et la contestation du bannissement sur le vrai serveur (avec votre accord), la photo pour « Panne ou météo » | Vous (fusionner), puis Claude |
 | 3 | Corrections du contrôle qualité (en cours, accord donné) ; les écrans du suivi de livraison sont faits (retard, nouvelles, délai, fil du suivi) (serveur 99a déjà en production) : PR à fusionner | Claude |
+| 3 bis | Participation négociée à trois et prix à l'unité obligatoire : serveur prêt sur le test (102c, 102d) ; fusionner la PR #322, puis l'écran (avec captures) et la mise en production | Vous, puis Claude |
 | 4 | Rejouer les tests des dernières corrections (suppression de compte, membre suspendu) et lire les commissions du vrai serveur (avec votre accord, en lecture seule) | Claude |
 | 5 | Faire les corrections choisies, une PR par lot, avec captures | Claude |
 | 6 | Petits restes connus : relance envoyée après un accord « sans suite » ; étape « Commande terminée » cochée trop tôt ; carte limitée à 500 annonces | Claude |

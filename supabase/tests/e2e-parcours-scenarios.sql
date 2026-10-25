@@ -177,7 +177,8 @@ end $$;
 -- | d5 acheteur annule : ok annulee | d6 stock=100 annulation=abusive imputable=vendeur chemin=accord sanction=avertissement
 -- | d7 fiab S 0 % sur 1, palier avertissement ; fiab B imputables=0.
 
--- ══ Parcours (e) : « livré » déclaré par le vendeur, acheteur muet 24 h → litige automatique → l'équipe partage ══
+-- ══ Parcours (e) : « livré » déclaré par le vendeur, acheteur muet 1 h → litige automatique → l'équipe partage avant l'heure suivante ══
+-- (schéma 97b, 25/10/2026 : avant, 24 h et rappel à 12 h ; la clôture sans réponse est jouée dans litige-quantites-97-scenarios.sql, bloc L1)
 do $$
 declare S uuid := '1bfd5713-2525-44a6-8403-084ebb9ddad3'; B uuid := '68345d7a-9d64-410a-a4c7-92a750d9888d'; ADM uuid := '981961d4-25ba-4e1b-a732-8fd68cd6c922';
   oid uuid := gen_random_uuid(); n uuid; c uuid; res text := ''; k text;
@@ -200,15 +201,15 @@ begin
   perform public.commande_avancer(c, 'transport', null, null, null, null);
   res := concat(res, 'e1 vendeur « livré »: ', pg_temp.e(format('select public.commande_avancer(%L, %L, null, null, null, null)', c, 'arrivee')), ' ', pg_temp.cs(c));
   execute 'reset role';
-  update public.commandes set livre_le = now() - interval '13 hours' where id = c;
+  update public.commandes set livre_le = now() - interval '31 minutes' where id = c;
   perform public.commandes_delais();
-  res := concat(res, ' | e2 à 13 h: ', (select etat from public.commandes where id = c), ' alertes=', (select string_agg(evenement, ',') from public.commande_alertes where commande_id = c));
-  update public.commandes set livre_le = now() - interval '25 hours' where id = c;
+  res := concat(res, ' | e2 à 31 min: ', (select etat from public.commandes where id = c), ' alertes=', (select string_agg(evenement, ',') from public.commande_alertes where commande_id = c));
+  update public.commandes set livre_le = now() - interval '61 minutes' where id = c;
   perform public.commandes_delais();
-  res := concat(res, ' | e3 à 25 h: ', (select concat_ws(' ', etat, 'par=' || coalesce(litige_par::text, 'systeme'), 'motif=' || left(litige_motif, 50), 'échéance=' || (litige_echeance is not null)) from public.commandes where id = c),
+  res := concat(res, ' | e3 à 61 min: ', (select concat_ws(' ', etat, 'par=' || coalesce(litige_par::text, 'systeme'), 'motif=' || left(litige_motif, 50), 'échéance=' || (litige_echeance is not null)) from public.commandes where id = c),
     ' commission=', (select statut || '/' || statut_registre from public.commissions where commande_id = c));
   perform pg_temp.qui(B);
-  res := concat(res, ' | e4 mot après litige: ', pg_temp.e(format('select public.commande_reception_mot(%L, %L, false, null, null, null)', c, 'x')));
+  res := concat(res, ' | e4 mauvais mot pendant le litige automatique: ', public.commande_reception_mot(c, 'x', false, null, null, null));
   perform pg_temp.qui(S);
   res := concat(res, ' | e5 vendeur tranche: ', pg_temp.e(format('select public.admin_litige_partager(%L, 30, %L)', c, 'moi')));
   perform pg_temp.qui(ADM);
@@ -221,9 +222,10 @@ begin
     ' annulation=', coalesce((select categorie || ' imputable=' || case imputable_id when S then 'vendeur' when B then 'acheteur' else 'personne' end from public.annulations where commande_id = c), 'aucune'));
   raise exception 'TEST: %', res;
 end $$;
--- Résultat (25/10/2026) : e1 arrivee | e2 à 13 h : en_cours, rappel_reception | e3 à 25 h : litige par=systeme, échéance posée, commission suspendue
--- | e4 mot après litige refusé | e5 vendeur : « Réservé à l'administration. » | e6 partage 100/100 refusé | e7 partage 30 : ok
--- | e8 terminee, 600000 refusés, libérée (admin), commission calculee sur 1400000 = 49000, aucune annulation (stock 0 : la marchandise est partie).
+-- Résultat (25/10/2026, rejoué après le schéma 97b) : e1 arrivee | e2 à 31 min : en_cours, rappel_reception | e3 à 61 min : litige par=systeme,
+-- « Réception non confirmée 60 min après la livraison déclarée », échéance posée, commission suspendue
+-- | e4 mauvais mot pendant le litige automatique : mot_incorrect:4 (avant 97b : refusé, « pas en cours ») | e5 vendeur : « Réservé à l'administration. »
+-- | e6 partage 100/100 refusé | e7 partage 30 : ok | e8 terminee, 600000 refusés, libérée (admin), commission calculee sur 1400000 = 49000, aucune annulation.
 
 -- ══ (j) deux acceptations sur le même stock (offre, puis demande) → la 2e refusée ══
 do $$

@@ -205,7 +205,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
             <div class="tb-l1"><span class="tb-prix">${x.prix != null ? F(x.prix) : 'Prix à discuter'}<small>${x.prix != null ? ' / ' + esc(x.unite || 'unité') : ''}</small></span>
               <span>${i === 0 && x.prix != null ? `<span class="tb-ec ok">${ach ? 'Meilleur prix' : 'Meilleur budget'}</span>` : ec ? `<span class="tb-ec">${ach ? '+' : '−'}${ec} % ${ach ? 'plus cher' : 'en dessous'}</span>` : ''}${s.monte[cle] ? '<span class="tb-monte">↑ monte</span>' : ''}</span></div>
             <p class="tb-i"><span class="tb-nom">${esc(x.nom)}</span>${badges}</p>
-            <p class="tb-i">${x.quantite ? `<span class="x">${nf(x.quantite, 2)} ${esc(pluriel(x.quantite, x.unite))} ${ach ? 'disponible' : 'recherché'}${x.quantite > 1 ? 's' : ''}</span>` : ''}${x.qte_min ? `<span class="x">min. ${nf(x.qte_min, 2)}</span>` : ''}${lieu ? `<span class="x">${esc(lieu)}</span>` : ''}<span class="x">${ilya(x.le)}</span></p>
+            <p class="tb-i">${x.quantite ? `<span class="x">${nf(x.quantite, 2)} ${esc(pluriel(x.quantite, x.unite))} ${ach ? 'disponible' : 'recherché'}${x.quantite > 1 ? 's' : ''}</span>` : ''}${x.qte_min ? (m => `<span class="x">minimum ${nf(m, 2)} ${esc(pluriel(m, x.unite))}</span>`)(x.quantite ? Math.min(x.qte_min, x.quantite) : x.qte_min) : ''}${lieu ? `<span class="x">${esc(lieu)}</span>` : ''}<span class="x">${ilya(x.le)}</span></p>
             <p class="tb-i">${x.terminees ? `<span class="x">${nf(x.terminees)} commande${x.terminees > 1 ? 's' : ''} honorée${x.terminees > 1 ? 's' : ''}</span>` : '<span class="x">Nouveau sur le marché</span>'}${x.note != null ? `<span class="x">★ ${nf(x.note, 1)}/5</span>` : ''}</p>
             ${T ? `<span class="tb-t ${T[1]}">${T[0]}</span>` : ''}${x.negociable === false ? '<span class="tb-t">Prix ferme</span>' : '<span class="tb-t">Négociable</span>'}
           </div>
@@ -236,7 +236,7 @@ html[data-theme=sombre] .tb-v img{filter:drop-shadow(0 6px 8px rgba(0,0,0,.45))}
         const ach = s.sens === 'acheter', x = ((s.data || {})[ach ? 'offres' : 'demandes'] || []).find(y => y.id === b.dataset.go); if (!x) return;
         if (!window.MDGNegoce) { if (N() && N().toast) N().toast('Un instant : l’application se prépare.'); return; }
         MDGNegoce.proposer({ cible: ach ? 'offre' : 'demande', id: x.id, transport: x.transport || '', produit: (s.data && s.data.lab) || nomProduit(s.slug),
-          prix: x.prix, unite: x.unite, quantite: x.quantite || null, qmin: ach ? x.qte_min || null : null, ville: x.ville || '', nom: x.nom, negociable: x.negociable !== false });
+          prix: x.prix, unite: x.unite, quantite: x.quantite || null, qmin: x.qte_min || null, ville: x.ville || '', nom: x.nom, negociable: x.negociable !== false });
       });
     }
   }

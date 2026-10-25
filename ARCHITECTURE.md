@@ -244,6 +244,7 @@ Toutes actives en production :
 |---|---|---|
 | `mdg-marketing` | toutes les 5 min | `marketing_tick` : messages du marché (30 par jour au plus, de 7 h à 21 h UTC, soit l'heure d'Abidjan ; réglage dans `marketing_reglage`) |
 | `mdg-liberer-echus` | toutes les 5 min | `sequestre_liberer_echus` : marque « libérée » une commande terminée depuis 1 h (schéma 89) sans réclamation (écriture dans le journal seulement, aucun argent) |
+| `mdg-commandes-delais` | toutes les 15 min en production ; toutes les 5 min avec le schéma 97b (**projet de test seulement**) | `commandes_delais` : rappels et retard de chargement, rappel de réception à mi-délai, litige ouvert tout seul 1 h après « livré » sans réaction de l'acheteur (`litige_auto_le`), puis clôture en faveur du vendeur 1 h plus tard sans réaction (schéma 97b ; rien n'est versé), litiges en retard, accords sans suite |
 | `mdg-groupes-echeances` | toutes les 15 min | `groupes_echeances` : fin des achats groupés |
 | `mdg-rappels-achat` | toutes les 15 min | `rappels_envoyer` : rappels des achats récurrents (rien n'est acheté) |
 | `mdg-effacer-messages` | chaque heure, à la minute 23 | `dm_purger` : efface les messages directs et discussions de plus de 365 jours (`dm_duree`) |
@@ -253,7 +254,7 @@ Toutes actives en production :
 | `mdg-commandes-delais` | toutes les 15 min (schéma 92b, **test seulement**) | `commandes_delais` : rappel de chargement, retard, rappel de réception, litige automatique, litiges en retard, accords sans suite |
 | `mdg-annonces-expirer` | toutes les 15 min (schéma 93c, **test seulement**) | `annonces_expirer` : annonces de plus de 30 jours cachées (par lots de 500, jamais effacées), rappel 3 jours avant |
 | `mdg-prix` | toutes les 5 min (schéma 96a, **test seulement**) | `tableau_prix_calculer` : recalcule `tableau_prix_cache` |
-| `mdg-notif` | toutes les 15 min (schéma 88b, en production) | `notif_tick` : alertes regroupées, groupes bientôt complets, produits à racheter, actions après ouverture. Avec le schéma 91 (**projet de test seulement**, production après l'accord du propriétaire), il appelle aussi `notif_relances` (9 déclencheurs commerciaux, de 7 h à 21 h) |
+| `mdg-notif` | toutes les 15 min en production ; envoi toutes les 5 min avec le schéma 97d (**projet de test seulement**), calculs toujours un passage sur trois | `notif_tick` : alertes regroupées, groupes bientôt complets, produits à racheter, actions après ouverture. Avec le schéma 91 (**projet de test seulement**, production après l'accord du propriétaire), il appelle aussi `notif_relances` (9 déclencheurs commerciaux, de 7 h à 21 h) |
 
 ### 4.8 Fonctions Edge
 

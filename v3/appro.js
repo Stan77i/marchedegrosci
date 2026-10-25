@@ -179,7 +179,7 @@
           <div class="ap-2"><label>Livraison à partir du<input type="date" data-k="debut" min="${dans(0)}" value="${v('debut', dans(2))}"></label>
             <label>Jusqu’au (facultatif)<input type="date" data-k="fin" min="${dans(0)}" value="${v('fin', freq === 'ponctuelle' ? '' : dans(30))}"></label></div>
           <div class="ap-2"><label>Zone de livraison<select data-k="region">${regs().map(r => `<option value="${esc(r.slug)}" ${v('region', 'abidjan') === r.slug ? 'selected' : ''}>${esc(r.name)}</option>`).join('')}</select></label>
-            <label>Commune ou quartier<input data-k="ville" maxlength="80" placeholder="ex. Cocody" value="${v('ville', '')}"></label></div>
+            <label>Ville<input data-k="ville" maxlength="80" placeholder="ex. Bouaké" value="${v('ville', '')}"></label></div>
           <h3 class="ap-sec">Produits (10 au plus)</h3>
           ${lignes.map((l, i) => `<div class="ap-l"><div class="t"><b>Produit ${i + 1}</b>${lignes.length > 1 ? `<button type="button" data-rm="${i}" aria-label="Retirer le produit ${i + 1}">Retirer</button>` : ''}</div>
             <label style="display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E5546">Produit<input list="apProds" data-lp="${i}" value="${esc(l.produit)}" placeholder="ex. Tomate" autocomplete="off"></label>

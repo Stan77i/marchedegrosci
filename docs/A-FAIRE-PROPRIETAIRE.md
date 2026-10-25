@@ -42,6 +42,10 @@ revoke truncate on public.alertes, public.alertes_produits, public.zones from au
 
 Les corrections de l'audit (schémas 92 à 96, plus 97a) sont **en production depuis le 25/10/2026**, avec la fonction `pousser` v24. Les schémas 97b, 97c, 97d, 98a et 98b (litige en 1 h, quantité minimale, suppression du compte, suspension) sont aussi **en production depuis le 25/10/2026**, avec `pousser` v25.
 
+Les schémas 99 à 101 (corrections du contrôle qualité, journal de l'équipe, durées de conservation) sont **en production depuis le 25/10/2026** (« Allons directement dans la production »), sauf 101c et 101z (ils attendent la PR #321 des écrans) et 101e (à coller par vous, partie 4 ter).
+
+- [x] Donner le « OK production » pour les schémas 99 à 101 (fait le 25/10/2026 ; Claude a appliqué 99a à 99d, 100a à 100f, 101a, 101b, 101d, puis redéployé `pousser`).
+
 - [x] Donner le « OK production » pour les schémas 92 à 96 (fait le 25/10/2026 ; Claude les a appliqués avec 97a, puis a déployé `pousser` v24).
   - [x] litige automatique après le « livré » du vendeur : tranché le 25/10/2026 (1 h, puis clôture en faveur du vendeur, schéma 97b) ;
   - [x] valeurs des badges et du masquage d'une annonce (point C) : gardées, tranché le 25/10/2026 (« ok pour tout ») ;
@@ -59,6 +63,24 @@ Les corrections de l'audit (schémas 92 à 96, plus 97a) sont **en production de
 - [ ] Trouver un juriste : d'abord une aide gratuite (clinique juridique d'une faculté de droit, chambre de commerce), décision du 25/10/2026. Il relit les textes de `docs/juridique/` (conditions, confidentialité, mentions légales) et la formalité ARTCI.
 - [ ] Remplir `docs/juridique/mentions-legales.md` (éditeur, adresse, RCCM, contact).
 - [ ] Démarche ARTCI (déclaration des données personnelles) : vous, avec le juriste, **avant l'ouverture au public** (décision du 25/10/2026).
+
+## 4 ter. Coller le fichier « 101e » dans Supabase (5 minutes, gratuit)
+
+**Pourquoi** : c'est la dernière pièce des durées de conservation que vous avez acceptées (« ok pour tout », décision n° 22) : journal des notifications après 90 jours, photos de preuve après 1 an, signalements et sanctions après 2 ans, commandes et négociations après 5 ans. L'outil de Claude refuse tout texte qui contient le mot « supprimer » en anglais : vous seul pouvez le coller. **Coller le fichier n'efface rien sur le moment** : c'est la tâche de nuit (2 h 41) qui s'en sert. Aujourd'hui, en production, rien n'est assez vieux : rien ne partira avant le 22/01/2027.
+
+**Comment** (d'abord le projet de TEST, puis la PRODUCTION) :
+1. Sur GitHub, ouvrez le dépôt `Stan77i/marchedegrosci`, puis le dossier **supabase**, puis le fichier **schema-101e-conservation-effacer-a-coller.sql**.
+2. En haut à droite du texte, touchez le bouton **Copier** (deux petits carrés) : tout le fichier est copié.
+3. Ouvrez https://supabase.com/dashboard et choisissez le projet de **test** : **mgci-test** (`yowdymdnoiubatxlwhfv`).
+4. Dans la colonne de gauche, touchez **SQL Editor**, puis **New query** (nouvelle requête).
+5. Collez le texte dans la grande zone blanche, puis touchez **Run** (en bas à droite).
+6. Si Supabase affiche un avertissement (« opération destructive » ou « potential issue »), touchez **Run this query** pour confirmer : le fichier ne fait que créer une fonction, rien n'est effacé à ce moment.
+7. Le résultat doit dire **Success. No rows returned**.
+8. Écrivez à Claude « 101e collé sur le test » : il relance les essais du fichier `supabase/tests/juridique-101-scenarios.sql` et vous dit si tout va bien.
+9. Ensuite seulement, refaites les étapes 3 à 7 avec le projet de **production** : **mgci** (`catmsypctymgkjkfzdkt`). Puis écrivez « 101e collé en production » : Claude vérifiera (lecture seule).
+
+- [ ] Collé sur le test
+- [ ] Collé en production
 
 ## 4 bis. Lancer l'essai fermé (une heure, gratuit)
 

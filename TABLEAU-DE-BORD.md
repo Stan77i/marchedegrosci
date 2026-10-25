@@ -132,13 +132,8 @@ Ce sont vos décisions. Chaque ligne est une règle en service ou à respecter.
 
 **Juridique et comptes (« ok pour tout », 25/10/2026)**
 - Le Marché de Gros met en relation : il n'est ni vendeur, ni acheteur.
-<<<<<<< HEAD
-- Casse en route : le risque reste au vendeur jusqu'à la réception conforme, même quand le transport est à la charge de l'acheteur (ça veut seulement dire que le transport n'est pas compris dans le prix). Seul le retrait par l'acheteur lui-même fait de la remise au départ l'« arrivée ». Les photos de départ servent à trancher.
-- Marchandise refusée : refus accepté, l'acheteur ne paie ni la marchandise ni le transport ; refus rejeté, il paie tout ; refus en partie accepté, il paie la partie gardée et le vendeur paie le transport.
-=======
-- Casse en route (règle du 25/10/2026, remplace la n° 10) : le vendeur en répond jusqu'à la réception conforme, quel que soit le transport. Marchandise gâtée ou cassée : l'acheteur ne paie ni la marchandise ni le transport. « Transport à la charge de l'acheteur » veut seulement dire que le transport n'est pas dans le prix.
-- Transport d'une marchandise refusée : payé par le vendeur si le refus est accepté ; par l'acheteur (avec la marchandise) si le refus est rejeté parce que la marchandise était conforme.
->>>>>>> origin/main
+- Casse en route : le risque reste au vendeur jusqu'à la réception conforme, même quand le transport est à la charge de l'acheteur (ça veut seulement dire que le transport n'est pas compris dans le prix). Marchandise gâtée ou cassée : l'acheteur ne paie ni la marchandise ni le transport. Seul le retrait par l'acheteur lui-même fait de la remise au départ l'« arrivée ». Les photos de départ servent à trancher.
+- Marchandise refusée : refus accepté, l'acheteur ne paie ni la marchandise ni le transport ; refus rejeté (marchandise conforme), il paie tout ; refus en partie accepté, il paie la partie gardée et le vendeur paie le transport.
 - Force majeure : une photo ou une information publique (radio, presse, autorités) ; l'équipe juge.
 - Achat groupé : le transport suit la règle écrite dans l'offre.
 - Numéro contesté : pièce d'identité vue et appel de l'équipe sur ce numéro, tout est noté.

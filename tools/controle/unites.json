@@ -36,6 +36,8 @@
     "supabase/tests/alertes-ciblage-scenarios.sql":   { "unites": ["U08"], "schemas": ["96f"] },
     "supabase/tests/boutiques-86-scenarios.sql":      { "unites": ["U04", "U07"], "schemas": ["86"] },
     "supabase/tests/commission-95b-scenarios.sql":    { "unites": ["U03"], "schemas": ["95b"] },
+    "supabase/tests/controle-corrections-98-scenarios.sql": { "unites": ["U01", "U07", "U05"], "schemas": ["98a", "98b"] },
+    "supabase/tests/litige-quantites-97-scenarios.sql": { "unites": ["U05", "U06", "U04"], "schemas": ["97b", "97c", "97d"] },
     "supabase/tests/confiance-94-scenarios.sql":      { "unites": ["U07", "U02", "U11"], "schemas": ["94"] },
     "supabase/tests/dm-anti-doublon-scenarios.sql":   { "unites": ["U10", "U05"], "schemas": ["96c", "97a"] },
     "supabase/tests/e2e-parcours-scenarios.sql":      { "unites": ["U01", "U03", "U04", "U05", "U06"], "schemas": ["92", "93", "94", "95", "95b", "96a", "96b", "96c", "96d", "96e", "96f", "97a"] },
@@ -66,7 +68,7 @@
     "CONTROLE_QUALITE/tests/navigateur/U12-parcours.js":  { "unites": ["U12"], "ids": "CMP-21 à CMP-26 (CMP-01 à CMP-11 : jugement sur captures)" }
   },
   "enCours": [
-    { "schemas": ["97b"], "sujet": "litige en 1 h (au lieu de 24 h), quantité minimale et achat partiel", "branche": "claude/litige-1h-quantites", "consigne": "un test qui touche ces délais ou ces quantités est noté « en cours de changement », pas « échoué »" }
+    { "schemas": ["97b", "97c", "97d", "98a", "98b"], "sujet": "litige en 1 h, quantité minimale, garde 93 qui prévient (97b-97d, PR #306) ; suppression de compte et suspension (98a-98b, PR #305) : fusionnés le 25/10/2026, appliqués sur le projet de test, production à confirmer", "branche": "main (PR #305 et #306)", "consigne": "un test écrit avant ces schémas (délais de 24 h, ancienne quantité gardée, suppression de compte acceptée) est rejoué et mis à jour, pas déclaré « échoué » sans relecture" }
   ],
   "front": "^(application\\.dc\\.html|index-v3\\.html|index\\.html|admin\\.html|suivi\\.html|404\\.html|maintenance\\.html|manifest\\.webmanifest|app/|v3/|v2/|css/)"
 }

@@ -4,21 +4,21 @@
 > Statuts : **ouverte** · **correction en cours** (PR ouverte, pas encore fusionnée ni rejouée) · **corrigée non vérifiée** (correctif fusionné, test de non-régression pas encore rejoué) · **vérifiée** (test rejoué et réussi, avec date et preuve) · **risque accepté par le propriétaire** (seulement avec sa phrase écrite, sa date et le lieu où il l'a dite).
 > Gravité : **P0** argent, sécurité ou perte de données, bloquant · **P1** grave · **P2** gênant · **P3** cosmétique.
 > Règles : aucune anomalie masquée ; un test bloqué n'est pas réussi ; aucune donnée personnelle ni secret dans ce fichier.
-> Mis à jour le 25/10/2026 par le premier contrôle général (`rapports/2026-10-25-controle-general.md`) : ANO-012 à ANO-056 ajoutées, doublons fusionnés (une anomalie vue par deux équipes = une seule fiche, avec les deux preuves).
+> Mis à jour le 25/10/2026 par le premier contrôle général (`rapports/2026-10-25-controle-general.md`) : ANO-012 à ANO-057 ajoutées ; statuts revus après la fusion des PR #305 et #306 (25/10/2026, 01 h 29 UTC), doublons fusionnés (une anomalie vue par deux équipes = une seule fiche, avec les deux preuves).
 
 ## 1. Tableau (P0 et P1 en haut)
 
 | N° | Titre | Gravité | Unité | Statut | Test de non-régression |
 |---|---|---|---|---|---|
 | — | **Aucune P0** trouvée le 25/10/2026 | P0 | — | — | — |
-| ANO-012 | Suppression du compte pendant une commande en cours | **P1** | U01, U07, U14 | correction en cours (PR #305), non vérifiée | PRO-02 b, LOG-10 |
+| ANO-012 | Suppression du compte pendant une commande en cours | **P1** | U01, U07, U14 | corrigée non vérifiée (PR #305 fusionnée le 25/10/2026 à 01 h 29 UTC ; projet de test seulement, production à confirmer) | PRO-02 b, LOG-10 ; `controle-corrections-98` |
 | ANO-013 | 51 commissions « due » sans aucun argent passé (registre) | **P1** | U03, U11 | ouverte | ARG-06b |
 | ANO-008 | L'équipe peut lire tous les messages privés | **P1** | U02, U07 | ouverte (décision en attente) | à écrire (U02) |
 | ANO-010 | Comptes créés sans preuve du numéro (une personne = deux comptes) | **P1** | U02, U07, U01 | ouverte (attend un budget) | LOG-14 ; en attente : service d'envoi |
-| ANO-001 | « L'acheteur vient chercher la marchandise » | P2 | U13, U06 | ouverte | STA-03 |
-| ANO-002 | Exemple « Cocody » dans un champ ville | P2 | U01 | ouverte | STA-04 |
-| ANO-003 | Textes d'écran trop longs (52) | P2 | U12 | ouverte | STA-08 |
-| ANO-007 | La règle 93 garde l'ancienne quantité sans le dire | P2 | U04 | ouverte (chantier 97b en cours, PR #306) | SQL-boutiques-86 B |
+| ANO-001 | « L'acheteur vient chercher la marchandise » | P2 | U13, U06 | **vérifiée** (25/10/2026, STA-03 : plus de rouge après la PR #306) | STA-03 |
+| ANO-002 | Exemple « Cocody » dans un champ ville | P2 | U01 | **vérifiée** (25/10/2026, STA-04 réussi après la PR #306) | STA-04 |
+| ANO-003 | Textes d'écran trop longs (51) | P2 | U12 | ouverte | STA-08 |
+| ANO-007 | La règle 93 garde l'ancienne quantité sans le dire | P2 | U04 | corrigée non vérifiée (schéma 97d, PR #306 fusionnée le 25/10/2026 ; projet de test seulement) | SQL-boutiques-86 B ; `litige-quantites-97` L4 |
 | ANO-009 | Itinéraires par le serveur public OSRM | P2 | U10, U06 | ouverte (décision en attente) | à écrire |
 | ANO-011 | Pas d'anti-robot (Turnstile) | P2 | U02 | ouverte (décision en attente) | à écrire |
 | ANO-014 | Le quota de 3 annonces gratuites se contourne | P2 | U02, U04 | ouverte | SEC-05 c |
@@ -35,9 +35,9 @@
 | ANO-025 | Notifications commerciales avec quantité et prix périmés | P2 | U08 | ouverte | NOT-02, NOT-03 |
 | ANO-026 | Vendeur banni : l'acheteur attend 72 h pour annuler | P2 | U14, U05 | ouverte | EXT-06 |
 | ANO-027 | Badges Excellent et Grand impossibles à obtenir (l'aide les promet) | P2 | U01, U07, U13 | ouverte | LOG-11, DOC-10 |
-| ANO-028 | Membre suspendu : accord conclu puis commande refusée | P2 | U01, U05 | correction en cours (PR #305), non vérifiée | LOG-12 |
+| ANO-028 | Membre suspendu : accord conclu puis commande refusée | P2 | U01, U05 | corrigée non vérifiée (PR #305 fusionnée le 25/10/2026 à 01 h 29 UTC ; projet de test seulement, production à confirmer) | LOG-12 ; `controle-corrections-98` |
 | ANO-029 | « Dans ma ville, l'acheteur s'en charge » (formulaire d'offre) | P2 | U13, U06 | ouverte | DOC-01 |
-| ANO-030 | Pitch : commission « retenue sur la part du vendeur » | P2 | U13, U03 | correction en cours (PR #305), non vérifiée | DOC-02 |
+| ANO-030 | Pitch : commission « retenue sur la part du vendeur » | P2 | U13, U03 | corrigée non vérifiée (PR #305 fusionnée le 25/10/2026) | DOC-02 |
 | ANO-031 | 4,4 Mo à la première ouverture ; accueil lisible à 57 s en 3G lente | P2 | U10 | ouverte | FIA-58, FIA-59 |
 | ANO-032 | Aucune indication de coupure du réseau | P2 | U10 | ouverte | FIA-60 |
 | ANO-033 | « Indiquez la quantité » sans montrer le champ | P2 | U12 | ouverte | CMP-01 |
@@ -67,8 +67,9 @@
 | ANO-054 | Aide, CGU, guide et FONCTIONNALITES en retard sur le code | P3 | U13 | ouverte | DOC-03 à DOC-09 |
 | ANO-055 | En panne : « Commandes indisponibles » et « Aucune commande en cours » ensemble | P3 | U10 | ouverte | FIA-63 |
 | ANO-056 | Protection « mots de passe compromis » désactivée | P3 | U02 | ouverte (en attente : option peut-être payante) | SEC-11 (`get_advisors`) |
+| ANO-057 | Le site caché appelle 5 modules avec une ancienne version (`?v=`) | P3 | U10 | ouverte | STA-02 |
 
-Comptes : **0 P0 · 4 P1 · 28 P2 · 24 P3** (56 fiches, dont 45 nouvelles le 25/10/2026).
+Comptes : **0 P0 · 4 P1 · 28 P2 · 25 P3** (57 fiches, dont 46 nouvelles le 25/10/2026). Statuts : 2 vérifiées (ANO-001, 002), 4 corrigées non vérifiées (ANO-007, 012, 028, 030), 51 ouvertes.
 
 ## 2. Gabarit (copier pour chaque nouvelle anomalie)
 
@@ -98,9 +99,9 @@ Batteries citées : `tests/sql/U02-securite.sql` (SEC), `U03-argent.sql` (ARG), 
 | Gravité | P1 |
 | Preuve | Projet de test, bloc annulé : vendeur avec une commande à l'étape « chargement » (PRO-02 b) puis avec 4 commandes ouvertes (LOG-10) ; `supprimer_compte()` → « ok » ; la commande reste `en_cours/chargement`, le compte est bloqué pour toujours (`banned_until = infinity`). `supabase/schema-4.sql` `supprimer_compte` (seule définition : `python3 tools/controle/fn.py supprimer_compte`). EXT-07 : aucune des 5 fonctions de commande ne vérifie un compte supprimé (lecture du code). |
 | Risque métier | L'acheteur attend une marchandise d'un vendeur qui ne peut plus se connecter (pas de chargement, pas de mot secret, pas de litige à deux) ; moyen d'échapper à un litige ou à une suspension, puis de revenir avec un autre numéro. |
-| Correctif | en cours : PR #305 (`claude/corrections-controle-serveur`) « suppression de compte bloquée pendant une commande ». Attendu : refus tant qu'une commande est `a_confirmer`, `en_cours`, `litige`, ou qu'un accord conclu n'a pas de commande. |
+| Correctif | fait : PR #305, schéma 98a (`supprimer_compte` refuse tant qu'il reste une commande à confirmer ou en cours, un litige, un accord sans commande de moins de 72 h ou une suspension) et écran `v3/compte.js` ; testé par l'équipe de correction (`supabase/tests/controle-corrections-98-scenarios.sql`), sur le projet de test seulement |
 | Test de non-régression | PRO-02 b (`tests/sql/U07-profils.sql`) : refus, commande inchangée, compte actif ; « sans commande » : accepté |
-| Statut | **correction en cours, non vérifiée** (PR #305 ouverte le 25/10/2026) |
+| Statut | **corrigée non vérifiée** : PRO-02 b et LOG-10 pas encore rejoués par le contrôle ; schéma 98a en production : à confirmer |
 
 ### ANO-013 · 51 commissions « due » sans aucun argent passé
 | Champ | Valeur |
@@ -146,11 +147,11 @@ Batteries citées : `tests/sql/U02-securite.sql` (SEC), `U03-argent.sql` (ARG), 
 | Date | 25/10/2026 (premier rapport des gardiens ; toujours là au contrôle général du 25/10/2026) |
 | Unité | U13, U06 |
 | Gravité | P2 provisoire (rouge du script, gravité à juger) |
-| Preuve | `bash tools/controle/lancer.sh statique` → STA-03 ; `v3/commandes.js:1140` (libellé du choix « acheteur » quand vendeur et acheteur sont dans la même ville) ; même tournure en orange `v3/commandes.js:897` (`REGLE.retrait`) |
+| Preuve | `bash tools/controle/lancer.sh statique` → STA-03 ; `v3/commandes.js:1140` (avant la PR #306) (libellé du choix « acheteur » quand vendeur et acheteur sont dans la même ville) ; même tournure en orange `v3/commandes.js:897`, aujourd'hui 915 (`REGLE.retrait`) |
 | Risque métier | Si la phrase désigne le choix « transport à la charge de l'acheteur », elle contredit la règle du 24/10/2026. Lecture du code : elle désigne le **retrait** accepté par le vendeur (même ville), un autre choix, que la règle n'interdit pas. |
 | Correctif | à décider : si c'est bien le retrait, ajouter une exception motivée dans `tools/controle/exceptions.json` et retirer la clé de `tools/controle/reference-rouges.json` ; sinon écrire « Transport à la charge de l'acheteur » |
 | Test de non-régression | STA-03 |
-| Statut | ouverte |
+| Statut | **vérifiée** le 25/10/2026 : la PR #306 écrit « Transport à la charge de l'acheteur » ; `bash tools/controle/lancer.sh statique` sur le commit d'intégration : STA-03 sans rouge (reste un orange `v3/commandes.js:915`, `REGLE.retrait`, qui désigne le retrait accepté par le vendeur) ; clé retirée de `tools/controle/reference-rouges.json` |
 
 ### ANO-002 · Exemple « Cocody » dans un champ ville
 | Champ | Valeur |
@@ -160,16 +161,16 @@ Batteries citées : `tests/sql/U02-securite.sql` (SEC), `U03-argent.sql` (ARG), 
 | Gravité | P2 |
 | Preuve | STA-04 ; `v3/appro.js:182` (texte d'exemple d'un champ `data-k="ville"`) |
 | Risque métier | Laisse croire qu'une commune d'Abidjan est une ville, contre la règle « Abidjan est une seule ville » (schéma 87c). |
-| Correctif | proposé : un exemple de vraie ville (ex. « Bouaké ») |
+| Correctif | fait : PR #306 (champ « Commune ou quartier » de l'approvisionnement pro) |
 | Test de non-régression | STA-04 |
-| Statut | ouverte |
+| Statut | **vérifiée** le 25/10/2026 : STA-04 « rien à signaler » sur le commit d'intégration |
 
 ### ANO-003 · Textes d'écran trop longs
 | Champ | Valeur |
 |---|---|
-| Date | 25/10/2026 (53 au premier passage, 52 après la PR #303 « moins de texte ») |
+| Date | 25/10/2026 (53 au premier passage, 52 après la PR #303 « moins de texte », 51 après les PR #305 et #306) |
 | Unité | U12 |
-| Gravité | P2 (les plus longs : `v3/identite.js:493`, `v3/commandes.js:759`, `v3/compte.js:863`) |
+| Gravité | P2 (les plus longs : `v3/identite.js:493`, `v3/commandes.js:777`, `v3/compte.js:863`) |
 | Preuve | STA-08 ; liste complète : `node tools/controle/controle.js` puis `rapport-controle.md` |
 | Risque métier | Règle « pas de long texte d'explication sur les écrans » : le membre ne lit pas, se trompe d'action. |
 | Correctif | à choisir par le propriétaire, écran par écran (captures avant PR) |
@@ -184,9 +185,9 @@ Batteries citées : `tests/sql/U02-securite.sql` (SEC), `U03-argent.sql` (ARG), 
 | Gravité | P2 |
 | Preuve | `_annonce_regles` (schéma 93) garde l'ancienne quantité avant le message `STOCK_EPUISE` de `_stock_garde` (schéma 92) ; `supabase/tests/boutiques-86-scenarios.sql` bloc B mis à jour pour ce comportement |
 | Risque métier | Un vendeur qui vide la quantité croit l'avoir changée alors que l'ancienne reste (rien ne le lui dit). |
-| Correctif | en cours de changement : PR #306 (`claude/litige-1h-quantites`) « garde 93 qui prévient » |
-| Test de non-régression | SQL-boutiques-86 bloc B, SQL-regles-93 |
-| Statut | ouverte (chantier 97b en cours, PR #306) |
+| Correctif | fait : PR #306, schéma 97d (colonnes `quantite_gardee` ; message « La quantité a changé, vérifiez votre annonce. ») ; projet de test seulement |
+| Test de non-régression | SQL-boutiques-86 bloc B, SQL-regles-93, `litige-quantites-97` L4 |
+| Statut | corrigée non vérifiée (pas rejouée par le contrôle ; 97d en production : à confirmer) |
 
 ### ANO-009 · Itinéraires par le serveur public OSRM
 | Champ | Valeur |
@@ -328,7 +329,7 @@ Batteries citées : `tests/sql/U02-securite.sql` (SEC), `U03-argent.sql` (ARG), 
 | Gravité | P2 |
 | Preuve | CMD-12b et CMD-12c : après 30 jours simulés et toutes les tâches, `en_cours/transport` et `en_cours/arrivee` (`livre_le` vide) sans alerte ; CMD-12d : mot bloqué, alerte seulement, pas d'échéance (`commandes_delais`) |
 | Risque métier | Commande, stock et commission « prévue » bloqués sans fin si personne n'agit ; l'équipe n'est pas prévenue. |
-| Correctif | proposé : dans `commandes_delais`, alerte puis litige après X h en `chargement/transport/transbordement` sans livraison et après X min en `arrivee` sans `livre_le` ; échéance pour le mot bloqué |
+| Correctif | proposé : dans `commandes_delais`, alerte puis litige après X h en chargement, transport ou transbordement sans livraison et après X min en `arrivee` sans `livre_le` ; échéance pour le mot bloqué |
 | Test de non-régression | CMD-12b, 12c, 12d : une alerte ou un litige |
 | Statut | ouverte (les délais de litige changent dans la PR #306 : à rejouer après) |
 
@@ -388,9 +389,9 @@ Batteries citées : `tests/sql/U02-securite.sql` (SEC), `U03-argent.sql` (ARG), 
 | Gravité | P2 |
 | Preuve | LOG-12 : pas de garde de suspension dans `nego_agir` (schéma 93b) ; l'autre partie peut conclure, puis `_fiab_garde_commande` (schéma 84b) refuse la commande (« Ce membre est suspendu ») |
 | Risque métier | L'autre partie croit avoir un accord, puis tout est bloqué ; stock immobilisé 72 h ; contraire à l'esprit de la décision 16. |
-| Correctif | en cours : PR #305 « suspendu sans nouvel accord » |
+| Correctif | fait : PR #305, schéma 98b (déclencheurs `messages_fiab_garde_prix` et `negociations_fiab_garde_accord` : ni proposition ni accord avec un membre suspendu) ; projet de test seulement |
 | Test de non-régression | LOG-12 : « suspendu → accord refusé » |
-| Statut | **correction en cours, non vérifiée** (PR #305) |
+| Statut | **corrigée non vérifiée** : LOG-12 pas encore rejoué par le contrôle ; schéma 98b en production : à confirmer |
 
 ### ANO-029 · « Dans ma ville, l'acheteur s'en charge »
 | Champ | Valeur |
@@ -412,9 +413,9 @@ Batteries citées : `tests/sql/U02-securite.sql` (SEC), `U03-argent.sql` (ARG), 
 | Gravité | P2 |
 | Preuve | DOC-02 : `strategie/sources/pitch.html` vers les lignes 66-70 : « 3,5 % … retenus sur la part du vendeur quand la vente est définitive » et « registre que personne ne peut modifier » (l'équipe a des fonctions sur les commissions) |
 | Risque métier | Laisse croire qu'un prélèvement existe ; affirmation non vérifiée dans un document montré à l'extérieur. |
-| Correctif | en cours : PR #305 (commission « prévue ») ; attendu : « calculés, pas encore prélevés », et retrait ou preuve de « personne ne peut modifier » |
+| Correctif | fait : PR #305 : pitch, présentation, problème et solution, marketing et `FOUNDER_CONTEXT.md` disent « commission prévue, calculée sur la marchandise ; prélevée seulement une fois le paiement intégré » |
 | Test de non-régression | DOC-02 : recherche de « retenu » dans `strategie/sources/` |
-| Statut | **correction en cours, non vérifiée** (PR #305) |
+| Statut | **corrigée non vérifiée** : DOC-02 à rejouer (recherche de « retenu » dans `strategie/sources/` et relecture des PDF refaits) |
 
 ### ANO-031 · Poids et lenteur à la première ouverture
 | Champ | Valeur |
@@ -752,6 +753,18 @@ Batteries citées : `tests/sql/U02-securite.sql` (SEC), `U03-argent.sql` (ARG), 
 | Risque métier | Le membre croit ses commandes perdues. |
 | Correctif | proposé : ne pas afficher « Aucune commande » quand la lecture a échoué |
 | Test de non-régression | FIA-63 |
+| Statut | ouverte |
+
+### ANO-057 · Le site caché appelle 5 modules avec une ancienne version
+| Champ | Valeur |
+|---|---|
+| Date | 25/10/2026 (apparue avec la fusion des PR #305 et #306 dans `main`) |
+| Unité | U10 |
+| Gravité | P3 |
+| Preuve | STA-02 : `v3/sons.js`, `v3/negoce.js`, `v3/reputation.js`, `v3/messages.js`, `v3/identite.js` sont appelés en `?v=20261131lq2` dans `application.dc.html:39` mais avec une version plus ancienne dans `index-v3.html` (lignes 1307 à 1320) |
+| Risque métier | Le site caché (vu seulement par l'administrateur) peut garder l'ancienne version de ces modules en cache. |
+| Correctif | proposé : mettre la même version dans `index-v3.html` |
+| Test de non-régression | STA-02 |
 | Statut | ouverte |
 
 ### ANO-056 · Protection « mots de passe compromis » désactivée

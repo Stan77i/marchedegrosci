@@ -60,19 +60,19 @@ Le propriétaire lit « En bref », puis les P0 et P1, puis « Corrections propo
 | Unité | Automatique (script) | Tests SQL anciens (`supabase/tests/`) | Batteries du contrôle qualité (`tests/`) | Résultat du 25/10/2026 (réussis / échoués / bloqués / non exécutés / en attente) |
 |---|---|---|---|---|
 | U01 Logique métier | STA-04 | `regles-93`, `e2e-parcours` | LOG-01 à 16 (jugement, `tools/controle/fn.py`) | 10 / 6 / 0 / 0 / 1 |
-| U02 Sécurité | — | `confiance-94`, `transport-83` G, `fiabilite-84` E, `regles-93` | `sql/U02-securite.sql` (SEC) | 8 / 2 / 0 / 0 / 1 |
-| U03 Transactions et argent | STA-03 | `commission-95b`, `transport-95`, `e2e-parcours` | `sql/U03-argent.sql` (ARG) | 10 / 3 / 0 / 0 / 4 ; vrais paiements **impossibles** (aucun branché) |
-| U04 Stocks et produits | — | `boutiques-86`, `tableau-prix`, `stock-commandes`, `regles-93`, `e2e-parcours` | `sql/U04-stocks.sql` (STK) | 8 / 2 / 0 / 1 / 1 |
-| U05 Commandes et négociations | — | `e2e-parcours`, `stock-commandes`, `fiabilite-84`, `dm-anti-doublon` | `sql/U05-commandes.sql` (CMD) | 11 / 4 / 0 / 0 / 1 |
-| U06 Transport et livraison | — | `transport-83`, `transport-95`, `stock-commandes`, `e2e-parcours` | `sql/U06-transport.sql` (TRA) | 12 / 0 / 0 / 0 / 1 |
-| U07 Profils et confiance | — | `confiance-94`, `niveaux-85`, `fiabilite-84`, `boutiques-86` | `sql/U07-profils.sql` (PRO) | 3 / 1 / 0 / 1 / 0 |
-| U08 Notifications | — | `notifications-88`, `notif-objet-vivant`, `alertes-ciblage` | `sql/U08-notifications.sql` (NOT) | 5 / 4 / 0 / 1 / 1 ; envoi réel **en attente : clés push** |
-| U09 Base de données | STA-12 | `stockage-volume` ; listes G | `sql/U09-base.sql` (BDD) | 3 / 3 / 0 / 0 / 1 |
-| U10 Fiabilité technique | STA-01, 02, 06, 07, 14 ; APM-02 à 07 | `dm-anti-doublon` | `navigateur/U10-fiabilite.js` (FIA, automatique) | 57 / 18 / 0 / 0 / 3 |
-| U11 Administration | — | `stockage-volume`, `commission-95b`, `confiance-94` | `sql/U11-admin.sql` (ADM) | 3 / 2 / 0 / 0 / 0 |
-| U12 Compréhension | STA-05, 08 à 11 | — | `navigateur/U12-parcours.js` (CMP-21+, automatique) ; CMP-01 à 11 (jugement sur captures) | 10 / 11 / 1 / 0 / 0 |
+| U02 Sécurité | — | `confiance-94`, `transport-83` G, `fiabilite-84` E, `regles-93` | `tests/sql/U02-securite.sql` (SEC) | 8 / 2 / 0 / 0 / 1 |
+| U03 Transactions et argent | STA-03 | `commission-95b`, `transport-95`, `e2e-parcours` | `tests/sql/U03-argent.sql` (ARG) | 10 / 3 / 0 / 0 / 4 ; vrais paiements **impossibles** (aucun branché) |
+| U04 Stocks et produits | — | `boutiques-86`, `tableau-prix`, `stock-commandes`, `regles-93`, `e2e-parcours` | `tests/sql/U04-stocks.sql` (STK) | 8 / 2 / 0 / 1 / 1 |
+| U05 Commandes et négociations | — | `e2e-parcours`, `stock-commandes`, `fiabilite-84`, `dm-anti-doublon` | `tests/sql/U05-commandes.sql` (CMD) | 11 / 4 / 0 / 0 / 1 |
+| U06 Transport et livraison | — | `transport-83`, `transport-95`, `stock-commandes`, `e2e-parcours` | `tests/sql/U06-transport.sql` (TRA) | 12 / 0 / 0 / 0 / 1 |
+| U07 Profils et confiance | — | `confiance-94`, `niveaux-85`, `fiabilite-84`, `boutiques-86` | `tests/sql/U07-profils.sql` (PRO) | 3 / 1 / 0 / 1 / 0 |
+| U08 Notifications | — | `notifications-88`, `notif-objet-vivant`, `alertes-ciblage` | `tests/sql/U08-notifications.sql` (NOT) | 5 / 4 / 0 / 1 / 1 ; envoi réel **en attente : clés push** |
+| U09 Base de données | STA-12 | `stockage-volume` ; listes G | `tests/sql/U09-base.sql` (BDD) | 3 / 3 / 0 / 0 / 1 |
+| U10 Fiabilité technique | STA-01, 02, 06, 07, 14 ; APM-02 à 07 | `dm-anti-doublon` | `tests/navigateur/U10-fiabilite.js` (FIA, automatique) | 57 / 18 / 0 / 0 / 3 |
+| U11 Administration | — | `stockage-volume`, `commission-95b`, `confiance-94` | `tests/sql/U11-admin.sql` (ADM) | 3 / 2 / 0 / 0 / 0 |
+| U12 Compréhension | STA-05, 08 à 11 | — | `tests/navigateur/U12-parcours.js` (CMP-21+, automatique) ; CMP-01 à 11 (jugement sur captures) | 10 / 11 / 1 / 0 / 0 |
 | U13 Cohérence documentaire et commerciale | STA-03, 09, 13 | — | DOC-01 à 12 (jugement) | 2 / 11 / 0 / 0 / 1 |
-| U14 Situations extrêmes | — | `alertes-ciblage` (250 abonnés) | `sql/U14-extremes.sql` (EXT) | 6 / 2 / 0 / 1 / 1 ; charge simultanée **jamais testée** |
+| U14 Situations extrêmes | — | `alertes-ciblage` (250 abonnés) | `tests/sql/U14-extremes.sql` (EXT) | 6 / 2 / 0 / 1 / 1 ; charge simultanée **jamais testée** |
 
 Détail par type de situation : `MATRICE_TESTS.md`.
 

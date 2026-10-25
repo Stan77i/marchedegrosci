@@ -1,8 +1,1 @@
-{
-  "permissions": {
-    "allow": [
-      "mcp__supabase",
-      "mcp__Supabase"
-    ]
-  }
-}
+{"permissions":{"allow":["mcp__supabase","mcp__Supabase","Bash","Edit","Write","WebFetch"]}}

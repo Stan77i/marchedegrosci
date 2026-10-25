@@ -6,6 +6,8 @@
 
 ## 1. L'état au moment de la reprise
 
+> **Pause du 25/10/2026 : lire d'abord [`docs/RAPPORT-PAUSE-2026-10-25.md`](RAPPORT-PAUSE-2026-10-25.md)** (en production, PR à fusionner, travail interrompu à reprendre dans l'ordre).
+
 - **25/10/2026 : production, 101c, 101z et `itineraire`** (branche `claude/production-101c-101z`, après la fusion de #321) : **101c** (numéro contesté : deux cases obligatoires, l'ancien appel est fermé) et **101z** (compte banni : contester en 7 jours, réponse de l'équipe) **appliqués en PRODUCTION** ; fonction Edge **`itineraire` déployée** (version Supabase 2, mode `points` pour la carte, `verify_jwt` = false comme avant, code identique au dépôt). Plus aucun appel à OSRM ; `docs/juridique/confidentialite.md` corrigé. Reste en production : **101e** (le propriétaire le colle). Détail : `docs/PASSATION.md`, section « Production : 101c, 101z et `itineraire` ».
 - **25/10/2026 : production, schémas 99 à 101** (« Allons directement dans la production ») : **99a, 99b, 99c, 99d, 100a à 100f, 101a, 101b, 101d appliqués en PRODUCTION** (un fichier à la fois, contrôlés), `pousser` redéployée (code identique au dépôt, version Supabase 27). **Pas appliqués** : 101c et 101z (la PR #321 des écrans n'était pas fusionnée ; à faire en même temps que la mise en ligne de `v3/admin.js`, sinon l'équipe ne peut plus libérer de numéro), la fonction `itineraire` (même raison), 101e (contient le mot bloqué : **le propriétaire le colle**, mode d'emploi dans `docs/A-FAIRE-PROPRIETAIRE.md`, partie 4 ter). Détail : `docs/PASSATION.md`, section « 25/10/2026 · Production : schémas 99 à 101 ».
 - **25/10/2026 : écrans des décisions juridiques** (branche `claude/juridique-ecrans`, après #314, avec la PR du serveur juridique) : aide (casse en route, transport si refus, numéro pris), source publique pour « Panne ou météo », écran « Compte banni » + « Contester » (schéma 101z, **test seulement**), carte sans OSRM (fonction `itineraire`, mode `points`, **pas encore déployée**), profil sans compte, deux cases du numéro contesté, conservation dans l'outil de l'équipe. Restent : déployer `itineraire`, 101z en production, photo pour « Panne ou météo », retirer OSRM de `confidentialite.md`. Détail : `docs/PASSATION.md`.
@@ -85,6 +87,8 @@
 - Audits SEO, concurrents et plan : `docs/seo/` (audit-site, audit-app, concurrents, PLAN).
 
 ## 3. Ce qui reste à faire (dans l'ordre conseillé)
+
+> **Pause du 25/10/2026 : lire d'abord [`docs/RAPPORT-PAUSE-2026-10-25.md`](RAPPORT-PAUSE-2026-10-25.md)** (en production, PR à fusionner, travail interrompu à reprendre dans l'ordre).
 
 - **D'abord : l'audit du 24/10/2026** (`docs/audits/audit-logique-viabilite-2026-10-24.md`, partie 10) : décisions du propriétaire sur les délais, puis stock rendu, commandes bloquées, noms réservés, service worker, CGU.
 

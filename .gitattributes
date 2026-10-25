@@ -1,0 +1,4 @@
+# Documents de suivi : chaque PR y ajoute sa section ; on garde les deux textes en cas de fusion.
+CHANGELOG.md merge=union
+docs/PASSATION.md merge=union
+docs/REPRISE.md merge=union

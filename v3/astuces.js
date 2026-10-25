@@ -65,7 +65,7 @@
       ['🪪', 'Votre code transporteur', 'Montrez-le au vendeur et à l’acheteur : il prouve que vous êtes bien le transporteur du réseau. Vous *acceptez* la mission en fixant votre prix, ou vous refusez.'],
       ['📦', 'Au chargement', 'Montrez votre code transporteur au vendeur. Il vous dit son *code de prise en charge* : tapez-le. Besoin ? Touchez *« Demander le code »*.'],
       ['📍', 'À la livraison', 'Même chose avec l’acheteur : il vérifie la marchandise, puis vous dit le *code de réception*. Vous le tapez : la livraison est validée.'],
-      ['💰', 'Votre prix', 'Choisi par un vendeur ou un acheteur : *aucune commission*. Mission du service Marché de Gros, à son ouverture : votre prix moins *6,9 %*. Si l’acheteur refuse la marchandise, dites honnêtement ce que vous avez vu : *votre transport reste dû*.']] },
+      ['💰', 'Votre prix', 'Choisi par un vendeur ou un acheteur : *aucune commission*. Mission du service Marché de Gros, à son ouverture : votre prix moins *6,9 %*. Si l’acheteur refuse la marchandise, dites honnêtement ce que vous avez vu : *votre transport est payé quand même*, par le vendeur ou par l’acheteur selon la décision.']] },
     // schémas 57 à 61 : séquestre, mot secret, refus, discussion, tableau des prix (montrés jusqu'à 3 fois, tant que « J’ai compris » n’est pas touché)
     mot: { t: 'Le mot secret', insiste: 3, cartes: [
       ['📝', 'Votre mot secret', 'Il s’affiche en jaune dans votre commande, par exemple *MANGUE 47*.'],
@@ -79,7 +79,7 @@
       ['⚠️', 'Un problème ?', 'Touchez *« Refuser la marchandise »* avant la fin du délai, avec le mot du vendeur et des photos.']] },
     refus: { t: 'Refuser la marchandise', insiste: 3, cartes: [
       ['🧾', 'Il faut des preuves réelles', 'Le *mot secret du vendeur* (le papier dans le colis) et *1 à 4 photos* : la marchandise et le papier.'],
-      ['🤝', 'Si le vendeur reconnaît', 'Vous ne devez *que la partie acceptée*. Le *transport reste dû* : le chauffeur a fait son travail.'],
+      ['🤝', 'Si le vendeur reconnaît', 'Vous payez *seulement la partie acceptée*. Le transport est payé par le *vendeur*.'],
       ['⚖️', 'Sinon, on en parle à trois', 'Vous, le vendeur et le *Marché de Gros*, dans la discussion de la commande. L’équipe juge avec tous les échanges.'],
       ['📄', 'Pas de papier ?', 'Revenez en arrière et touchez *« Signaler un problème »* : rien n’est décidé tout seul, l’équipe juge.']] },
     discussion: { t: 'La discussion à trois', insiste: 2, cartes: [

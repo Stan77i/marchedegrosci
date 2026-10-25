@@ -127,8 +127,8 @@ Ce sont vos décisions. Chaque ligne est une règle en service ou à respecter.
 
 **Juridique et comptes (« ok pour tout », 25/10/2026)**
 - Le Marché de Gros met en relation : il n'est ni vendeur, ni acheteur.
-- Casse en route : le vendeur en répond jusqu'à la réception quand il livre ; l'acheteur dès le chargement quand le transport est à sa charge. Les photos de départ servent à trancher.
-- Transport d'une marchandise refusée : payé par l'acheteur si le refus est rejeté, par le vendeur s'il est accepté.
+- Casse en route (règle du 25/10/2026, remplace la n° 10) : le vendeur en répond jusqu'à la réception conforme, quel que soit le transport. Marchandise gâtée ou cassée : l'acheteur ne paie ni la marchandise ni le transport. « Transport à la charge de l'acheteur » veut seulement dire que le transport n'est pas dans le prix.
+- Transport d'une marchandise refusée : payé par le vendeur si le refus est accepté ; par l'acheteur (avec la marchandise) si le refus est rejeté parce que la marchandise était conforme.
 - Force majeure : une photo ou une information publique (radio, presse, autorités) ; l'équipe juge.
 - Achat groupé : le transport suit la règle écrite dans l'offre.
 - Numéro contesté : pièce d'identité vue et appel de l'équipe sur ce numéro, tout est noté.

@@ -792,7 +792,7 @@
         <span class="t" style="display:block;margin:14px 0 6px;font-weight:600">Photos (1 à 4) : la marchandise, et le papier du vendeur</span>
         <div class="cm-ph" data-apercu></div>
         <label class="cm-pick">${TI('photo')}Ajouter des photos<input type="file" accept="image/*" multiple data-fic></label>
-        <p class="cm-note" style="font-size:13.5px">Preuves : le mot du vendeur et vos photos, comparées à celles du départ. Vendeur d’accord : la partie refusée n’est pas due. Sinon, l’équipe juge. Transport : à votre charge si le refus est rejeté, à celle du vendeur s’il est accepté.</p>
+        <p class="cm-note" style="font-size:13.5px">Preuves : le mot du vendeur et vos photos, comparées à celles du départ. Refus accepté : vous ne payez ni la partie refusée, ni le transport. Refus rejeté : vous payez tout.</p>
         <p class="cm-err" role="alert"></p>
         <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">Envoyer le refus</button><button type="button" data-ann>Retour</button></div>
       </form>`;
@@ -1133,7 +1133,7 @@
           fn: () => R('commande_liberer', { p_id: c.id }) }); }
       case 'refuser': return refuser(c);
       case 'rf-oui': return confirmer(c, { titre: 'Reconnaître le <em>problème</em>', ok: 'Je reconnais', note: 'Un mot (facultatif)', fait: 'Refus accepté : la commande est clôturée',
-        texte: seq[c.id] && seq[c.id].actif ? 'La partie refusée n’est pas due. Le reste de la commande vous revient. Le transport est à votre charge.' : 'L’acheteur ne doit que la partie acceptée. Le transport est à votre charge.',
+        texte: seq[c.id] && seq[c.id].actif ? 'La partie refusée n’est pas due. Le reste de la commande vous revient. Vous payez le transport.' : 'L’acheteur ne paie que la partie acceptée. Vous payez le transport.',
         fn: v => R('commande_refus_vendeur', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
       case 'rf-non': return confirmer(c, { titre: 'Contester le <em>refus</em>', ok: 'Contester', note: 'Pourquoi ?', noteRequise: true, fait: 'Contestation envoyée : l’équipe va trancher',
         texte: 'L’équipe du Marché de Gros tranche avec l’accord, la négociation, vos messages, les photos et la réponse du chauffeur.',

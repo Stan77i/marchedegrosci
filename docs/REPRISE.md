@@ -87,7 +87,7 @@
 **0 octies. Scénarios de commande (25/10/2026)** : `docs/regles/SCENARIOS-COMMANDE.md` (96 combinaisons comparées au code). Attendre la réponse du propriétaire aux 19 propositions (partie 6), puis : retirer de 99a le rappel et le litige pendant le trajet ; construire le retard signalé, « demander des nouvelles » (6 h) et le délai justifié (2 h, 6 h, 24 h) ; vérifier l'avis de clôture « en faveur du vendeur » (`push_commande` ignore « terminee ») ; écrire les tests `SCN` « à écrire » (`CONTROLE_QUALITE/MATRICE_TESTS.md`, partie 5).
 
 **0 septies. Décisions juridiques à construire (25/10/2026, « ok pour tout »)** : liste complète dans `docs/juridique/DECISIONS-A-PRENDRE.md`, partie « À construire » ; une PR par point, testée sur le projet de test avant la production. Dans l'ordre conseillé :
-1. n° 11 : changer « le transport reste dû » dans l'aide (`v3/aide.js`, 4 réponses) ; n° 10 : question « cassé en route » dans l'aide ;
+1. n° 10 et 11 : textes faits (branche `claude/juridique-ecrans` ; la n° 10 est remplacée le 25/10/2026 : le vendeur répond de la marchandise jusqu'à la réception conforme, quel que soit le transport). Reste une **PR serveur** : `_seq_repartition` ne retire pas le transport quand le refus est accepté, notification `pousser` « Le transport reste dû » (détail : `docs/PASSATION.md`, section « Casse en route ») ;
 2. n° 18 : écran du compte banni (seulement « Compte banni » et « Contester », 7 jours, réponse en 7 jours) ;
 3. n° 19 : journal de l'équipe (`admin_journal`) pour tous les gestes sur un compte, et un écran pour le lire ;
 4. n° 16 et D : deux cases dans l'outil « Numéro contesté » (pièce vue, appel fait) ;

@@ -365,7 +365,7 @@ end $$;
 -- [4] acheteur banni : stock 90 → 100, accord « membre_banni », rendu 10 ; commande refusée (accord arrêté).
 --     Vendeur banni : le bannissement passe (avant correction, il échouait : la garde des annonces d'un banni refusait le retour du
 --     stock), accord « membre_banni », rendu 0 (son annonce ne bouge pas) ; commande refusée.
---     Message changé ensuite en « ACCORD_ARRETE : cet accord a pris fin… » (pas rejoué).
+--     Message rejoué ensuite : « ACCORD_ARRETE : cet accord a pris fin, l'un des deux membres ne peut plus commander pour l'instant. »
 -- [5] 25 h sans réponse : annulee, « légitime, personne » ; journal « Annulation acceptée : l'acheteur n'a pas répondu en 24 h… ».
 -- [6] demande de l'acheteur : annulation_demandee ; le vendeur accepte : annulee, « légitime, personne » ; 2e commande : le vendeur
 --     refuse : en_cours.
@@ -391,4 +391,5 @@ end $$;
 -- proposition caduque ; « transport » 3 000 F acceptée → _seq_repartition : acheteur paie 3 000, transport payé par l'acheteur,
 -- vendeur net 3 000, non dû 200 000. Écarts du côté 102 sur le test (vendeur qui propose, 4e proposition, réglages participation
 -- absents) : signalés à l'équipe participation, sans lien avec 103.
-
+-- Rejeu du 25/10/2026 (après la fusion avec 102, état après seulement) : blocs 4 (ACCORD_ARRETE), 10, 11, 12, 14 et T joués dans un
+-- seul appel : résultats identiques à ceux ci-dessus ; « ACCORD_ARRETE » affiché pour l'acheteur banni et pour le vendeur banni.

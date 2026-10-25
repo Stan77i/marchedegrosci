@@ -198,7 +198,7 @@
       const html = admin()
         ? `<button type="button" data-tous>${LOGO(34)}<span>Message à tous les membres<small>Au nom du Marché de Gros, avec le logo</small></span></button><a href="admin.html#messages">${I.bulle}<span>Toutes les conversations<small>Lire, alertes de sortie de l’application</small></span></a>`
         : liste.some(c => c.officiel) ? ''
-        : `<button type="button" data-marche>${LOGO(34)}<span>Écrire au Marché de Gros<small>Une question, un problème, un vol : l’équipe vous répond ici</small></span></button>`;
+        : `<button type="button" data-marche>${LOGO(34)}<span>Écrire au Marché de Gros<small>L’équipe vous répond ici</small></span></button>`;
       if (z._h === html) return; z._h = html; z.innerHTML = html; z.style.display = html ? '' : 'none';
       const t = z.querySelector('[data-tous]'); if (t) t.onclick = () => diffuser();
       const m = z.querySelector('[data-marche]'); if (m) m.onclick = () => ecrireMarche(); };

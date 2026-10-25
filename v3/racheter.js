@@ -187,7 +187,7 @@
     if (!bg) return;
     const choix = new Set();
     const peindre = () => {
-      box.innerHTML = tete('Mes achats', 'habituels') + '<p class="rc-lead">Les produits de vos commandes terminées. Cochez ceux à racheter : on vérifie le prix et le stock du jour, vous ajustez, puis vous confirmez.</p>' +
+      box.innerHTML = tete('Mes achats', 'habituels') + '<p class="rc-lead">Cochez ceux à racheter.</p>' +
         (L.length ? L.map((x, i) => `<div class="rc-li"><input type="checkbox" id="rh${i}" data-c="${i}" ${choix.has(i) ? 'checked' : ''}><label class="t" for="rh${i}"><b>${esc(x.produit || x.slug)}</b>
           <small>${nf(x.quantite)} ${esc(x.unite)} à ${F(x.prix_unitaire)} · ${esc(x.vendeur)} · ${jour(x.dernier)}${x.fois > 1 ? ' · acheté ' + x.fois + ' fois' : ''}</small>
           ${x.rappel && x.rappel.actif ? `<small>Rappel : ${x.rappel.frequence === 'quotidien' ? 'chaque jour' : 'chaque ' + JOURS[x.rappel.jour]} à ${x.rappel.heure} h</small>` : ''}</label>

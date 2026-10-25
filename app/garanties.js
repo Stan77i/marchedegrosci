@@ -1,7 +1,7 @@
 /* ═════════ Marché de Gros CI — pourquoi acheter et vendre ici : nos garanties, dites au bon moment ═════════
    Seulement des promesses que l'application tient déjà (PHILOSOPHIE.md : rien d'inventé) :
    sceau vert « vérifié » seulement après contrôle de la pièce par l'équipe, numéros cachés, tout se passe dans l'application, pas de liens ni de demandes de code,
-   annonces réelles, statuts qui se gagnent, signalement avec preuves, compte officiel. Le paiement par tiers de confiance : « bientôt ».
+   annonces réelles, signalement avec preuves, compte officiel. Le paiement par tiers de confiance : « bientôt ».
    <mdg-garanties></mdg-garanties>                 : la bande fine de l'accueil, une garantie à la fois ; toucher → la feuille
    <mdg-garanties data-mode="ligne" data-t="…">    : une ligne de réassurance (fiche produit, annonce publiée) ; toucher → la feuille
    MDGGaranties.ouvrir()                           : la feuille « Pourquoi le Marché de Gros »
@@ -66,21 +66,18 @@
     ['lien', 'Ni liens, ni ', 'arnaques', ' au code'],
     ['prix', 'Les prix du marché, ', 'par zone', '', PAGE('prix')],
     ['cadenas', 'Réception validée par ', 'code secret', '', FEN('MDGAstuces', 'tour', ['codes', true])],
-    ['panier', 'Achetez en ', 'gros', ', partout en Côte d’Ivoire', PAGE('acheter')],
     ['reel', 'Que des annonces ', 'réelles', ''],
     ['groupe', 'Achats ', 'groupés', ' : à plusieurs, moins cher', FEN('MDGGroupes', 'ouvrir')],
     ['main', 'Un litige ? On juge sur ', 'preuves', ', à trois'],
     ['cloche', 'Alertes produits : ', 'prévenu', ' dès qu’il arrive', FEN('MDGAlertes', 'gerer')],
-    ['pousse', 'Du champ au ', 'marché', ''],
     ['volant', 'Chauffeur ? Inscrivez-vous, c’est ', 'gratuit', '', FEN('MDGChauffeur', 'ouvrir')]
   ];
   // la feuille : chaque garantie, ce que l'application fait vraiment
   const DETAIL = [
-    ['sceau', 'Un sceau vert qui se mérite', 'Le sceau vert « vérifié » apparaît seulement quand une personne de l’équipe a comparé la pièce d’identité, encore valide, et un selfie. Un membre sans sceau n’est pas vérifié : avec lui, ne payez jamais d’avance.'],
+    ['sceau', 'Sceau vert : identité vérifiée', 'Le sceau vert « vérifié » apparaît seulement quand une personne de l’équipe a comparé la pièce d’identité, encore valide, et un selfie. Un membre sans sceau n’est pas vérifié : avec lui, ne payez jamais d’avance.'],
     ['cache', 'Votre numéro reste caché', 'Personne ne voit votre numéro. On vous écrit et on négocie avec vous dans l’application.'],
     ['lien', 'Ni liens, ni arnaques au code', 'Les liens, les adresses e-mail, les numéros et les demandes de code secret sont refusés dans les messages. Le Marché de Gros ne vous demandera jamais votre code.'],
     ['reel', 'Que des annonces réelles', 'Chaque offre et chaque demande a été publiée par un membre. Aucun chiffre n’est inventé : les prix viennent des annonces.'],
-    ['etoile', 'Des statuts qui se gagnent', 'Vendeur de confiance, acheteur sérieux, répond vite : ils se gagnent par des ventes conclues et des avis, jamais en payant.'],
     ['drapeau', 'Un problème ? Signalez', 'Signalez une personne avec une preuve. L’équipe examine chaque signalement et peut bannir un compte à vie.'],
     ['main', 'Négociez ici, payez à la livraison', 'Mettez-vous d’accord sur le prix et la quantité dans l’application. Voyez la marchandise, puis payez : jamais d’avance à une personne.']
   ];
@@ -103,12 +100,11 @@
 .gr-f{width:100%;max-width:480px;max-height:calc(100dvh - 24px);overflow-x:hidden;overflow-y:auto;background:#F3EFE4;color:#171512;border-radius:28px 28px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom,0px));box-shadow:0 -20px 60px rgba(0,0,0,.35);animation:grMonte .42s cubic-bezier(.22,1,.36,1) both}
 @keyframes grMonte{from{transform:translateY(100%)}}
 .gr-poig{width:40px;height:4px;border-radius:2px;background:rgba(23,21,18,.18);margin:0 auto 10px}
-.gr-hd{display:flex;align-items:flex-start;gap:12px}
+.gr-hd{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
 .gr-hd h2{flex:1;margin:8px 0 0;font:600 26px/1.08 Jost,sans-serif;letter-spacing:-.015em}
 .gr-hd h2 em{font:900 italic 1em Jost,sans-serif;color:#10392B;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .gr-x{flex:none;width:44px;height:44px;border:0;border-radius:50%;background:rgba(23,21,18,.07);color:#171512;display:grid;place-items:center;cursor:pointer}
 .gr-x:focus-visible{outline:2px solid #10392B;outline-offset:2px}
-.gr-ch{margin:8px 0 18px;font:400 15px/1.5 Jost,system-ui,sans-serif;color:#4D473D}
 .gr-li{display:flex;gap:14px;padding:12px 0;border-top:1px solid rgba(23,21,18,.08)}
 .gr-li .gr-i{flex:none;width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:rgba(16,57,43,.08);color:#10392B}
 .gr-li b{display:block;font:600 16px/1.25 Jost,system-ui,sans-serif}.gr-li p{margin:3px 0 0;font:400 14px/1.45 Jost,system-ui,sans-serif;color:#4D473D}
@@ -129,7 +125,6 @@
     fond = document.createElement('div'); fond.className = 'gr-fond';
     fond.innerHTML = `<div class="gr-f" role="dialog" aria-modal="true" aria-labelledby="grT"><div class="gr-poig" aria-hidden="true"></div>
       <div class="gr-hd"><h2 id="grT">Pourquoi le <em>Marché de Gros</em></h2><button type="button" class="gr-x" aria-label="Fermer">${ico('fermer', 20)}</button></div>
-      <p class="gr-ch">Nous ne vendons rien : nous mettons en relation les producteurs, les grossistes et les acheteurs, et nous veillons à ce que chacun échange en confiance.</p>
       ${DETAIL.map(([i, t, d]) => `<div class="gr-li"><span class="gr-i">${ico(i, 20)}</span><div><b>${t}</b><p>${d}</p></div></div>`).join('')}
       <div class="gr-bt">${ico('horloge', 20)}<span><b>Plus tard</b> : un tiers de confiance gardera l’argent jusqu’à la livraison. Pas encore ouvert.</span></div>
       <button type="button" class="gr-ok">J’ai compris</button></div>`;

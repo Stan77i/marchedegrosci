@@ -246,9 +246,9 @@
           // quantité du serveur vue par ce téléphone (schéma 93a) : sans elle, une quantité plus haute n'est pas acceptée
           const corps = x.qServeur != null ? Object.assign({}, row, { quantite_vue: x.qServeur }) : row;
           try { const r = await essai(corps); if (r && r[0]) { p[key] = r[0].id; em[key] = h; changed = true; W(K.p, p); W(K.e, em);
-              // des ventes ont été conclues entre-temps : le serveur garde son stock, le téléphone le reprend et le dit
+              // le serveur a gardé sa quantité (schéma 97d : quantite_gardee ; ventes conclues entre-temps) : on relit l'annonce et on le dit
               const qs = num(r[0].quantity);
-              if (qs != null && num(x.quantity) != null && qs < num(x.quantity)) { await stockDuServeur(); toast('Stock gardé à ' + qs + ' ' + (x.unit || '') + ' : des ventes ont été conclues entre-temps. Vérifiez-le dans Mes publications.'); }
+              if (r[0].quantite_gardee === true || (qs != null && num(x.quantity) != null && qs < num(x.quantity))) { await stockDuServeur(); say('mes'); toast('La quantité a changé, vérifiez votre annonce.'); }
               // stock à zéro sur le téléphone : l'annonce sort du marché ; stock remis : elle revient (jamais une annonce masquée par l'administration, ni une annonce expirée : « Prolonger » la remet)
               if (k === 'offres' && !x.expiree) await api('/rest/v1/offres?id=eq.' + r[0].id + '&status=neq.masquee', { method: 'PATCH', auth: true, body: { status: x.epuise || !(+x.quantity > 0) ? 'retiree' : 'active' }, prefer: 'return=minimal' }).catch(() => {}); } }
           catch (e) { if (e.code === 'auth') throw e; console.warn('[nuage] envoi refusé', e.message); if (/Limite atteinte/.test(e.message)) toast(e.message);

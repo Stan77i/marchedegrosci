@@ -269,6 +269,7 @@ Règles données le 24/10/2026. **La plupart ne sont pas encore codées telles q
 | Réglage « Voix » | en attente | Fichiers audio `fr_P1.zip`. |
 | Rappel du mot secret en notification | en attente | À faire dans la fonction `pousser`. Aucun code pour le mot secret. Les rappels qui existent (`supabase/functions/pousser/index.ts`) ne concernent que les codes des commandes « avec codes », donc le réseau en pause. |
 | Limite de connexion Supabase Auth | réglée | 20 connexions par 5 minutes et par adresse IP (réglé par le propriétaire). |
+| Écran administrateur des délais de commande | plus tard (accord du propriétaire, 25/10/2026) | Les délais (`reception_minutes`, `litige_sans_reponse_minutes`…) se règlent par la fonction `admin_commandes_regler`, sans écran. |
 | Remotion (vidéos) | laissé de côté | Pas dans l'application ni sur le site. Peut-être plus tard pour des vidéos de présentation. |
 | Ouverture du nouveau site au public | bloqué par une décision | 55 pages prêtes, toutes en `noindex` et sous garde administrateur. Le propriétaire seul décide de l'ouverture. Search Console et Bing attendent ses comptes. |
 | Publication sur Play Store et App Store | absent | L'application est une PWA. Les liens seront ajoutés le moment venu. |

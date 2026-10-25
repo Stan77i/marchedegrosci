@@ -81,6 +81,7 @@ end $$;
 -- la commande sera close en faveur du vendeur. » | l5 écran acheteur : litige_auto=true, clôture dans 60 min | l6 +59 min : litige
 -- | l7 +61 min : clotures=1, terminee/terminee, libéré, liberation=auto, refusé=0, commission prevue/calculee 70000 F (rien n'est réclamé),
 -- journal terminee « En faveur du vendeur : l'acheteur n'a pas répondu », séquestre « Clôture en faveur du vendeur… », aucune annulation
+-- Après le schéma 97d (25/10/2026) : l7 identique, sauf annulation=litige (litige perdu imputé à l'acheteur, voir L4).
 -- | l8 litige après clôture refusé.
 
 -- ══ L2 : pendant le litige automatique, l'acheteur écrit, confirme avec le mot secret, ou refuse avec photos ; ou il signale avant l'heure ══
@@ -203,3 +204,66 @@ end $$;
 -- | p3 vendeur propose 100 : « L'acheteur achète à partir de 200 kg. » | p4 S 600 : reste 400 active | p5 tableau : qte_min des demandes = 200
 -- | p6 C 500 : « l'annonce porte sur 400 au plus » | p7 C 400 : reste 0 retiree.
 -- Avant 97c : pas de minimum sur les demandes (colonne absente), une demande pouvait être publiée sans quantité côté serveur.
+
+-- ══ L4 (schéma 97d) : l'acheteur muet perd un litige ; l'acheteur qui répond ne perd rien ; garde 93 qui prévient ; file à 5 min ══
+do $$
+declare S uuid := '1bfd5713-2525-44a6-8403-084ebb9ddad3'; B uuid := '68345d7a-9d64-410a-a4c7-92a750d9888d'; D uuid := '86c69f98-e113-4bfb-bb2a-0bd32fba7830';
+  c1 uuid; c2 uuid; res text := ''; r json; n0 int; lp0 int; o uuid; dm uuid; g record;
+begin
+  insert into public.verifications (user_id, statut, piece, defi, decide_le, expire_le, numero) values (S, 'verifie', 'cni', '1234', now(), current_date + 365, 'L97-S');
+  n0 := public._fiab_n90(B); lp0 := coalesce((public.reputation_publique(B) -> 'acheteur' ->> 'litiges_perdus')::int, 0);
+  c1 := pg_temp.livree(S, B); c2 := pg_temp.livree(S, B);
+  update public.commandes set livre_le = now() - interval '61 minutes' where id in (c1, c2);
+  r := public.commandes_delais();
+  perform pg_temp.qui(B); perform public.litige_ecrire(c2, 'Je regarde la marchandise ce soir.'); execute 'reset role';
+  update public.commandes set litige_auto_le = now() - interval '61 minutes' where id in (c1, c2);
+  r := public.commandes_delais();
+  res := concat(res, 'f1 clôtures=', r ->> 'clotures_sans_reponse', ' c1=', (select etat from public.commandes where id = c1), ' c2=', (select etat from public.commandes where id = c2),
+    ' | f2 c1 fiabilité: ', (select concat_ws(' ', categorie, 'imputé=' || role_imputable, 'acheteur=' || (imputable_id = B), 'examen=' || a_examiner, '« ' || motif_texte || ' »') from public.annulations where commande_id = c1),
+    ' | f3 c2 (l''acheteur a répondu): ', coalesce((select categorie from public.annulations where commande_id = c2), 'aucune'),
+    ' | f4 B n90 ', n0, '→', public._fiab_n90(B), ' litiges perdus ', lp0, '→', coalesce((public.reputation_publique(B) -> 'acheteur' ->> 'litiges_perdus')::int, 0),
+    ' palier=', coalesce((select type from public.sanctions s join public.annulations a on a.id = s.annulation_id where a.commande_id = c1), 'aucun'),
+    ' | f5 vendeur S rien: ', coalesce((select count(*)::text from public.annulations where commande_id in (c1, c2) and imputable_id = S), '0'),
+    ' | f6 réglage remis à vide: «', coalesce(current_setting('mdg.fiab_fautif', true), ''), '»');
+  -- garde 93 (membre D) : une offre de 100 sacs, 60 vendus (stock 40) ; un téléphone en retard renvoie 100 sans avoir vu 40
+  insert into public.verifications (user_id, statut, piece, defi, decide_le, expire_le, numero) values (D, 'verifie', 'cni', '1234', now(), current_date + 365, 'L97-D');
+  perform pg_temp.qui(D);
+  insert into public.offres (client_id, product_slug, product_label, region_slug, city, quantity, unit, price)
+    values ('t97d-o', 'igname', 'Igname', 'vallee-du-bandama', 'Bouaké', 100, 'sac', 16100) returning id into o;
+  insert into public.demandes (client_id, product_slug, product_label, region_slug, city, quantity, unit, budget)
+    values ('t97d-d', 'igname', 'Igname', 'vallee-du-bandama', 'Bouaké', 100, 'sac', 15100) returning id into dm;
+  execute 'reset role';
+  update public.offres set quantity = 40 where id = o; update public.demandes set quantity = 40 where id = dm;
+  perform pg_temp.qui(D);
+  insert into public.offres (client_id, product_slug, product_label, region_slug, city, quantity, unit, price)
+    values ('t97d-o', 'igname', 'Igname', 'vallee-du-bandama', 'Bouaké', 100, 'sac', 16500)
+    on conflict (user_id, client_id) do update set quantity = excluded.quantity, price = excluded.price returning quantity, price, quantite_gardee into g;
+  res := concat(res, ' | g1 offre renvoyée à 100 sans vue: stock=', g.quantity, ' prix=', g.price, ' gardée=', g.quantite_gardee);
+  update public.offres set price = 16600 where id = o returning quantity, quantite_gardee into g;
+  res := concat(res, ' | g2 modification suivante: gardée=', g.quantite_gardee);
+  insert into public.offres (client_id, product_slug, product_label, region_slug, city, quantity, unit, price, quantite_vue)
+    values ('t97d-o', 'igname', 'Igname', 'vallee-du-bandama', 'Bouaké', 70, 'sac', 16600, 40)
+    on conflict (user_id, client_id) do update set quantity = excluded.quantity, quantite_vue = excluded.quantite_vue returning quantity, quantite_gardee into g;
+  res := concat(res, ' | g3 remise à 70 après avoir vu 40: stock=', g.quantity, ' gardée=', g.quantite_gardee);
+  insert into public.demandes (client_id, product_slug, product_label, region_slug, city, quantity, unit, budget)
+    values ('t97d-d', 'igname', 'Igname', 'vallee-du-bandama', 'Bouaké', 100, 'sac', 15100)
+    on conflict (user_id, client_id) do update set quantity = excluded.quantity returning quantity, quantite_gardee into g;
+  res := concat(res, ' | g4 demande renvoyée à 100 sans vue: quantité=', g.quantity, ' gardée=', g.quantite_gardee);
+  update public.offres set quantity = 30 where id = o returning quantity, quantite_gardee into g;
+  res := concat(res, ' | g5 baisse à 30: stock=', g.quantity, ' gardée=', g.quantite_gardee);
+  res := concat(res, ' | g6 membre écrit gardée=true lui-même: ', pg_temp.e(format('update public.offres set quantite_gardee = true where id = %L', o)));
+  execute 'reset role';
+  res := concat(res, ' | n1 tâche mdg-notif=', (select schedule from cron.job where jobname = 'mdg-notif'));
+  raise exception 'TEST: %', res;
+end $$;
+-- Résultat APRÈS le schéma 97d (25/10/2026, projet de test) :
+-- f1 clôtures=1 c1=terminee c2=litige | f2 c1 fiabilité : litige imputé=acheteur acheteur=true examen=false « Réception non confirmée 60 min après
+-- la livraison déclarée » | f3 c2 (l'acheteur a répondu) : aucune | f4 B n90 0→1, litiges perdus (rôle acheteur) 0→1, palier=avertissement
+-- | f5 vendeur S : 0 | f6 réglage remis à vide : «» | g1 offre renvoyée à 100 sans vue : stock=40 prix=16500 gardée=t (le prix passe, la quantité
+-- est gardée et signalée) | g2 modification suivante : gardée=f | g3 remise à 70 après avoir vu 40 : stock=70 gardée=f | g4 demande renvoyée à 100
+-- sans vue : quantité=40 gardée=t | g5 baisse à 30 : stock=30 gardée=f | g6 le membre écrit quantite_gardee lui-même : permission denied
+-- | n1 tâche mdg-notif : */5 * * * *.
+-- Avant 97d : f2 aucune ligne de fiabilité (l'acheteur muet ne perdait rien) ; g1 et g4 sans indication (colonne absente) ; mdg-notif */15.
+-- Rejoués le 25/10/2026 après 97d, sorties identiques à celles notées : stock-commandes A à D, transport-95, commission-95b,
+-- e2e-parcours a, b, c, d, e, j, regles-93 A à E, et ici L1, L2, L3, Q1, Q2.
+

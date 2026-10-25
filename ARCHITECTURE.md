@@ -254,7 +254,7 @@ Toutes actives en production :
 | `mdg-commandes-delais` | toutes les 15 min (schéma 92b, **test seulement**) | `commandes_delais` : rappel de chargement, retard, rappel de réception, litige automatique, litiges en retard, accords sans suite |
 | `mdg-annonces-expirer` | toutes les 15 min (schéma 93c, **test seulement**) | `annonces_expirer` : annonces de plus de 30 jours cachées (par lots de 500, jamais effacées), rappel 3 jours avant |
 | `mdg-prix` | toutes les 5 min (schéma 96a, **test seulement**) | `tableau_prix_calculer` : recalcule `tableau_prix_cache` |
-| `mdg-notif` | toutes les 15 min (schéma 88b, en production) | `notif_tick` : alertes regroupées, groupes bientôt complets, produits à racheter, actions après ouverture. Avec le schéma 91 (**projet de test seulement**, production après l'accord du propriétaire), il appelle aussi `notif_relances` (9 déclencheurs commerciaux, de 7 h à 21 h) |
+| `mdg-notif` | toutes les 15 min en production ; envoi toutes les 5 min avec le schéma 97d (**projet de test seulement**), calculs toujours un passage sur trois | `notif_tick` : alertes regroupées, groupes bientôt complets, produits à racheter, actions après ouverture. Avec le schéma 91 (**projet de test seulement**, production après l'accord du propriétaire), il appelle aussi `notif_relances` (9 déclencheurs commerciaux, de 7 h à 21 h) |
 
 ### 4.8 Fonctions Edge
 

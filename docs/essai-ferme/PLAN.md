@@ -1,6 +1,7 @@
 # Plan de l'essai fermé (20 à 50 vendeurs et acheteurs réels)
 
 Statut : **proposition**. Les points marqués **[À VALIDER]** sont à décider par le propriétaire. Rien ici n'est encore lancé.
+Kit pour lancer l'essai soi-même en une heure : `LANCER-EN-1-HEURE.md` (avec `MESSAGES.md`, `GUIDE-PARTICIPANT.md`, `SUIVI.md`, `QUESTIONNAIRE.md`, `CRITERES-DE-REUSSITE.md`).
 Sources : `AUDIT.md` (parties 4, 9, 10, 13), `FOUNDER_CONTEXT.md`, `FONCTIONNALITES.md`, `docs/REPRISE.md`.
 
 ## 1. Objectif

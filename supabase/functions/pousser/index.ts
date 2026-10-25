@@ -31,6 +31,9 @@
 // 18. par la base (pg_cron « mdg-notif », public.notif_tick, schéma 88) avec { lots: true } : les messages en file d'attente
 //     (nouvelles offres et demandes, groupe bientôt complet, veille de la date limite, produit à racheter), regroupés par
 //     personne et par sujet : « 3 nouvelles offres : Tomate ».
+// v27 (25/10/2026, schéma 102, NON DÉPLOYÉE) : participation de l'acheteur après un problème : « L'acheteur propose N F »
+//     (cmd_participation, au vendeur), « Participation acceptée » / « refusée » (à l'acheteur), « Proposition retirée » (au
+//     vendeur), « Proposition sans réponse » (aux deux, 24 h). Aucun argent ne bouge : le montant est seulement noté.
 // v26 (25/10/2026, schéma 99a, NON DÉPLOYÉE) : rien ne se déclenche avant « arrivé » ; « Retard en route » (cmd_retard),
 //     « L'acheteur demande des nouvelles » (cmd_nouvelles), « L'acheteur demande N h » (cmd_delai), « Confirmez la réception »
 //     quand l'arrivée vient de l'acheteur ; « Annulation retirée par le vendeur » quand il charge ; le texte « close dans l'heure »
@@ -620,6 +623,29 @@ Deno.serve(async (req) => {
             return M(T45(`${lib} : l'acheteur demande ${h} h`, "L'acheteur demande un délai"),
               B80(fin ? `Il vérifie la marchandise avant ${fin}.` : "", "Il vérifie la marchandise un peu plus tard."), "cmd-" + l.objet_id);
           }
+          // schéma 102 : participation de l'acheteur après un problème (aucun argent ne bouge : le montant est seulement noté)
+          case "cmd_participation": {
+            const m = F(Number(d.montant || 0)), fin = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
+            const qg = d.quantite ? qteTxt(d.quantite, String(d.unite || "")) : "";
+            const quoi = d.mode === "transport" ? "Il paie le transport seulement." : d.mode === "partie" && qg ? `Il garde ${qg}.` : "Après un problème signalé.";
+            return M(T45(`${lib} : l'acheteur propose ${m}`, `L'acheteur propose ${m}`, "Proposition de l'acheteur"),
+              B80(fin ? `${quoi} Acceptez ou refusez avant ${fin}.` : "", `${quoi} Acceptez ou refusez.`, "Acceptez ou refusez. Sinon, l'équipe tranche."), "cmd-" + l.objet_id);
+          }
+          case "cmd_participation_acceptee": {
+            const m = F(Number(d.montant || 0));
+            return M(T45(`${lib} : participation acceptée`, "Participation acceptée"),
+              B80(`Le vendeur accepte ${m}. La commande est terminée.`, "Le vendeur accepte. La commande est terminée."), "cmd-" + l.objet_id);
+          }
+          case "cmd_participation_refusee":
+            return M(T45(`${lib} : participation refusée`, "Participation refusée"),
+              "Le litige continue : l'équipe du Marché de Gros tranche.", "cmd-" + l.objet_id);
+          case "cmd_participation_retiree":
+            return M(T45(`${lib} : proposition retirée`, "Proposition retirée"),
+              "L'acheteur a retiré sa proposition. Le litige continue.", "cmd-" + l.objet_id);
+          case "cmd_participation_expiree":
+            return M(T45(`${lib} : proposition sans réponse`, "Proposition sans réponse"),
+              d.role === "vendeur" ? "Vous n'avez pas répondu à temps. L'équipe tranche le litige." : "Le vendeur n'a pas répondu. L'équipe tranche le litige.",
+              "cmd-" + l.objet_id);
           case "cmd_mot_bloque":
             return M(T45(`${lib} : mot secret bloqué`, "Mot secret bloqué"),
               B80("Trop d'essais faux. L'équipe du Marché de Gros va regarder la commande.", "Trop d'essais faux. L'équipe va regarder."), "cmd-" + l.objet_id);

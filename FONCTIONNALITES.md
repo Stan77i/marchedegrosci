@@ -365,6 +365,12 @@ Toutes les lignes de cette section sont appliquées sur le projet de **test**. L
 | Gardes de la négociation | opérationnelle (projet de test) | Prix d'au moins 1 F ; quantité entière pour les unités qui se comptent ; unités connues seulement ; texte renvoyé après coupure écrit une fois. | | `nego_agir`, `_unite_entiere`, `offres_unite_connue`, `demandes_unite_connue` (99d) | |
 | Notifications au bon moment | opérationnelle (projet de test) | Quantité et prix relus à l'envoi ; « ouverte » seulement par le destinataire (ou par le téléphone qui l'a reçue) ; rien pour un compte supprimé. | | `_notif_donnees_fraiches`, `notif_lots_prendre`, `notif_ouverte`, `notif_preparer` (99c) | |
 
+### C12. Participation de l'acheteur après un problème (schémas 102a et 102b, projet de test seulement)
+
+| Fonctionnalité | État | Ce que ça fait | Fichiers | Tables / fonctions SQL | Ce qui manque ou défaut |
+|---|---|---|---|---|---|
+| « Voulez-vous quand même participer ? » | serveur seulement (projet de test) | Après « arrivé » ou pendant un litige, l'acheteur peut proposer : payer le transport seulement (prix à part), garder une partie au prix normal, ou un montant tapé (0 < montant ≤ total). Une proposition ouverte à la fois (3 au plus), retirable. Le vendeur accepte (commande terminée avec ce montant, total initial gardé, commission « calculée » sur la part marchandise, aucun litige perdu, rien rendu au stock) ou refuse (l'équipe tranche). Sans réponse en 24 h : expirée, l'équipe tranche. Une proposition compte comme une réaction pendant le litige automatique. Aucun argent ne bouge. | `supabase/functions/pousser/index.ts` (v27, non déployée) | `commande_participations`, `commandes.total_initial`, `commandes.participation_montant`, `commande_participation_proposer`, `commande_participation_repondre`, `commande_participation_retirer`, `commande_participation_lire`, `participations_delais` (tâche `mdg-participations`), `_part_avis`, `_part_caduque`, `_cmd_acheteur_a_reagi`, `commande_suivi_lire`, `commandes_regles`, `admin_commandes_regler` | Écrans à faire (`v3/commandes.js`) ; propositions P20 à P23 à valider ; production après fusion et accord. |
+
 ## Module D. Notifications, accueil, aide, réglages, hors ligne, administration
 
 ### D1. Notifications sur le téléphone (Web Push)

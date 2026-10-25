@@ -1,7 +1,7 @@
 # Politique de confidentialité du Marché de Gros CI
 
 > **PROJET, à faire relire par un juriste. Rien n'est en ligne.**
-> Version de travail du 24/10/2026, mise à jour le 25/10/2026 (lecture des messages par l'équipe). Chaque ligne décrit ce que fait vraiment l'application ; les commentaires `<!-- source: … -->` disent où le vérifier. Ils seront retirés de la version publiée.
+> Version de travail du 24/10/2026, mise à jour le 25/10/2026 (lecture des messages par l'équipe ; durées de conservation, délai de réponse et itinéraires décidés par le propriétaire, « ok pour tout », voir `DECISIONS-A-PRENDRE.md`). Chaque ligne décrit ce que fait vraiment l'application ; les commentaires `<!-- source: … -->` disent où le vérifier. Ils seront retirés de la version publiée.
 
 ## 1. Qui est responsable de vos données
 
@@ -70,7 +70,7 @@ Quand vous signalez quelqu'un : le motif, votre précision, d'où vient le signa
 
 ### 2.7 Votre position (GPS)
 La position n'est jamais prise sans votre geste :
-- **Sur la carte**, le bouton « me localiser » sert à trouver votre région. Si vous tracez un trajet, votre point de départ et d'arrivée sont envoyés à un **service public de calcul d'itinéraire (OSRM)**, hors du Marché de Gros. [À VALIDER : garder ce service ou le remplacer.]
+- **Sur la carte**, le bouton « me localiser » sert à trouver votre région. Si vous tracez un trajet, votre point de départ et d'arrivée sont envoyés à un **service public de calcul d'itinéraire (OSRM)**, hors du Marché de Gros. **Décision du propriétaire (25/10/2026)** : ce trajet passera par notre serveur (le service d'itinéraire déjà utilisé pour les commandes) ; plus rien ne sera envoyé à un service inconnu. [À VÉRIFIER AVANT PUBLICATION : le changement est à construire ; aujourd'hui, `app/carte-gl.js` appelle encore OSRM.]
 - **Dans une commande**, vous pouvez joindre votre position à une étape (chargement, arrivée, réception). Elle est notée dans le journal de la commande.
 - **Le chauffeur** peut partager sa position pendant le transport, seulement quand l'application est ouverte. Une position est gardée toutes les 15 secondes au plus. Ces positions sont **effacées 30 jours après la fin de la commande**.
 <!-- source: app/carte-gl.js lignes 326-357 (navigator.geolocation, appel router.project-osrm.org) ; application.dc.html locate() ; v3/commandes.js position() et commande_avancer (p_lat, p_lon) ; v3/chauffeur.js chauffeur_position ; supabase/schema-29-gps.sql (table positions, 15 s, effacement à 30 jours, tâche mdg-purger-positions) -->
@@ -101,6 +101,7 @@ L'application garde sur votre téléphone : vos annonces en attente d'envoi, vos
 
 - **Nom public** : votre pseudonyme s'il existe ; sinon votre prénom et l'initiale du nom (« Awa K. »). Votre nom de famille entier n'est montré que si vous l'activez (Réglages → Montrer mon nom de famille).
 - MGCI ne vend pas vos données. [À VALIDER : à confirmer comme engagement.]
+- **Chaque geste de l'équipe sur un compte est noté** : qui, quand, pourquoi (décision du propriétaire du 25/10/2026). [À VÉRIFIER AVANT PUBLICATION : aujourd'hui, le journal de l'équipe note le numéro rendu, le code changé et les signalements (schémas 94b et 94e) ; les autres gestes sont à brancher.]
 <!-- source: supabase/schema.sql politique « offres lisibles par tous » (anon) ; schema-56-nom-du-compte.sql ; schema-4.sql profils_publics() (pseudo, sinon prénom + initiale sauf nom_public) ; schema-80-fil-public.sql (prénom + initiale, ville, produit, quantité, prix ; jamais de numéro) ; schema-78-activite-membres.sql (heure d'activité réservée aux connectés) ; schema-9-lieu-contact.sql (phone effacé des annonces) ; RLS des tables -->
 Note pour la relecture : l'audit du 24/10/2026 signale que `profil_public` montre à un visiteur sans compte un historique commercial (produits, volumes, villes, dates). La décision 43 prévoit « les totaux, pas le détail ». Vérifier avant publication que seuls les totaux sont visibles. [À VÉRIFIER AVANT PUBLICATION]
 
@@ -113,12 +114,14 @@ Note pour la relecture : l'audit du 24/10/2026 signale que `profil_public` montr
 | Dossier d'identité envoyé (photos, nom, numéro de pièce, téléphone) | Tant que le compte existe, puis **5 ans après la suppression du compte**. Un dossier refusé, remplacé ou retiré : 5 ans après cette date. Ensuite, effacé automatiquement. |
 | Brouillon de dossier d'identité jamais envoyé | 30 jours, ou dès que vous le retirez. |
 | Profil | Effacé quand vous supprimez votre compte (prénom, nom, pseudo, avatar, rôle, région, ville). |
-| Accords, commandes, messages de négociation | Gardés pour la trace des échanges, même après suppression du compte. [DÉCISION DU PROPRIÉTAIRE : durée.] |
-| Numéro de téléphone après suppression du compte | Le compte de connexion reste bloqué avec le numéro. [DÉCISION DU PROPRIÉTAIRE : durée.] |
-| Journal des notifications | [DÉCISION DU PROPRIÉTAIRE] Proposition : 90 jours (à effacer seulement avec l'accord du propriétaire). |
-| Signalements, alertes, sanctions, annulations | [DÉCISION DU PROPRIÉTAIRE] |
-| Photos de profil, d'activité, de structure, de preuve (colis, refus, signalement) | [DÉCISION DU PROPRIÉTAIRE] |
+| Accords, commandes, messages de négociation | **5 ans**, même après suppression du compte (trace des échanges). [À VALIDER PAR LE JURISTE] |
+| Numéro de téléphone après suppression du compte | **Libéré** dès la suppression (il peut servir à un nouveau compte), sauf pour un compte banni. Comptes supprimés avant le 25/10/2026 : libérés sur demande. |
+| Journal des notifications | **90 jours**. [À VALIDER PAR LE JURISTE] |
+| Signalements, alertes, sanctions, annulations | **2 ans**. [À VALIDER PAR LE JURISTE] |
+| Photos de preuve (colis au départ, refus, signalement) | **1 an après la clôture** de la commande ou du signalement. [À VALIDER PAR LE JURISTE] |
+| Photos de profil, d'activité, de structure | [DÉCISION DU PROPRIÉTAIRE : durée, hors des décisions du 25/10/2026.] |
 | Mesures de visite (sans donnée personnelle) | [DÉCISION DU PROPRIÉTAIRE] |
+Durées de 5 ans, 2 ans, 1 an et 90 jours : décision du propriétaire du 25/10/2026. [À VÉRIFIER AVANT PUBLICATION : leur effacement automatique n'existe pas encore ; il sera construit seulement avec l'accord explicite du propriétaire, car il efface des données.]
 <!-- source: schema-60 dm_duree() = 365 jours ; schema-29-gps.sql (30 jours) ; schema-16-identite-conservation.sql (5 ans ; brouillon 30 jours) ; schema-4.sql supprimer_compte() ; CLAUDE.md « Effacer le journal après 90 jours : seulement avec l'accord du propriétaire » -->
 
 ## 5. Vos droits
@@ -131,7 +134,7 @@ Vous pouvez :
 - **demander** l'effacement d'une donnée, sauf ce que nous devons garder (dossier d'identité pendant 5 ans, trace des commandes).
 
 Pour exercer un droit : Messages → « Écrire au Marché de Gros », ou [À REMPLIR : autre contact].
-Délai de réponse : [DÉCISION DU PROPRIÉTAIRE] [À VALIDER PAR LE JURISTE].
+Délai de réponse : **30 jours** au plus (décision du propriétaire du 25/10/2026). [À VALIDER PAR LE JURISTE]
 Vous pouvez aussi vous adresser à l'**ARTCI** (Autorité de Régulation des Télécommunications/TIC de Côte d'Ivoire). [À VALIDER PAR LE JURISTE : voie de recours exacte.]
 <!-- source: v3/compte.js (réglages, sécurité, suppression) ; CLAUDE.md « le seul choix est Activer/Désactiver sur le téléphone » -->
 
@@ -142,7 +145,7 @@ Vous pouvez aussi vous adresser à l'**ARTCI** (Autorité de Régulation des Té
 | **Supabase** | Base de données, comptes, fichiers (photos), tâches automatiques, envoi des notifications | Toutes les données du compte. Région du serveur : [À VÉRIFIER dans le tableau de bord Supabase]. |
 | **GitHub Pages** | Héberge les pages de l'application et du site (`stan77i.github.io/marchedegrosci`) | Aucune donnée de compte ; le service reçoit l'adresse IP des visiteurs, comme tout hébergeur. |
 | **OpenFreeMap** et **Amazon S3** (relief) | Fonds de carte | Le téléphone demande les morceaux de carte affichés. |
-| **OSRM** (serveur public de démonstration) | Trajet par la route sur la carte | Les deux points du trajet (voir 2.7). |
+| **OSRM** (serveur public de démonstration) | Trajet par la route sur la carte | Les deux points du trajet (voir 2.7). À retirer : le trajet passera par notre serveur (décision du 25/10/2026). |
 | **openrouteservice** | Calcul de l'itinéraire d'une commande, par le serveur | Les lieux de départ et de livraison de la commande. |
 | Service de notification du navigateur | Achemine les notifications | Titre et texte de la notification. |
 
@@ -162,7 +165,7 @@ Aucun système n'est parfait. En cas de fuite de données, nous vous préviendro
 
 - Loi ivoirienne n° 2013-450 du 19 juin 2013 relative à la protection des données à caractère personnel. [À VALIDER PAR LE JURISTE : date et intitulé exacts.]
 - Autorité de contrôle : l'**ARTCI**.
-- **La déclaration ou la demande d'autorisation auprès de l'ARTCI est à vérifier avec le juriste.** Rien n'indique dans le dépôt qu'elle a été faite. Le traitement des pièces d'identité gardées 5 ans est le point le plus sensible.
+- **La déclaration ou la demande d'autorisation auprès de l'ARTCI est à vérifier avec le juriste.** Rien n'indique dans le dépôt qu'elle a été faite. Le traitement des pièces d'identité gardées 5 ans est le point le plus sensible. **Décision du propriétaire (25/10/2026)** : il fait la démarche avec le juriste, **avant l'ouverture au public**.
 <!-- source: MISE-A-JOUR.md ligne 188 (« Déclarer ce traitement à l'ARTCI… Un juriste peut confirmer la formalité exacte ») ; audit 24/10/2026 partie 7 -->
 
 ## 9. Changements

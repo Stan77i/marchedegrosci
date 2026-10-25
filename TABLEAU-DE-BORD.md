@@ -5,7 +5,7 @@
 C'est **la seule page à lire**. Tout ce qui est important est ici, en français simple. Les détails sont dans les documents cités tout en bas.
 
 **Où on en est, en 3 lignes :**
-1. L'application marche sur le vrai serveur, avec toutes les corrections de l'audit (depuis le 25/10/2026). Il y a encore très peu de vrais membres.
+1. L'application marche sur le vrai serveur, avec toutes les corrections de l'audit et du contrôle qualité (schémas jusqu'au 101, le 25/10/2026, sauf le fichier « 101e » que vous collez vous-même). Il y a encore très peu de vrais membres.
 2. Aucun argent ne passe par l'application. La commission est seulement calculée, jamais encaissée.
 3. Vos décisions sont prises (« ok pour tout », 25/10/2026). Prochaine grande étape : l'essai fermé (20 personnes, 4 semaines). Il attend votre « on lance ».
 
@@ -181,7 +181,7 @@ Dans l'ordre conseillé.
 | # | Quoi | Qui |
 |---|---|---|
 | 1 | Fusionner #311, puis #312 (ce tableau de bord) | Vous |
-| 2 | Décisions juridiques : les écrans sont faits (aide « cassé en route », transport en cas de refus, « Panne ou météo » avec la source, écran « Compte banni » avec « Contester », carte sans service extérieur inconnu, profil sans compte, numéro contesté, conservation des données) : PR « écrans juridiques » à fusionner après #314, en même temps que la PR du serveur juridique. Restent : mettre en service le nouveau calcul de trajet de la carte et la contestation du bannissement sur le vrai serveur (avec votre accord), la photo pour « Panne ou météo » | Vous (fusionner), puis Claude |
+| 2 | Décisions juridiques : les écrans sont faits (aide « cassé en route », transport en cas de refus, « Panne ou météo » avec la source, écran « Compte banni » avec « Contester », carte sans service extérieur inconnu, profil sans compte, numéro contesté, conservation des données) : PR « écrans juridiques » à fusionner après #314, en même temps que la PR du serveur juridique. Sur le vrai serveur depuis le 25/10/2026 : les deux cases du numéro contesté, la contestation du bannissement et le calcul de trajet de la carte par notre serveur. Reste : la photo pour « Panne ou météo » | Claude |
 | 3 | Corrections du contrôle qualité (en cours, accord donné) | Claude |
 | 4 | Rejouer les tests des dernières corrections (suppression de compte, membre suspendu) et lire les commissions du vrai serveur (avec votre accord, en lecture seule) | Claude |
 | 5 | Faire les corrections choisies, une PR par lot, avec captures | Claude |
@@ -286,4 +286,4 @@ Attention : un défaut noté aujourd'hui « gênant » (un 2e paiement ignoré s
 - **23/10/2026** : nouveau site public construit et caché ; PDF de stratégie mis à jour tout seuls.
 - **24/10/2026** : les 4 chantiers (transport, fiabilité, badges, boutiques), « ville seulement », notifications automatiques, preuves au départ. L'audit donne 49 sur 100 : bon pour un essai fermé, pas pour le public.
 - **Nuit du 24 au 25/10/2026** : toutes les corrections de l'audit sont faites et testées.
-- **25/10/2026** : corrections mises sur le vrai serveur ; litige en 1 h et quantité minimale ; contrôle qualité permanent (premier bilan) ; décisions juridiques toutes prises (« ok pour tout ») ; kit de l'essai fermé ; ce tableau de bord.
+- **25/10/2026** : corrections mises sur le vrai serveur ; litige en 1 h et quantité minimale ; contrôle qualité permanent (premier bilan) ; décisions juridiques toutes prises (« ok pour tout ») ; kit de l'essai fermé ; ce tableau de bord. Puis, sur le vrai serveur : numéro contesté (deux cases), contestation du compte banni et trajets de la carte par notre serveur.

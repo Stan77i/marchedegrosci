@@ -24,7 +24,7 @@
 - 🕓 en cours : écrit sur la branche `claude/corrections-99`, pas encore fusionné.
 
 **Les règles du 25/10/2026 intégrées ici**
-- **Pendant le trajet, rien d'automatique.** Tant que le vendeur n'a pas déclaré « arrivé », il n'y a ni litige automatique ni rappel automatique, même si la marchandise met très longtemps. Le vendeur peut signaler un retard (motif et nouvelle date). L'acheteur peut « demander des nouvelles », au plus une fois toutes les 6 h.
+- **Pendant le trajet, rien d'automatique.** Tant que le vendeur n'a pas déclaré « arrivé », il n'y a ni litige automatique ni rappel automatique, même si la marchandise met très longtemps. Le vendeur peut signaler un retard (motif et nouvelle date). L'acheteur peut « demander des nouvelles » autant qu'il veut (deux appuis dans la même minute = une relance).
 - **Risque et participation (25/10/2026, validé « Ok »).** Le risque de la marchandise reste au vendeur jusqu'à la réception conforme ; « transport à la charge de l'acheteur » veut seulement dire que le transport n'est pas compris dans le prix. Cassé, gâté, manquant ou non conforme : l'acheteur ne paie rien, ni marchandise ni transport. Quand il signale un problème : « Voulez-vous quand même participer ? » (jamais « Oui » par défaut). Non : litige normal. Oui : transport seulement, partie gardée au prix normal, ou montant tapé ; le vendeur accepte (commande terminée avec ce montant) ou refuse (l'équipe tranche). Aucun argent ne bouge. Combinaisons : partie K.
 - **Après « arrivé », l'acheteur a 1 h** pour : (a) confirmer avec le mot secret ; (b) signaler un problème (litige) ; (c) demander un délai justifié (motif ; 2 h, 6 h ou 24 h ; une seule fois). S'il ne fait rien, un litige s'ouvre tout seul. 1 h plus tard, la commande est close en faveur du vendeur : commission « calculée » (aucun argent réel), litige perdu pour l'acheteur muet. S'il répond pendant le litige, l'équipe tranche.
 
@@ -124,7 +124,7 @@ Colonnes : **N°** · **Situation** (qui fait quoi) · **Ce qui doit se passer**
 | E-02 | Une partie veut annuler après le chargement | Impossible : seulement « Signaler un problème ». | — | — | — | ✅ 92b |
 | E-03 | Le trajet dure très longtemps, le vendeur ne déclare rien | **Rien d'automatique** : ni rappel, ni litige. | personne | aucun | aucun | ✅ sur `main` (97d : rien pour le trajet) ; ⚠️ **🕓 99a ajoute un rappel à 48 h et un litige à 96 h pendant le trajet : contraire à la règle du 25/10**, à retirer de la branche (P1) |
 | E-04 | Le vendeur signale un retard (motif + nouvelle date) | Noté dans le journal, l'acheteur voit la nouvelle date. | l'acheteur | — | aucun | ❌ manquant (aucune fonction) |
-| E-05 | L'acheteur demande des nouvelles | Un avis part au vendeur ; au plus une fois toutes les 6 h. | le vendeur | 6 h entre deux | aucun | ❌ manquant (seuls les messages privés existent) |
+| E-05 | L'acheteur demande des nouvelles | Un avis part au vendeur, sans limite (deux appuis dans la même minute = une relance). | le vendeur | — | aucun | ✅ 99a (`commande_nouvelles_demander`) |
 | E-06 | Le vendeur ne répond pas aux demandes de nouvelles | Rien d'automatique ; l'acheteur peut signaler un problème. | — | — | — | ✅ `commande_litige` possible pendant le trajet ; ❌ la demande de nouvelles n'existe pas (P14) |
 | E-07 | Transbordement, changement de chauffeur | Lieu noté ; le prix convenu ne change pas (n° 8). | l'acheteur | — | — | ✅ étape « transbordement » (92b) |
 | E-08 | Marchandise cassée en route | Vendeur responsable jusqu'à la réception conforme, **quel que soit le transport** ; l'acheteur ne paie ni la marchandise ni le transport (exemple : tomate 100 F + transport 50 F, gâtée : 0 F), ou participe s'il le veut (partie K). L'équipe juge avec les photos de départ si le refus est contesté. (Règle du 25/10/2026, remplace la n° 10.) | l'équipe | — | — | ✅ participation 102a à 102d (projet de test) ; ⚠️ dans l'aide (branche `claude/juridique-ecrans`) ; écran de la participation à faire |
@@ -250,7 +250,7 @@ Fonctions : `commande_participation_proposer(commande, mode, quantite_gardee, mo
 |---|---|
 | Rien d'automatique pendant le trajet | ✅ sur `main` ; ⚠️ 99a ajoute rappel 48 h et litige 96 h pendant le trajet : à retirer avant la fusion de la branche |
 | Le vendeur signale un retard (motif + nouvelle date) | ❌ |
-| L'acheteur demande des nouvelles (une fois toutes les 6 h) | ❌ |
+| L'acheteur demande des nouvelles (sans limite, une relance par minute) | ✅ 99a |
 | 1 h après « arrivé » : confirmer avec le mot | ✅ |
 | 1 h après « arrivé » : signaler un problème | ✅ |
 | 1 h après « arrivé » : délai justifié (2 h, 6 h, 24 h, une fois) | ❌ |

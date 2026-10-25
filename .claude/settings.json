@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "mcp__supabase"
+      "mcp__supabase",
+      "mcp__Supabase"
     ]
   }
 }

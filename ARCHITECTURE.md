@@ -63,7 +63,13 @@ Chaque module expose un objet global : `MDGNuage`, `MDGCompte`, `MDGNegoce`, `MD
 
 ### 2.4 Service worker et hors ligne
 
-`sw.js`, cache `mgci-v262` :
+`sw.js` (trois réserves ; le numéro du cache de code est `CACHE` dans le fichier) :
+
+- `mgci-vNNN` (le code) change à chaque version, mais à l'installation un fichier déjà gardé sous la même adresse (même `?v=`) est recopié sans téléchargement : seuls les fichiers dont le `?v=` a changé sont téléchargés ;
+- `fichiers-mgci` (durable : images, polices, icônes, `vendor/`, carte ; inventaire `mgci-inventaire.json`) ne change jamais de nom : rien n'y est retéléchargé ; pour remplacer un fichier sous le même nom, ajouter `?v=2` à son entrée dans `sw.js` ;
+- `tuiles-mgci` (tuiles de carte).
+
+Règles de la version précédente, toujours valables :
 
 - pages, code et manifeste : réseau d'abord, cache si le réseau ne répond pas ;
 - fichiers avec `?v=` et images : cache d'abord ;
@@ -116,7 +122,7 @@ Mode d'emploi détaillé : `PORTAGE-SITE.md`, partie 6. Plan SEO : `docs/seo/PLA
 
 Le front ne contient que la clé publique. Les clés privées (VAPID, clé partagée de `pousser`, clé openrouteservice) sont dans le coffre (Vault) ou les secrets des fonctions Edge.
 
-Les changements de base sont gardés dans `supabase/schema-*.sql` (81 fichiers, du schéma 2 au schéma 81) et `supabase/a-lancer-*.sql`.
+**Schémas 92 à 96** (corrections de l'audit du 24/10/2026) : appliqués sur le projet de **test** seulement ; la production attend l'accord du propriétaire. Les changements de base sont gardés dans `supabase/schema-*.sql` (81 fichiers, du schéma 2 au schéma 81) et `supabase/a-lancer-*.sql`.
 
 ### 4.2 Extensions installées
 
@@ -171,6 +177,11 @@ Les changements de base sont gardés dans `supabase/schema-*.sql` (81 fichiers, 
 | `site_mesures` | mesure d'audience anonyme du site | 0 |
 | `boutiques`, `boutique_passages`, `boutique_sels` | boutiques des vendeurs, visites comptées une fois par visiteur et par jour, sel du jour (schéma 86, projet de test seulement) | 0 |
 
+| `stock_mouvements` | stock pris par chaque accord, stock rendu, « sans suite » (schéma 92a, **test seulement**) | 0 (lecture par fonctions) |
+| `villes_ref` | copie de la liste des villes de `app/villes.js` (124 villes), pour vérifier la ville d'une annonce (schéma 93a, **test seulement**) | 0 |
+| `admin_journal` | journal des gestes de l'équipe (schéma 94b, **test seulement**) | lecture équipe seulement |
+| `signalement_masquages` | annonces cachées par des signalements, contestation et décision de l'équipe (schéma 94e, **test seulement**) | 0 |
+| `tableau_prix_cache` | tableau des prix par région, recalculé toutes les 5 min (schéma 96a, **test seulement**) | 0 |
 | `niveaux_regles`, `niveaux_membres`, `niveaux_journal`, `niveaux_contestations` | niveaux de confiance (schéma 85) : paliers, état de chaque membre, historique (ajout seulement), contestations | 0 (lecture par fonctions seulement) |
 
 ### 4.4 Politiques RLS principales
@@ -207,6 +218,7 @@ Stockage (buckets) :
 - **Séquestre et litiges** : `sequestre_depot_confirme` (réservée au rôle service, aucun appelant réel), `commande_liberer`, `admin_liberer`, `sequestre_liberer_echus`, `commande_litige`, `litige_ecrire`, `admin_litige_trancher`. Aucun argent ne circule.
 - **Achats récurrents, pros, groupés** : `recommande_preparer`, `mes_rappels`, `rappels_envoyer`, `besoin_creer3`, `besoins_liste`, `besoin_repondre`, `groupe_*`, `groupes_echeances`.
 - **Notifications** : `push_abonner`, `push_desabonner`, `notif_reglage_moi`, `push_config` (rôle service), `push_*` des déclencheurs, `marketing_tick`. Schémas 88a, 88b, 88d (en production depuis le 24/10/2026) : `notif_preparer`, `notif_resultat`, `notif_desactivation_noter` (rôle service), `notif_ouverte` (anon et membres), `push_quitter`, `notif_permission_retiree`, `notif_prefs_moi`, `notif_pref_regler`, `notif_reglage_diffusions` (gardée), `notif_stats`, `notif_stats_jours`, `notif_regles_regler` (admin), `notif_cible_annonce`, `notif_cible_marche`, `notif_cible_conseils`, `notif_fourchette`, `notif_groupes_veille`, `notif_renouveler_calculer`, `notif_lots_prendre`, `notif_actions_calculer`, `notif_tick`. Schéma 91 (**projet de test seulement**, production après l'accord du propriétaire) : `notif_relances` (N1 à N9), `_notif_mettre`, `_notif_dernier_com`, `_notif_ecart_ok`, `_notif_rang`, `notif_annonces_recentes`, `notif_deja_vus` ; `_notif_pref` répond toujours « oui » (les anciennes préférences ne comptent plus).
+- **Corrections de l'audit (schémas 92 à 96, test seulement)** : stock et délais `commandes_delais`, `commande_delais`, `commande_annuler_retard`, `accords_sans_suite`, `admin_commandes_regler`, `commandes_regles`, `admin_commande_issue`, `admin_litige_partager`, `_cmd_rendre_stock`, `_cmd_alerte` ; annonces `annonces_expirer`, `annonce_prolonger`, `admin_annonces_regler`, `annonces_duree_jours`, `_annonce_regles`, `_nego_arret_refus`, `_groupe_refus` ; confiance `_nom_reserve`, `admin_numero_rendre`, `admin_reinitialiser_journal`, `_equipe_ecrire`, `admin_paires_fermees`, `mes_annonces_masquees`, `signalement_contester`, `admin_annonce_retablir`, `admin_annonce_maintenir`, `admin_annulation_classer`, `_fiab_litige_perdu` ; transport et argent `_transport_reseau_min`, `_cmd_argent_passe`, colonne `statut_registre` (commissions « calculée » ou « due » ; la valeur qui fait foi est `coalesce(statut_registre, statut)`) ; technique `tableau_prix_calculer`, `_notif_objet_vivant`, `notif_besoins_ouverts`, `stockage_volume`, `dm_envoyer(…, p_client)`.
 - **Mesure du site** : `mesurer`, `mesures_resume` (admin).
 - **Boutiques** (schéma 86, projet de test seulement) : `boutique_publique`, `boutiques_de`, `boutiques_publiques`, `ma_boutique`, `boutique_activer`, `boutique_mesurer` ; outils internes `_boutique_*` (nom, adresse, état d'une offre, catalogue, boutique cachée).
 
@@ -220,7 +232,8 @@ Stockage (buckets) :
 - **Annonces, schéma 86** : `offres_boutique` / `demandes_boutique` (quantité obligatoire, quantité de départ, retrait avec trace), `offres_boutique_retrait` / `demandes_boutique_retrait` (négociations fermées au retrait) ; profils : `profils_boutique_pseudo`, `profils_boutique_supprime`.
 - **Commandes** : synchronisation des commissions (vente et transport), séquestre, mot de réception, pause du réseau de transport. Les journaux (`commission_journal`, `commission_transport_journal`, `sequestre_journal`, `litige_messages`) ne peuvent plus être modifiés une fois écrits.
 - **Profils** : textes, photos et structure propres, nom repris sur les annonces, dossier d'identité à la suppression du compte.
-- **Signalements** : modération après un signalement (`apres_signalement`).
+- **Signalements** : modération après un signalement (`apres_signalement`) ; schéma 94e (test seulement) : seuls des membres vérifiés et anciens font cacher une annonce.
+- **Schémas 92 à 96 (test seulement)** : `commandes_stock_retour` (stock rendu), `offres_aa_regles` / `demandes_aa_regles` (règles d'annonce), `offres_groupes_sortie` (groupes fermés quand l'offre sort), `profils_confiance` (noms réservés).
 - **Notifications** (`push_*`) : sur `messages`, `dm`, `alertes`, `offres`, `demandes`, `verifications`, `commande_etapes`, `transporteurs`, `transport_missions`, `besoins`, `groupes_achat`, `groupe_participants`, `code_demandes`, `litige_messages`. Ils appellent la fonction Edge `pousser` par `pg_net`.
 
 ### 4.7 Tâches planifiées (pg_cron)
@@ -238,9 +251,14 @@ Toutes actives en production :
 | `mdg-purger-positions` | chaque nuit, 3 h 23 UTC | `positions_purger` : effacement des positions GPS |
 | `mdg-niveaux` | chaque nuit, 4 h 37 UTC | `niveaux_recalculer` : niveaux de confiance (fenêtre de 12 mois, fin des sursis) |
 | `mdg-identites-matin` | chaque matin, 7 h 45 UTC | `push_resume_identites` : résumé des identités à examiner pour l'admin |
+| `mdg-commandes-delais` | toutes les 15 min (schéma 92b, **test seulement**) | `commandes_delais` : rappel de chargement, retard, rappel de réception, litige automatique, litiges en retard, accords sans suite |
+| `mdg-annonces-expirer` | toutes les 15 min (schéma 93c, **test seulement**) | `annonces_expirer` : annonces de plus de 30 jours cachées (par lots de 500, jamais effacées), rappel 3 jours avant |
+| `mdg-prix` | toutes les 5 min (schéma 96a, **test seulement**) | `tableau_prix_calculer` : recalcule `tableau_prix_cache` |
 | `mdg-notif` | toutes les 15 min (schéma 88b, en production) | `notif_tick` : alertes regroupées, groupes bientôt complets, produits à racheter, actions après ouverture. Avec le schéma 91 (**projet de test seulement**, production après l'accord du propriétaire), il appelle aussi `notif_relances` (9 déclencheurs commerciaux, de 7 h à 21 h) |
 
 ### 4.8 Fonctions Edge
+
+Le fichier `supabase/functions/pousser/index.ts` du dépôt est en **v24** (textes de rappels de commande, rappel `offre_fin`, `notif_besoins_ouverts`) : **non déployé**, ni en production ni sur le test. La ligne ci-dessous décrit ce qui tourne en production.
 
 | Fonction | Version | Rôle |
 |---|---|---|

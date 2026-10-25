@@ -1,0 +1,57 @@
+{
+  "_lisez-moi": "Carte des 14 unités du contrôle qualité, lue par tools/controle/lancer.js. Centre de commande : CONTROLE_QUALITE/README.md. Quand un test SQL est ajouté dans supabase/tests/, ajouter sa ligne dans « testsSql » (unités et schémas qu'il couvre). Les batteries de CONTROLE_QUALITE/tests/ sont trouvées toutes seules par leur nom (Uxx-…).",
+  "unites": {
+    "U01": "Logique métier",
+    "U02": "Sécurité",
+    "U03": "Transactions et argent",
+    "U04": "Stocks et produits",
+    "U05": "Commandes et négociations",
+    "U06": "Transport et livraison",
+    "U07": "Profils et confiance",
+    "U08": "Notifications",
+    "U09": "Base de données",
+    "U10": "Fiabilité technique",
+    "U11": "Administration",
+    "U12": "Compréhension",
+    "U13": "Cohérence documentaire et commerciale",
+    "U14": "Situations extrêmes"
+  },
+  "statique": {
+    "syntaxe":          { "id": "STA-01", "unites": ["U10"] },
+    "cache":            { "id": "STA-02", "unites": ["U10"] },
+    "mots-interdits":   { "id": "STA-03", "unites": ["U13", "U03"] },
+    "communes":         { "id": "STA-04", "unites": ["U01"] },
+    "doublon-texte":    { "id": "STA-05", "unites": ["U12"] },
+    "doublon-fonction": { "id": "STA-06", "unites": ["U10"] },
+    "doublon-id":       { "id": "STA-07", "unites": ["U10"] },
+    "long-texte":       { "id": "STA-08", "unites": ["U12"] },
+    "slogan":           { "id": "STA-09", "unites": ["U12", "U13"] },
+    "police":           { "id": "STA-10", "unites": ["U12"] },
+    "bleu":             { "id": "STA-11", "unites": ["U12"] },
+    "sql":              { "id": "STA-12", "unites": ["U09"] },
+    "liens":            { "id": "STA-13", "unites": ["U13"] },
+    "navigateur":       { "id": "STA-14", "unites": ["U10"] }
+  },
+  "testsSql": {
+    "supabase/tests/alertes-ciblage-scenarios.sql":   { "unites": ["U08"], "schemas": ["96f"] },
+    "supabase/tests/boutiques-86-scenarios.sql":      { "unites": ["U04", "U07"], "schemas": ["86"] },
+    "supabase/tests/commission-95b-scenarios.sql":    { "unites": ["U03"], "schemas": ["95b"] },
+    "supabase/tests/confiance-94-scenarios.sql":      { "unites": ["U07", "U02", "U11"], "schemas": ["94"] },
+    "supabase/tests/dm-anti-doublon-scenarios.sql":   { "unites": ["U10", "U05"], "schemas": ["96c", "97a"] },
+    "supabase/tests/e2e-parcours-scenarios.sql":      { "unites": ["U01", "U03", "U04", "U05", "U06"], "schemas": ["92", "93", "94", "95", "95b", "96a", "96b", "96c", "96d", "96e", "96f", "97a"] },
+    "supabase/tests/fiabilite-84-scenarios.sql":      { "unites": ["U07", "U05", "U02"], "schemas": ["84", "92"] },
+    "supabase/tests/niveaux-85-scenarios.sql":        { "unites": ["U07"], "schemas": ["85", "94d"] },
+    "supabase/tests/notif-objet-vivant-scenarios.sql":{ "unites": ["U08"], "schemas": ["96b"] },
+    "supabase/tests/notifications-88-scenarios.sql":  { "unites": ["U08"], "schemas": ["88", "91", "96b"] },
+    "supabase/tests/regles-93-scenarios.sql":         { "unites": ["U01", "U04", "U02"], "schemas": ["93", "87", "87b", "87c"] },
+    "supabase/tests/stock-commandes-scenarios.sql":   { "unites": ["U04", "U05", "U06"], "schemas": ["92", "89", "90", "90b"] },
+    "supabase/tests/stockage-volume-scenarios.sql":   { "unites": ["U09", "U11"], "schemas": ["96e"] },
+    "supabase/tests/tableau-prix-scenarios.sql":      { "unites": ["U04"], "schemas": ["96a"] },
+    "supabase/tests/transport-83-scenarios.sql":      { "unites": ["U06", "U02"], "schemas": ["83", "90", "90b"] },
+    "supabase/tests/transport-95-scenarios.sql":      { "unites": ["U06", "U03"], "schemas": ["95"] }
+  },
+  "enCours": [
+    { "schemas": ["97b"], "sujet": "litige en 1 h (au lieu de 24 h), quantité minimale et achat partiel", "branche": "claude/litige-1h-quantites", "consigne": "un test qui touche ces délais ou ces quantités est noté « en cours de changement », pas « échoué »" }
+  ],
+  "front": "^(application\\.dc\\.html|index-v3\\.html|index\\.html|admin\\.html|suivi\\.html|404\\.html|maintenance\\.html|manifest\\.webmanifest|app/|v3/|v2/|css/)"
+}

@@ -1,9 +1,11 @@
 #!/usr/bin/env node
-/* Les gardiens du Marché de Gros : contrôles automatiques du dépôt (doublons, sur-explications, bugs, incohérences).
-   Lancement : node tools/gardiens/controle.js  →  écrit rapport-gardiens.md à la racine du dépôt.
+/* Contrôle statique du Marché de Gros (« les gardiens ») : doublons, sur-explications, bugs, incohérences.
+   Lancement : node tools/controle/controle.js  →  écrit rapport-controle.md à la racine du dépôt.
+   Option : --json <fichier> (ou CONTROLE_JSON) écrit aussi les constats en JSON (lu par tools/controle/lancer.js).
+   Point d'entrée de tous les contrôles : tools/controle/lancer.sh (centre de commande : CONTROLE_QUALITE/README.md).
    Aucune dépendance à installer. La partie navigateur (erreurs JavaScript au chargement) ne tourne que si Playwright est trouvé.
    Le script se termine toujours avec le code 0 : un constat ne fait jamais échouer la tâche GitHub.
-   Mode d'emploi, liste des contrôles et exceptions : tools/gardiens/README.md. */
+   Mode d'emploi, liste des contrôles et exceptions : tools/controle/README.md. */
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -11,7 +13,9 @@ const vm = require('vm');
 const cp = require('child_process');
 
 const RACINE = path.resolve(__dirname, '..', '..');
-const SORTIE = process.env.GARDIENS_SORTIE || path.join(RACINE, 'rapport-gardiens.md');
+const SORTIE = process.env.CONTROLE_SORTIE || process.env.GARDIENS_SORTIE || path.join(RACINE, 'rapport-controle.md');
+const iJson = process.argv.indexOf('--json');
+const SORTIE_JSON = iJson > 0 ? process.argv[iJson + 1] : process.env.CONTROLE_JSON;
 const EXC = lireJSON(path.join(__dirname, 'exceptions.json')) || { seuils: {}, ignorer: [] };
 const SEUILS = Object.assign({ motsMax: 25, doublonMin: 40, doublonMax: 30, parGroupe: 25 }, EXC.seuils || {});
 
@@ -515,7 +519,15 @@ controle('sql', () => {
 
 /* h. Liens vers des fichiers */
 controle('liens', () => {
-  const docs = [...(EXC.documentsLiens || ['CLAUDE.md']), ...liste('docs/gardiens', /\.md$/)].filter(existe);
+  const docsCQ = (function tous(dir) {
+    if (!existe(dir)) return [];
+    return fs.readdirSync(path.join(RACINE, dir), { withFileTypes: true }).flatMap(e =>
+      e.isDirectory() ? (e.name === 'rapports' ? [] : tous(dir + '/' + e.name)) : (/\.md$/.test(e.name) ? [dir + '/' + e.name] : []));
+  })('CONTROLE_QUALITE');   // les rapports datés sont des photos d'un jour : leurs liens ne sont pas relus
+  const docs = [...(EXC.documentsLiens || ['CLAUDE.md']), ...docsCQ].filter(existe);
+  // nom de fichier seul (« regles-93-scenarios.sql ») : il suffit qu'un fichier du dépôt porte ce nom
+  let noms = new Set();
+  try { noms = new Set(cp.execFileSync('git', ['ls-files'], { cwd: RACINE, encoding: 'utf8', maxBuffer: 64 << 20 }).split('\n').map(f => f.split('/').pop())); } catch (_) { }
   const dejaVus = new Set();
   for (const d of [...new Set(docs)]) {
     const src = lire(d);
@@ -525,9 +537,10 @@ controle('liens', () => {
       if (/^(https?:|mailto:|\/)/.test(p)) continue;                        // adresse web ou chemin de la machine (/opt/…)
       if (/^[\w.-]+\/[\w.-]+$/.test(p) && !/\.\w+$/.test(p) && !existe(p.split('/')[0])) continue;   // dépôt GitHub (auteur/nom)
       if (!/\//.test(p) && !/\.(md|js|html|json|sql|yml|css|py|txt|pdf|webp|png)$/.test(p)) continue;
-      if (/[<>*{}$|]|\bNN\b|XX|\.\.\.|…/.test(p) || /^[-.]/.test(p) || /\s/.test(p)) continue;
+      if (/[<>*{}$|]|\bNN\b|XX|AAAA|JJ|\.\.\.|…/.test(p) || /^[-.]/.test(p) || /\s/.test(p)) continue;
+      if (!/\//.test(p) && noms.has(p)) continue;
       if (/^(origin|claude|refs)\//.test(p) || /^[\w-]+\/[\w.-]+$/.test(p) && !/\./.test(p.split('/').pop()) && !existe(p) && /^[A-Z]/.test(p)) continue;
-      const base = d.startsWith('docs/gardiens/') ? path.posix.dirname(d) : '';
+      const base = d.startsWith('CONTROLE_QUALITE/') ? path.posix.dirname(d) : '';
       const cand = [p, base ? path.posix.normalize(base + '/' + p) : null].filter(Boolean);
       if (cand.some(existe)) continue;
       if (/^repos\/|^Stan77i\/|\/(pulls|issues)\b/.test(p)) continue;     // adresses GitHub, pas des fichiers
@@ -608,12 +621,12 @@ function rapport() {
   const jour = date.toLocaleDateString('fr-FR', { timeZone: 'UTC', day: '2-digit', month: '2-digit', year: 'numeric' });
   const r = constats.filter(c => c.niveau === 'rouge'), o = constats.filter(c => c.niveau === 'orange'), inf = constats.filter(c => c.niveau === 'info');
   const L = [];
-  L.push('# Rapport des gardiens · ' + jour, '');
+  L.push('# Rapport du contrôle statique · ' + jour, '');
   L.push('**En bref** : ' + (r.length ? r.length + ' rouge' + (r.length > 1 ? 's' : '') + ' (à corriger vite)' : 'aucun rouge') + ', ' +
     (o.length ? o.length + ' orange' + (o.length > 1 ? 's' : '') + ' (à regarder)' : 'aucun orange') + ', ' +
     passes.length + ' contrôle' + (passes.length > 1 ? 's' : '') + ' sans rien à signaler' +
     (nonVerifies.length ? ', ' + nonVerifies.length + ' non vérifié' + (nonVerifies.length > 1 ? 's' : '') : '') + '.', '');
-  if (ignores) L.push('_' + ignores + ' constat' + (ignores > 1 ? 's' : '') + ' mis de côté par les exceptions connues (`tools/gardiens/exceptions.json`)._', '');
+  if (ignores) L.push('_' + ignores + ' constat' + (ignores > 1 ? 's' : '') + ' mis de côté par les exceptions connues (`tools/controle/exceptions.json`)._', '');
   const section = (titre, liste) => {
     if (!liste.length) return;
     L.push('## ' + titre, '');
@@ -622,7 +635,7 @@ function rapport() {
     for (const [k, cs] of Object.entries(par)) {
       L.push('### ' + (NOMS[k] || k) + ' (' + cs.length + ')', '');
       for (const c of cs.slice(0, SEUILS.parGroupe)) L.push('- ' + (c.lieu ? lien(c.lieu) + ' : ' : '') + c.message);
-      if (cs.length > SEUILS.parGroupe) L.push('- … et ' + (cs.length - SEUILS.parGroupe) + ' autres (lancer `node tools/gardiens/controle.js` pour la liste complète)');
+      if (cs.length > SEUILS.parGroupe) L.push('- … et ' + (cs.length - SEUILS.parGroupe) + ' autres (lancer `node tools/controle/controle.js` pour la liste complète)');
       L.push('');
     }
   };
@@ -636,9 +649,9 @@ function rapport() {
   L.push('## Non vérifié', '');
   if (nonVerifies.length) for (const n of nonVerifies) L.push('- ' + (NOMS[n.controle] || n.controle) + ' : ' + n.raison + '.');
   else L.push('- Tout a été vérifié.');
-  L.push('', '---', '_Fait par `tools/gardiens/controle.js`' + (process.env.GITHUB_SHA ? ' sur la version ' + process.env.GITHUB_SHA.slice(0, 7) : '') + '. Mode d’emploi : `tools/gardiens/README.md`._');
+  L.push('', '---', '_Fait par `tools/controle/controle.js`' + (process.env.GITHUB_SHA ? ' sur la version ' + process.env.GITHUB_SHA.slice(0, 7) : '') + '. Mode d’emploi : `tools/controle/README.md`._');
   let texte = L.join('\n') + '\n';
-  if (texte.length > 60000) texte = texte.slice(0, 59000) + '\n\n… rapport coupé (trop long pour GitHub). Lancer `node tools/gardiens/controle.js` pour tout voir.\n';
+  if (texte.length > 60000) texte = texte.slice(0, 59000) + '\n\n… rapport coupé (trop long pour GitHub). Lancer `node tools/controle/controle.js` pour tout voir.\n';
   return { texte, r: r.length, o: o.length };
 }
 
@@ -653,6 +666,10 @@ function rapport() {
   passes.sort((a, b) => ordre.indexOf(a.controle) - ordre.indexOf(b.controle));
   const { texte, r, o } = rapport();
   fs.writeFileSync(SORTIE, texte);
-  console.log('Rapport des gardiens : ' + r + ' rouge(s), ' + o + ' orange(s) → ' + path.relative(process.cwd(), SORTIE));
+  if (SORTIE_JSON) fs.writeFileSync(SORTIE_JSON, JSON.stringify({
+    date: new Date().toISOString(), constats: constats.map(({ niveau, controle, lieu, message, cle }) => ({ niveau, controle, lieu, message, cle: cle || null })),
+    passes, nonVerifies, ignores
+  }, null, 1));
+  console.log('Contrôle statique : ' + r + ' rouge(s), ' + o + ' orange(s) → ' + path.relative(process.cwd(), SORTIE));
   process.exit(0);
-})().catch(e => { console.error(e); try { fs.writeFileSync(SORTIE, '# Rapport des gardiens\n\nLe contrôle s’est arrêté sur une erreur : ' + e.message + '\n'); } catch (_) { } process.exit(0); });
+})().catch(e => { console.error(e); try { fs.writeFileSync(SORTIE, '# Rapport du contrôle statique\n\nLe contrôle s’est arrêté sur une erreur : ' + e.message + '\n'); } catch (_) { } process.exit(0); });

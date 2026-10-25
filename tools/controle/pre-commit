@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Hook git FACULTATIF du contrôle qualité MGCI (rien n'est installé de force).
+# Installer (une fois, depuis la racine du dépôt) :
+#   cp tools/controle/pre-commit "$(git rev-parse --git-common-dir)/hooks/pre-commit"
+#   chmod +x "$(git rev-parse --git-common-dir)/hooks/pre-commit"
+# Retirer : enlever ce fichier du dossier hooks. Passer outre une fois : git commit --no-verify.
+# Ce qu'il vérifie, sur les fichiers mis dans le commit seulement (quelques secondes) :
+#   - node --check sur chaque .js ; chaque .json se lit ;
+#   - si un fichier du front est dans le commit : sw.js aussi, avec CACHE changé (règle de CLAUDE.md).
+# Contrôle complet après modification : bash tools/controle/lancer.sh apres-modif (ou CONTROLE_COMPLET=1 git commit …).
+set -u
+racine="$(git rev-parse --show-toplevel)"
+cd "$racine" || exit 0
+fichiers="$(git diff --cached --name-only --diff-filter=ACMR)"
+[ -z "$fichiers" ] && exit 0
+erreurs="$(mktemp)"
+echec=0
+while IFS= read -r f; do
+  case "$f" in
+    *.js|*.mjs|*.cjs)
+      if ! node --check "$f" 2>"$erreurs"; then echo "✗ Syntaxe : $f"; head -5 "$erreurs"; echec=1; fi ;;
+    *.json)
+      if ! node -e 'JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"))' "$f" 2>/dev/null; then echo "✗ JSON illisible : $f"; echec=1; fi ;;
+  esac
+done <<< "$fichiers"
+rm -f "$erreurs"
+motif="$(node -e 'process.stdout.write(require("./tools/controle/unites.json").front)')"
+if printf '%s\n' "$fichiers" | grep -Eq "$motif"; then
+  if ! printf '%s\n' "$fichiers" | grep -qx 'sw.js'; then
+    echo "✗ Fichiers du front dans le commit, mais pas sw.js : monter CACHE (mgci-vNNN) et les ?v= (règle de CLAUDE.md)."
+    echec=1
+  elif ! git diff --cached -U0 -- sw.js | grep -q "^+const CACHE = "; then
+    echo "✗ sw.js est dans le commit mais CACHE n'a pas changé."
+    echec=1
+  fi
+fi
+if [ "${CONTROLE_COMPLET:-0}" = "1" ]; then
+  bash tools/controle/lancer.sh apres-modif --sortie /dev/null || echec=1
+fi
+if [ $echec -ne 0 ]; then
+  echo "Commit arrêté par le contrôle qualité (tools/controle/pre-commit). Corriger, ou git commit --no-verify pour passer outre."
+fi
+exit $echec

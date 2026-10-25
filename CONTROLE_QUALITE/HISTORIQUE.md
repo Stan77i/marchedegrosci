@@ -6,3 +6,4 @@
 | Date | Mode | Commit | Réussis | Échoués | Bloqués | Non exécutés | En attente | Échec bloquant | Rapport |
 |---|---|---|---|---|---|---|---|---|---|
 | 25/10/2026 | premier rapport des gardiens (ancien chemin tools/gardiens/controle.js, avant ce dossier) | non noté | 8 contrôles sans constat | 1 rouge, 89 oranges | 0 | — | — | — | non enregistré dans le dépôt ; repris dans `REGISTRE_ANOMALIES.md` (ANO-001 à ANO-006) |
+| 25/10/2026 à 00 h 39 | `tout` | `e215991` | 8 | 6 | 0 | 17 | 0 | non | [rapport](rapports/2026-10-25-00h39-tout.md) |

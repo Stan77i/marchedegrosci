@@ -1,6 +1,7 @@
 # Plan de l'essai fermé (20 à 50 vendeurs et acheteurs réels)
 
 Statut : **proposition**. Les points marqués **[À VALIDER]** sont à décider par le propriétaire. Rien ici n'est encore lancé.
+Kit pour lancer l'essai soi-même en une heure : `LANCER-EN-1-HEURE.md` (avec `MESSAGES.md`, `GUIDE-PARTICIPANT.md`, `SUIVI.md`, `QUESTIONNAIRE.md`, `CRITERES-DE-REUSSITE.md`).
 Sources : `AUDIT.md` (parties 4, 9, 10, 13), `FOUNDER_CONTEXT.md`, `FONCTIONNALITES.md`, `docs/REPRISE.md`.
 
 ## 1. Objectif
@@ -95,9 +96,9 @@ Proposition **[À VALIDER]** : **4 semaines**.
 - Semaines 2 et 3 : commandes en autonomie, l'équipe observe.
 - Semaine 4 : bilan, décision.
 
-## 8. Critères de réussite proposés **[À VALIDER]**
+## 8. Critères de réussite
 
-Aucun seuil chiffré n'est inventé ici : le propriétaire fixe les nombres avant le début.
+Les seuils chiffrés sont dans `CRITERES-DE-REUSSITE.md`, **validés par le propriétaire le 25/10/2026** (« ok pour tout »). Les [N] ci-dessous y sont remplacés par des nombres.
 
 - [ ] Au moins [N] commandes menées jusqu'à la clôture.
 - [ ] Au moins [N] vendeurs différents ont reçu une commande, [N] acheteurs différents en ont passé.

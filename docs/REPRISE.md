@@ -80,6 +80,8 @@
 
 - **D'abord : l'audit du 24/10/2026** (`docs/audits/audit-logique-viabilite-2026-10-24.md`, partie 10) : décisions du propriétaire sur les délais, puis stock rendu, commandes bloquées, noms réservés, service worker, CGU.
 
+**0 octies. Scénarios de commande (25/10/2026)** : `docs/regles/SCENARIOS-COMMANDE.md` (96 combinaisons comparées au code). Attendre la réponse du propriétaire aux 19 propositions (partie 6), puis : retirer de 99a le rappel et le litige pendant le trajet ; construire le retard signalé, « demander des nouvelles » (6 h) et le délai justifié (2 h, 6 h, 24 h) ; vérifier l'avis de clôture « en faveur du vendeur » (`push_commande` ignore « terminee ») ; écrire les tests `SCN` « à écrire » (`CONTROLE_QUALITE/MATRICE_TESTS.md`, partie 5).
+
 **0 septies. Décisions juridiques à construire (25/10/2026, « ok pour tout »)** : liste complète dans `docs/juridique/DECISIONS-A-PRENDRE.md`, partie « À construire » ; une PR par point, testée sur le projet de test avant la production. Dans l'ordre conseillé :
 1. n° 11 : changer « le transport reste dû » dans l'aide (`v3/aide.js`, 4 réponses) ; n° 10 : question « cassé en route » dans l'aide ;
 2. n° 18 : écran du compte banni (seulement « Compte banni » et « Contester », 7 jours, réponse en 7 jours) ;

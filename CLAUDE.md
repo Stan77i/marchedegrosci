@@ -34,7 +34,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - Il n'a **pas d'argent pour l'instant** : aucune solution payante (SMS, WhatsApp, plan Supabase Pro, service ou abonnement payant, dépendance inutile).
 - Envoyer les captures d'écran avec SendUserFile.
 - Simplicité avant tout.
-- **Penser à sa place, ne pas tout lui demander** (règle du propriétaire, 25/10/2026) : « pense logique, ne m'attends pas toujours pour tout, mets-toi à la place ». Pour chaque règle, se mettre à la place de l'acheteur, du vendeur et de l'équipe, prévoir les cas logiques (retard, absence, justification, recours) et décider soi-même la solution la plus simple et juste ; l'expliquer ensuite en une ligne. Ne lui poser une question que pour un vrai choix d'affaires (argent, risque, image) ; toujours avec un conseil.
+- **Penser à sa place, puis proposer** (règle du propriétaire, 25/10/2026) : « pense logique, mets-toi à la place » mais « tu ne traites pas sans m'en parler : tu proposes ». Pour chaque règle, se mettre à la place de l'acheteur, du vendeur et de l'équipe, mettre les cas dans un scénario avec toutes les combinaisons (`docs/regles/`), trouver les trous logiques et **proposer** pour chacun la solution la plus simple et juste, avec la raison en une ligne, en liste numérotée (il répond « ok pour tout » ou « ok sauf n° X »). Ne rien construire de nouveau avant son accord.
 
 ## Le projet
 

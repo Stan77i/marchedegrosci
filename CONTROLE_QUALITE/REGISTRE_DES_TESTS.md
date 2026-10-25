@@ -2,7 +2,8 @@
 
 > Tous les tests du serveur, ce qu'ils vérifient, leur dernier résultat connu. **Un test qui n'a pas tourné est « non rejoué », jamais « passe ».**
 > Source des résultats au 25/10/2026 : rapport de bout en bout de l'étape 7 (session du 24/10/2026 au soir, rejeux de 22 h 50 au 25/10/2026 à 0 h 30, projet de test), notes écrites dans chaque fichier et `docs/PASSATION.md`.
-> Mise à jour : la session des gardiens propose les nouveaux résultats dans son rapport ; ce fichier est corrigé dans une PR à part (ou dans la PR qui ajoute le test).
+> Centre de commande : `README.md` de ce dossier. Classement par unité et par type : `MATRICE_TESTS.md`.
+> Mise à jour : la session de contrôle propose les nouveaux résultats dans son rapport ; ce fichier est corrigé dans une PR à part (ou dans la PR qui ajoute le test).
 
 ## 1. Fichiers `supabase/tests/*.sql`
 
@@ -25,13 +26,13 @@ Tous se jouent sur le **projet de test** `yowdymdnoiubatxlwhfv`, jamais sur la p
 | `tableau-prix-scenarios.sql` | Schéma 96a : prix aberrant écarté, offres de plus de 30 jours hors prix, recalcul, lecture du tableau gardé. | Test | **Passe** (24/10/2026, soir) |
 | `transport-83-scenarios.sql` | Schéma 83 : même ville (livreur du vendeur, retrait), villes différentes, transport inclus ou à part, transporteur réseau, droits des rôles. | Test | A échouait (`DEPART_PREUVES`, test périmé depuis 90/90b), mis à jour sur `claude/e2e-corrections` puis **passe** (25/10/2026) ; B à J **passent** |
 | `transport-95-scenarios.sql` | Schéma 95 : service transport fermé, seuil de transporteurs vérifiés, 6,9 % seulement avec le réseau, 0 % pour le livreur du vendeur, transport à part (270 000 + 30 000), arrondis FCFA, textes de clôture. | Test | **Passe** (24/10/2026, soir) |
-| `e2e-parcours-scenarios.sql` *(sur la branche `claude/e2e-corrections`, pas encore dans `main` le 25/10/2026)* | Les parcours complets de bout en bout (partie 2). | Test | Voir partie 2 |
+| `e2e-parcours-scenarios.sql` (dans `main` depuis la PR #300) | Les parcours complets de bout en bout (partie 2). | Test | Voir partie 2 |
 
-À la fusion de `claude/e2e-corrections` : vérifier que les fichiers de `main` portent bien les mises à jour notées ci-dessus, sinon les marquer « périmé ».
+`claude/e2e-corrections` est fusionnée (PR #300) : les mises à jour notées ci-dessus « sur `claude/e2e-corrections` » sont dans `main`. Les résultats « passe » restent ceux des dates écrites : **non rejoué** depuis.
 
 ## 2. Parcours de bout en bout (étape 7)
 
-Fichier : `supabase/tests/e2e-parcours-scenarios.sql` (branche `claude/e2e-corrections`). Comptes : S vendeur (Yamoussoukro), B acheteur (Daloa), ADM administrateur. Les fonctions sont appelées comme dans l'application, avec le rôle `authenticated`. Les fonctions `pg_temp.*` d'en-tête se lancent dans le **même appel** que chaque bloc.
+Fichier : `supabase/tests/e2e-parcours-scenarios.sql`. Comptes : S vendeur (Yamoussoukro), B acheteur (Daloa), ADM administrateur. Les fonctions sont appelées comme dans l'application, avec le rôle `authenticated`. Les fonctions `pg_temp.*` d'en-tête se lancent dans le **même appel** que chaque bloc.
 
 Avant les parcours (étape 1) : 121 fonctions des schémas 92a à 96f comparées au test (md5 du corps, commentaires `--` retirés, blancs ramenés à un espace) : 121/121 identiques le 24/10/2026.
 
@@ -72,6 +73,6 @@ Détail, méthode gratuite et qui le fait : `docs/essai-ferme/A-CONFIRMER-AVANT-
 ## 4. Ajouter un test
 
 1. Écrire le fichier `supabase/tests/<sujet>-scenarios.sql` : en-tête (schéma, projet de **test** seulement, comptes), chaque bloc fini par `raise exception 'TEST…'`, résultat obtenu écrit sous le bloc avec la date.
-2. Ajouter sa ligne au tableau de la partie 1, dans la **même PR** (règle de `CLAUDE.md`).
-3. Ajouter, si besoin, la case à vérifier dans `LISTES-DE-CONTROLE.md`.
+2. Ajouter sa ligne au tableau de la partie 1, à `MATRICE_TESTS.md` et à `tools/controle/unites.json` (« testsSql » : unités et schémas), dans la **même PR** (règle de `CLAUDE.md`).
+3. Ajouter, si besoin, la case à vérifier dans `LISTES_DE_CONTROLE.md`.
 4. Jamais de `drop`, `delete`, `truncate` dans un test, même en commentaire (le MCP le refuse).

@@ -527,13 +527,16 @@ controle('liens', () => {
   const docs = [...(EXC.documentsLiens || ['CLAUDE.md']), ...docsCQ].filter(existe);
   // nom de fichier seul (« regles-93-scenarios.sql ») : il suffit qu'un fichier du dépôt porte ce nom
   let noms = new Set();
-  try { noms = new Set(cp.execFileSync('git', ['ls-files'], { cwd: RACINE, encoding: 'utf8', maxBuffer: 64 << 20 }).split('\n').map(f => f.split('/').pop())); } catch (_) { }
+  let suivis = [];
+  try { suivis = cp.execFileSync('git', ['ls-files', '-co', '--exclude-standard'], { cwd: RACINE, encoding: 'utf8', maxBuffer: 64 << 20 }).split('\n').filter(Boolean); } catch (_) { }
+  noms = new Set(suivis.map(f => f.split('/').pop()));
+  const dossiers = new Set(suivis.flatMap(f => f.split('/').slice(0, -1).map((_, i, a) => a.slice(0, i + 1).join('/') + '/')));
   const dejaVus = new Set();
   for (const d of [...new Set(docs)]) {
     const src = lire(d);
     const re = /`([^`\s]+)`|\]\(([^)\s#]+)(?:#[^)]*)?\)/g; let m;
     while ((m = re.exec(src))) {
-      let p = (m[1] || m[2]).replace(/[?#].*$/, '').replace(/[),.;:]+$/, '');
+      let p = (m[1] || m[2]).replace(/[?#].*$/, '').replace(/:\d[\d,-]*$/, '').replace(/[),.;:]+$/, '');   // « fichier.js:12 » → « fichier.js »
       if (/^(https?:|mailto:|\/)/.test(p)) continue;                        // adresse web ou chemin de la machine (/opt/…)
       if (/^[\w.-]+\/[\w.-]+$/.test(p) && !/\.\w+$/.test(p) && !existe(p.split('/')[0])) continue;   // dépôt GitHub (auteur/nom)
       if (!/\//.test(p) && !/\.(md|js|html|json|sql|yml|css|py|txt|pdf|webp|png)$/.test(p)) continue;
@@ -541,8 +544,8 @@ controle('liens', () => {
       if (!/\//.test(p) && noms.has(p)) continue;
       if (/^(origin|claude|refs)\//.test(p) || /^[\w-]+\/[\w.-]+$/.test(p) && !/\./.test(p.split('/').pop()) && !existe(p) && /^[A-Z]/.test(p)) continue;
       const base = d.startsWith('CONTROLE_QUALITE/') ? path.posix.dirname(d) : '';
-      const cand = [p, base ? path.posix.normalize(base + '/' + p) : null].filter(Boolean);
-      if (cand.some(existe)) continue;
+      const cand = [p, base ? path.posix.normalize(base + '/' + p) : null, base ? 'CONTROLE_QUALITE/' + p : null].filter(Boolean);
+      if (cand.some(existe) || cand.some(c => dossiers.has(c.replace(/\/?$/, '/')))) continue;
       if (/^repos\/|^Stan77i\/|\/(pulls|issues)\b/.test(p)) continue;     // adresses GitHub, pas des fichiers
       const cle = d + ' ' + p;
       if (dejaVus.has(cle)) continue; dejaVus.add(cle);

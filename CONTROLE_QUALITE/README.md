@@ -1,56 +1,107 @@
-# Les gardiens de l'application
+# Centre de commande du contrôle qualité MGCI
 
-> Demande du propriétaire (24/10/2026) : avant l'ouverture au public, des « policiers » qui passent **tous les 3 jours** et vérifient qu'il n'y a ni doublon, ni texte trop long, ni bug, ni chose illogique, ni chose qui n'est pas à sa place. Ils lancent les tests et envoient un rapport. **Tout est noté ici.**
+> Demande du propriétaire (25/10/2026) : un système permanent de vérification, comme les contrôles militaires, les audits bancaires et les procédures d’usine : des unités indépendantes, des contrôles croisés, des exercices réguliers, des alertes et des preuves. **Une application qui s’ouvre n’est pas une application prête.**
+> Ce dossier remplace l’ancien `docs/gardiens/` (24/10/2026) : tout est ici, rien en double.
 
-## Ce que les gardiens protègent
+## La phrase à dire
 
-L'application ne doit jamais faire « amateur ». Six interdits :
+**« Lance le contrôle général MGCI »** : Claude suit `procedures/CONTROLE_GENERAL.md` (script, tests SQL sur le projet de test en équipes d’agents, navigateur, jugement, rapport daté, PR avec seulement les rapports).
 
-| Interdit | En clair |
-|---|---|
-| **Zéro amateur** | Rien de bancal à l'écran : police, couleurs, pastilles, alignements, états vides (`DESIGN.md`, section 8 : les 32 lois). |
-| **Zéro doublon** | Une entrée n'apparaît qu'à un endroit logique. Pas deux fois la même phrase, le même bouton, la même fonction. |
-| **Zéro sur-explication** | Pas de paragraphe « comme un cahier », pas de slogan, pas de sous-titre qui redit le titre. |
-| **Zéro bug** | Pas d'erreur dans la console, pas d'écran vide, pas de clignotement, pas de test qui échoue. |
-| **Rien d'illogique** | Les écrans disent la même chose entre eux et la même chose que le serveur (transport, ville, 1 h, commission…). |
-| **Rien hors de sa place** | Le compte dans Mon compte, les notifications dans Réglages et la cloche, l'aide dans L'aide. |
+## Les commandes
 
-## Les règles des gardiens (à ne jamais enfreindre)
+| Je veux… | Commande | Durée |
+|---|---|---|
+| tout ce qui est automatique | `bash tools/controle/lancer.sh tout` | ~10 s |
+| le contrôle du code et des textes seulement | `bash tools/controle/lancer.sh statique` | ~5 s |
+| ouvrir l’application dans le navigateur (iPhone émulé) et les batteries d’écran | `bash tools/controle/lancer.sh navigateur` | ~15 s + batteries |
+| une seule unité | `bash tools/controle/lancer.sh unite U04` | ~5 s (+ SQL listé) |
+| contrôler ce que je viens de changer | `bash tools/controle/lancer.sh apres-modif` (`procedures/APRES_MODIFICATION.md`) | ~10 s (+ SQL lié) |
+| l’audit complet avant publication | `procedures/AVANT_PRODUCTION.md` | une demi-journée |
+| après un incident | `procedures/APRES_INCIDENT.md` | variable |
 
-1. **Mesurer, ne pas supposer.** Un point est « vert » seulement si on l'a vu (commande lancée, capture, requête lue). Sinon, il va dans « Non vérifié », avec la raison.
-2. **Ne jamais inventer un résultat.** Pas de « tout va bien » sans preuve. Un test qui n'a pas tourné est « non rejoué », jamais « réussi ».
-3. **Ne rien corriger en passant.** Le gardien **constate et propose**. La correction se fait ensuite, dans une PR à part, seulement pour les numéros choisis par le propriétaire, avec les captures validées avant (règle de `CLAUDE.md`).
-4. **Ne jamais toucher la production.** Sur le projet de production (`catmsypctymgkjkfzdkt`) : lecture seule (conseillers Supabase, journaux d'erreurs, tâches planifiées). Les tests se font sur le **projet de test** (`yowdymdnoiubatxlwhfv`), dans des blocs annulés.
-5. **Jamais de `drop`, `delete` ou `truncate`**, jamais de dépense, jamais de fusion de PR.
+Le script **n’exécute jamais le SQL** (il n’a pas accès à la base) : il liste les tests « à exécuter par Claude (MCP) » et ne les déclare jamais réussis. Code de sortie : 0 = pas d’échec bloquant, 1 = échec bloquant, 2 = commande mal écrite.
 
-## Qui sont les gardiens
+## Où lire le résultat
 
-| | Qui | Quand | Ce qu'il fait | Où arrive le résultat |
+- **Dernier rapport** : `DERNIER_RAPPORT.md` (copie du plus récent).
+- Tous les rapports : `rapports/` (un fichier daté par passage). Liste des passages : `HISTORIQUE.md`.
+- Sur GitHub : issue « Contrôle quotidien » (chaque jour), issue « Rapport des gardiens » (tous les 3 jours), coche de chaque PR (« Contrôle des PR »).
+- Les anomalies et leur suivi : `REGISTRE_ANOMALIES.md`.
+
+## Lire un rapport
+
+Gravité :
+- **P0** : argent, sécurité ou perte de données ; bloque tout.
+- **P1** : grave ; à corriger avant toute ouverture.
+- **P2** : gênant.
+- **P3** : cosmétique.
+
+Statut d’un test : **réussi** (vu, avec preuve) · **échoué** · **bloqué** (n’a pas pu tourner : ce n’est **pas** réussi) · **non exécuté** (pas lancé, par exemple le SQL par le script) · **en attente : <prérequis>** (paiement, SMS, clé, vrai téléphone).
+
+Statut d’une anomalie : **ouverte** · **corrigée non vérifiée** · **vérifiée** · **risque accepté par le propriétaire** (seulement avec sa phrase écrite).
+
+Le propriétaire lit « En bref », puis les P0 et P1, puis « Corrections proposées », et répond par les numéros (« corrige 1, 3 et 4 »).
+
+## Reprendre après une correction
+
+1. La correction se fait dans une PR à part (captures validées avant, si un écran change).
+2. `bash tools/controle/lancer.sh apres-modif` sans échec bloquant ; tests SQL liés rejoués sur le projet de test.
+3. Dans `REGISTRE_ANOMALIES.md` : « corrigée non vérifiée ».
+4. Après fusion : rejouer le test de non-régression (`bash tools/controle/lancer.sh unite Uxx`, ou le fichier SQL via MCP) ; statut « vérifiée » avec date et preuve.
+5. Un rouge corrigé : retirer sa clé de `tools/controle/reference-rouges.json`.
+
+## Les 14 unités (état au 25/10/2026)
+
+| Unité | Automatique (script) | Tests SQL existants (Claude, MCP) | Batteries du contrôle qualité | État |
 |---|---|---|---|---|
-| **1** | **Le contrôle automatique (scripts)** : tâche GitHub `.github/workflows/gardiens.yml`, scripts dans `tools/gardiens/` | Tous les 3 jours, tout seul | Les vérifications mécaniques : recherche de mots interdits, de doublons, de clés secrètes, de cache non monté, etc. Rien de jugé, seulement compté. | Voir `tools/gardiens/README.md` (mode d'emploi et endroit exact du résultat). |
-| **2** | **La session Claude programmée** | Tous les 3 jours (heure fixée dans `CALENDRIER.md`) | Ce qui demande un œil : lire les écrans en iPhone émulé, juger les textes, rejouer les tests SQL sur le projet de test, lire les conseillers Supabase, comparer avec le rapport précédent. Suit **exactement** `MISSION-SESSION-PROGRAMMEE.md`. | Une PR « Rapport des gardiens du JJ/MM » qui ajoute `docs/gardiens/rapports/AAAA-MM-JJ.md`, et une notification sur le téléphone du propriétaire. |
-| **3** | **Le propriétaire** | Après chaque rapport | Lit « En bref » et les points rouges, choisit les numéros à corriger, fusionne la PR du rapport. | Il répond dans une discussion : « corrige 1, 3 et 4 ». |
+| U01 Logique métier | STA-04 | `regles-93`, `e2e-parcours` | à intégrer | partiel |
+| U02 Sécurité | — | `confiance-94`, `transport-83` G, `fiabilite-84` E, `regles-93` | à intégrer (SQL) | manuel seulement |
+| U03 Transactions et argent | STA-03 | `commission-95b`, `transport-95`, `e2e-parcours` | à intégrer (SQL) | partiel ; vrais paiements **impossibles** (aucun branché) |
+| U04 Stocks et produits | — | `boutiques-86`, `tableau-prix`, `stock-commandes`, `regles-93`, `e2e-parcours` | à intégrer (SQL) | manuel seulement |
+| U05 Commandes et négociations | — | `e2e-parcours`, `stock-commandes`, `fiabilite-84`, `dm-anti-doublon` | à intégrer (SQL) | manuel seulement |
+| U06 Transport et livraison | — | `transport-83`, `transport-95`, `stock-commandes`, `e2e-parcours` | à intégrer (SQL) | manuel seulement |
+| U07 Profils et confiance | — | `confiance-94`, `niveaux-85`, `fiabilite-84`, `boutiques-86` | à intégrer (SQL) | manuel seulement |
+| U08 Notifications | — | `notifications-88`, `notif-objet-vivant`, `alertes-ciblage` | à intégrer (SQL) | manuel ; envoi réel (`pousser`) **en attente : clés push** |
+| U09 Base de données | STA-12 | `stockage-volume` ; listes G | à intégrer (SQL) | partiel |
+| U10 Fiabilité technique | STA-01, 02, 06, 07, 14 ; APM-02 à 07 | `dm-anti-doublon` | à intégrer (navigateur) | automatique en grande partie |
+| U11 Administration | — | `stockage-volume`, `commission-95b`, `confiance-94` | à intégrer (SQL) | manuel seulement |
+| U12 Compréhension | STA-05, 08 à 11 | — | à intégrer (navigateur) | partiel (repérage automatique, jugement par Claude) |
+| U13 Cohérence documentaire et commerciale | STA-03, 09, 13 | — | — (jugement) | partiel |
+| U14 Situations extrêmes | — | `alertes-ciblage` (250 abonnés) | à intégrer (SQL) | manuel ; charge simultanée **jamais testée** |
 
-## Les fichiers du dossier
+Détail par type de situation : `MATRICE_TESTS.md`.
 
-| Fichier | À quoi il sert |
+## Automatique, manuel, impossible
+
+| | Quoi | Qui |
+|---|---|---|
+| **Automatique** | syntaxe, textes interdits, doublons, textes longs, police, bleu, liens, cache (`?v=`, `CACHE`, `IMAGES`), ouverture de l’application, batteries navigateur | GitHub (chaque PR, chaque jour, tous les 3 jours), `lancer.sh` |
+| **Manuel (Claude)** | tous les tests SQL sur le projet de test, droits et RLS, conseillers Supabase, écrans avec compte, jugement des textes et du design, cohérence avec les règles de `CLAUDE.md` | Claude sur demande ; tâche programmée (sans SQL tant qu’elle n’a pas l’outil Supabase) |
+| **Manuel (propriétaire)** | vrai téléphone, choix des corrections, risques acceptés | le propriétaire |
+| **Impossible sans accès externe** | vrais paiements, SMS, fonctions `pousser` et `itineraire` en réel, charge simultanée à grande échelle, production en écriture (interdite) | — (prérequis dans `INVENTAIRE_OUTILS.md`) |
+
+## Les fichiers
+
+| Fichier | Rôle |
 |---|---|
-| `README.md` | Ce fichier : l'idée, les règles, qui fait quoi. |
-| `CALENDRIER.md` | Ce qui se vérifie tous les 3 jours, chaque semaine, chaque mois, avant une ouverture ou une grosse nouveauté, avant le paiement. |
-| `LISTES-DE-CONTROLE.md` | Les listes A à K, case par case, avec la façon exacte de vérifier chaque case. |
-| `REGISTRE-DES-TESTS.md` | Tous les tests du serveur (`supabase/tests/*.sql`), les parcours de bout en bout, leur dernier résultat connu, et ce qui n'a jamais pu être vérifié. |
-| `MISSION-SESSION-PROGRAMMEE.md` | Les instructions exactes de la session Claude qui passe tous les 3 jours. |
-| `rapports/` | Un rapport par passage (`AAAA-MM-JJ.md`). |
+| `README.md` | ce centre de commande |
+| `CALENDRIER.md` | quoi, quand, avec quelle commande, par qui |
+| `MATRICE_TESTS.md` | unité × type de situation, avec les ID des tests |
+| `REGISTRE_ANOMALIES.md` | toutes les anomalies et leur statut |
+| `REGISTRE_DES_TESTS.md` | chaque fichier SQL, son dernier résultat connu, ce qui n’a jamais été vérifié |
+| `LISTES_DE_CONTROLE.md` | les cases A à K, avec la façon exacte de vérifier |
+| `INVENTAIRE_OUTILS.md` | ce qui existe, ce qui est automatisable, ce qui ne l’est pas et pourquoi |
+| `DERNIER_RAPPORT.md`, `HISTORIQUE.md`, `rapports/` | les résultats |
+| `modeles/RAPPORT.md` | gabarit de rapport |
+| `procedures/` | contrôle général, après modification, avant production, après incident |
+| `tests/sql/`, `tests/navigateur/` | batteries des unités (ajoutées par l’intégration ; noms `Uxx-<sujet>`) |
+| `tools/controle/` (hors de ce dossier) | les scripts : `lancer.sh`, `controle.js`, `unites.json`, `reference-rouges.json`, `exceptions.json`, `pre-commit` |
 
-## Tenir le dossier à jour
+## Règles qui ne changent jamais
 
-Règle du propriétaire (24/10/2026, dans `CLAUDE.md`) : **chaque nouvelle règle, fonction, test ou écran ajoute ce qu'il faut vérifier** dans `LISTES-DE-CONTROLE.md` et `REGISTRE-DES-TESTS.md`, dans la même PR. Une règle qui change : on remplace la case, on ne garde pas les deux.
-
-## Lire un rapport en 1 minute
-
-- **En bref** : 3 lignes.
-- **Rouge** : grave (bug qui bloque, faille, texte qui promet un paiement, test qui échoue). À corriger avant toute ouverture.
-- **Orange** : à corriger (doublon, texte trop long, couleur hors règle).
-- **Vert** : vérifié et bon, avec la preuve.
-- **Non vérifié** : ce qu'on n'a pas pu regarder, et pourquoi.
-- **Corrections proposées** : une liste numérotée. Le propriétaire répond par les numéros.
+1. Mesurer, ne pas supposer : « réussi » seulement avec une preuve qu’un autre peut refaire.
+2. Ne jamais masquer une anomalie ; ne jamais inventer un résultat ; un test bloqué n’est pas réussi.
+3. Ne rien corriger pendant un contrôle : constater, proposer ; le propriétaire choisit.
+4. Production : lecture seule (`get_advisors`). Projet de test : blocs annulés seulement. Jamais `drop`, `delete`, `truncate`.
+5. Aucun paiement n’est branché : ne jamais simuler, ne jamais écrire « encaissé ».
+6. Chaque nouvelle règle, fonction, test ou écran ajoute ce qu’il faut vérifier (`LISTES_DE_CONTROLE.md`, `MATRICE_TESTS.md`, `tools/controle/unites.json`) dans la même PR.

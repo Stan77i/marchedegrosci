@@ -182,7 +182,7 @@ Dans l'ordre conseillé.
 |---|---|---|
 | 1 | Fusionner #311, puis #312 (ce tableau de bord) | Vous |
 | 2 | Construire ce que demandent vos décisions juridiques, une PR par point avec captures : aide (casse en route), textes du transport en cas de refus, écran du compte banni, journal de tous les gestes de l'équipe, trajets de la carte par notre serveur, profil public sans compte limité aux totaux… L'effacement automatique après les durées seulement avec votre accord | Claude |
-| 3 | Corrections du contrôle qualité (en cours, accord donné) | Claude |
+| 3 | Corrections du contrôle qualité (en cours, accord donné) ; les écrans du suivi de livraison sont faits (retard, nouvelles, délai, fil du suivi) et attendent le serveur 99a | Claude |
 | 4 | Rejouer les tests des dernières corrections (suppression de compte, membre suspendu) et lire les commissions du vrai serveur (avec votre accord, en lecture seule) | Claude |
 | 5 | Faire les corrections choisies, une PR par lot, avec captures | Claude |
 | 6 | Petits restes connus : relance envoyée après un accord « sans suite » ; étape « Commande terminée » cochée trop tôt ; carte limitée à 500 annonces | Claude |

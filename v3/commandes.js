@@ -30,6 +30,8 @@
   const signal = () => { try { dispatchEvent(new CustomEvent('mdg:activite')); } catch (_) {} };
   const jour = t => new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
   const quand = t => { const d = new Date(t), a = new Date(); return d.toDateString() === a.toDateString() ? 'aujourd’hui à ' + heure(t) : jour(t) + ' à ' + heure(t); };
+  // une échéance : l'heure seule aujourd'hui, sinon le jour et l'heure
+  const echeance = t => new Date(t).toDateString() === new Date().toDateString() ? heure(t) : jour(t) + ' à ' + heure(t);
   // une durée en minutes, dite simplement : 60 → « 1 h », 90 → « 90 min »
   const duree = m => m % 60 === 0 ? (m / 60) + ' h' : m + ' min';
   const ilya = t => { const m = Math.round((Date.now() - new Date(t)) / 60000); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'le ' + jour(t); };
@@ -37,6 +39,8 @@
   const qte = (q, u) => nf(q, 2) + ' ' + esc(unites(q, u));
   const sac = (h, t) => window.MDGSac ? MDGSac.svg(h, { t }) : '';
   const toast = (t, o) => window.MDGToast ? MDGToast.dire(t, o) : (N() && N().toast && N().toast(t));
+  // schéma 99d : unités qui se comptent, toujours en nombre entier
+  const ENTIERES = ['sac', 'carton', 'régime', 'cageot', 'unité', 'tas', 'pièce', 'alvéole', 'caisse', 'cagette', 'botte'];
   const MOUV = () => !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
 
   // les étapes, dans l'ordre (le transbordement n'apparaît que s'il a eu lieu)
@@ -174,6 +178,9 @@
 .cm-f textarea{min-height:76px;resize:vertical}
 .cm-motif{display:block;border:0;margin:0;padding:0;min-width:0}.cm-motif legend.t{display:block;margin:14px 0 2px;padding:0;font-weight:600}.cm-motif .cm-ck{margin:2px 0 0}
 .cm-ck{display:flex;gap:10px;align-items:center;min-height:44px;margin:10px 0 0;font-size:14px}.cm-ck input{width:20px;height:20px;accent-color:#10392B}
+.cm-pil{display:flex;gap:8px;margin:6px 0 10px}.cm-pil label{position:relative;flex:1;display:grid;place-items:center;min-height:48px;border-radius:14px;background:#FFFDF8;box-shadow:inset 0 0 0 1.5px rgba(16,57,43,.3);font:600 16px Jost,sans-serif;color:#10392B;cursor:pointer;font-variant-numeric:tabular-nums}
+.cm-pil input{position:absolute;opacity:0;width:1px;height:1px}.cm-pil label:has(input:checked){background:#10392B;color:#F3EFE4;box-shadow:none}.cm-pil label:has(input:focus-visible){outline:2px solid #10392B;outline-offset:2px}
+.cm-f input[type=datetime-local]{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512;accent-color:#10392B}
 .cm-err{color:#8A2414;font-size:13.5px;margin:8px 0 0;min-height:1em}
 .cm-note{margin:12px 2px 0;font-size:12.5px;color:#5E5546}
 .cm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -377,6 +384,7 @@
 
   const seq = {};           // commande → séquestre (commande_sequestre, schémas 57-58)
   const dl = {};            // commande → délais (commande_delais, schéma 92)
+  const suivi = {};         // commande → retards, demandes de nouvelles et délai (commande_suivi_lire, schéma 99a)
   const disc = {};          // commande → discussion à trois pendant un litige (litige_messages_lire, schéma 58)
   async function lireListe() {
     if (!N() || !N().session()) return;
@@ -397,7 +405,10 @@
     if (c && (c.etat === 'litige' || c.refus_le)) { const d = await N().rpc('litige_messages_lire', { p_cmd: id }).catch(() => null); if (d) disc[id] = d; }
     // délais (schéma 92) : échéance de chargement, livraison déclarée, essais du mot secret ; serveur pas à jour : rien
     // schéma 97b : aussi pendant un litige, pour savoir s'il s'est ouvert tout seul (acheteur muet 1 h après « livré »)
-    if (c && ['en_cours', 'litige'].includes(c.etat)) { const d = await N().rpc('commande_delais', { p_id: id }).catch(() => null); if (d) dl[id] = d; }
+    // schéma 99a : le fil du suivi (retards, demandes de nouvelles, délai), lu à côté du journal des étapes ; serveur pas à jour : rien
+    const [d, s] = await Promise.all([c && ['en_cours', 'litige'].includes(c.etat) ? N().rpc('commande_delais', { p_id: id }).catch(() => null) : null,
+      c && c.etat !== 'a_confirmer' ? N().rpc('commande_suivi_lire', { p_id: id }).catch(() => null) : null]);
+    if (d) dl[id] = d; if (Array.isArray(s)) suivi[id] = s;
     if (c && c.etat === 'terminee') { const a = await N().rpc('avis_commande_moi', { p_cmd: id }).catch(() => null); if (a) avis[id] = a; }
   }
   let sigAvant = '';
@@ -410,7 +421,7 @@
     if (dernierEcran === 'creer' || dernierEcran === 'geste') return;
     const apres = sel && trouve(sel) && trouve(sel).etape;
     // rien de neuf depuis la dernière relecture : on ne redessine pas (sinon l'écran clignote et le défilement saute toutes les 20 s)
-    let sig = ''; try { sig = JSON.stringify([vue, sel, filtre, liste, sel ? journal[sel] : null]); } catch (_) {}
+    let sig = ''; try { sig = JSON.stringify([vue, sel, filtre, liste, sel ? journal[sel] : null, sel ? suivi[sel] : null, sel ? dl[sel] : null]); } catch (_) {}
     if (sig && sig === sigAvant) return; sigAvant = sig;
     peindre(avant && apres && avant !== apres ? apres : null);
   }
@@ -453,6 +464,8 @@
     const r = prochaine0(c), D = dl[c.id];
     if (c.etat !== 'en_cours' || !['confirmee', 'preparation'].includes(c.etape) || !D || !D.chargement_echeance || c.annulation) return r;
     const fin = quand(D.chargement_echeance);
+    // schéma 99a : vendeur banni, l'acheteur annule sans attendre l'échéance
+    if (D.vendeur_banni && D.peut_annuler_retard) return ['Vendeur <em>banni</em>', 'Ce vendeur a été banni du Marché de Gros. Vous pouvez annuler la commande.'];
     if (D.peut_annuler_retard) return ['Chargement <em>en retard</em>', 'Le vendeur n’a pas chargé à temps. Vous pouvez annuler, ou signaler un problème.'];
     return [r[0], (r[1] ? r[1] + ' ' : '') + (c.role === 'vendeur' ? `Échéance du chargement : ${fin}. Après, l’acheteur pourra annuler.` : `Échéance du chargement : ${fin}.`)];
   }
@@ -510,14 +523,17 @@
         : ['Marchandise <em>chargée</em>', 'Le départ du camion sera signalé ici. ' + (MOTM && !V ? 'À l’arrivée, tapez le mot secret du vendeur pour confirmer la réception.' : '')];
         return ['Commande <em>en cours</em>', ''];
       case 'transport': case 'transbordement': return V ? ['Transport <em>en cours</em>', 'À l’arrivée, l’acheteur touche «\u00a0La marchandise est arrivée\u00a0»' + (MOTM ? ', puis tape votre mot secret. ' : ', puis confirme la réception. ') + 'S’il ne dit rien, touchez «\u00a0Marchandise livrée\u00a0».'] : ['Votre marchandise est <em>en route</em>', MOTM ? 'À l’arrivée, touchez «\u00a0La marchandise est arrivée\u00a0», vérifiez-la, puis tapez le mot secret du vendeur (sur le papier glissé dedans).' : 'À l’arrivée, touchez «\u00a0La marchandise est arrivée\u00a0», vérifiez-la, puis confirmez la réception.'];
-      case 'arrivee': if (dl[c.id] && dl[c.id].reception_echeance) { const [t0, s0] = V ? ['Marchandise <em>livrée</em>', MOTM ? 'L’acheteur vérifie la marchandise, puis tape votre mot secret.' : 'L’acheteur vérifie la marchandise.']
-          : ['Marchandise <em>livrée</em>', MOTM ? 'Vérifiez la quantité et la qualité, retrouvez le papier du vendeur, puis tapez son mot secret. Un problème : refusez avec des photos.' : 'Vérifiez la marchandise, puis confirmez la réception. Un problème : refusez avec des photos.'];
-        const h = heure(dl[c.id].reception_echeance);
-        return [t0, s0 + (V ? ` Il a jusqu’à ${h} pour répondre. Sinon, un litige s’ouvre.` : ` Répondez avant ${h}. Sinon, un litige s’ouvre.`)]; }
+      case 'arrivee': if (dl[c.id] && dl[c.id].reception_echeance) { const TL = dl[c.id].livre_le ? 'Marchandise <em>livrée</em>' : 'Marchandise <em>arrivée</em>';   // schéma 99a : arrivée dite par l'acheteur
+        const [t0, s0] = V ? [TL, MOTM ? 'L’acheteur vérifie la marchandise, puis tape votre mot secret.' : 'L’acheteur vérifie la marchandise.']
+          : [TL, MOTM ? 'Vérifiez la quantité et la qualité, retrouvez le papier du vendeur, puis tapez son mot secret. Un problème : refusez avec des photos.' : 'Vérifiez la marchandise, puis confirmez la réception. Un problème : refusez avec des photos.'];
+        // schéma 99a : l'échéance réelle, délai demandé par l'acheteur compris
+        const h = echeance(dl[c.id].reception_echeance), dh = dl[c.id].delai_heures, avec = dh ? ` (délai de ${dh} h compris)` : '';
+        return [t0, s0 + (V ? ` Il a jusqu’à ${h}${avec} pour répondre. Sinon, un litige s’ouvre.` : ` Répondez avant ${h}${avec}. Sinon, un litige s’ouvre.`)]; }
         return V ? ['Marchandise <em>arrivée</em>', MOTM ? 'L’acheteur vérifie la marchandise, puis tape votre mot secret.' : 'L’acheteur vérifie la marchandise.'] : ['Marchandise <em>arrivée</em>', MOTM ? 'Vérifiez la quantité et la qualité, retrouvez le papier du vendeur, puis tapez son mot secret pour confirmer la réception. Un problème : refusez avec des photos. Après la réception, vous avez 1 h pour réclamer.' : 'Vérifiez la marchandise et le papier du vendeur avant de confirmer la réception. Un problème : refusez avec des photos. Après la réception, vous avez 1 h pour réclamer.'];
       default: return ['Commande <em>en cours</em>', ''];
     }
   }
+  const MOT = c => c.validation === 'declaration' && c.mode_transport !== 'reseau';   // réception avec le mot secret du vendeur
   function actions(c) {
     const B = [];
     const b = (g, t, cls) => B.push(`<button type="button" class="${cls || ''}" data-g="${g}">${t}</button>`);
@@ -539,19 +555,24 @@
         if (c.role === 'acheteur' && (['transport', 'transbordement'].includes(c.etape) || (!K && c.etape === 'chargement'))) b('arrivee', 'La marchandise est arrivée', c.etape === 'chargement' ? '' : 'p');
         if (c.role === 'vendeur' && (DL ? DL.peut_declarer_arrivee : ['transport', 'transbordement'].includes(c.etape)) && ['transport', 'transbordement', 'arrivee'].includes(c.etape)) b('arrivee', TI('camion') + 'Marchandise livrée', c.etape === 'arrivee' ? 'm' : '');
         if (c.role === 'acheteur' && !K && ['chargement', 'transport', 'transbordement'].includes(c.etape)) b('reception', 'Réception confirmée');
-        if (c.role === 'acheteur' && DL && DL.peut_annuler_retard && ['confirmee', 'preparation'].includes(c.etape)) b('retard', 'Annuler : le vendeur n’a pas chargé à temps', 'm');
-        if (c.role === 'acheteur' && c.etape === 'arrivee' && !K) b('reception', 'Réception confirmée', 'p');
+        // schéma 99a : en route, rien d'automatique ; le vendeur signale un retard, l'acheteur demande des nouvelles autant qu'il veut
+        if (DL && DL.peut_signaler_retard) b('retard-sig', TI('horloge') + 'Signaler un retard');
+        if (c.role === 'acheteur' && DL && DL.peut_annuler_retard && ['confirmee', 'preparation'].includes(c.etape)) b('retard', DL.vendeur_banni ? 'Annuler la commande' : 'Annuler : le vendeur n’a pas chargé à temps', DL.vendeur_banni ? '' : 'm');
+        if (c.role === 'acheteur' && DL && DL.peut_demander_nouvelles) b('nouvelles', TI('cloche') + 'Demander des nouvelles');
+        if (c.role === 'acheteur' && c.etape === 'arrivee' && !K) b('reception', MOT(c) ? 'Confirmer avec le mot secret' : 'Réception confirmée', 'p');
         if (['transport', 'transbordement'].includes(c.etape)) b('transbordement', 'Signaler un transbordement', 'm');
         // commande confirmée : seul le vendeur peut demander l'annulation (l'acheteur peut l'accepter), avant le chargement
         if (c.role === 'vendeur' && ['confirmee', 'preparation'].includes(c.etape) && c.annulation !== 'moi' && !(DL && DL.peut_redemander === false)) b('annuler', 'Demander l’annulation', 'm');
       }
       // schéma 92 : un problème se signale dès la confirmation
       if (['confirmee', 'preparation', 'chargement', 'transport', 'transbordement', 'arrivee', 'reception'].includes(c.etape)) b('litige', 'Signaler un problème', 'm');
+      // schéma 99a : après « arrivé », un seul délai de 2, 6 ou 24 h, avec sa cause
+      if (c.role === 'acheteur' && c.etape === 'arrivee' && c.annulation !== 'autre' && dl[c.id] && dl[c.id].peut_demander_delai) b('delai', 'Demander un délai', 'm');
       // une fois la commande confirmée, l'acheteur ne peut plus l'annuler seul : seulement d'un commun accord, avant le chargement
     }
     // schéma 97b : pendant le litige ouvert tout seul, l'acheteur peut encore confirmer la réception (mot secret) ou refuser avec des photos
     const LA = c.etat === 'litige' && c.role === 'acheteur' && c.validation !== 'code' && dl[c.id] && dl[c.id].litige_auto;
-    if (LA) b('reception', 'Réception confirmée', 'p');
+    if (LA) b('reception', MOT(c) ? 'Confirmer avec le mot secret' : 'Réception confirmée', 'p');
     const S = seq[c.id];
     if (c.role === 'acheteur' && (S ? S.peut_liberer : aVerifier(c))) b('liberer', 'Tout est conforme', 'p');
     if (c.role === 'acheteur' && (LA || (S ? S.peut_refuser : dansDelai(c)))) b('refuser', 'Refuser la marchandise');
@@ -576,7 +597,7 @@
       <p class="cm-sous">${c.role === 'vendeur' ? 'Vente à' : 'Achat chez'} ${esc(c.partenaire_nom)} · n° ${esc(c.numero)}</p>
       <div class="cm-hero">${enRoute(c) && window.MDGSuivi ? `<div data-carte></div>
         <p class="cm-sr" aria-live="polite">${esc(MDGSuivi.texte(pos[c.id]).t)}</p>` : plan(c)}${fiche(c, Jr)}</div>
-      <div class="cm-st" role="status" aria-live="polite"><b>${titre}</b>${sous ? `<small>${esc(sous)}</small>` : ''}<small>Dernière actualisation : ${ilya(der)}</small></div>
+      <div class="cm-st" role="status" aria-live="polite"><b>${titre}</b>${sous ? `<small>${esc(sous)}</small>` : ''}${enRouteLigne(c)}<small>Dernière actualisation : ${ilya(der)}</small></div>
       ${actions(c)}
       ${c.etat === 'terminee' && c.role === 'acheteur' && window.MDGRacheter ? `<div class="cm-act"><button type="button" class="p" data-racheter>Racheter · prix du jour</button></div>` : ''}
       ${blocDepart(c)}${blocMot(c)}${blocRefus(c)}${blocDisc(c)}${blocSequestre(c)}${c.etat === 'litige' || seq[c.id] && seq[c.id].refus ? blocWa(c) : ''}
@@ -591,7 +612,7 @@
         ${ddTransport(c)}
         <dt>Paiement</dt><dd>${seq[c.id] && seq[c.id].actif ? 'Séquestre ' + esc(OPE[seq[c.id].operateur] || '') : 'À la livraison<br><small style="font-weight:400;color:#5E5546">séquestre en construction</small>'}</dd>
       </dl>
-      ${Jr.length ? `<h3 class="cm-h3">Historique</h3><ul class="cm-j">${Jr.slice().reverse().map(e => `<li><b>${esc(evLib(e))}</b> · ${esc(e.par_moi ? 'vous' : ROLE[e.role] || '')}<small>${quand(e.at)} · ${esc(PREUVE[e.preuve] || '')}${e.lieu ? ' · ' + esc(e.lieu) : ''}${e.lat != null ? ' · position jointe' : ''}</small>${e.note ? `<small>« ${esc(e.note)} »</small>` : ''}</li>`).join('')}</ul>` : ''}
+      ${historique(c, Jr)}
       <button type="button" class="cm-act" style="all:unset;display:block;margin:16px auto 0;padding:10px;min-height:44px;box-sizing:border-box;color:#10392B;text-decoration:underline;cursor:pointer" data-retour>Toutes mes commandes</button>`;
     box.querySelector('[data-x]').onclick = fermer;
     box.querySelector('[data-retour]').onclick = () => { oublierCarte(); sel = null; vue = 'liste'; peindre(); };
@@ -600,6 +621,31 @@
     const ec = box.querySelector('[data-ecrire]'); if (ec) ec.onclick = () => { fermer(); MDGMessages.ecrire(c.partenaire_id, { nom: c.partenaire_nom }); };
     lierTransport(c, box); lierTrois(c, box); lierLien(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box); photos(box); lierDisc(c, box);
     if (arrive) { if (navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {} toast('Le chauffeur est arrivé', { type: 'ok', sous: c.role === 'acheteur' ? 'Vérifiez la marchandise avant de confirmer.' : esc(c.produit || '') }); }
+  }
+  // schéma 99a : le fil du suivi (retards, demandes de nouvelles, délai) rangé dans l'historique, avec les étapes, du plus récent au plus ancien.
+  // Plusieurs demandes de nouvelles d'affilée font une seule ligne avec leur nombre (pas de liste qui se répète).
+  const CAUSE_R = { panne: 'Panne', route: 'Route difficile', pluie: 'Pluie', controle: 'Contrôle routier', autre: 'Autre' };
+  const CAUSE_D = { pas_sur_place: 'Pas sur place', dechargement: 'Déchargement en cours', controle: 'Contrôle de la marchandise', autre: 'Autre' };
+  function historique(c, Jr) {
+    const qui = r => r === c.role ? 'vous' : ROLE[r] || '';
+    const L = Jr.map(e => ({ at: e.at, h: `<li><b>${esc(evLib(e))}</b> · ${esc(e.par_moi ? 'vous' : ROLE[e.role] || '')}<small>${quand(e.at)} · ${esc(PREUVE[e.preuve] || '')}${e.lieu ? ' · ' + esc(e.lieu) : ''}${e.lat != null ? ' · position jointe' : ''}</small>${e.note ? `<small>« ${esc(e.note)} »</small>` : ''}</li>` }));
+    const S = (suivi[c.id] || []).slice().sort((a, b) => new Date(a.at) - new Date(b.at)), G = [];
+    S.forEach(x => { const p = G[G.length - 1]; if (x.genre === 'nouvelles' && p && p.genre === 'nouvelles') { p.n++; p.at = x.at; } else G.push(Object.assign({ n: 1 }, x)); });
+    G.forEach(x => {
+      const pied = t => `<small>${quand(x.at)}${t ? ' · ' + esc(t) : ''}</small>${x.texte ? `<small>« ${esc(x.texte)} »</small>` : ''}`;
+      const h = x.genre === 'retard' ? `<li><b>Retard signalé</b> · ${esc(qui(x.role))}${pied((CAUSE_R[x.motif] || '') + (x.date_estimee ? ' · arrivée estimée ' + quand(x.date_estimee) : ''))}</li>`
+        : x.genre === 'nouvelles' ? `<li><b>Nouvelles demandées</b>${x.n > 1 ? ` <span class="nbul">${x.n}</span>` : ''} · ${esc(qui(x.role))}${pied('')}</li>`
+        : x.genre === 'delai' ? `<li><b>Délai demandé : ${esc(x.heures)} h</b> · ${esc(qui(x.role))}${pied(CAUSE_D[x.motif] || '')}</li>` : '';
+      if (h) L.push({ at: x.at, h });
+    });
+    return L.length ? `<h3 class="cm-h3">Historique</h3><ul class="cm-j">${L.sort((a, b) => new Date(b.at) - new Date(a.at)).map(x => x.h).join('')}</ul>` : '';
+  }
+  // en route : l'arrivée estimée et le dernier retard signalé, en une ligne
+  function enRouteLigne(c) {
+    const D = dl[c.id]; if (c.etat !== 'en_cours' || !['chargement', 'transport', 'transbordement'].includes(c.etape)) return '';
+    const R = (suivi[c.id] || []).filter(x => x.genre === 'retard').sort((a, b) => new Date(b.at) - new Date(a.at))[0];
+    const t = [R ? 'Retard signalé : ' + (CAUSE_R[R.motif] || 'autre').toLowerCase() : '', D && D.arrivee_estimee ? 'Arrivée estimée ' + quand(D.arrivee_estimee) : ''].filter(Boolean).join(' · ');
+    return t ? `<small>${esc(t)}</small>` : '';
   }
   // qui paie quoi : où en est l'argent, et qui reçoit quoi à la clôture (schéma 57, transport « à part » : schéma 95)
   const OPE = { wave: 'Wave', orange: 'Orange Money', mtn: 'MTN MoMo', moov: 'Moov Money' };
@@ -812,6 +858,7 @@
       e.preventDefault();
       const qv = f.querySelector('#cmRq').value.trim(), q = qv === '' ? null : Number(qv.replace(',', '.')), m = f.querySelector('#cmRm').value.trim();
       if (q != null && !(q > 0)) { err.textContent = 'Indiquez la quantité refusée.'; return; }
+      if (q != null && q % 1 && ENTIERES.includes(String(c.unite || '').toLowerCase())) { err.textContent = `Quantité en nombre entier pour « ${c.unite} ».`; f.querySelector('#cmRq').focus(); return; }
       if (!m) { err.textContent = 'Expliquez le problème en quelques mots.'; f.querySelector('#cmRm').focus(); return; }
       if (!fichiers.length) { err.textContent = 'Ajoutez au moins une photo de la marchandise.'; return; }
       const W = f.querySelector('#cmRw'), mot = W ? W.value.trim() : '', sansMot = false;
@@ -1027,13 +1074,15 @@
         ${o.essais != null ? `<p class="cm-note" style="margin:6px 0 0;font-size:13px">${o.essais === 0 ? 'Mot secret bloqué après trop d’essais faux. L’équipe est prévenue.' : `Essais restants <span class="nbul">${o.essais}</span>`}</p>` : ''}
         <label class="cm-ck"><input type="checkbox" id="cmS"> Je ne trouve pas le papier du vendeur</label>
         <p class="cm-info" data-sans hidden>Sans le mot, la réception est notée « sans le mot secret du vendeur », visible du vendeur et de l’équipe. Si la marchandise ne va pas, ne confirmez pas : <b>refusez-la avec des photos</b>.</p>` : ''}
-        ${o.motifs ? `<fieldset class="cm-motif"><legend class="t">Motif</legend>${MOTIFS.map(([k, t]) => `<label class="cm-ck"><input type="radio" name="cmMot" value="${k}"> ${t}</label>`).join('')}</fieldset>` : ''}
+        ${o.heures ? `<fieldset class="cm-motif"><legend class="t">Combien de temps ?</legend><div class="cm-pil">${o.heures.map(h => `<label><input type="radio" name="cmH" value="${h}">${h} h</label>`).join('')}</div></fieldset>` : ''}
+        ${o.motifs ? `<fieldset class="cm-motif"><legend class="t">${o.motifsTitre || 'Motif'}</legend>${(o.motifs === true ? MOTIFS : o.motifs).map(([k, t]) => `<label class="cm-ck"><input type="radio" name="cmMot" value="${k}"> ${t}</label>`).join('')}</fieldset>` : ''}
         ${o.accord ? `<p class="cm-info" data-motif>Motif donné : …</p><fieldset class="cm-motif"><legend class="t">Êtes-vous d’accord avec ce motif ?</legend>
           <label class="cm-ck"><input type="radio" name="cmAcc" value="1"> Oui, d’un commun accord</label>
           <label class="cm-ck"><input type="radio" name="cmAcc" value="0"> J’accepte, mais je ne suis pas d’accord</label></fieldset>
           <p class="cm-note" style="font-size:13.5px">D’un commun accord, l’annulation ne compte contre personne. Sinon, elle compte dans la fiabilité de l’autre partie, qui peut la contester.</p>` : ''}
         ${o.lieu ? `<label class="t" for="cmL">${o.lieu}</label><input type="text" id="cmL" maxlength="120" autocomplete="off">` : ''}
-        ${o.note ? `<label class="t" for="cmN">${o.note}</label><textarea id="cmN" maxlength="300"></textarea>` : ''}
+        ${o.note ? `<label class="t" for="cmN">${o.note}</label><textarea id="cmN" maxlength="${o.noteMax || 300}"></textarea>` : ''}
+        ${o.date ? `<label class="t" for="cmD">${o.date}</label><input type="datetime-local" id="cmD" min="${dtLocal(Date.now())}" max="${dtLocal(Date.now() + 60 * 864e5)}">` : ''}
         ${o.gps ? `<label class="cm-ck"><input type="checkbox" id="cmG"> Joindre ma position actuelle (une seule fois)</label>` : ''}
         ${o.texte ? `<p class="cm-note" style="font-size:13.5px">${o.texte}</p>` : ''}
         <p class="cm-err" role="alert"></p>
@@ -1048,6 +1097,10 @@
       const L = f.querySelector('#cmL'), Nt = f.querySelector('#cmN'), G = f.querySelector('#cmG'), M = f.querySelector('#cmM');
       const lieu = L ? L.value.trim() : null, note = Nt ? Nt.value.trim() : null, mot = M ? M.value.trim() : null, sansMot = !!(Sm && Sm.checked);
       const mo = f.querySelector('[name=cmMot]:checked'), motif = mo ? mo.value : null, ac = f.querySelector('[name=cmAcc]:checked'), accord = ac ? ac.value === '1' : null;
+      const hh = f.querySelector('[name=cmH]:checked'), heures = hh ? +hh.value : null, Dd = f.querySelector('#cmD'), date = Dd && Dd.value ? new Date(Dd.value) : null;
+      if (o.heures && !heures) { err.textContent = 'Choisissez 2 h, 6 h ou 24 h.'; f.querySelector('[name=cmH]').focus(); return; }
+      if (o.motifs && !motif && o.motifsErr) { err.textContent = o.motifsErr; f.querySelector('[name=cmMot]').focus(); return; }
+      if (date && (isNaN(date) || date < Date.now() - 6e4 || date > Date.now() + 60 * 864e5)) { err.textContent = 'Choisissez une date à venir, dans les 60 jours.'; Dd.focus(); return; }
       if (o.motifs && !motif) { err.textContent = 'Choisissez un motif.'; f.querySelector('[name=cmMot]').focus(); return; }
       if (o.motifs && motif === 'autre' && !(note && note.length >= 3)) { err.textContent = 'Motif « Autre » : écrivez quelques mots.'; Nt.focus(); return; }
       if (o.accord && accord == null) { err.textContent = 'Dites si vous êtes d’accord avec le motif.'; f.querySelector('[name=cmAcc]').focus(); return; }
@@ -1058,7 +1111,7 @@
       const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = '';
       try {
         const pos = await position(G && G.checked);
-        await o.fn({ lieu, note, pos, mot, sansMot, motif, accord });
+        await o.fn({ lieu, note, pos, mot, sansMot, motif, accord, heures, date });
         await lireListe(); await lireJournal(c.id);
         if (o.fait) toast(o.fait, { type: 'ok' });
         if (window.MDGSons && MDGSons.signal) try { MDGSons.signal('accord'); } catch (_) {}
@@ -1071,6 +1124,8 @@
     if (zm) N().rpc('commande_annulation_motif', { p_id: c.id }).then(m => { if (!zm.isConnected) return; const t = m && m.motif ? (MOTIF_NOM[m.motif] || m.motif) + (m.texte ? ' : « ' + m.texte + ' »' : '') : 'non précisé';
       zm.innerHTML = 'Motif donné : <b>' + esc(t) + '</b>'; }).catch(() => { if (zm.isConnected) zm.textContent = 'Motif donné : non précisé'; });
   }
+  // une date pour <input type="datetime-local"> (heure du téléphone)
+  const dtLocal = t => { const d = new Date(t), z = n => String(n).padStart(2, '0'); return d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate()) + 'T' + z(d.getHours()) + ':' + z(d.getMinutes()); };
   // motifs d'annulation (décision 11, schéma 84) ; « Autre » demande quelques mots
   const MOTIFS = [['stock_epuise', 'Stock épuisé'], ['prix_change', 'Prix changé'], ['sans_reponse', 'L’autre partie ne répond pas'], ['erreur_saisie', 'Erreur de saisie'], ['panne_meteo', 'Panne ou météo'], ['autre', 'Autre']];
   const MOTIF_NOM = Object.fromEntries(MOTIFS);
@@ -1080,6 +1135,17 @@
     .catch(e => ancien(e) ? N().rpc('commande_annuler', { p_id: c.id, p_oui: oui, p_note: v.note || null }) : Promise.reject(e));
   const repondreMotif = (c, oui, v) => N().rpc('commande_repondre_motif', { p_id: c.id, p_oui: oui, p_note: v.note || null, p_motif: v.motif || null, p_motif_texte: v.motif ? v.note || null : null })
     .catch(e => ancien(e) ? N().rpc('commande_repondre', { p_id: c.id, p_oui: oui, p_note: v.note || null }) : Promise.reject(e));
+  let nouvEnvoi = false;
+  async function nouvelles(c) {
+    if (nouvEnvoi) return; nouvEnvoi = true;
+    const bt = bg && bg.querySelector('[data-g="nouvelles"]'); if (bt) bt.disabled = true;
+    try {
+      const r = await N().rpc('commande_nouvelles_demander', { p_id: c.id });
+      if (r === 'nouvelles_deja') toast('Déjà envoyé', { type: 'info', sous: 'Réessayez dans une minute.' });
+      else { toast('Nouvelles demandées', { type: 'ok', sous: 'Le vendeur le voit dans la commande.' }); await lireJournal(c.id); peindre(); }
+    } catch (x) { toast('Demande non envoyée', { type: 'erreur', sous: erreurTxt(x) }); }
+    finally { nouvEnvoi = false; const b2 = bg && bg.querySelector('[data-g="nouvelles"]'); if (b2) b2.disabled = false; }
+  }
   function geste(c, g) {
     const R = (f, a) => N().rpc(f, a);
     const av = (etape, ok, extra) => confirmer(c, Object.assign({ titre: ok, ok, etape, gps: true, note: 'Un mot (facultatif)', fait: LIB[etape] || ok,
@@ -1099,7 +1165,8 @@
         ? av('arrivee', 'La marchandise est arrivée', { texte: 'Touchez quand la marchandise est devant vous. Ensuite, vérifiez-la : confirmez la réception, ou refusez avec des photos.', fait: 'Marchandise arrivée : vérifiez-la' })
         : av('arrivee', 'Marchandise livrée', { texte: `Touchez quand la marchandise est déposée chez l’acheteur et qu’il ne l’a pas encore dit. Il a ${duree((dl[c.id] && dl[c.id].reception_minutes) || 60)} pour confirmer ou signaler un problème. Sans réponse, un litige s’ouvre ; encore ${duree((dl[c.id] && dl[c.id].litige_sans_reponse_minutes) || 60)} sans réponse, la commande est close en votre faveur.`, fait: 'Livraison déclarée' });
       case 'retard': return confirmer(c, { titre: 'Annuler la <em>commande</em>', ok: 'Annuler la commande', note: 'Un mot (facultatif)', fait: 'Commande annulée',
-        texte: `Le vendeur n’a pas chargé dans les ${(dl[c.id] && dl[c.id].chargement_heures) || 72} h après la confirmation. L’annulation compte dans sa fiabilité, pas dans la vôtre. Le stock revient sur son annonce.`,
+        texte: dl[c.id] && dl[c.id].vendeur_banni ? 'Le vendeur a été banni du Marché de Gros. L’annulation compte contre lui, pas contre vous.'
+          : `Le vendeur n’a pas chargé dans les ${(dl[c.id] && dl[c.id].chargement_heures) || 72} h après la confirmation. L’annulation compte dans sa fiabilité, pas dans la vôtre. Le stock revient sur son annonce.`,
         fn: v => R('commande_annuler_retard', { p_id: c.id, p_note: v.note || null }) });
       case 'reception': return c.validation === 'declaration' && c.mode_transport !== 'reseau'
         ? confirmer(c, { titre: 'Confirmer la <em>réception</em>', ok: 'Confirmer la réception', etape: 'reception', mot: true, gps: true, note: 'Un mot (facultatif)', fait: 'Réception confirmée : 1 h pour signaler un problème',
@@ -1130,6 +1197,17 @@
       case 'rf-non': return confirmer(c, { titre: 'Contester le <em>refus</em>', ok: 'Contester', note: 'Pourquoi ?', noteRequise: true, fait: 'Contestation envoyée : l’équipe va trancher',
         texte: 'L’équipe du Marché de Gros tranche avec l’accord, la négociation, vos messages, les photos et la réponse du chauffeur.',
         fn: v => R('commande_refus_vendeur', { p_id: c.id, p_oui: false, p_note: v.note }) });
+      // schéma 99a : l'acheteur demande des nouvelles, sans limite (deux appuis dans la même minute comptent pour un)
+      case 'nouvelles': return nouvelles(c);
+      // schéma 99a : le vendeur (ou le chauffeur) signale un retard en route ; l'acheteur le lit dans la commande
+      case 'retard-sig': return confirmer(c, { titre: 'Signaler un <em>retard</em>', ok: 'Signaler le retard', motifs: Object.entries(CAUSE_R), motifsTitre: 'Cause du retard', motifsErr: 'Choisissez la cause du retard.',
+        note: 'Un mot (obligatoire pour « Autre »)', noteMax: 200, date: 'Nouvelle arrivée estimée (facultatif)', fait: 'Retard signalé',
+        fn: v => R('commande_retard_signaler', { p_id: c.id, p_motif: v.motif, p_date: v.date ? v.date.toISOString() : null, p_texte: v.note || null }) });
+      // après « arrivé » : un seul délai de 2, 6 ou 24 h, avec sa cause ; l'échéance d'1 h est repoussée d'autant
+      case 'delai': return confirmer(c, { titre: 'Demander un <em>délai</em>', ok: 'Demander le délai', heures: [2, 6, 24], motifs: Object.entries(CAUSE_D), motifsTitre: 'Pourquoi ?', motifsErr: 'Dites pourquoi vous demandez un délai.',
+        note: 'Un mot (obligatoire pour « Autre »)', noteMax: 200, fait: 'Délai accordé', texte: 'Un seul délai par commande. Le vendeur le voit.',
+        fn: v => R('commande_delai_demander', { p_id: c.id, p_heures: v.heures, p_motif: v.motif, p_texte: v.note || null }).then(r => { if (dl[c.id] && r && r.reception_echeance) Object.assign(dl[c.id], { reception_echeance: r.reception_echeance, delai_heures: r.delai_heures, peut_demander_delai: false }); return r; })
+          .catch(e => { if (/DELAI_DEJA/.test(String(e && e.message))) { if (dl[c.id]) dl[c.id].peut_demander_delai = false; } throw e; }) });
       case 'litige': return confirmer(c, { titre: 'Signaler un <em>problème</em>', ok: 'Ouvrir un litige', note: 'Que s’est-il passé ?', noteRequise: true, fait: 'Litige ouvert : l’équipe va examiner',
         texte: 'L’équipe du Marché de Gros examine la commande, l’accord, la négociation et vos messages.',
         fn: v => R('commande_litige', { p_id: c.id, p_motif: v.note }) });

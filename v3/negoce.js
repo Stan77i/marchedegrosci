@@ -28,6 +28,8 @@
   const pas = p => p >= 10000 ? 100 : p >= 1000 ? 50 : p >= 100 ? 5 : 1;
   const arrondi = p => { const s = pas(p); return Math.max(s, Math.round(p / s) * s); };
   const num = v => +String(v || '').replace(/\s/g, '').replace(',', '.') || 0;
+  // schéma 99d : unités qui se comptent (quantité entière) et plafond d'une commande (reglages.commandes.montant_max, 1 milliard)
+  const ENTIERES = ['sac', 'carton', 'régime', 'cageot', 'unité', 'tas', 'pièce', 'alvéole', 'caisse', 'cagette', 'botte'], MONTANT_MAX = 1e9;
 
   // rôles : sur une offre, celui qui l'a publiée vend ; sur une demande, il achète
   const roles = n => { const owner = n.cible === 'offre' ? 'vendeur' : 'acheteur'; return { [n.proprio_id]: owner, [n.auteur_id]: owner === 'vendeur' ? 'acheteur' : 'vendeur' }; };
@@ -397,7 +399,8 @@
     tp.addEventListener('input', () => { const v = num(tp.value); tp.value = v ? fmt(v) : ''; upd(); });
     const vals = () => ({ p: num(ip.value), q: num(iq.value) || null, t: $('#nxT').value.trim(), tr, pt: tr === 'apart' ? num(tp.value) || null : null });
     const upd = () => {
-      const { p, q, pt } = vals(); go.disabled = !p || (ctx.qmax && q > ctx.qmax) || (qmin && !(q >= qmin)) || (tr === 'apart' && !pt);
+      const { p, q, pt } = vals(), qFrac = q && q % 1 && ENTIERES.includes(String(u).toLowerCase()), trop = p && q && p * q > MONTANT_MAX;   // schéma 99d : le serveur refuse aussi
+      go.disabled = !p || p < 1 || qFrac || trop || (ctx.qmax && q > ctx.qmax) || (qmin && !(q >= qmin)) || (tr === 'apart' && !pt);
       go.textContent = p ? (label || 'Proposer') + ' ' + fmt(p) + ' F / ' + u + (q ? ' × ' + fq(q) : '') : (label || 'Envoyer ma proposition');
       box.querySelectorAll('.nx-chip[data-v]').forEach(c => c.setAttribute('aria-pressed', String(+c.dataset.v === p)));
       let h = '';
@@ -407,6 +410,9 @@
       if (p && ref) { const e = p - ref, pc = Math.round(Math.abs(e) / ref * 100); h += `<div class="nx-sum"><span>Par rapport au prix affiché</span><b>${Math.abs(e) < 1 ? 'identique' : (e < 0 ? '−' : '+') + fmt(Math.abs(e)) + ' F (' + (e < 0 ? '−' : '+') + pc + ' %)'}${Math.abs(e) >= 1 && q ? `<small> soit ${fmt(Math.abs(e) * q)} F ${e < 0 ? 'de moins' : 'de plus'} au total</small>` : ''}</b></div>`;
         if (p < ref * 0.25 || p > ref * 4) h += `<p class="nx-warn">Ce prix est très loin du prix affiché (${fmt(ref)} F). Un zéro en trop ou en moins ?</p>`;
         else if (pc > 40) h += `<p class="nx-warn">Un écart de plus de 40 % a peu de chances d’être accepté.</p>`; }
+      if (p && p < 1) h += `<p class="nx-warn">Le prix doit être d’au moins 1 F.</p>`;
+      if (qFrac) h += `<p class="nx-warn">Quantité en nombre entier pour « ${esc(u)} ».</p>`;
+      if (trop) h += `<p class="nx-warn">Montant trop élevé : 1 milliard F CFA au plus.</p>`;
       if (ctx.qmax && q > ctx.qmax) h += `<p class="nx-warn">L’annonce porte sur ${fq(ctx.qmax)} ${esc(uQ(ctx.qmax, u))} au plus.</p>`;
       if (qmin && q && q < qmin) h += `<p class="nx-warn">${aPartir} ${fq(qmin)} ${esc(uQ(qmin, u))}.</p>`;
       out.innerHTML = h;

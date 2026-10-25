@@ -105,10 +105,12 @@ declare S uuid := 'd56f75b3-463d-484d-9e19-4af3fd3eb8d8'; B uuid := 'efec4ce4-7a
   o uuid := '94a33186-8a5e-4cf1-a198-d8a7d6c523ab'; c1 uuid; c2 uuid; r text := ''; a public.annulations; j json; cid uuid; x text;
 begin
   c1 := pg_temp.mk(S, B, o); perform pg_temp.qui(S); perform public.commande_repondre(c1, true, null);
-  perform public.commande_annuler(c1, true, 'vieux');
-  perform pg_temp.qui(B); perform public.commande_annuler(c1, true, null);
+  -- depuis le schéma 92, l'ancien chemin sans motif est refusé ; la demande se fait avec un motif, l'acheteur répond « d'accord »
+  r := r || 'T1 ancien chemin sans motif: ' || pg_temp.e(format('select public.commande_annuler(%L, true, %L)', c1, 'vieux')) || E'\n';
+  perform public.commande_annuler_motif(c1, true, null, 'erreur_saisie', null);
+  perform pg_temp.qui(B); perform public.commande_annuler_motif(c1, true, null, null, null, true);
   select * into a from public.annulations where commande_id = c1;
-  r := r || 'T1 ancien: cat=' || a.categorie || ' sanctions=' || (select count(*) from public.sanctions where annulation_id = a.id) || E'\n';
+  r := r || 'T1 motif + accord: cat=' || a.categorie || ' sanctions=' || (select count(*) from public.sanctions where annulation_id = a.id) || E'\n';
   c2 := pg_temp.mk(S, B, o); perform pg_temp.qui(S); perform public.commande_repondre_motif(c2, true, null);
   x := public.commande_annuler_motif(c2, true, null, 'prix_change', null);
   perform pg_temp.qui(B); x := public.commande_annuler_motif(c2, true, null, null, null, false);
@@ -125,4 +127,6 @@ end $$;
 --   instruction séparée : dans la même expression que fiabilite_tick(), le comptage lit l'état d'avant).
 -- • bloc H : T1 ne passe plus tel quel : l'ancienne commande_annuler demande maintenant un motif (changement d'une autre équipe) ;
 --   T2/T3 : abusive imputée au vendeur + 1 sanction ; l'acheteur ne voit ni catégorie ni contestation ; le vendeur voit tout.
+-- • bloc H mis à jour le 25/10/2026 (étape 7) : T1 « ancien chemin sans motif : Choisissez un motif. » puis motif + accord de l'acheteur :
+--   cat=legitime sanctions=0 ; T3 l'acheteur voit categorie=null, contestation=null, note_admin=null, contestable=false. PASSE.
 -- • nouveau (94f) : motif panne_meteo ou stock_epuise refusé par l'autre partie = « à examiner », sans sanction (voir confiance-94, bloc 7b).

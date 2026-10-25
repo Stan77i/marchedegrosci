@@ -25,6 +25,13 @@ begin
   perform public.commande_repondre(cid, true, null);
   j := public.commande_transport(cid);
   r := r || 'A4 hors=' || (j->>'hors_mgci') || ' prix=' || coalesce(j->>'prix_transport', 'null') || ' total=' || coalesce(j->>'total_livraison', 'null') || ';';
+  -- preuves au départ (schémas 90/90b) : 2 photos + poids, puis code affiché et photo du papier, avant le chargement
+  t := public.commande_depart_defi(cid);
+  insert into storage.objects (bucket_id, name, owner, created_at) values
+    ('preuves', S || '/t83a/1.jpg', S, now() + interval '1 second'), ('preuves', S || '/t83a/2.jpg', S, now() + interval '1 second'),
+    ('preuves', S || '/motpapier-t83a.jpg', S, now() + interval '1 second');
+  perform public.commande_depart_preuves(cid, array[S || '/t83a/1.jpg', S || '/t83a/2.jpg'], 5000);
+  if (select mot_secret from public.commandes where id = cid) is not null then perform public.commande_depart_mot(cid, S || '/motpapier-t83a.jpg'); end if;
   -- litige : numéro coupé en deux messages, numéro en lettres refusé
   perform public.commande_avancer(cid, 'chargement');
   perform set_config('request.jwt.claims', json_build_object('sub', B, 'role', 'authenticated')::text, true);
@@ -421,3 +428,9 @@ begin
   r := r || 'J3 ' || t || ';';
   raise exception 'TEST %', r;
 end $$;
+
+-- Rejoué le 24/10/2026 (étape 7, après 92-96) : blocs B à J sans « KO » ; bloc A échoue à commande_avancer(chargement) :
+-- « DEPART_PREUVES : le vendeur doit d'abord photographier le colis emballé, le papier du mot secret, et indiquer le poids. »
+-- (règle des schémas 90/90b, pas une interaction 92-96). Bloc A mis à jour le 25/10/2026 : preuves de départ déposées avant le chargement.
+-- Résultat (25/10/2026) : A0 ville exigée ; A1 retrait/true/44000/1540 ; A2 acheteur ne confirme pas seul ; A3 choix fermé ; A4 hors=true prix=null total=null ;
+-- A5 lettres refusées ; A6 07 45 | [numéro masqué] ; A7 terminee ; A8 commission transport=0 ; A9 livreur_vendeur/true/vendeur. PASSE.

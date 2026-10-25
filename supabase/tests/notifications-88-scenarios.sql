@@ -272,3 +272,7 @@ begin
 end $$;
 -- Résultat (24/10/2026) : sans téléphone : false | avec téléphone : true | 2e fois : false | conseils (jour) : 2 | conseils (calme) : 0
 -- | veille : 1 {"unite": "kg", "limite": "2026-10-25T13:05:54.759364+00:00", "manque": 90, "statut": "ouvert"}
+
+-- Rejoué le 24/10/2026 (étape 7, après 92-96) : blocs 1, 2, 3, 5, 6 identiques ; bloc 4 : plus de « B3 offre » ni « B3 renouveler »
+-- dans le même passage : depuis 96b (notif_lots_prendre), un seul lot commercial par personne et par passage (écart 90 min) ;
+-- les deux restent « en attente » pour un passage suivant. Voulu.

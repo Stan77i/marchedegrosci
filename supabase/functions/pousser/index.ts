@@ -31,6 +31,12 @@
 // 18. par la base (pg_cron « mdg-notif », public.notif_tick, schéma 88) avec { lots: true } : les messages en file d'attente
 //     (nouvelles offres et demandes, groupe bientôt complet, veille de la date limite, produit à racheter), regroupés par
 //     personne et par sujet : « 3 nouvelles offres : Tomate ».
+// v30 (25/10/2026, schémas 102a à 102d et 103a à 103c réunis, NON DÉPLOYÉE) : réunit les textes de la v28 (commandes, 103)
+//     et de la v29 (participation négociée, 102d). Aucun texte retiré.
+// v29 (25/10/2026, schéma 102d, NON DÉPLOYÉE) : la participation devient une négociation à trois : « Le vendeur contre-propose
+//     N F » (cmd_participation_contre), « L'équipe propose N F » (cmd_participation_equipe, aux deux), « Le vendeur accepte »
+//     (cmd_participation_un_accord : une partie a accepté la proposition de l'équipe), « Accord à N F » (aux deux) ; refus, retrait
+//     et expiration disent qui a proposé. Numéro 29 : la v28 est celle des schémas 103 (autre branche, claude/commandes-15-propositions).
 // v28 (25/10/2026, schémas 103a à 103c, NON DÉPLOYÉE) : « livré » déclaré entre 21 h et 7 h : « Vous aurez 1 h dès 7 h » ;
 //     retrait par l'acheteur : « Marchandise remise : vérifiez-la » ; annulation acceptée sans réponse en 24 h ; annulation d'un
 //     commun accord demandée par l'acheteur ; clôtures avec une note (équipe, refus, partage) annoncées aux deux, note coupée ;
@@ -640,29 +646,42 @@ Deno.serve(async (req) => {
             return M(T45(`${lib} : l'acheteur demande ${h} h`, "L'acheteur demande un délai"),
               B80(fin ? `Il vérifie la marchandise avant ${fin}.` : "", "Il vérifie la marchandise un peu plus tard."), "cmd-" + l.objet_id);
           }
-          // schéma 102 : participation de l'acheteur après un problème (aucun argent ne bouge : le montant est seulement noté)
-          case "cmd_participation": {
+          // schémas 102 et 102d : participation après un problème, négociée à trois (acheteur, vendeur, équipe) ;
+          // aucun argent ne bouge : le montant est seulement noté
+          case "cmd_participation":
+          case "cmd_participation_contre":
+          case "cmd_participation_equipe": {
             const m = F(Number(d.montant || 0)), fin = d.echeance ? quandTxt(d.echeance).replace(/^aujourd'hui à /, "") : "";
             const qg = d.quantite ? qteTxt(d.quantite, String(d.unite || "")) : "";
-            const quoi = d.mode === "transport" ? "Il paie le transport seulement." : d.mode === "partie" && qg ? `Il garde ${qg}.` : "Après un problème signalé.";
-            return M(T45(`${lib} : l'acheteur propose ${m}`, `L'acheteur propose ${m}`, "Proposition de l'acheteur"),
-              B80(fin ? `${quoi} Acceptez ou refusez avant ${fin}.` : "", `${quoi} Acceptez ou refusez.`, "Acceptez ou refusez. Sinon, l'équipe tranche."), "cmd-" + l.objet_id);
+            const moi = d.role === "acheteur";
+            const quoi = d.mode === "transport" ? (moi ? "Vous payez le transport seulement." : "L'acheteur paie le transport seulement.")
+              : d.mode === "partie" && qg ? (moi ? `Vous gardez ${qg}.` : `L'acheteur garde ${qg}.`) : "";
+            const qui = d.auteur === "vendeur" ? "le vendeur" : d.auteur === "equipe" ? "l'équipe" : "l'acheteur";
+            const Qui = qui.charAt(0).toUpperCase() + qui.slice(1);
+            const verbe = l.type === "cmd_participation_contre" ? "contre-propose" : "propose";
+            const rep = l.type === "cmd_participation_equipe" ? "Acceptez ou refusez" : "Acceptez, refusez ou contre-proposez";
+            return M(T45(`${lib} : ${qui} ${verbe} ${m}`, `${Qui} ${verbe} ${m}`, "Nouvelle proposition"),
+              B80(fin ? `${quoi} ${rep} avant ${fin}.`.trim() : "", `${quoi} ${rep}.`.trim(), `${rep}.`), "cmd-" + l.objet_id);
           }
+          case "cmd_participation_un_accord":
+            return M(T45(`${lib} : ${d.role === "vendeur" ? "l'acheteur" : "le vendeur"} accepte`, "Une partie accepte"),
+              B80(`${d.role === "vendeur" ? "L'acheteur" : "Le vendeur"} accepte la proposition de l'équipe. À vous de répondre.`, "À vous de répondre à la proposition de l'équipe."),
+              "cmd-" + l.objet_id);
           case "cmd_participation_acceptee": {
             const m = F(Number(d.montant || 0));
-            return M(T45(`${lib} : participation acceptée`, "Participation acceptée"),
-              B80(`Le vendeur accepte ${m}. La commande est terminée.`, "Le vendeur accepte. La commande est terminée."), "cmd-" + l.objet_id);
+            return M(T45(`${lib} : accord à ${m}`, `Accord à ${m}`, "Participation acceptée"),
+              B80(`Accord trouvé à ${m}. La commande est terminée.`, "Accord trouvé. La commande est terminée."), "cmd-" + l.objet_id);
           }
           case "cmd_participation_refusee":
-            return M(T45(`${lib} : participation refusée`, "Participation refusée"),
-              "Le litige continue : l'équipe du Marché de Gros tranche.", "cmd-" + l.objet_id);
+            return M(T45(`${lib} : proposition refusée`, "Proposition refusée"),
+              "Faites une autre proposition, ou l'équipe du Marché de Gros tranche.", "cmd-" + l.objet_id);
           case "cmd_participation_retiree":
             return M(T45(`${lib} : proposition retirée`, "Proposition retirée"),
-              "L'acheteur a retiré sa proposition. Le litige continue.", "cmd-" + l.objet_id);
+              B80(`${d.auteur === "vendeur" ? "Le vendeur" : d.auteur === "equipe" ? "L'équipe" : "L'acheteur"} a retiré sa proposition. Le litige continue.`, "Proposition retirée. Le litige continue."),
+              "cmd-" + l.objet_id);
           case "cmd_participation_expiree":
             return M(T45(`${lib} : proposition sans réponse`, "Proposition sans réponse"),
-              d.role === "vendeur" ? "Vous n'avez pas répondu à temps. L'équipe tranche le litige." : "Le vendeur n'a pas répondu. L'équipe tranche le litige.",
-              "cmd-" + l.objet_id);
+              "Pas de réponse à temps : l'équipe du Marché de Gros tranche le litige.", "cmd-" + l.objet_id);
           case "cmd_mot_bloque":
             return M(T45(`${lib} : mot secret bloqué`, "Mot secret bloqué"),
               B80("Trop d'essais faux. L'équipe du Marché de Gros va regarder la commande.", "Trop d'essais faux. L'équipe va regarder."), "cmd-" + l.objet_id);

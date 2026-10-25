@@ -42,7 +42,7 @@ Fichiers : `regles-93` = `supabase/tests/regles-93-scenarios.sql`, etc. ; `e2e` 
 
 Trous à combler en priorité : U01 panne, U02 erreur, U04 panne, U07 panne, U08 erreur et concurrent, U10 malveillant, U13 limite et erreur, U14 normal ; et partout la vraie concurrence à deux connexions.
 
-Scénarios de commande (`SCN-01` à `SCN-43`, unités U01, U05, U06) : partie 5.
+Scénarios de commande (`SCN-01` à `SCN-48`, unités U01, U05, U06) : partie 5.
 
 ## 3. Listes A à K et unités
 
@@ -116,3 +116,8 @@ Tirés de `docs/regles/SCENARIOS-COMMANDE.md` (25/10/2026) : chaque scénario re
 | SCN-41 | U05 | normal | Litige automatique puis proposition : pas de clôture pour le vendeur ; 24 h sans réponse : expirée, litige à l'équipe | K-12, K-14 | `participation-102` 102-A (c3) |
 | SCN-42 | U05 | normal | L'équipe tranche pendant une proposition ouverte : caduque, le vendeur ne peut plus répondre | K-16 | `participation-102` 102-A (c5) |
 | SCN-43 | U03 | normal | « Transport seulement » accepté : total = prix du transport, commission 0 | K-03, K-10 | `participation-102` 102-A (c6) |
+| SCN-44 | U01 | erreur | Annonce sans prix, à 0 F, prix vidé ; commande et message « prix » sans prix | — | `participation-102` 102-D (prix) |
+| SCN-45 | U05 | normal | Acheteur, contre-proposition du vendeur, contre-proposition de l'acheteur, accord : commande terminée | K-10, K-20, K-21 | `participation-102` 102-D (c1) |
+| SCN-46 | U05 | normal | L'équipe propose ; l'acheteur accepte (attend le vendeur) ; le vendeur accepte | K-23, K-24 | `participation-102` 102-D (c2) |
+| SCN-47 | U05 | limite | Plus de plafond ; expiration ; réglages `participation_max` inconnu, délai noté au journal | K-12, K-15, K-27 | `participation-102` 102-D (c3) |
+| SCN-48 | U05 | erreur | Rôles : vendeur qui ouvre, répondre à sa propre proposition, proposition identique, membre comme équipe, retrait par un autre | K-13, K-17, K-22 | `participation-102` 102-D (c1, c2, c4) |

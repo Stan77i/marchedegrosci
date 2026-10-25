@@ -202,33 +202,43 @@ Colonnes : **N°** · **Situation** (qui fait quoi) · **Ce qui doit se passer**
 | J-05 | Texte renvoyé après une coupure | Écrit une seule fois. | 🕓 99d (même texte en 2 min) |
 | J-06 | Commission | 3,5 % de la marchandise ; jamais sur le transport à part ; 6,9 % seulement avec le service Marché de Gros ; toujours « calculée », jamais encaissée. | ✅ 95, 95b |
 
-### K. Problème à l'arrivée : « Voulez-vous quand même participer ? » (schémas 102a, 102b, projet de test)
+### K. Problème à l'arrivée : la participation, négociée à trois (schémas 102a à 102d, projet de test)
 
-Fonctions : `commande_participation_proposer(commande, mode, quantite_gardee, montant, motif)`, `commande_participation_repondre(commande, accepte, note)`, `commande_participation_retirer(commande)`, `commande_participation_lire(commande)`, tâche `participations_delais` (5 min). Table `commande_participations`. Aucun argent ne bouge : le montant est seulement noté.
+Règle du propriétaire (25/10/2026, validée « Ok ») : l'acheteur ouvre ; le vendeur accepte, refuse ou contre-propose ; l'acheteur répond de même ; l'équipe voit tout, écrit dans la discussion à trois du litige et peut proposer un arrangement, valable seulement si l'acheteur ET le vendeur l'acceptent. Dès que les deux ont accepté la même proposition, la commande se termine avec ce montant. 24 h pour répondre ; sans réponse ou sans accord, l'équipe tranche. Plus de limite du nombre de propositions.
+
+Fonctions : `commande_participation_proposer(commande, mode, quantite_gardee, montant, motif)` (acheteur ou vendeur), `commande_participation_equipe(commande, mode, quantite_gardee, montant, note)` (équipe), `commande_participation_repondre(commande, accepte, note)`, `commande_participation_retirer(commande)`, `commande_participation_lire(commande)`, tâche `participations_delais` (5 min), discussion `litige_ecrire` (inchangée). Table `commande_participations` (colonnes `role`, `accord_acheteur`, `accord_vendeur`, `remplace_id`, `message` en 102d). Aucun argent ne bouge : le montant est seulement noté.
 
 | N° | Situation | Ce qui doit se passer | Prévenu | Délai | Effet | Code réel |
 |---|---|---|---|---|---|---|
 | K-01 | L'acheteur signale un problème et répond « Non » | Litige normal ; il ne paie rien ; l'équipe tranche. | le vendeur, l'équipe | l'équipe a 72 h | commission « suspendue » | ✅ `commande_litige` (rien de nouveau) |
 | K-02 | « Oui » sans choix, ou « Oui » proposé par défaut | Interdit : il choisit lui-même une des trois formes. | — | — | — | ✅ mode obligatoire ; écran : jamais pré-coché |
-| K-03 | « Transport seulement » | Montant = prix du transport à part de la commande. Sans prix à part : refusé, « proposez plutôt un montant ». | le vendeur | 24 h pour répondre | accepté : commission 0 (jamais sur le transport) | ✅ 102a |
-| K-04 | « Garder la partie en bon état » | Quantité gardée (0 < q ≤ quantité commandée) × prix unitaire ; transport non compté. | le vendeur | 24 h | accepté : commission 3,5 % de la part gardée, « calculée » | ✅ 102a |
-| K-05 | « Proposer un montant » | Nombre entier, 0 < montant ≤ total initial (marchandise + transport à part). | le vendeur | 24 h | accepté : commission 3,5 % du montant, plafonné à la valeur de la marchandise | ✅ 102a |
+| K-03 | « Transport seulement » | Montant = prix du transport à part de la commande. Sans prix à part : refusé, « proposez plutôt un montant ». | l'autre partie | 24 h pour répondre | accepté : commission 0 (jamais sur le transport) | ✅ 102a, 102d |
+| K-04 | « Garder la partie en bon état » | Quantité gardée (0 < q ≤ quantité commandée, entière pour les sacs, cartons…) × prix à l'unité ; sans le transport : le transport à part est alors à la charge du vendeur. | l'autre partie | 24 h | accepté : commission 3,5 % de la part gardée, « calculée » | ✅ 102a, 102d ; règle validée (ex-P22) |
+| K-05 | « Proposer un montant » | Nombre entier, 0 < montant ≤ total initial (marchandise + transport à part). | l'autre partie | 24 h | accepté : commission 3,5 % du montant, plafonné à la valeur de la marchandise | ✅ 102a, 102d |
 | K-06 | Proposition faite à l'arrivée, sans litige ouvert | Motif obligatoire ; le litige s'ouvre (auteur : l'acheteur) en même temps. | le vendeur | — | « suspendue » | ✅ 102a (appelle `commande_litige`) |
-| K-07 | Proposition faite pendant un litige (ouvert par lui, par le vendeur, ou tout seul) | Possible, sans motif. | le vendeur | 24 h | — | ✅ 102a |
-| K-08 | Proposition avant « arrivé » (en route, avant chargement) | Refusée (`PARTICIPATION_ETAT`). | l'acheteur | — | — | ✅ 102a |
-| K-09 | Double appui, coupure réseau | Même proposition : réponse « deja_proposee », rien en double. Autre proposition pendant qu'une attend : refusée (`PARTICIPATION_OUVERTE`). | — | — | — | ✅ index unique + verrou `for update` |
-| K-10 | Le vendeur accepte | Commande terminée avec ce montant (nouveau total convenu ; total initial gardé) ; journal « Participation de l'acheteur acceptée… Aucun argent n'a été versé par l'application. » | l'acheteur | — | commission « calculée » ; **aucun litige perdu** ; stock : rien rendu | ✅ 102a |
-| K-11 | Le vendeur refuse | Le litige continue ; l'équipe tranche. L'acheteur peut refaire une proposition. | l'acheteur | l'équipe a 72 h | — | ✅ 102a |
-| K-12 | Le vendeur ne répond pas | La proposition expire ; le litige reste à l'équipe. | les deux | 24 h (réglable) | — | ✅ 102b ; **proposition P20** |
-| K-13 | L'acheteur retire sa proposition avant la réponse | Retirée ; le litige continue. Retirer deux fois : même réponse. Après la réponse : refusé. | le vendeur | — | — | ✅ 102a |
-| K-14 | Litige automatique (acheteur muet 1 h), puis proposition | La proposition compte comme une réaction : plus de clôture en faveur du vendeur. | le vendeur | — | pas de litige perdu automatique | ✅ 102b (`_cmd_acheteur_a_reagi`) |
-| K-15 | Propositions répétées | 3 au plus par commande (réglable de 1 à 10) ; ensuite l'équipe tranche. | l'acheteur | — | — | ✅ 102a ; **proposition P21** |
-| K-16 | L'équipe tranche, ou l'acheteur confirme avec le mot, pendant une proposition ouverte | La proposition devient caduque ; le vendeur ne peut plus y répondre. | — | — | selon la décision de l'équipe | ✅ 102a (déclencheur `commandes_participation_caduque`) |
-| K-17 | Le vendeur ou l'acheteur se trompe de rôle | Seul l'acheteur propose et retire ; seul le vendeur répond (« Commande introuvable » sinon). Compte banni : refusé. | — | — | — | ✅ 102a |
-| K-18 | Commande avec un dépôt d'argent (séquestre) | Pas de participation : l'équipe tranche. | — | — | aucun argent ne bouge | ✅ 102a (aucun paiement n'est branché) |
+| K-07 | Proposition faite pendant un litige (ouvert par lui, par le vendeur, ou tout seul) | Possible, sans motif ; un mot facultatif (200 caractères). | le vendeur | 24 h | — | ✅ 102a, 102d |
+| K-08 | Proposition avant « arrivé » (en route, avant chargement) | Refusée (`PARTICIPATION_ETAT`). | — | — | — | ✅ 102a |
+| K-09 | Double appui, coupure réseau | Même proposition par son auteur : « deja_proposee », rien en double. Autre proposition pendant que la sienne attend : refusée (`PARTICIPATION_OUVERTE`, la retirer d'abord). Même réponse renvoyée : même résultat. | — | — | — | ✅ index unique + verrou `for update` (102d : tri par id corrigé) |
+| K-10 | L'acheteur et le vendeur ont accepté la même proposition | Commande terminée avec ce montant (nouveau total convenu ; total initial gardé) ; journal « Participation convenue (proposée par…, acceptée par l'acheteur et le vendeur)… Aucun argent n'a été versé par l'application. » | les deux (sauf celui qui accepte en dernier) | — | commission « calculée » sur la part marchandise ; **aucun litige perdu** ; stock : rien rendu | ✅ 102d (`_part_valider`) |
+| K-11 | Refus (vendeur ou acheteur) | Le litige continue ; chacun peut refaire une proposition ; sinon l'équipe tranche. | l'auteur (proposition de l'équipe : l'autre partie) | l'équipe a 72 h | — | ✅ 102d |
+| K-12 | Pas de réponse | La proposition expire ; le litige reste à l'équipe. | les deux | 24 h (réglable, `participation_reponse_heures`) | — | ✅ 102b ; règle validée (ex-P20) |
+| K-13 | L'auteur retire sa proposition avant la réponse | Retirée ; le litige continue. Retirer deux fois : même réponse. Après la réponse : refusé. Personne d'autre ne la retire. | l'autre partie (et les deux si c'est l'équipe) | — | — | ✅ 102d |
+| K-14 | Litige automatique (acheteur muet 1 h), puis proposition ou accord de l'acheteur | Compte comme une réaction : plus de clôture en faveur du vendeur. | le vendeur | — | pas de litige perdu automatique | ✅ 102b, 102d (`_cmd_acheteur_a_reagi`) |
+| K-15 | Propositions répétées | Plus de limite : la négociation reste ouverte tant que chacun répond ; une seule proposition ouverte à la fois. | — | — | — | ✅ 102d (`participation_max` retiré) ; règle validée |
+| K-16 | L'équipe tranche, ou l'acheteur confirme avec le mot, pendant une proposition ouverte | La proposition devient caduque ; plus personne ne peut y répondre. | — | — | selon la décision de l'équipe | ✅ 102a (déclencheur `commandes_participation_caduque`) |
+| K-17 | Rôles | L'acheteur ouvre ; le vendeur contre-propose seulement après une proposition de l'acheteur ou de l'équipe (`PARTICIPATION_VENDEUR`) ; on ne répond pas à sa propre proposition (`PARTICIPATION_PROPRE`) ; un membre étranger : « Commande introuvable » ; compte banni : refusé. | — | — | — | ✅ 102d |
+| K-18 | Commande avec un dépôt d'argent (séquestre) | Pas de participation : l'équipe tranche. | — | — | aucun argent ne bouge | ✅ 102a, 102d |
 | K-19 | Partie non gardée (cassée, gâtée, restée chez l'acheteur) | Rien n'est rendu à l'annonce : la marchandise est partie. Si le vendeur la reprend en bon état, il remet lui-même la quantité. | — | — | stock inchangé | ✅ 92a (rien après le chargement) |
+| K-20 | Le vendeur contre-propose | Sa proposition remplace celle de l'acheteur (refusée, « Contre-proposition ») ; mêmes trois choix. | l'acheteur | 24 h | — | ✅ 102d |
+| K-21 | L'acheteur contre-propose (au vendeur ou à l'équipe) | La proposition en attente est refusée, la sienne la remplace. | le vendeur | 24 h | — | ✅ 102d |
+| K-22 | Contre-proposition identique à celle qui attend | Refusée (`PARTICIPATION_IDENTIQUE`) : il suffit de l'accepter. | — | — | — | ✅ 102d |
+| K-23 | L'équipe propose un arrangement | Administrateur qui n'est pas partie (sinon `CONFLIT_INTERETS`) ; litige après l'arrivée seulement ; remplace la proposition ouverte (caduque) ; noté au journal de l'équipe. | les deux | 24 h | — | ✅ 102d (`commande_participation_equipe`) |
+| K-24 | Une seule partie accepte la proposition de l'équipe | Elle reste ouverte ; on attend l'autre (« ouverte/vendeur ») ; l'autre est prévenue. | l'autre partie | 24 h | — | ✅ 102d |
+| K-25 | Une partie refuse la proposition de l'équipe | Refusée ; le litige continue. | l'autre partie | — | — | ✅ 102d |
+| K-26 | L'équipe écrit dans la discussion | Discussion à trois du litige (`litige_ecrire`, rôle « admin ») ; elle voit toutes les propositions (`commande_participation_lire`, rôle « equipe »). | les parties (messages du litige) | — | — | ✅ existant (inchangé) |
+| K-27 | Réglage du délai par l'équipe | `participation_reponse_heures` de 1 à 720 ; `participation_max` n'existe plus (« Réglage inconnu ») ; chaque changement noté au journal de l'équipe. | — | — | — | ✅ 102d (porte du journal remise) |
 
-**Total : 115 combinaisons** (A 8, B 6, C 11, D 15, E 13, F 19, G 7, H 7, I 4, J 6, K 19). La partie C sépare les 4 modes de transport là où la règle change.
+**Total : 123 combinaisons** (A 8, B 6, C 11, D 15, E 13, F 19, G 7, H 7, I 4, J 6, K 27). La partie C sépare les 4 modes de transport là où la règle change.
 
 **Bilan du code réel** (compté par script sur la dernière colonne) : 59 cases entièrement conformes ✅ ; 37 cases avec au moins une réserve : 22 avec un écart ⚠️, 11 avec un manque ❌, 8 en cours 🕓 sur la branche `claude/corrections-99`, dont 1 contraire à la règle du 25/10 (E-03). Une case peut porter plusieurs marques.
 
@@ -324,17 +334,7 @@ Proposition : une confirmation renvoyée après une coupure répond « déjà co
 La règle dit « pendant le trajet ». Le délai de 72 h vient avant le chargement (règle n° 2 du 24/10).
 Proposition : garder le délai de chargement de 72 h tel quel ; la règle « rien d'automatique » commence au chargement. (Avant le chargement, la marchandise n'est pas partie : l'acheteur doit pouvoir sortir d'une commande qui ne démarre pas.) — **validé le 25/10, fait sur le test** (schéma 103a).
 
-**P20. Le vendeur ne répond pas à une participation (K-12).**
-Proposition appliquée sur le projet de test : 24 h pour répondre (réglage `participation_reponse_heures`), puis la proposition expire et le litige reste à l'équipe ; les deux sont prévenus. (Le vendeur a le temps de réfléchir ; l'acheteur n'attend pas sans fin.) — à valider par le propriétaire.
-
-**P21. Combien de propositions de participation ? (K-15)**
-Proposition appliquée sur le projet de test : 3 au plus par commande (réglage `participation_max`, de 1 à 10). (Assez pour négocier, pas assez pour harceler le vendeur.) — à valider par le propriétaire.
-
-**P22. « Garder une partie » et le transport à part (K-04).**
-Proposition appliquée : la partie gardée se paie au prix unitaire, sans le transport ; l'acheteur qui veut aussi payer le transport tape un montant. (Le calcul reste simple et suit la règle « non conforme : pas de transport ».) — à valider par le propriétaire.
-
-**P23. Commission d'une participation (K-03 à K-05).**
-Proposition appliquée : 3,5 % de la part marchandise du montant convenu (0 pour « transport seulement », jamais de commission sur le transport à part), statut « calculée ». — à valider par le propriétaire.
+**P20 à P23 (participation) : tranchées par le propriétaire le 25/10/2026 (« Ok »).** 24 h pour répondre, puis l'équipe (P20, gardé) ; plus de limite du nombre de propositions, la participation devient une négociation à trois (P21, remplacé) ; « garder une partie » se paie au prix à l'unité sans le transport, le transport étant alors payé par le vendeur (P22, gardé) ; commission sur la part marchandise seulement (P23, gardé). Et : prix à l'unité obligatoire partout (schéma 102c). Voir la partie K.
 
 ---
 
@@ -367,7 +367,7 @@ Le propriétaire peut répondre « ok pour tout » ou « ok sauf n° X ».
 17. Envoyer l'avis de clôture « en faveur du vendeur » aux deux. — **validé le 25/10, fait sur le test** (103b).
 18. Confirmation renvoyée : « déjà confirmée » ; message du litige protégé contre la clôture simultanée. — **validé le 25/10, fait sur le test** (103b).
 19. Garder le délai de chargement de 72 h ; « rien d'automatique » commence au chargement. — **validé le 25/10, vérifié sur le test : rien à changer** (test 103, bloc 15).
-20. Participation sans réponse du vendeur en 24 h : elle expire, l'équipe tranche (appliqué sur le test).
-21. 3 propositions de participation au plus par commande (appliqué sur le test).
-22. « Garder une partie » : prix unitaire × quantité gardée, sans le transport (appliqué sur le test).
-23. Commission d'une participation : 3,5 % de la part marchandise, « calculée » (appliqué sur le test).
+20. Participation sans réponse en 24 h : elle expire, l'équipe tranche (validé le 25/10/2026, appliqué sur le test).
+21. Remplacé le 25/10/2026 : plus de limite, la participation est une négociation à trois (acheteur, vendeur, équipe), schéma 102d.
+22. « Garder une partie » : prix à l'unité × quantité gardée, sans le transport, payé alors par le vendeur (validé le 25/10/2026).
+23. Commission d'une participation : 3,5 % de la part marchandise, « calculée » (validé le 25/10/2026).

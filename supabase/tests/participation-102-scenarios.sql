@@ -1,4 +1,4 @@
--- Scénarios des schémas 102a et 102b : participation de l'acheteur après un problème (règle du propriétaire du 25/10/2026).
+-- Scénarios des schémas 102a à 102d : participation de l'acheteur après un problème, prix à l'unité obligatoire, négociation à trois (règles du propriétaire du 25/10/2026).
 -- Projet de TEST seulement (yowdymdnoiubatxlwhfv). Le bloc finit par raise exception 'TEST …' : rien ne reste en base.
 -- Joué deux fois le 25/10/2026 : avant les schémas 102 (les fonctions n'existent pas) et après. Résultats sous le bloc.
 -- S = vendeur, B = acheteur, ADM = administrateur (comptes de simulation du projet de test).
@@ -188,3 +188,158 @@ end $$;
 -- c6 : « transport » 3 000 F proposé et accepté : terminee, montant_refuse 200 000, total 3 000, total initial 203 000 ;
 --      commission annulee base 0 (jamais de commission sur le transport) ; 0 litige perdu.
 -- Réglages : 24 h / 3 ; participation_max 20 refusé (de 1 à 10).
+
+-- Note (25/10/2026, schéma 102d) : les résultats du bloc 102-A ci-dessus sont ceux d'AVANT 102d. Avec 102d, le plafond de 3
+-- disparaît (la 4e proposition de c2 passe), le vendeur qui propose sans proposition de l'acheteur reçoit PARTICIPATION_VENDEUR,
+-- et un message « prix » ou une annonce sans prix est refusé (102c).
+-- Le bloc 102-D ci-dessous joue la règle nouvelle (prix à l'unité obligatoire, négociation à trois).
+
+-- ══ Bloc 102-D : prix à l'unité obligatoire (102c) et négociation à trois (102d) ══
+-- prix : offre et demande sans prix ou à 0 F refusées ; prix vidé sur une offre refusé ; autre modification d'une offre permise ;
+--        commande sans prix à l'unité et message « prix » sans prix refusés ; contraintes validées.
+-- c1 acheteur « partie » 6 sacs → vendeur contre-propose 150 000 (double appui, répondre à sa propre proposition, même proposition
+--    reprise par l'acheteur) → acheteur contre-propose 7 sacs → vendeur accepte : terminée, total 140 000, commission sur 140 000.
+-- c2 litige ouvert par l'acheteur : le vendeur ne peut pas ouvrir ; un membre ne peut pas proposer comme l'équipe ; l'équipe propose
+--    100 000 : l'acheteur accepte (attend le vendeur), double appui, le vendeur accepte : terminée, total 100 000.
+-- c3 l'équipe propose, le vendeur refuse ; 5 propositions de suite de l'acheteur (plus de plafond) ; 24 h sans réponse : expirée,
+--    litige à l'équipe ; réglages : participation_max inconnu, participation_reponse_heures 48 permis et noté au journal de l'équipe.
+-- c4 l'équipe propose, l'acheteur contre-propose (proposition de l'équipe refusée) ; transport sans prix à part refusé au vendeur ;
+--    l'équipe ne retire pas la proposition de l'acheteur ; l'équipe la remplace (caduque) puis retire la sienne ; rôles étrangers.
+do $$
+declare S uuid := '1bfd5713-2525-44a6-8403-084ebb9ddad3'; B uuid := '68345d7a-9d64-410a-a4c7-92a750d9888d'; ADM uuid := '981961d4-25ba-4e1b-a732-8fd68cd6c922';
+  o uuid; n uuid; c1 uuid; c2 uuid; c3 uuid; c4 uuid; res text := ''; i int;
+  q_cmd text := $q$select concat_ws(' ', etat || '/' || etape, 'refusé=' || montant_refuse, 'total=' || total_convenu, 'initial=' || total_initial) from public.commandes where id = %L$q$;
+  q_com text := $q$select coalesce(statut_registre, statut) || ' base=' || montant_vente || ' com=' || commission from public.commissions where commande_id = %L$q$;
+  q_ann text := $q$select count(*)::text from public.annulations where commande_id = %L$q$;
+  q_part text := $q$select string_agg(role || ':' || mode || ':' || montant || ':' || statut, ',' order by id) from public.commande_participations where commande_id = %L$q$;
+  q_st text := $q$select (j ->> 'statut') || coalesce('/' || (j ->> 'attend'), '') from (select %s j) x$q$;
+begin
+  -- prix à l'unité (102c)
+  perform pg_temp.verif(S);
+  execute 'reset role';
+  res := 'offre sans prix: ' || pg_temp.e(format($q$insert into public.offres (user_id, client_id, product_slug, product_label, region_slug, city, quantity, unit, price, status) values (%L, 'p102d-1', 'mais', 'Maïs', 'yamoussoukro', 'Yamoussoukro', 10, 'sac', null, 'active')$q$, S))
+     || ' ; offre 0 F: ' || pg_temp.e(format($q$insert into public.offres (user_id, client_id, product_slug, product_label, region_slug, city, quantity, unit, price, status) values (%L, 'p102d-2', 'mais', 'Maïs', 'yamoussoukro', 'Yamoussoukro', 10, 'kg', 0, 'active')$q$, S))
+     || ' ; demande sans budget: ' || pg_temp.e(format($q$insert into public.demandes (user_id, client_id, product_slug, product_label, region_slug, city, quantity, unit, budget, status) values (%L, 'p102d-3', 'mais', 'Maïs', 'yamoussoukro', 'Yamoussoukro', 10, 'tonne', null, 'active')$q$, B));
+  o := pg_temp.offre(S, 1000, 20000, 'p102d');
+  res := res || ' ; prix vidé: ' || pg_temp.e(format('update public.offres set price = null where id = %L', o))
+     || ' ; quantité changée: ' || pg_temp.e(format('update public.offres set quantity = 999 where id = %L', o))
+     || ' ; commande sans prix: ' || pg_temp.e($q$update public.commandes set prix_unitaire = null where id = (select id from public.commandes limit 1)$q$)
+     || ' ; message prix sans prix: ' || pg_temp.e($q$update public.messages set prix = null where id = (select id from public.messages where genre = 'prix' limit 1)$q$)
+     || ' ; contraintes: ' || pg_temp.l2($q$select string_agg(conname || '=' || convalidated, ',' order by conname) from pg_constraint where conname like '%c102%'$q$);
+
+  -- commandes arrivées
+  n := pg_temp.accord(S, B, o, 20000, 10); c1 := pg_temp.cmd(S, B, n, true); perform pg_temp.partir(S, c1);
+  n := pg_temp.accord(S, B, o, 20000, 10); c2 := pg_temp.cmd(S, B, n, true); perform pg_temp.partir(S, c2);
+  n := pg_temp.accord(S, B, o, 20000, 10); c3 := pg_temp.cmd(S, B, n, true); perform pg_temp.partir(S, c3);
+  n := pg_temp.accord(S, B, o, 20000, 10); c4 := pg_temp.cmd(S, B, n, true); perform pg_temp.partir(S, c4);
+  perform pg_temp.qui(S);
+  perform public.commande_avancer(c1, 'arrivee', null, null, null, null);
+  perform public.commande_avancer(c2, 'arrivee', null, null, null, null);
+  perform public.commande_avancer(c3, 'arrivee', null, null, null, null);
+  perform public.commande_avancer(c4, 'arrivee', null, null, null, null);
+
+  -- c1 : acheteur, vendeur, acheteur, accord
+  perform pg_temp.qui(B);
+  res := res || ' || c1 acheteur 6 sacs: ' || pg_temp.l2(format(q_st, format('public.commande_participation_proposer(%L, %L, 6, null, %L)', c1, 'partie', '4 sacs mouillés')));
+  perform pg_temp.qui(S);
+  res := res || ' ; vendeur contre 150 000: ' || pg_temp.l2(format(q_st, format('public.commande_participation_proposer(%L, %L, null, 150000, %L)', c1, 'montant', 'Les sacs sèchent')))
+     || ' ; double appui: ' || pg_temp.l2(format(q_st, format('public.commande_participation_proposer(%L, %L, null, 150000, null)', c1, 'montant')))
+     || ' ; répond à la sienne: ' || pg_temp.e(format('select public.commande_participation_repondre(%L, true, null)', c1))
+     || ' ; autre pendant la sienne: ' || pg_temp.e(format('select public.commande_participation_proposer(%L, %L, null, 160000, null)', c1, 'montant'));
+  perform pg_temp.qui(B);
+  res := res || ' ; acheteur reprend la même: ' || pg_temp.e(format('select public.commande_participation_proposer(%L, %L, null, 150000, null)', c1, 'montant'))
+     || ' ; écran acheteur: ' || pg_temp.l2(format($q$select concat_ws(' ', 'role=' || (j ->> 'role'), 'proposer=' || (j ->> 'peut_proposer'), 'contre=' || (j ->> 'contre'), 'repondre=' || (j ->> 'peut_repondre'), 'retirer=' || (j ->> 'peut_retirer'), 'restantes=' || coalesce(j ->> 'restantes', 'absent')) from (select public.commande_participation_lire(%L) j) x$q$, c1))
+     || ' ; acheteur contre 7 sacs: ' || pg_temp.l2(format(q_st, format('public.commande_participation_proposer(%L, %L, 7, null, null)', c1, 'partie')))
+     || ' ; 7,5 sacs: ' || pg_temp.e(format('select public.commande_participation_proposer(%L, %L, 7.5, null, null)', c1, 'partie'));
+  perform pg_temp.qui(S);
+  res := res || ' ; vendeur accepte: ' || pg_temp.l2(format(q_st, format('public.commande_participation_repondre(%L, true, null)', c1)))
+     || ' ; 2e appui: ' || pg_temp.l2(format(q_st, format('public.commande_participation_repondre(%L, true, null)', c1)))
+     || ' | ' || pg_temp.l2(format(q_cmd, c1)) || ' ; commission ' || pg_temp.l2(format(q_com, c1)) || ' ; litiges perdus=' || pg_temp.l2(format(q_ann, c1))
+     || ' ; ' || pg_temp.l2(format(q_part, c1))
+     || ' ; journal=' || pg_temp.l2(format($q$select left(note, 90) from public.commande_etapes where commande_id = %L and evenement = 'terminee' order by at desc limit 1$q$, c1));
+
+  -- c2 : l'équipe propose, les deux acceptent
+  perform pg_temp.qui(B);
+  perform public.commande_litige(c2, 'Sacs abîmés');
+  perform pg_temp.qui(S);
+  res := res || ' || c2 vendeur ouvre: ' || pg_temp.e(format('select public.commande_participation_proposer(%L, %L, null, 100000, null)', c2, 'montant'))
+     || ' ; membre comme équipe: ' || pg_temp.e(format('select public.commande_participation_equipe(%L, %L, null, 100000, null)', c2, 'montant'));
+  perform pg_temp.qui(ADM);
+  res := res || ' ; étranger propose: ' || pg_temp.e(format('select public.commande_participation_proposer(%L, %L, null, 100000, null)', c2, 'montant'))
+     || ' ; étranger répond: ' || pg_temp.e(format('select public.commande_participation_repondre(%L, true, null)', c2))
+     || ' ; équipe 100 000: ' || pg_temp.l2(format(q_st, format('public.commande_participation_equipe(%L, %L, null, 100000, %L)', c2, 'montant', 'Moitié chacun')))
+     || ' ; équipe double appui: ' || pg_temp.l2(format(q_st, format('public.commande_participation_equipe(%L, %L, null, 100000, null)', c2, 'montant')))
+     || ' ; journal équipe=' || pg_temp.l2(format($q$select count(*)::text from public.admin_journal where action = 'commande_participation_equipe' and cible_id = %L$q$, c2))
+     || ' ; écran équipe: ' || pg_temp.l2(format($q$select concat_ws(' ', 'role=' || (j ->> 'role'), 'proposer=' || (j ->> 'peut_proposer'), 'repondre=' || (j ->> 'peut_repondre'), 'retirer=' || (j ->> 'peut_retirer')) from (select public.commande_participation_lire(%L) j) x$q$, c2));
+  perform pg_temp.qui(B);
+  res := res || ' ; acheteur accepte: ' || pg_temp.l2(format(q_st, format('public.commande_participation_repondre(%L, true, null)', c2)))
+     || ' ; 2e appui: ' || pg_temp.l2(format(q_st, format('public.commande_participation_repondre(%L, true, null)', c2)))
+     || ' ; état=' || pg_temp.cs(c2);
+  perform pg_temp.qui(S);
+  res := res || ' ; vendeur accepte: ' || pg_temp.l2(format(q_st, format('public.commande_participation_repondre(%L, true, null)', c2)))
+     || ' | ' || pg_temp.l2(format(q_cmd, c2)) || ' ; commission ' || pg_temp.l2(format(q_com, c2)) || ' ; litiges perdus=' || pg_temp.l2(format(q_ann, c2));
+
+  -- c3 : refus du vendeur, plus de plafond, expiration
+  perform pg_temp.qui(B);
+  perform public.commande_litige(c3, 'Sacs abîmés');
+  perform pg_temp.qui(ADM);
+  perform public.commande_participation_equipe(c3, 'montant', null, 120000, null);
+  perform pg_temp.qui(S);
+  res := res || ' || c3 vendeur refuse l''équipe: ' || pg_temp.l2(format(q_st, format('public.commande_participation_repondre(%L, false, %L)', c3, 'Trop bas')));
+  perform pg_temp.qui(B);
+  for i in 1 .. 4 loop
+    perform public.commande_participation_proposer(c3, 'montant', null, 50000 + i * 1000, null);
+    perform public.commande_participation_retirer(c3);
+  end loop;
+  res := res || ' ; 5e proposition: ' || pg_temp.l2(format(q_st, format('public.commande_participation_proposer(%L, %L, null, 60000, null)', c3, 'montant')))
+     || ' ; ' || pg_temp.l2(format($q$select count(*)::text || ' propositions' from public.commande_participations where commande_id = %L$q$, c3));
+  execute 'reset role';
+  update public.commande_participations set echeance = now() - interval '1 minute' where commande_id = c3 and statut = 'ouverte';
+  res := res || ' ; 24 h: ' || pg_temp.l2('select public.participations_delais()::text') || ' état=' || pg_temp.cs(c3)
+     || ' ; règles=' || pg_temp.l2($q$select coalesce(j ->> 'participation_max', 'sans max') || '/' || (j ->> 'participation_reponse_heures') from (select public.commandes_regles() j) x$q$);
+  perform pg_temp.qui(ADM);
+  res := res || ' ; participation_max: ' || pg_temp.e($q$select public.admin_commandes_regler('{"participation_max": 5}')$q$)
+     || ' ; 48 h: ' || pg_temp.e($q$select public.admin_commandes_regler('{"participation_reponse_heures": 48}')$q$)
+     || ' ; journal réglage=' || pg_temp.l2($q$select count(*)::text from public.admin_journal where action = 'admin_commandes_regler' and at > now() - interval '1 minute'$q$);
+
+  -- c4 : contre-proposition à l'équipe, rôles
+  perform pg_temp.qui(B);
+  perform public.commande_litige(c4, 'Sacs abîmés');
+  perform pg_temp.qui(ADM);
+  perform public.commande_participation_equipe(c4, 'montant', null, 120000, null);
+  perform pg_temp.qui(B);
+  res := res || ' || c4 acheteur contre l''équipe: ' || pg_temp.l2(format(q_st, format('public.commande_participation_proposer(%L, %L, 5, null, null)', c4, 'partie')));
+  perform pg_temp.qui(S);
+  res := res || ' ; vendeur transport sans prix à part: ' || pg_temp.e(format('select public.commande_participation_proposer(%L, %L, null, null, null)', c4, 'transport'))
+     || ' ; vendeur retire celle de l''acheteur: ' || pg_temp.e(format('select public.commande_participation_retirer(%L)', c4));
+  perform pg_temp.qui(ADM);
+  res := res || ' ; équipe retire celle de l''acheteur: ' || pg_temp.e(format('select public.commande_participation_retirer(%L)', c4))
+     || ' ; équipe remplace: ' || pg_temp.l2(format(q_st, format('public.commande_participation_equipe(%L, %L, 8, null, null)', c4, 'partie')))
+     || ' ; équipe retire la sienne: ' || pg_temp.l2(format(q_st, format('public.commande_participation_retirer(%L)', c4)))
+     || ' ; ' || pg_temp.l2(format(q_part, c4))
+     || ' ; suivi=' || pg_temp.l2(format($q$select string_agg(e ->> 'role', ',') from json_array_elements(public.commande_suivi_lire(%L)) e where e ->> 'genre' = 'participation'$q$, c4));
+  raise exception 'TEST 102-D: %', res;
+end $$;
+-- Résultat APRÈS 102c et 102d (25/10/2026, projet de test ; joué deux fois : la 2e fois après le correctif du double appui) :
+-- prix : offre sans prix « PRIX_UNITE : Indiquez le prix au sac. » ; offre 0 F « … au kg. » ; demande sans budget « … à la tonne. » ;
+--        prix vidé refusé ; quantité changée ok ; commande sans prix et message « prix » sans prix refusés par les contraintes ;
+--        3 contraintes c102 validées (0 ligne fautive sur le test).
+-- c1 : 6 sacs proposée ; contre 150 000 du vendeur ; double appui « deja_proposee » ; répondre à la sienne PARTICIPATION_PROPRE ;
+--      autre pendant la sienne PARTICIPATION_OUVERTE ; l'acheteur reprend la même PARTICIPATION_IDENTIQUE ; écran acheteur :
+--      proposer, contre, répondre = true, retirer = false, « restantes » absent ; contre 7 sacs ok ; 7,5 sacs refusé (entier) ;
+--      vendeur accepte « acceptee » ; 2e appui « acceptee » (1er essai : PARTICIPATION_AUCUNE, corrigé : tri par id) ; refus
+--      après l'accord : PARTICIPATION_AUCUNE ; terminee/terminee, refusé 60 000, total 140 000, initial 200 000 ; commission
+--      calculee base 140 000, 4 900 F ; 0 litige perdu ; propositions acheteur 120 000 refusee, vendeur 150 000 refusee,
+--      acheteur 140 000 acceptee ; journal « Participation convenue (proposée par l'acheteur, acceptée par l'acheteur et le
+--      vendeur) : 140 000 F (garde 7 sac). Aucun argent n'a été versé par l'application. »
+-- c2 : le vendeur ne peut pas ouvrir (PARTICIPATION_VENDEUR) ; un membre comme équipe « Réservé à l'administration » ; l'admin
+--      étranger à la commande ne propose ni ne répond comme partie (« Commande introuvable ») ; équipe 100 000 proposée, double
+--      appui « deja_proposee », 1 ligne au journal de l'équipe ; écran équipe : proposer et retirer, pas répondre ; acheteur
+--      accepte « ouverte/vendeur », 2e appui pareil, toujours litige ; vendeur accepte « acceptee » : terminee, refusé 100 000,
+--      total 100 000 ; commission calculee base 100 000, 3 500 F ; 0 litige perdu.
+-- c3 : le vendeur refuse la proposition de l'équipe ; 4 propositions-retraits puis une 5e de l'acheteur : acceptée (6 propositions,
+--      plus de plafond) ; échéance passée : 1 expirée, commande toujours litige/arrivee (l'équipe tranche) ; règles « sans max/24 » ;
+--      participation_max « Réglage inconnu » ; participation_reponse_heures 48 ok et 1 ligne au journal de l'équipe (porte remise).
+-- c4 : l'acheteur contre-propose l'équipe ; « transport » sans prix à part refusé au vendeur ; ni le vendeur ni l'équipe ne retirent
+--      la proposition de l'acheteur ; l'équipe la remplace (caduque) puis retire la sienne ; equipe:120000:refusee,
+--      acheteur:partie:100000:caduque, equipe:partie:160000:retiree ; suivi : equipe, acheteur, equipe.

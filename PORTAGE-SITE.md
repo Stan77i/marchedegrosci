@@ -176,19 +176,19 @@ Rien n'est supprimé tant que le propriétaire n'a pas dit oui. Les fichiers res
 ## 7. Inventaire automatique
 
 <!-- INVENTAIRE:DEBUT -->
-_Inventaire du 24 octobre 2026_
+_Inventaire du 25 octobre 2026_
 _Partie mise à jour automatiquement par `tools/inventaire-site.js` (tâche GitHub `rapport-site.yml`). Ne pas modifier à la main._
 
 ### Les pages
 
 | Page | Rôle | Fichiers chargés | Poids chargé |
 |---|---|---|---|
-| `application.dc.html` | Application mobile (la priorité). S’ouvre sur téléphone ; sur ordinateur, seulement pour l’administrateur. | 61 | 2,9 Mo |
+| `application.dc.html` | Application mobile (la priorité). S’ouvre sur téléphone ; sur ordinateur, seulement pour l’administrateur. | 61 | 3,0 Mo |
 | `index-v3.html` | Site pour ordinateur. Aujourd’hui caché derrière la maintenance, ouvert seulement à l’administrateur. | 65 | 4,7 Mo |
 | `index.html` | Aiguillage : téléphone → application, ordinateur → maintenance (ou site pour l’administrateur). | 0 | 2 ko |
 | `maintenance.html` | Page « site en maintenance » avec QR code vers l’application. | 3 | 85 ko |
 | `suivi.html` | Lien de suivi envoyé au chauffeur (sans compte). | 0 | 12 ko |
-| `admin.html` | Tableau de bord de l’administrateur. | 16 | 445 ko |
+| `admin.html` | Tableau de bord de l’administrateur. | 16 | 446 ko |
 
 ### Modules communs à l’application et au site (23)
 

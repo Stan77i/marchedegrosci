@@ -76,6 +76,8 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Commandes : fiche, plan de livraison, étapes (« À confirmer », « Le camion est parti »…), code de prise en charge et de réception, refus avec preuves, litige à trois, libération sous 1 h | `v3/commandes.js` (schémas 57 à 65) | haute |
 | Colis au départ : 2 à 4 photos + poids pesé avant le chargement, photo du papier du mot secret avec code au hasard (3 min, équipe seulement) | `v3/commandes.js` (`depart`, `blocDepart`), schémas 90 et 90b | haute (avec les commandes) |
 | Litige en 1 h après « livré », clôture en faveur du vendeur sans réponse : textes « Répondez avant … », boutons pendant le litige | `v3/commandes.js` (`prochaine0`, `actions`), schéma 97b | haute (avec les commandes) |
+| Suivi de livraison : « Signaler un retard », « Demander des nouvelles », « Demander un délai » (2, 6, 24 h), échéance réelle, fil du suivi dans l'historique, « Annuler » quand le vendeur est banni | `v3/commandes.js` (`historique`, `nouvelles`, `geste`), schéma 99a | haute (avec les commandes) |
+| Quantité entière pour les unités qui se comptent, contrôlée dans les formulaires de publication | `application.dc.html` (`qFrac`), schéma 99d | moyenne |
 | Quantité minimale sur les annonces (offre et demande) : champ des formulaires, « Disponible » et pastille « Minimum … » sur les cartes d'annonce | `application.dc.html` (formulaires, carte d'annonce), `v3/tableau.js`, schéma 97c | haute |
 | Accord conclu en reçu (quantité, prix, total), « Suivre la commande » | `v3/negoce.js` (commun : déjà là) mais le bouton s'appuie sur `v3/commandes.js` | haute |
 | Tableau du marché façon P2P (50 meilleures annonces par unité) | `v3/tableau.js` (schémas 59, 70) | haute |
@@ -191,7 +193,7 @@ _Partie mise à jour automatiquement par `tools/inventaire-site.js` (tâche GitH
 | `index.html` | Aiguillage : téléphone → application, ordinateur → maintenance (ou site pour l’administrateur). | 0 | 2 ko |
 | `maintenance.html` | Page « site en maintenance » avec QR code vers l’application. | 3 | 85 ko |
 | `suivi.html` | Lien de suivi envoyé au chauffeur (sans compte). | 0 | 12 ko |
-| `admin.html` | Tableau de bord de l’administrateur. | 16 | 452 ko |
+| `admin.html` | Tableau de bord de l’administrateur. | 16 | 454 ko |
 
 ### Modules communs à l’application et au site (23)
 

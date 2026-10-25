@@ -234,15 +234,19 @@
   // ANO-013 : une ancienne « due » sans séquestre (avant le schéma 95b) n'est jamais « argent passé ». Le serveur la marque dans statut_registre
   // (avant_regle / non_reclamee) ; tant qu'aucun paiement n'existe, une « due » sans séquestre confirmé s'affiche aussi « D'avant la règle ».
   const AVANT = ['avant', 'avant_regle', 'non_reclamee'];
-  const stK = k => { const v = k.statut_registre || k.statut; if (AVANT.includes(v)) return 'avant'; if (v === 'due' && !(k.sequestre === true || k.argent_passe === true)) return 'avant'; return KST[v] ? v : 'prevue'; };
+  // schéma 99b : le serveur marque ces lignes avant_regle (statut « calculee ») ; la marque passe avant le statut
+  const stK = k => { const v = k.statut_registre || k.statut; if (k.avant_regle === true || AVANT.includes(v)) return 'avant'; if (v === 'due' && !(k.sequestre === true || k.argent_passe === true)) return 'avant'; return KST[v] ? v : 'prevue'; };
   const etiq = k => { const v = stK(k); return `<span class="at-t ${KST[v][1]}">${KST[v][0]}</span>`; };
   // totaux du serveur, regroupés par libellé affiché (les « due » d'aujourd'hui sont toutes d'avant la règle : aucun paiement n'existe)
-  const totauxAff = (T, cles) => { const o = {}; Object.keys(T || {}).forEach(s => { const v = AVANT.includes(s) || s === 'due' ? 'avant' : s, x = T[s] || {}, y = o[v] || (o[v] = {});
-    Object.keys(x).forEach(c => { y[c] = (y[c] || 0) + (+x[c] || 0); }); }); return o; };
+  // schéma 99b : les totaux « avant_regle » sont comptés dans « calculee » par le serveur : on les en retire pour la tuile « D'avant la règle »
+  const totauxAff = (T, AR) => { const o = {}; Object.keys(T || {}).forEach(s => { const v = AVANT.includes(s) || s === 'due' ? 'avant' : s, x = T[s] || {}, y = o[v] || (o[v] = {});
+    Object.keys(x).forEach(c => { y[c] = (y[c] || 0) + (+x[c] || 0); }); });
+    if (AR && +AR.n > 0) { const a = o.avant || (o.avant = {}), k = o.calculee || {}; Object.keys(AR).forEach(c => { a[c] = (a[c] || 0) + (+AR[c] || 0); if (o.calculee) k[c] = Math.max(0, (k[c] || 0) - (+AR[c] || 0)); }); }
+    return o; };
   // commission transport (schéma 42, 95, 95b) : 6,9 % du prix du transporteur du service Marché de Gros. « Calculée » : jamais réclamée. Rien n'est encaissé.
   function commTransport(H) {
     const e = H.esc, c = D.comTr; if (!c) return '';
-    const TA = totauxAff(c.totaux), t = k => TA[k] || { n: 0, transports: 0, commission: 0 };
+    const TA = totauxAff(c.totaux, c.avant_regle), t = k => TA[k] || { n: 0, transports: 0, commission: 0 };
     const tuile = k => { const x = t(k); return `<div class="at-k"><small>${KST[k][0]}</small><b>${H.fmt(x.commission || 0)} F</b><small>${x.n || 0} transport${x.n > 1 ? 's' : ''} · ${H.fmt(x.transports || 0)} F</small></div>`; };
     const ligne = k => `<div class="at-r"><div><b>${e(k.produit || 'Commande')} · ${e(k.numero)}</b><small>${e(k.transporteur || 'Chauffeur')} · ${new Date(k.updated_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</small></div>
         <div><b>${H.fmt(k.commission)} F</b><small>6,9 % de ${H.fmt(k.prix_transport)} F</small></div>
@@ -251,12 +255,23 @@
       <div class="at-ks">${tuile('calculee')}${tuile('avant')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div>
       <div class="at-l" style="margin-top:10px">${(c.lignes || []).length ? c.lignes.map(ligne).join('') : '<div class="at-vide"><b>Aucune commission transport</b>Elle s’inscrit quand un chauffeur accepte une mission avec son prix.</div>'}</div></section>`;
   }
-  D.com = null; D.comOuv = {};
+  D.com = null; D.comOuv = {}; D.depots = null;
+  // schéma 99b : 2e dépôt reçu pour une commande qui a déjà son séquestre (autre référence) : gardé pour être rendu. Aucun paiement n'est branché.
+  const OPE = { wave: 'Wave', orange: 'Orange Money', mtn: 'MTN MoMo', moov: 'Moov Money' };
+  function depotsDoubles(H) {
+    const e = H.esc, L = D.depots; if (!L) return '';
+    const ligne = x => `<div class="at-r"><div><b>Commande ${e(x.numero || '')}</b><small>${e(OPE[x.operateur] || x.operateur)} · réf. ${e(x.reference)} · reçu ${new Date(x.recu_le).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</small>${x.note ? `<small>« ${e(x.note)} »</small>` : ''}</div>
+        <div><b>${x.montant != null ? H.fmt(x.montant) + ' F' : '—'}</b><small>${x.traite_le ? 'reçu en double' : 'à rendre au payeur'}</small></div>
+        <div class="at-a"><span class="at-t ${x.traite_le ? 'v' : 'a'}">${x.traite_le ? 'Traité' : 'À rendre'}</span></div></div>`;
+    return `<section class="sec"><h2 style="margin:6px 0 10px">Dépôts en double</h2>
+      <div class="at-l">${L.length ? L.map(ligne).join('') : '<div class="at-vide"><b>Aucun dépôt en double</b>Un 2e dépôt reçu pour une commande qui a déjà son séquestre s’inscrit ici, pour être rendu.</div>'}</div></section>`;
+  }
   EXT.commissions = {
     titre: 'Commissions', ico: 'prix',
-    charger: async H => { const [a, t] = await Promise.all([H.rpc('admin_commissions'), H.rpc('admin_commissions_transport').catch(() => null)]); D.com = a; D.comTr = t; },
+    n: () => (D.depots || []).filter(x => !x.traite_le).length,
+    charger: async H => { const [a, t, d] = await Promise.all([H.rpc('admin_commissions'), H.rpc('admin_commissions_transport').catch(() => null), H.rpc('admin_depots_doubles').catch(() => null)]); D.com = a; D.comTr = t; D.depots = Array.isArray(d) ? d : null; },
     vue(H) {
-      const e = H.esc, c = D.com || { totaux: {}, lignes: [] }, TA = totauxAff(c.totaux), t = k => TA[k] || { n: 0, ventes: 0, commission: 0 };
+      const e = H.esc, c = D.com || { totaux: {}, lignes: [] }, TA = totauxAff(c.totaux, c.avant_regle), t = k => TA[k] || { n: 0, ventes: 0, commission: 0 };
       const tuile = (k) => { const x = t(k); return `<div class="at-k"><small>${KST[k][0]}</small><b>${H.fmt(x.commission || 0)} F</b><small>${x.n || 0} commande${x.n > 1 ? 's' : ''} · ventes ${H.fmt(x.ventes || 0)} F</small></div>`; };
       const ligne = k => `<div class="at-r"><div><b>${e(k.produit || 'Commande')} · ${e(k.numero)}</b><small>${e(k.vendeur || 'Membre')} · ${new Date(k.updated_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</small></div>
           <div><b>${H.fmt(k.commission)} F</b><small>3,5 % de ${H.fmt(k.montant_vente)} F</small></div>
@@ -265,7 +280,7 @@
       return H.top('Commissions', 'Registre de la commission de 3,5 % sur les ventes de marchandises, calculée par le serveur. Aucun paiement n’existe : une vente clôturée donne une commission « calculée », jamais réclamée. Rien n’a été encaissé.', '') + `
         <section class="sec"><div class="at-ks">${tuile('calculee')}${tuile('avant')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div></section>
         <section class="sec"><div class="at-l">${(c.lignes || []).length ? c.lignes.map(ligne).join('') : '<div class="at-vide"><b>Aucune commission</b>Elles s’inscrivent seules à chaque commande.</div>'}</div></section>
-        ${commTransport(H)}`;
+        ${commTransport(H)}${depotsDoubles(H)}`;
     },
     lier(root, H) {
       root.querySelectorAll('[data-kj]').forEach(b => b.onclick = () => { const id = b.dataset.kj; if (D.comOuv[id]) delete D.comOuv[id]; else D.comOuv[id] = 1; H.repeindre(); });

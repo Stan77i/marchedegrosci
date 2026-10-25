@@ -72,6 +72,7 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 
 | Fonction | Modèle dans l'application | Priorité |
 |---|---|---|
+| Formulaire incomplet : le premier champ à corriger est amené au milieu de l’écran, avec le focus (CMP-01, 25/10/2026) | `application.dc.html` (`montrerChamp`) | moyenne |
 | Commandes : fiche, plan de livraison, étapes (« À confirmer », « Le camion est parti »…), code de prise en charge et de réception, refus avec preuves, litige à trois, libération sous 1 h | `v3/commandes.js` (schémas 57 à 65) | haute |
 | Colis au départ : 2 à 4 photos + poids pesé avant le chargement, photo du papier du mot secret avec code au hasard (3 min, équipe seulement) | `v3/commandes.js` (`depart`, `blocDepart`), schémas 90 et 90b | haute (avec les commandes) |
 | Litige en 1 h après « livré », clôture en faveur du vendeur sans réponse : textes « Répondez avant … », boutons pendant le litige | `v3/commandes.js` (`prochaine0`, `actions`), schéma 97b | haute (avec les commandes) |
@@ -175,19 +176,19 @@ Rien n'est supprimé tant que le propriétaire n'a pas dit oui. Les fichiers res
 ## 7. Inventaire automatique
 
 <!-- INVENTAIRE:DEBUT -->
-_Inventaire du 24 octobre 2026_
+_Inventaire du 25 octobre 2026_
 _Partie mise à jour automatiquement par `tools/inventaire-site.js` (tâche GitHub `rapport-site.yml`). Ne pas modifier à la main._
 
 ### Les pages
 
 | Page | Rôle | Fichiers chargés | Poids chargé |
 |---|---|---|---|
-| `application.dc.html` | Application mobile (la priorité). S’ouvre sur téléphone ; sur ordinateur, seulement pour l’administrateur. | 61 | 2,9 Mo |
+| `application.dc.html` | Application mobile (la priorité). S’ouvre sur téléphone ; sur ordinateur, seulement pour l’administrateur. | 61 | 3,0 Mo |
 | `index-v3.html` | Site pour ordinateur. Aujourd’hui caché derrière la maintenance, ouvert seulement à l’administrateur. | 65 | 4,7 Mo |
 | `index.html` | Aiguillage : téléphone → application, ordinateur → maintenance (ou site pour l’administrateur). | 0 | 2 ko |
 | `maintenance.html` | Page « site en maintenance » avec QR code vers l’application. | 3 | 85 ko |
 | `suivi.html` | Lien de suivi envoyé au chauffeur (sans compte). | 0 | 12 ko |
-| `admin.html` | Tableau de bord de l’administrateur. | 16 | 445 ko |
+| `admin.html` | Tableau de bord de l’administrateur. | 16 | 446 ko |
 
 ### Modules communs à l’application et au site (23)
 

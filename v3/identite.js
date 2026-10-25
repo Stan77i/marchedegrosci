@@ -253,7 +253,7 @@
 .idv-in{width:100%;box-sizing:border-box;height:52px;padding:0 14px;border:1px solid var(--line2);border-radius:13px;background:#fff;color:var(--ink);font:500 17px Jost,sans-serif}
 .idv-sf{display:flex;gap:12px;align-items:flex-start;margin-top:12px;padding:12px 14px;border-radius:14px;background:rgba(140,140,140,.1);cursor:pointer}.idv-sf input{flex:none;width:22px;height:22px;margin:1px 0 0;accent-color:#10392B}.idv-sf b{display:block;font-weight:600}.idv-sf small{display:block;margin-top:3px;opacity:.75;font-size:13px;line-height:1.4}
 .idv-in:disabled{opacity:.45}
-.idv-lu{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:rgba(16,57,43,.08);color:#234f80;font-size:13.5px;line-height:1.4}
+.idv-lu{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:rgba(16,57,43,.08);color:#10392B;font-size:13.5px;line-height:1.4}
 .idv-lu.doute{background:rgba(242,201,76,.22);color:#6b4e00}
 .idv-act{display:flex;flex-direction:column;gap:8px;margin-top:auto;padding-top:6px}
 .idv-go{min-height:54px;border:0;border-radius:27px;background:#10392B;color:#F3EFE4;font:600 16px Jost,sans-serif;cursor:pointer}

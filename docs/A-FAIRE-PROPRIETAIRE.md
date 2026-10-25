@@ -40,9 +40,14 @@ revoke truncate on public.alertes, public.alertes_produits, public.zones from au
 
 ## 4. Corrections de l'audit : la production et les décisions (24/10/2026)
 
-Les corrections de l'audit (schémas 92 à 96, plus 97a) sont **en production depuis le 25/10/2026**, avec la fonction `pousser` v24. Les schémas 97b et 97c restent sur le projet de test.
+Les corrections de l'audit (schémas 92 à 96, plus 97a) sont **en production depuis le 25/10/2026**, avec la fonction `pousser` v24. Les schémas 97b, 97c, 97d, 98a et 98b (litige en 1 h, quantité minimale, suppression du compte, suspension) sont aussi **en production depuis le 25/10/2026**, avec `pousser` v25.
 
 - [x] Donner le « OK production » pour les schémas 92 à 96 (fait le 25/10/2026 ; Claude les a appliqués avec 97a, puis a déployé `pousser` v24).
+  - [x] litige automatique après le « livré » du vendeur : tranché le 25/10/2026 (1 h, puis clôture en faveur du vendeur, schéma 97b) ;
+  - [ ] valeurs des badges et du masquage d'une annonce (point C) ;
+  - [x] lecture des messages par l'équipe : tranché le 25/10/2026 (l'équipe peut tout lire ; écrit dans les textes) ;
+  - [ ] les 15 questions restantes des 32 de `docs/juridique/regles-manquantes.md` (17 déjà tranchées).
+- [x] Donner le « OK production » pour les schémas 97b à 98b (fait le 25/10/2026 : « C'EST FAIT, MET EN PRODUCTION » ; Claude les a appliqués, puis a déployé `pousser` v25).
 - [ ] Répondre aux décisions en attente :
   - [ ] annonces déjà en ligne : 7 jours de grâce avant leur expiration (30 jours de vie, rappel 3 jours avant) ;
   - [ ] rôle acheteur / vendeur : simple affichage (un membre peut acheter et vendre) ou bloquer selon le rôle ;
@@ -53,6 +58,15 @@ Les corrections de l'audit (schémas 92 à 96, plus 97a) sont **en production de
 - [ ] Trouver un juriste pour relire les textes de `docs/juridique/` (conditions, confidentialité, mentions légales) et la formalité ARTCI.
 - [ ] Remplir `docs/juridique/mentions-legales.md` (éditeur, adresse, RCCM, contact).
 - [ ] Démarche ARTCI (déclaration des données personnelles) : vérifier ce qui est obligatoire avec le juriste, puis la faire.
+
+## 4 bis. Lancer l'essai fermé (une heure, gratuit)
+
+Tout est prêt dans `docs/essai-ferme/`. Commencez par **[LANCER-EN-1-HEURE.md](essai-ferme/LANCER-EN-1-HEURE.md)** : étapes numérotées, messages à copier (`MESSAGES.md`), guide à envoyer (`GUIDE-PARTICIPANT.md`), suivi (`SUIVI.md`), questionnaire (`QUESTIONNAIRE.md`), critères (`CRITERES-DE-REUSSITE.md`). Conseil : 20 personnes (10 vendeurs, 10 acheteurs), 2 produits, 1 ville, 4 semaines.
+
+- [x] Valider ou changer les seuils de `CRITERES-DE-REUSSITE.md` (validés le 25/10/2026 : « ok pour tout »)
+- [ ] Choisir la ville, les 2 produits, le canal d'aide et les horaires
+- [ ] Décider de lancer malgré les cases « Pas fait » de l'étape 0 (conditions d'utilisation, audit de sécurité), ou attendre
+- [ ] Lancer l'essai fermé
 
 ## 5. Le jour où vous aurez votre partenaire de paiement
 

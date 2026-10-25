@@ -1,7 +1,7 @@
 # Conditions d'utilisation du Marché de Gros CI
 
 > **PROJET, à faire relire par un juriste. Rien n'est en ligne.**
-> Version de travail du 24/10/2026. Les commentaires `<!-- source: … -->` disent où chaque règle se trouve dans le code ; ils seront retirés de la version publiée.
+> Version de travail du 24/10/2026, mise à jour le 25/10/2026 (lecture des messages par l'équipe). Les commentaires `<!-- source: … -->` disent où chaque règle se trouve dans le code ; ils seront retirés de la version publiée.
 
 ## 1. Qui nous sommes et ce que nous faisons
 
@@ -19,6 +19,10 @@ Exception à venir : un **service de transport Marché de Gros**, avec des trans
 <!-- source: supabase/schema-62-transport-reseau-pause.sql (_transport_reseau_ouvert = false) ; schema-83a-transport-nego.sql (réglage transport_reseau_ouvert = false) ; CLAUDE.md « le service reste fermé tant qu'il n'y a pas 3 transporteurs vérifiés et l'accord du propriétaire » -->
 
 [À VALIDER PAR LE JURISTE : qualification juridique de MGCI (intermédiaire, place de marché) et effets en droit ivoirien.]
+
+**Les messages ne sont pas une messagerie privée.** Le Marché de Gros n'est pas WhatsApp : c'est une mise en relation d'un vendeur et d'un acheteur. **L'équipe du Marché de Gros peut lire tous les messages** échangés dans l'application (messages privés et négociations), pour la sécurité des membres, les litiges, la lutte contre la fraude et le bon fonctionnement de la mise en relation. N'y écrivez que ce qui concerne votre achat ou votre vente. Voir la politique de confidentialité, partie 2.5.
+[À VALIDER PAR LE JURISTE : formulation, au regard de la loi n° 2013-450 sur les données personnelles et des règles de l'ARTCI.]
+<!-- source: supabase/schema-10-admin-messages.sql admin_discussions(), admin_dm() ; décision du propriétaire du 25/10/2026 (« L'équipe peut lire tout, l'app n'est pas un WhatsApp, c'est une mise en relation d'un vendeur et d'un acheteur. ») -->
 
 ## 2. Accepter ces conditions
 
@@ -246,7 +250,7 @@ Un **paiement sécurisé** (l'argent est bloqué jusqu'à la réception) est **e
 
 - Un problème se signale **après le chargement**, et **jusqu'à la clôture de la commande** (1 heure après la réception).
 - Pendant un litige, une **discussion à trois** réunit l'acheteur, le vendeur et le Marché de Gros.
-- L'équipe lit les échanges (négociation, messages, photos, preuves de départ, mot secret) pour comprendre.
+- L'équipe lit les échanges (négociation, messages, photos, preuves de départ, mot secret) pour comprendre. Elle peut aussi lire les messages en dehors d'un litige (voir partie 1).
 - **Le rôle de l'équipe est la médiation.** Elle propose une issue et note sa décision dans l'application (commande terminée ou annulée, partie refusée acceptée ou non). **MGCI n'est pas un tribunal** : sa décision ne remplace pas une décision de justice, et chacun garde le droit d'aller devant le juge. [À VALIDER PAR LE JURISTE]
 - Délai de réponse de l'équipe à un litige : [DÉCISION DU PROPRIÉTAIRE]. Proposition : 7 jours, comme pour les contestations.
 <!-- source: supabase/schema-61-liberation-24h.sql commande_litige() (après chargement, jusqu'à libere_le) ; schema-57/84a admin_litige_trancher(), admin_litige_trancher2() ; schema-57 admin_refus_trancher() ; v3/commandes.js « Discussion à trois » ; v3/aide.js « C'est quoi, la discussion à trois ? » ; audit 24/10/2026 problème 10 (aucune échéance des litiges) -->

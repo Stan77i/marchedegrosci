@@ -25,6 +25,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # La branche d'une PR n'a pas forcément le .gitattributes de main : on l'impose ici.
+          mkdir -p .git/info && git show origin/main:.gitattributes > .git/info/attributes
           gh pr list --state open --json number,headRefName --jq '.[] | select(.headRefName|startswith("claude/")) | "\(.number) \(.headRefName)"' |
           while read -r num ref; do
             git fetch -q origin "$ref"

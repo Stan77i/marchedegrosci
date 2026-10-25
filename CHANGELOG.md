@@ -4,6 +4,13 @@ Cet historique vient de `git log origin/main` du dépôt (607 commits) et des se
 
 Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22, 23 et 24 octobre 2026), 607 commits. Aucun commit les 20/10 et entre le 5 et le 9, le 13 et le 16 octobre.
 
+## 25/10/2026
+
+- Corrections du contrôle qualité (LOG-10, LOG-12, DOC-02), **projet de test seulement** (production : 98a puis 98b, sans les commentaires d'en-tête, par l'équipe qui y travaille) :
+  - Schéma 98a : plus de suppression du compte avec une commande à confirmer ou en cours, un litige ouvert, un accord sans commande (moins de 72 h) ou une suspension en cours. Message : « Terminez d’abord vos commandes en cours : 4 commandes. » Méthode « porte » : l'ancienne fonction devient `_supprimer_compte_effacer` (fermée aux membres) ; `supprimer_compte()` garde son nom. `compte_suppression_verifier()` prévient dans Mon compte avant de demander le code (`v3/compte.js`).
+  - Schéma 98b : un membre suspendu, ou son partenaire, ne peut plus faire de proposition de prix ni conclure d'accord (déclencheurs sur `messages` et `negociations`) ; écrire, refuser, retirer et arrêter restent possibles.
+  - Modèles de stratégie (pitch, présentation, problème et solution, marketing) et `FOUNDER_CONTEXT.md` : la commission est « prévue, calculée sur la marchandise ; prélevée seulement une fois le paiement intégré » (plus de « retenus sur la part du vendeur », plus de « registre que personne ne peut modifier », plus de titre « Payé… »). PDF refaits.
+
 ## 24/10/2026
 
 - Corrections de l'audit (schémas 92 à 96) : **appliquées sur le projet de test seulement**, la production attend l'accord du propriétaire, la fonction `pousser` v24 n'est pas déployée. Détail par équipe ci-dessous et dans `docs/PASSATION.md`.

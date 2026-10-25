@@ -273,7 +273,8 @@ Deno.serve(async (req) => {
         transport: e.par ? [`${qui} : le camion est parti`, `${produit} · en route vers la livraison`] : ["Le camion est parti", `${produit} · départ vu par le lien de suivi du chauffeur`],
         transbordement: ["Transbordement", `${produit}${e.lieu ? " · " + e.lieu : ""}`],
         // schéma 92 : l'acheteur dit « arrivée » ; le vendeur (ou le chauffeur) peut déclarer « livré »
-        arrivee: e.par && e.par === k.acheteur_id ? ["La marchandise est arrivée", `${produit} · L'acheteur vérifie.`] : ["Livraison déclarée", `${produit} · Vérifiez, puis confirmez ou refusez.`],
+        // schéma 97b : après « livré », l'acheteur a 1 h ; sans réaction, un litige s'ouvre tout seul
+        arrivee: e.par && e.par === k.acheteur_id ? ["La marchandise est arrivée", `${produit} · L'acheteur vérifie.`] : [`Livraison déclarée : ${coupe(k.produit || "commande", 22)}`, "Confirmez la réception ou signalez un problème dans l'heure."],
         reception: ["Réception confirmée, commande terminée", produit],
         annulation_demandee: [`${qui} demande l'annulation`, `${produit}. Touchez pour répondre.`],
         annulation_refusee: ["Annulation refusée", produit],
@@ -293,8 +294,20 @@ Deno.serve(async (req) => {
         if (d === k.vendeur_id && e.evenement === "confirmee") return [title, `${produit} · Gardez votre code de prise en charge pour le chargement.`];
         return null;
       };
+      // schéma 97b : litige ouvert par le système (acheteur muet 1 h après « livré »), puis clôture en faveur du vendeur sans réponse.
+      // Aucun paiement n'est branché : on ne parle jamais d'argent versé.
+      const auto = (d: string): [string, string] | null => {
+        const ach = d === k.acheteur_id;
+        if (e.evenement === "litige" && !e.par && !k.refus_le) return ach
+          ? ["Litige ouvert : réception non confirmée", "Répondez dans l'heure, sinon la commande sera close pour le vendeur."]
+          : ["Litige ouvert : l'acheteur n'a pas confirmé", "Sans réponse de sa part dans l'heure, la commande sera close pour vous."];
+        if (e.evenement === "terminee" && !e.par && String(e.note || "").startsWith("En faveur du vendeur")) return ach
+          ? ["Commande close pour le vendeur", `${produit} · Pas de réponse de votre part dans l'heure.`]
+          : ["Commande close en votre faveur", `${produit} · L'acheteur n'a pas répondu.`];
+        return null;
+      };
       const meta = (d: string): Meta => ({ cat: e.evenement === "litige" ? "litige" : "commande", cle: `cmd:${e.id}:${d}`, type: e.evenement, objet: k.id });
-      for (const d of dests) { const [t2, b2] = rappel(d) || [title, body]; res.push(await envoyer(d, { title: t2, body: b2, tag: "cmd-" + k.id, url: APP + "#/?commande=" + k.id }, meta(d))); }
+      for (const d of dests) { const [t2, b2] = auto(d) || rappel(d) || [title, body]; res.push(await envoyer(d, { title: t2, body: b2, tag: "cmd-" + k.id, url: APP + "#/?commande=" + k.id }, meta(d))); }
       // schéma 57 : le chauffeur inscrit est prévenu du refus, pour dire ce qu'il a vu à la livraison
       if (e.evenement === "litige" && k.refus_le && k.transporteur_id) {
         const { data: t } = await sb.from("transporteurs").select("user_id").eq("id", k.transporteur_id).maybeSingle();

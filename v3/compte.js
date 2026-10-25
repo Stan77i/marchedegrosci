@@ -883,7 +883,20 @@ label.cp-r{cursor:pointer}
   };
   // dans l'application : on « sort du marché » (v3/porte.js)
   function deconnecter() { fermer(); const fin = () => N().toast('Vous êtes sorti du marché. Vos annonces restent publiées.'); if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N().signOut()); else { N().signOut(); fin(); } }
-  function supprimer(main) {
+  // LOG-10 (schéma 98a) : pas de suppression tant qu'il reste une commande, un litige, un accord sans commande ou une suspension.
+  // Le serveur le dit avant qu'on demande le code ; s'il ne répond pas, il refusera de toute façon au moment de supprimer.
+  async function supprimer(main) {
+    const btn = main.querySelector('[data-del]'); if (!btn) return;
+    btn.disabled = true;
+    let bloque = null; try { bloque = await N().rpc('compte_suppression_verifier'); } catch (_) {}
+    btn.disabled = false;
+    if (typeof bloque === 'string' && bloque) {
+      const box = document.createElement('div'); box.className = 'cp-card'; box.style.marginTop = '10px';
+      box.innerHTML = `<p class="cp-bad" role="alert" style="margin:0 0 12px;font-size:14.5px;line-height:1.5">${esc(bloque.replace(/^[A-Z_]{3,} : /, ''))}</p><button type="button" class="cp-alt" data-no>Compris</button>`;
+      btn.replaceWith(box);
+      box.querySelector('[data-no]').onclick = () => bg.rafraichir();
+      return;
+    }
     const box = document.createElement('div'); box.className = 'cp-card'; box.style.marginTop = '10px';
     box.innerHTML = `<form class="cp-f" novalidate><p style="margin:0;font-size:14.5px">Pour confirmer, tapez votre code secret.</p>${champ('cp-dc', 'Code secret', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}<div class="cp-row"><button type="submit" class="cp-go" style="background:#C0442B">Supprimer définitivement</button><button type="button" class="cp-alt" data-no>Annuler</button></div></form>`;
     main.querySelector('[data-del]').replaceWith(box);

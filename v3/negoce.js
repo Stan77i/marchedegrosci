@@ -370,6 +370,8 @@
   /* ——— l'éditeur de proposition (nouvelle proposition, contre-proposition, relance) ——— */
   // ctx : { cible, prixRef (prix affiché), unite, qmax, q0, negociable, pour (le rôle qui reçoit), dernier (dernier prix de l'autre) }
   function editeur(box, ctx, onSend, label) {
+    // schéma 97c : le minimum vaut aussi pour une demande (fixé par l'acheteur) ; quand il reste moins, on prend tout le reste
+    const aPartir = ctx.cible === 'demande' ? 'L’acheteur achète à partir de' : 'Le vendeur vend à partir de';
     const u = ctx.unite || 'unité', qmin = ctx.qmin ? Math.min(+ctx.qmin, ctx.qmax || +ctx.qmin) : 0, sens = ctx.cible === 'offre' ? -1 : 1, ref = +ctx.prixRef || 0, fixe = ctx.negociable === false && ctx.moi !== 'proprio';
     const chips = ref && !fixe ? [5, 10, 15].map(p => ({ v: arrondi(ref * (1 + sens * p / 100)), t: (sens < 0 ? '−' : '+') + p + ' %' })) : [];
     box.innerHTML = `<div class="nx-ed">
@@ -377,7 +379,7 @@
       <label class="nx-lbl" for="nxP">Prix par ${esc(u)}</label>
       <div class="nx-px"><input id="nxP" inputmode="numeric" autocomplete="off" placeholder="${ref ? fmt(chips[1] ? chips[1].v : ref) : '0'}" ${fixe ? `value="${fmt(ref)}" readonly` : ''} aria-describedby="nxD"><span>F / ${esc(u)}</span></div>
       <div class="nx-chips nx-pq" role="group" aria-label="Prix rapides">${ref ? `<button type="button" class="nx-chip" data-v="${ref}" aria-pressed="false"><small>Prix affiché</small>${fmt(ref)}</button>` : ''}${ctx.dernier && ctx.dernier !== ref ? `<button type="button" class="nx-chip" data-v="${ctx.dernier}" aria-pressed="false"><small>Sa proposition</small>${fmt(ctx.dernier)}</button>` : ''}${chips.map(c => `<button type="button" class="nx-chip" data-v="${c.v}" aria-pressed="false"><small>${c.t}</small>${fmt(c.v)}</button>`).join('')}</div>
-      <div class="nx-qr"><label class="nx-lbl" for="nxQ">Quantité</label><div class="nx-q"><input id="nxQ" inputmode="decimal" autocomplete="off" value="${ctx.q0 ? fq(ctx.q0) : ''}" placeholder="—"><span>${esc(u)}</span>${qmin && qmin < (ctx.qmax || Infinity) ? `<button type="button" class="nx-chip" data-q="${qmin}">Minimum · ${fq(qmin)}</button>` : ''}${ctx.qmax ? `<button type="button" class="nx-chip" data-q="${ctx.qmax}">Tout le lot · ${fq(ctx.qmax)}</button>` : ''}</div>${qmin ? `<p class="nx-note" style="margin:6px 0 0">Le vendeur vend à partir de ${fq(qmin)} ${esc(uQ(qmin, u))}.</p>` : ''}</div>
+      <div class="nx-qr"><label class="nx-lbl" for="nxQ">Quantité</label><div class="nx-q"><input id="nxQ" inputmode="decimal" autocomplete="off" value="${ctx.q0 ? fq(ctx.q0) : ''}" placeholder="—"><span>${esc(u)}</span>${qmin && qmin < (ctx.qmax || Infinity) ? `<button type="button" class="nx-chip" data-q="${qmin}">Minimum · ${fq(qmin)}</button>` : ''}${ctx.qmax ? `<button type="button" class="nx-chip" data-q="${ctx.qmax}">Tout le lot · ${fq(ctx.qmax)}</button>` : ''}</div>${qmin ? `<p class="nx-note" style="margin:6px 0 0">${aPartir} ${fq(qmin)} ${esc(uQ(qmin, u))}.</p>` : ''}</div>
       <div class="nx-trc" role="group" aria-label="Transport"><span class="nx-lbl">Transport</span><div><button type="button" data-tr="inclus" aria-pressed="${ctx.tr0 === 'inclus'}">Inclus</button><button type="button" data-tr="apart" aria-pressed="${ctx.tr0 === 'apart'}">À part</button><button type="button" data-tr="sans" aria-pressed="${ctx.tr0 === 'sans'}">${ctx.pour === 'vendeur' ? 'À ma charge' : 'À l’acheteur'}</button></div>
         <div class="nx-trp"${ctx.tr0 === 'apart' ? '' : ' hidden'}><label for="nxTP">Prix du transport</label><input id="nxTP" inputmode="numeric" autocomplete="off" placeholder="0" value="${ctx.pt0 ? fmt(ctx.pt0) : ''}"><span>F</span></div>
         <small>Inclus : le vendeur livre, son prix comprend la livraison. À part : le vendeur livre et le transport s’ajoute, au prix discuté ici. ${ctx.pour === 'vendeur' ? 'À ma charge : je viens chercher ou j’envoie mon camion.' : 'À l’acheteur : le transport est à sa charge.'} Dans la même ville, les frais de livraison se règlent au livreur, hors Marché de Gros.</small></div>
@@ -406,7 +408,7 @@
         if (p < ref * 0.25 || p > ref * 4) h += `<p class="nx-warn">Ce prix est très loin du prix affiché (${fmt(ref)} F). Un zéro en trop ou en moins ?</p>`;
         else if (pc > 40) h += `<p class="nx-warn">Un écart de plus de 40 % a peu de chances d’être accepté.</p>`; }
       if (ctx.qmax && q > ctx.qmax) h += `<p class="nx-warn">L’annonce porte sur ${fq(ctx.qmax)} ${esc(uQ(ctx.qmax, u))} au plus.</p>`;
-      if (qmin && q && q < qmin) h += `<p class="nx-warn">Le vendeur vend à partir de ${fq(qmin)} ${esc(uQ(qmin, u))}.</p>`;
+      if (qmin && q && q < qmin) h += `<p class="nx-warn">${aPartir} ${fq(qmin)} ${esc(uQ(qmin, u))}.</p>`;
       out.innerHTML = h;
       $('.nx-prev').innerHTML = p && ctx.preview ? ctx.preview(p) : '';
     };
@@ -443,7 +445,7 @@
       </div>`, 'Proposer un prix');
     bindSnd();
     const fake = { cible, prix_annonce: prix || null, unite: u, statut: 'ouverte', proprio_id: 'lui', auteur_id: me() };
-    editeur(bg.querySelector('.nx-edbox'), { cible, tr0: trAnnonce(cible, a.transport), prixRef: prix, unite: u, qmax: q || null, q0: q || null, qmin: cible === 'offre' ? +a.qmin || 0 : 0, negociable: a.negociable, pour: lui, moi: 'auteur', preview: p => rail(fake, [{ genre: 'prix', auteur_id: me(), prix: p, issue: 'en_attente', expire_le: new Date(Date.now() + 864e5).toISOString() }]) },
+    editeur(bg.querySelector('.nx-edbox'), { cible, tr0: trAnnonce(cible, a.transport), prixRef: prix, unite: u, qmax: q || null, q0: q || null, qmin: +a.qmin || 0, negociable: a.negociable, pour: lui, moi: 'auteur', preview: p => rail(fake, [{ genre: 'prix', auteur_id: me(), prix: p, issue: 'en_attente', expire_le: new Date(Date.now() + 864e5).toISOString() }]) },
       async v => { const id = await envoyer('nego_ouvrir', { cible, cible_id: a.id, prix: v.p, quantite: v.q, texte: v.t || null }, v); await refresh(); thread(id, true); N().toast('Proposition envoyée. Réponse attendue sous 48 h.'); });
   }
 
@@ -555,7 +557,7 @@
       const c = f.querySelector('.nx-cancel'); if (c) c.onclick = () => { mode = ''; pied(); };
       if (mode === 'edit') {
         const proprio = me() === n.proprio_id;
-        editeur(f.querySelector('.nx-edbox'), { cible: n.cible, tr0: n.dernier_transport != null ? trDe(n.dernier_transport, n.dernier_prix_transport) : trAnnonce(n.cible, a && a.transport), pt0: n.dernier_prix_transport, prixRef: n.prix_annonce, unite: u, qmax: (a && a.quantity) || n.quantite, q0: n.dernier_quantite || n.quantite, negociable: a ? a.negociable : true, qmin: n.cible === 'offre' && !proprio && a ? +a.qteMin || 0 : 0, pour: lui, moi: proprio ? 'proprio' : 'auteur', dernier: aMoi(n) ? n.dernier_prix : null },
+        editeur(f.querySelector('.nx-edbox'), { cible: n.cible, tr0: n.dernier_transport != null ? trDe(n.dernier_transport, n.dernier_prix_transport) : trAnnonce(n.cible, a && a.transport), pt0: n.dernier_prix_transport, prixRef: n.prix_annonce, unite: u, qmax: (a && a.quantity) || n.quantite, q0: n.dernier_quantite || n.quantite, negociable: a ? a.negociable : true, qmin: !proprio && a ? +a.qteMin || 0 : 0, pour: lui, moi: proprio ? 'proprio' : 'auteur', dernier: aMoi(n) ? n.dernier_prix : null },
           async v => { await envoyer('nego_agir', { nego: n.id, action: 'prix', prix: v.p, quantite: v.q, texte: v.t || null, ref: null }, v, n.id); mode = ''; await load(true); N().toast('Proposition envoyée.'); },
           aMoi(n) ? 'Contre-proposer' : 'Proposer');
       }

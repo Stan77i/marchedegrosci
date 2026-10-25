@@ -104,6 +104,7 @@ begin
   begin update public.stock_mouvements set rendu = pris + 1 where negociation_id = n[1]; res := res || ' | rendu>pris ACCEPTE?!'; exception when others then res := res || ' | rendu>pris refuse (contrainte)'; end;
   raise exception 'TEST: %', res;
 end $$;
+-- Rejoué le 25/10/2026 après les schémas 97b et 97c : inchangé (500 → 600 → 700 → 800 → 900 → 1000, épuisée puis rendue, sans suite, STOCK_INSUFFISANT, contrainte).
 
 -- ══ Bloc B : commande confirmée jamais chargée, redemandes d'annulation, litige dès la confirmation, issue admin ══
 do $$
@@ -182,6 +183,8 @@ begin
   select quantity into q from public.offres where id = oid; res := res || ' stock=' || q;
   raise exception 'TEST: %', res;
 end $$;
+-- Rejoué le 25/10/2026 après les schémas 97b et 97c : inchangé (stock 600 puis 700 et 800, rappel et retard de chargement, annulation abusive
+-- imputée au vendeur, 3e demande d'annulation refusée, litige 72 h, issue admin).
 
 -- ══ Bloc C : livraison déclarée par celui qui transporte, mot secret limité, réception sans réponse, litiges (échéance, partage), journal ══
 do $$
@@ -230,11 +233,11 @@ begin
   perform set_config('request.jwt.claims', json_build_object('sub', A, 'role', 'authenticated')::text, true);
   x := public.commande_reception_mot(c[2], lower(mot), false); res := res || ' | bon mot en minuscules=' || x;
   execute 'reset role';
-  -- 3. livrée sans réception : rappel à mi-délai, puis litige automatique après 24 h
-  update public.commandes set livre_le = now() - interval '13 hours' where id = c[3];
-  j := public.commandes_delais(); res := res || ' | 13 h: rappels_reception=' || (j->>'rappels_reception');
-  update public.commandes set livre_le = now() - interval '25 hours' where id = c[3];
-  j := public.commandes_delais(); res := res || ' | 25 h: litiges_reception=' || (j->>'litiges_reception');
+  -- 3. livrée sans réception : rappel à mi-délai, puis litige automatique après 1 h (schéma 97b ; avant : 12 h et 24 h)
+  update public.commandes set livre_le = now() - interval '31 minutes' where id = c[3];
+  j := public.commandes_delais(); res := res || ' | 31 min: rappels_reception=' || (j->>'rappels_reception');
+  update public.commandes set livre_le = now() - interval '61 minutes' where id = c[3];
+  j := public.commandes_delais(); res := res || ' | 61 min: litiges_reception=' || (j->>'litiges_reception');
   select etat || ' par=' || coalesce(litige_par::text, 'systeme') into x from public.commandes where id = c[3]; res := res || ' -> ' || x;
   -- 4. litige en retard pour l'équipe
   update public.commandes set litige_echeance = now() - interval '1 minute' where id = c[3];
@@ -267,6 +270,9 @@ begin
   res := res || ' | journal c2=' || x;
   raise exception 'TEST: %', res;
 end $$;
+-- Rejoué le 25/10/2026 après le schéma 97b : 5 essais puis mot bloqué (alerte 1), bon mot en minuscules : terminee ;
+-- 31 min : rappels_reception=1 ; 61 min : litiges_reception=1, litige par le système ; retard vu par l'équipe ; partage 30 : terminee ;
+-- refus avec le bon mot puis tranché : terminee ; litige après clôture refusé ; journal c2 creee,confirmee,arrivee,reception,terminee.
 
 -- ══ Bloc D : l'acheteur dit « arrivée » ; le vendeur peut déclarer « livré » pour faire partir le délai ; avis → file des notifications ══
 do $$
@@ -308,11 +314,15 @@ begin
   res := res || ' | c2 apres livre vendeur=' || (select etape || ' livre_le=' || (livre_le is not null) from public.commandes where id = c[2]);
   -- 3. avis du système → file des notifications (catégorie commande)
   update public.commandes set confirme_le = now() - interval '61 hours' where id = c[3];
-  update public.commandes set livre_le = now() - interval '13 hours' where id = c[2];
+  update public.commandes set livre_le = now() - interval '31 minutes' where id = c[2];   -- schéma 97b : rappel à mi-délai (30 min sur 60)
   j := public.commandes_delais(); res := res || ' | delais=' || j::text;
   perform public._cmd_alerte(c[1], 'mot_bloque', 'test');
   select string_agg(f.type || '>' || case when f.user_id = V then 'V' else 'A' end || ' ' || f.url, ' ; ' order by f.id) into x
     from public.notif_file f where f.objet_id in (c[1]::text, c[2]::text, c[3]::text);
   res := res || ' | file=' || coalesce(x, 'vide');
+  res := res || ' | échéance rappel=' || coalesce((select round(extract(epoch from ((f.donnees ->> 'echeance')::timestamptz - now())) / 60)::text from public.notif_file f where f.objet_id = c[2]::text and f.type = 'cmd_rappel_reception'), '?') || ' min';
   raise exception 'TEST: %', res;
 end $$;
+-- Rejoué le 25/10/2026 après le schéma 97b : arrivée acheteur ok, 2e refusée (« Étape déjà passée. »), vendeur peut déclarer, 2e « livré » refusé ;
+-- délais : rappels_chargement 1, rappels_reception 1 (à 31 min) ; file : rappel de chargement → V, rappel de réception → A, mot bloqué → A et V ;
+-- échéance du rappel de réception = 29 min (livré + 60 min).

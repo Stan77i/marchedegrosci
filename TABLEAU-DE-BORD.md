@@ -118,6 +118,10 @@ Ce sont vos décisions. Chaque ligne est une règle en service ou à respecter.
 - Réception : 1 h pour réclamer, puis clôture toute seule.
 - Après « livré » : 1 h pour répondre, sinon litige ; 1 h de plus sans réponse, clôture pour le vendeur.
 - Pas de chargement sans photos du colis et poids ; un acheteur qui dit « cassé » face à des photos propres doit le prouver.
+- « Arrivé » déclaré la nuit (21 h - 7 h) : l'heure de l'acheteur commence à 7 h.
+- Le vendeur demande l'annulation et l'acheteur ne répond pas en 24 h : annulée, personne en faute. L'acheteur peut aussi demander une annulation avant le chargement.
+- Membre banni : plus de commande ni d'accord avec lui ; ses commandes en route vont à l'équipe. Membre suspendu ou banni : ses accords sans commande s'arrêtent tout de suite.
+- « Signaler un problème » : 5 choix, photo obligatoire pour « cassé » et « mauvaise qualité ». Fausse déclaration « arrivé » : litige perdu pour le vendeur.
 
 **Transport**
 - Même ville : le livreur du vendeur, payé par l'acheteur, hors Marché de Gros.
@@ -127,8 +131,8 @@ Ce sont vos décisions. Chaque ligne est une règle en service ou à respecter.
 
 **Juridique et comptes (« ok pour tout », 25/10/2026)**
 - Le Marché de Gros met en relation : il n'est ni vendeur, ni acheteur.
-- Casse en route : le vendeur en répond jusqu'à la réception quand il livre ; l'acheteur dès le chargement quand le transport est à sa charge. Les photos de départ servent à trancher.
-- Transport d'une marchandise refusée : payé par l'acheteur si le refus est rejeté, par le vendeur s'il est accepté.
+- Casse en route : le risque reste au vendeur jusqu'à la réception conforme, même quand le transport est à la charge de l'acheteur (ça veut seulement dire que le transport n'est pas compris dans le prix). Seul le retrait par l'acheteur lui-même fait de la remise au départ l'« arrivée ». Les photos de départ servent à trancher.
+- Marchandise refusée : refus accepté, l'acheteur ne paie ni la marchandise ni le transport ; refus rejeté, il paie tout ; refus en partie accepté, il paie la partie gardée et le vendeur paie le transport.
 - Force majeure : une photo ou une information publique (radio, presse, autorités) ; l'équipe juge.
 - Achat groupé : le transport suit la règle écrite dans l'offre.
 - Numéro contesté : pièce d'identité vue et appel de l'équipe sur ce numéro, tout est noté.
@@ -183,6 +187,7 @@ Dans l'ordre conseillé.
 | 1 | Fusionner #311, puis #312 (ce tableau de bord) | Vous |
 | 2 | Construire ce que demandent vos décisions juridiques, une PR par point avec captures : aide (casse en route), textes du transport en cas de refus, écran du compte banni, journal de tous les gestes de l'équipe, trajets de la carte par notre serveur, profil public sans compte limité aux totaux… L'effacement automatique après les durées seulement avec votre accord | Claude |
 | 3 | Corrections du contrôle qualité (en cours, accord donné) | Claude |
+| 3 bis | Vos 15 propositions du 25/10 : faites sur le serveur de test (branche `claude/commandes-15-propositions`, schémas 103a à 103c). Restent : les écrans (boutons d'annulation, « Signaler un problème » en 5 choix, avertissements), puis votre « OK production » | Claude, puis vous |
 | 4 | Rejouer les tests des dernières corrections (suppression de compte, membre suspendu) et lire les commissions du vrai serveur (avec votre accord, en lecture seule) | Claude |
 | 5 | Faire les corrections choisies, une PR par lot, avec captures | Claude |
 | 6 | Petits restes connus : relance envoyée après un accord « sans suite » ; étape « Commande terminée » cochée trop tôt ; carte limitée à 500 annonces | Claude |
@@ -286,4 +291,4 @@ Attention : un défaut noté aujourd'hui « gênant » (un 2e paiement ignoré s
 - **23/10/2026** : nouveau site public construit et caché ; PDF de stratégie mis à jour tout seuls.
 - **24/10/2026** : les 4 chantiers (transport, fiabilité, badges, boutiques), « ville seulement », notifications automatiques, preuves au départ. L'audit donne 49 sur 100 : bon pour un essai fermé, pas pour le public.
 - **Nuit du 24 au 25/10/2026** : toutes les corrections de l'audit sont faites et testées.
-- **25/10/2026** : corrections mises sur le vrai serveur ; litige en 1 h et quantité minimale ; contrôle qualité permanent (premier bilan) ; décisions juridiques toutes prises (« ok pour tout ») ; kit de l'essai fermé ; ce tableau de bord.
+- **25/10/2026** : vos 15 propositions sur les commandes (nuit, bannis, annulations, problème en 5 choix, transport payé par le vendeur quand un refus est accepté) faites sur le serveur de test ; corrections mises sur le vrai serveur ; litige en 1 h et quantité minimale ; contrôle qualité permanent (premier bilan) ; décisions juridiques toutes prises (« ok pour tout ») ; kit de l'essai fermé ; ce tableau de bord.

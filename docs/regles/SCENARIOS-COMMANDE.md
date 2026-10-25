@@ -5,6 +5,17 @@
 > Sources lues : `CLAUDE.md`, `docs/audits/decisions-chantiers-2026-10-24.md` (44 décisions), `docs/juridique/DECISIONS-A-PRENDRE.md` (32 questions), `FONCTIONNALITES.md`, schémas SQL 26 à 98b de `main` (en production jusqu'à 98b d'après `docs/PASSATION.md`) et la branche `claude/corrections-99` (schémas 99a à 99d, projet de test seulement, en cours de modification).
 > Pour chaque fonction, c'est **la dernière définition** qui compte (ex. `commandes_delais` : 92b, puis 97b, puis 97d, puis 99a sur la branche).
 > Ce document ne change ni le code ni les règles. Les « Propositions » de la partie 4 attendent la réponse du propriétaire.
+> **Mise à jour du 25/10/2026 (schémas 103a, 103b, 103c, projet de test)** : le propriétaire a validé (« Ok ») 15 propositions
+> (P3, P5 à P14, P16 à P19 ; liste de la partie 6, n° 3, 5 à 14 et 16 à 19). Elles sont faites sur le projet de test
+> (`supabase/tests/commandes-103-scenarios.sql`), pas encore en production. Les cases des tableaux qui en parlent gardent leur
+> marque d'origine ; la partie 4 et la partie 6 disent ce qui est fait.
+> **Deux règles nouvelles du propriétaire (25/10/2026)** :
+> - **Le risque reste au vendeur jusqu'à la réception conforme.** « Transport à la charge de l'acheteur » veut seulement dire que le
+>   transport n'est pas compris dans le prix (le livreur peut être celui du vendeur). La casse en route n'est donc plus « à la charge de
+>   l'acheteur dès le chargement » (C-09, E-08 : ancienne lecture de la décision n° 10, remplacée). Seul le **retrait par l'acheteur
+>   lui-même** (accepté par le vendeur) fait de la remise au départ l'« arrivé » (P11).
+> - **Refus de la marchandise et transport** : refus accepté, l'acheteur ne paie ni la marchandise ni le transport ; refus rejeté, il
+>   paie tout ; refus partiel accepté, il paie la partie acceptée et le transport est payé par le vendeur (F-15 : fait, schéma 103c).
 
 **Légende du code réel**
 - ✅ conforme : le serveur fait ce que dit la règle.
@@ -225,7 +236,7 @@ Proposition : « arrivé » dit par l'acheteur ouvre la même heure que s'il ven
 
 **P3. « Arrivé » déclaré la nuit (F-04, G-07).**
 Un vendeur qui déclare « arrivé » à 23 h fait ouvrir un litige à minuit et clore la commande à 1 h, pendant que l'acheteur dort.
-Proposition : un « arrivé » déclaré entre 21 h et 7 h fait partir l'heure à 7 h ; pas de règle spéciale pour les jours fériés (le délai justifié de 24 h les couvre). (Même heure calme que les notifications commerciales ; personne ne perd en dormant.) — à valider par le propriétaire.
+Proposition : un « arrivé » déclaré entre 21 h et 7 h fait partir l'heure à 7 h ; pas de règle spéciale pour les jours fériés (le délai justifié de 24 h les couvre). (Même heure calme que les notifications commerciales ; personne ne perd en dormant.) — **validé le 25/10, fait sur le test** (schéma 103a).
 
 **P4. Mot secret bloqué pendant l'heure (F-08).**
 Un acheteur présent, qui s'est trompé 5 fois, n'est pas compté comme « ayant réagi » : il peut perdre automatiquement.
@@ -233,58 +244,58 @@ Proposition : un essai de mot secret compte comme une réaction ; un mot bloqué
 
 **P5. Vendeur banni pendant le trajet (E-09).**
 Il ne peut plus déclarer « arrivé » ; avec la règle du 25/10, rien ne se passe jamais.
-Proposition : au bannissement, ses commandes chargées passent en litige confié à l'équipe ; l'acheteur peut toujours confirmer avec le mot s'il a reçu. (L'acheteur n'attend pas un vendeur qui ne peut plus agir.) — à valider par le propriétaire.
+Proposition : au bannissement, ses commandes chargées passent en litige confié à l'équipe ; l'acheteur peut toujours confirmer avec le mot s'il a reçu. (L'acheteur n'attend pas un vendeur qui ne peut plus agir.) — **validé le 25/10, fait sur le test** (schéma 103a).
 
 **P6. Acheteur banni pendant une commande (D-11, E-10, F-17).**
 Il ne peut plus confirmer, signaler ni écrire ; le litige automatique le fait perdre et lui compte un « litige perdu ».
-Proposition : avant le chargement, le vendeur peut annuler tout de suite, l'annulation compte contre l'acheteur (le miroir de 99a) ; après le chargement, litige confié à l'équipe, sans clôture automatique ni « litige perdu » automatique. (Le vendeur n'attend pas ; l'équipe juge celui qui ne peut plus parler.) — à valider par le propriétaire.
+Proposition : avant le chargement, le vendeur peut annuler tout de suite, l'annulation compte contre l'acheteur (le miroir de 99a) ; après le chargement, litige confié à l'équipe, sans clôture automatique ni « litige perdu » automatique. (Le vendeur n'attend pas ; l'équipe juge celui qui ne peut plus parler.) — **validé le 25/10, fait sur le test** (schéma 103a).
 
 **P7. Commande vers un membre banni (B-05).**
 Une commande se crée vers un vendeur banni, puis expire en 48 h.
-Proposition : refuser la commande avec un membre banni, comme avec un membre suspendu, et rendre la quantité de l'accord tout de suite. (Personne n'attend 48 h pour rien.) — à valider par le propriétaire.
+Proposition : refuser la commande avec un membre banni, comme avec un membre suspendu, et rendre la quantité de l'accord tout de suite. (Personne n'attend 48 h pour rien.) — **validé le 25/10, fait sur le test** (schéma 103a).
 
 **P8. Demande d'annulation du vendeur restée sans réponse (D-08).**
 Le vendeur demande l'annulation avec un motif ; l'acheteur se tait ; à 72 h l'acheteur peut annuler seul, et ça compte contre le vendeur.
-Proposition : sans réponse de l'acheteur en 24 h, l'annulation est acceptée, « légitime », personne en faute, quantité rendue. (Le vendeur a prévenu ; le silence de l'acheteur ne doit pas le punir.) — à valider par le propriétaire (touche la fiabilité).
+Proposition : sans réponse de l'acheteur en 24 h, l'annulation est acceptée, « légitime », personne en faute, quantité rendue. (Le vendeur a prévenu ; le silence de l'acheteur ne doit pas le punir.) — **validé le 25/10, fait sur le test** (schéma 103a).
 
 **P9. L'acheteur ne peut pas demander une annulation d'un commun accord (D-05).**
 Seul le vendeur peut demander ; l'acheteur doit attendre 72 h ou ouvrir un litige.
-Proposition : l'acheteur peut demander l'annulation avant le chargement, avec un motif, comme le vendeur ; le vendeur accepte ou refuse ; s'il refuse, la commande continue. (Même droit des deux côtés ; moins de litiges inutiles.) — à valider par le propriétaire.
+Proposition : l'acheteur peut demander l'annulation avant le chargement, avec un motif, comme le vendeur ; le vendeur accepte ou refuse ; s'il refuse, la commande continue. (Même droit des deux côtés ; moins de litiges inutiles.) — **validé le 25/10, fait sur le test** (schéma 103b).
 
 **P10. Accord conclu, puis suspension de l'un des deux (B-04).**
 La commande est refusée, mais la quantité reste bloquée 72 h.
-Proposition : à la suspension, les accords sans commande de ce membre passent « sans suite » tout de suite et la quantité revient. (L'autre partie peut revendre ou racheter aussitôt.) — à valider par le propriétaire.
+Proposition : à la suspension, les accords sans commande de ce membre passent « sans suite » tout de suite et la quantité revient. (L'autre partie peut revendre ou racheter aussitôt.) — **validé le 25/10, fait sur le test** (schéma 103a).
 
-**P11. Transport à la charge de l'acheteur ou retrait : qui dit « arrivé » ? (C-09, E-12)**
+**P11. Transport à la charge de l'acheteur ou retrait : qui dit « arrivé » ? (C-09, E-12)** — validé **pour le retrait seulement** (règle du 25/10 ci-dessus).
 Le vendeur remet la marchandise au départ ; pourtant l'heure de vérification se compte à « arrivé ».
-Proposition : dans ces deux cas, la remise au chauffeur de l'acheteur (ou à l'acheteur) vaut « arrivé » : le vendeur la déclare après le chargement, l'acheteur ou son chauffeur vérifie sur place et confirme avec le mot. (La casse en route est à la charge de l'acheteur dès le chargement, règle n° 10 : la vérification se fait donc au départ.) — à valider par le propriétaire (touche la responsabilité de la marchandise).
+Proposition : dans ces deux cas, la remise au chauffeur de l'acheteur (ou à l'acheteur) vaut « arrivé » : le vendeur la déclare après le chargement, l'acheteur ou son chauffeur vérifie sur place et confirme avec le mot. (La casse en route est à la charge de l'acheteur dès le chargement, règle n° 10 : la vérification se fait donc au départ.) — **validé le 25/10, fait sur le test** (schéma 103b).
 
 **P12. Fausse déclaration « arrivé » (F-16).**
 Rien n'est prévu contre un vendeur qui déclare « arrivé » trop tôt.
-Proposition : quand l'équipe constate une fausse déclaration, elle tranche en faveur de l'acheteur et compte un « litige perdu » au vendeur. (Sinon déclarer trop tôt ne coûte rien.) — à valider par le propriétaire.
+Proposition : quand l'équipe constate une fausse déclaration, elle tranche en faveur de l'acheteur et compte un « litige perdu » au vendeur. (Sinon déclarer trop tôt ne coûte rien.) — **validé le 25/10, fait sur le test** (schéma 103b).
 
 **P13. Retard annoncé puis dépassé (E-04).**
-Proposition : le vendeur peut annoncer autant de retards qu'il faut, chacun avec motif et nouvelle date, tous visibles par l'acheteur ; quand la date est passée, l'application met en avant « Signaler un problème », sans rien déclencher. (On respecte « rien d'automatique » tout en aidant l'acheteur.) — à valider par le propriétaire.
+Proposition : le vendeur peut annoncer autant de retards qu'il faut, chacun avec motif et nouvelle date, tous visibles par l'acheteur ; quand la date est passée, l'application met en avant « Signaler un problème », sans rien déclencher. (On respecte « rien d'automatique » tout en aidant l'acheteur.) — **validé le 25/10, fait sur le test** (schéma 103b).
 
 **P14. Demandes de nouvelles sans réponse (E-06).**
-Proposition : après 2 demandes restées sans réponse du vendeur, l'application propose « Signaler un problème » à l'acheteur ; rien d'automatique. (L'acheteur sait quoi faire, le vendeur n'est pas puni par une machine.) — à valider par le propriétaire.
+Proposition : après 2 demandes restées sans réponse du vendeur, l'application propose « Signaler un problème » à l'acheteur ; rien d'automatique. (L'acheteur sait quoi faire, le vendeur n'est pas puni par une machine.) — **validé le 25/10, fait sur le test** (schéma 103b).
 
 **P15. Délai justifié (F-10, F-11).**
 Proposition : le délai se demande seulement pendant l'heure qui suit « arrivé », pas pendant le litige automatique (y répondre suffit déjà à faire trancher l'équipe) ; à la fin du délai, même suite qu'après l'heure (litige automatique, puis 1 h). Le vendeur voit le motif et la nouvelle heure. (Une seule chance, une seule suite : simple à expliquer.) — à valider par le propriétaire.
 
 **P16. Problème signalé en texte libre (F-13).**
-Proposition : 5 choix (cassé, manquant, mauvaise qualité, pas la bonne quantité, autre) plus quelques mots, et une photo demandée pour « cassé » et « mauvaise qualité ». (L'équipe juge plus vite, avec les photos de départ en face.) — à valider par le propriétaire.
+Proposition : 5 choix (cassé, manquant, mauvaise qualité, pas la bonne quantité, autre) plus quelques mots, et une photo demandée pour « cassé » et « mauvaise qualité ». (L'équipe juge plus vite, avec les photos de départ en face.) — **validé le 25/10, fait sur le test** (schéma 103b).
 
 **P17. Avis de clôture en faveur du vendeur (G-04).**
 D'après la lecture du code, l'avis « En faveur du vendeur » n'est jamais envoyé (`push_commande` ignore l'étape « terminee »).
-Proposition : envoyer cet avis aux deux, après vérification sur le projet de test. (Celui qui perd doit le savoir pour pouvoir contester dans les 7 jours.) — à valider par le propriétaire.
+Proposition : envoyer cet avis aux deux, après vérification sur le projet de test. (Celui qui perd doit le savoir pour pouvoir contester dans les 7 jours.) — **validé le 25/10, fait sur le test** (schéma 103b).
 
 **P18. Petites protections techniques (F-19, G-05).**
-Proposition : une confirmation renvoyée après une coupure répond « déjà confirmée » au lieu d'une erreur ; un message écrit dans le litige verrouille la commande pour que la clôture automatique ne passe pas en même temps. (Aucune règle ne change ; on évite une peur ou une injustice rare.) — à valider par le propriétaire.
+Proposition : une confirmation renvoyée après une coupure répond « déjà confirmée » au lieu d'une erreur ; un message écrit dans le litige verrouille la commande pour que la clôture automatique ne passe pas en même temps. (Aucune règle ne change ; on évite une peur ou une injustice rare.) — **validé le 25/10, fait sur le test** (schéma 103b).
 
 **P19. Le délai de chargement de 72 h est-il touché par la règle du 25/10 ?**
 La règle dit « pendant le trajet ». Le délai de 72 h vient avant le chargement (règle n° 2 du 24/10).
-Proposition : garder le délai de chargement de 72 h tel quel ; la règle « rien d'automatique » commence au chargement. (Avant le chargement, la marchandise n'est pas partie : l'acheteur doit pouvoir sortir d'une commande qui ne démarre pas.) — à valider par le propriétaire.
+Proposition : garder le délai de chargement de 72 h tel quel ; la règle « rien d'automatique » commence au chargement. (Avant le chargement, la marchandise n'est pas partie : l'acheteur doit pouvoir sortir d'une commande qui ne démarre pas.) — **validé le 25/10, fait sur le test** (schéma 103a).
 
 ---
 
@@ -300,20 +311,20 @@ Le propriétaire peut répondre « ok pour tout » ou « ok sauf n° X ».
 
 1. Pendant le trajet : retirer de 99a le rappel à 48 h et le litige à 96 h ; l'équipe seule voit les commandes en route depuis 7 jours.
 2. « Arrivé » dit par l'acheteur : même heure et même suite que s'il venait du vendeur.
-3. « Arrivé » entre 21 h et 7 h : l'heure part à 7 h.
+3. « Arrivé » entre 21 h et 7 h : l'heure part à 7 h. — **validé le 25/10, fait sur le test** (103a).
 4. Un essai de mot secret compte comme une réaction ; mot bloqué : litige pour l'équipe, sans clôture automatique.
-5. Vendeur banni pendant le trajet : litige pour l'équipe.
-6. Acheteur banni : avant chargement, le vendeur annule (contre l'acheteur) ; après, litige pour l'équipe, sans « litige perdu » automatique.
-7. Pas de commande avec un membre banni ; la quantité revient tout de suite.
-8. Demande d'annulation du vendeur sans réponse en 24 h : acceptée, personne en faute.
-9. L'acheteur peut demander une annulation d'un commun accord avant le chargement.
-10. Membre suspendu : ses accords sans commande passent « sans suite » tout de suite.
-11. Transport à la charge de l'acheteur ou retrait : la remise au départ vaut « arrivé ».
-12. Fausse déclaration « arrivé » constatée : litige perdu pour le vendeur.
-13. Retards annoncés sans limite, tous visibles ; date passée : « Signaler un problème » mis en avant.
-14. Après 2 demandes de nouvelles sans réponse : « Signaler un problème » proposé.
+5. Vendeur banni pendant le trajet : litige pour l'équipe. — **validé le 25/10, fait sur le test** (103a).
+6. Acheteur banni : avant chargement, le vendeur annule (contre l'acheteur) ; après, litige pour l'équipe, sans « litige perdu » automatique. — **validé le 25/10, fait sur le test** (103a).
+7. Pas de commande avec un membre banni ; la quantité revient tout de suite. — **validé le 25/10, fait sur le test** (103a).
+8. Demande d'annulation du vendeur sans réponse en 24 h : acceptée, personne en faute. — **validé le 25/10, fait sur le test** (103a).
+9. L'acheteur peut demander une annulation d'un commun accord avant le chargement. — **validé le 25/10, fait sur le test** (103b).
+10. Membre suspendu : ses accords sans commande passent « sans suite » tout de suite. — **validé le 25/10, fait sur le test** (103a).
+11. Transport à la charge de l'acheteur ou retrait : la remise au départ vaut « arrivé ». — **validé le 25/10 pour le retrait par l'acheteur seulement, fait sur le test** (103b) ; le simple « transport à la charge de l'acheteur » garde l'heure comptée depuis l'arrivée (le risque reste au vendeur jusqu'à la réception conforme).
+12. Fausse déclaration « arrivé » constatée : litige perdu pour le vendeur. — **validé le 25/10, fait sur le test** (103b).
+13. Retards annoncés sans limite, tous visibles ; date passée : « Signaler un problème » mis en avant. — **validé le 25/10, fait sur le test** (103b).
+14. Après 2 demandes de nouvelles sans réponse : « Signaler un problème » proposé. — **validé le 25/10, fait sur le test** (103b).
 15. Délai justifié seulement dans l'heure après « arrivé » ; ensuite même suite.
-16. Problème signalé : 5 choix et une photo pour « cassé » et « mauvaise qualité ».
-17. Envoyer l'avis de clôture « en faveur du vendeur » aux deux.
-18. Confirmation renvoyée : « déjà confirmée » ; message du litige protégé contre la clôture simultanée.
-19. Garder le délai de chargement de 72 h ; « rien d'automatique » commence au chargement.
+16. Problème signalé : 5 choix et une photo pour « cassé » et « mauvaise qualité ». — **validé le 25/10, fait sur le test** (103b).
+17. Envoyer l'avis de clôture « en faveur du vendeur » aux deux. — **validé le 25/10, fait sur le test** (103b).
+18. Confirmation renvoyée : « déjà confirmée » ; message du litige protégé contre la clôture simultanée. — **validé le 25/10, fait sur le test** (103b).
+19. Garder le délai de chargement de 72 h ; « rien d'automatique » commence au chargement. — **validé le 25/10, vérifié sur le test : rien à changer** (test 103, bloc 15).

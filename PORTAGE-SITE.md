@@ -193,7 +193,7 @@ _Partie mise à jour automatiquement par `tools/inventaire-site.js` (tâche GitH
 | `index.html` | Aiguillage : téléphone → application, ordinateur → maintenance (ou site pour l’administrateur). | 0 | 2 ko |
 | `maintenance.html` | Page « site en maintenance » avec QR code vers l’application. | 3 | 85 ko |
 | `suivi.html` | Lien de suivi envoyé au chauffeur (sans compte). | 0 | 12 ko |
-| `admin.html` | Tableau de bord de l’administrateur. | 16 | 452 ko |
+| `admin.html` | Tableau de bord de l’administrateur. | 16 | 454 ko |
 
 ### Modules communs à l’application et au site (23)
 

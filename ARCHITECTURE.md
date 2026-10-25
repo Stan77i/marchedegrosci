@@ -280,7 +280,7 @@ Le fichier `supabase/functions/pousser/index.ts` du dépôt est en **v26** (sch�
 
 Toutes gratuites :
 
-- **Cartes** : MapLibre GL (embarqué), fond OpenFreeMap (`tiles.openfreemap.org`), relief Terrarium (`s3.amazonaws.com`), trajets OSRM public (`router.project-osrm.org`) sur la carte, openrouteservice dans la fonction `itineraire`.
+- **Cartes** : MapLibre GL (embarqué), fond OpenFreeMap (`tiles.openfreemap.org`), relief Terrarium (`s3.amazonaws.com`), trajets de la carte par notre fonction `itineraire` (mode `points`, plus d'OSRM public depuis le 25/10/2026), openrouteservice dans la fonction `itineraire`.
 - **Polices** : Jost, hébergée dans le dépôt.
 - **Notifications** : Web Push des navigateurs, par la fonction `pousser`. Clés VAPID dans le coffre Supabase.
 - **Lecture de pièce d'identité** : Tesseract, dans le téléphone (`vendor/tesseract`), rien n'est envoyé à un service extérieur.

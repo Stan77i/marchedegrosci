@@ -1314,9 +1314,9 @@ verifier()})();</script>
 <script src="app/toast.js?v=20261124h"></script>
 <script src="v3/compte.js?v=20261202mx"></script>
 <script src="v3/pousse.js?v=20261124nt"></script>
-<script src="v3/reputation.js?v=20261203cq"></script>
+<script src="v3/reputation.js?v=20261207je"></script>
 <script src="v3/statuts.js?v=20261124n1"></script>
-<script src="v3/identite.js?v=20261203cq"></script>
+<script src="v3/identite.js?v=20261207je"></script>
 <script src="v3/messages.js?v=20261203cq"></script>
 <script src="v3/marche.js?v=20261011c"></script>
 <script src="v2/search.js"></script>
@@ -2099,7 +2099,7 @@ function product(view, parts, qs) {
         ${mdgAlias(p).length ? `<div class="aliases"><span class="caps" style="font-size:10px;align-self:center;color:var(--color-neutral-700)">Aussi appelé</span>${mdgAlias(p).map(a => `<i>${esc(a)}</i>`).join('')}</div>` : ''}
         <div class="facts">
           ${offs.length ? `<div><span>Offres</span><b>${plural(offs.length, 'offre', 'offres')}</b></div>` : ''}
-          ${offs.length ? `<div><span>Chez</span><b>${[...new Set(offs.map(o => o.city))].join(', ')}</b></div>` : ''}
+          ${offs.length ? `<div><span>Chez</span><b>${[...new Set(offs.map(o => o.city))].map(esc).join(', ')}</b></div>` : ''}
         </div>
         <div class="fpx">${window.MDGMarche.prixHTML(p.slug)}</div>
         <div class="nst-a" style="margin-top:22px">

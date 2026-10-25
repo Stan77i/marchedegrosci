@@ -1,7 +1,7 @@
 # Conditions d'utilisation du Marché de Gros CI
 
 > **PROJET, à faire relire par un juriste. Rien n'est en ligne.**
-> Version de travail du 24/10/2026, mise à jour le 25/10/2026 (lecture des messages par l'équipe). Les commentaires `<!-- source: … -->` disent où chaque règle se trouve dans le code ; ils seront retirés de la version publiée.
+> Version de travail du 24/10/2026, mise à jour le 25/10/2026 (lecture des messages par l'équipe ; décisions du propriétaire « ok pour tout », voir `DECISIONS-A-PRENDRE.md`). Les commentaires `<!-- source: … -->` disent où chaque règle se trouve dans le code ; ils seront retirés de la version publiée.
 
 ## 1. Qui nous sommes et ce que nous faisons
 
@@ -15,7 +15,7 @@ MGCI :
 
 MGCI **n'est ni le vendeur, ni l'acheteur, ni le transporteur** de la marchandise. Le contrat de vente se fait entre l'acheteur et le vendeur.
 
-Exception à venir : un **service de transport Marché de Gros**, avec des transporteurs vérifiés par l'équipe. **Ce service est fermé aujourd'hui.** Quand il ouvrira, ses règles seront ajoutées ici. [DÉCISION DU PROPRIÉTAIRE : rôle exact de MGCI dans ce service (simple mise en relation ou transporteur responsable).]
+Exception à venir : un **service de transport Marché de Gros**, avec des transporteurs vérifiés par l'équipe. **Ce service est fermé aujourd'hui.** Quand il ouvrira, ses règles seront ajoutées ici. Même dans ce service, **MGCI reste seulement intermédiaire** : le transporteur répond de la marchandise pendant le transport (décision du propriétaire du 25/10/2026). [À VALIDER PAR LE JURISTE]
 <!-- source: supabase/schema-62-transport-reseau-pause.sql (_transport_reseau_ouvert = false) ; schema-83a-transport-nego.sql (réglage transport_reseau_ouvert = false) ; CLAUDE.md « le service reste fermé tant qu'il n'y a pas 3 transporteurs vérifiés et l'accord du propriétaire » -->
 
 [À VALIDER PAR LE JURISTE : qualification juridique de MGCI (intermédiaire, place de marché) et effets en droit ivoirien.]
@@ -27,7 +27,7 @@ Exception à venir : un **service de transport Marché de Gros**, avec des trans
 ## 2. Accepter ces conditions
 
 En créant un compte, vous acceptez ces conditions. Si vous n'êtes pas d'accord, n'utilisez pas l'application.
-[À VALIDER : la case « J'accepte les conditions » à l'inscription n'existe pas encore. Elle sera ajoutée après validation.]
+[À VALIDER PAR LE JURISTE : la case « J'accepte les conditions et la politique de confidentialité » à l'inscription n'existe pas encore. Décision du propriétaire (25/10/2026) : elle sera ajoutée après la relecture du juriste ; les membres déjà inscrits accepteront à leur prochaine ouverture de l'application.]
 
 ## 3. Votre compte
 
@@ -60,13 +60,16 @@ En créant un compte, vous acceptez ces conditions. Si vous n'êtes pas d'accord
 ### 3.5 Changer de numéro
 Pour changer de numéro, écrivez au Marché de Gros dans l'application.
 <!-- source: v3/compte.js securite() « Pour en changer, écrivez au Marché de Gros. » -->
-[DÉCISION DU PROPRIÉTAIRE : procédure quand un numéro est contesté (quelqu'un a pris votre numéro avant vous).]
+**Numéro contesté** (quelqu'un a pris votre numéro avant vous) : écrivez au Marché de Gros. Vous montrez votre pièce d'identité à l'équipe, puis l'équipe vous appelle sur ce numéro. Si c'est bien le vôtre, l'équipe le détache de l'autre compte (qui est fermé, sans rien effacer) et vous pouvez créer votre compte. Chaque étape est notée dans le journal de l'équipe. (Décision du propriétaire du 25/10/2026.) [À VALIDER PAR LE JURISTE]
+<!-- source: supabase/schema-94b-numero-et-journal.sql admin_numero_rendre() (motif obligatoire, admin_journal) ; v3/admin.js « Numéro libéré » -->
 
 ### 3.6 Supprimer votre compte
 - Vous pouvez supprimer votre compte vous-même (Mon compte → Sécurité et compte).
 - Vos annonces sont retirées, les négociations en cours fermées, votre profil effacé, la connexion bloquée.
 - Les accords et les messages déjà échangés restent visibles de l'autre partie (avec « Compte supprimé »), pour garder la trace des échanges.
-- Le numéro reste bloqué : il ne peut pas servir à créer un nouveau compte. [DÉCISION DU PROPRIÉTAIRE : faut-il libérer le numéro après un délai ?]
+- Le numéro est **libéré** dès la suppression : il peut servir à créer un nouveau compte. Un compte **banni** garde son numéro bloqué.
+- Les comptes supprimés **avant le 25/10/2026** ont gardé leur numéro bloqué : il est libéré sur demande, un par un, par la procédure « numéro contesté » (partie 3.5).
+<!-- source: supabase/schema-94b-numero-et-journal.sql _numero_libere_suppression() (en production le 25/10/2026) ; décisions 17 et D du propriétaire (25/10/2026) -->
 - Le dossier d'identité, s'il a été envoyé, est gardé 5 ans (voir la politique de confidentialité).
 <!-- source: supabase/schema-4.sql supprimer_compte() (annonces retirées, profil vidé, secours effacé, banned_until = infinity) ; schema-16-identite-conservation.sql (dossier gardé 5 ans après la suppression) -->
 
@@ -175,7 +178,12 @@ Aujourd'hui fermé. Règles prévues à son ouverture (décidées par le propri�
 - le transporteur propose son prix ; l'acheteur et le vendeur acceptent, refusent ou contre-proposent (48 h) ;
 - si son prix est refusé, la commande continue avec le livreur du vendeur ;
 - pas de messages privés avec le transporteur pendant la mission.
+- MGCI reste seulement intermédiaire ; le transporteur répond de la marchandise pendant le transport (décision du propriétaire du 25/10/2026). [À VALIDER PAR LE JURISTE]
 <!-- source: docs/audits/decisions-chantiers-2026-10-24.md décisions 3 à 9 ; schema-83c-transport-trois.sql ; schema-62 (fermé) -->
+
+### 7.5 Achat groupé
+Le transport d'un achat groupé suit la même règle qu'une commande normale : celle écrite dans l'offre (décision du propriétaire du 25/10/2026). [À VÉRIFIER AVANT PUBLICATION : aujourd'hui, le serveur note toujours « livré par le vendeur » sur la commande d'un achat groupé.]
+<!-- source: supabase/schema-93d-groupes-regles.sql (mode_transport = 'vendeur') ; schema-35-achats-groupes.sql (frais_transport mutualisés, estimation) -->
 
 ## 8. Le paiement
 
@@ -186,7 +194,7 @@ Aujourd'hui fermé. Règles prévues à son ouverture (décidées par le propri�
 - Le moyen de paiement (espèces, Mobile Money…) est choisi par les parties, **à leurs risques**.
 - **Ne payez jamais d'avance** à quelqu'un que vous ne connaissez pas.
 - Si une partie de la marchandise est refusée et que le refus est reconnu ou accepté par l'équipe, l'acheteur ne doit pas cette partie. MGCI ne peut pas forcer un remboursement d'argent déjà versé. [À VALIDER PAR LE JURISTE]
-- Le transport reste dû en cas de refus de la marchandise. [À VALIDER : règle écrite dans l'aide de l'application, à confirmer.]
+- **Transport en cas de refus** : si l'équipe rejette le refus, l'acheteur paie le transport ; si le refus est reconnu ou accepté, c'est le vendeur qui le paie (décision du propriétaire du 25/10/2026). [À VÉRIFIER AVANT PUBLICATION : l'aide de l'application dit encore « le transport reste dû » ; à changer.]
 <!-- source: supabase/schema-30-commissions.sql (encaissement = 'aucun', seule valeur permise) ; schema-57-sequestre.sql (séquestre : 0 ligne, jamais déclenché, audit 24/10/2026) ; v3/aide.js « Comment se passe le paiement ? », « Qui paie le transport si je refuse ? » -->
 
 Un **paiement sécurisé** (l'argent est bloqué jusqu'à la réception) est **en préparation**. Il demande un partenaire agréé. Tant qu'il n'est pas ouvert, rien de ce qui précède ne change. [DÉCISION DU PROPRIÉTAIRE : partenaire, date, règles. Le texte sera revu à ce moment-là.]
@@ -207,8 +215,8 @@ Un **paiement sécurisé** (l'argent est bloqué jusqu'à la réception) est **e
 <!-- source: supabase/schema-30-commissions.sql (statuts prevue/due/suspendue/annulee ; encaissement in ('aucun')) ; schema-42-commission-transport.sql -->
 
 ### 9.3 Quand le paiement intégré arrivera
-- Comment la commission sera prélevée : [DÉCISION DU PROPRIÉTAIRE].
-- Les ventes faites **avant** l'arrivée du paiement : la commission sera-t-elle demandée ? [DÉCISION DU PROPRIÉTAIRE] Proposition : **non**, rien n'est demandé pour les ventes antérieures. [À VALIDER]
+- Comment la commission sera prélevée : par le **partenaire de paiement**, sur l'argent versé au vendeur, **à la clôture de la commande** ; rien avant (décision du propriétaire du 25/10/2026). Les détails seront écrits le jour où le partenaire sera choisi. [À VALIDER PAR LE JURISTE]
+- Les ventes faites **avant** l'arrivée du paiement : **aucune commission n'est demandée**. Elle reste seulement « calculée » (décision du propriétaire du 24/10/2026).
 - Les membres seront prévenus avant tout changement (voir partie 15).
 
 ## 10. Annulations
@@ -252,7 +260,7 @@ Un **paiement sécurisé** (l'argent est bloqué jusqu'à la réception) est **e
 - Pendant un litige, une **discussion à trois** réunit l'acheteur, le vendeur et le Marché de Gros.
 - L'équipe lit les échanges (négociation, messages, photos, preuves de départ, mot secret) pour comprendre. Elle peut aussi lire les messages en dehors d'un litige (voir partie 1).
 - **Le rôle de l'équipe est la médiation.** Elle propose une issue et note sa décision dans l'application (commande terminée ou annulée, partie refusée acceptée ou non). **MGCI n'est pas un tribunal** : sa décision ne remplace pas une décision de justice, et chacun garde le droit d'aller devant le juge. [À VALIDER PAR LE JURISTE]
-- Délai de réponse de l'équipe à un litige : [DÉCISION DU PROPRIÉTAIRE]. Proposition : 7 jours, comme pour les contestations.
+- Délai de l'équipe pour trancher un litige : **72 heures** (règle du propriétaire du 24/10/2026, schémas 92a et 92b).
 <!-- source: supabase/schema-61-liberation-24h.sql commande_litige() (après chargement, jusqu'à libere_le) ; schema-57/84a admin_litige_trancher(), admin_litige_trancher2() ; schema-57 admin_refus_trancher() ; v3/commandes.js « Discussion à trois » ; v3/aide.js « C'est quoi, la discussion à trois ? » ; audit 24/10/2026 problème 10 (aucune échéance des litiges) -->
 
 ## 13. Responsabilité
@@ -267,14 +275,14 @@ Un **paiement sécurisé** (l'argent est bloqué jusqu'à la réception) est **e
 ### 13.2 Ce dont MGCI ne répond pas
 MGCI n'étant ni vendeur, ni acheteur, ni transporteur :
 - **Qualité et conformité** : le vendeur répond de la marchandise qu'il a décrite ; l'acheteur doit vérifier à la réception et réclamer dans l'heure. [À VALIDER]
-- **Casse ou perte en route** : proposition : avec le livreur du vendeur (ou un transport « inclus » ou « à part »), le risque reste au **vendeur** jusqu'à la réception ; avec un transport à la charge de l'acheteur, le risque passe à l'**acheteur** au chargement. Les preuves de départ servent à trancher. [À VALIDER]
+- **Casse ou perte en route** : quand le vendeur livre (transport « inclus », « à part » ou son livreur), le risque reste au **vendeur** jusqu'à la réception ; avec un transport à la charge de l'acheteur, le risque passe à l'**acheteur** dès le chargement. Les photos de départ servent à trancher. Avec le service de transport Marché de Gros (fermé), le transporteur en répond pendant le transport. (Décision du propriétaire du 25/10/2026.) [À VALIDER PAR LE JURISTE]
 - **Retard** : proposition : un retard ne donne pas droit à une indemnité de MGCI ; l'acheteur peut demander l'annulation à l'équipe si le chargement n'a pas eu lieu dans le délai. [À VALIDER]
 - **Paiement** : MGCI ne garantit aucun paiement entre les parties (voir partie 8).
 - **Informations des membres** : MGCI ne garantit pas l'exactitude des annonces, des profils ni des numéros (non vérifiés par SMS).
 - **Interruption** : l'application peut être indisponible (panne, mise à jour, hébergeur). Aucune indemnité. [À VALIDER]
 
 ### 13.3 Force majeure
-Proposition : un événement qu'on ne peut ni prévoir ni éviter (route coupée, pluies exceptionnelles, panne grave, décision des autorités) permet d'annuler sans que cela compte contre soi, **si l'équipe l'accepte** sur preuves. Le motif « panne ou météo » sert à le déclarer. [À VALIDER] [À VALIDER PAR LE JURISTE : définition de la force majeure en droit ivoirien.]
+Proposition : un événement qu'on ne peut ni prévoir ni éviter (route coupée, pluies exceptionnelles, panne grave, décision des autorités) permet d'annuler sans que cela compte contre soi, **si l'équipe l'accepte** sur preuves. Le motif « panne ou météo » sert à le déclarer. **Preuves acceptées** : une photo (route coupée, pluie) ou une information publique (radio, presse, autorités) ; l'équipe juge (décision du propriétaire du 25/10/2026). [À VALIDER PAR LE JURISTE : définition de la force majeure en droit ivoirien.]
 <!-- source: schema-84a motif « panne_meteo » ; décision 27 (« force majeure validée par l'administrateur ») -->
 
 ## 14. Ce qui est interdit
@@ -299,7 +307,9 @@ Les numéros écrits dans les messages sont masqués, et une tentative de sortie
 
 - En cas de manquement à ces conditions, l'équipe peut : avertir, cacher une annonce, **suspendre** (partie 11.3) ou **bannir** le compte. Un bannissement est noté avec un motif.
 - Les cas graves (fraude, usurpation, menace) peuvent mener à un bannissement sans suspension préalable. [À VALIDER]
-- Vous pouvez contester par message au Marché de Gros. [DÉCISION DU PROPRIÉTAIRE : délai et procédure pour contester un bannissement.]
+- Un compte banni voit seulement « Compte banni » et comment contester.
+- Vous pouvez contester un bannissement **dans les 7 jours**, par message au Marché de Gros. L'équipe répond **en 7 jours**, comme pour les autres contestations. (Décision du propriétaire du 25/10/2026.) [À VÉRIFIER AVANT PUBLICATION : l'écran du compte banni et le délai de 7 jours sont à construire.]
+- Chaque geste de l'équipe sur un compte (bannir, suspendre, lever, rendre un numéro, changer un code, trancher un litige) est noté : qui, quand, pourquoi. [À VÉRIFIER AVANT PUBLICATION : aujourd'hui, seuls le numéro, le code et les signalements sont notés dans le journal de l'équipe (schémas 94b et 94e).]
 <!-- source: supabase/schema-14-confiance.sql admin_bannir(p_user, p_motif, p_detail), admin_lever_bannissement() -->
 
 ## 16. Modification des conditions

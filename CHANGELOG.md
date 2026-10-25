@@ -4,6 +4,10 @@ Cet historique vient de `git log origin/main` du dépôt (607 commits) et des se
 
 Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22, 23 et 24 octobre 2026), 607 commits. Aucun commit les 20/10 et entre le 5 et le 9, le 13 et le 16 octobre.
 
+## 25/10/2026
+
+- Moins de texte dans l'application (demande du propriétaire : « ça sur-explique ») : slogans, phrases morales et sous-titres qui redisent le titre retirés ou raccourcis (Demander, Prix, Accueil, Mes commandes, Mon compte, « Pourquoi le Marché de Gros », tableau du marché, Sons, Alertes produits, Achats groupés, Approvisionnement pro, Racheter, Prix par zone, Messages). Les règles qui protègent restent (argent, quotas, vérification). Corrigé au passage : la feuille des garanties ne cite plus les anciens statuts « Vendeur de confiance » et « Acheteur sérieux » ; « Ma réputation » ne dit plus que les avis arrivent après les négociations (ils viennent après une commande terminée). Cache `mgci-v291`.
+
 ## 24/10/2026
 
 - Corrections de l'audit (schémas 92 à 96) : **appliquées sur le projet de test seulement**, la production attend l'accord du propriétaire, la fonction `pousser` v24 n'est pas déployée. Détail par équipe ci-dessous et dans `docs/PASSATION.md`.

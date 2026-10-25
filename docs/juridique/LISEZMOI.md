@@ -13,7 +13,8 @@
 | `conditions-utilisation.md` | Les règles entre MGCI et les membres : rôle, comptes, annonces, négociation, commande, transport, paiement, commission, annulations, litiges, responsabilité. |
 | `confidentialite.md` | Les données gardées, pourquoi, qui les voit, combien de temps, les droits de chacun. |
 | `mentions-legales.md` | Gabarit : éditeur, adresse, RCCM, contact, hébergeurs. Tout est à remplir. |
-| `regles-manquantes.md` | Les décisions que le propriétaire doit encore prendre avant que ces textes soient complets. |
+| `regles-manquantes.md` | Les 32 questions à trancher, avec le statut de chacune (25/10/2026). |
+| `DECISIONS-A-PRENDRE.md` | Le point des 32 questions : tranchées, restantes avec un conseil, à confirmer par un juriste. Le propriétaire répond « ok pour tout » ou change un numéro. |
 
 ## Les marques dans les textes
 

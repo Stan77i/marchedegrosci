@@ -4,6 +4,12 @@ Cet historique vient de `git log origin/main` du dépôt (607 commits) et des se
 
 Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22, 23 et 24 octobre 2026), 607 commits. Aucun commit les 20/10 et entre le 5 et le 9, le 13 et le 16 octobre.
 
+## 25/10/2026
+
+- Litige en 1 h après « livré » (schéma 97b, règle du propriétaire) : après « livré » déclaré par le vendeur, l'acheteur a 1 h (avant : 24 h, rappel à 12 h) pour confirmer la réception ou signaler un problème ; sans réaction, un litige s'ouvre tout seul ; 1 h plus tard sans réaction, la commande est close en faveur du vendeur (rien n'est versé, la commission reste calculée). Pendant ce litige, l'acheteur peut encore confirmer avec le mot secret ou refuser avec des photos ; un message de sa part laisse le litige à l'équipe. Délais réglables (`reception_minutes`, `litige_sans_reponse_minutes`) ; tâche `mdg-commandes-delais` toutes les 5 min (avant : 15). Textes de l'application, de l'aide et des notifications (`pousser`, à redéployer) mis à jour. Testé sur le projet de test seulement.
+- Achat par parties et quantité minimale (schéma 97c) : vérifié par test que l'offre se vendait déjà par parties avec un minimum (schéma 37, 92a) ; ajout du minimum sur les demandes (fixé par l'acheteur, valable pour les vendeurs qui répondent), quantité obligatoire et minimum au plus égal à la quantité vérifiés par le serveur ; formulaires « Quantité minimale » (offre et demande) ; l'annonce affiche « Disponible » et la pastille « Minimum … » ; le tableau du marché montre aussi le minimum des demandes. Testé sur le projet de test seulement.
+- Transport : dans le choix du transport d'une commande en même ville, « L'acheteur vient chercher la marchandise » devient « Transport à la charge de l'acheteur » (règle du 24/10/2026) ; Approvisionnement pro : le champ « Commune ou quartier » (exemple « Cocody ») devient « Ville » (exemple « Bouaké »).
+
 ## 24/10/2026
 
 - Mon compte : « S'identifier » devient un bouton maïs sous la photo et le nom (« Non identifié · S'identifier », ou l'étape en cours : « En cours d'examen »…) ; la ligne Identité de la liste est retirée pour ne pas l'avoir deux fois (demande du propriétaire). `v3/compte.js`.

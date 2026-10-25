@@ -1,0 +1,63 @@
+# Contrôle quotidien léger : contrôle statique + ouverture de l'application en iPhone émulé + batteries navigateur
+# de CONTROLE_QUALITE/tests/navigateur/. Centre de commande : CONTROLE_QUALITE/README.md.
+# Sans spam : une seule issue « Contrôle quotidien », dont le texte est remplacé chaque jour (ce qui ne prévient personne) ;
+# un commentaire (qui, lui, prévient) n'est ajouté que si la liste des échecs bloquants change par rapport à la veille.
+# Les tests SQL ne tournent pas ici (aucun accès à la base) : ils restent « non exécuté » dans le rapport.
+# Gratuit (dépôt public). N'écrit rien dans le dépôt.
+name: Contrôle quotidien
+on:
+  schedule:
+    - cron: '29 5 * * *'   # 5 h 29, heure d'Abidjan (UTC), chaque jour
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+concurrency:
+  group: controle-quotidien
+  cancel-in-progress: false
+jobs:
+  controle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # facultatif : sans navigateur, le rapport le note « bloqué » et le reste tourne quand même
+      - name: Navigateur
+        continue-on-error: true
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Lancer le contrôle
+        id: controle
+        run: |
+          set +e
+          bash tools/controle/lancer.sh tout --sortie rapport-controle-quotidien.md --resume resume-controle.json
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Mettre à jour l'issue « Contrôle quotidien »
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          CODE: ${{ steps.controle.outputs.code }}
+        run: |
+          empreinte="$(jq -r '.empreinte // "aucune"' resume-controle.json 2>/dev/null || echo aucune)"
+          { cat rapport-controle-quotidien.md; echo; echo "<!-- empreinte: $empreinte -->"; } > corps.md
+          titre="Contrôle quotidien · $(date -u +%d/%m/%Y)"
+          numero="$(gh issue list --state open --limit 100 --json number,title \
+            --jq '[.[] | select(.title | startswith("Contrôle quotidien"))][0].number // empty')"
+          if [ -z "$numero" ]; then
+            gh issue create --title "$titre" --body-file corps.md
+            exit 0
+          fi
+          avant="$(gh issue view "$numero" --json body --jq .body | grep -o 'empreinte: [0-9a-f]*' | head -1 | cut -d' ' -f2)"
+          gh issue edit "$numero" --title "$titre" --body-file corps.md
+          if [ "$avant" != "$empreinte" ]; then
+            if [ "$CODE" = "1" ]; then
+              gh issue comment "$numero" --body "Nouvel échec bloquant le $(date -u +%d/%m/%Y) : voir « En bref » en haut de cette page."
+            else
+              gh issue comment "$numero" --body "Plus d'échec bloquant le $(date -u +%d/%m/%Y) (contrôles automatiques seulement ; les tests SQL ne tournent pas ici)."
+            fi
+          fi

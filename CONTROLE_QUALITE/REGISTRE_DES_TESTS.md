@@ -2,7 +2,9 @@
 
 > Tous les tests du serveur, ce qu'ils vérifient, leur dernier résultat connu. **Un test qui n'a pas tourné est « non rejoué », jamais « passe ».**
 > Source des résultats au 25/10/2026 : rapport de bout en bout de l'étape 7 (session du 24/10/2026 au soir, rejeux de 22 h 50 au 25/10/2026 à 0 h 30, projet de test), notes écrites dans chaque fichier et `docs/PASSATION.md`.
-> Mise à jour : la session des gardiens propose les nouveaux résultats dans son rapport ; ce fichier est corrigé dans une PR à part (ou dans la PR qui ajoute le test).
+> Centre de commande : `README.md` de ce dossier. Classement par unité et par type : `MATRICE_TESTS.md`.
+> Contrôle général du 25/10/2026 : les 18 fichiers de la partie 1 **n'ont pas été rejoués** (le temps est allé aux nouvelles batteries, partie 1 bis) : leurs résultats restent ceux des dates écrites.
+> Mise à jour : la session de contrôle propose les nouveaux résultats dans son rapport ; ce fichier est corrigé dans une PR à part (ou dans la PR qui ajoute le test).
 
 ## 1. Fichiers `supabase/tests/*.sql`
 
@@ -25,13 +27,36 @@ Tous se jouent sur le **projet de test** `yowdymdnoiubatxlwhfv`, jamais sur la p
 | `tableau-prix-scenarios.sql` | Schéma 96a : prix aberrant écarté, offres de plus de 30 jours hors prix, recalcul, lecture du tableau gardé. | Test | **Passe** (24/10/2026, soir) |
 | `transport-83-scenarios.sql` | Schéma 83 : même ville (livreur du vendeur, retrait), villes différentes, transport inclus ou à part, transporteur réseau, droits des rôles. | Test | A échouait (`DEPART_PREUVES`, test périmé depuis 90/90b), mis à jour sur `claude/e2e-corrections` puis **passe** (25/10/2026) ; B à J **passent** |
 | `transport-95-scenarios.sql` | Schéma 95 : service transport fermé, seuil de transporteurs vérifiés, 6,9 % seulement avec le réseau, 0 % pour le livreur du vendeur, transport à part (270 000 + 30 000), arrondis FCFA, textes de clôture. | Test | **Passe** (24/10/2026, soir) |
-| `e2e-parcours-scenarios.sql` *(sur la branche `claude/e2e-corrections`, pas encore dans `main` le 25/10/2026)* | Les parcours complets de bout en bout (partie 2). | Test | Voir partie 2 |
+| `controle-corrections-98-scenarios.sql` (PR #305) | Schémas 98a et 98b : pas de suppression du compte avec une commande en cours, un litige, un accord sans commande ou une suspension ; un membre suspendu (ou son partenaire) ne propose plus de prix ni ne conclut d'accord. | Test | Résultats écrits sous chaque bloc par l'équipe de correction (25/10/2026) ; **non rejoué** par le contrôle |
+| `litige-quantites-97-scenarios.sql` (PR #306) | Schémas 97b, 97c, 97d : litige en 1 h après « livré », quantité minimale et achat par parties, litige perdu pour l'acheteur muet, garde 93 qui prévient. | Test | Résultats écrits sous chaque bloc par l'équipe (25/10/2026) ; **non rejoué** par le contrôle |
+| `e2e-parcours-scenarios.sql` (dans `main` depuis la PR #300) | Les parcours complets de bout en bout (partie 2). | Test | Voir partie 2 |
 
-À la fusion de `claude/e2e-corrections` : vérifier que les fichiers de `main` portent bien les mises à jour notées ci-dessus, sinon les marquer « périmé ».
+`claude/e2e-corrections` est fusionnée (PR #300) : les mises à jour notées ci-dessus « sur `claude/e2e-corrections` » sont dans `main`. Les résultats « passe » restent ceux des dates écrites : **non rejoué** depuis.
+
+## 1 bis. Batteries du contrôle qualité (`CONTROLE_QUALITE/tests/`, ajoutées le 25/10/2026)
+
+Jouées pour la première fois le 25/10/2026 (projet de **test** pour le SQL ; navigateur avec données factices). Détail ligne par ligne : `rapports/2026-10-25-controle-general.md` et ses annexes (`rapports/annexes/`). Les fichiers SQL de U03 à U06, U08 et U14 se lancent après `tests/sql/_outils.sql`, dans le même appel ; ceux de U02, U07, U09 et U11 ont leurs outils en tête.
+
+| Fichier | Ce qu'il vérifie (une ligne) | Projet | Dernier résultat connu (25/10/2026) |
+|---|---|---|---|
+| `tests/sql/U02-securite.sql` | SEC-01 à 11 : un tiers, un visiteur, un faux admin, un suspendu, injection, abus, failles d'octobre, coupure au milieu, droits des tables | Test | 8 réussis, 2 échoués (SEC-05 c, SEC-11), 1 en attente (SEC-10 : deux connexions) |
+| `tests/sql/U03-argent.sql` | ARG-01 à 16 : commission prévue puis calculée, double clôture, fraude sur le registre, dépôt (fonction de service), arrondis, plafonds, litige | Test | 10 réussis, 3 échoués (ARG-06b, ARG-10b, ARG-15), 4 en attente (paiement réel ×3, deux connexions) |
+| `tests/sql/U04-stocks.sql` | STK-01 à 11 : deux acheteurs sur le même reste, stock rendu une fois, bornes de prix et quantités, unités, pause, demandes | Test | 8 réussis, 2 échoués (STK-03, STK-07f), 1 en attente (STK-10), 1 non exécuté (STK-11 : règle 97c en cours de changement) |
+| `tests/sql/U05-commandes.sql` | CMD-01 à 13 : expiration, arrêt 24 h, tiers, contre-propositions croisées, étapes sautées, annulation croisée, coupure, sorties automatiques | Test | 11 réussis, 4 échoués (CMD-09, CMD-12b, 12c, 12d), 1 en attente (CMD-13) |
+| `tests/sql/U06-transport.sql` | TRA-01 à 16 : service fermé, prix à trois, changement de prix, codes, mot secret, preuves au départ, refus du transporteur | Test | 12 réussis (TRA-11 : règle en cours de changement), 1 en attente (TRA-14 : deux connexions, GPS réel) |
+| `tests/sql/U07-profils.sql` | PRO-01 à 05 : limites du profil, pièce expirée, suppression du compte en commande, badge et fausses commandes, deux dossiers | Test | 3 réussis, 1 échoué (PRO-02), 1 non exécuté (PRO-05 : préparer un changement de niveau récent) |
+| `tests/sql/U08-notifications.sql` | NOT-01 à 15 : file d'attente, données périmées, objet vivant, doublon, droits, compte supprimé, heures calmes, plafond | Test | 5 réussis, 4 échoués (NOT-02, NOT-03, NOT-11d, NOT-12), 1 non exécuté (NOT-01 : aucune cible), 1 en attente (NOT-15 : clés push) |
+| `tests/sql/U09-base.sql` | BDD-01 à 06 : clés étrangères, valeurs impossibles, déclencheurs, 31 contrôles de cohérence, coupure, double prise de stock | Test (lecture + blocs annulés) | 2 réussis, 3 échoués (BDD-01, BDD-02, BDD-04), 1 en attente (BDD-06) |
+| `tests/sql/U11-admin.sql` | ADM-01 à 05 : traces des 12 actions sensibles, 23 valeurs absurdes, admin juge et partie, doubles actions, fonctions fermées | Test | 3 réussis, 2 échoués (ADM-01, ADM-02) |
+| `tests/sql/U14-extremes.sql` | EXT-01 à 11 : renvoi après coupure, textes extrêmes, cadence, double dépôt, vendeur banni, compte supprimé, photo perdue | Test | 6 réussis, 2 échoués (EXT-02, EXT-06), 1 non exécuté (EXT-07 : lecture du code), 1 en attente (EXT-10/11) |
+| `tests/navigateur/U10-fiabilite.js` | FIA-01 à 73 : 14 écrans × 4 profils (iPhone 13 clair/sombre, 320 px), temps, poids, 3G lente, coupure, panne, double clic, tutoriel, service worker | Navigateur (données factices) | 52 réussis, 18 échoués (14 × « [object Object] », FIA-58, 59, 60, 67), 3 en attente ; **relancé** par `lancer.sh navigateur` sur le commit d'intégration : mêmes chiffres |
+| `tests/navigateur/U12-parcours.js` | CMP-21 à 26 : écrans d'une commande à chaque étape (charger, recevoir, vérifier, litige, annulée, en route) | Navigateur (données factices) | 6 réussis (nouveau, lancé le 25/10/2026 par `lancer.sh navigateur` et seul avec `python3 -m http.server`) |
+
+Non automatisés (jugement de Claude, à refaire à chaque contrôle général) : LOG-01 à 16 (règle écrite → dernière définition, `python3 tools/controle/fn.py <fonction>`), DOC-01 à 12 (documents → code), CMP-01 à 11 (captures). Résultats du 25/10/2026 : LOG 10 réussis, 5 échoués, 1 en attente ; DOC 1 réussi, 10 échoués, 1 en attente ; CMP-01 à 11 : 3 réussis, 7 échoués, 1 bloqué.
 
 ## 2. Parcours de bout en bout (étape 7)
 
-Fichier : `supabase/tests/e2e-parcours-scenarios.sql` (branche `claude/e2e-corrections`). Comptes : S vendeur (Yamoussoukro), B acheteur (Daloa), ADM administrateur. Les fonctions sont appelées comme dans l'application, avec le rôle `authenticated`. Les fonctions `pg_temp.*` d'en-tête se lancent dans le **même appel** que chaque bloc.
+Fichier : `supabase/tests/e2e-parcours-scenarios.sql`. Comptes : S vendeur (Yamoussoukro), B acheteur (Daloa), ADM administrateur. Les fonctions sont appelées comme dans l'application, avec le rôle `authenticated`. Les fonctions `pg_temp.*` d'en-tête se lancent dans le **même appel** que chaque bloc.
 
 Avant les parcours (étape 1) : 121 fonctions des schémas 92a à 96f comparées au test (md5 du corps, commentaires `--` retirés, blancs ramenés à un espace) : 121/121 identiques le 24/10/2026.
 
@@ -72,6 +97,6 @@ Détail, méthode gratuite et qui le fait : `docs/essai-ferme/A-CONFIRMER-AVANT-
 ## 4. Ajouter un test
 
 1. Écrire le fichier `supabase/tests/<sujet>-scenarios.sql` : en-tête (schéma, projet de **test** seulement, comptes), chaque bloc fini par `raise exception 'TEST…'`, résultat obtenu écrit sous le bloc avec la date.
-2. Ajouter sa ligne au tableau de la partie 1, dans la **même PR** (règle de `CLAUDE.md`).
-3. Ajouter, si besoin, la case à vérifier dans `LISTES-DE-CONTROLE.md`.
+2. Ajouter sa ligne au tableau de la partie 1, à `MATRICE_TESTS.md` et à `tools/controle/unites.json` (« testsSql » : unités et schémas), dans la **même PR** (règle de `CLAUDE.md`).
+3. Ajouter, si besoin, la case à vérifier dans `LISTES_DE_CONTROLE.md`.
 4. Jamais de `drop`, `delete`, `truncate` dans un test, même en commentaire (le MCP le refuse).

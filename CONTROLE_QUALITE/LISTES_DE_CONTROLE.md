@@ -1,7 +1,9 @@
-# Listes de contrôle des gardiens (A à K)
+# Listes de contrôle (A à K)
+
+> Centre de commande : `README.md` de ce dossier. Ces listes sont le détail « case par case » des unités U01 à U14 : la correspondance liste → unité est dans `MATRICE_TESTS.md`, partie 2.
 
 > Chaque case a un numéro (A1, B3…) pour être citée dans les rapports. Sous chaque case : **comment vérifier** (commande, fichier, requête SQL en lecture seule, capture).
-> Le contrôle automatique (scripts de `tools/gardiens/`, mode d'emploi `tools/gardiens/README.md`) fait déjà une partie des recherches : la session Claude **lit son résultat d'abord**, puis fait le reste et juge.
+> Le contrôle automatique (`bash tools/controle/lancer.sh statique`, moteur `tools/controle/controle.js`, mode d'emploi `tools/controle/README.md`) fait déjà une partie des recherches : la session Claude **lit son résultat d'abord**, puis fait le reste et juge.
 > Une case n'est cochée que si la preuve a été vue (règle « mesurer, ne pas supposer »). Sinon : « non vérifié », avec la raison.
 
 **Périmètre « front de l'application »** (pour les recherches) : `application.dc.html`, `app/*.js`, `v3/*.js`, `v3/*.css`, `css/*.css`, `v2/*.js`. **Site** : gabarits `tools/site/`, `tools/site-*.js` (jamais les pages fabriquées de `site/`). Hors des recherches de textes d'écran : `docs/`, `strategie/`, `.claude/`, `supabase/tests/`.
@@ -93,7 +95,7 @@ Règle de `CLAUDE.md` : « Stabilité avant tout » : aucun écran vide ni clign
   - Vérifier : `document.documentElement.scrollWidth > window.innerWidth` sur chaque écran à 320 px ; tout `true` = orange avec l'élément fautif.
 - [ ] **C7. Liens internes et images** : aucune image cassée (`naturalWidth === 0`), aucune adresse `#/…` qui mène à un écran vide.
   - Vérifier : Playwright, liste des `img` après chargement ; `requestfailed` vers le dépôt (pas Supabase).
-- [ ] **C8. Tests du serveur** : aucun test de `supabase/tests/` en échec (voir liste G et `REGISTRE-DES-TESTS.md`).
+- [ ] **C8. Tests du serveur** : aucun test de `supabase/tests/` en échec (voir liste G et `REGISTRE_DES_TESTS.md`).
 - [ ] **C9. Le site caché** : pages fabriquées à jour (`node tools/site-public.js` ne change rien de plus que la date) et sans erreur console sur l'accueil, la carte, une page produit, un guide, à 1366 px.
   - Vérifier : lancer le générateur dans une copie de travail, `git status` ; Playwright sur `site/`.
 
@@ -185,7 +187,7 @@ Jamais sur la production. Jamais de `drop`, `delete`, `truncate`. Le MCP Supabas
 - [ ] **G1. Rejouer chaque fichier de `supabase/tests/*.sql`**, bloc par bloc, et comparer au résultat écrit dans le fichier.
   - Avant de lancer : vérifier que **chaque** bloc `do $$ … end $$` se termine par `raise exception 'TEST…'` (sinon : ne pas lancer, rouge). Les fonctions `pg_temp.*` d'en-tête se lancent dans le **même appel** que le bloc.
   - Lancer avec `execute_sql` sur le projet de test ; le message d'erreur « TEST: … » **est** le résultat. Même résultat = vert ; résultat différent = orange (ou rouge si une règle de sécurité ou d'argent ne tient plus) ; donnée vivante qui bouge (un compte, une durée) = vert avec note.
-  - Tenir à jour le tableau de `REGISTRE-DES-TESTS.md` (dans la PR du rapport, seulement la date et le résultat proposés dans le rapport ; le registre est modifié par une PR de correction).
+  - Tenir à jour le tableau de `REGISTRE_DES_TESTS.md` (dans la PR du rapport, seulement la date et le résultat proposés dans le rapport ; le registre est modifié par une PR de correction).
 - [ ] **G2. RLS sur toutes les tables.**
   ```sql
   select c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace
@@ -224,7 +226,7 @@ Jamais sur la production. Jamais de `drop`, `delete`, `truncate`. Le MCP Supabas
   group by j.jobname, d.status order by 1, 2;
   ```
   Attendu sur le test (relevé du 24/10/2026, 13 tâches) : `mdg-annonces-expirer`, `mdg-commandes-delais`, `mdg-fiabilite`, `mdg-groupes-echeances`, `mdg-notif`, `mdg-rappels-achat` (toutes les 15 min) ; `mdg-liberer-echus`, `mdg-prix`, `mdg-marketing` (toutes les 5 min) ; `mdg-effacer-messages`, `mdg-identites-matin` (7 h 45), `mdg-purger-positions` (3 h 23), `mdg-niveaux` (4 h 37). Une tâche inactive, en échec, ou sans exécution sur 3 jours = rouge. `mdg-niveaux` n'avait encore aucune exécution enregistrée le 24/10/2026 : à confirmer.
-- [ ] **G8. Les fonctions du dépôt sont celles du test** : pour les schémas récents, comparer l'empreinte du corps (md5 de `prosrc`, commentaires `--` retirés, blancs ramenés à un espace) entre la dernière définition dans `supabase/schema-*.sql` et le test. Méthode : `docs/gardiens/REGISTRE-DES-TESTS.md`, partie 2 (étape 1 du rapport de bout en bout).
+- [ ] **G8. Les fonctions du dépôt sont celles du test** : pour les schémas récents, comparer l'empreinte du corps (md5 de `prosrc`, commentaires `--` retirés, blancs ramenés à un espace) entre la dernière définition dans `supabase/schema-*.sql` et le test. Méthode : `REGISTRE_DES_TESTS.md`, partie 2 (étape 1 du rapport de bout en bout).
 
 ## H. Production en LECTURE SEULE (`catmsypctymgkjkfzdkt`)
 
@@ -269,6 +271,6 @@ Règle de `CLAUDE.md` : à chaque changement du front, monter le `?v=` du fichie
   - Vérifier : `gh api "repos/Stan77i/marchedegrosci/pulls?state=closed&per_page=30" --jq '.[] | select(.merged_at) | [.number, .title, .merged_at] | @tsv'` ; chercher chaque titre dans `docs/PASSATION.md`.
 - [ ] **K3. `docs/REPRISE.md`** : date de mise à jour récente ; « ce qui reste » ne liste pas une chose déjà faite.
 - [ ] **K4. `PORTAGE-SITE.md`, partie 4** : chaque nouveauté de l'application qui n'est pas dans un module commun y a sa ligne.
-- [ ] **K5. Ce dossier** : chaque fichier de `supabase/tests/` est dans `REGISTRE-DES-TESTS.md` ; chaque nouvelle règle de `CLAUDE.md` a sa case ici.
+- [ ] **K5. Ce dossier** : chaque fichier de `supabase/tests/` est dans `REGISTRE_DES_TESTS.md`, dans `MATRICE_TESTS.md` et dans `tools/controle/unites.json` ; chaque nouvelle règle de `CLAUDE.md` a sa case ici.
   - Vérifier : `ls supabase/tests/*.sql` comparé au tableau du registre ; règles de `CLAUDE.md` datées depuis le dernier rapport (`git log -p --since=… -- CLAUDE.md`).
 - [ ] **K6. `CLAUDE.md`** : pas deux règles qui se contredisent ; « Décisions en attente » ne contient pas une décision déjà tranchée.

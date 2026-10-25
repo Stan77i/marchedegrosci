@@ -435,6 +435,8 @@
           if (suiv.note_min != null && !(c.note >= suiv.note_min)) manque.push([c.avis ? `Note ${virg(c.note)}/5, il faut ${virg(suiv.note_min)} au moins` : `Une note d’au moins ${virg(suiv.note_min)}/5`, 0]);
           if (suiv.volume_min != null && det.volume < suiv.volume_min) manque.push([`${fcfa(det.volume)} sur ${fcfa(suiv.volume_min)} de commandes terminées`, det.volume / suiv.volume_min]);
           if (suiv.identite_requise && !c.identite) manque.push(['Identité vérifiée par l’équipe', 0]);
+          // LOG-11 : la validation par code n'existe qu'avec le service transport Marché de Gros, encore fermé : on le dit
+          if (suiv.code_requis && det.commandes < suiv.commandes) manque.push(['Validation par code : service transport Marché de Gros pas encore ouvert', 0]);
           if (manque.length) h += `<div class="st-but" style="margin-top:10px"><b>Pour ${esc(suiv.libelle)}</b>${manque.map(([t, f]) => `<small>${t}</small>${f > 0 ? `<div class="st-jauge" role="img" aria-label="${t}"><i style="width:${Math.min(100, f * 100)}%"></i></div>` : ''}`).join('')}</div>`;
         }
         if (role === 'acheteur' && !r.gros && C.gros) h += `<small>Acheteur en gros : ${c.gros_commandes || 0} sur ${C.gros.commandes} commandes de ${fcfa(C.gros.montant)} ou plus.</small>`;
@@ -448,6 +450,7 @@
       const ligneN = x => `<li><b>${esc(x.libelle)}</b> : ${x.commandes} commandes${x.mois > 1 ? ' sur ' + x.mois + ' mois différents' : ''}${x.code_requis ? ' validées par code (' + (x.plafond_partenaire || '?') + ' au plus avec le même partenaire)' : ''}, au plus ${virg(x.abus_max)} % d’annulations abusives${x.note_min != null ? ', note d’au moins ' + virg(x.note_min) + '/5' : ''}${x.volume_min != null ? ', au moins ' + fcfa(x.volume_min) : ''}${x.identite_requise ? ', identité vérifiée' : ''}.</li>`;
       h += `<div class="rp-sec"><h3>Comment ça marche</h3><ul class="rp-fb-reg">${NV.filter(x => x.role === 'vendeur').sort((a, b) => a.ordre - b.ordre).map(ligneN).join('')}
         <li>Mêmes paliers pour les acheteurs : Acheteur fiable, Bon, Excellent, Grand acheteur.</li>
+        ${NV.some(x => x.code_requis) ? '<li>La validation par code passe par le service transport Marché de Gros, pas encore ouvert.</li>' : ''}
         ${C.gros ? `<li><b>Acheteur en gros</b> : au moins ${C.gros.commandes} commandes de ${fcfa(C.gros.montant)} ou plus.</li>` : ''}
         <li>Seules les commandes terminées des ${mois} derniers mois comptent. Une annulation légitime, un litige en cours ou partagé ne comptent pas.</li>
         <li>Si vous ne remplissez plus les critères, vous gardez votre niveau ${C.grace_jours || 30} jours, puis il baisse. Vous êtes prévenu.</li>

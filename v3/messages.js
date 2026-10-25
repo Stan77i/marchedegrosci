@@ -1,6 +1,6 @@
 /* ═════════ Marché de Gros CI — messagerie directe ═════════
    Écrire à un vendeur, un acheteur ou n'importe quel membre, sans annonce et sans quitter l'application.
-   Chaque message est gardé 1 an (schéma 60) : l'équipe peut relire les échanges pour régler un litige ; on peut bloquer quelqu'un.
+   Chaque message est gardé 1 an (schéma 60) : l'équipe du Marché de Gros peut lire les échanges (décision du propriétaire, 25/10/2026) ; on peut bloquer quelqu'un.
    Serveur : supabase/schema-8.sql (dm_ouvrir, dm_envoyer, dm_liste, dm_messages, dm_lu, dm_masquer, dm_bloquer) ;
    notification sur le téléphone : fonction Edge « pousser » (déclencheur push_dm).
    Les administrateurs écrivent au nom du « Marché de Gros » (logo, mention Officiel) ; chacun peut écrire au Marché de Gros ;
@@ -10,7 +10,7 @@
    Événement : mdg:dm { unread } quand le nombre de conversations à lire change. */
 (function () {
   'use strict';
-  const JOURS = 365;  // = dm_duree() (schéma 60 : gardés 1 an, l'équipe peut les lire pour régler un litige)
+  const JOURS = 365;  // = dm_duree() (schéma 60 : gardés 1 an, l'équipe peut les lire)
   const KL = 'mdg-dm:liste';
   const N = () => window.MDGNuage, A = () => window.MDGAvatar;
   const TI = n => window.MDGIco ? '<span class="ic-t" aria-hidden="true">' + MDGIco.svg(n, 17, 1.9) + '</span>' : '';   // petite icône dessinée devant un texte (plus d'emoji)
@@ -292,7 +292,7 @@
     const b = feuille(`<div class="dm-h">${depuisBoite ? `<button type="button" class="dm-ib" data-back aria-label="Retour aux messages">${I.retour}</button>` : ''}
       <button type="button" class="dm-qui" data-profil aria-label="${c.officiel ? 'Marché de Gros' : 'Voir le profil de ' + esc(c.autre_nom)}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 40, c.officiel)}<span><b>${esc(c.autre_nom || 'Membre')}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 15 }) : ''}</b>${!c.officiel && window.MDGCompte && MDGCompte.puceStructure ? `<span class="dm-org">${MDGCompte.puceStructure(c.autre_id)}</span>` : ''}<small data-rep>${c.officiel ? 'L’équipe du Marché de Gros' : window.MDGStatut && MDGStatut.liste(c.autre_id).length ? MDGStatut.puces(c.autre_id, { max: 2, sceau: false }) : 'Voir son profil'}</small></span></button>
       <button type="button" class="dm-ib" data-plus aria-label="Plus d’options" aria-haspopup="menu">${I.plus}</button><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div>
-      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les échanges ne sont pas secrets : l’équipe du Marché de Gros peut les lire pour vérifier un accord ou régler un litige. Ils sont gardés 1 an. Restez ici : les numéros sont masqués.</div>${vsA}${!c.officiel && window.MDGIdentite && MDGIdentite.gardePaiement ? `<div class="dm-garde" data-garde>${MDGIdentite.gardePaiement(c.autre_id, c.autre_nom)}</div>` : ''}<div data-msgs></div></div>
+      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les échanges ne sont pas secrets : l’équipe du Marché de Gros peut les lire. Ils sont gardés 1 an. Restez ici : les numéros sont masqués.</div>${vsA}${!c.officiel && window.MDGIdentite && MDGIdentite.gardePaiement ? `<div class="dm-garde" data-garde>${MDGIdentite.gardePaiement(c.autre_id, c.autre_nom)}</div>` : ''}<div data-msgs></div></div>
       <div class="dm-f" data-f></div>`, 'Conversation avec ' + (c.autre_nom || 'un membre'));
     const corps = b.querySelector('[data-b]'), zone = b.querySelector('[data-msgs]'), pied = b.querySelector('[data-f]');
     const garde = b.querySelector('[data-garde]');

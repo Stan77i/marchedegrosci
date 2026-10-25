@@ -230,17 +230,25 @@
   };
 
   // Commissions (schéma 30) : registre calculé par le serveur. Rien n'est encaissé.
-  const KST = { prevue: ['Prévue', 'a'], calculee: ['Calculée (jamais réclamée)', 'v'], due: ['Due (argent passé par l’application)', 'v'], suspendue: ['Suspendue (litige)', 'r'], annulee: ['Annulée', ''] };
+  const KST = { prevue: ['Prévue', 'a'], calculee: ['Calculée (jamais réclamée)', 'v'], due: ['Due (argent passé par l’application)', 'v'], avant: ['D’avant la règle : non réclamée', ''], suspendue: ['Suspendue (litige)', 'r'], annulee: ['Annulée', ''] };
+  // ANO-013 : une ancienne « due » sans séquestre (avant le schéma 95b) n'est jamais « argent passé ». Le serveur la marque dans statut_registre
+  // (avant_regle / non_reclamee) ; tant qu'aucun paiement n'existe, une « due » sans séquestre confirmé s'affiche aussi « D'avant la règle ».
+  const AVANT = ['avant', 'avant_regle', 'non_reclamee'];
+  const stK = k => { const v = k.statut_registre || k.statut; if (AVANT.includes(v)) return 'avant'; if (v === 'due' && !(k.sequestre === true || k.argent_passe === true)) return 'avant'; return KST[v] ? v : 'prevue'; };
+  const etiq = k => { const v = stK(k); return `<span class="at-t ${KST[v][1]}">${KST[v][0]}</span>`; };
+  // totaux du serveur, regroupés par libellé affiché (les « due » d'aujourd'hui sont toutes d'avant la règle : aucun paiement n'existe)
+  const totauxAff = (T, cles) => { const o = {}; Object.keys(T || {}).forEach(s => { const v = AVANT.includes(s) || s === 'due' ? 'avant' : s, x = T[s] || {}, y = o[v] || (o[v] = {});
+    Object.keys(x).forEach(c => { y[c] = (y[c] || 0) + (+x[c] || 0); }); }); return o; };
   // commission transport (schéma 42, 95, 95b) : 6,9 % du prix du transporteur du service Marché de Gros. « Calculée » : jamais réclamée. Rien n'est encaissé.
   function commTransport(H) {
     const e = H.esc, c = D.comTr; if (!c) return '';
-    const t = k => (c.totaux && c.totaux[k]) || { n: 0, transports: 0, commission: 0 };
+    const TA = totauxAff(c.totaux), t = k => TA[k] || { n: 0, transports: 0, commission: 0 };
     const tuile = k => { const x = t(k); return `<div class="at-k"><small>${KST[k][0]}</small><b>${H.fmt(x.commission || 0)} F</b><small>${x.n || 0} transport${x.n > 1 ? 's' : ''} · ${H.fmt(x.transports || 0)} F</small></div>`; };
     const ligne = k => `<div class="at-r"><div><b>${e(k.produit || 'Commande')} · ${e(k.numero)}</b><small>${e(k.transporteur || 'Chauffeur')} · ${new Date(k.updated_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</small></div>
         <div><b>${H.fmt(k.commission)} F</b><small>6,9 % de ${H.fmt(k.prix_transport)} F</small></div>
-        <div class="at-a"><span class="at-t ${KST[k.statut][1]}">${KST[k.statut][0]}</span></div></div>`;
+        <div class="at-a">${etiq(k)}</div></div>`;
     return `<section class="sec"><h2 style="margin:6px 0 4px">Transport · 6,9 %</h2><p style="margin:0 0 10px;color:var(--mute,#655C4D)">Seulement pour le service transport Marché de Gros, sur le prix du transporteur. Avant le paiement dans l’application, elle est calculée et jamais réclamée. Rien n’est encaissé.</p>
-      <div class="at-ks">${tuile('calculee')}${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div>
+      <div class="at-ks">${tuile('calculee')}${tuile('avant')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div>
       <div class="at-l" style="margin-top:10px">${(c.lignes || []).length ? c.lignes.map(ligne).join('') : '<div class="at-vide"><b>Aucune commission transport</b>Elle s’inscrit quand un chauffeur accepte une mission avec son prix.</div>'}</div></section>`;
   }
   D.com = null; D.comOuv = {};
@@ -248,14 +256,14 @@
     titre: 'Commissions', ico: 'prix',
     charger: async H => { const [a, t] = await Promise.all([H.rpc('admin_commissions'), H.rpc('admin_commissions_transport').catch(() => null)]); D.com = a; D.comTr = t; },
     vue(H) {
-      const e = H.esc, c = D.com || { totaux: {}, lignes: [] }, t = k => (c.totaux && c.totaux[k]) || { n: 0, ventes: 0, commission: 0 };
+      const e = H.esc, c = D.com || { totaux: {}, lignes: [] }, TA = totauxAff(c.totaux), t = k => TA[k] || { n: 0, ventes: 0, commission: 0 };
       const tuile = (k) => { const x = t(k); return `<div class="at-k"><small>${KST[k][0]}</small><b>${H.fmt(x.commission || 0)} F</b><small>${x.n || 0} commande${x.n > 1 ? 's' : ''} · ventes ${H.fmt(x.ventes || 0)} F</small></div>`; };
       const ligne = k => `<div class="at-r"><div><b>${e(k.produit || 'Commande')} · ${e(k.numero)}</b><small>${e(k.vendeur || 'Membre')} · ${new Date(k.updated_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })}</small></div>
           <div><b>${H.fmt(k.commission)} F</b><small>3,5 % de ${H.fmt(k.montant_vente)} F</small></div>
-          <div class="at-a"><span class="at-t ${KST[k.statut][1]}">${KST[k.statut][0]}</span><button class="btn sm ghost" data-kj="${k.id}" aria-expanded="${!!D.comOuv[k.id]}">Journal</button></div>
-          ${D.comOuv[k.id] ? `<ul class="at-j">${(k.journal || []).map(j => `<li><b>${e(KST[j.statut] ? KST[j.statut][0] : j.statut)}</b> · ${H.fmt(j.commission)} F · ${e(j.motif)} · ${new Date(j.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</li>`).join('')}</ul>` : ''}</div>`;
-      return H.top('Commissions', 'Registre de la commission de 3,5 % sur les ventes de marchandises, calculée par le serveur. Aucun paiement n’existe encore : une vente clôturée donne une commission « calculée », jamais réclamée. « Due » viendra seulement quand l’argent passera par l’application. Rien n’a été encaissé.', '') + `
-        <section class="sec"><div class="at-ks">${tuile('calculee')}${tuile('due')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div></section>
+          <div class="at-a">${etiq(k)}<button class="btn sm ghost" data-kj="${k.id}" aria-expanded="${!!D.comOuv[k.id]}">Journal</button></div>
+          ${D.comOuv[k.id] ? `<ul class="at-j">${(k.journal || []).map(j => `<li><b>${e(AVANT.includes(j.statut) || (j.statut === 'due' && !(k.sequestre === true || k.argent_passe === true)) ? KST.avant[0] : KST[j.statut] ? KST[j.statut][0] : j.statut)}</b> · ${H.fmt(j.commission)} F · ${e(j.motif)} · ${new Date(j.at).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</li>`).join('')}</ul>` : ''}</div>`;
+      return H.top('Commissions', 'Registre de la commission de 3,5 % sur les ventes de marchandises, calculée par le serveur. Aucun paiement n’existe : une vente clôturée donne une commission « calculée », jamais réclamée. Rien n’a été encaissé.', '') + `
+        <section class="sec"><div class="at-ks">${tuile('calculee')}${tuile('avant')}${tuile('prevue')}${tuile('suspendue')}${tuile('annulee')}<div class="at-k"><small>Encaissé</small><b>0 F</b><small>pas de paiement dans l’application</small></div></div></section>
         <section class="sec"><div class="at-l">${(c.lignes || []).length ? c.lignes.map(ligne).join('') : '<div class="at-vide"><b>Aucune commission</b>Elles s’inscrivent seules à chaque commande.</div>'}</div></section>
         ${commTransport(H)}`;
     },

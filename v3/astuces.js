@@ -138,7 +138,7 @@
       ['📦', 'Accord conclu ?', 'Touchez *« Suivre la commande »* pour organiser la livraison.']] },
     m_messages: { t: 'Messages', insiste: 2, cartes: [
       ['💬', 'Vos conversations', 'Écrivez aux vendeurs et aux acheteurs *sans donner votre numéro*.'],
-      ['👀', 'Rien n’est secret', 'Les échanges sont *gardés 1 an*. L’équipe du Marché de Gros peut les lire pour régler un litige.'],
+      ['👀', 'Rien n’est secret', 'Les échanges sont *gardés 1 an*. L’équipe du Marché de Gros peut les lire.'],
       ['🚫', 'Quelqu’un vous dérange ?', 'Vous pouvez le *bloquer*. Les liens, numéros et réseaux sociaux sont refusés.']] },
     m_diffuser: { t: 'Message à tous', insiste: 2, cartes: [
       ['📣', 'Au nom du Marché de Gros', 'Ce message part à *tous les membres*, avec le logo, comme une annonce officielle.'],
@@ -193,7 +193,7 @@
     ['m_identite', '.idv-bg'],
     ['m_diffuser', '.dm-bg .dm-dif'],
     ['m_messages', '.dm-bg .dm-l'],
-    ['m_negos', '.nx-bg:not(:has(.nx-edbox))'],
+    ['m_negos', '.nx-bg:not(:has(.nx-edbox)):not(:has(.nx-msgs))'],   // FIA-67 : la liste seulement, jamais sur le fil d'une négociation
     ['m_notes', '.rp[aria-label="Les mieux notés"]'],
     ['m_profil', '.rp[aria-label="Mon profil public"]'],
     ['m_alertes', '.al-bg'],

@@ -44,20 +44,21 @@ Les corrections de l'audit (schémas 92 à 96, plus 97a) sont **en production de
 
 - [x] Donner le « OK production » pour les schémas 92 à 96 (fait le 25/10/2026 ; Claude les a appliqués avec 97a, puis a déployé `pousser` v24).
   - [x] litige automatique après le « livré » du vendeur : tranché le 25/10/2026 (1 h, puis clôture en faveur du vendeur, schéma 97b) ;
-  - [ ] valeurs des badges et du masquage d'une annonce (point C) ;
+  - [x] valeurs des badges et du masquage d'une annonce (point C) : gardées, tranché le 25/10/2026 (« ok pour tout ») ;
   - [x] lecture des messages par l'équipe : tranché le 25/10/2026 (l'équipe peut tout lire ; écrit dans les textes) ;
-  - [ ] les 15 questions restantes des 32 de `docs/juridique/regles-manquantes.md` (17 déjà tranchées).
+  - [x] les 15 questions restantes des 32 de `docs/juridique/regles-manquantes.md` : tranchées le 25/10/2026 (« ok pour tout »).
 - [x] Donner le « OK production » pour les schémas 97b à 98b (fait le 25/10/2026 : « C'EST FAIT, MET EN PRODUCTION » ; Claude les a appliqués, puis a déployé `pousser` v25).
-- [ ] Répondre aux décisions en attente :
-  - [ ] annonces déjà en ligne : 7 jours de grâce avant leur expiration (30 jours de vie, rappel 3 jours avant) ;
-  - [ ] rôle acheteur / vendeur : simple affichage (un membre peut acheter et vendre) ou bloquer selon le rôle ;
-  - [ ] litige automatique 24 h après le « livré » du vendeur, si l'acheteur ne répond pas ;
-  - [ ] valeurs des badges (3 commandes comptées par partenaire, 3 partenaires, 60 minutes) et du masquage d'une annonce (3 membres vérifiés inscrits depuis 30 jours, ou plus de masquage automatique) ;
-  - [ ] lecture des messages par l'équipe (aujourd'hui sans condition) : garder ou encadrer ;
-  - [ ] les 32 questions de `docs/juridique/regles-manquantes.md`.
-- [ ] Trouver un juriste pour relire les textes de `docs/juridique/` (conditions, confidentialité, mentions légales) et la formalité ARTCI.
+- [x] Répondre aux décisions en attente : **fait le 25/10/2026, « ok pour tout »** (détail et ce qui reste à construire : `docs/juridique/DECISIONS-A-PRENDRE.md`) :
+  - [x] annonces déjà en ligne : 7 jours de grâce gardés (point A) ;
+  - [x] rôle acheteur / vendeur : simple affichage, tout membre peut acheter et vendre (point B) ;
+  - [x] litige automatique après le « livré » du vendeur : 1 h (schéma 97b) ;
+  - [x] valeurs des badges et du masquage : gardées (point C) ;
+  - [x] lecture des messages par l'équipe : l'équipe peut tout lire ;
+  - [x] les 32 questions de `docs/juridique/regles-manquantes.md` ;
+  - [x] numéros des comptes supprimés avant le 25/10/2026 : libérés sur demande, avec « Numéro contesté » (point D).
+- [ ] Trouver un juriste : d'abord une aide gratuite (clinique juridique d'une faculté de droit, chambre de commerce), décision du 25/10/2026. Il relit les textes de `docs/juridique/` (conditions, confidentialité, mentions légales) et la formalité ARTCI.
 - [ ] Remplir `docs/juridique/mentions-legales.md` (éditeur, adresse, RCCM, contact).
-- [ ] Démarche ARTCI (déclaration des données personnelles) : vérifier ce qui est obligatoire avec le juriste, puis la faire.
+- [ ] Démarche ARTCI (déclaration des données personnelles) : vous, avec le juriste, **avant l'ouverture au public** (décision du 25/10/2026).
 
 ## 5. Le jour où vous aurez votre partenaire de paiement
 

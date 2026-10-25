@@ -40,23 +40,35 @@ revoke truncate on public.alertes, public.alertes_produits, public.zones from au
 
 ## 4. Corrections de l'audit : la production et les décisions (24/10/2026)
 
-Les corrections de l'audit (schémas 92 à 96) sont faites et testées sur le projet de **test** seulement. Rien n'est en production.
+Les corrections de l'audit (schémas 92 à 97a) sont faites et testées sur le projet de **test** seulement. Rien n'est en production. **Tout est expliqué dans `docs/RAPPORT-CORRECTIONS-AUDIT-2026-10.md`** (avec mon conseil pour chaque décision, partie 5).
 
-- [ ] Donner le « OK production » pour les schémas 92 à 96 (Claude les applique ensuite lui-même, un lot après l'autre, puis déploie la fonction `pousser` v24).
-- [ ] Répondre aux décisions en attente :
+- [x] Fusionner #297, #298, #299 (fait le 24/10/2026).
+- [ ] Fusionner #300 (tests de bout en bout, schéma 97a).
+- [ ] Regarder les captures des « textes en trop » (branche `claude/moins-de-texte`), dire oui ou non ; puis fusionner sa PR, puis celle du rapport.
+- [ ] Donner le « OK production » pour les schémas 92 à 97a (Claude les applique ensuite lui-même, un lot après l'autre, dans l'ordre du rapport, partie 3, puis déploie la fonction `pousser` v24).
+- [ ] Répondre aux décisions en attente (rapport, partie 5 : 23 points) :
+  - [ ] ancienne quantité renvoyée par un téléphone : la garder sans rien dire, ou afficher « La quantité a changé, vérifiez votre annonce » (conseillé) ;
   - [ ] annonces déjà en ligne : 7 jours de grâce avant leur expiration (30 jours de vie, rappel 3 jours avant) ;
   - [ ] rôle acheteur / vendeur : simple affichage (un membre peut acheter et vendre) ou bloquer selon le rôle ;
   - [ ] litige automatique 24 h après le « livré » du vendeur, si l'acheteur ne répond pas ;
-  - [ ] valeurs des badges (3 commandes comptées par partenaire, 3 partenaires, 60 minutes) et du masquage d'une annonce (3 membres vérifiés inscrits depuis 30 jours, ou plus de masquage automatique) ;
+  - [ ] délais : accord sans commande 72 h, chargement 72 h, litige traité en 72 h, négociation arrêtée 24 h ;
+  - [ ] valeurs des badges (3 commandes comptées par partenaire, 3 partenaires, 60 minutes) et du masquage d'une annonce (3 membres vérifiés inscrits depuis 30 jours, ou plus de masquage automatique) ; avertissement dès le premier litige perdu ;
   - [ ] lecture des messages par l'équipe (aujourd'hui sans condition) : garder ou encadrer ;
+  - [ ] itinéraires de la carte : serveur public OSRM, notre serveur, ou arrêter ;
+  - [ ] numéros des comptes supprimés avant le schéma 94b ; pseudo d'un membre vérifié ; Turnstile ;
+  - [ ] anciennes commissions « dues » (test) et commissions d'avant le paiement intégré (jamais réclamées ?) ;
+  - [ ] notifications : effacer le journal après 90 jours ; clés push pour le projet de test ;
+  - [ ] essai fermé : nombre, produits, villes, durée, critères, numéro et horaires de l'équipe (`docs/essai-ferme/PLAN.md`) ;
   - [ ] les 32 questions de `docs/juridique/regles-manquantes.md`.
+- [ ] Une séance avec votre téléphone : notifications, carte en 3G, réseau lent (`docs/essai-ferme/A-CONFIRMER-AVANT-DE-CLORE-L-AUDIT.md`, points 3, 4, 8, 10).
+- [ ] Facultatif : accord pour retirer les index en double `sim_tmp_*` du projet de test (« drop index »).
 - [ ] Trouver un juriste pour relire les textes de `docs/juridique/` (conditions, confidentialité, mentions légales) et la formalité ARTCI.
 - [ ] Remplir `docs/juridique/mentions-legales.md` (éditeur, adresse, RCCM, contact).
 - [ ] Démarche ARTCI (déclaration des données personnelles) : vérifier ce qui est obligatoire avec le juriste, puis la faire.
 
 ## 5. Le jour où vous aurez votre partenaire de paiement
 
-Aucun paiement ne passe par l'application aujourd'hui, et il n'y a pas de budget. Le jour où vous aurez un partenaire (par exemple un service de Mobile Money agréé), revenez dans une discussion avec :
+Aucun paiement ne passe par l'application aujourd'hui, et il n'y a pas de budget. Le jour où vous aurez un partenaire (par exemple un service de Mobile Money agréé), ouvrez une discussion et écrivez « J'ai mon partenaire de paiement : <nom> » (ce que Claude fera ensuite : rapport `docs/RAPPORT-CORRECTIONS-AUDIT-2026-10.md`, partie 7). Venez avec :
 
 - [ ] le **nom du partenaire** et sa **documentation technique** ;
 - [ ] ses **clés de TEST**. Elles se mettent dans les réglages du serveur Supabase (secrets des fonctions), **jamais dans l'application** ni dans une discussion ;

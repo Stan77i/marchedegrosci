@@ -59,6 +59,15 @@ Les corrections de l'audit (schémas 92 à 96, plus 97a) sont **en production de
 - [ ] Remplir `docs/juridique/mentions-legales.md` (éditeur, adresse, RCCM, contact).
 - [ ] Démarche ARTCI (déclaration des données personnelles) : vérifier ce qui est obligatoire avec le juriste, puis la faire.
 
+## 4 bis. Lancer l'essai fermé (une heure, gratuit)
+
+Tout est prêt dans `docs/essai-ferme/`. Commencez par **[LANCER-EN-1-HEURE.md](essai-ferme/LANCER-EN-1-HEURE.md)** : étapes numérotées, messages à copier (`MESSAGES.md`), guide à envoyer (`GUIDE-PARTICIPANT.md`), suivi (`SUIVI.md`), questionnaire (`QUESTIONNAIRE.md`), critères (`CRITERES-DE-REUSSITE.md`). Conseil : 20 personnes (10 vendeurs, 10 acheteurs), 2 produits, 1 ville, 4 semaines.
+
+- [x] Valider ou changer les seuils de `CRITERES-DE-REUSSITE.md` (validés le 25/10/2026 : « ok pour tout »)
+- [ ] Choisir la ville, les 2 produits, le canal d'aide et les horaires
+- [ ] Décider de lancer malgré les cases « Pas fait » de l'étape 0 (conditions d'utilisation, audit de sécurité), ou attendre
+- [ ] Lancer l'essai fermé
+
 ## 5. Le jour où vous aurez votre partenaire de paiement
 
 Aucun paiement ne passe par l'application aujourd'hui, et il n'y a pas de budget. Le jour où vous aurez un partenaire (par exemple un service de Mobile Money agréé), revenez dans une discussion avec :

@@ -97,6 +97,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 - « Aucun système de paiement n'est encore à considérer comme opérationnel. Ne simule pas de paiement, ne prélève aucun argent et ne prétends pas qu'une commission a été encaissée. »
 - « Ne révèle jamais de clé secrète ou de clé privilégiée dans le frontend. »
 - **Audit de sécurité** : fait (octobre 2026), toutes les failles trouvées sont corrigées (détail dans `docs/PASSATION.md`). **À refaire** avant l'ouverture au public, avant de brancher le paiement, et après chaque grosse fonction nouvelle.
+- **Lecture des messages par l'équipe** (décision du propriétaire, 25/10/2026) : « L'équipe [peut] lire tout, l'app n'est pas un WhatsApp, c'est une mise en relation d'un vendeur et d'un acheteur. » L'équipe peut lire tous les messages (privés et négociations), sans condition, pour la sécurité, les litiges, la lutte contre la fraude et le bon fonctionnement de la mise en relation. Les textes le disent clairement (`docs/juridique/confidentialite.md` 2.5, `conditions-utilisation.md` partie 1) et conseillent de n'écrire que ce qui concerne l'achat ou la vente. Ne jamais présenter les messages comme une messagerie privée ou secrète. Formulation à faire valider par un juriste.
 - Points restés ouverts : comptes créés sans preuve du numéro (attend le SMS/WhatsApp, donc un budget) ; anti-robot Turnstile pas installé (voir « Décisions en attente »).
 
 ## Commandes, transport, fiabilité, badges, boutiques (décisions du 24/10/2026)
@@ -192,7 +193,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 
 - **Vérification anti-robot (Cloudflare Turnstile)** : le propriétaire la veut **sur le site web seulement**, pas dans l'application. Attention : dans Supabase, la protection CAPTCHA vaut pour tout le projet, donc l'application serait bloquée. Le conseil donné est de l'activer partout en mode invisible. Rien n'est fait : lui reposer la question au moment de le faire. Il faudra un compte Cloudflare gratuit.
 - **Serveur bloqué dans l'environnement Claude** : le propriétaire doit autoriser `catmsypctymgkjkfzdkt.supabase.co` (mode d'emploi : `docs/A-FAIRE-PROPRIETAIRE.md`). Remis à plus tard le 24/10/2026.
-- **Décisions de l'audit du 24/10/2026 attendues du propriétaire** : 7 jours de grâce pour les annonces déjà en ligne, rôle acheteur/vendeur (simple affichage ?), litige automatique 24 h après le « livré » du vendeur, valeurs des badges et du masquage, lecture des messages par l'équipe, 32 questions de `docs/juridique/regles-manquantes.md`. Liste : `docs/A-FAIRE-PROPRIETAIRE.md`.
+- **Décisions attendues du propriétaire** : `docs/juridique/DECISIONS-A-PRENDRE.md` (25/10/2026) : 17 des 32 questions juridiques tranchées, 15 restent avec un conseil chacune, plus 4 points de l'audit (7 jours de grâce, rôle acheteur/vendeur, valeurs des badges et du masquage, numéros des comptes supprimés avant 94b). Le propriétaire répond « ok pour tout » ou change un numéro. Liste cochable : `docs/A-FAIRE-PROPRIETAIRE.md`.
 - **Vérification du numéro par SMS/WhatsApp** : quand il y aura un budget.
 - Limite de connexion Supabase Auth : 20 par 5 minutes et par IP (réglée par le propriétaire).
 - En attente : réglage « Voix » (fichiers audio fr_P1.zip) ; rappel du mot secret en notification (fonction `pousser`).

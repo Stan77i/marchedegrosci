@@ -100,6 +100,9 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Lien de notification « Ma boutique » (`#/?maboutique=1`) | `v3/boutique.js` (`depuisAdresse`), schéma 91 | basse (le site n'envoie pas de notifications) |
 | « Ville seulement » (schéma 87) : l'interrupteur « Je vends uniquement à Guiglo » à la publication et dans Mes publications, l'avertissement avant de négocier ou d'écrire, la ville imposée à la commande. Le site montre déjà la pastille « Guiglo uniquement » (fil, carte) | `app/ville-seule.js`, `application.dc.html` (`vsEl`, `vsSw`), `v3/negoce.js`, `v3/messages.js`, `v3/commandes.js` | moyenne |
 
+| « Panne ou météo » : champ « Source publique » (n° 12, 25/10/2026) | `v3/commandes.js` (`confirmer`) | basse (le site n'a pas les commandes) |
+| Écran « Compte banni » + « Contester » (n° 18, schéma 101z) | `v3/identite.js` (`gardeBanni`) ; chargé aussi par `index-v3.html` | aucune (module commun, déjà sur le site) |
+| Trajet de la carte par la fonction `itineraire` (n° 23) | `app/carte-gl.js` (commun) | aucune (module commun) |
 | Annulation avec motif obligatoire (liste fermée), accord ou non de l'autre partie sur le motif, expiration à 48 h (schéma 84) | `v3/commandes.js` (`confirmer`, `annulerMotif`, `repondreMotif`) | haute |
 | « Ma fiabilité » : score, annulations qui comptent ou non, avertissements, contestation ; ligne « Fiabilité : 96 % sur 25 commandes » du profil (schéma 84) | `v3/reputation.js` (`fiabilite`, commun) et la ligne de `v3/compte.js` (commun) : à vérifier sur le site | moyenne |
 | « Mes niveaux » : niveau vendeur et acheteur, ce qui manque pour le suivant, sursis de 30 jours, historique, contestation ; ligne « Mes niveaux » de Mon compte avec pastille (schéma 85) | `v3/reputation.js` (`niveaux`, commun) et la ligne de `v3/compte.js` (commun) : à vérifier sur le site | moyenne |

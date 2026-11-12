@@ -32,5 +32,5 @@ Puis, au premier message à Claude dans ce projet :
 Ou, sans copier les fichiers à la main, depuis le dépôt GitHub :
 
 ```bash
-git clone --depth 1 https://github.com/Stan77i/gloriousdestiny /tmp/gd && mkdir -p .claude/skills && cp -r /tmp/gd/kit-createur-app/skills/* .claude/skills/
+git clone --depth 1 https://github.com/Stan77i/marchedegrosci /tmp/gd && mkdir -p .claude/skills && cp -r /tmp/gd/kit-createur-app/skills/* .claude/skills/
 ```

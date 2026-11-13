@@ -13,6 +13,8 @@ C'est **la seule page à lire**. Tout ce qui est important est ici, en français
 
 > **Pause du 25/10/2026 (plus de crédit)** : l'état exact et ce qu'il faut reprendre sont dans [`docs/RAPPORT-PAUSE-2026-10-25.md`](docs/RAPPORT-PAUSE-2026-10-25.md). Au retour : écrire « On reprend ».
 
+> **13/11/2026 : refonte de l'application.** Vous avez dit « ok pour tout » à la maquette de Claude Design. Claude l'applique en 16 étapes, une PR par étape, avec captures avant chaque PR. Avancement : `docs/brief-design/ETAT-DESIGN.md`.
+
 ## 1. Ce que vous devez faire maintenant
 
 Une « PR », c'est une proposition de changement : vous la fusionnez sur GitHub pour l'accepter.

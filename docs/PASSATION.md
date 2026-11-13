@@ -2215,3 +2215,12 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - **Agent Reach a besoin de son programme** `agent-reach` : son installation a été refusée par les garde-fous de la session. À installer seulement avec l'accord du propriétaire, par la commande officielle (jamais le paquet PyPI du même nom).
 - **Nouvelle règle** (`CLAUDE.md`, partie « Claude Design ») : le dossier `docs/brief-design/` est le point d'entrée de Claude Design ; `ETAT-DESIGN.md` dit ce qui est déjà fait et ce qu'il doit faire maintenant ; il est mis à jour à chaque nouvel écran. Elle remplace la décision du 23/10/2026 (pas de dossier Claude Design).
 - **Maquette « MGCI App v2 »** de Claude Design (13/11/2026) lue : 16 écrans ou groupes d'écrans, plan en 16 lots. Rien n'est encore dans l'application. À corriger dans la maquette : avatars en initiales (règle : personnages du marché), « Encaissé 0 F » (interdit), alternance « de Gros » / « du pays » absente de la porte. Nouveautés qui attendent le propriétaire : onglets en bas, roue retirée de l'accueil, choix parmi 5 accueils, recherche en phrase, échelle de zone, jauge du prix, Espace équipe dans l'application. Détail : `docs/brief-design/ETAT-DESIGN.md`. La maquette n'est pas copiée dans le dépôt (données factices, et GitHub Pages la servirait au public).
+
+## 13/11/2026 · Décisions de la refonte (« ok pour tout ») et Agent Reach installé
+
+- **Le propriétaire valide la maquette « MGCI App v2 »** de Claude Design : « ok pour tout » aux 6 nouveautés (onglets en bas et alertes dans la cloche, roue retirée de l'accueil, accueil « Duo », recherche en phrase, zone qui s'élargit et « Pourquoi », espace équipe dans l'application) ; « applique ce que Claude Design a fait ».
+- **Avatars** : « plus besoin des avatars » : plus de personnages du marché pour les écrans refaits (`CLAUDE.md`, `DESIGN.md`).
+- **Corrections faites par Claude Code** dans la refonte : alternance « de Gros » / « du pays » gardée sur la porte ; « Calculée » au lieu de « Encaissé » pour les commissions.
+- **Site pour ordinateur** : instruction pour Claude Design (déjà fait / pas fait) dans `docs/brief-design/ETAT-DESIGN.md`, partie 4.
+- Nouvelle partie de `CLAUDE.md` : « Refonte de l'application (décisions du 13/11/2026) » ; plan en 16 lots, avancement dans `ETAT-DESIGN.md`, partie 3.
+- **Agent Reach installé** dans la session (`agent-reach` 1.6.1, `agent-reach setup` : 5 canaux par défaut, sans connexion). La machine est effacée à la fin de la session : refaire l'installation au besoin (notice des compétences).

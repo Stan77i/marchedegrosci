@@ -183,7 +183,7 @@ Le propriétaire a répondu « ok pour tout » le 25/10/2026 : les 32 questions 
 - Ne jamais écrire « PAYÉ ».
 - Photos de produits : `v2/img/produit-<identifiant>.webp`, carré 800 × 800, fond transparent. L'identifiant doit aussi figurer dans `A.SACK` (`app/marche-app.js`) avec la teinte du produit, sinon la photo ne s'affiche pas. La liste des produits sans photo est dans `docs/IMAGES.md`.
 - La tomate est montrée **en carton**, pas en sac.
-- Avatars : les **personnages du marché** (`v3/personnages.js`) : des produits avec un visage, dessinés en SVG. Au repos, ils respirent et clignent des yeux seulement ; ils **sautent uniquement quand il y a du nouveau** (proposition de prix, message, notification, commande à traiter) ou quand on change son avatar. Pas de service extérieur. Les anciens portraits restent lisibles.
+- **Avatars** (règle du propriétaire, 13/11/2026 : « plus besoin des avatars ») : on ne crée plus de personnages du marché ; les écrans refaits suivent la maquette de Claude Design (initiales dans un rond). `v3/personnages.js` reste tant que des écrans pas encore refaits s'en servent.
 - Couleurs de l'accord conclu : vert de la marque, plus de bleu.
 - **L'eau (fleuves, lacs) reste en bleu sur les cartes** (décision du propriétaire, 24/10/2026) : le bleu y a un sens ; c'est la seule exception avec le lien « compatible ».
 - **Décisions de l'audit antislop (24/10/2026)** : le badge « vérifié » et les négociations sont en vert profond `#10392B` (plus aucun bleu, sauf le lien « compatible » de la carte et l'eau des cartes) ; l'accueil vivant est « calmé » (chaque effet se joue 1 ou 2 fois, puis rejoue seulement quand on change de produit) ; « de Gros » en dégradé avec reflet est gardé, sur la page de connexion seulement.
@@ -213,6 +213,20 @@ Le propriétaire a répondu « ok pour tout » le 25/10/2026 : les 32 questions 
 - Les compétences sont dans `.claude/skills/` (licences Apache 2.0 et MIT, fichiers `LICENSE` gardés). Les mettre à jour depuis leurs dépôts : `pbakaus/impeccable`, `nextlevelbuilder/ui-ux-pro-max-skill`, `microsoft/playwright-cli`, `amaancoderx/npxskillui`, `miqdadbadjuber/anti-slop`.
 - **Avant de toucher au design, relire les 32 lois anti-« design généré par IA » et anti-amateur** (`DESIGN.md`, section 8), puis vérifier l'écran rendu contre chacune.
 - Mode « Opérer » : la précision et la retenue d'abord. Quand une règle de `DESIGN.md` change, mettre `DESIGN.md` à jour dans la même PR.
+
+## Refonte de l'application (décisions du 13/11/2026)
+
+Le propriétaire a répondu « ok pour tout » le 13/11/2026 à la maquette « MGCI App v2 » de Claude Design (« applique ce que Claude Design a fait ») :
+- la maquette est la référence **haute fidélité** de l'application (couleurs, espaces, textes, parcours), en clair et en sombre, à 390 et 320 px ; plan en 16 lots (`docs/brief-design/ETAT-DESIGN.md`), **une PR par lot**, captures avant chaque PR ;
+- **onglets en bas** (Marché · Prix · Publier · Activité · Compte), les alertes passent dans la cloche ;
+- **la roue des produits quitte l'accueil** ; l'accueil est la variante **« Duo »** (« Que faites-vous aujourd'hui ? », J'ai / Je cherche) ;
+- **recherche en phrase** (« 10 tonnes de manioc à Korhogo » → offres, ou demande pré-remplie) ;
+- **fiche produit** : zone qui s'élargit (autour de moi → ville → région → pays), « Pourquoi » de chaque offre, tri par correspondance ;
+- **Publier** en 5 étapes avec aperçu vivant et jauge du prix du marché ;
+- **Espace équipe dans l'application** (en plus de `admin.html`), réservé à l'administrateur (`est_admin` vérifié par le serveur) ;
+- **corrections de la maquette par Claude Code** : la porte garde l'alternance « marché de Gros » / « marché du pays » ; les commissions s'écrivent « Calculée » (jamais « Encaissé ») ; les données d'exemple de la maquette ne vont jamais dans l'application ;
+- quand la maquette contredit une ancienne règle **d'écran** (place des entrées, onglets du haut, roue, avatars, sous-titres), la maquette l'emporte ; les règles **d'argent, de sécurité, de vie privée et de texte** (« PAYÉ », « encaissé », rien d'inventé, numéros cachés) restent toujours ;
+- la maquette elle-même n'est pas copiée dans le dépôt (GitHub Pages la servirait au public avec ses fausses données) : elle est gardée hors du dépôt et décrite dans `docs/brief-design/ETAT-DESIGN.md`.
 
 ## Claude Design
 

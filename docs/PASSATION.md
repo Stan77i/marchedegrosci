@@ -2249,3 +2249,12 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Recherches récentes : 6 au plus, sur le téléphone (`mdg-v2:recentes`).
 - Texte « rien trouvé » : la maquette promettait que les vendeurs et l'acheteur « seront prévenus » ; non vérifié, donc remplacé par « les vendeurs qui l'ont la verront et pourront vous proposer leur prix ».
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur ; anneau de focus maïs autour du champ (l'anneau intérieur global retiré pour ce champ seulement).
+
+## 13/11/2026 · Refonte, lot 5 : fiche produit
+
+- Captures validées (« Ok »). Écran `fiche` refait (`data-v2`), méthode `v2Fiche()` (calculée seulement quand la fiche est dans la pile), styles dans `css/v2.css`.
+- Données réelles : fourchette et médiane des offres avec prix dans l'unité la plus fréquente, seulement à partir de 4 prix ; zones à partir de la ville et de la région du profil (sinon du téléphone) ; quantité voulue réglable par pas selon l'unité (kg 50, tonne 1, litre 10, sinon 5), gardée par produit et par côté dans l'état.
+- « Pourquoi » : quantité (assez, partie, minimum, autre unité), disponibilité (`quand()`), transport (`trTexte()`) ; score = 1 par ligne verte, 0,5 par ligne partielle ; « Meilleure correspondance » à partir de 2,5. Écart au marché seulement avec 4 prix et la même unité.
+- « Proposer un prix » = l'action existante (`card().neg`, `MDGNegoce.proposer`) ; profil = `card().voir` ; pastille = le premier statut de `MDGStatut.liste()`.
+- Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
+- Vérifié (iPhone émulé, clair et sombre) : aucune erreur.

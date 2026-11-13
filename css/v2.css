@@ -6,13 +6,13 @@
   background: var(--barre); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-top: 1px solid var(--t08); }
 .v2-tab { position: relative; flex: 1; min-width: 0; height: 54px; border: 0; background: none; padding: 0; font: inherit;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--mute); }
-.v2-tab > span:last-child { font-size: 11.5px; font-weight: 500; }
+.v2-tab .lb { font-size: 11.5px; font-weight: 500; }
 .v2-tab[aria-current=page] { color: var(--vert); }
-.v2-tab[aria-current=page] > span:last-child { font-weight: 700; }
+.v2-tab[aria-current=page] .lb { font-weight: 700; }
 .v2-tab .v2-pub { width: 50px; height: 38px; border-radius: 999px; background: var(--vert); color: #F3EFE4; display: grid; place-items: center; box-shadow: 0 6px 16px rgba(16, 57, 43, .28); }
 html[data-theme=sombre] .v2-tab .v2-pub { color: #171512; box-shadow: 0 6px 16px rgba(0, 0, 0, .35); }
 .v2-tab.pub { color: var(--vert); }
-.v2-tab.pub > span:last-child { font-weight: 600; }
+.v2-tab.pub .lb { font-weight: 600; }
 .v2-nb { position: absolute; top: 2px; left: calc(50% + 6px); min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 999px;
   background: #F2C230; color: #10392B; font-size: 11.5px; font-weight: 800; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
 .v2-tab:focus-visible, .v2-btn:focus-visible, .v2-rond:focus-visible, .v2-duo button:focus-visible { outline: 2px solid var(--vert); outline-offset: 2px; }
@@ -91,3 +91,24 @@ html[data-theme=sombre] .v2-carte { background: #26221C; }
 .v2-ttl h1 em { font-weight: 900; font-style: italic; color: var(--vert); letter-spacing: -.02em; padding: 0 .06em 0 .02em;
   background: linear-gradient(transparent 60%, var(--hl) 60%, var(--hl) 94%, transparent 94%); }
 .v2-retour { width: 44px; height: 44px; flex: none; margin-left: -10px; border: 0; background: none; color: inherit; display: grid; place-items: center; padding: 0; }
+
+/* ——— lot 10 (avancé) : Activité ——— */
+.v2-act { display: flex; flex-direction: column; gap: 14px; padding: 14px 16px 0; }
+.v2-act-h1 { margin: 6px 0 4px; font-size: 32px; font-weight: 600; line-height: 1.05; letter-spacing: -.015em; }
+.v2-msg { display: flex; align-items: center; gap: 12px; border: 1px solid var(--t14); background: var(--carte); border-radius: 16px; padding: 12px 14px; color: var(--encre);
+  font: inherit; font-size: 15px; font-weight: 700; text-align: left; min-height: 52px; }
+.v2-msg > span:not(.nbul) { flex: 1; }
+.v2-act-vide { padding: 60px 12px; display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.v2-act-vide > b { font-size: 19px; font-weight: 700; }
+.v2-act-vide > span { font-size: 14.5px; color: var(--texte-3); line-height: 1.45; max-width: 280px; }
+.v2-act-vide button { margin-top: 6px; height: 48px; padding: 0 24px; border: 0; border-radius: 999px; background: var(--vert); color: #F3EFE4; font: inherit; font-size: 15px; font-weight: 700; }
+html[data-theme=sombre] .v2-act-vide button { color: #171512; }
+.v2-al { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; background: none; padding: 14px 0; text-align: left; color: var(--encre); border-bottom: 1px solid var(--t08); font: inherit; }
+.v2-al .ic { width: 46px; height: 46px; flex: none; border-radius: 14px; display: grid; place-items: center; }
+.v2-al .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.v2-al .tx b { font-size: 15px; font-weight: 700; }
+.v2-al .tx small { font-size: 13.5px; color: var(--texte-3); line-height: 1.3; }
+.v2-tampon { flex: none; transform: rotate(-5deg); border: 1.5px solid currentColor; border-radius: 5px; padding: 2px 7px; font-size: 11.5px; font-weight: 800;
+  letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.v2-tampon.st-v { color: var(--vert); } .v2-tampon.st-j { color: #765802; } .v2-tampon.st-o { color: #31543C; } .v2-tampon.st-r { color: var(--hausse); } .v2-tampon.st-n { color: var(--mute); }
+html[data-theme=sombre] .v2-tampon.st-j { color: #F2C94C; } html[data-theme=sombre] .v2-tampon.st-o { color: #9FDCB2; }

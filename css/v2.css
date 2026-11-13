@@ -1,0 +1,93 @@
+/* Marché de Gros CI : écrans refaits d'après la maquette « MGCI App v2 » de Claude Design (refonte 2026-11).
+   Les couleurs viennent des jetons (css/mgci-tokens.css, css/sombre.css) : un écran refait porte data-v2. */
+
+/* ——— lot 2 : barre d'onglets du bas ——— */
+.v2-tabs { position: absolute; left: 0; right: 0; bottom: 0; z-index: 20; display: flex; align-items: flex-start; padding: 6px 8px 0;
+  background: var(--barre); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-top: 1px solid var(--t08); }
+.v2-tab { position: relative; flex: 1; min-width: 0; height: 54px; border: 0; background: none; padding: 0; font: inherit;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--mute); }
+.v2-tab > span:last-child { font-size: 11.5px; font-weight: 500; }
+.v2-tab[aria-current=page] { color: var(--vert); }
+.v2-tab[aria-current=page] > span:last-child { font-weight: 700; }
+.v2-tab .v2-pub { width: 50px; height: 38px; border-radius: 999px; background: var(--vert); color: #F3EFE4; display: grid; place-items: center; box-shadow: 0 6px 16px rgba(16, 57, 43, .28); }
+html[data-theme=sombre] .v2-tab .v2-pub { color: #171512; box-shadow: 0 6px 16px rgba(0, 0, 0, .35); }
+.v2-tab.pub { color: var(--vert); }
+.v2-tab.pub > span:last-child { font-weight: 600; }
+.v2-nb { position: absolute; top: 2px; left: calc(50% + 6px); min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box; border-radius: 999px;
+  background: #F2C230; color: #10392B; font-size: 11.5px; font-weight: 800; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.v2-tab:focus-visible, .v2-btn:focus-visible, .v2-rond:focus-visible, .v2-duo button:focus-visible { outline: 2px solid var(--vert); outline-offset: 2px; }
+
+/* ——— lot 2 : feuille du bas (Publier) ——— */
+.v2-voile { position: absolute; inset: 0; z-index: 60; background: rgba(23, 21, 18, .45); }
+.v2-feuille { position: absolute; left: 0; right: 0; bottom: 0; z-index: 61; max-height: 88%; overflow-y: auto; background: var(--papier); color: var(--encre);
+  border-radius: 26px 26px 0 0; padding: 10px 16px 0; animation: v2Monte var(--d-long) var(--courbe); }
+.v2-poignee { width: 40px; height: 5px; border-radius: 999px; background: var(--t18); margin: 0 auto 8px; }
+.v2-feuille-t { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.v2-feuille-t h2 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+.v2-fermer { width: 40px; height: 40px; flex: none; border: 0; border-radius: 999px; background: var(--lin); color: var(--encre); display: grid; place-items: center; }
+@keyframes v2Monte { from { transform: translateY(100%); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .v2-feuille { animation: none; } }
+
+/* ——— lot 3 : accueil « Duo » ——— */
+.v2-acc { display: flex; flex-direction: column; gap: 24px; padding: 14px 16px 0; }
+.v2-tete { display: flex; align-items: center; gap: 12px; }
+.v2-logo { width: 44px; height: 44px; flex: none; border: 0; padding: 0; border-radius: 14px; background: #10392B; display: grid; place-items: center; overflow: hidden; }
+.v2-logo img { width: 44px; height: 44px; display: block; }
+.v2-qui { flex: 1; min-width: 0; }
+.v2-qui b { display: block; font-size: 17px; font-weight: 600; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2-qui span { display: flex; align-items: center; gap: 4px; font-size: 13.5px; color: var(--texte-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2-rond { position: relative; width: 44px; height: 44px; flex: none; border-radius: 999px; border: 1px solid var(--t12); background: var(--carte); color: var(--encre); display: grid; place-items: center; padding: 0; }
+.v2-rond .v2-nb { top: -3px; right: -3px; left: auto; min-width: 20px; height: 20px; }
+.v2-h1 { margin: 4px 0 0; font-size: 32px; font-weight: 600; line-height: 1.05; letter-spacing: -.015em; text-wrap: balance; }
+.v2-h1 em { font-weight: 900; font-style: italic; color: var(--vert); letter-spacing: -.02em; padding: 0 .06em 0 .02em;
+  background: linear-gradient(transparent 60%, var(--hl) 60%, var(--hl) 94%, transparent 94%); }
+.v2-duo { display: flex; gap: 10px; margin-top: -8px; }
+.v2-duo button { flex: 1; min-width: 0; height: 150px; border: 0; border-radius: 24px; padding: 16px; font: inherit; color: #171512;
+  display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; text-align: left; }
+.v2-duo .o { background: #6CC58C; box-shadow: inset 0 -4px 0 rgba(16, 57, 43, .14); }
+.v2-duo .d { background: #F2C94C; box-shadow: inset 0 -4px 0 rgba(118, 88, 2, .16); }
+.v2-duo .ic { width: 52px; height: 52px; border-radius: 999px; background: rgba(255, 253, 248, .55); display: grid; place-items: center; }
+.v2-duo b { display: block; font-size: 27px; font-weight: 800; line-height: 1; letter-spacing: -.02em; }
+.v2-duo small { display: block; font-size: 15px; font-weight: 500; color: rgba(23, 21, 18, .72); margin-top: 3px; }
+.v2-cherche { height: 52px; border-radius: 999px; border: 1px solid var(--t14); background: var(--champ); display: flex; align-items: center; gap: 10px;
+  padding: 0 18px; color: var(--mute); font: inherit; font-size: 16px; text-align: left; margin-top: -8px; }
+.v2-cherche svg { color: var(--encre); flex: none; }
+.v2-sec { display: flex; flex-direction: column; gap: 12px; }
+.v2-sec-t { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.v2-sec-t h2 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+.v2-lien { border: 0; background: none; color: var(--vert); font: inherit; font-weight: 600; font-size: 14px; padding: 10px 0; min-height: 44px; }
+.v2-rail { display: flex; gap: 10px; overflow-x: auto; margin: 0 -16px; padding: 0 16px 4px; scrollbar-width: none; }
+.v2-rail::-webkit-scrollbar { display: none; }
+.v2-pc { flex: none; width: 136px; border: 0; background: none; padding: 0; text-align: left; color: var(--encre); display: flex; flex-direction: column; gap: 8px; font: inherit; }
+.v2-pc .im { width: 136px; height: 112px; border-radius: 18px; background: var(--sable-clair); display: grid; place-items: center; overflow: hidden; }
+.v2-pc .im img { width: 96px; height: 96px; object-fit: contain; }
+.v2-pc .tx { display: flex; flex-direction: column; gap: 1px; padding: 0 2px; }
+.v2-pc .nm { font-size: 14px; font-weight: 600; }
+.v2-pc .px { font-size: 14px; font-weight: 800; color: var(--vert); font-variant-numeric: tabular-nums lining-nums; }
+.v2-pc .px small { font-weight: 500; color: var(--texte-3); font-size: 12.5px; }
+.v2-pc .nb { font-size: 12.5px; color: var(--texte-3); font-weight: 500; }
+.v2-ligne { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; background: none; padding: 10px 0; text-align: left; color: var(--encre);
+  border-bottom: 1px solid var(--t08); min-height: 64px; font: inherit; }
+.v2-ligne .ic { width: 44px; height: 44px; flex: none; border-radius: 13px; display: grid; place-items: center; }
+.v2-ligne .ic.o { background: #DCEFE3; } .v2-ligne .ic.d { background: #F6E2B0; }
+.v2-ligne .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.v2-ligne .tx b { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2-ligne .tx small { font-size: 13.5px; color: var(--texte-3); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2-ligne .qd { font-size: 12.5px; color: var(--mute); flex: none; text-align: right; font-variant-numeric: tabular-nums; }
+.v2-vide { background: var(--carte); border-radius: 18px; padding: 16px; font-size: 14px; line-height: 1.45; color: var(--texte-2); }
+.v2-carte { display: flex; align-items: center; gap: 12px; border: 0; background: #171512; border-radius: 18px; padding: 12px 14px 12px 12px; color: #F5F0E6;
+  text-align: left; min-height: 64px; font: inherit; }
+html[data-theme=sombre] .v2-carte { background: #26221C; }
+.v2-carte .ic { width: 48px; height: 48px; flex: none; border-radius: 13px; background: #2A251E; display: grid; place-items: center; }
+.v2-carte .tx { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.v2-carte b { font-size: 15px; font-weight: 700; } .v2-carte small { font-size: 13.5px; color: #B9AD98; }
+.v2-confiance { display: flex; align-items: center; gap: 10px; border: 0; background: var(--carte); border-radius: 16px; padding: 14px 16px; color: var(--vert);
+  font: inherit; font-size: 15px; font-weight: 600; text-align: left; min-height: 52px; }
+.v2-confiance span { flex: 1; }
+
+/* titre d'un onglet (Prix, Activité) et de l'écran Alertes */
+.v2-ttl { display: flex; align-items: center; gap: 8px; padding: 14px 16px 4px; }
+.v2-ttl h1 { margin: 0; flex: 1; font-size: 32px; font-weight: 600; line-height: 1.05; letter-spacing: -.015em; }
+.v2-ttl h1 em { font-weight: 900; font-style: italic; color: var(--vert); letter-spacing: -.02em; padding: 0 .06em 0 .02em;
+  background: linear-gradient(transparent 60%, var(--hl) 60%, var(--hl) 94%, transparent 94%); }
+.v2-retour { width: 44px; height: 44px; flex: none; margin-left: -10px; border: 0; background: none; color: inherit; display: grid; place-items: center; padding: 0; }

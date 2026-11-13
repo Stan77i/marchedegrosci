@@ -11,7 +11,7 @@
   --line: var(--t08); --line2: var(--t14); --acc: var(--vert); --acc-t: var(--vert); --bad: var(--hausse);
   background: var(--papier); color: var(--encre); font: 400 15px/1.45 Jost, system-ui, sans-serif;
 }
-.cp-bg.v2c-plein .cp.v2c { max-width: none; height: 100%; border-radius: 0; box-shadow: none; animation: none; }
+.cp-bg.v2c-plein .cp.v2c { max-width: none; height: 100% !important; max-height: none; border-radius: 0; box-shadow: none; animation: none; }
 .cp-bg.v2c-plein .cp.v2c > .cp-x { display: none; }
 .cp-bg .cp.v2c > .cp-x { background: var(--t08); color: var(--encre); }
 .cp.v2c .cp-top { display: flex; align-items: center; justify-content: flex-start; min-height: 0; padding: calc(env(safe-area-inset-top) + 10px) 16px 0 5px; background: var(--papier); }
@@ -55,9 +55,9 @@ button.v2c-tete { border: 0; background: none; padding: 8px 0 0; margin: 0; colo
 .v2c-liste { display: flex; flex-direction: column; background: var(--carte); border-radius: 18px; padding: 0 16px; }
 .v2c-l { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 8px 0; box-sizing: border-box; border: 0; border-bottom: 1px solid var(--t08); background: none; color: var(--encre); font: 600 15px/1.3 Jost, sans-serif; text-align: left; text-decoration: none; cursor: pointer; }
 .v2c-l:last-child { border-bottom: 0; }
-.v2c-l .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.v2c-l .t { flex: 1; min-width: min-content; display: flex; flex-direction: column; gap: 2px; }
 .v2c-l .t small { font-size: 13px; font-weight: 400; color: var(--texte-3); }
-.v2c-l .v { flex: none; max-width: 48%; font-size: 13.5px; font-weight: 500; color: var(--texte-3); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2c-l .v { flex: 0 1 auto; min-width: 0; max-width: 48%; font-size: 13.5px; font-weight: 500; color: var(--texte-3); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .v2c-l > svg { flex: none; color: var(--mute); }
 .v2c-l.info { cursor: default; }
 .v2c-l.haut { min-height: 64px; }
@@ -205,3 +205,4 @@ label.v2c-l { cursor: pointer; }
 .cp.v2c .cp-go.v2c-rouge { background: var(--hausse); color: var(--action-t); }
 .cp.v2c [tabindex="-1"]:focus { outline: none; }
 .cp.v2c .cp-fg { padding: 0; background: none; border-radius: 0; box-shadow: none; gap: 18px; }
+.cp-bg.v2c-plein { transition: none; }

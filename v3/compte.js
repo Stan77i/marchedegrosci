@@ -424,7 +424,9 @@ label.cp-r{cursor:pointer}
       // la hauteur suit le clavier (règle de v3/nuage.js : height = --vvh), moins la barre d'onglets
       if (vue) { Object.assign(moi.style, { left: Math.max(0, r.left) + 'px', right: Math.max(0, innerWidth - r.right) + 'px' }); moi.style.setProperty('height', `calc(var(--vvh, 100%) - ${Math.max(0, innerHeight - r.top)}px)`, 'important'); t.classList.add('cp-actif'); }
       else { moi.style.left = moi.style.right = ''; moi.style.removeProperty('height'); }
-      moi._tabs = vue ? t : null; };
+      moi._tabs = vue ? t : null;
+      // la barre change de hauteur (zone du bas de l'iPhone lue après coup) : on se recale
+      if (vue && !moi._ro && window.ResizeObserver) { moi._ro = new ResizeObserver(() => poser()); moi._ro.observe(t); } };
     // les onglets du bas : « Compte » revient en haut du compte ; un autre onglet ferme le compte puis fait son travail
     const onglets = e => { const b = e.target && e.target.closest && e.target.closest('.v2-tabs .v2-tab'); if (!b || !moi.isConnected || !moi.classList.contains('v2c-plein')) return;
       if (b === b.parentNode.lastElementChild) { e.preventDefault(); e.stopPropagation(); aller('accueil', true); } else fermer(); };
@@ -433,7 +435,7 @@ label.cp-r{cursor:pointer}
     const neuf = () => { if (page === 'accueil' && bg && bg.rafraichirAuto) bg.rafraichirAuto(); };
     addEventListener('mdg:boutiques', neuf); addEventListener('mdg:profil', neuf);
     moi.lacher = () => { document.removeEventListener('click', onglets, true); removeEventListener('resize', poser); removeEventListener('mdg:aller', partir); removeEventListener('hashchange', partir);
-      removeEventListener('mdg:boutiques', neuf); removeEventListener('mdg:profil', neuf); if (moi._tabs) moi._tabs.classList.remove('cp-actif'); };
+      removeEventListener('mdg:boutiques', neuf); removeEventListener('mdg:profil', neuf); if (moi._ro) moi._ro.disconnect(); if (moi._tabs) moi._tabs.classList.remove('cp-actif'); };
     poser();
     // le contenu est là tout de suite (aucun fondu) ; une page s'ouvre en haut
     const aller = (p, calme) => {

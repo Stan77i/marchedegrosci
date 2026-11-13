@@ -67,6 +67,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/sombre.css?v=20261113r1">
 <link rel="stylesheet" href="css/annee-app.css?v=20261124h">
 <link rel="stylesheet" href="css/categories-app.css?v=20261124f">
+<link rel="stylesheet" href="css/v2.css?v=20261113r3">
 <link rel="stylesheet" href="v3/ux.css?v=20261124i">
 <script src="v2/data.js?v=20261031a"></script>
 <script src="app/marche-app.js?v=20261124h"></script>
@@ -94,137 +95,83 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
 
 <div style="position:absolute;inset:0;isolation:isolate;z-index:0">
 <!-- ═══ ACCUEIL ═══ -->
-<div data-pg="home" data-screen-label="Accueil" class="acc" style="position:absolute;inset:0;background:#F3EFE4;color:#171512;display:flex;flex-direction:column;overflow:hidden;isolation:isolate;transform:{{ tf.home }};visibility:{{ vis.home }};z-index:{{ zi.home }};backface-visibility:hidden;-webkit-backface-visibility:hidden">
-  <!-- accueil clair : en-tête flottant (marque, recherche, publier, compte) + onglets ; dessous, le contenu de l'onglet ; J'ai / Je cherche restent en bas -->
-  <div class="acc-sc" style="padding-top:{{ topPad }};padding-bottom:calc({{ botPad }} + 96px)">
-  <div class="acc-tete">
-    <div class="acc-l1">
-      <button class="acc-mq" onClick="{{ openMenu }}" aria-label="Menu">{{ accLogo }}<sc-if value="{{ hasPubs }}" hint-placeholder-val="{{ false }}"><span class="acc-pt"></span></sc-if></button>
-      <span class="acc-nom" aria-hidden="true"><mdg-souffle data-go="{{ sfGo }}"></mdg-souffle></span>
-      <button class="acc-r" onClick="{{ goAcheter }}" aria-label="Chercher un produit">{{ accIco.chercher }}</button>
-      <button class="{{ accCl.cls }}" onClick="{{ accCl.go }}" aria-label="{{ accCl.l }}"><span class="acc-cl-i">{{ accIco.cloche }}</span><sc-if value="{{ accCl.on }}" hint-placeholder-val="{{ false }}"><span class="acc-cl-n">{{ accCl.n }}</span></sc-if></button>
-      <button class="acc-r plein" onClick="{{ goVendre }}" aria-label="Publier une offre">{{ accIco.plus }}</button>
-      <button class="acc-r av" onClick="{{ goMoi }}" aria-label="{{ moiLabel }}">{{ accMoi }}</button>
-    </div>
-    <div class="acc-ong" role="tablist" aria-label="Accueil" style="--i:{{ accOngI }}"><span class="acc-ong-ind" aria-hidden="true"></span>
-      <sc-for list="{{ accOngs }}" as="o" hint-placeholder-count="3"><button role="tab" aria-selected="{{ o.sel }}" class="{{ o.cls }}" onClick="{{ o.go }}">{{ o.t }}<sc-if value="{{ o.hasN }}" hint-placeholder-val="{{ false }}"><span class="acc-n {{ o.nC }}">{{ o.n }}</span></sc-if></button></sc-for>
-    </div>
-  </div>
-
+<div data-pg="home" data-v2 data-screen-label="Accueil" class="acc" style="position:absolute;inset:0;background:var(--papier);color:var(--encre);display:flex;flex-direction:column;overflow:hidden;isolation:isolate;transform:{{ tf.home }};visibility:{{ vis.home }};z-index:{{ zi.home }};backface-visibility:hidden;-webkit-backface-visibility:hidden">
+  <!-- refonte 2026-11 (maquette « MGCI App v2 » de Claude Design, lots 2 et 3) : onglets en bas (Marché, Prix, Publier, Activité, Compte) ; les alertes passent dans la cloche ; accueil « Duo » -->
+  <div class="acc-sc" style="padding-top:{{ topPad }};padding-bottom:calc({{ botPad }} + 104px)">
   <div style="display:{{ accM }}">
-    <div class="acc-salut">
-      {{ accTitre }}
-      <p>{{ accSous }}</p>
+  <div class="v2-acc">
+    <div class="v2-tete">
+      <button class="v2-logo" onClick="{{ openMenu }}" aria-label="Menu"><img src="logo/marque.svg" alt=""></button>
+      <div class="v2-qui"><b>{{ v2.salut }}</b><sc-if value="{{ v2.lieuOn }}" hint-placeholder-val="{{ true }}"><span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0113 0c0 5-6.5 11-6.5 11z"></path><circle cx="12" cy="10" r="2.3"></circle></svg>{{ v2.lieu }}</span></sc-if></div>
+      <button class="v2-rond" onClick="{{ goAcheter }}" aria-label="Chercher un produit"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg></button>
+      <button class="v2-rond" onClick="{{ v2.versAlertes }}" aria-label="{{ v2.clocheL }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16v-5a6 6 0 0112 0v5l1.5 2h-15z"></path><path d="M10 20.5a2 2 0 004 0"></path></svg><sc-if value="{{ v2.clocheOn }}" hint-placeholder-val="{{ false }}"><span class="v2-nb">{{ v2.clocheN }}</span></sc-if></button>
     </div>
-    <div class="acc-orb">
-  <div class="acc-halo" style="position:absolute;left:50%;top:250px;width:640px;height:640px;margin:-320px 0 0 -320px;border-radius:50%;background:radial-gradient(circle,{{ halo }} 0%,transparent 60%);opacity:.5;pointer-events:none;transition:background .6s"></div>
-      <mdg-marche></mdg-marche>
-  <!-- nos garanties, une à la fois (app/garanties.js) : toucher → « Pourquoi le Marché de Gros » -->
-  <div style="position:relative;z-index:2;flex:none;height:32px;margin-top:2px"><mdg-garanties></mdg-garanties></div>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:0;padding:0;margin-top:-4px;position:relative">
-    <div style="display:flex;gap:4px">
-      <sc-for list="{{ famPips }}" as="s" hint-placeholder-count="11"><button onClick="{{ s.go }}" aria-label="{{ s.name }}" class="ux-pip" style="border:0;padding:14px 5px;margin:-8px 0;min-width:24px;justify-content:center;background:transparent;display:flex;position:relative"><span style="display:block;height:3px;border-radius:2px;width:{{ s.w }};background:{{ s.bg }};transition:all .4s cubic-bezier(.22,1,.36,1)"></span></button></sc-for>
+    <h1 class="v2-h1">Que faites-vous <em>aujourd’hui</em> ?</h1>
+    <div class="v2-duo" role="group" aria-label="Publier">
+      <button class="o" style="order:{{ v2.ordO }}" onClick="{{ goVendre }}" aria-label="J’ai à vendre : publier une offre"><span class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5h17l-2 9h-13z"></path><path d="M8 10.5L11 4.5M16 10.5L13 4.5"></path><path d="M9 13.5v3.5M12 13.5v3.5M15 13.5v3.5"></path></svg></span><span><b>J’ai</b><small>à vendre</small></span></button>
+      <button class="d" style="order:{{ v2.ordD }}" onClick="{{ goDemande }}" aria-label="Je cherche à acheter : publier une demande"><span class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5h3l2.3 10.5h10.2l2-7.5H6.5"></path><circle cx="9" cy="19" r="1.6"></circle><circle cx="17" cy="19" r="1.6"></circle></svg></span><span><b>Je cherche</b><small>à acheter</small></span></button>
     </div>
-    <div style="display:flex;align-items:center;gap:2px;max-width:100%">
-      <button onClick="{{ prevFam }}" aria-label="Famille précédente" style="flex:none;width:44px;height:44px;border:0;background:transparent;color:var(--mute-d);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button>
-      <button onClick="{{ openFams }}" style="border:0;background:transparent;color:var(--sable);font-size:var(--t-sm);letter-spacing:0;font-weight:500;padding:8px 6px;display:flex;align-items:center;gap:6px;min-height:44px;min-width:0"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0">{{ famName }}</span><svg width="10" height="10" stroke="currentColor" stroke-width="2.4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="bas"><path d="m6 9 6 6 6-6"></path></svg></button>
-      <button onClick="{{ nextFam }}" aria-label="Famille suivante" style="flex:none;width:44px;height:44px;border:0;background:transparent;color:var(--mute-d);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="suite"><path d="m9 18 6-6-6-6"></path></svg></button>
-    </div>
-  </div>
-  <div onPointerDown="{{ wDown }}" onPointerMove="{{ wMove }}" onPointerUp="{{ wUp }}" onPointerCancel="{{ wUp }}" style="position:relative;height:{{ wheelH }};flex:none;touch-action:pan-y;user-select:none">
-    <!-- le switch « Démo » (app/demo-orbite.js) : la roue et le prix se montrent tout seuls -->
-    <button type="button" class="dm-sw" onPointerDown="{{ stop }}" onClick="{{ demoGo }}" aria-label="Démo : voir comment marchent la roue et les prix"><span class="pi" aria-hidden="true"></span>Démo</button>
-    <button class="tv-ouvrir" onPointerDown="{{ stop }}" onClick="{{ openTout }}" aria-label="{{ toutL }}"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="3" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"></rect><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"></rect><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" opacity=".45"></rect></svg><span>Tout</span></button>
-    <div style="position:absolute;left:50%;top:0;width:390px;height:388px;margin-left:-195px;transform:scale({{ wheelSc }});transform-origin:50% 0">
-    <svg width="390" height="388" viewBox="0 0 390 388" style="position:absolute;left:50%;top:0;margin-left:-195px;pointer-events:none;overflow:visible">
-      <path d="M -85.8 231 A 318 318 0 0 1 475.8 231" fill="none" stroke="rgba(245,240,230,.14)" stroke-width="1"></path>
-      <path d="M -69.9 239.2 A 300 300 0 0 1 459.9 239.2" fill="none" stroke="{{ halo }}" stroke-opacity=".6" stroke-width="1"></path>
-      <path class="acc-comete" d="M -69.9 239.2 A 300 300 0 0 1 459.9 239.2" pathLength="100" fill="none" stroke="#F2C230" stroke-width="2.2" stroke-linecap="round"></path>
-      <circle class="acc-pouls" cx="195" cy="62" r="9" fill="#F2C230" fill-opacity=".18"></circle>
-      <circle cx="195" cy="62" r="3.5" fill="#F2C230"></circle>
-    </svg>
-    <div style="position:absolute;left:50%;top:380px;width:0;height:0">
-      <sc-for list="{{ ticks }}" as="t" hint-placeholder-count="0"><span style="position:absolute;left:0;top:0;width:1.5px;height:7px;background:var(--ivoire);opacity:{{ t.op }};transform:{{ t.tf }};transform-origin:0 0;transition:{{ t.tr }}"></span></sc-for>
-      <sc-for list="{{ labels }}" as="l" hint-placeholder-count="0">
-        <button onClick="{{ l.go }}" class="arc-l" style="position:absolute;left:0;top:0;border:0;background:transparent;padding:6px 4px;white-space:nowrap;font-size:{{ l.fs }};letter-spacing:.16em;text-transform:uppercase;color:{{ l.color }};font-weight:{{ l.weight }};transform:{{ l.tf }};opacity:{{ l.op }};transition:{{ l.tr }};transform-origin:0 0;pointer-events:{{ l.pe }}">{{ l.name }}</button>
-      </sc-for>
-    </div>
-    <div class="acc-flotte" style="position:absolute;left:50%;top:104px;width:250px;height:250px;margin-left:-125px;pointer-events:none">
-      <sc-if value="{{ tendOn }}" hint-placeholder-val="{{ false }}"><div class="acc-tend {{ tend.cls }}" role="status" style="animation-duration:{{ tend.dur }}"><span class="acc-tend-i" aria-hidden="true">{{ tend.ico }}</span><span class="acc-tend-x"><b>{{ tend.t }}</b><small>{{ tend.s }}</small></span></div></sc-if>
-      <div class="acc-ombre" style="position:absolute;left:30px;right:30px;bottom:6px;height:26px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.6),transparent 70%)"></div>
-      <sc-for list="{{ sacks }}" as="k" hint-placeholder-count="0"><img sc-camel-src="{{ k.src }}" alt="{{ k.alt }}" draggable="false" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:{{ k.op }};transform:{{ k.tf }};transition:{{ k.tr }}"></sc-for>
-      <div style="position:absolute;inset:0;opacity:{{ jute.op }};transform:{{ jute.tf }};transition:opacity .4s,transform .55s cubic-bezier(.22,1,.36,1)">
-        <svg viewBox="0 0 250 250" width="250" height="250">
-          <defs><linearGradient id="jg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#c9ab7c"></stop><stop offset=".55" stop-color="#a98a5c"></stop><stop offset="1" stop-color="#7d6440"></stop></linearGradient><pattern id="jw" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0 2.5h5M2.5 0v5" stroke="#5c4930" stroke-opacity=".18" stroke-width=".8"></path></pattern><radialGradient id="jm" cx=".5" cy=".7" r=".6"><stop offset="0" stop-color="{{ jute.mound }}"></stop><stop offset="1" stop-color="#2a2218"></stop></radialGradient></defs>
-          <ellipse cx="125" cy="74" rx="80" ry="22" fill="url(#jm)"></ellipse>
-          <path d="M44 78 C40 120 34 170 38 214 C40 232 60 238 125 238 C190 238 210 232 212 214 C216 170 210 120 206 78 C190 92 60 92 44 78Z" fill="url(#jg)"></path>
-          <path d="M44 78 C40 120 34 170 38 214 C40 232 60 238 125 238 C190 238 210 232 212 214 C216 170 210 120 206 78 C190 92 60 92 44 78Z" fill="url(#jw)"></path>
-          <path d="M38 70 C60 58 190 58 212 70 C216 86 214 100 206 106 C170 116 80 116 44 106 C36 100 34 86 38 70Z" fill="#b89a6b"></path>
-          <path d="M38 70 C60 58 190 58 212 70 C216 86 214 100 206 106 C170 116 80 116 44 106 C36 100 34 86 38 70Z" fill="url(#jw)"></path>
-        </svg>
-        <div style="position:absolute;left:50px;right:50px;top:132px;display:flex;flex-direction:column;align-items:center;gap:6px;color:#2A2016;text-align:center;font-family:Jost,sans-serif"><span style="font-size:{{ jute.fs }};font-weight:700;letter-spacing:.08em;line-height:1.1">{{ jute.l1 }}</span><span style="font-size:var(--t-2xs);font-weight:600;letter-spacing:.24em">CÔTE D'IVOIRE</span></div>
+    <button class="v2-cherche" onClick="{{ goAcheter }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>Igname, tomate, plantain…</button>
+    <sc-if value="{{ v2.railOn }}" hint-placeholder-val="{{ true }}"><section class="v2-sec">
+      <div class="v2-sec-t"><h2>Prix du moment</h2><button class="v2-lien" onClick="{{ v2.versPrix }}">Tout voir</button></div>
+      <div class="v2-rail">
+        <sc-for list="{{ v2.rail }}" as="p" hint-placeholder-count="4"><button class="v2-pc" onClick="{{ p.go }}" aria-label="{{ p.lab }}"><span class="im"><img sc-camel-src="{{ p.img }}" alt="" loading="lazy"></span><span class="tx"><span class="nm">{{ p.nom }}</span><sc-if value="{{ p.pxOn }}" hint-placeholder-val="{{ true }}"><span class="px">{{ p.px }} <small>{{ p.u }}</small></span></sc-if><span class="nb">{{ p.nb }}</span></span></button></sc-for>
       </div>
-    </div>
-    <button onPointerDown="{{ stop }}" onClick="{{ prev }}" aria-label="Produit précédent" style="position:absolute;left:4px;top:208px;width:44px;height:44px;border:0;background:transparent;color:var(--sable);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" stroke="currentColor" stroke-width="1.6" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button>
-    <button onPointerDown="{{ stop }}" onClick="{{ next }}" aria-label="Produit suivant" style="position:absolute;right:4px;top:208px;width:44px;height:44px;border:0;background:transparent;color:var(--sable);display:flex;align-items:center;justify-content:center"><svg width="20" height="20" stroke="currentColor" stroke-width="1.6" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="suite"><path d="m9 18 6-6-6-6"></path></svg></button>
-    </div>
+    </section></sc-if>
+    <section class="v2-sec" style="gap:4px">
+      <h2 style="margin:0 0 6px;font-size:19px;font-weight:700;letter-spacing:-.01em">{{ v2.presT }}</h2>
+      <sc-for list="{{ v2.pres }}" as="r" hint-placeholder-count="3"><button class="v2-ligne" onClick="{{ r.go }}"><span class="ic {{ r.k }}"><sc-if value="{{ r.d }}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5h3l2.3 10.5h10.2l2-7.5H6.5"></path><circle cx="9" cy="19" r="1.6"></circle><circle cx="17" cy="19" r="1.6"></circle></svg></sc-if><sc-if value="{{ r.o }}" hint-placeholder-val="{{ true }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5h17l-2 9h-13z"></path><path d="M8 10.5L11 4.5M16 10.5L13 4.5"></path><path d="M9 13.5v3.5M12 13.5v3.5M15 13.5v3.5"></path></svg></sc-if></span><span class="tx"><b>{{ r.t }}</b><small>{{ r.s }}</small></span><span class="qd">{{ r.h }}</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:var(--mute)"><path d="M9 6l6 6-6 6"></path></svg></button></sc-for>
+      <sc-if value="{{ v2.presVide }}" hint-placeholder-val="{{ false }}"><p class="v2-vide" style="margin:0">{{ v2.presVideT }}</p></sc-if>
+    </section>
+    <button class="v2-carte" onClick="{{ v2.versCarte }}"><span class="ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F2C230" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4.5L3.5 6.5v13L9 17.5l6 2 5.5-2v-13L15 6.5z"></path><path d="M9 4.5v13M15 6.5v13"></path></svg></span><span class="tx"><b>Carte du réseau</b><small>Où est l’offre, où est la demande</small></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B9AD98" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
+    <button class="v2-confiance" onClick="{{ v2.confiance }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l7 2.8v5.2c0 4.3-3 7.8-7 9-4-1.2-7-4.7-7-9V6.3z"></path><path d="M8.8 12l2.2 2.2 4.2-4.4"></path></svg><span>Achetez en confiance</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"></path></svg></button>
   </div>
-  <div style="text-align:center;padding:0 24px;position:relative;margin-top:-10px;height:156px;flex:none;display:flex;flex-direction:column;align-items:center">
-    <!-- sous l'orbite : le nom est déjà sur l'arc ; ici, le prix du moment (le nombre défile d'un produit à l'autre) -->
-    <!-- toucher le prix : « Ici, chacun place son prix » (app/prixmoment.js) : l'échelle des prix, qui a publié, placer le sien -->
-    <button type="button" class="acc-px" onClick="{{ openPrix }}" aria-label="{{ act.pAria }}"><span class="acc-px-k">{{ act.pk }}</span>
-      <sc-if value="{{ act.pOn }}" hint-placeholder-val="{{ false }}"><b class="acc-px-v"><mdg-nb data-v="{{ act.pv }}"></mdg-nb><i>F</i><span class="acc-px-tri" aria-hidden="true"><s></s><s></s></span></b></sc-if>
-      <sc-if value="{{ act.tOn }}" hint-placeholder-val="{{ false }}"><b class="acc-px-t" style="font-size:{{ act.tfs }}">{{ act.pt }}<span class="acc-px-tri" aria-hidden="true"><s></s><s></s></span></b></sc-if></button>
-    <div class="acc-px-n" style="display:flex;justify-content:center;gap:14px;margin:-6px -18px -12px;padding:12px 18px;font-size:var(--t-md);color:var(--sable);flex-wrap:nowrap;white-space:nowrap;height:44px;box-sizing:border-box;flex:none;overflow:hidden">
-      <span style="display:flex;align-items:center;gap:6px"><i class="od od-o" aria-hidden="true" style="opacity:{{ act.oOp }}"></i>{{ act.oTxt }}</span>
-      <span style="display:flex;align-items:center;gap:6px"><i class="od od-d" aria-hidden="true" style="opacity:{{ act.dOp }}"></i>{{ act.dTxt }}</span>
-      <sc-if value="{{ act.season }}" hint-placeholder-val="{{ false }}"><span class="en-saison" style="color:#9dc2a7;padding:0 2px">En saison</span></sc-if>
-    </div>
-    <button onClick="{{ openFicheAct }}" style="margin-top:8px;border:0;background:transparent;color:var(--ivoire);font-size:var(--t-md);font-weight:500;padding:10px 14px;display:inline-flex;align-items:center;gap:6px;border-radius:20px">{{ act.cta }}<svg width="14" height="14" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="fleche"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button>
-  </div>
-    </div>
-    <div class="acc-stats">
-      <sc-for list="{{ accStats }}" as="c" hint-placeholder-count="3"><button class="{{ c.cls }}" onClick="{{ c.go }}"><span class="acc-k-t">{{ c.t }}</span><span class="acc-i {{ c.tint }}">{{ c.ico }}</span><b><mdg-nb data-v="{{ c.v }}"></mdg-nb></b><small>{{ c.s }}</small></button></sc-for>
-    </div>
   </div>
 
-  <!-- Prix : le tableau du marché, classé comme Binance P2P (v3/tableau.js, schéma 59) -->
+  <!-- Prix : le tableau du marché, classé comme Binance P2P (v3/tableau.js, schéma 59) ; refait au lot 8 -->
   <div style="display:{{ accP }}"><mdg-tableau></mdg-tableau></div>
   <div style="display:{{ accA }}">
-    <!-- « En cours » : seulement pour une personne connectée (demandé le 22/10/2026) -->
-    <!-- rien en cours et aucune annonce : un seul message, « Aucune activité » (demande du propriétaire, 23/10/2026) -->
-    <sc-if value="{{ actRien }}" hint-placeholder-val="{{ false }}"><section class="acc-carte acc-rien">{{ actRienEl }}</section></sc-if>
-    <sc-if value="{{ actQqc }}" hint-placeholder-val="{{ true }}">
-    <sc-if value="{{ ecOn }}" hint-placeholder-val="{{ false }}"><section class="acc-carte acc-ec"><div class="acc-ttl"><h2>En <em>cours</em></h2><sc-if value="{{ ecEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ ecEff }}">Tout effacer</button></sc-if></div><p class="acc-sub">{{ ecSous }}</p>
-      <sc-if value="{{ ecRepOn }}" hint-placeholder-val="{{ false }}"><div class="glis glis-rep" onScroll="{{ ecRep.glis }}"><button class="ec-rep ec-{{ ecRep.etat }}" onClick="{{ ecRep.go }}" aria-label="{{ ecRep.lab }}"><span class="ec-rep-h">Reprendre là où vous en étiez</span><span class="ec-l"><span class="ec-i ec-{{ ecRep.k }} {{ ecRep.anim }}" aria-hidden="true">{{ ecRep.emo }}<sc-if value="{{ ecRep.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ ecRep.titre }}</b><small>{{ ecRep.sous }}</small></span><span class="ec-go" aria-hidden="true">{{ accIco.suite }}</span></span></button><button type="button" class="glis-z" onClick="{{ ecRep.ret }}" tabindex="-1"><span class="ic-t" aria-hidden="true"><svg class="ico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></span>Retirer</button></div></sc-if>
-      <sc-for list="{{ ecListe }}" as="e" hint-placeholder-count="0"><div class="glis" onScroll="{{ e.glis }}"><button class="acc-ligne ec-ligne ec-{{ e.etat }}" onClick="{{ e.go }}" aria-label="{{ e.lab }}"><span class="ec-i ec-{{ e.k }} {{ e.anim }}" aria-hidden="true">{{ e.emo }}<sc-if value="{{ e.route }}" hint-placeholder-val="{{ false }}"><i class="ec-route"></i></sc-if></span><span class="acc-tx"><b>{{ e.titre }}</b><small><span class="ec-tag">{{ e.tag }}</span>{{ e.sous }}</small></span><sc-if value="{{ e.vague }}" hint-placeholder-val="{{ false }}"><span class="ec-vague" aria-hidden="true"><i></i><i></i><i></i></span></sc-if></button><button type="button" class="glis-z" onClick="{{ e.ret }}" tabindex="-1"><span class="ic-t" aria-hidden="true"><svg class="ico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></span>Retirer</button></div></sc-for>
-      <sc-if value="{{ ecVideOn }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">{{ ecVideTxt }}</p></sc-if>
-    </section></sc-if>
-    <!-- « Dernières annonces » : la carte n'existe que s'il y a au moins une annonce (demande du propriétaire, 23/10/2026) -->
-    <sc-if value="{{ accActOn }}" hint-placeholder-val="{{ false }}"><section class="acc-carte"><div class="acc-ttl"><h2>Dernières annonces</h2><sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><button type="button" class="acc-eff" onClick="{{ actEff }}">Tout effacer</button></sc-if></div><p class="acc-sub"><sc-if value="{{ actEffOn }}" hint-placeholder-val="{{ false }}"><span class="acc-astuce">Glissez une ligne vers la gauche pour la retirer.</span></sc-if></p>
-      <sc-for list="{{ accActs }}" as="a" hint-placeholder-count="0"><div class="glis" onScroll="{{ a.glis }}"><button class="acc-ligne" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span><span class="acc-h">{{ a.h }}</span></button><button type="button" class="glis-z" onClick="{{ a.ret }}" tabindex="-1"><span class="ic-t" aria-hidden="true"><svg class="ico" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></span>Retirer</button></div></sc-for>
-    </section></sc-if>
-    </sc-if>
+  <!-- Activité (lot 10, avancé à la demande du propriétaire, 13/11/2026) : mes commandes, propositions et annonces, avec leur tampon -->
+  <div class="v2-act">
+    <h1 class="v2-act-h1">Activité</h1>
+    <button class="v2-msg" onClick="{{ v2.versMessages }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h16v10H9l-5 4z"></path></svg><span>Messages</span><sc-if value="{{ v2.msgOn }}" hint-placeholder-val="{{ false }}"><span class="nbul">{{ v2.msgN }}</span></sc-if><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color:var(--mute)"><path d="M9 6l6 6-6 6"></path></svg></button>
+    <sc-if value="{{ v2.actVide }}" hint-placeholder-val="{{ false }}"><div class="v2-act-vide"><b>Aucune activité</b><span>{{ v2.actVideT }}</span><button onClick="{{ v2.actVideGo }}">{{ v2.actVideB }}</button></div></sc-if>
+    <div>
+      <sc-for list="{{ v2.acts }}" as="a" hint-placeholder-count="3"><button class="v2-al" onClick="{{ a.go }}" aria-label="{{ a.lab }}"><span class="ic" style="background:{{ a.tint }}"><sc-if value="{{ a.cmd }}" hint-placeholder-val="{{ true }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10392B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.5h11v9.5h-11zM13.5 9.5h4l3 3.5v3h-7"></path><circle cx="6.5" cy="17.5" r="1.8"></circle><circle cx="17" cy="17.5" r="1.8"></circle></svg></sc-if><sc-if value="{{ a.prop }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D2E05" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5h16v10H9l-5 4z"></path><path d="M8.5 10.5h7"></path></svg></sc-if><sc-if value="{{ a.off }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10392B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5h17l-2 9h-13z"></path><path d="M8 10.5L11 4.5M16 10.5L13 4.5"></path></svg></sc-if><sc-if value="{{ a.dem }}" hint-placeholder-val="{{ false }}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3D2E05" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5h3l2.3 10.5h10.2l2-7.5H6.5"></path><circle cx="9" cy="19" r="1.6"></circle><circle cx="17" cy="19" r="1.6"></circle></svg></sc-if></span><span class="tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span><span class="v2-tampon {{ a.sc }}">{{ a.stamp }}</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:var(--mute)"><path d="M9 6l6 6-6 6"></path></svg></button></sc-for>
+    </div>
+  </div>
   </div>
 
   <div style="display:{{ accL }}">
+    <div class="v2-ttl"><button class="v2-retour" onClick="{{ v2.versMarche }}" aria-label="Retour au marché"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"></path></svg></button><h1>Alertes</h1></div>
+    <section class="acc-carte"><button class="acc-al v" onClick="{{ accCl.go }}"><span class="acc-i v">{{ accIco.cloche }}</span><span class="acc-tx"><b>Notifications</b><small>{{ v2.notifS }}</small></span>{{ accIco.suite }}</button></section>
     <sc-if value="{{ codesOn }}" hint-placeholder-val="{{ false }}"><section class="acc-carte acc-codes"><h2><span class="ic-t" aria-hidden="true"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg></span>Mes codes</h2><p class="acc-garde">{{ codesGarde }}</p>
       <sc-for list="{{ codesL }}" as="c" hint-placeholder-count="0"><button class="acc-ligne cd-ligne {{ c.cls }}" onClick="{{ c.go }}" aria-label="{{ c.lab }}"><span class="cd-i" aria-hidden="true"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg></span><span class="acc-tx"><b>{{ c.titre }}</b><small><span class="cd-genre">{{ c.genre }}</span>{{ c.quand }}</small></span><sc-if value="{{ c.aCode }}" hint-placeholder-val="{{ false }}"><span class="cd-code">{{ c.code }}<small>{{ c.exp }}</small></span></sc-if><sc-if value="{{ c.sansCode }}" hint-placeholder-val="{{ false }}"><span class="cd-voir">{{ c.voir }}</span></sc-if></button></sc-for>
       <p class="acc-sub cd-note">{{ codesNote }}</p>
     </section></sc-if>
-    <section class="acc-carte"><sc-if value="{{ accAlQqc }}" hint-placeholder-val="{{ true }}"><h2 class="acc-seul">Alertes</h2></sc-if>
+    <section class="acc-carte">
       <sc-for list="{{ accAlertes }}" as="a" hint-placeholder-count="0"><button class="acc-al {{ a.tint }}" onClick="{{ a.go }}"><span class="acc-i {{ a.tint }}">{{ a.ico }}</span><span class="acc-tx"><b>{{ a.t }}</b><small>{{ a.s }}</small></span>{{ accIco.suite }}</button></sc-for>
       <sc-if value="{{ accAlVide }}" hint-placeholder-val="{{ false }}"><div class="acc-rien">{{ alRienEl }}</div></sc-if>
       <sc-if value="{{ accAlRien }}" hint-placeholder-val="{{ false }}"><p class="acc-vide">Rien d’autre à signaler.</p></sc-if>
     </section>
   </div>
   </div>
-  <div class="acc-bas {{ accBasC }}" aria-hidden="{{ accBasH }}" style="padding:0 18px {{ botPad }}">
-    <div class="duo2" role="group" aria-label="Publier">
-      <button class="jai" onClick="{{ openJai }}" aria-label="{{ duoH.jaiL }}"><span class="emo" aria-hidden="true"></span><span class="tx"><b>J'ai</b><small>à vendre</small></span></button>
-      <button class="ch" onClick="{{ openCherche }}" aria-label="{{ duoH.chL }}"><span class="emo d" aria-hidden="true"></span><span class="tx"><b>Je cherche</b><small>à acheter</small></span></button>
-    </div>
   </div>
+  <!-- barre d'onglets du bas (lot 2) -->
+  <nav class="v2-tabs" aria-label="Onglets" style="padding-bottom:{{ botPad }};height:calc(60px + {{ botPad }})">
+    <sc-for list="{{ v2.tabs }}" as="b" hint-placeholder-count="5"><button class="v2-tab {{ b.cls }}" aria-current="{{ b.cur }}" onClick="{{ b.go }}"><span class="{{ b.icC }}">{{ b.ico }}</span><span class="lb">{{ b.t }}</span><sc-if value="{{ b.nOn }}" hint-placeholder-val="{{ false }}"><span class="v2-nb">{{ b.n }}</span></sc-if></button></sc-for>
+  </nav>
+  <sc-if value="{{ v2.choix }}" hint-placeholder-val="{{ false }}">
+    <div class="v2-voile" onClick="{{ v2.fermerChoix }}"></div>
+    <div class="v2-feuille" role="dialog" aria-modal="true" aria-label="Publier" style="padding-bottom:calc(20px + {{ botPad }})">
+      <div class="v2-poignee" aria-hidden="true"></div>
+      <div class="v2-feuille-t"><h2>Publier</h2><button class="v2-fermer" onClick="{{ v2.fermerChoix }}" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+      <div class="v2-duo" style="margin:0">
+        <button class="o" style="order:{{ v2.ordO }}" onClick="{{ v2.choixO }}"><span class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5h17l-2 9h-13z"></path><path d="M8 10.5L11 4.5M16 10.5L13 4.5"></path><path d="M9 13.5v3.5M12 13.5v3.5M15 13.5v3.5"></path></svg></span><span><b>J’ai</b><small>à vendre</small></span></button>
+        <button class="d" style="order:{{ v2.ordD }}" onClick="{{ v2.choixD }}"><span class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5h3l2.3 10.5h10.2l2-7.5H6.5"></path><circle cx="9" cy="19" r="1.6"></circle><circle cx="17" cy="19" r="1.6"></circle></svg></span><span><b>Je cherche</b><small>à acheter</small></span></button>
+      </div>
+    </div>
+  </sc-if>
 </div>
 
 <!-- ═══ FICHE PRODUIT ═══ -->
@@ -1417,6 +1364,7 @@ class Component extends DCLogic {
             if (!nl && dm && M) { M.boite(); return; } moiC && moiC.ouvrir('notifs'); } }; })(),
       accMoi: moiS && window.MDGAvatar ? h('img', { src: window.MDGAvatar.uri(moiP && moiP.avatar, { size: 38, anime: true, nom: (moiP && moiC && moiC.nomAffiche(moiP)) || String(moiS.user.tel || ''), seed: moiS.user.id }), alt: '', width: 38, height: 38, style: { borderRadius: '50%', display: 'block' } }) : ico('compte', 22),
       accOngs: ongs, accOngI: String(['marche', 'prix', 'activite', 'alertes'].indexOf(tab)), accM: tab === 'marche' ? 'block' : 'none', accP: tab === 'prix' ? 'block' : 'none', accA: tab === 'activite' ? 'block' : 'none', accL: tab === 'alertes' ? 'block' : 'none',
+      accActN: ecT.length, accAlN: nAl, v2Mine: mine,
       accTitre: titre, accSous: sous, accStats: stats,
       ecRepOn: !!ecRepE, ecRep: ecRepE ? Object.assign({}, ecRepE, { sous: ecRepE.tag + ecRepE.sous }) : { k: '', etat: '', emo: '', titre: '', sous: '', route: false, anim: '', lab: '', go: () => {}, glis: () => {}, ret: () => {} },
       ecEffOn: ecT.length + (ecD ? 1 : 0) > 1, ecEff: () => this.masquer(ecT.concat(ecD ? [ecD] : []).map(cleE), 'Activité en cours effacée'),
@@ -1432,6 +1380,69 @@ class Component extends DCLogic {
       alRienEl: h('div', { dangerouslySetInnerHTML: { __html: window.MDGSac ? MDGSac.vide('Aucune alerte', 'Tout est en ordre. Ce qui demande votre attention apparaîtra ici.', { t: 92 }) : '<p class="acc-vide">Aucune alerte</p>' } }), accAlRien: !!moiS && !al.length && nCd > 0,
       codesOn: nCd > 0, codesL, codesGarde: cdMoi ? 'Gardez bien ce code : vous aurez à le présenter au chauffeur. Donnez-le de vive voix, jamais par message.' : 'Demandez le code au bon moment, puis tapez-le dans votre Espace chauffeur.',
       codesNote: cdMoi ? 'Pour votre sécurité, le code n’est jamais enregistré dans le téléphone : touchez la ligne pour l’afficher au moment voulu. Un nouveau code remplace l’ancien.' : 'Le code fait 6 chiffres. 5 essais au plus.' };
+  }
+  // ——— refonte 2026-11 (maquette « MGCI App v2 », lots 2 et 3) : onglets du bas et accueil « Duo », avec les vraies annonces (rien d'inventé) ———
+  v2Vals(ac, { moiS, moiP, moiC }) {
+    const S = this.state, A = window.MDGApp, I = window.MDGIco, tab = S.accTab || 'marche', me = this.me || {};
+    // icônes des onglets, dessinées comme la maquette (trait 1,8)
+    const TI = { marche: '<path d="M4 9.5L5.5 4.5h13L20 9.5"/><path d="M4 9.5a2.7 2.7 0 005.3 0 2.7 2.7 0 005.4 0 2.7 2.7 0 005.3 0"/><path d="M5.5 11.5V20h13v-8.5"/><path d="M10 20v-4.5h4V20"/>',
+      tendance: '<path d="M4 19h16"/><path d="M5 15l4.5-4.5 3.5 3 6-6.5"/><path d="M15 7h4v4"/>', activite: '<path d="M3.5 12h3.5l2.5-6 5 12 2.5-6h3.5"/>',
+      compte: '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.5 20a7.5 7.5 0 0115 0"/>', plus: '<path d="M12 5v14M5 12h14"/>' };
+    const ico = (n, w, t) => React.createElement('span', { style: { display: 'flex' }, dangerouslySetInnerHTML: { __html: '<svg width="' + (t || 24) + '" height="' + (t || 24) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || 1.8) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + TI[n] + '</svg>' } });
+    const pl = (n, m) => n + ' ' + m + (n > 1 ? 's' : '');
+    const role = (moiP && moiP.role) || '', vend = role === 'vendeur';
+    const region = (moiP && moiP.region) || me.region || '', ville = (moiP && (moiP.ville || moiP.city)) || me.city || '';
+    const prenom = moiS && moiP ? (moiP.pseudo || moiP.prenom || '') : '';
+    const aller = k => { this.setState({ accTab: k }); const sc = document.querySelector('[data-pg="home"] .acc-sc'); if (sc) sc.scrollTop = 0; };
+    // « Prix du moment » : les produits qui ont des annonces ; la médiane seulement à partir de 4 prix (sinon on montre seulement les nombres)
+    const off = this.offers().filter(o => o.qty > 0), dem = this.demands(), par = {};
+    off.forEach(o => { const x = par[o.slug] || (par[o.slug] = { o: 0, d: 0, px: [], u: {} }); x.o++; if (o.price > 0) { x.px.push(o.price); x.u[o.unit] = (x.u[o.unit] || 0) + 1; } });
+    dem.forEach(d => { const x = par[d.slug] || (par[d.slug] = { o: 0, d: 0, px: [], u: {} }); x.d++; });
+    const med = l => { const s = l.slice().sort((a, b) => a - b), k = s.length >> 1; return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2; };
+    const rail = Object.keys(par).map(slug => ({ slug, x: par[slug] })).sort((a, b) => (b.x.o + b.x.d) - (a.x.o + a.x.d)).slice(0, 10).map(({ slug, x }) => {
+      const P = this.prod(slug), u = Object.keys(x.u).sort((a, b) => x.u[b] - x.u[a])[0] || '', pxOn = x.px.length >= 4;
+      const nb = [x.o ? pl(x.o, 'offre') : '', x.d ? pl(x.d, 'demande') : ''].filter(Boolean).join(' · ');
+      return { nom: P.name, img: P.thumb, pxOn, px: pxOn ? A.fmt(med(x.px)) + ' F' : '', u: u ? '/ ' + u : '', nb, lab: P.name + (pxOn ? ', prix médian ' + A.fmt(med(x.px)) + ' F' : '') + (nb ? ', ' + nb : ''), go: () => this.openFiche(slug) }; });
+    // « Disponible / Recherché autour de vous » : dans sa région d'abord ; sinon dans tout le pays
+    const base = vend ? dem : off, ici = region ? base.filter(x => x.region === region) : [], liste = (ici.length ? ici : base).slice().sort((a, b) => (Date.parse(b.at) || 0) - (Date.parse(a.at) || 0)).slice(0, 5);
+    const pres = liste.map(x => { const P = this.prod(x.slug), o = x.kind === 'offre', prix = o ? x.price : x.budget;
+      return { k: o ? 'o' : 'd', o, d: !o, t: P.name + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + A.unites(x.qty, x.unit) : ''),
+        s: this.place(x) + (prix > 0 ? ' · ' + A.fmt(prix) + ' F / ' + x.unit : ''), h: A.ago(x.at), go: () => this.openFiche(x.slug) }; });
+    const presT = (vend ? 'Recherché' : 'Disponible') + (ici.length ? ' autour de vous' : ' en ce moment');
+    const nAct = ac.accActN || 0, nCl = (ac.accCl && ac.accCl.on ? (parseInt(ac.accCl.n, 10) || 0) : 0) + (ac.accAlN || 0);
+    const tabs = [['marche', 'Marché', 'marche'], ['prix', 'Prix', 'tendance'], ['publier', 'Publier', 'plus'], ['activite', 'Activité', 'activite'], ['compte', 'Compte', 'compte']].map(([k, t, n]) => {
+      const pub = k === 'publier', cur = !pub && k !== 'compte' && tab === k;
+      return { t, cls: pub ? 'pub' : '', cur: cur ? 'page' : 'false', icC: pub ? 'v2-pub' : '', ico: pub ? ico('plus', 2.4, 22) : ico(n),
+        nOn: k === 'activite' && nAct > 0, n: String(nAct),
+        go: pub ? () => this.setState({ v2choix: true }) : k === 'compte' ? () => { const N = window.MDGNuage; if (!N) return; if (moiS && moiC) moiC.ouvrir(); else N.open(); } : () => aller(k) }; });
+    const fermer = () => this.setState({ v2choix: false });
+    // Activité : mes commandes et propositions (app/activite.js), puis mes annonces ; les messages ont leur ligne en haut
+    const AV = window.MDGActivite, ST = { litige: 'r', moi: 'j', attente: 'j', route: 'v', ok: 'v' };
+    const demarches = (moiS && AV ? AV.tout() : []).filter(x => x.k !== 'dm').map(x => { const cmd = x.k === 'cmd', av = x.avec || '';
+      const s = cmd ? (x.role === 'vendeur' ? 'Commande de ' + (av || 'l’acheteur') : 'Commande' + (av ? ' · ' + av : ''))
+        : (x.etat === 'ok' ? 'Accord avec ' : x.etat === 'moi' ? 'Proposition de ' : 'Votre proposition à ') + (av || 'l’autre partie') + (x.prix ? ' · ' + x.prix : '');
+      const vente = cmd && x.role === 'vendeur';   // une vente : le panier, comme la maquette ; un achat : le camion
+      return { cmd: cmd && !vente, prop: !cmd, off: vente, dem: false, tint: x.etat === 'moi' || !cmd ? '#F6E2B0' : '#DCEFE3', t: x.titre, s, stamp: x.tag || '', sc: 'st-' + (ST[x.etat] || 'j'), lab: x.titre + ' : ' + (x.tag || ''), go: () => x.ouvrir() }; });
+    const annonces = (ac.v2Mine || []).map(x => { const P = this.prod(x.slug), o = x.kind === 'offre', prix = o ? x.price : x.budget, fin = x.epuise || x.servie || x.expiree;
+      const stamp = x.epuise ? 'Épuisé' : x.servie ? 'Servie' : x.expiree ? 'Expirée' : 'En ligne';
+      return { cmd: false, prop: false, off: o, dem: !o, tint: o ? '#DCEFE3' : '#F6E2B0', t: P.name + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + A.unites(x.qty, x.unit) : ''),
+        s: (o ? 'Votre offre' : 'Votre demande') + (prix > 0 ? ' · ' + (o ? '' : 'budget ') + A.fmt(prix) + ' F / ' + x.unit : ''), stamp, sc: fin ? 'st-n' : 'st-o', lab: P.name + ' : ' + stamp, go: () => this.push('pubs') }; });
+    const acts = demarches.concat(annonces), M = window.MDGMessages, nMsg = moiS && M && M.unread ? M.unread() : 0;
+    return {
+      salut: prenom ? 'Bonjour ' + prenom : 'Bienvenue au marché', lieuOn: !!(ville || region), lieu: [ville, region ? this.regName(region) : ''].filter((v, i, l) => v && l.indexOf(v) === i).join(' · '),
+      ordO: vend || !role ? '0' : '1', ordD: vend || !role ? '1' : '0',
+      railOn: rail.length > 0, rail, pres, presT, presVide: !pres.length,
+      presVideT: vend ? 'Pas encore de demande. Publiez votre offre : les acheteurs vous trouveront.' : 'Pas encore d’offre. Publiez votre demande : le réseau commence par vous.',
+      clocheOn: nCl > 0, clocheN: nCl > 99 ? '99+' : String(nCl), clocheL: nCl ? 'Alertes : ' + nCl + ' à voir' : 'Alertes',
+      notifS: ac.accCl && ac.accCl.on ? ac.accCl.n + ' nouvelle' + (ac.accCl.n === '1' ? '' : 's') : 'Vos notifications',
+      versAlertes: () => aller('alertes'), versMarche: () => aller('marche'), versPrix: () => aller('prix'), versCarte: () => this.push('carte', { cprod: '', csel: '' }),
+      tabs, choix: !!S.v2choix, fermerChoix: fermer,
+      acts, actVide: !acts.length, msgOn: nMsg > 0, msgN: String(nMsg),
+      actVideT: moiS ? 'Vos propositions, commandes et annonces apparaîtront ici.' : 'Connectez-vous : vos propositions, commandes et annonces apparaîtront ici.',
+      actVideB: moiS ? 'Publier' : 'Se connecter', actVideGo: () => { const N = window.MDGNuage; if (moiS) this.setState({ v2choix: true }); else if (N) N.open(); },
+      versMessages: () => { const N = window.MDGNuage; if (!moiS) { if (N) N.open(); return; } if (M && M.boite) M.boite(); },
+      confiance: () => { if (window.MDGGaranties && MDGGaranties.ouvrir) MDGGaranties.ouvrir(); },
+      choixO: () => { fermer(); this.push('vendre'); }, choixD: () => { fermer(); this.push('demande'); } };
   }
   isDark() { return this.state.logoDark != null ? this.state.logoDark : ls('mdg-app:logo-noir') === true; }
   setIcons(d) { const n = d ? '-noir' : ''; document.querySelectorAll('link[rel="apple-touch-icon"]').forEach(l => l.href = 'icons/v2/apple-touch-icon' + n + '.png'); document.querySelectorAll('link[rel="icon"]').forEach(l => l.href = l.type === 'image/svg+xml' ? 'icons/v2/favicon' + n + '.svg' : 'icons/v2/favicon' + n + '-32.png'); }
@@ -1941,7 +1952,7 @@ class Component extends DCLogic {
       wDown: e => this.wDown(e), wMove: e => this.wMove(e), wUp: () => this.wUp(), labels, ticks, sacks,
       jute: { op: act.sack ? 0 : 1, tf: act.sack ? 'scale(.86)' : 'none', mound: act.tint, l1: act.name.toUpperCase(), fs: act.name.length > 14 ? '14px' : act.name.length > 9 ? '17px' : '21px' },
       prev: () => this.snap(Math.round(S.rot) - 1), next: () => this.snap(Math.round(S.rot) + 1),
-      ...this.accueil({ h, mine, moiS, moiP, moiC, moiN }),
+      ...(() => { const ac = this.accueil({ h, mine, moiS, moiP, moiC, moiN }); return Object.assign(ac, { v2: this.v2Vals(ac, { moiS, moiP, moiC }) }); })(),
       markEl: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.ligne({ fond: 'clair', h: 24 }) } }) : 'Marché de Gros',
       act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }, this.prixMoment(act, O, D, inSeason(act.slug, cm), Math.min(aW, 390) - 48)), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
       openFicheAct: () => this.openFiche(act.slug), openPrix: () => this.prixPop(act.slug, O, D), demoGo: () => window.MDGDemo && MDGDemo.basculer(),

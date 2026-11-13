@@ -2240,3 +2240,21 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - **Données réelles seulement** : prix médian à partir de 4 prix publiés ; annonces de la région de la personne, sinon du pays ; Activité = `MDGActivite.tout()` (sans les messages, qui ont leur ligne) puis les annonces de la personne.
 - **Changements à savoir** : l'onglet Activité ne montre plus les « Dernières annonces » du marché ni les ventes conclues (`ventes_recentes()`) ; le glisser pour retirer une ligne n'existe plus (la maquette ne l'a pas). Les alertes (connexion, propositions, messages, stock épuisé, codes) sont dans l'écran Alertes, ouvert par la cloche.
 - Vérifié (Playwright, iPhone émulé, clair et sombre, 390 et 320 px) : aucune erreur, pas de débordement. Contrastes : tampons `#765802` 5,59:1, `#31543C` 7,18:1, `#F2C94C` sur sombre 11,78:1. Captures dans `docs/brief-design/captures/`.
+
+## 13/11/2026 · Refonte, lot 4 : Recherche
+
+- Captures validées (« Ok »). Écran `recherche` dans l'accueil (`accTab: 'recherche'`, panneau `v2.rechD`), ouvert par la loupe et le champ de l'accueil, champ au focus.
+- Phrase lue par `MDG.search.parse` (`v2/search.js`) : produit, quantité, unité, lieu ; « Compris : … » seulement si le produit est reconnu avec une quantité ou un lieu. « Créer cette demande » remplit `df` (produit, quantité, unité si connue, région, ville rattachée par `accord()`), puis ouvre l'écran Demander. « Voir les offres » passe la phrase à l'écran Acheter (`aq`).
+- Produits trouvés : produit reconnu, sinon candidats, sinon `MDG.search.suggest` ; nombre d'annonces réel, médiane seulement à partir de 4 prix.
+- Recherches récentes : 6 au plus, sur le téléphone (`mdg-v2:recentes`).
+- Texte « rien trouvé » : la maquette promettait que les vendeurs et l'acheteur « seront prévenus » ; non vérifié, donc remplacé par « les vendeurs qui l'ont la verront et pourront vous proposer leur prix ».
+- Vérifié (iPhone émulé, clair et sombre) : aucune erreur ; anneau de focus maïs autour du champ (l'anneau intérieur global retiré pour ce champ seulement).
+
+## 13/11/2026 · Refonte, lot 5 : fiche produit
+
+- Captures validées (« Ok »). Écran `fiche` refait (`data-v2`), méthode `v2Fiche()` (calculée seulement quand la fiche est dans la pile), styles dans `css/v2.css`.
+- Données réelles : fourchette et médiane des offres avec prix dans l'unité la plus fréquente, seulement à partir de 4 prix ; zones à partir de la ville et de la région du profil (sinon du téléphone) ; quantité voulue réglable par pas selon l'unité (kg 50, tonne 1, litre 10, sinon 5), gardée par produit et par côté dans l'état.
+- « Pourquoi » : quantité (assez, partie, minimum, autre unité), disponibilité (`quand()`), transport (`trTexte()`) ; score = 1 par ligne verte, 0,5 par ligne partielle ; « Meilleure correspondance » à partir de 2,5. Écart au marché seulement avec 4 prix et la même unité.
+- « Proposer un prix » = l'action existante (`card().neg`, `MDGNegoce.proposer`) ; profil = `card().voir` ; pastille = le premier statut de `MDGStatut.liste()`.
+- Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
+- Vérifié (iPhone émulé, clair et sombre) : aucune erreur.

@@ -7,6 +7,8 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 ## 13/11/2026
 
 - Refonte de l'application, lot 1 (maquette « MGCI App v2 » de Claude Design, validée par le propriétaire) : nouveaux jetons `--vert`, `--recu`, `--hausse`, `--panneau`, `--barre`, `--t08` à `--t30`, `--hl`, `--ombre` (`css/mgci-tokens.css`, sombre dans `css/sombre.css`) et attribut `data-v2` qui donne le jeu complet clair ou sombre à un écran refait. Aucun changement visible (aucun écran ne s'en sert encore). Cache `mgci-v303`.
+- Refonte, lot 5 : fiche produit comme la maquette (fourchette des prix publiés, Acheter / Vendre, zone qui s’élargit, quantité voulue, « Pourquoi », « Proposer un prix »). Cache `mgci-v306`.
+- Refonte, lot 4 : écran Recherche comme la maquette (recherches récentes, recherche en phrase « Compris : … », demande pré-remplie, « Personne n’a encore publié … »). Cache `mgci-v305`.
 - Refonte, lots 2 et 3 (et Activité du lot 10, avancée) : onglets du bas (Marché, Prix, Publier, Activité, Compte), alertes dans la cloche, accueil « Duo » avec les vraies annonces, écran Activité à tampons comme la maquette, « Achetez en confiance » sans bordure. La roue quitte l’accueil. `css/v2.css`, cache `mgci-v304`.
 - Décisions de la refonte (« ok pour tout »), compétences ponytail et Agent Reach, dossier de passage `docs/brief-design/` pour Claude Design.
 

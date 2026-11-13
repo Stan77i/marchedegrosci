@@ -24,8 +24,8 @@ Toutes les nouveautés de la maquette sont acceptées : onglets en bas et alerte
 | 1 | Jetons | **fait** (13/11/2026) : `css/mgci-tokens.css`, `css/sombre.css` ; un écran refait pose `data-v2` |
 | 2 | Coquille (onglets en bas, feuille, toast, hors connexion) | **fait** pour l'accueil (13/11/2026) : onglets en bas, feuille « Publier », alertes dans la cloche ; toast et bandeau hors connexion : ceux d'avant, gardés |
 | 3 | Accueil « Duo » | **fait** (13/11/2026). Écart voulu : le prix médian s'affiche seulement à partir de 4 prix réels, et pas de tendance tant qu'elle n'est pas calculée sur les vraies données |
-| 4 | Recherche | à faire |
-| 5 | Fiche produit | à faire |
+| 4 | Recherche | **fait** (13/11/2026). Écart : texte « rien trouvé » limité à ce qui est vérifié (« les vendeurs qui l’ont la verront et pourront vous proposer leur prix ») |
+| 5 | Fiche produit | **fait** (13/11/2026). Écarts : zones « ma ville / ma région / tout le pays » (pas « autour de moi » sans position) ; cloche d’alerte et partage gardés en haut ; « prix publiés » au lieu de « relevés sur 7 jours » |
 | 6 | Proposer + Discussion | à faire |
 | 7 | Publier | à faire |
 | 8 | Prix, Tous les produits, Année du marché | à faire |

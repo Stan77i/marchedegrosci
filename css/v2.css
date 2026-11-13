@@ -458,3 +458,23 @@ html[data-theme=sombre] .v2-pub-go:not([aria-disabled=true]) { color: #171512; }
 .v2-an-leg i { width: 14px; height: 14px; border-radius: 4px; }
 .v2-an-leg i.debut { background: #9DC2A7; } .v2-an-leg i.plein { background: #6CC58C; } .v2-an-leg i.fin { background: #D6A83E; }
 .v2-an-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--texte-3); }
+
+/* ——— lot 9 : carte du réseau — la carte actuelle est gardée (décision du propriétaire), la logique de la maquette ——— */
+.v2-ct-t { flex: 1; font-size: 21px; font-weight: 700; letter-spacing: -.01em; color: #F5F0E6; }
+.v2-ct-f { display: flex; gap: 8px; padding: 0 12px 10px; pointer-events: auto; }
+.v2-ct-f button { flex: 1; min-width: 0; height: 42px; border-radius: 999px; border: 1px solid rgba(245, 240, 230, .18); background: rgba(23, 21, 18, .82); color: #F5F0E6; font: inherit; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 0 8px; }
+.v2-ct-f button[aria-pressed=true] { background: #F5F0E6; border-color: #F5F0E6; color: #171512; }
+.v2-ct-f i { width: 10px; height: 10px; flex: none; }
+.v2-ct-f i.tt { border-radius: 3px; background: #171512; box-shadow: inset 0 0 0 1.5px #F5F0E6; } .v2-ct-f button[aria-pressed=true] i.tt { background: #171512; box-shadow: none; }
+.v2-ct-f i.o { border-radius: 999px; background: #6CC58C; } .v2-ct-f i.d { border-radius: 3px; background: #F2C94C; }
+.v2-ct-f .n { min-width: 22px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: rgba(245, 240, 230, .14); font-size: 12.5px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.v2-ct-f button[aria-pressed=true] .n { background: #171512; color: #F2C230; }
+.v2-ct-liens { display: flex; flex-direction: column; }
+.v2-ct-liens button { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; border-bottom: 1px solid rgba(245, 240, 230, .08); background: none; padding: 10px 0; color: #F5F0E6; text-align: left; font: inherit; }
+.v2-ct-liens .im { position: relative; width: 44px; height: 44px; flex: none; border-radius: 12px; background: #2A251E; display: grid; place-items: center; }
+.v2-ct-liens .im img { width: 38px; height: 38px; object-fit: contain; }
+.v2-ct-liens .im i { position: absolute; right: -3px; bottom: -3px; width: 12px; height: 12px; border-radius: 999px; background: #6AAEF0; box-shadow: 0 0 0 2px #171512; }
+.v2-ct-liens .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.v2-ct-liens .tx b { font-size: 15px; font-weight: 700; } .v2-ct-liens .tx small { font-size: 13px; color: #B9AD98; }
+.v2-ct-liens .km { flex: none; font-size: 14px; font-weight: 800; color: #F2C230; font-variant-numeric: tabular-nums; }
+.v2-ct-st { display: block; margin: 14px 0 4px; font-size: 14px; font-weight: 600; color: #B9AD98; }

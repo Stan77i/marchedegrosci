@@ -4,6 +4,12 @@ Cet historique vient de `git log origin/main` du dépôt (607 commits) et des se
 
 Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22, 23 et 24 octobre 2026), 607 commits. Aucun commit les 20/10 et entre le 5 et le 9, le 13 et le 16 octobre.
 
+## 13/11/2026
+
+- Refonte de l'application, lot 1 (maquette « MGCI App v2 » de Claude Design, validée par le propriétaire) : nouveaux jetons `--vert`, `--recu`, `--hausse`, `--panneau`, `--barre`, `--t08` à `--t30`, `--hl`, `--ombre` (`css/mgci-tokens.css`, sombre dans `css/sombre.css`) et attribut `data-v2` qui donne le jeu complet clair ou sombre à un écran refait. Aucun changement visible (aucun écran ne s'en sert encore). Cache `mgci-v303`.
+- Refonte, lots 2 et 3 (et Activité du lot 10, avancée) : onglets du bas (Marché, Prix, Publier, Activité, Compte), alertes dans la cloche, accueil « Duo » avec les vraies annonces, écran Activité à tampons comme la maquette, « Achetez en confiance » sans bordure. La roue quitte l’accueil. `css/v2.css`, cache `mgci-v304`.
+- Décisions de la refonte (« ok pour tout »), compétences ponytail et Agent Reach, dossier de passage `docs/brief-design/` pour Claude Design.
+
 ## 25/10/2026
 
 - Les 15 propositions validées par le propriétaire (« Ok ») et le transport d'un refus (schémas 103a, 103b, 103c, **projet de test seulement**, branche `claude/commandes-15-propositions`) : « arrivé » de nuit, l'heure part à 7 h ; vendeur banni en route ou acheteur banni : l'équipe, le vendeur annule avant le chargement ; plus de commande ni d'accord avec un banni, accords d'un banni ou d'un suspendu arrêtés tout de suite ; demande d'annulation du vendeur acceptée après 24 h sans réponse, sans faute ; l'acheteur peut demander une annulation ; retrait par l'acheteur : la remise vaut « arrivé » ; issue « fausse arrivée » pour l'équipe ; indicateurs date dépassée et nouvelles sans réponse ; « Signaler un problème » en 5 choix avec photo ; avis de clôture aux deux ; confirmation renvoyée « déjà confirmée » ; message du litige verrouillé ; refus accepté : le transport n'est plus dû par l'acheteur (payé par le vendeur). `pousser` v28 non déployée. Règle du propriétaire : le risque reste au vendeur jusqu'à la réception conforme. Tests : `supabase/tests/commandes-103-scenarios.sql`.

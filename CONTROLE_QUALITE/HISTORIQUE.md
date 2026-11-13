@@ -9,3 +9,5 @@
 | 25/10/2026 à 00 h 39 | `tout` | `e215991` | 8 | 6 | 0 | 17 | 0 | non | [rapport](rapports/2026-10-25-00h39-tout.md) |
 | 25/10/2026, 00 h 20 à 02 h 00 | contrôle général (équipes SQL sur le projet de test, navigateur, jugement, `lancer.sh statique` et `navigateur`) | `1657f0e` (SQL, jugement) / `8e88fbe` (statique, navigateur) | 148 | 69 | 1 | 4 | 16 | non (0 P0 ; 4 P1) | [rapport](rapports/2026-10-25-controle-general.md) |
 | 13/11/2026 à 12 h 34 | `apres-modif` | `ca34847` | 10 | 4 | 0 | 3 | 0 | non | [rapport](rapports/2026-11-13-12h34-apres-modif.md) |
+| 13/11/2026 à 12 h 44 | `apres-modif` | `dd4dfc6` | 13 | 4 | 0 | 1 | 0 | non | [rapport](rapports/2026-11-13-12h44-apres-modif.md) |
+| 13/11/2026 à 13 h 00 | `apres-modif` | `3cecb72` | 9 | 4 | 1 | 1 | 0 | non | [rapport](rapports/2026-11-13-13h00-apres-modif.md) |

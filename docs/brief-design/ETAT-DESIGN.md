@@ -21,16 +21,16 @@ Toutes les nouveautés de la maquette sont acceptées : onglets en bas et alerte
 
 | Lot | Contenu | État |
 |---|---|---|
-| 1 | Jetons | à faire |
-| 2 | Coquille (onglets en bas, feuille, toast, hors connexion) | à faire |
-| 3 | Accueil « Duo » | à faire |
+| 1 | Jetons | **fait** (13/11/2026) : `css/mgci-tokens.css`, `css/sombre.css` ; un écran refait pose `data-v2` |
+| 2 | Coquille (onglets en bas, feuille, toast, hors connexion) | **fait** pour l'accueil (13/11/2026) : onglets en bas, feuille « Publier », alertes dans la cloche ; toast et bandeau hors connexion : ceux d'avant, gardés |
+| 3 | Accueil « Duo » | **fait** (13/11/2026). Écart voulu : le prix médian s'affiche seulement à partir de 4 prix réels, et pas de tendance tant qu'elle n'est pas calculée sur les vraies données |
 | 4 | Recherche | à faire |
 | 5 | Fiche produit | à faire |
 | 6 | Proposer + Discussion | à faire |
 | 7 | Publier | à faire |
 | 8 | Prix, Tous les produits, Année du marché | à faire |
 | 9 | Carte | à faire |
-| 10 | Activité + Messages | à faire |
+| 10 | Activité + Messages | Activité **faite** (13/11/2026, avancée) ; Messages : à faire. Écart : le montant de la commande n'est pas encore sur la ligne |
 | 11 | Commande acheteur | à faire |
 | 12 | Côté vendeur | à faire |
 | 13 | Compte | à faire |
@@ -38,7 +38,7 @@ Toutes les nouveautés de la maquette sont acceptées : onglets en bas et alerte
 | 15 | Porte et cas limites | à faire |
 | 16 | Passe finale (sombre, 320 px, contrastes) | à faire |
 
-Les captures de chaque lot terminé sont ajoutées dans `docs/brief-design/captures/`.
+Les captures de chaque lot terminé sont dans `docs/brief-design/captures/` (`lot2-…`, `lot3-…`, `lot10-…`).
 
 ## 4. Le site pour ordinateur : ce qui existe, ce qui manque
 

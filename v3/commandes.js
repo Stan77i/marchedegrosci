@@ -12,7 +12,8 @@
    Le transporteur du réseau (fermé pour l'instant) convient son prix à trois : lui, l'acheteur et le vendeur (transport_agir).
    Aucun paiement : la commission de 3,5 % est seulement calculée et montrée au vendeur (« non prélevée »).
    Pas de faux suivi en direct : sans position réelle, on montre la dernière étape et son heure, rien d'autre.
-   API : MDGCommandes.ouvrir(id?) · MDGCommandes.depuisAccord(nego) · MDGCommandes.creer(nego) */
+   API : MDGCommandes.ouvrir(id?) · MDGCommandes.depuisAccord(nego) · MDGCommandes.creer(nego)
+   Écran d’une commande (lots 11-12, 13/11/2026) : plein écran, jetons data-v2 (clair et sombre), fidèle à la maquette de Claude Design. */
 (function () {
   'use strict';
   if (window.MDGCommandes) return;

@@ -3,6 +3,8 @@
 La référence du design de l'application mobile (`application.dc.html`) et du site. À lire avant toute modification visible.
 Les valeurs viennent du code (`css/mgci-tokens.css`, `css/sombre.css`, `css/mgci-app.css`), mesurées le 23/10/2026. En cas de doute, le code fait foi, puis ce fichier est corrigé.
 
+> **Refonte en cours (13/11/2026)** : la maquette « MGCI App v2 » de Claude Design, validée par le propriétaire, devient la référence haute fidélité des écrans (onglets en bas, accueil « Duo », nouveaux jetons `--recu`, `--hausse`, `--panneau`, `--barre`, `--t08`…`--t30`, `--hl`, `--ombre`, `--vert-texte`). Ce fichier est mis à jour lot par lot ; état : `docs/brief-design/ETAT-DESIGN.md`. Les sections 2 à 8 restent valables tant qu'un lot ne les remplace pas.
+
 ## 1. L'esprit
 
 - **Un marché vivrier ivoirien, calme et sûr.** Fond crème chaud, encre presque noire, vert du logo et maïs. Pas de néon, pas de violet « tech », pas de dégradés décoratifs.
@@ -64,7 +66,7 @@ Règles :
 - **« J'ai » / « Je cherche »** (`.duo2`, `css/mgci-app.css`) : titre et sous-titre **toujours en noir** `#171512` (sous-titre à 72 %), en mode clair comme en mode sombre (règle du propriétaire, 25/10/2026 : « le blanc est illisible »). Jamais `var(--encre)`, qui devient crème en sombre. Contraste mesuré : 8,7:1 sur le vert `#6CC58C`, 11,5:1 sur le jaune `#F2C94C` ; sous-titre 4,9:1 et 5,8:1. La barre qui les porte ne passe jamais par-dessus le contenu : sur la fiche produit, elle est sous la zone qui défile (`.fp-bas`, dans le flux, avec la zone sûre de l'iPhone).
 - **Ligne « Achetez en confiance »** (`<mdg-garanties data-mode="ligne">`) : ces trois mots et un chevron, rien de plus ; le détail est dans la feuille qu'elle ouvre.
 - **Ligne d'alerte discrète** (ex. vérification d'identité) : une seule ligne qu'on touche, pas un gros encadré.
-- **Avatars** : les personnages du marché (`v3/personnages.js`). Calmes au repos, ils sautent seulement quand il y a du nouveau.
+- **Avatars** (13/11/2026) : plus de personnages du marché ; les écrans refaits montrent les initiales dans un rond, comme la maquette de Claude Design.
 - **Confirmation** : `MDGDemande.oui(texte, { ok, danger })` et `MDGDemande.saisie(texte, { ok })` (`app/toast.js`), feuille de l'application avec mode nuit, Échap et focus. Jamais `confirm()` ni `prompt()` du navigateur.
 - **Feuilles et menu de l'accueil** : Échap ferme ; le focus entre dans la feuille à l'ouverture et revient au bouton d'origine à la fermeture.
 - **Erreur de formulaire** : une phrase sous le champ (« Indiquez la quantité. »), `aria-invalid`, bord `#C0442B` doublé ; jamais la couleur seule.

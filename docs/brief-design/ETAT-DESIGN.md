@@ -29,7 +29,7 @@ Toutes les nouveautés de la maquette sont acceptées : onglets en bas et alerte
 | 6 | Proposer + Discussion | **fait** (13/11/2026). Ajouts pour les règles : « Changer » le transport dans le reçu (prix du transport « à part »), « Ajouter une condition » replié ; sous la discussion, profil, écrire en privé, retirer, signaler, arrêter gardés |
 | 7 | Publier | **fait** (13/11/2026). Écarts : « À la prochaine récolte » → « Ce mois-ci » (pas de date de récolte) ; « Chaque semaine » retiré des demandes (pas géré) ; prix obligatoire (règle du 25/10) |
 | 8 | Prix, Tous les produits, Année du marché | **fait** (13/11/2026). Prix : « offres publiées » (pas encore les commandes), pas de tendance sans prix réels de deux semaines ; Tous les produits : les 12 vraies familles ; Année du marché : toutes les récoltes sourcées (A.CAL) |
-| 9 | Carte | **décision du propriétaire (13/11/2026)** : garder la carte actuelle de l’application (plus pro), n’en prendre que la logique de la maquette (panneau, filtres, colonne de boutons) |
+| 9 | Carte | **fait** (13/11/2026). Décision du propriétaire : la carte MapLibre de l’application est gardée (plus pro) ; seule la logique de la maquette est prise : titre « Carte du réseau », Tout / Offres / Demandes en haut, produit et zone dans le panneau du bas, « Ce qui se rapproche » (offre et demande du même produit, de la plus proche à la plus loin). Distances à vol d’oiseau entre chefs-lieux. Rien à redessiner |
 | 10 | Activité + Messages | Activité **faite** (13/11/2026, avancée) ; Messages : à faire. Écart : le montant de la commande n'est pas encore sur la ligne |
 | 11 | Commande acheteur | à faire |
 | 12 | Côté vendeur | à faire |
@@ -38,7 +38,7 @@ Toutes les nouveautés de la maquette sont acceptées : onglets en bas et alerte
 | 15 | Porte et cas limites | à faire |
 | 16 | Passe finale (sombre, 320 px, contrastes) | à faire |
 
-Les captures de chaque lot terminé sont dans `docs/brief-design/captures/` (`lot2-…`, `lot3-…`, `lot10-…`).
+Les captures de chaque lot terminé sont dans `docs/brief-design/captures/` (`lot2-…` à `lot9-…`, `lot10-…`).
 
 ## 4. Le site pour ordinateur : ce qui existe, ce qui manque
 

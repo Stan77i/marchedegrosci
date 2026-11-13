@@ -2259,6 +2259,13 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur.
 
+## 13/11/2026 · Refonte, lot 9 : carte du réseau (logique de la maquette)
+
+- Captures validées (« Ok »). La carte MapLibre est gardée (décision du propriétaire) ; seule la logique de la maquette est prise.
+- Haut : titre « Carte du réseau » et pastilles Tout / Offres / Demandes avec leur nombre (`cTop`, `.v2-ct-f`). La ligne produit / zone passe dans le panneau du bas (`cBotPx` + 54 px).
+- Panneau : « Ce qui se rapproche » (`cLiens`) : une offre et une demande du même produit, d’un autre lieu et d’une autre personne, triées par distance (10 au plus), qui ouvrent la fiche produit ; sinon « Toutes les publications ». Légende réduite à « Pour vous » et « Forte demande » (`cLeg`).
+- Vérifié (iPhone émulé) : aucune erreur ; les captures avec liens utilisent de fausses demandes injectées seulement dans le navigateur d’essai (rien en base). Cache `mgci-v311`.
+
 ## 13/11/2026 · Refonte, lot 6 (négociation) et Prix du moment
 
 - **Règle redite par le propriétaire** : « toujours respecter ce que Claude Design a fait ; s'il y a un problème, me le dire en très peu de mots ».

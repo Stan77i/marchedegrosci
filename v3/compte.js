@@ -371,11 +371,13 @@ label.cp-r{cursor:pointer}
   let css = false, bg = null, rendre = null;
   function cadre(html, label) {
     if (!css) { const st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st); css = true; }
+    // la feuille de style des pages refaites (css/v2-compte.css) : déjà dans l'application ; ailleurs (site), on l'ajoute
+    if (!document.querySelector('link[href*="css/v2-compte.css"]')) { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'css/v2-compte.css?v=20261113c13'; document.head.appendChild(l); }
     fermer(true);
-    bg = document.createElement('div'); bg.className = 'cp-bg';
+    bg = document.createElement('div'); bg.className = 'cp-bg'; bg.setAttribute('data-v2', '');
     // toujours une barre du haut : la croix y a sa place et ne chevauche jamais le contenu qui défile
     const tete = /^\s*<header class="cp-top"/.test(html) ? '' : '<header class="cp-top"><span></span><span class="cp-top-t"></span><span></span></header>';
-    bg.innerHTML = `<div class="cp" role="dialog" aria-modal="true" aria-label="${esc(label)}"><button type="button" class="cp-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button>${tete}${html}</div>`;
+    bg.innerHTML = `<div class="cp v2c" role="dialog" aria-modal="true" aria-label="${esc(label)}"><button type="button" class="cp-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button>${tete}${html}</div>`;
     document.body.appendChild(bg);
     const r = N() && N().piege ? N().piege(bg) : null; if (!rendre) rendre = r;
     bg.addEventListener('click', e => { if (e.target === bg) fermer(); });
@@ -383,7 +385,7 @@ label.cp-r{cursor:pointer}
     document.addEventListener('keydown', onKey);
     return bg;
   }
-  function fermer(garder) { if (bg) { bg.remove(); bg = null; } if (!garder) { document.removeEventListener('keydown', onKey); if (rendre) { rendre(); rendre = null; } } }
+  function fermer(garder) { if (bg) { if (bg.lacher) bg.lacher(); bg.remove(); bg = null; } if (!garder) { document.removeEventListener('keydown', onKey); if (rendre) { rendre(); rendre = null; } } }
   function onKey(e) { if (e.key === 'Escape' && bg && !bg.dataset.lock) fermer(); }
 
   /* ——— notifications (journal des vrais événements, alimenté par v3/negoce.js) ——— */
@@ -397,7 +399,13 @@ label.cp-r{cursor:pointer}
   const CHEV = '<svg class="cp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
   // une ligne : icône, titre (+ précision), valeur à droite, chevron
   const ligne = o => `<${o.href ? `a href="${o.href}"` : o.cls === 'info' ? 'div' : 'button type="button"'} class="cp-r${o.cls ? ' ' + o.cls : ''}" ${o.attrs || ''}>${o.ico || ''}<span class="cp-r-t"><b>${o.t}</b>${o.s ? `<small>${o.s}</small>` : ''}</span>${o.v != null && o.v !== '' ? `<span class="cp-r-v${o.vf ? ' fort' : ''}">${o.v}</span>` : ''}${o.n ? `<span class="cp-n" aria-label="${o.nl || o.n + ' nouveau' + (o.n > 1 ? 'x' : '')}">${o.n}</span>` : ''}${o.chev === false ? '' : CHEV}</${o.href ? 'a' : o.cls === 'info' ? 'div' : 'button'}>`;
-  const TITRES = { accueil: 'Mon compte', profil: 'Profil et avatar', activite: 'Mon activité', notifs: 'Notifications', prefs: 'Réglages', securite: 'Sécurité et compte' };
+  const TITRES = { accueil: 'Compte', profil: 'Mon profil', activite: 'Mon activité', notifs: 'Notifications', prefs: 'Réglages', securite: 'Sécurité', aide: 'Aide', appro: 'Approvisionnement', boutique: 'Ma boutique' };
+  // les pages refaites (lot 13) : petites pièces communes
+  const CHEV_V2 = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>';
+  const RETOUR_V2 = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
+  // une ligne de liste : libellé (+ précision), valeur discrète à droite, chevron
+  const ligneV2 = o => `<${o.href ? `a href="${o.href}"` : 'button type="button"'} class="v2c-l${o.cls ? ' ' + o.cls : ''}" ${o.attrs || ''}><span class="t">${o.t}${o.s ? `<small>${o.s}</small>` : ''}</span>${o.v ? `<span class="v">${o.v}</span>` : ''}${o.pt ? '<span class="v2c-pt" aria-hidden="true"></span>' : ''}${CHEV_V2}</${o.href ? 'a' : 'button'}>`;
+  const initiales = n => { const m = String(n || '').trim().split(/\s+/).filter(Boolean); return ((m[0] || '?')[0] + (m[1] ? m[1][0] : '')).toUpperCase(); };
   const negosDe = () => { const u = me(), L = J('mdg-negoce:liste', []), vive = n => n.statut === 'ouverte' && n.dernier_par && n.expire_le && Date.parse(n.expire_le) > Date.now();
     return { vive, L, env: L.filter(n => vive(n) && n.dernier_par === u.id), rec: L.filter(n => vive(n) && n.dernier_par !== u.id), ok: L.filter(n => n.statut === 'conclue'), fin: L.filter(n => n.statut !== 'conclue' && !vive(n)) }; };
   const mesAnn = k => J('mdg-v2:' + k, []).filter(x => x && x.productSlug);
@@ -405,28 +413,43 @@ label.cp-r{cursor:pointer}
   function ouvrir(onglet) {
     if (!N()) return; const u = me(); if (!u) return N().open();
     let page = TITRES[onglet] ? onglet : 'accueil';
-    cadre(`<header class="cp-top"><span></span><span class="cp-top-t"></span><span></span></header><div class="cp-main"></div>`, 'Mon compte');
-    const main = bg.querySelector('.cp-main'), top = bg.querySelector('.cp-top');
-    // calme : le contenu se pose sans fondu (à l'ouverture et quand les données arrivent) ; le fondu ne sert qu'en passant d'une page à l'autre
+    cadre(`<header class="cp-top"></header><div class="cp-main"></div>`, 'Compte');
+    const main = bg.querySelector('.cp-main'), top = bg.querySelector('.cp-top'), moi = bg;
+    // une page plein écran au-dessus de l'accueil : la barre d'onglets reste visible en dessous (maquette, lot 13)
+    const poser = () => { if (!moi.isConnected) return;
+      const t = document.querySelector('[data-pg="home"] .v2-tabs'), r = t && t.getBoundingClientRect();
+      const vue = t && r.height > 0 && r.top < innerHeight && getComputedStyle(t).visibility !== 'hidden' && getComputedStyle(t.closest('[data-pg]') || t).visibility !== 'hidden';
+      moi.classList.toggle('v2c-plein', !!vue);
+      if (vue) { Object.assign(moi.style, { top: '0px', left: Math.max(0, r.left) + 'px', right: Math.max(0, innerWidth - r.right) + 'px', bottom: Math.max(0, innerHeight - r.top) + 'px' }); t.classList.add('cp-actif'); }
+      else ['top', 'left', 'right', 'bottom'].forEach(k => { moi.style[k] = ''; });
+      moi._tabs = vue ? t : null; };
+    // les onglets du bas : « Compte » revient en haut du compte ; un autre onglet ferme le compte puis fait son travail
+    const onglets = e => { const b = e.target && e.target.closest && e.target.closest('.v2-tabs .v2-tab'); if (!b || !moi.isConnected || !moi.classList.contains('v2c-plein')) return;
+      if (b === b.parentNode.lastElementChild) { e.preventDefault(); e.stopPropagation(); aller('accueil', true); } else fermer(); };
+    const partir = () => { if (moi.isConnected) fermer(); };
+    document.addEventListener('click', onglets, true); addEventListener('resize', poser); addEventListener('mdg:aller', partir); addEventListener('hashchange', partir);
+    const neuf = () => { if (page === 'accueil' && bg && bg.rafraichirAuto) bg.rafraichirAuto(); };
+    addEventListener('mdg:boutiques', neuf); addEventListener('mdg:profil', neuf);
+    moi.lacher = () => { document.removeEventListener('click', onglets, true); removeEventListener('resize', poser); removeEventListener('mdg:aller', partir); removeEventListener('hashchange', partir);
+      removeEventListener('mdg:boutiques', neuf); removeEventListener('mdg:profil', neuf); if (moi._tabs) moi._tabs.classList.remove('cp-actif'); };
+    poser();
+    // le contenu est là tout de suite (aucun fondu) ; une page s'ouvre en haut
     const aller = (p, calme) => {
       page = p;
-      top.innerHTML = (p === 'accueil' ? '<span></span>' : `<button type="button" class="cp-back" data-retour aria-label="Retour à Mon compte">${IC('retour', 22) || '‹'}</button>`) + `<span class="cp-top-t" aria-hidden="true">${TITRES[p]}</span><span></span>`;
-      top.classList.remove('titre'); bg.querySelector('.cp').classList.toggle('sur-hero', p === 'accueil'); bg.querySelector('.cp').classList.remove('defile');
+      top.innerHTML = p === 'accueil' ? '' : `<button type="button" class="cp-back" data-retour aria-label="Retour au compte">${RETOUR_V2}</button><span class="v2c-top-t" aria-hidden="true">Compte</span>`;
       const r = top.querySelector('[data-retour]'); if (r) r.onclick = () => aller('accueil');
-      VUES[p](main); main.scrollTop = 0;
-      if (calme) main.querySelectorAll('.cp-pg').forEach(x => { x.style.animation = 'none'; });
-      const h = main.querySelector('h2'); if (h) h.setAttribute('tabindex', '-1');
+      main._apLu = false; VUES[p](main); main.scrollTop = 0;
+      const h = main.querySelector('h1, h2'); if (h) h.setAttribute('tabindex', '-1');
+      if (!calme && h) h.focus({ preventScroll: true });
     };
-    // le titre de la page apparaît dans la barre quand le grand titre est passé
-    main.addEventListener('scroll', () => { if (!bg) return;   // la fenêtre vient d'être fermée : plus rien à mettre à jour
-      const h = page === 'accueil'; top.classList.toggle('titre', main.scrollTop > (h ? 260 : 48)); bg.querySelector('.cp').classList.toggle('defile', h && main.scrollTop > 200); }, { passive: true });
     bg.aller = aller;
     aller(page, true);
-    bg.rafraichir = () => { const y = main.scrollTop; aller(page, true); main.scrollTop = y; };
+    bg.rafraichir = () => { const y = main.scrollTop; VUES[page](main); main.scrollTop = y; };
     // mise à jour venue du réseau : jamais pendant qu'on écrit, ni si un champ a été modifié (sinon la saisie serait perdue, 24/10/2026)
     bg.rafraichirAuto = () => { if (!bg || !main.isConnected) return; const a = document.activeElement;
       if (a && main.contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
       if ([...main.querySelectorAll('input, textarea')].some(x => (x.type === 'checkbox' || x.type === 'radio') ? x.checked !== x.defaultChecked : x.value !== x.defaultValue)) return;
+      if (main.querySelector('details[open], [data-garde]')) return;
       bg.rafraichir(); };
     if (navigator.onLine) charger().then(() => bg && bg.rafraichirAuto && bg.rafraichirAuto());
     const adm0 = J('mdg-nuage:admin', false); if (N().isAdmin) N().isAdmin().then(a => { if (a !== adm0 && bg && bg.rafraichirAuto) bg.rafraichirAuto(); if (a) compterIdent(); });
@@ -640,153 +663,135 @@ label.cp-r{cursor:pointer}
   }
   const repBtn = '<button type="button" class="cp-rep" data-rep><span class="cp-rep-n" data-repn aria-hidden="true">—</span><span><b>Ma réputation</b><small data-rept></small></span>' + CHEV + '</button>';
 
+  // Réglages : l'état réel des notifications de ce téléphone (v3/pousse.js), gardé pour que la page s'ouvre sans attendre ; la réponse du dernier essai
+  let pousseEtat = null, essaiTxt = '';
+  const texteEssai = r => !r ? 'L’essai n’a pas pu être demandé. Vérifiez la connexion, puis réessayez.'
+    : r.envoyees > 0 ? 'Essai parti vers ' + r.envoyees + (r.envoyees > 1 ? ' téléphones' : ' téléphone') + '. Il s’affiche dès que le téléphone a du réseau.'
+    : !r.telephones ? 'Aucun téléphone abonné pour ce compte. Désactivez puis réactivez les notifications.'
+    : 'Le service de notification a refusé l’essai. Désactivez puis réactivez les notifications.';
+  // Approvisionnement : achats habituels et groupes, lus une fois à l'ouverture de la page (gardés pour la prochaine fois)
+  let approCache = null;
+  async function lireAppro(main, force) {
+    if (main._apLu && !force) return; main._apLu = true;
+    const r = await Promise.all([
+      window.MDGRacheter ? N().rpc('mes_achats_habituels').catch(() => approCache && approCache.achats || []) : [],
+      window.MDGGroupes ? N().rpc('groupes_liste', { p_vue: 'miens', p_produit: null }, true).catch(() => approCache && approCache.groupes || []) : []
+    ]);
+    const d = { achats: r[0] || [], groupes: r[1] || [] }, change = JSON.stringify(d) !== JSON.stringify(approCache);
+    approCache = d; if (change && main.isConnected && main.querySelector('#v2c-rc, #v2c-gr')) VUES.appro(main);
+  }
   const VUES = {
     accueil(main) {
-      const p = profil || {}, u = me(), nom = nomAffiche(p), off = mesAnn('offres'), dem = mesAnn('demandes'), ng = negosDe();
-      const M = window.MDGMessages, G = window.MDGNegoce, dmN = M && M.unread ? M.unread() : 0, nl = nonLues(), S = window.MDGSons, sn = S ? S.reglages() : null;
-      const reg = (REGIONS().find(r => r[0] === p.region_slug) || [])[1], lieuTxt = p.ville || reg || '', adm = J('mdg-nuage:admin', false);
-      const mono = n => `<span class="cp-ico" aria-hidden="true">${IC(n, 22)}</span>`;
-      const ID = window.MDGIdentite, idC = ID && ID.statutCache(), idS = idC ? idC.statut : 'non_verifie';
+      // l'onglet Compte (maquette « MGCI App v2 », lot 13) : qui je suis, une ligne d'identité si elle manque, puis une liste
+      const p = profil || {}, u = me(), nom = nomAffiche(p), off = mesAnn('offres'), dem = mesAnn('demandes');
+      const M = window.MDGMessages, dmN = M && M.unread ? M.unread() : 0, adm = J('mdg-nuage:admin', false);
+      const ID = window.MDGIdentite, idC = ID && ID.statutCache(), idS = idC ? idC.statut : null;
       // l'administrateur parle au nom du Marché de Gros (supabase/schema-20) : pas de vérification, pas de nom, pas de numéro visible
       const off0 = !!((idC && (idC.officiel || idC.exempt)) || adm);
       if (ID && navigator.onLine) ID.statut().then(s => { if (s && JSON.stringify(s) !== JSON.stringify(idC) && bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); }).catch(() => {});
-      // fiabilité (schéma 84) : relue en fond ; la ligne se met à jour seulement si quelque chose a changé
-      if (window.MDGRep && MDGRep.lireFiabilite && !off0 && navigator.onLine) { const fv = JSON.stringify(MDGRep.fiabResume());
-        MDGRep.lireFiabilite().then(f => { if (f && JSON.stringify(f) !== fv && bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); }).catch(() => {}); }
-      // annonces cachées après signalements (schéma 94e) : la ligne n'apparaît que s'il y en a
-      if (window.MDGRep && MDGRep.lireMasquees && !off0 && navigator.onLine) { const mqv = JSON.stringify(MDGRep.masqResume());
-        MDGRep.lireMasquees().then(f => { if (f && JSON.stringify(f) !== mqv && bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); }).catch(() => {}); }
-      if (window.MDGRep && MDGRep.lireNiveaux && !off0 && navigator.onLine) { const nvv = JSON.stringify(MDGRep.nivResume());
-        MDGRep.lireNiveaux().then(f => { if (f && JSON.stringify(f) !== nvv && bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); }).catch(() => {}); }
-      // la vérification d'identité, bien en vue tant qu'elle n'est pas faite : 3 annonces gratuites, puis elle est demandée pour publier
-      // l'identité n'a qu'une place : sa ligne dans « Votre compte » (demande du propriétaire, 24/10/2026 : pas de doublon) ;
-      // en haut, seulement un compte banni
-      const idBandeau = ID && idC && idC.banni && !off0
-        ? `<button type="button" class="cp-idv ko" data-idv aria-label="Compte banni : il ne peut plus publier, négocier ni écrire."><span class="cp-idv-i" aria-hidden="true">${IC('fermer', 22)}</span><span class="cp-idv-x"><b>Compte banni</b><small>Il ne peut plus publier, négocier ni écrire.</small></span></button>` : '';
-      // l'activité : ce qui s'est vraiment passé, du plus récent au plus ancien, regroupé par jour
-      const montant = t => { const m = /(\d[\d  .]*)\s*F(?:\s*\/\s*([\p{L}]+))?/u.exec(t || ''); return m ? `${m[1].trim()} F${m[2] ? `<em>/ ${esc(m[2])}</em>` : ''}` : ''; };
-      const evs = notifs().slice(0, 40).map((n, i) => { const nego = /propos|accord|accept|refus|expir|prix/i.test(n.texte), ok = /accord|accept/i.test(n.texte);
-          return { t: n.t, ton: ok ? 'offre' : nego ? 'lien' : 'aide', ico: ok ? 'negoce' : nego ? 'negoce' : 'cloche', titre: esc(n.texte), long: true, sous: ok ? 'Accord' : nego ? 'Négociation' : 'Notification', m: montant(n.texte), neuf: !n.lu, attrs: `data-ni="${i}"` }; })
-        .concat(off.map(x => ({ t: x.createdAt, ton: 'offre', ico: 'vendre', titre: esc(x.productLabel || x.productName || x.productSlug) + (x.quantity ? ' · ' + fmt(x.quantity) + ' ' + esc(x.unit || '') : ''), sous: 'Offre publiée', m: x.price ? `${fmt(x.price)} F<em>/ ${esc(x.unit || 'kg')}</em>` : '<em>à discuter</em>', attrs: 'data-go="activite"' })))
-        .concat(dem.map(x => ({ t: x.createdAt, ton: 'demande', ico: 'demander', titre: esc(x.productLabel || x.productName || x.productSlug) + (x.quantity ? ' · ' + fmt(x.quantity) + ' ' + esc(x.unit || '') : ''), sous: 'Demande publiée', m: x.budget ? `${fmt(x.budget)} F<em>budget / ${esc(x.unit || 'kg')}</em>` : '<em>à discuter</em>', attrs: 'data-go="activite"' })))
-        .filter(e => e.t && !isNaN(Date.parse(e.t))).sort((a, b) => Date.parse(b.t) - Date.parse(a.t)).slice(0, 6);
-      const jour = t => { const d = new Date(t), a = new Date(), h = new Date(a - 864e5), m = x => x.toDateString(); return m(d) === m(a) ? 'Aujourd’hui' : m(d) === m(h) ? 'Hier' : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: d.getFullYear() === a.getFullYear() ? undefined : 'numeric' }); };
-      const heure = t => { const d = new Date(t); return 'à ' + d.getHours() + 'h' + String(d.getMinutes()).padStart(2, '0'); };
-      let fil = '', jPrec = '';
-      evs.forEach(e => { const j = jour(e.t); if (j !== jPrec) { fil += (jPrec ? '</div>' : '') + `<p class="cp-day">${j}</p><div class="cp-feed">`; jPrec = j; }
-        fil += `<button type="button" class="cp-ev${e.neuf ? ' neuf' : ''}" data-ton="${e.ton}" ${e.attrs}><span class="o" aria-hidden="true">${IC(e.ico, 22)}</span><b${e.long ? ' class="long"' : ''}>${e.titre}</b><span class="m">${e.m}</span><small>${e.sous} ${heure(e.t)}</small></button>`; });
-      if (fil) fil += '</div>';
-      // vos statuts (v3/statuts.js) : ceux gagnés, et ce qui reste à faire pour les suivants
-      const SG = window.MDGStatut;
-      if (SG && !SG.get(u.id)) addEventListener('mdg:rep', function f() { removeEventListener('mdg:rep', f); if (bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); });
-      const stBloc = !SG || off0 ? '' : (() => { const gag = SG.liste(u.id), but = SG.progres(u.id), v = idS === 'verifie';
-        return `<div class="cp-sh"><h3>Vos statuts</h3></div>
-          <div class="cp-grp cp-statuts">${gag.length || v ? `<div class="cp-st-l">${SG.puces(u.id, { max: 9, t: 18 })}</div>` : '<p class="cp-vide">Pas encore de statut : faites vérifier votre identité et terminez vos commandes.</p>'}
-          ${but.map(x => `<div class="st-but"><b>${x.t}</b><small>${x.fait} sur ${x.total} ${x.txt}</small><div class="st-jauge" role="img" aria-label="${x.fait} sur ${x.total}"><i style="width:${Math.min(100, x.fait / x.total * 100)}%"></i></div></div>`).join('')}</div>`; })();
-      main.innerHTML = `<div class="cp-pg">
-        <section class="cp-hero" aria-label="Mon identité">
-          <div class="cp-hero-av">${off0 && window.MDGMarque ? MDGMarque.dg(114, { fond: 'vert', rond: true }) : (A() ? A().svg(p.avatar, { size: 114, nom: nom || '?', seed: u.id, anime: true }) : '') + `<button type="button" class="cp-hero-cam" data-av aria-label="Changer mon avatar">${IC('photo', 18)}</button>`}</div>
-          ${off0 ? `<h2>marché <em>de Gros</em></h2>
-          <p class="cp-off-p">${esc(N().fmtTel(u.tel))} · visible par vous seul. Les membres voient « Marché de Gros », jamais votre nom ni votre numéro.</p>
-          <div class="cp-hero-tags"><span class="cp-adm">${window.MDGMarque ? MDGMarque.dg(16, { fond: 'vert', rond: true }) : ''}Administrateur · Officiel</span></div>` : `<h2>${nom ? 'Bonjour, <em>' + esc(p.pseudo || p.prenom || nom) + '</em>' : '<em>Bienvenue</em>'}${idS === 'verifie' ? ' ' + ID.badge(22) : ''}</h2>
-          <p>${esc(N().fmtTel(u.tel))}</p>
-          <div class="cp-hero-tags">${p.role ? `<span>${ROLE_TXT[p.role] || ''}</span>` : ''}${lieuTxt ? `<span>${IC('lieu', 13)}${esc(lieuTxt)}</span>` : ''}${!nom ? '<span class="a">Profil à compléter</span>' : ''}${ID && idC && !idC.exempt && idS === 'verifie' ? `<span class="idok">${ID.badge(14)}Identité vérifiée</span>` : ID && idC && idC.banni ? '<span class="a">Compte banni</span>' : ''}</div>
-          ${ID && !(idC && (idC.exempt || idC.banni)) && idS !== 'verifie' ? (() => { const R = ID.RESUME[idS] || ID.RESUME.non_verifie, rg = ID.gratuitesRestantes ? ID.gratuitesRestantes(idC) : null;
-            // s'identifier : sous la photo, là où on le voit tout de suite (demande du propriétaire), et plus dans la liste du bas
-            return `<button type="button" class="cp-hero-idv" data-idv aria-label="Non identifié. ${idS === 'non_verifie' ? 'S’identifier' : R[0]}${rg ? ', ' + rg + ' annonce' + (rg > 1 ? 's' : '') + ' gratuite' + (rg > 1 ? 's' : '') + ' restante' + (rg > 1 ? 's' : '') : ''}">${IC('verifie', 18)}<span>Non identifié</span><b>${idS === 'non_verifie' ? 'S’identifier' : esc(R[0])}</b><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>`; })() : ''}`}
-          <div class="cp-hero-act">
-            ${M ? `<button type="button" data-dm>${IC('messages', 20)}Messages${dmN ? `<em aria-label="${dmN} non lus">${dmN}</em>` : ''}</button>` : ''}
-            <button type="button" data-nego>${IC('negoce', 20)}Négociations${ng.rec.length ? `<em aria-label="${ng.rec.length} à vous de répondre">${ng.rec.length}</em>` : ''}</button>
-          </div>
-        </section>
-        <div class="cp-body">
-          ${idBandeau}
-          ${off0 ? '' : repBtn}
-          ${stBloc}
-          <div class="cp-sh"><h3>Votre compte</h3><small>${esc(N().fmtTel(u.tel))}</small></div>
-          <div class="cp-grp">
-            ${off0 ? '' : ligne({ ico: mono('compte'), t: 'Profil et avatar', s: nom ? '' : 'Prénom, rôle, lieu', attrs: 'data-go="profil"' })}
-            ${window.MDGRep && !off0 ? ligne({ ico: mono('profil'), t: 'Mon profil public', attrs: 'data-profpub' }) : ''}
-            ${!off0 ? ligne({ ico: mono('publications'), t: 'Mes publications', s: off.length + dem.length ? 'Et mon stock' : 'Vos offres et demandes', n: off.length + dem.length || '', nl: (off.length + dem.length) + ' publication' + (off.length + dem.length > 1 ? 's' : ''), attrs: 'data-pubs' }) : ''}
-            ${window.MDGBoutique && !off0 ? ligne({ ico: mono('vendre'), t: 'Ma boutique', s: 'Mes offres sur une page à partager, QR code', attrs: 'data-boutique' }) : ''}
-            ${window.MDGReleve ? ligne({ ico: mono('barres'), t: 'Mes ventes et achats', s: 'Relevés, bons de transaction, volumes', attrs: 'data-releve' }) : ''}
-            ${window.MDGCommandes && !off0 ? (() => { const nC = MDGCommandes.aAgir(); return ligne({ ico: mono('negoce'), t: 'Mes commandes', s: nC ? nC + (nC > 1 ? ' commandes attendent' : ' commande attend') + ' votre action' : 'Suivi du chargement à la réception', n: nC, attrs: 'data-cmds' }); })() : ''}
-            ${window.MDGRep && MDGRep.masquees && !off0 && (MDGRep.masqResume() || []).length ? (() => { const L = MDGRep.masqResume(), nC = L.filter(a => !a.contestee).length; return ligne({ ico: mono('alertes'), t: L.length > 1 ? 'Annonces cachées' : 'Annonce cachée', s: nC ? 'Signalée : vous pouvez contester' : 'Contestée : l’équipe vous répond', n: L.length, nl: L.length + (L.length > 1 ? ' annonces cachées' : ' annonce cachée'), attrs: 'data-masq' }); })() : ''}
-            ${window.MDGRep && MDGRep.fiabilite && !off0 ? (() => { const f = MDGRep.fiabResume(), sc = f && f.score, nv = f ? +f.non_vues || 0 : 0; return ligne({ ico: mono('tendance'), t: 'Ma fiabilité', s: f && f.suspension ? 'Compte suspendu pour l’instant' : sc && sc.sur ? 'Fiabilité : ' + sc.pourcent + ' % sur ' + sc.sur + ' commande' + (sc.sur > 1 ? 's' : '') : 'Votre score et votre historique', n: nv, attrs: 'data-fiab' }); })() : ''}
-            ${window.MDGRep && MDGRep.niveaux && !off0 ? (() => { const f = MDGRep.nivResume(), R = f && f.roles || {}, L = ['vendeur', 'acheteur'].map(k => R[k] && R[k].libelle).filter(Boolean), sursis = ['vendeur', 'acheteur'].some(k => R[k] && R[k].grace_jusqua); return ligne({ ico: mono('confiance'), t: 'Mes niveaux', s: sursis ? 'Un niveau est en sursis : voyez ce qui manque' : L.length ? L.join(' · ') : 'Vendeur fiable, Bon, Excellent, Grand : ce qui manque', n: f ? +f.non_vus || 0 : 0, attrs: 'data-niv' }); })() : ''}
-            ${window.MDGAppro && !off0 ? ligne({ ico: mono('tableau'), t: 'Approvisionnement pro', s: 'Besoins réguliers, propositions, comparaison', attrs: 'data-appro' }) : ''}
-            ${window.MDGGroupes && !off0 ? ligne({ ico: mono('comptes'), t: 'Achats groupés', attrs: 'data-groupes' }) : ''}
-            ${window.MDGRacheter && !off0 ? ligne({ ico: mono('echanger'), t: 'Racheter', s: 'Mes achats habituels, prix du jour, rappels', attrs: 'data-racheter' }) : ''}
-            ${window.MDGAlertes && !off0 ? (() => { const nA = MDGAlertes.liste().length; return ligne({ ico: mono('alertes'), t: 'Alertes produits', s: nA ? nA + ' produit' + (nA > 1 ? 's' : '') + ' suivi' + (nA > 1 ? 's' : '') : '', attrs: 'data-alertes' }); })() : ''}
-            ${window.MDGChauffeur && !off0 ? (() => { const e = MDGChauffeur.etat(); return ligne({ ico: mono('distance'), t: 'Espace chauffeur', s: !e.inscrit ? 'Transporteur ? Inscrivez-vous, c’est gratuit' : e.propositions ? e.propositions + (e.propositions > 1 ? ' missions à accepter' : ' mission à accepter') : e.statut === 'verifie' ? 'Profil vérifié · vos missions' : e.statut === 'en_attente' ? 'Vérification en cours · vos missions' : 'Vos missions', n: e.propositions, attrs: 'data-chauffeur' }); })() : ''}
-            ${ligne({ ico: mono('cadenas'), t: 'Sécurité et code secret', attrs: 'data-go="securite"' })}
-            ${adm ? (() => { const nI = +(J('mdg-admin:identites', {}).n) || 0; return ligne({ ico: mono('tableau'), t: 'Tableau de bord', s: nI ? nI + (nI > 1 ? ' dossiers' : ' dossier') + ' à examiner' : 'Administration', n: nI, href: nI ? 'admin.html#identites' : 'admin.html' }); })() : ''}
-          </div>
-          <div class="cp-grp">${ligne({ ico: mono('sortir'), t: 'Déconnexion', cls: 'bad', chev: false, attrs: 'data-out' })}</div>
-          <p class="cp-note">${off0 ? 'Compte officiel : pas de vérification d’identité, pas de note, pas d’étoiles. Tout ce que vous publiez ou écrivez apparaît au nom du « Marché de Gros ».' : 'Votre numéro n’est pas vérifié par SMS.'}</p>
-        </div></div>`;
+      // fiabilité (schéma 84), niveaux, annonces cachées (schéma 94e) : relus en fond ; la page change seulement si quelque chose a changé
+      const R = window.MDGRep;
+      if (R && !off0 && navigator.onLine) [['lireFiabilite', 'fiabResume'], ['lireMasquees', 'masqResume'], ['lireNiveaux', 'nivResume']].forEach(([lire, res]) => {
+        if (!R[lire] || !R[res]) return; const avant = JSON.stringify(R[res]());
+        R[lire]().then(f => { if (f && JSON.stringify(f) !== avant && bg && bg.rafraichirAuto && main.isConnected) bg.rafraichirAuto(); }).catch(() => {}); });
+      // badges : rien tant que le serveur n'a pas répondu (MDGIdentite.connu) ; puis le niveau réel
+      const pas = [];
+      if (off0) pas.push('<span class="v2c-pa ok">Compte officiel</span>');
+      else if (idC) pas.push(idC.banni ? '<span class="v2c-pa bad">Compte banni</span>' : idS === 'verifie' ? '<span class="v2c-pa ok">Identité vérifiée</span>' : idS === 'en_attente' ? '<span class="v2c-pa att">Vérification en cours</span>' : '<span class="v2c-pa">Non identifié</span>');
+      const nv = !off0 && R && R.nivResume ? R.nivResume() : null, ro = (nv && nv.roles) || {}, niv = (ro.vendeur && ro.vendeur.libelle) || (ro.acheteur && ro.acheteur.libelle);
+      if (niv) pas.push(`<span class="v2c-pa niv">${esc(niv)}</span>`);
+      // la ligne discrète « Vérifiez votre identité » (feuille pièce + visage : v3/identite.js)
+      let idl = '';
+      if (!off0 && ID && idC && !idC.exempt) {
+        const BOUC = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8.3 7 9.5 4-1.2 7-5 7-9.5V6z"/></svg>';
+        const l = (t, a) => `<button type="button" class="v2c-idl" ${a}>${BOUC}<span>${t}</span>${CHEV_V2}</button>`;
+        if (idC.banni) idl = l('Compte banni · comment contester', 'data-banni');
+        else if (idS !== 'verifie' && idS !== 'en_attente') {
+          const rg = ID.gratuitesRestantes ? ID.gratuitesRestantes(idC) : null, Rs = ID.RESUME[idS];
+          idl = l(!Rs || idS === 'non_verifie' ? 'Vérifiez votre identité · ' + (rg == null ? '3 annonces gratuites, puis c’est demandé' : rg > 0 ? rg + (rg > 1 ? ' annonces gratuites' : ' annonce gratuite') + ', puis c’est demandé' : 'demandée pour publier') : esc(Rs[0] + ' · ' + Rs[1]), 'data-idv');
+        }
+      }
+      // la liste, dans l'ordre de la maquette ; chaque ligne mène à la vraie fonction
+      const nA = window.MDGAlertes ? MDGAlertes.liste() : [], prod = s => { const x = window.MDG && MDG.products && MDG.products.find(q => q.slug === s); return x ? x.name : s; };
+      const bq = window.MDGBoutique && !off0 ? MDGBoutique.connue(u.id) : null, nI = adm ? +(J('mdg-admin:identites', {}).n) || 0 : 0;
+      const L1 = [
+        !off0 && ligneV2({ t: 'Modifier mon profil', attrs: 'data-go="profil"' }),
+        window.MDGBoutique && !off0 && ligneV2({ t: 'Ma boutique', v: bq ? 'Ouverte' : '', attrs: 'data-go="boutique"' }),
+        !off0 && ligneV2({ t: 'Mes annonces', v: off.length + dem.length ? String(off.length + dem.length) : '', attrs: 'data-pubs' }),
+        M && ligneV2({ t: 'Messages', v: dmN ? dmN + (dmN > 1 ? ' non lus' : ' non lu') : '', attrs: 'data-dm' }),
+        !off0 && (window.MDGRacheter || window.MDGGroupes || window.MDGAppro) && ligneV2({ t: 'Approvisionnement', v: 'Racheter, groupes', attrs: 'data-go="appro"' }),
+        window.MDGAlertes && !off0 && ligneV2({ t: 'Alertes de prix', v: nA.length ? esc(nA.map(a => prod(a.product_slug)).join(', ')) : 'Aucune', attrs: 'data-alertes' }),
+        ligneV2({ t: 'Réglages', attrs: 'data-go="prefs"' }),
+        ligneV2({ t: 'Sécurité', attrs: 'data-go="securite"' }),
+        ligneV2({ t: 'Aide', v: 'Questions, guide, contact', attrs: 'data-go="aide"' }),
+        adm && ligneV2({ t: 'Espace équipe', v: nI ? nI + (nI > 1 ? ' dossiers' : ' dossier') + ' à examiner' : 'Réservé à l’équipe', href: nI ? 'admin.html#identites' : 'admin.html' })
+      ].filter(Boolean);
+      // ce que l'application fait en plus de la maquette : rangé dans une seconde carte, sous la liste
+      const f = R && R.fiabResume ? R.fiabResume() : null, sc = f && f.score, mq = R && R.masqResume ? R.masqResume() || [] : [], ch = window.MDGChauffeur ? MDGChauffeur.etat() : null;
+      const L2 = off0 ? [] : [
+        R && ligneV2({ t: 'Mon profil public', attrs: 'data-profpub' }),
+        window.MDGReleve && ligneV2({ t: 'Mes ventes et achats', attrs: 'data-releve' }),
+        R && R.fiabilite && ligneV2({ t: 'Ma fiabilité', v: f && f.suspension ? 'Suspendu' : sc && sc.sur ? sc.pourcent + ' %' : '', pt: f && +f.non_vues > 0, attrs: 'data-fiab' }),
+        R && R.niveaux && ligneV2({ t: 'Mes niveaux', v: ['vendeur', 'acheteur'].some(k => ro[k] && ro[k].grace_jusqua) ? 'En sursis' : '', pt: nv && +nv.non_vus > 0, attrs: 'data-niv' }),
+        R && R.masquees && mq.length && ligneV2({ t: mq.length > 1 ? 'Annonces cachées' : 'Annonce cachée', v: String(mq.length), attrs: 'data-masq' }),
+        ch && ligneV2({ t: 'Espace chauffeur', v: ch.propositions ? ch.propositions + (ch.propositions > 1 ? ' missions' : ' mission') : ch.inscrit ? '' : 'Transporteur ?', attrs: 'data-chauffeur' })
+      ].filter(Boolean);
+      main.innerHTML = `<div class="v2c-pg acc">
+        <${off0 || !R ? 'div' : 'button type="button" data-profpub aria-label="Voir mon profil public"'} class="v2c-tete">
+          <span class="v2c-av" aria-hidden="true">${off0 && window.MDGMarque ? MDGMarque.dg(64, { fond: 'vert', rond: true }) : esc(initiales(nom))}</span>
+          <span class="v2c-qui"><h2 class="v2c-nom">${off0 ? 'Marché de Gros' : nom ? esc(nom) : 'Profil à compléter'}</h2>${pas.length ? `<span class="v2c-pas">${pas.join('')}</span>` : ''}</span>
+        </${off0 || !R ? 'div' : 'button'}>
+        ${idl}
+        <div class="v2c-liste">${L1.join('')}</div>
+        ${L2.length ? `<div class="v2c-liste">${L2.join('')}</div>` : ''}
+        ${off0 ? '<p class="v2c-note">Compte officiel : tout ce que vous publiez ou écrivez apparaît au nom du « Marché de Gros ».</p>' : ''}
+      </div>`;
       main.querySelectorAll('[data-go]').forEach(b => b.onclick = () => bg.aller(b.dataset.go));
-      const q = s => main.querySelector(s);
-      if (q('[data-dm]')) q('[data-dm]').onclick = () => { fermer(); M.boite(); };
-      q('[data-nego]').onclick = () => { if (G && G.inbox) { fermer(); G.inbox(); } else bg.aller('activite'); };
-      if (q('[data-av]')) q('[data-av]').onclick = () => choisirAvatar(() => ouvrir());
-      if (q('[data-profpub]')) q('[data-profpub]').onclick = () => { fermer(); setTimeout(() => window.MDGRep.profil(u.id, { nom: nom || 'Moi' }), 250); };
-      if (q('[data-pubs]')) q('[data-pubs]').onclick = () => { fermer(); setTimeout(() => { location.hash = '#/mes-publications'; }, 250); };
-      if (q('[data-alertes]')) q('[data-alertes]').onclick = () => { fermer(); setTimeout(() => window.MDGAlertes.gerer(), 250); };
-      if (q('[data-marche]')) q('[data-marche]').onclick = () => { fermer(); M.ecrireMarche(); };
-      if (q('[data-releve]')) q('[data-releve]').onclick = () => { fermer(); window.MDGReleve.ouvrir(); };
-      if (q('[data-boutique]')) q('[data-boutique]').onclick = () => { fermer(); window.MDGBoutique.gerer(); };   // schéma 86
-      if (q('[data-cmds]')) q('[data-cmds]').onclick = () => { fermer(); window.MDGCommandes.ouvrir(); };
-      if (q('[data-fiab]')) q('[data-fiab]').onclick = () => { fermer(); window.MDGRep.fiabilite(); };
-      if (q('[data-masq]')) q('[data-masq]').onclick = () => { fermer(); window.MDGRep.masquees(); };
-      if (q('[data-niv]')) q('[data-niv]').onclick = () => { fermer(); window.MDGRep.niveaux(); };
-      if (q('[data-appro]')) q('[data-appro]').onclick = () => { fermer(); window.MDGAppro.ouvrir(); };
-      if (q('[data-groupes]')) q('[data-groupes]').onclick = () => { fermer(); window.MDGGroupes.ouvrir('miens'); };
-      if (q('[data-racheter]')) q('[data-racheter]').onclick = () => { fermer(); window.MDGRacheter.habituels(); };
-      if (q('[data-chauffeur]')) q('[data-chauffeur]').onclick = () => { fermer(); window.MDGChauffeur.ouvrir(); };
-      main.querySelectorAll('[data-idv]').forEach(b => b.onclick = () => { fermer(); ID.ouvrir(); });
-      q('[data-out]').onclick = deconnecter;
-      main.querySelectorAll('[data-ni]').forEach(b => b.onclick = () => { const all = notifs(), n = all[+b.dataset.ni]; if (!n) return; n.lu = true; W(KN, all); if (n.nego && G) { fermer(); G.thread(n.nego); } else bg.aller('notifs'); });
-      remplirRep(q('[data-rep]'), p, u);
-      const pst = q('[data-pst]'); if (pst) (window.MDGPousse ? MDGPousse.etat() : Promise.resolve('impossible')).then(st => { if (pst.isConnected) pst.textContent = POUSSE_COURT[st] || ''; }).catch(() => { pst.textContent = ''; });
+      const q = s => main.querySelector(s), on = (s, f) => main.querySelectorAll(s).forEach(b => b.onclick = f);
+      // les autres modules s'ouvrent au-dessus : en les fermant, on retrouve le compte
+      on('[data-dm]', () => M.boite());
+      on('[data-profpub]', () => R.profil(u.id, { nom: nom || 'Moi' }));
+      on('[data-pubs]', () => { fermer(); setTimeout(() => { if (window.MDGV2 && MDGV2.annonces) MDGV2.annonces(); else location.hash = '#/mes-publications'; }, 60); });
+      on('[data-alertes]', () => window.MDGAlertes.gerer());
+      on('[data-releve]', () => window.MDGReleve.ouvrir());
+      on('[data-fiab]', () => R.fiabilite());
+      on('[data-masq]', () => R.masquees());
+      on('[data-niv]', () => R.niveaux());
+      on('[data-chauffeur]', () => window.MDGChauffeur.ouvrir());
+      on('[data-idv]', () => ID.ouvrir());
+      on('[data-banni]', () => ID.inviter ? ID.inviter('banni') : ID.ouvrir());
+      void q;
     },
     profil(main) {
+      // Mon profil (maquette) : l'aperçu du nom affiché, prénom, nom, pseudonyme, nom de famille visible, ce que vous faites et où, la structure
       const p = profil || {}, u = me();
-      main.innerHTML = `<div class="cp-pg"><h2>Profil et avatar</h2>
-        <div class="cp-avz"><div class="cp-avbig">${A().svg(p.avatar, { size: 108, nom: nomAffiche(p) || '?', seed: u.id })}</div><div class="cp-row"><button type="button" class="cp-alt" data-av>${p.avatar ? 'Changer d’avatar' : 'Choisir mon avatar'}</button>${p.avatar ? '<button type="button" class="cp-alt" data-av0>Mes initiales</button>' : ''}</div></div>
+      main.innerHTML = `<div class="v2c-pg"><h1 class="v2c-h1">Mon profil</h1>
+        <div class="v2c-apercu" aria-live="polite"><span>Sur le marché, on verra</span><b data-vu>${esc(nomAffiche(p) || 'Votre prénom')}</b></div>
         <form class="cp-f" novalidate>
-          <h3 class="cp-lab">Comment on vous appelle</h3>
-          <div class="cp-fg">${champ('cp-prenom', 'Prénom', p.prenom, { attrs: 'maxlength="40" autocomplete="given-name" required' })}${champ('cp-nom', 'Nom', p.nom, { facultatif: true, attrs: 'maxlength="60" autocomplete="family-name"', aide: 'Les autres ne voient que son initiale, sauf si vous choisissez de le montrer (juste en dessous).' })}
-          ${champ('cp-pseudo', 'Pseudonyme', p.pseudo, { facultatif: true, attrs: 'maxlength="24" autocomplete="nickname" spellcheck="false" autocapitalize="off"', aide: 'S’il est rempli, il remplace votre prénom. Unique sur le Marché de Gros.' })}</div>
-          <div class="cp-grp"><label class="cp-r">${ti('oeil', 'vous')}<span class="cp-r-t"><b>Montrer mon nom de famille</b><small>Sinon, les autres voient « ${esc(p.prenom || 'Prénom')} ${esc(p.nom ? p.nom[0] + '.' : 'N.')} »${p.pseudo ? ' (votre pseudonyme passe avant)' : ''}</small></span><input type="checkbox" class="cp-tog" role="switch" data-np ${p.nom_public ? 'checked' : ''}></label></div>
-          <h3 class="cp-lab">Ce que vous faites, et où</h3>
+          <div class="cp-fg">${champ('cp-prenom', 'Prénom', p.prenom, { attrs: 'maxlength="40" autocomplete="given-name" placeholder="Votre prénom" required' })}${champ('cp-nom', 'Nom', p.nom, { attrs: 'maxlength="60" autocomplete="family-name" placeholder="Facultatif"' })}
+          ${champ('cp-pseudo', 'Pseudonyme', p.pseudo, { attrs: 'maxlength="24" autocomplete="nickname" spellcheck="false" autocapitalize="off" placeholder="De 3 à 24 caractères"', aide: 'S’il est rempli, il remplace votre prénom.' })}</div>
+          <label class="v2c-ligne"><span>Montrer mon nom de famille</span><input type="checkbox" class="v2c-sw" role="switch" data-np ${p.nom_public ? 'checked' : ''}></label>
           <div class="cp-fg">${roleSeg(p)}${lieu(p)}</div>
+          <div class="v2c-struct"><span class="v2c-lab" id="cp-st-l">Vous représentez une structure ?</span><div data-stf></div></div>
+          <p class="v2c-note">Pas de numéro, de lien ni de réseau social dans le profil.</p>
           <button type="submit" class="cp-go plein">Enregistrer</button><span class="cp-msg" role="status"></span></form>
-        <h3 class="cp-lab">Votre structure</h3>
-        <form class="cp-f" data-stform novalidate><div class="cp-fg"><div data-stf></div></div><button type="submit" class="cp-go plein">Enregistrer la structure</button><span class="cp-msg" role="status" data-stok></span></form>
-        <div data-stv></div>
-        <h3 class="cp-lab">Téléphone</h3>
-        <div class="cp-grp">${ligne({ ico: ti('telephone', 'aide'), t: esc(N().fmtTel(u.tel)), s: 'Numéro du compte', cls: 'info', chev: false })}</div>
-        <p class="cp-note">Le nom affiché sur chaque annonce (nom de vendeur ou d’exploitation) reste celui de l’annonce.</p></div>`;
+        <div data-stv></div></div>`;
       lierRole(main); lierLieu(main, p); badgeStructure(main.querySelector('[data-stv]'));
-      // nom de famille visible ou non (déplacé de Réglages le 24/10/2026 : c'est ce que les autres voient de vous)
-      const np = main.querySelector('[data-np]'); if (np) np.onchange = async e => { try { await enregistrer({ nom_public: e.target.checked }); N().toast('Réglage enregistré.'); } catch (x) { e.target.checked = !e.target.checked; N().toast(x.message); } };
-      // la structure (schéma 23)
-      const sf = main.querySelector('[data-stform]'), S = formStructure(sf.querySelector('[data-stf]'), p), sok = sf.querySelector('[data-stok]'), sgo = sf.querySelector('.cp-go');
-      sf.onsubmit = async e => { e.preventDefault(); sok.textContent = ''; if (!S.verifier()) return; if (!navigator.onLine) { sok.textContent = 'Pas de connexion internet : réessayez quand le réseau revient.'; return; }
-        sgo.disabled = true; sgo.setAttribute('aria-busy', 'true');
-        try { await enregistrer(S.val()); N().toast('Structure enregistrée.', { sous: 'Elle apparaît sur votre profil et vos annonces.' }); badgeStructure(main.querySelector('[data-stv]')); }
-        catch (x) { sok.textContent = x.message; } finally { sgo.disabled = false; sgo.removeAttribute('aria-busy'); } };
-      main.querySelector('[data-av]').onclick = () => choisirAvatar(() => ouvrir('profil'));
-      const z = main.querySelector('[data-av0]'); if (z) z.onclick = async () => { try { await enregistrer({ avatar: null }); bg.rafraichir(); N().toast('Avatar : vos initiales.'); } catch (e) { N().toast(e.message); } };
-      const f = main.querySelector('form'), msg = main.querySelector('.cp-msg'), go = main.querySelector('.cp-go');
+      const f = main.querySelector('form'), msg = main.querySelector('.cp-msg'), go = main.querySelector('.cp-go'), S = formStructure(main.querySelector('[data-stf]'), p);
+      main.querySelector('.cp-sto').setAttribute('aria-labelledby', 'cp-st-l'); main.querySelector('.cp-sto').removeAttribute('aria-label');
+      const lbl = main.querySelector('[data-st="particulier"] b'); if (lbl) lbl.textContent = 'Aucune';
+      // l'aperçu suit la saisie
+      const vu = main.querySelector('[data-vu]'), np = main.querySelector('[data-np]');
+      const apercu = () => { vu.textContent = nomAffiche({ prenom: f.querySelector('#cp-prenom').value.trim(), nom: f.querySelector('#cp-nom').value.trim(), pseudo: f.querySelector('#cp-pseudo').value.trim(), nom_public: np.checked }) || 'Votre prénom'; };
+      f.querySelectorAll('.cp-in').forEach(i => i.addEventListener('input', apercu)); np.onchange = apercu;
       f.querySelectorAll('.cp-in').forEach(i => i.addEventListener('blur', () => { const k = i.id.slice(3); if (VALID[k] && i.value) valider(f, [k]); }));
       f.onsubmit = async e => {
         e.preventDefault(); msg.textContent = ''; if (!valider(f, ['prenom', 'nom', 'pseudo'])) { f.querySelector('[aria-invalid=true]').focus(); return; }
+        if (!S.verifier()) return;
         if (!navigator.onLine) { msg.textContent = 'Pas de connexion internet : réessayez quand le réseau revient.'; return; }
         go.disabled = true; go.setAttribute('aria-busy', 'true'); go.textContent = 'Enregistrement…';
-        try { await enregistrer(Object.assign({ prenom: f.querySelector('#cp-prenom').value.trim(), nom: f.querySelector('#cp-nom').value.trim() || null, pseudo: f.querySelector('#cp-pseudo').value.trim() || null, role: roleVal(f) }, lieuVal(f)));
-          N().toast('Profil enregistré.'); bg.aller('accueil'); }
+        try { await enregistrer(Object.assign({ prenom: f.querySelector('#cp-prenom').value.trim(), nom: f.querySelector('#cp-nom').value.trim() || null, pseudo: f.querySelector('#cp-pseudo').value.trim() || null, nom_public: np.checked, role: roleVal(f) }, lieuVal(f), S.val()));
+          N().toast('Profil enregistré.'); badgeStructure(main.querySelector('[data-stv]')); bg.aller('accueil'); }
         catch (x) { go.disabled = false; go.removeAttribute('aria-busy'); go.textContent = 'Enregistrer'; if (/pseudonyme/i.test(x.message)) { f.querySelector('#cp-pseudo').setAttribute('aria-invalid', 'true'); f.querySelector('#cp-pseudo-e').textContent = x.message; } else msg.innerHTML = `<span class="cp-bad">${esc(ERR(x))}</span>`; }
       };
     },
@@ -833,35 +838,70 @@ label.cp-r{cursor:pointer}
       });
     },
     prefs(main) {
-      const pf = prefs(), p = profil || {}, S = window.MDGSons, sn = S ? S.reglages() : null;
-      main.innerHTML = `<div class="cp-pg"><h2>Réglages</h2>
-        <h3 class="cp-lab">Confidentialité</h3>
-        <div class="cp-grp"><label class="cp-r">${ti('oeil', 'vous')}<span class="cp-r-t"><b>Montrer mon nom de famille</b><small>Sinon, les autres voient « ${esc(p.prenom || 'Prénom')} ${esc(p.nom ? p.nom[0] + '.' : 'N.')} »${p.pseudo ? ' (votre pseudonyme passe avant)' : ''}</small></span><input type="checkbox" class="cp-tog" role="switch" data-np ${p.nom_public ? 'checked' : ''}></label></div>
-        <p class="cp-note">Votre numéro n’est jamais affiché sur vos annonces : on vous écrit et on vous propose un prix dans l’application.</p>
-        <h3 class="cp-lab">À l’écran</h3>
-        <div class="cp-grp"><label class="cp-r">${ti('ecran', 'lien')}<span class="cp-r-t"><b>Messages à l’écran</b><small>Une ligne en bas quand une proposition arrive, est acceptée ou refusée</small></span><input type="checkbox" class="cp-tog" role="switch" data-pf="toasts" ${pf.toasts ? 'checked' : ''}></label>
-          ${S ? ligne({ ico: ti('son', 'marche'), t: 'Sons', s: 'Notes de balafon', v: sn && sn.on ? 'Activés' : 'Désactivés', attrs: 'data-sons' }) : ''}</div>
-        <h3 class="cp-lab">Sur ce téléphone</h3>
-        <div data-pousse></div></div>`;
-      main.querySelectorAll('[data-pf]').forEach(i => i.onchange = () => { const o = prefs(); o[i.dataset.pf] = i.checked; W(KPF, o); N().toast('Réglage enregistré.'); });
-      const s = main.querySelector('[data-sons]'); if (s) s.onclick = () => { fermer(); S && S.panneau(); };
-      cartePousse(main.querySelector('[data-pousse]'));
-      main.querySelector('[data-np]').onchange = async e => { try { await enregistrer({ nom_public: e.target.checked }); N().toast('Réglage enregistré.'); } catch (x) { e.target.checked = !e.target.checked; N().toast(x.message); } };
+      // Réglages (maquette) : apparence, puis les interrupteurs. Pas d'interrupteur par catégorie de notifications (schéma 91) :
+      // seulement Activer/Désactiver sur ce téléphone, et l'essai qui montre la vraie réponse du serveur.
+      const pf = prefs(), S = window.MDGSons, sn = S ? S.reglages() : null, T = window.MDGTheme, V = window.MDGVibre, As = window.MDGAstuces, P = window.MDGPousse;
+      const m = T ? T.mode() : 'auto', st = pousseEtat || (P ? null : 'impossible');
+      const sw = (k, t, s, on, dis) => `<label class="v2c-l haut"><span class="t"><b>${t}</b>${s ? `<small>${s}</small>` : ''}</span><input type="checkbox" class="v2c-sw" role="switch" data-sw="${k}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}></label>`;
+      const PS = { actif: 'Activées · les nouvelles du marché jamais entre 21 h et 7 h', inactif: 'Désactivées sur ce téléphone', refuse: 'Bloquées : autorisez-les dans les réglages du téléphone', installer: 'Sur iPhone : ajoutez d’abord l’application à l’écran d’accueil', impossible: 'Indisponibles dans ce navigateur' };
+      main.innerHTML = `<div class="v2c-pg"><h1 class="v2c-h1">Réglages</h1>
+        ${T ? `<div class="v2c-bloc"><span class="v2c-lab" id="v2c-app">Apparence</span><div class="v2c-seg" role="radiogroup" aria-labelledby="v2c-app">${[['auto', 'Automatique'], ['clair', 'Clair'], ['sombre', 'Sombre']].map(([k, t]) => `<button type="button" role="radio" aria-checked="${m === k}" data-m="${k}">${t}</button>`).join('')}</div></div>` : ''}
+        <div class="v2c-liste">
+          ${sw('pousse', 'Notifications', st ? PS[st] : 'Un instant…', st === 'actif', !(st === 'actif' || st === 'inactif'))}
+          ${S ? sw('sons', 'Sons', 'Notes de balafon à chaque réponse', sn && sn.on) : ''}
+          ${V ? sw('vibre', 'Vibrations', V.possible ? 'Au toucher' : 'Ce navigateur ne permet pas les vibrations', V.actif(), !V.possible) : ''}
+          ${sw('ecran', 'Messages à l’écran', 'Proposition arrivée, acceptée, refusée', pf.toasts !== false)}
+          ${As ? sw('astuces', 'Astuces et tutoriels', 'Un court tutoriel la première fois', As.actif()) : ''}
+        </div>
+        ${st === 'actif' ? '<button type="button" class="v2c-lien" data-essai>Envoyer un essai</button>' : ''}
+        <p class="v2c-msg" role="status" data-res>${esc(essaiTxt)}</p>
+        ${S ? `<div class="v2c-liste">${ligneV2({ t: 'Choisir les sons', attrs: 'data-sons' })}</div>` : ''}
+      </div>`;
+      const dire = t => { try { window.MDGToast ? MDGToast.dire(t, { type: 'ok' }) : N().toast(t.replace(/\*/g, '')); } catch (_) {} };
+      main.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { T.choisir(b.dataset.m); main.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-checked', String(x === b))); });
+      const so = main.querySelector('[data-sons]'); if (so) so.onclick = () => S.panneau();
+      const es = main.querySelector('[data-essai]'); if (es) es.onclick = async () => { es.disabled = true; es.textContent = 'Envoi…';
+        const r = await P.essai().catch(() => null); essaiTxt = texteEssai(r); const o = main.querySelector('[data-res]'); if (o) o.textContent = essaiTxt; es.disabled = false; es.textContent = 'Envoyer un essai'; };
+      main.querySelectorAll('[data-sw]').forEach(i => i.onchange = async () => {
+        const k = i.dataset.sw; i.disabled = true;
+        try {
+          if (k === 'pousse') {
+            if (i.checked) { const r = await P.activer(); essaiTxt = texteEssai(r); dire('Notifications *activées*'); }
+            else { await P.desactiver(); essaiTxt = ''; dire('Notifications *désactivées* sur ce téléphone'); }
+            pousseEtat = await P.etat(); if (main.isConnected) VUES.prefs(main); return;
+          }
+          if (k === 'sons') { S.regler({ on: i.checked }); dire(i.checked ? 'Sons *activés*' : 'Sons *coupés*'); }
+          else if (k === 'vibre') { V.regler(i.checked); dire(i.checked ? 'Vibrations *activées*' : 'Vibrations *coupées*'); }
+          else if (k === 'ecran') { const o = prefs(); o.toasts = i.checked; W(KPF, o); dire('Réglage *enregistré*'); }
+          else if (k === 'astuces') { if (i.checked) As.revoir(); else As.regler(false); dire(i.checked ? 'Astuces *activées*' : 'Astuces et tutoriels *coupés*'); }
+        } catch (x) {
+          i.checked = !i.checked; const c = String(x && x.message);
+          dire(c === 'REFUS' ? 'Autorisez les notifications dans les réglages du téléphone, puis réessayez.' : c === 'INSTALLER' ? 'Sur iPhone, ajoutez d’abord l’application à l’écran d’accueil.' : c === 'SANS_REPONSE' ? 'Pas de réponse à la demande. Réessayez et touchez « Autoriser ».' : ERR(x));
+          if (k === 'pousse' && P) { pousseEtat = await P.etat().catch(() => pousseEtat); if (main.isConnected) VUES.prefs(main); return; }
+        }
+        i.disabled = false; i.defaultChecked = i.checked;
+      });
+      // l'état réel du téléphone (4 s au plus) : seule la ligne des notifications change, et seulement si l'état a changé
+      if (P) Promise.race([P.etat(), new Promise(r => setTimeout(() => r(pousseEtat || 'inactif'), 4000))]).catch(() => 'impossible').then(e => { if (e !== pousseEtat) { pousseEtat = e; if (main.isConnected && main.querySelector('[data-sw="pousse"]') && document.activeElement !== main.querySelector('[data-sw]')) VUES.prefs(main); } });
     },
     securite(main) {
+      // Sécurité (maquette) : code secret, code de secours, appareils, ce que nous gardons ; puis le numéro, la déconnexion, et « Supprimer mon compte »
       const u = me();
-      const acc = (ico, t, s, corps, cls) => `<details class="cp-acc"><summary class="cp-r${cls ? ' ' + cls : ''}">${ico}<span class="cp-r-t"><b>${t}</b><small>${s}</small></span>${CHEV}</summary><div class="cp-acc-c">${corps}</div></details>`;
-      main.innerHTML = `<div class="cp-pg"><h2>Sécurité et compte</h2>
-        <h3 class="cp-lab">Connexion</h3>
-        <div class="cp-grp">${ligne({ ico: ti('telephone', 'aide'), t: esc(N().fmtTel(u.tel)), s: 'Votre numéro de connexion. Pour en changer, écrivez au Marché de Gros.', cls: 'info', chev: false })}
-          ${acc(ti('cle', 'vous'), 'Changer mon code secret', 'Il vous faut votre code actuel', `<form class="cp-f cp-code" novalidate>${champ('cp-c0', 'Code actuel', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}${champ('cp-c1', 'Nouveau code (6 chiffres)', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}${champ('cp-c2', 'Retapez le nouveau code', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}<button type="submit" class="cp-go plein">Enregistrer le nouveau code</button><span class="cp-msg" role="status"></span></form>`)}
-          ${ligne({ ico: ti('bouee', 'demande'), t: 'Nouveau code de secours', s: 'Pour retrouver votre compte si vous oubliez votre code', attrs: 'data-sos' })}</div>
-        <h3 class="cp-lab">Appareils</h3>
-        <div class="cp-grp">${ligne({ ico: ti('sortir', 'marche'), t: 'Me déconnecter', s: 'Sur ce téléphone seulement', attrs: 'data-out' })}
-          ${ligne({ ico: ti('appareils', 'marche'), t: 'Déconnecter tous mes appareils', s: 'Téléphone perdu ou prêté ? Tous devront se reconnecter', attrs: 'data-outall' })}</div>
-        <h3 class="cp-lab">Vos données</h3>
-        <div class="cp-grp">${acc(ti('donnees', 'aide'), 'Ce que nous gardons', 'Et pourquoi', '<p class="cp-help" style="font-size:13.5px;margin:0">Numéro et code secret (chiffré) : pour vous connecter. Profil : pour vous présenter aux autres. Annonces : pour être trouvées. Négociations et messages : pour que les deux parties gardent la trace de leurs échanges. Signalements : pour la modération. Sur cet appareil : vos annonces en attente, vos réglages et une copie des annonces des autres pour l’usage hors connexion.</p>')}
-          ${acc(ti('supprimer', 'bad'), 'Supprimer mon compte', 'Définitif : vos annonces sont retirées', '<p style="margin:0 0 12px;color:var(--mute);font-size:14px;line-height:1.5">Vos annonces sont retirées et les négociations en cours fermées. Votre profil et votre code de secours sont effacés, et la connexion est bloquée. Les accords déjà conclus et les messages restent visibles des deux parties, pour la trace des échanges ; l’autre partie y voit « Compte supprimé ».</p><button type="button" class="cp-alt cp-bad" data-del>Je veux supprimer mon compte…</button>', 'bad')}</div></div>`;
+      const det = (t, corps) => `<details class="v2c-det"><summary class="v2c-l"><span class="t">${t}</span>${CHEV_V2}</summary><div class="v2c-det-c">${corps}</div></details>`;
+      main.innerHTML = `<div class="v2c-pg"><h1 class="v2c-h1">Sécurité</h1>
+        <div class="v2c-liste">
+          ${det('Changer mon code secret', `<form class="cp-f cp-code" novalidate>${champ('cp-c0', 'Code actuel', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}${champ('cp-c1', 'Nouveau code (6 chiffres)', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}${champ('cp-c2', 'Retapez le nouveau code', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="new-password"' })}<button type="submit" class="cp-go plein">Enregistrer le nouveau code</button><span class="cp-msg" role="status"></span></form>`)}
+          ${ligneV2({ t: 'Recréer un code de secours', attrs: 'data-sos' })}
+          ${ligneV2({ t: 'Déconnecter tous mes appareils', attrs: 'data-outall' })}
+          ${det('Ce que nous gardons et pourquoi', '<p>Numéro et code secret (chiffré) : pour vous connecter. Profil : pour vous présenter aux autres. Annonces : pour être trouvées. Négociations et messages : pour que les deux parties gardent la trace de leurs échanges ; l’équipe peut les lire pour la sécurité, les litiges et la lutte contre la fraude. Signalements : pour la modération. Sur cet appareil : vos annonces en attente, vos réglages et une copie des annonces des autres pour l’usage hors connexion.</p>')}
+        </div>
+        <div class="v2c-liste">
+          <div class="v2c-l info"><span class="t">Numéro du compte<small>Pour en changer, écrivez au Marché de Gros.</small></span><span class="v">${esc(N().fmtTel(u.tel))}</span></div>
+          ${ligneV2({ t: 'Me déconnecter', s: 'Sur ce téléphone seulement', attrs: 'data-out' })}
+        </div>
+        <button type="button" class="v2c-danger" data-del>Supprimer mon compte</button>
+      </div>`;
+      const oui = (t, o) => window.MDGDemande ? MDGDemande.oui(t, o) : Promise.resolve(confirm(t));
       const f = main.querySelector('.cp-code'), msg = f.querySelector('.cp-msg'), go = f.querySelector('.cp-go');
       f.onsubmit = async e => {
         e.preventDefault(); const c0 = f.querySelector('#cp-c0').value, c1 = f.querySelector('#cp-c1').value, c2 = f.querySelector('#cp-c2').value;
@@ -871,15 +911,77 @@ label.cp-r{cursor:pointer}
         if (/^(\d)\1{5}$/.test(c1) || c1 === '123456' || c1 === '654321') return err('cp-c1', 'Trop facile à deviner : évitez 123456 ou 6 fois le même chiffre.');
         if (c1 !== c2) return err('cp-c2', 'Les deux codes ne sont pas identiques.');
         go.disabled = true; go.setAttribute('aria-busy', 'true'); go.textContent = 'Vérification…'; msg.textContent = '';
-        try { await N().signIn(u.tel, c0); await N().api('/auth/v1/user', { method: 'PUT', auth: true, body: { password: c1 } }); f.reset(); msg.innerHTML = '<span class="cp-ok">✓ Code changé</span>'; }
+        try { await N().signIn(u.tel, c0); await N().api('/auth/v1/user', { method: 'PUT', auth: true, body: { password: c1 } }); f.reset(); msg.innerHTML = '<span class="cp-ok">Code changé</span>'; }
         catch (x) { msg.innerHTML = `<span class="cp-bad">${esc(/incorrect/i.test(x.message) ? 'Code actuel incorrect.' : ERR(x))}</span>`; }
         go.disabled = false; go.removeAttribute('aria-busy'); go.textContent = 'Enregistrer le nouveau code';
       };
-      main.querySelector('[data-sos]').onclick = async e => { if (!confirm('Créer un nouveau code de secours ? L’ancien ne fonctionnera plus.')) return; const b = e.currentTarget; b.disabled = true; try { const c = await N().rpc('creer_secours'); fermer(); N().showSecours ? N().showSecours(c) : alert('Votre code de secours : ' + c); } catch (x) { b.disabled = false; N().toast(x.message); } };
+      main.querySelector('[data-sos]').onclick = async e => { const b = e.currentTarget; if (!await oui('Créer un nouveau code de secours ? L’ancien ne fonctionnera plus.', { ok: 'Nouveau code' })) return;
+        b.disabled = true; try { const c = await N().rpc('creer_secours'); fermer(); N().showSecours ? N().showSecours(c) : alert('Votre code de secours : ' + c); } catch (x) { b.disabled = false; N().toast(ERR(x)); } };
       main.querySelector('[data-out]').onclick = deconnecter;
-      main.querySelector('[data-outall]').onclick = async () => { if (!confirm('Déconnecter tous vos appareils, celui-ci compris ?')) return; try { await N().api('/auth/v1/logout?scope=global', { method: 'POST', auth: true }); } catch (_) {} fermer(); N().signOut(); N().toast('Tous vos appareils sont déconnectés.'); };
+      main.querySelector('[data-outall]').onclick = async () => { if (!await oui('Déconnecter tous vos appareils, celui-ci compris ?', { ok: 'Déconnecter', danger: true })) return;
+        try { await N().api('/auth/v1/logout?scope=global', { method: 'POST', auth: true }); } catch (_) {} fermer(); N().signOut(); N().toast('Tous vos appareils sont déconnectés.'); };
       main.querySelector('[data-del]').onclick = () => supprimer(main);
+    },
+    aide(main) {
+      // Aide (maquette) : le guide, cinq questions qui reviennent, puis parler à l'équipe. Les réponses viennent de v3/aide.js.
+      const AI = window.MDGAide, QR = (AI && AI.QR) || [], G = window.MDGGuide, M = window.MDGMessages;
+      const Q = [['Qui paie si c’est cassé en route ?', 'La marchandise est cassée en route'], ['Qui paie le transport si je refuse ?', 'Je refuse la marchandise'], ['Panne ou météo : la commande est en retard', 'Panne ou météo'], ['C’est quoi, le mot secret ?', 'À quoi sert le mot secret ?'], ['Comment se passe le paiement ?', 'Comment je paie ?']]
+        .map(([q, t]) => [QR.find(e => e.q === q), t]).filter(x => x[0]);
+      main.innerHTML = `<div class="v2c-pg"><h1 class="v2c-h1">Aide</h1>
+        ${G ? `<button type="button" class="v2c-guide" data-guide><span><b>Comment ça marche</b><small>Le guide de l’application, pas à pas</small></span>${CHEV_V2}</button>` : ''}
+        ${AI ? `<div class="v2c-liste">${Q.map(([e, t]) => ligneV2({ t, attrs: `data-q="${esc(e.id)}"` })).join('')}${ligneV2({ t: 'Toutes les questions', attrs: 'data-q=""' })}</div>` : ''}
+        ${AI || M ? `<div class="v2c-carte"><b>Parler à l’équipe</b><p>Votre message part dans la conversation avec le Marché de Gros. Votre numéro reste caché aux autres membres.</p>
+          <button type="button" class="v2c-go m" data-ecrire>Écrire au Marché de Gros</button></div>` : ''}
+      </div>`;
+      const g = main.querySelector('[data-guide]'); if (g) g.onclick = () => G.ouvrir();
+      main.querySelectorAll('[data-q]').forEach(b => b.onclick = () => AI.ouvrir(b.dataset.q ? { id: b.dataset.q } : {}));
+      const w = main.querySelector('[data-ecrire]'); if (w) w.onclick = () => AI ? AI.ouvrir({ personne: true }) : M.ecrireMarche();
+    },
+    appro(main) {
+      // Approvisionnement (maquette) : racheter, rappels d'achat, achats groupés ; plus les besoins réguliers des professionnels (v3/appro.js).
+      // Lecture seule ici : racheter, rejoindre un groupe ou régler un rappel se fait dans le module concerné, qui demande toujours une confirmation.
+      const Rc = window.MDGRacheter, Gr = window.MDGGroupes, Ap = window.MDGAppro, App = window.MDGApp, d = approCache;
+      const img = s => App && App.SACK && s && App.SACK[s] != null ? App.IMG + 'produit-' + s + '.webp' : '';
+      const vig = (s, n, c) => { const i = img(s); return `<span class="v2c-vig${c ? ' ' + c : ''}" aria-hidden="true">${i ? `<img src="${esc(i)}" alt="" loading="lazy">` : esc(String(n || '?').charAt(0).toUpperCase())}</span>`; };
+      const jr = t => t ? new Date(t + (String(t).length === 10 ? 'T12:00:00' : '')).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : '';
+      const JOURS = ['', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+      const rap = x => x.rappel && x.rappel.actif ? (x.rappel.frequence === 'quotidien' ? 'chaque jour' : 'chaque ' + (JOURS[x.rappel.jour] || 'semaine')) + ' à ' + x.rappel.heure + ' h' : '';
+      const charge = '<p class="v2c-vide">Un instant…</p>';
+      const achats = d && d.achats, groupes = d && d.groupes, raps = (achats || []).filter(x => rap(x));
+      const ST = { propose: 'Proposé au vendeur', ouvert: 'Ouvert', seuil_atteint: 'Seuil atteint', en_attente_confirmation: 'En attente de confirmation', confirme: 'Confirmé', termine: 'Terminé', annule: 'Annulé', expire: 'Expiré' };
+      main.innerHTML = `<div class="v2c-pg"><h1 class="v2c-h1">Approvisionnement</h1>
+        ${Rc ? `<section class="v2c-sec" aria-labelledby="v2c-rc"><h2 class="v2c-h2" id="v2c-rc">Racheter</h2><p class="v2c-sous">Même vendeur, même produit. Rien n’est acheté sans votre confirmation.</p>
+          ${!achats ? charge : achats.length ? achats.slice(0, 4).map(x => `<div class="v2c-ach">${vig(x.slug, x.produit)}<span class="t"><b>${esc(fmt(x.quantite))} ${esc(x.unite || '')} de ${esc(x.produit || x.slug || '')}</b><small>${esc(x.vendeur || '')} · ${esc(fmt(x.prix_unitaire))} F / ${esc(x.unite || '')} · ${esc(jr(x.dernier))}</small></span><button type="button" class="v2c-cont" data-rc="${esc(x.commande_id)}">Racheter</button></div>`).join('')
+            + (achats.length > 4 ? '<button type="button" class="v2c-lien" data-rcall>Tous mes achats habituels</button>' : '')
+            : '<p class="v2c-vide">Pas encore d’achat terminé. Une commande terminée se rachète d’ici en un geste.</p>'}</section>` : ''}
+        ${Rc && achats && achats.length ? `<div class="v2c-liste"><button type="button" class="v2c-l haut" data-rcall><span class="t"><b>Rappel d’achat</b><small>${raps.length ? esc(raps.map(x => (x.produit || x.slug) + ' : ' + rap(x)).join(' · ')) : 'Aucun rappel : réglez-le sur un achat'}</small></span>${CHEV_V2}</button></div>` : ''}
+        ${Gr ? `<section class="v2c-bloc" aria-labelledby="v2c-gr" style="gap:12px"><div><h2 class="v2c-h2" id="v2c-gr">Achats groupés</h2><p class="v2c-sous">On s’unit pour le volume. Chacun confirme sa part : rien n’est commandé sans vous.</p></div>
+          ${!groupes ? charge : groupes.length ? groupes.slice(0, 6).map(g => { const t = +g.total || 0, o = +g.objectif || 0, w = o ? Math.min(100, t / o * 100) : 0, moi = g.mon_statut && g.mon_statut !== 'retire', ouvert = ['ouvert', 'seuil_atteint'].includes(g.statut);
+              return `<div class="v2c-grp"><div class="v2c-grp-h">${vig(g.produit_slug || g.slug, g.produit, 'p')}<span class="t"><b>${esc(g.produit || '')} · ${esc(g.zone || '')}</b><small>${esc(String(g.participants || 0))} participant${+g.participants > 1 ? 's' : ''} · ${esc(ST[g.statut] || '')}</small></span></div>
+                <span class="v2c-jauge" role="img" aria-label="${esc(fmt(t))} sur ${esc(fmt(o))} ${esc(g.unite || '')}"><i style="width:${w.toFixed(1)}%"></i></span>
+                <span class="v2c-prog">${esc(fmt(t))} ${esc(g.unite || '')} sur ${esc(fmt(o))}</span>
+                ${moi ? '<span class="v2c-ok">Vous y participez</span>' : g.je_suis_vendeur ? '<span class="v2c-ok">Votre offre</span>' : ''}
+                ${moi && ouvert ? `<button type="button" class="v2c-disc" data-gq="${esc(g.id)}">Quitter le groupe</button>` : `<button type="button" class="${!moi && ouvert && !g.je_suis_vendeur ? 'v2c-go m' : 'v2c-disc'}" data-g="${esc(g.id)}">${!moi && ouvert && !g.je_suis_vendeur ? 'Rejoindre' : 'Voir le groupe'}</button>`}</div>`; }).join('')
+            : '<p class="v2c-vide">Aucun groupe pour l’instant. Sur une offre avec un prix, touchez « Acheter à plusieurs ».</p>'}
+          <button type="button" class="v2c-lien" data-gall>Voir les achats groupés ouverts</button></section>` : ''}
+        ${Ap ? `<div class="v2c-liste">${ligneV2({ t: 'Besoins réguliers', s: 'Restaurant, hôtel, cantine : vos besoins, les propositions, la comparaison', attrs: 'data-pro' })}</div>` : ''}
+      </div>`;
+      const on = (s, f) => main.querySelectorAll(s).forEach(b => b.onclick = () => f(b));
+      on('[data-rc]', b => Rc.ouvrir(b.dataset.rc));
+      on('[data-rcall]', () => Rc.habituels());
+      on('[data-g]', b => Gr.groupe(b.dataset.g));
+      on('[data-gall]', () => Gr.ouvrir('ouverts'));
+      on('[data-pro]', () => Ap.ouvrir());
+      on('[data-gq]', async b => { if (!await (window.MDGDemande ? MDGDemande.oui('Vous retirer de cet achat groupé ?', { ok: 'Me retirer', danger: true }) : Promise.resolve(confirm('Vous retirer de cet achat groupé ?')))) return;
+        b.disabled = true; try { await N().rpc('groupe_quitter', { p_id: b.dataset.gq }); N().toast('Vous êtes retiré du groupe'); lireAppro(main, true); } catch (x) { b.disabled = false; N().toast(ERR(x)); } });
+      lireAppro(main);
+    },
+    boutique(main) {
+      // Ma boutique (maquette) : dessinée par v3/boutique.js dans cette page
+      main.innerHTML = `<div class="v2c-pg"><h1 class="v2c-h1">Ma boutique</h1><div class="v2c-pg" data-bq></div></div>`;
+      if (window.MDGBoutique) MDGBoutique.gerer({ dans: main.querySelector('[data-bq]'), fermer });
     }
+
   };
   // dans l'application : on « sort du marché » (v3/porte.js)
   function deconnecter() { fermer(); const fin = () => N().toast('Vous êtes sorti du marché. Vos annonces restent publiées.'); if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N().signOut()); else { N().signOut(); fin(); } }
@@ -891,14 +993,14 @@ label.cp-r{cursor:pointer}
     let bloque = null; try { bloque = await N().rpc('compte_suppression_verifier'); } catch (_) {}
     btn.disabled = false;
     if (typeof bloque === 'string' && bloque) {
-      const box = document.createElement('div'); box.className = 'cp-card'; box.style.marginTop = '10px';
-      box.innerHTML = `<p class="cp-bad" role="alert" style="margin:0 0 12px;font-size:14.5px;line-height:1.5">${esc(bloque.replace(/^[A-Z_]{3,} : /, ''))}</p><button type="button" class="cp-alt" data-no>Compris</button>`;
+      const box = document.createElement('div'); box.className = 'v2c-boite'; box.setAttribute('data-garde', '');
+      box.innerHTML = `<p role="alert"><b>Suppression impossible pour l’instant.</b> ${esc(bloque.replace(/^[A-Z_]{3,} : /, ''))}</p><button type="button" class="v2c-disc" data-no>Compris</button>`;
       btn.replaceWith(box);
       box.querySelector('[data-no]').onclick = () => bg.rafraichir();
       return;
     }
-    const box = document.createElement('div'); box.className = 'cp-card'; box.style.marginTop = '10px';
-    box.innerHTML = `<form class="cp-f" novalidate><p style="margin:0;font-size:14.5px">Pour confirmer, tapez votre code secret.</p>${champ('cp-dc', 'Code secret', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}<div class="cp-row"><button type="submit" class="cp-go" style="background:#C0442B">Supprimer définitivement</button><button type="button" class="cp-alt" data-no>Annuler</button></div></form>`;
+    const box = document.createElement('div'); box.className = 'v2c-boite'; box.setAttribute('data-garde', '');
+    box.innerHTML = `<form class="cp-f" novalidate><p>Vos annonces sont retirées et les négociations en cours fermées. Votre profil et votre code de secours sont effacés, et la connexion est bloquée. Les accords déjà conclus et les messages restent visibles des deux parties ; l’autre partie y voit « Compte supprimé ».</p><p>Pour confirmer, tapez votre code secret.</p>${champ('cp-dc', 'Code secret', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}<div class="v2c-duo"><button type="submit" class="cp-go v2c-rouge">Supprimer définitivement</button><button type="button" class="v2c-disc" data-no>Annuler</button></div></form>`;
     main.querySelector('[data-del]').replaceWith(box);
     box.querySelector('[data-no]').onclick = () => bg.rafraichir();
     box.querySelector('form').onsubmit = async e => {

@@ -203,3 +203,5 @@ label.v2c-l { cursor: pointer; }
 }
 @media (prefers-reduced-motion: reduce) { .v2c-sw, .v2c-sw::after { transition: none; } }
 .cp.v2c .cp-go.v2c-rouge { background: var(--hausse); color: var(--action-t); }
+.cp.v2c [tabindex="-1"]:focus { outline: none; }
+.cp.v2c .cp-fg { padding: 0; background: none; border-radius: 0; box-shadow: none; gap: 18px; }

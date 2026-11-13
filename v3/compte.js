@@ -417,12 +417,13 @@ label.cp-r{cursor:pointer}
     const main = bg.querySelector('.cp-main'), top = bg.querySelector('.cp-top'), moi = bg;
     // une page plein écran au-dessus de l'accueil : la barre d'onglets reste visible en dessous (maquette, lot 13)
     const poser = () => { if (!moi.isConnected) return;
-      const t = document.querySelector('[data-pg="home"] .v2-tabs'), r = t && t.getBoundingClientRect();
+      const t = document.querySelector('.v2-tabs'), r = t && t.getBoundingClientRect();
       // les onglets sont vraiment à l'écran (pas cachés sous une autre page) : on regarde ce qu'il y a sous le doigt, sans le compte
       let vue = false; if (t && r.height > 0 && r.top < innerHeight) { moi.style.visibility = 'hidden'; const x = document.elementFromPoint(r.left + r.width / 2, r.top + Math.min(r.height / 2, 28)); moi.style.visibility = ''; vue = !!(x && t.contains(x)); }
       moi.classList.toggle('v2c-plein', !!vue);
-      if (vue) { Object.assign(moi.style, { top: '0px', left: Math.max(0, r.left) + 'px', right: Math.max(0, innerWidth - r.right) + 'px', bottom: Math.max(0, innerHeight - r.top) + 'px' }); t.classList.add('cp-actif'); }
-      else ['top', 'left', 'right', 'bottom'].forEach(k => { moi.style[k] = ''; });
+      // la hauteur suit le clavier (règle de v3/nuage.js : height = --vvh), moins la barre d'onglets
+      if (vue) { Object.assign(moi.style, { left: Math.max(0, r.left) + 'px', right: Math.max(0, innerWidth - r.right) + 'px' }); moi.style.setProperty('height', `calc(var(--vvh, 100%) - ${Math.max(0, innerHeight - r.top)}px)`, 'important'); t.classList.add('cp-actif'); }
+      else { moi.style.left = moi.style.right = ''; moi.style.removeProperty('height'); }
       moi._tabs = vue ? t : null; };
     // les onglets du bas : « Compte » revient en haut du compte ; un autre onglet ferme le compte puis fait son travail
     const onglets = e => { const b = e.target && e.target.closest && e.target.closest('.v2-tabs .v2-tab'); if (!b || !moi.isConnected || !moi.classList.contains('v2c-plein')) return;
@@ -952,7 +953,7 @@ label.cp-r{cursor:pointer}
       const ST = { propose: 'Proposé au vendeur', ouvert: 'Ouvert', seuil_atteint: 'Seuil atteint', en_attente_confirmation: 'En attente de confirmation', confirme: 'Confirmé', termine: 'Terminé', annule: 'Annulé', expire: 'Expiré' };
       main.innerHTML = `<div class="v2c-pg"><h1 class="v2c-h1">Approvisionnement</h1>
         ${Rc ? `<section class="v2c-sec" aria-labelledby="v2c-rc"><h2 class="v2c-h2" id="v2c-rc">Racheter</h2><p class="v2c-sous">Même vendeur, même produit. Rien n’est acheté sans votre confirmation.</p>
-          ${!achats ? charge : achats.length ? achats.slice(0, 4).map(x => `<div class="v2c-ach">${vig(x.slug, x.produit)}<span class="t"><b>${esc(fmt(x.quantite))} ${esc(x.unite || '')} de ${esc(x.produit || x.slug || '')}</b><small>${esc(x.vendeur || '')} · ${esc(fmt(x.prix_unitaire))} F / ${esc(x.unite || '')} · ${esc(jr(x.dernier))}</small></span><button type="button" class="v2c-cont" data-rc="${esc(x.commande_id)}">Racheter</button></div>`).join('')
+          ${!achats ? charge : achats.length ? achats.slice(0, 4).map(x => `<div class="v2c-ach">${vig(x.slug, x.produit)}<span class="t"><b>${esc(fmt(x.quantite))} ${esc(App && App.unites ? App.unites(x.quantite, x.unite || '') : x.unite || '')} de ${esc(x.produit || x.slug || '')}</b><small>${esc(x.vendeur || '')} · ${esc(fmt(x.prix_unitaire))} F / ${esc(x.unite || '')} · ${esc(jr(x.dernier))}</small></span><button type="button" class="v2c-cont" data-rc="${esc(x.commande_id)}">Racheter</button></div>`).join('')
             + (achats.length > 4 ? '<button type="button" class="v2c-lien" data-rcall>Tous mes achats habituels</button>' : '')
             : '<p class="v2c-vide">Pas encore d’achat terminé. Une commande terminée se rachète d’ici en un geste.</p>'}</section>` : ''}
         ${Rc && achats && achats.length ? `<div class="v2c-liste"><button type="button" class="v2c-l haut" data-rcall><span class="t"><b>Rappel d’achat</b><small>${raps.length ? esc(raps.map(x => (x.produit || x.slug) + ' : ' + rap(x)).join(' · ')) : 'Aucun rappel : réglez-le sur un achat'}</small></span>${CHEV_V2}</button></div>` : ''}

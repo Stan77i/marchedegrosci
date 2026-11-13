@@ -12,7 +12,7 @@ Ce fichier est lu automatiquement par Claude Code. Le détail de tout ce qui a �
 3. partir de `origin/main` à jour ;
 4. continuer la prochaine tâche de la partie 3, ou celle que sa phrase désigne, puis lui dire en deux lignes où on en est.
 
-**Compétences : s'en servir sans cesse, dès qu'une tâche en a besoin** (règle du propriétaire, 23/10/2026). Les 25 compétences du dépôt (`.claude/skills/` : design, UX, anti-« IA », navigateur, business, marketing, SEO) et leur usage sont listés dans `docs/REPRISE.md`, partie 4.
+**Compétences : s'en servir sans cesse, dès qu'une tâche en a besoin** (règle du propriétaire, 23/10/2026). Les 32 compétences du dépôt (`.claude/skills/` : design, UX, anti-« IA », navigateur, business, marketing, SEO, code minimal `ponytail`, lecture des réseaux `agent-reach`) et leur usage sont listés dans `docs/REPRISE.md`, partie 4.
 
 ## Règle n° 1 : tenir ce fichier à jour
 
@@ -216,7 +216,9 @@ Le propriétaire a répondu « ok pour tout » le 25/10/2026 : les 32 questions 
 
 ## Claude Design
 
-- **Décision du propriétaire (23/10/2026) : pas de dossier ni d'outil pour Claude Design dans le dépôt.** Le dossier `claude-design/` a été retiré (PR « Retrait du dossier Claude Design »). Ne pas le recréer, et ne jamais publier de copie de l'application qui lève la protection « ordinateur → maintenance ».
+- **Dossier de passage pour Claude Design** (règle du propriétaire, 13/11/2026, remplace la décision du 23/10/2026) : Claude Design lit le dépôt sur GitHub. Le dossier `docs/brief-design/` lui sert de point d'entrée : `BRIEF.md` (application, marque, règles), les captures, et **`ETAT-DESIGN.md`** : ce qui est **déjà fait** dans l'application (écran par écran, avec ses captures) et ce qu'il doit **faire maintenant**, pour qu'il ne refasse jamais ce qui existe. À chaque nouvelle fonctionnalité ou nouvel écran construit, mettre à jour ce dossier dans la même PR (captures clair et sombre, iPhone émulé ; le code seulement s'il est utile), avec une phrase du type « Déjà fait : … Fais maintenant : … ».
+- **Retour de Claude Design** : quand le propriétaire envoie les fichiers de Claude Design, les lire, puis lui dire en français simple ce qu'il a fait, où, et ce qu'il n'a pas fait ; après la mise en œuvre, redire ce qui reste.
+- Toujours interdit : publier une copie de l'application qui lève la protection « ordinateur → maintenance ». Une maquette de Claude Design (données factices) ne part jamais en production ni sur le site, et ses données d'exemple ne sont jamais présentées comme réelles.
 
 ## Compétences business (founder-skills)
 

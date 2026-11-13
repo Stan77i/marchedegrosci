@@ -183,6 +183,7 @@ Ce sont vos décisions. Chaque ligne est une règle en service ou à respecter.
 **Façon de travailler**
 - Claude ne fusionne jamais : c'est vous. Une PR par changement.
 - Captures d'écran (et vidéo pour une animation) envoyées avant chaque PR qui change un écran.
+- Claude Design lit le dossier `docs/brief-design/` sur GitHub : à chaque nouvel écran, Claude y met les captures et la liste « déjà fait / à faire maintenant », pour qu'il ne refasse rien deux fois.
 - Rien sur le vrai serveur sans votre « OK production ». Rien n'est effacé sans votre accord.
 - Aucun chiffre inventé. Rien n'est dit « réussi » sans preuve.
 - Ce tableau de bord est mis à jour à chaque changement d'état.

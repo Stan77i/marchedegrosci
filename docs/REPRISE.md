@@ -156,6 +156,10 @@
 - organisation : `sop-creator` (procédures), `prd-generator` (cahier des charges).
 - Toujours : en français, actions gratuites seulement, aucun chiffre sans source, jamais dire qu'un paiement a été encaissé.
 
+**Code et veille** (ajoutées le 13/11/2026, voir `.claude/skills/PONYTAIL-AGENT-REACH-NOTICE.md`) :
+- `ponytail` : la plus petite modification qui règle tout le problème ; `ponytail-review` (relire une modification), `ponytail-audit` (relire tout le dépôt, constats seulement), `ponytail-debt` (raccourcis laissés exprès). Les règles de `CLAUDE.md` passent avant (français, captures, documentation, contrôle qualité) ;
+- `agent-reach` : lecture seule de Facebook, Instagram, X, Reddit, YouTube… pour la veille ; il faut d'abord installer son programme, avec l'accord du propriétaire.
+
 **Fournies par l'environnement Claude Code** (pas dans le dépôt, disponibles selon la session) : `supabase` et `supabase-postgres-best-practices` (avant tout changement de base), `dataviz` (graphiques, tableaux de chiffres), `artifact-design` (pages publiées), les compétences de sécurité (`security-review`, `code-review`). Si l'une manque, le dire au propriétaire plutôt que de s'en passer en silence.
 
 ## 5. Pièges connus

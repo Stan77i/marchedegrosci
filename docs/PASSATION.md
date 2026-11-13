@@ -2231,3 +2231,12 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - `css/sombre.css` : les mêmes en mode nuit (`--vert` devient maïs, comme la maquette) et `html[data-theme=sombre] [data-v2]`.
 - Contrastes mesurés (`contrast-check.py`, vrai fond) : `--hausse` 4,97:1 sur papier, 9,10:1 en sombre ; `--vert-texte` 5,52:1 sur carte, 10,89:1 en sombre ; `--mute` 5,24:1 et 6,34:1.
 - Aucun écran ne s'en sert encore : aucun changement visible. `?v=20261113r1` sur les deux feuilles, cache `mgci-v303`.
+
+## 13/11/2026 · Refonte, lots 2 et 3 : onglets en bas, accueil « Duo », Activité
+
+- **Captures validées** par le propriétaire (« ok ») avant la PR ; puis, à sa demande (« est-ce que tu respectes exactement ce que Claude Design a fait ? »), l'écran **Activité** (lot 10) a été avancé et refait comme la maquette, et « Achetez en confiance » a pris le style de la maquette.
+- `application.dc.html` : écran `home` refait (attribut `data-v2`, fond `var(--papier)`) ; nouvelle méthode `v2Vals()` (onglets, accueil, Activité) branchée dans `renderVals` ; `accueil()` renvoie aussi `accActN`, `accAlN`, `v2Mine`. La roue, les chiffres en cartes et la barre J'ai / Je cherche du bas ne sont plus affichés (leur code JS reste, à nettoyer au lot 16).
+- `css/v2.css` (nouveau) : onglets, feuille du bas, accueil, Activité, tampons ; clair et sombre par les jetons du lot 1.
+- **Données réelles seulement** : prix médian à partir de 4 prix publiés ; annonces de la région de la personne, sinon du pays ; Activité = `MDGActivite.tout()` (sans les messages, qui ont leur ligne) puis les annonces de la personne.
+- **Changements à savoir** : l'onglet Activité ne montre plus les « Dernières annonces » du marché ni les ventes conclues (`ventes_recentes()`) ; le glisser pour retirer une ligne n'existe plus (la maquette ne l'a pas). Les alertes (connexion, propositions, messages, stock épuisé, codes) sont dans l'écran Alertes, ouvert par la cloche.
+- Vérifié (Playwright, iPhone émulé, clair et sombre, 390 et 320 px) : aucune erreur, pas de débordement. Contrastes : tampons `#765802` 5,59:1, `#31543C` 7,18:1, `#F2C94C` sur sombre 11,78:1. Captures dans `docs/brief-design/captures/`.

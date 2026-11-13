@@ -2267,3 +2267,12 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Styles dans `css/v2.css` (préfixe `.nx-bg`), couleurs claires en dur traduites en sombre par `app/nuit.js` (comme avant : accents vert clair en sombre, pas maïs).
 - **Prix du moment** (lot 8 avancé) : onglet Prix refait (`v2Vals`, `pxRows`) ; `mdg-tableau` n'est plus affiché dans l'onglet.
 - Vérifié (iPhone émulé, clair et sombre, données d'essai pour la négociation) : aucune erreur.
+
+## 13/11/2026 · Refonte, lot 7 : Publier en 5 étapes
+
+- Captures validées (« ok »). Pages `vendre` et `demande` refaites (`data-v2`), méthode `v2Pub(mode)` ; l'ancien formulaire n'est plus affiché (son code de calcul reste, à nettoyer au lot 16).
+- Enregistrement inchangé : `pubOffer()` / `pubDemand()` (locaux puis synchronisés par `v3/nuage.js`) ; sans compte, la porte « Rendez votre annonce visible de tous » s'ouvre comme avant. `pubDemand()` garde maintenant « prix ferme » (`negociable: false`).
+- Données réelles : 9 produits avec photo (les plus actifs d'abord) ; villes : la sienne, celles de sa région (`MDGVilles.de`), puis les grandes villes, « Autre ville » avec recherche (`MDGVilles.toutes`) ; prix de départ = médiane des annonces publiées du produit dans la même unité ; jauge seulement à partir de 4 prix ; fin : 2 ou 3 annonces d'en face avec « Proposer » (`card().neg`).
+- Quand : offre « maintenant », date à +7 ou +14 jours, ou « mois » ; demande « vite », « semaine », « mois ». Écarts avec la maquette : « À la prochaine récolte » → « Ce mois-ci », « Chaque semaine » retiré.
+- Plus demandés à la publication : quantité minimale, transport (valeur par défaut d'avant : `hors_ville` pour une offre, `vendeur` pour une demande), agent terrain, exigences.
+- Vérifié (iPhone émulé, clair et sombre) : aucune erreur ; une offre publiée s'enregistre bien sur le téléphone.

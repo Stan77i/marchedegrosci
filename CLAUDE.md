@@ -226,6 +226,8 @@ Le propriétaire a répondu « ok pour tout » le 13/11/2026 à la maquette « M
 - **Espace équipe dans l'application** (en plus de `admin.html`), réservé à l'administrateur (`est_admin` vérifié par le serveur) ;
 - **corrections de la maquette par Claude Code** : la porte garde l'alternance « marché de Gros » / « marché du pays » ; les commissions s'écrivent « Calculée » (jamais « Encaissé ») ; les données d'exemple de la maquette ne vont jamais dans l'application ;
 - quand la maquette contredit une ancienne règle **d'écran** (place des entrées, onglets du haut, roue, avatars, sous-titres), la maquette l'emporte ; les règles **d'argent, de sécurité, de vie privée et de texte** (« PAYÉ », « encaissé », rien d'inventé, numéros cachés) restent toujours ;
+- **la carte du réseau reste celle de l'application** (décision du propriétaire, 13/11/2026 : « épouse juste sa logique, mais ta carte doit être gardée, elle est plus pro ») : on garde la carte MapLibre actuelle et on ne prend à la maquette que sa logique (panneau, filtres, colonne de boutons) ;
+- **toujours respecter ce que Claude Design a fait** (redit par le propriétaire le 13/11/2026) : reproduire la maquette fidèlement, en gardant la logique de l'application ; s'il y a un problème (règle, donnée absente), **le dire en très peu de mots** ;
 - la maquette elle-même n'est pas copiée dans le dépôt (GitHub Pages la servirait au public avec ses fausses données) : elle est gardée hors du dépôt et décrite dans `docs/brief-design/ETAT-DESIGN.md`.
 
 ## Claude Design

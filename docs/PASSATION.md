@@ -2258,3 +2258,27 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - « Proposer un prix » = l'action existante (`card().neg`, `MDGNegoce.proposer`) ; profil = `card().voir` ; pastille = le premier statut de `MDGStatut.liste()`.
 - Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur.
+
+## 13/11/2026 · Refonte, lot 6 (négociation) et Prix du moment
+
+- **Règle redite par le propriétaire** : « toujours respecter ce que Claude Design a fait ; s'il y a un problème, me le dire en très peu de mots ».
+- `v3/negoce.js` : `editeur()` refait comme la maquette (cases − / + pour la quantité et le prix, pas du prix d'environ 2,5 %, « min. … · … disponibles », « Demandé : … », écart, reçu Marchandise / Transport « Changer » / Total figé à l'accord, conditions sous « Ajouter une condition », « Le paiement se fait à la livraison, hors application. ») ; mêmes contrôles qu'avant (minimum, maximum, entiers, plafond 1 milliard, prix ferme, transport à part avec son prix). `proposer()` : titre « Acheter à … » / « Vendre à … », ligne « Numéros cachés » ; l'encadré de l'annonce et la longue note retirés (pas dans la maquette).
+- Fil : message du système (« L'équipe du Marché de Gros peut lire ces échanges », règle du 25/10/2026), bandeau « Ne payez jamais d'avance » si l'autre n'est pas vérifié, Accepter / Contre-proposer / Refuser dans la carte qui attend ma réponse, réponses rapides selon le rôle, bouton « Prix » ; accord : « Sans commande sous 72 h… », « Passer la commande » ou « Suivre la commande ».
+- Styles dans `css/v2.css` (préfixe `.nx-bg`), couleurs claires en dur traduites en sombre par `app/nuit.js` (comme avant : accents vert clair en sombre, pas maïs).
+- **Prix du moment** (lot 8 avancé) : onglet Prix refait (`v2Vals`, `pxRows`) ; `mdg-tableau` n'est plus affiché dans l'onglet.
+- Vérifié (iPhone émulé, clair et sombre, données d'essai pour la négociation) : aucune erreur.
+
+## 13/11/2026 · Refonte, lot 7 : Publier en 5 étapes
+
+- Captures validées (« ok »). Pages `vendre` et `demande` refaites (`data-v2`), méthode `v2Pub(mode)` ; l'ancien formulaire n'est plus affiché (son code de calcul reste, à nettoyer au lot 16).
+- Enregistrement inchangé : `pubOffer()` / `pubDemand()` (locaux puis synchronisés par `v3/nuage.js`) ; sans compte, la porte « Rendez votre annonce visible de tous » s'ouvre comme avant. `pubDemand()` garde maintenant « prix ferme » (`negociable: false`).
+- Données réelles : 9 produits avec photo (les plus actifs d'abord) ; villes : la sienne, celles de sa région (`MDGVilles.de`), puis les grandes villes, « Autre ville » avec recherche (`MDGVilles.toutes`) ; prix de départ = médiane des annonces publiées du produit dans la même unité ; jauge seulement à partir de 4 prix ; fin : 2 ou 3 annonces d'en face avec « Proposer » (`card().neg`).
+- Quand : offre « maintenant », date à +7 ou +14 jours, ou « mois » ; demande « vite », « semaine », « mois ». Écarts avec la maquette : « À la prochaine récolte » → « Ce mois-ci », « Chaque semaine » retiré.
+- Plus demandés à la publication : quantité minimale, transport (valeur par défaut d'avant : `hors_ville` pour une offre, `vendeur` pour une demande), agent terrain, exigences.
+- Vérifié (iPhone émulé, clair et sombre) : aucune erreur ; une offre publiée s'enregistre bien sur le téléphone.
+
+## 13/11/2026 · Refonte, lot 8 : Tous les produits et L'année du marché
+
+- Captures validées (« ok pour la PR »). Pages `categories` et `annee` refaites (`data-v2`) : méthodes `v2Tous()` (familles `this.FAMS`, nombres d'offres et de demandes en direct, tri par activité puis photo puis nom) et `v2Annee()` (`A.CAL`, mois courant, source par ligne). L'ancien cadran annuel et l'ancienne grille ne sont plus affichés (leur code reste, nettoyage au lot 16).
+- **Décision du propriétaire** pour le lot 9 : garder la carte actuelle (MapLibre), ne prendre que la logique de la maquette. Notée dans `CLAUDE.md` et `docs/brief-design/ETAT-DESIGN.md`.
+- Vérifié (iPhone émulé, clair et sombre) : aucune erreur.

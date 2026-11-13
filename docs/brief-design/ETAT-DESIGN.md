@@ -28,8 +28,8 @@ Toutes les nouveautés de la maquette sont acceptées : onglets en bas et alerte
 | 5 | Fiche produit | **fait** (13/11/2026). Écarts : zones « ma ville / ma région / tout le pays » (pas « autour de moi » sans position) ; cloche d’alerte et partage gardés en haut ; « prix publiés » au lieu de « relevés sur 7 jours » |
 | 6 | Proposer + Discussion | **fait** (13/11/2026). Ajouts pour les règles : « Changer » le transport dans le reçu (prix du transport « à part »), « Ajouter une condition » replié ; sous la discussion, profil, écrire en privé, retirer, signaler, arrêter gardés |
 | 7 | Publier | **fait** (13/11/2026). Écarts : « À la prochaine récolte » → « Ce mois-ci » (pas de date de récolte) ; « Chaque semaine » retiré des demandes (pas géré) ; prix obligatoire (règle du 25/10) |
-| 8 | Prix, Tous les produits, Année du marché | Prix du moment **fait** (13/11/2026, avancé) : « observe sur les offres publiées » (pas encore les commandes), pas de tendance tant qu’elle n’est pas calculée sur des prix réels, zones = villes qui ont le plus d’offres ; Tous les produits et Année du marché : à faire |
-| 9 | Carte | à faire |
+| 8 | Prix, Tous les produits, Année du marché | **fait** (13/11/2026). Prix : « offres publiées » (pas encore les commandes), pas de tendance sans prix réels de deux semaines ; Tous les produits : les 12 vraies familles ; Année du marché : toutes les récoltes sourcées (A.CAL) |
+| 9 | Carte | **décision du propriétaire (13/11/2026)** : garder la carte actuelle de l’application (plus pro), n’en prendre que la logique de la maquette (panneau, filtres, colonne de boutons) |
 | 10 | Activité + Messages | Activité **faite** (13/11/2026, avancée) ; Messages : à faire. Écart : le montant de la commande n'est pas encore sur la ligne |
 | 11 | Commande acheteur | à faire |
 | 12 | Côté vendeur | à faire |

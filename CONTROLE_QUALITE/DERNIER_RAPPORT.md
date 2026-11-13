@@ -1,5 +1,5 @@
-<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-13-14h01-apres-modif.md). Ne pas modifier à la main. -->
-# Rapport du contrôle qualité · 13/11/2026 à 14 h 01 (UTC = heure d’Abidjan)
+<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-13-14h08-apres-modif.md). Ne pas modifier à la main. -->
+# Rapport du contrôle qualité · 13/11/2026 à 14 h 08 (UTC = heure d’Abidjan)
 
 > Gabarit : `CONTROLE_QUALITE/modeles/RAPPORT.md`. Fait par `tools/controle/lancer.sh apres-modif`. Les tests SQL ne sont jamais exécutés par ce script : ils sont « non exécuté » tant que Claude ne les a pas joués via MCP sur le projet de test.
 
@@ -7,8 +7,8 @@
 
 | Champ | Valeur |
 |---|---|
-| Date | 13/11/2026 à 14 h 01 |
-| Commit | `2a381c0` (branche `claude/refonte-lot7-publier`, avec des changements non enregistrés) |
+| Date | 13/11/2026 à 14 h 08 |
+| Commit | `5160e0e` (branche `claude/refonte-lot8-produits-annee`, avec des changements non enregistrés) |
 | Mode | `apres-modif` |
 | Base de comparaison | `origin/main` |
 | Durée | 2 s |
@@ -31,7 +31,7 @@
 | STA-05 | U12 | normal | Contrôle « doublon-texte » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 27 orange(s) | échoué | P2 | v3/chauffeur.js:24 ; index-v3.html:2347 ; app/theme.js:90 ; … |
 | STA-06 | U10 | normal | Contrôle « doublon-fonction » | aucun constat | rien à signaler (77 fichiers JS et les scripts des pages) | réussi | — | tools/controle/controle.js |
 | STA-07 | U10 | normal | Contrôle « doublon-id » | aucun constat | rien à signaler (identifiants du HTML de application.dc.html et index-v3.html) | réussi | — | tools/controle/controle.js |
-| STA-08 | U12 | normal | Contrôle « long-texte » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 45 orange(s) | échoué | P2 | v3/identite.js:493 ; v3/compte.js:863 ; v3/identite.js:432 ; … |
+| STA-08 | U12 | normal | Contrôle « long-texte » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 44 orange(s) | échoué | P2 | v3/identite.js:493 ; v3/compte.js:863 ; v3/identite.js:432 ; … |
 | STA-09 | U12, U13 | normal | Contrôle « slogan » | aucun constat | rien à signaler (tournures publicitaires toutes faites) | réussi | — | tools/controle/controle.js |
 | STA-10 | U12 | normal | Contrôle « police » | aucun constat | rien à signaler (93 fichiers de style et de code) | réussi | — | tools/controle/controle.js |
 | STA-11 | U12 | normal | Contrôle « bleu » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 5 orange(s) | échoué | P2 | index-v3.html:2047 ; v3/avatar.js:13 ; v3/avatar.js:14 ; … |
@@ -46,7 +46,7 @@ Gravité donnée par le script, à confirmer par Claude dans `CONTROLE_QUALITE/R
 
 - **STA-03** (P2, U13, U03) : 0 rouge(s) dont 0 nouveau(x), 1 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/commandes.js:966.
 - **STA-05** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 27 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/chauffeur.js:24 ; index-v3.html:2347 ; app/theme.js:90 ; ….
-- **STA-08** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 45 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/identite.js:493 ; v3/compte.js:863 ; v3/identite.js:432 ; ….
+- **STA-08** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 44 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/identite.js:493 ; v3/compte.js:863 ; v3/identite.js:432 ; ….
 - **STA-11** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 5 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; index-v3.html:2047 ; v3/avatar.js:13 ; v3/avatar.js:14 ; ….
 
 ## 5. Risque métier, correctif, non-régression

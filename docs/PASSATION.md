@@ -2276,3 +2276,9 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Quand : offre « maintenant », date à +7 ou +14 jours, ou « mois » ; demande « vite », « semaine », « mois ». Écarts avec la maquette : « À la prochaine récolte » → « Ce mois-ci », « Chaque semaine » retiré.
 - Plus demandés à la publication : quantité minimale, transport (valeur par défaut d'avant : `hors_ville` pour une offre, `vendeur` pour une demande), agent terrain, exigences.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur ; une offre publiée s'enregistre bien sur le téléphone.
+
+## 13/11/2026 · Refonte, lot 8 : Tous les produits et L'année du marché
+
+- Captures validées (« ok pour la PR »). Pages `categories` et `annee` refaites (`data-v2`) : méthodes `v2Tous()` (familles `this.FAMS`, nombres d'offres et de demandes en direct, tri par activité puis photo puis nom) et `v2Annee()` (`A.CAL`, mois courant, source par ligne). L'ancien cadran annuel et l'ancienne grille ne sont plus affichés (leur code reste, nettoyage au lot 16).
+- **Décision du propriétaire** pour le lot 9 : garder la carte actuelle (MapLibre), ne prendre que la logique de la maquette. Notée dans `CLAUDE.md` et `docs/brief-design/ETAT-DESIGN.md`.
+- Vérifié (iPhone émulé, clair et sombre) : aucune erreur.

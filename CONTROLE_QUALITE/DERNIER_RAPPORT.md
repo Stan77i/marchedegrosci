@@ -1,5 +1,5 @@
-<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-13-13h15-apres-modif.md). Ne pas modifier à la main. -->
-# Rapport du contrôle qualité · 13/11/2026 à 13 h 15 (UTC = heure d’Abidjan)
+<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-13-13h38-apres-modif.md). Ne pas modifier à la main. -->
+# Rapport du contrôle qualité · 13/11/2026 à 13 h 38 (UTC = heure d’Abidjan)
 
 > Gabarit : `CONTROLE_QUALITE/modeles/RAPPORT.md`. Fait par `tools/controle/lancer.sh apres-modif`. Les tests SQL ne sont jamais exécutés par ce script : ils sont « non exécuté » tant que Claude ne les a pas joués via MCP sur le projet de test.
 
@@ -7,11 +7,11 @@
 
 | Champ | Valeur |
 |---|---|
-| Date | 13/11/2026 à 13 h 15 |
-| Commit | `a4b58f0` (branche `claude/refonte-lot5-fiche`, avec des changements non enregistrés) |
+| Date | 13/11/2026 à 13 h 38 |
+| Commit | `63efce1` (branche `claude/refonte-lot6-negoce`, avec des changements non enregistrés) |
 | Mode | `apres-modif` |
 | Base de comparaison | `origin/main` |
-| Durée | 2 s |
+| Durée | 3 s |
 | Lancé par | à la main ou par Claude |
 
 ## 2. En bref

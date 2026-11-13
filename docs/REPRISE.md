@@ -88,7 +88,7 @@
 
 ## 3. Ce qui reste à faire (dans l'ordre conseillé)
 
-**000. Refonte de l'application (13/11/2026, « ok pour tout »)** : appliquer la maquette « MGCI App v2 » de Claude Design en 16 lots (liste et avancement : `docs/brief-design/ETAT-DESIGN.md`, partie 3 ; règles : `CLAUDE.md`, partie « Refonte de l'application »). Une PR par lot, captures clair et sombre à 390 px envoyées avant chaque PR. La maquette n'est pas dans le dépôt : la redemander au propriétaire si la session ne l'a plus (fichier `MGCI_App_Design_Prototype.zip`).
+**000. Refonte de l'application (13/11/2026, « ok pour tout »)** : appliquer la maquette « MGCI App v2 » de Claude Design en 16 lots (liste et avancement : `docs/brief-design/ETAT-DESIGN.md`, partie 3 ; règles : `CLAUDE.md`, partie « Refonte de l'application »). Une PR par lot, captures clair et sombre à 390 px envoyées avant chaque PR. La maquette n'est pas dans le dépôt : la redemander au propriétaire si la session ne l'a plus (fichier `MGCI_App_Design_Prototype.zip`). Lots 1 à 9 faits (PR jusqu'au lot 9) ; prochain : lot 10, Messages.
 
 > **Pause du 25/10/2026 : lire d'abord [`docs/RAPPORT-PAUSE-2026-10-25.md`](RAPPORT-PAUSE-2026-10-25.md)** (en production, PR à fusionner, travail interrompu à reprendre dans l'ordre).
 

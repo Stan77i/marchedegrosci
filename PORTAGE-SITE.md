@@ -182,14 +182,14 @@ Rien n'est supprimé tant que le propriétaire n'a pas dit oui. Les fichiers res
 ## 7. Inventaire automatique
 
 <!-- INVENTAIRE:DEBUT -->
-_Inventaire du 25 octobre 2026_
+_Inventaire du 13 novembre 2026_
 _Partie mise à jour automatiquement par `tools/inventaire-site.js` (tâche GitHub `rapport-site.yml`). Ne pas modifier à la main._
 
 ### Les pages
 
 | Page | Rôle | Fichiers chargés | Poids chargé |
 |---|---|---|---|
-| `application.dc.html` | Application mobile (la priorité). S’ouvre sur téléphone ; sur ordinateur, seulement pour l’administrateur. | 61 | 3,0 Mo |
+| `application.dc.html` | Application mobile (la priorité). S’ouvre sur téléphone ; sur ordinateur, seulement pour l’administrateur. | 62 | 3,0 Mo |
 | `index-v3.html` | Site pour ordinateur. Aujourd’hui caché derrière la maintenance, ouvert seulement à l’administrateur. | 65 | 4,7 Mo |
 | `index.html` | Aiguillage : téléphone → application, ordinateur → maintenance (ou site pour l’administrateur). | 0 | 2 ko |
 | `maintenance.html` | Page « site en maintenance » avec QR code vers l’application. | 3 | 85 ko |
@@ -202,9 +202,9 @@ Ce qu’ils font est déjà sur les deux : une correction dans l’un de ces fic
 
 `app/admin-pc.js` · `app/icones.js` · `app/marque.js` · `app/stable.js` · `app/toast.js` · `app/ville-seule.js` · `css/fonts.css` · `css/symboles.css` · `v2/data.js` · `v2/search.js` · `v3/avatar.js` · `v3/compte.js` · `v3/identite.js` · `v3/messages.js` · `v3/negoce.js` · `v3/nuage.js` · `v3/personnages.js` · `v3/porte.js` · `v3/pousse.js` · `v3/reputation.js` · `v3/sons.js` · `v3/statuts.js` · `v3/ux.css`
 
-### Propres à l’application (38) : ce que le site n’a pas
+### Propres à l’application (39) : ce que le site n’a pas
 
-`app/activite.js` · `app/carte-app.js` · `app/carte-gl.js` · `app/demo-orbite.js` · `app/effets.js` · `app/garanties.js` · `app/icone.js` · `app/marche-app.js` · `app/nuit.js` · `app/prixmoment.js` · `app/sac.js` · `app/scene.js` · `app/theme.js` · `app/vibre.js` · `app/villes.js` · `css/annee-app.css` · `css/categories-app.css` · `css/mgci-app.css` · `css/mgci-tokens.css` · `css/sombre.css` · `support.js` · `v3/aide.js` · `v3/alertes.js` · `v3/appro.js` · `v3/astuces.js` · `v3/boutique.js` · `v3/chauffeur.js` · `v3/commandes.js` · `v3/groupes.js` · `v3/guide.js` · `v3/prixzone.js` · `v3/racheter.js` · `v3/releve.js` · `v3/souffle.js` · `v3/suivi.js` · `v3/tableau.js` · `vendor/maplibre/maplibre-gl.css` · `vendor/maplibre/maplibre-gl.js`
+`app/activite.js` · `app/carte-app.js` · `app/carte-gl.js` · `app/demo-orbite.js` · `app/effets.js` · `app/garanties.js` · `app/icone.js` · `app/marche-app.js` · `app/nuit.js` · `app/prixmoment.js` · `app/sac.js` · `app/scene.js` · `app/theme.js` · `app/vibre.js` · `app/villes.js` · `css/annee-app.css` · `css/categories-app.css` · `css/mgci-app.css` · `css/mgci-tokens.css` · `css/sombre.css` · `css/v2.css` · `support.js` · `v3/aide.js` · `v3/alertes.js` · `v3/appro.js` · `v3/astuces.js` · `v3/boutique.js` · `v3/chauffeur.js` · `v3/commandes.js` · `v3/groupes.js` · `v3/guide.js` · `v3/prixzone.js` · `v3/racheter.js` · `v3/releve.js` · `v3/souffle.js` · `v3/suivi.js` · `v3/tableau.js` · `vendor/maplibre/maplibre-gl.css` · `vendor/maplibre/maplibre-gl.js`
 
 ### Propres au site (43)
 

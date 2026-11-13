@@ -214,3 +214,56 @@ html[data-theme=sombre] .v2-of-cta.plein { color: #171512; }
 .v2-niv { flex: none; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--lin); color: var(--texte-2); white-space: nowrap; }
 .v2-niv.off, .v2-niv.nv4 { background: #10392B; color: #F2C230; } .v2-niv.nv1 { background: #DCEFE3; color: #10392B; } .v2-niv.nv2 { background: #6CC58C; color: #0d2a1c; }
 .v2-niv.nv3 { background: #F2C230; color: #10392B; } .v2-niv.gros { background: #F6E2B0; color: #3D2E05; }
+
+/* ——— lot 6 : négociation (v3/negoce.js) habillée comme la maquette ———
+   Couleurs claires écrites en dur, comme le module : app/nuit.js les traduit en mode nuit. Préfixe .nx-bg pour passer devant le style du module. */
+.nx-bg .nx { background: #F2EBDD; border-radius: 26px 26px 0 0; }
+.nx-bg .nx::before { content: ""; display: block; width: 40px; height: 5px; border-radius: 999px; background: rgba(23, 21, 18, .18); margin: 10px auto 0; flex: none; }
+.nx-bg .nx-h { border-bottom: 1px solid rgba(23, 21, 18, .08); padding: 10px 16px 12px; }
+.nx-bg .nx-h h2 { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+.nx-bg .nx-h h2 em { font: inherit; color: inherit; background: none; padding: 0; }
+.nx-bg .nx-ib { background: #E7DCC8; width: 40px; height: 40px; }
+.nx-bg .nx-back { background: none; margin-left: -8px; }
+.nx-bg .nx-b { padding: 14px 16px 18px; }
+.nx-bg .nx-f { background: rgba(250, 244, 233, .94); border-top: 1px solid rgba(23, 21, 18, .08); padding: 10px 16px calc(12px + env(safe-area-inset-bottom)); }
+.nx-bg .nx-sys { display: flex; gap: 8px; align-items: flex-start; justify-content: center; margin: 0 auto 12px; max-width: 300px; padding: 10px 14px; border-radius: 14px; background: #E7DCC8; color: #484236; font-size: 13px; line-height: 1.45; text-align: center; }
+.nx-bg .nx-sys svg { flex: none; margin-top: 1px; }
+.nx-bg .nx-avance { margin: 0 0 12px; padding: 10px 14px; border-radius: 14px; background: #F6E2B0; color: #3D2E05; font-size: 13.5px; font-weight: 600; line-height: 1.45; }
+.nx-bg .nx-lock { display: flex; gap: 8px; align-items: center; margin: -6px 0 16px; color: #484236; font-size: 13.5px; }
+/* bulles : moi en vert du logo, l'autre sur la carte */
+.nx-bg .nx-m { background: #FAF4E9; color: #171512; border-radius: 18px 18px 18px 6px; }
+.nx-bg .nx-m.me { background: #10392B; color: #F3EFE4; border-radius: 18px 18px 6px 18px; }
+.nx-bg .nx-m.me time { color: rgba(243, 239, 228, .72); }
+/* cartes de proposition : reçu clair, bord vert pour les miennes */
+.nx-bg .nx-tk, .nx-bg .nx-tk.me { width: 280px; max-width: 86%; min-width: 0; box-sizing: border-box; background: #FFFDF8; color: #171512; border: 1.5px solid rgba(23, 21, 18, .08); border-radius: 18px; padding: 14px 16px; }
+.nx-bg .nx-tk.me { border-color: #10392B; }
+.nx-bg .nx-tk.me :is(.who, .qty, time, .amt small) { color: #655C4D; }
+.nx-bg .nx-tk .amt { font-size: 22px; font-weight: 800; color: #10392B; }
+.nx-bg .nx-tk.me .nx-tag, .nx-bg .nx-tag { background: rgba(23, 21, 18, .06); color: #484236; }
+.nx-bg .nx-tk .nx-tag.acc, .nx-bg .nx-tk.me .nx-tag.acc { background: #F6E2B0; color: #3D2E05; }
+.nx-bg .nx-tk .nx-tag.ok, .nx-bg .nx-tk.me .nx-tag.ok { background: #DCEFE3; color: #10392B; }
+.nx-bg .nx-tk .nx-tag.bad, .nx-bg .nx-tk.me .nx-tag.bad { background: #F6D2C8; color: #B23C24; }
+.nx-bg .nx-tk.me .nx-tr { background: rgba(31, 138, 85, .13); color: #17633D; }
+.nx-bg .nx-tk.is-accord { border-color: #1F8A55; background: #FFFDF8; }
+.nx-bg .nx-tk-act { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.nx-bg .nx-tk-act .nx-go { grid-column: 1 / -1; min-height: 46px; font-size: 15px; }
+.nx-bg .nx-tk-act .nx-alt { min-height: 44px; padding: 0 10px; font-size: 14px; background: #E7DCC8; }
+.nx-bg .nx-tk-act .nx-non { color: #B23C24; }
+/* l'accord : bord vert « accord », reçu */
+.nx-bg .nx-deal { border: 1.5px solid #1F8A55; box-shadow: 0 1px 2px rgba(23, 21, 18, .06), 0 4px 14px rgba(23, 21, 18, .06); }
+/* boutons et barre de saisie */
+.nx-bg .nx-go { background: #10392B; color: #F3EFE4; }
+.nx-bg .nx-alt { background: #E7DCC8; color: #171512; }
+.nx-bg .nx-rap { display: flex; gap: 8px; overflow-x: auto; margin: 0 -16px 8px; padding: 0 16px 2px; scrollbar-width: none; }
+.nx-bg .nx-rap::-webkit-scrollbar { display: none; }
+.nx-bg .nx-rap .nx-chip { flex: none; min-height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid rgba(23, 21, 18, .14); background: #FAF4E9; font-size: 13.5px; font-weight: 600; }
+.nx-bg .nx-comp { display: flex; align-items: flex-end; gap: 8px; }
+.nx-bg .nx-comp textarea { min-height: 44px; height: 44px; margin: 0; padding: 11px 14px; border-radius: 22px; background: #FFFAF3; resize: none; }
+.nx-bg .nx-comp .nx-ib { background: #10392B; color: #F3EFE4; width: 44px; height: 44px; }
+.nx-bg .nx-prixb { flex: none; height: 44px; padding: 0 14px; border-radius: 999px; border: 1.5px solid #10392B; background: none; color: #10392B; font: 700 14px Jost, sans-serif; cursor: pointer; }
+/* « Proposer un prix » : le total comme un reçu */
+.nx-bg .nx-tot { background: #FFFDF8; border: 1px solid rgba(23, 21, 18, .08); border-radius: 16px; }
+.nx-bg .nx-px { border-bottom-color: rgba(23, 21, 18, .2); }
+.nx-bg .nx-tk .who { flex-wrap: wrap; gap: 4px 8px; }
+.nx-bg .nx-tk .who .nx-tag { margin-left: 0; }
+.nx-bg .nx-tk-act .nx-alt { padding: 0 6px; font-size: 13.5px; white-space: nowrap; }

@@ -21,7 +21,7 @@ Toutes les nouveautés de la maquette sont acceptées : onglets en bas et alerte
 
 | Lot | Contenu | État |
 |---|---|---|
-| 1 | Jetons | à faire |
+| 1 | Jetons | **fait** (13/11/2026) : `css/mgci-tokens.css`, `css/sombre.css` ; un écran refait pose `data-v2` |
 | 2 | Coquille (onglets en bas, feuille, toast, hors connexion) | à faire |
 | 3 | Accueil « Duo » | à faire |
 | 4 | Recherche | à faire |

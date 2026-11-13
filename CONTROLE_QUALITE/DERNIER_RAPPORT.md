@@ -1,5 +1,5 @@
-<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-13-12h34-apres-modif.md). Ne pas modifier à la main. -->
-# Rapport du contrôle qualité · 13/11/2026 à 12 h 34 (UTC = heure d’Abidjan)
+<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-13-12h44-apres-modif.md). Ne pas modifier à la main. -->
+# Rapport du contrôle qualité · 13/11/2026 à 12 h 44 (UTC = heure d’Abidjan)
 
 > Gabarit : `CONTROLE_QUALITE/modeles/RAPPORT.md`. Fait par `tools/controle/lancer.sh apres-modif`. Les tests SQL ne sont jamais exécutés par ce script : ils sont « non exécuté » tant que Claude ne les a pas joués via MCP sur le projet de test.
 
@@ -7,8 +7,8 @@
 
 | Champ | Valeur |
 |---|---|
-| Date | 13/11/2026 à 12 h 34 |
-| Commit | `ca34847` (branche `claude/competences-ponytail-agent-reach`) |
+| Date | 13/11/2026 à 12 h 44 |
+| Commit | `dd4dfc6` (branche `claude/refonte-lot1-jetons`, avec des changements non enregistrés) |
 | Mode | `apres-modif` |
 | Base de comparaison | `origin/main` |
 | Durée | 3 s |
@@ -16,7 +16,7 @@
 
 ## 2. En bref
 
-- **Aucun échec bloquant** ; réussis 10, échoués 4, bloqués 0, non exécutés 3, en attente 0.
+- **Aucun échec bloquant** ; réussis 13, échoués 4, bloqués 0, non exécutés 1, en attente 0.
 - Unités avec au moins un contrôle exécuté : U01, U03, U09, U10, U12, U13.
 - Unités non exécutées dans ce passage : U02, U04, U05, U06, U07, U08, U11, U14.
 
@@ -38,9 +38,10 @@
 | STA-12 | U09 | normal | Contrôle « sql » | aucun constat | rien à signaler (166 fichiers supabase/schema-*.sql ; voir « Pour information ») | réussi | — | tools/controle/controle.js |
 | STA-13 | U13 | normal | Contrôle « liens » | aucun constat | rien à signaler (CLAUDE.md, CONTROLE_QUALITE/CALENDRIER.md, CONTROLE_QUALITE/HISTORIQUE.md, CONTROLE_QUALITE/INVENTAIRE_OUTILS.md, CONTROLE_QUALITE/LISTES_DE_CONTROLE.md, CONTROLE_QUALITE/MATRICE_TESTS.md, CONTROLE_QUALITE/README.md, CONTROLE_QUALITE/REGISTRE_ANOMALIES.md, CONTROLE_QUALITE/REGISTRE_DES_TESTS.md, CONTROLE_QUALITE/modeles/RAPPORT.md, CONTROLE_QUALITE/procedures/APRES_INCIDENT.md, CONTROLE_QUALITE/procedures/APRES_MODIFICATION.md, CONTROLE_QUALITE/procedures/AVANT_PRODUCTION.md, CONTROLE_QUALITE/procedures/CONTROLE_GENERAL.md, CONTROLE_QUALITE/tests/navigateur/README.md, CONTROLE_QUALITE/tests/sql/README.md) | réussi | — | tools/controle/controle.js |
 | STA-14 | U10 | normal | Contrôle « navigateur » | contrôle fait | désactivé (--sans-navigateur) | non exécuté | — | tools/controle/controle.js |
-| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (cdba932) | liste | 23 fichier(s) | réussi | — | git diff --name-only cdba932 |
-| APM-02 | U10 | régression | node --check sur les 0 fichier(s) JS changé(s) | aucune erreur | aucune erreur | non exécuté | — | aucun JS changé |
-| APM-05 | U10 | normal | CACHE et ?v= (front changé ?) | — | aucun fichier du front changé | non exécuté | — | motif : ^(application\.dc\.html\|index-v3\.html\|index\.html\|admin\.html\|suivi\.html\|404\.html\|maintenance\.html\|manifest\.webmanifest\|app/\|v3/\|v2/\|css/) |
+| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (f1400f2) | liste | 12 fichier(s) | réussi | — | git diff --name-only f1400f2 |
+| APM-02 | U10 | régression | node --check sur les 1 fichier(s) JS changé(s) | aucune erreur | aucune erreur | réussi | — | sw.js |
+| APM-05 | U10 | régression | 3 fichier(s) du front changé(s) : CACHE de sw.js monté | CACHE différent de la base | mgci-v302 → mgci-v303 | réussi | — | sw.js ; fichiers : application.dc.html, css/mgci-tokens.css, css/sombre.css |
+| APM-06 | U10 | régression | ?v= monté pour chaque JS/CSS changé appelé avec ?v= | nouvelle version | monté partout | réussi | — | application.dc.html, index-v3.html, index.html, admin.html, suivi.html, sw.js |
 
 ## 4. Anomalies (P0 à P3)
 

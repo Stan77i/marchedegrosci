@@ -2224,3 +2224,10 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - **Site pour ordinateur** : instruction pour Claude Design (déjà fait / pas fait) dans `docs/brief-design/ETAT-DESIGN.md`, partie 4.
 - Nouvelle partie de `CLAUDE.md` : « Refonte de l'application (décisions du 13/11/2026) » ; plan en 16 lots, avancement dans `ETAT-DESIGN.md`, partie 3.
 - **Agent Reach installé** dans la session (`agent-reach` 1.6.1, `agent-reach setup` : 5 canaux par défaut, sans connexion). La machine est effacée à la fin de la session : refaire l'installation au besoin (notice des compétences).
+
+## 13/11/2026 · Refonte, lot 1 : jetons
+
+- `css/mgci-tokens.css` : jetons de la maquette v2 (`--vert`, `--recu`, `--hausse`, `--panneau`, `--barre`, `--t08`…`--t30`, `--hl`, `--ombre`) ; `[data-v2]` donne à un écran refait le jeu clair complet (papier, carte, encre, action verte).
+- `css/sombre.css` : les mêmes en mode nuit (`--vert` devient maïs, comme la maquette) et `html[data-theme=sombre] [data-v2]`.
+- Contrastes mesurés (`contrast-check.py`, vrai fond) : `--hausse` 4,97:1 sur papier, 9,10:1 en sombre ; `--vert-texte` 5,52:1 sur carte, 10,89:1 en sombre ; `--mute` 5,24:1 et 6,34:1.
+- Aucun écran ne s'en sert encore : aucun changement visible. `?v=20261113r1` sur les deux feuilles, cache `mgci-v303`.

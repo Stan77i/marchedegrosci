@@ -96,3 +96,18 @@ html[data-theme=sombre] .nx-px input::placeholder, html[data-theme=sombre] .cp-i
 
 /* pieds collants (Approvisionnement pro, Racheter) : leur ombre crème faisait une bande blanche au-dessus du bouton */
 html[data-theme=sombre] :is(.ap-pied, .rc-pied) { box-shadow: 0 -10px 16px rgba(33, 30, 25, .95) !important; }
+
+/* ——— refonte 2026-11 (lot 1) : écrans refaits (data-v2) en mode nuit, comme la maquette de Claude Design ——— */
+html[data-theme=sombre] {
+  --vert: #F2C230; --recu: #25211B; --hausse: #F3A08C; --panneau: #26221C; --barre: rgba(31, 27, 22, .94);
+  --t08: rgba(243, 239, 228, .08); --t10: rgba(243, 239, 228, .1); --t12: rgba(243, 239, 228, .12); --t14: rgba(243, 239, 228, .14);
+  --t18: rgba(243, 239, 228, .2); --t22: rgba(243, 239, 228, .24); --t25: rgba(243, 239, 228, .26); --t30: rgba(243, 239, 228, .3);
+  --hl: rgba(242, 194, 48, .22);
+  --ombre: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
+}
+html[data-theme=sombre] [data-v2] {
+  --papier: #14120F; --carte: #1F1B16; --champ: #25211B; --sable-clair: #2A251E; --lin: #2C2720; --lin-2: #3A342A;
+  --encre: #F3EFE4; --texte-2: #DDD3C2; --texte-3: #BFB39E; --mute: #A89C88;
+  --action: var(--vert); --action-t: #171512; --vert-texte: #9FDCB2;
+  color-scheme: dark;
+}

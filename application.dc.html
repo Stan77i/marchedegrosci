@@ -1408,7 +1408,7 @@ class Component extends DCLogic {
       acts, actVide: !acts.length, msgOn: nMsg > 0, msgN: String(nMsg),
       actVideT: moiS ? 'Vos propositions, commandes et annonces apparaîtront ici.' : 'Connectez-vous : vos propositions, commandes et annonces apparaîtront ici.',
       actVideB: moiS ? 'Publier' : 'Se connecter', actVideGo: () => { const N = window.MDGNuage; if (moiS) this.setState({ v2choix: true }); else if (N) N.open(); },
-      versMessages: () => { const N = window.MDGNuage; if (!moiS) { if (N) N.open(); return; } if (M && M.boite) M.boite(); },
+      versMessages: () => { const N = window.MDGNuage; if (!moiS) { if (N) N.open(); return; } if (M && M.boite) M.boite({ de: 'Activité' }); },
       confiance: () => { if (window.MDGGaranties && MDGGaranties.ouvrir) MDGGaranties.ouvrir(); },
       rechD: tab === 'recherche' ? 'block' : 'none', q, qOn: !!q, qJoli: qt,
       ...(() => { // Prix du moment (lot 8) : par produit, les prix des offres dans l'unité la plus fréquente ; zones = les villes qui ont le plus d'offres

@@ -423,3 +423,38 @@ html[data-theme=sombre] .v2-pills button[aria-pressed=true] { color: #171512; }
 html[data-theme=sombre] .v2-pub-go:not([aria-disabled=true]) { color: #171512; }
 .v2-pub-sc > * { flex: none; }
 [data-pg] .v2-pas2 input { font: 800 40px/1 Jost, sans-serif !important; letter-spacing: -.02em; height: auto; }
+
+/* ——— lot 8 : pages Tous les produits et L'année du marché ——— */
+.v2-page { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--papier); }
+.v2-page-sc { flex: 1; overflow-y: auto; padding: 4px 16px 40px; display: flex; flex-direction: column; gap: 16px; }
+.v2-page-sc > * { flex: none; }
+.v2-nav { display: flex; align-items: center; margin-left: -11px; }
+.v2-nav .v2-retour { margin-left: 0; }
+.v2-nav > span { font-size: 14px; color: var(--texte-3); }
+.v2-tous { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.v2-tous button { border: 0; background: var(--carte); border-radius: 18px; padding: 10px 10px 12px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; text-align: left; color: var(--encre); font: inherit; }
+.v2-tous .im { width: 100%; height: 96px; border-radius: 14px; background: var(--sable-clair); display: grid; place-items: center; overflow: hidden; }
+.v2-tous .im img { width: 80px; height: 80px; object-fit: contain; }
+.v2-tous b { font-size: 15px; font-weight: 700; line-height: 1.2; }
+.v2-tous .nb { display: flex; flex-wrap: wrap; gap: 6px; min-height: 22px; }
+.v2-tous .nb i { font-style: normal; font-size: 12.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+.v2-tous .nb i.o { background: #DCEFE3; color: #10392B; } .v2-tous .nb i.d { background: #F6E2B0; color: #3D2E05; }
+.v2-tous .nb small { font-size: 12.5px; color: var(--mute); }
+.v2-an-maint { display: flex; flex-direction: column; gap: 10px; }
+.v2-an-maint > span { font-size: 14px; font-weight: 600; color: var(--texte-2); }
+.v2-pills button.vert { background: #6CC58C; border-color: #6CC58C; color: #10392B; font-weight: 700; }
+.v2-an { display: flex; flex-direction: column; }
+.v2-an-l { display: flex; align-items: center; gap: 8px; width: 100%; border: 0; border-bottom: 1px solid var(--t08); background: none; padding: 9px 0; text-align: left; color: var(--encre); font: inherit; }
+.v2-an-l.tete { border-bottom: 0; padding: 0 0 4px; }
+.v2-an-l > span:first-child, .v2-an-l .tx { width: 112px; flex: none; display: flex; flex-direction: column; gap: 1px; }
+.v2-an-l .tx b { font-size: 13.5px; font-weight: 700; line-height: 1.2; } .v2-an-l .tx small { font-size: 11.5px; color: var(--texte-3); }
+.v2-an-l .mois { flex: 1; min-width: 0; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px; }
+.v2-an-l.tete .mois b { font-size: 11.5px; font-weight: 600; color: var(--texte-3); text-align: center; }
+.v2-an-l.tete .mois b.auj { color: var(--encre); font-weight: 800; }
+.v2-an-l .mois i { display: block; height: 18px; border-radius: 4px; background: var(--lin); }
+.v2-an-l .mois i.debut { background: #9DC2A7; } .v2-an-l .mois i.plein { background: #6CC58C; } .v2-an-l .mois i.fin { background: #D6A83E; }
+.v2-an-leg { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12.5px; color: var(--texte-2); }
+.v2-an-leg span { display: flex; align-items: center; gap: 6px; }
+.v2-an-leg i { width: 14px; height: 14px; border-radius: 4px; }
+.v2-an-leg i.debut { background: #9DC2A7; } .v2-an-leg i.plein { background: #6CC58C; } .v2-an-leg i.fin { background: #D6A83E; }
+.v2-an-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--texte-3); }

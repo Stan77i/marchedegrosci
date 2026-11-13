@@ -67,7 +67,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/sombre.css?v=20261113r1">
 <link rel="stylesheet" href="css/annee-app.css?v=20261124h">
 <link rel="stylesheet" href="css/categories-app.css?v=20261124f">
-<link rel="stylesheet" href="css/v2.css?v=20261113r8">
+<link rel="stylesheet" href="css/v2.css?v=20261113r9">
 <link rel="stylesheet" href="v3/ux.css?v=20261124i">
 <script src="v2/data.js?v=20261031a"></script>
 <script src="app/marche-app.js?v=20261124h"></script>
@@ -440,57 +440,15 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
 </div>
 
 <!-- ═══ CATÉGORIES ═══ -->
-<div data-pg="categories" data-screen-label="Catégories" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:var(--papier);color:var(--encre);display:flex;flex-direction:column;transform:{{ tf.categories }};visibility:{{ vis.categories }};z-index:{{ zi.categories }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
+<div data-pg="categories" data-v2 data-screen-label="Catégories" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:var(--papier);color:var(--encre);display:flex;flex-direction:column;transform:{{ tf.categories }};visibility:{{ vis.categories }};z-index:{{ zi.categories }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.categories }}" hint-placeholder-val="{{ false }}">
-  <div style="flex:none;padding-top:{{ topPad }};border-bottom:1px solid var(--trait-doux)"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:inherit;display:flex;align-items:center;justify-content:center"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span style="flex:1;text-align:center;font-size:var(--t-lead);font-weight:600">Catégories</span><span style="width:44px"></span></div></div>
-  <div class="ct">
-    <!-- en-tête : le catalogue, ses chiffres vivants -->
-    <header class="ct-tete">
-      <h1 class="ct-h">{{ catTitle }}<br><em>tout le vivrier.</em></h1>
-      <div class="ct-chiffres">
-        <div><b>{{ ctNb.prod }}</b><small>produits</small></div>
-        <div><b>{{ ctNb.saison }}</b><small>en saison · {{ ctNb.mois }}</small></div>
-        <div><b>{{ ctNb.ann }}</b><small><i class="o"></i>{{ ctNb.o }} <i class="d"></i>{{ ctNb.d }} en ligne</small></div>
-      </div>
-    </header>
-    <!-- chercher, trier -->
-    <div class="ct-outils">
-      <label class="ct-cherche"><svg width="18" height="18" stroke="currentColor" stroke-width="1.9" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg><input value="{{ ctQ }}" onChange="{{ ctOnQ }}" placeholder="Chercher un produit : aloco, gombo…" aria-label="Chercher un produit dans les familles" enterkeyhint="search"><sc-if value="{{ ctHasQ }}" hint-placeholder-val="{{ false }}"><button onClick="{{ ctClearQ }}" aria-label="Effacer la recherche" class="ct-x"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></sc-if></label>
-      <div class="ct-puces" role="group" aria-label="Trier">
-        <sc-for list="{{ ctFiltres }}" as="f" hint-placeholder-count="3"><button onClick="{{ f.go }}" aria-pressed="{{ f.on }}" class="ct-puce">{{ f.t }}<sc-if value="{{ f.hasN }}" hint-placeholder-val="{{ false }}"><em>{{ f.n }}</em></sc-if></button></sc-for>
-      </div>
-    </div>
-
-    <!-- une famille ouverte : ses produits -->
-    <sc-if value="{{ ctFamOn }}" hint-placeholder-val="{{ false }}">
-      <section class="ct-fam" aria-label="{{ ctFam.name }}">
-        <button onClick="{{ ctFam.fermer }}" class="ct-retour"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>Toutes les familles</button>
-        <div class="ct-banniere"><img sc-camel-src="{{ ctFam.img }}" alt=""><div><h2>{{ ctFam.name }}</h2><p>{{ ctFam.sub }}</p></div></div>
-        <sc-if value="{{ ctFam.vide }}" hint-placeholder-val="{{ false }}"><p class="ct-vide">Aucun produit de cette famille ne correspond à ce tri.</p></sc-if>
-        <div class="ct-grille">
-          <sc-for list="{{ ctFam.produits }}" as="p" hint-placeholder-count="6"><button onClick="{{ p.go }}" class="ct-pr" aria-label="{{ p.aria }}"><span class="ct-pr-img" style="background:{{ p.bg }}"><img sc-camel-src="{{ p.thumb }}" alt="" style="object-fit:{{ p.fit }}"><sc-if value="{{ p.sea }}" hint-placeholder-val="{{ false }}"><span class="ct-saison">En saison</span></sc-if></span><b>{{ p.name }}</b><small class="ct-prix">{{ p.prix }}</small><span class="ct-ann"><sc-if value="{{ p.hasO }}" hint-placeholder-val="{{ false }}"><span class="o"><i></i>{{ p.o }}</span></sc-if><sc-if value="{{ p.hasD }}" hint-placeholder-val="{{ false }}"><span class="d"><i></i>{{ p.d }}</span></sc-if></span></button></sc-for>
-        </div>
-      </section>
-    </sc-if>
-
-    <!-- une recherche : les produits trouvés, toutes familles -->
-    <sc-if value="{{ ctRechOn }}" hint-placeholder-val="{{ false }}">
-      <section class="ct-fam" aria-label="Résultats">
-        <p class="ct-res">{{ ctRechT }}</p>
-        <div class="ct-grille">
-          <sc-for list="{{ ctRech }}" as="p" hint-placeholder-count="4"><button onClick="{{ p.go }}" class="ct-pr" aria-label="{{ p.aria }}"><span class="ct-pr-img" style="background:{{ p.bg }}"><img sc-camel-src="{{ p.thumb }}" alt="" style="object-fit:{{ p.fit }}"><sc-if value="{{ p.sea }}" hint-placeholder-val="{{ false }}"><span class="ct-saison">En saison</span></sc-if></span><b>{{ p.name }}</b><small class="ct-fam-n">{{ p.fam }}</small><small class="ct-prix">{{ p.prix }}</small><span class="ct-ann"><sc-if value="{{ p.hasO }}" hint-placeholder-val="{{ false }}"><span class="o"><i></i>{{ p.o }}</span></sc-if><sc-if value="{{ p.hasD }}" hint-placeholder-val="{{ false }}"><span class="d"><i></i>{{ p.d }}</span></sc-if></span></button></sc-for>
-        </div>
-      </section>
-    </sc-if>
-
-    <!-- les familles, en grandes tuiles (la plus active en grand) -->
-    <sc-if value="{{ ctGrilleOn }}" hint-placeholder-val="{{ true }}">
-      <div class="ct-tuiles">
-        <sc-for list="{{ cats }}" as="c" hint-placeholder-count="11"><button onClick="{{ c.toggle }}" class="ct-tuile {{ c.cls }}" aria-label="{{ c.aria }}"><img sc-camel-src="{{ c.img }}" alt="" loading="lazy"><span class="ct-voile"></span><span class="ct-t"><b>{{ c.name }}</b><small>{{ c.nb }}</small><span class="ct-pas"><sc-if value="{{ c.hasO }}" hint-placeholder-val="{{ false }}"><span class="o"><i></i>{{ c.o }}</span></sc-if><sc-if value="{{ c.hasD }}" hint-placeholder-val="{{ false }}"><span class="d"><i></i>{{ c.d }}</span></sc-if><sc-if value="{{ c.hasS }}" hint-placeholder-val="{{ false }}"><span class="s">{{ c.s }} en saison</span></sc-if></span></span></button></sc-for>
-      </div>
-      <sc-if value="{{ ctAucune }}" hint-placeholder-val="{{ false }}"><p class="ct-vide">Aucune famille ne correspond à ce tri pour l’instant.</p></sc-if>
-    </sc-if>
-  </div>
+  <!-- Tous les produits (lot 8, maquette « MGCI App v2 ») : familles en pastilles, grille de 2 colonnes, offres et demandes en direct -->
+  <div class="v2-page" style="padding-top:{{ topPad }}"><div class="v2-page-sc">
+    <div class="v2-nav"><button class="v2-retour" onClick="{{ back }}" aria-label="Retour"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><span>Prix</span></div>
+    <h1 class="v2-h1">Tous les produits</h1>
+    <div class="v2-pills" role="group" aria-label="Familles"><sc-for list="{{ tp.fams }}" as="f" hint-placeholder-count="4"><button aria-pressed="{{ f.on }}" onClick="{{ f.go }}">{{ f.l }}</button></sc-for></div>
+    <div class="v2-tous"><sc-for list="{{ tp.prods }}" as="p" hint-placeholder-count="6"><button onClick="{{ p.go }}" aria-label="{{ p.lab }}"><span class="im"><img sc-camel-src="{{ p.img }}" alt="" loading="lazy"></span><b>{{ p.nom }}</b><span class="nb"><sc-if value="{{ p.oOn }}" hint-placeholder-val="{{ true }}"><i class="o">{{ p.o }}</i></sc-if><sc-if value="{{ p.dOn }}" hint-placeholder-val="{{ true }}"><i class="d">{{ p.d }}</i></sc-if><sc-if value="{{ p.rien }}" hint-placeholder-val="{{ false }}"><small>Pas encore d’annonce</small></sc-if></span></button></sc-for></div>
+  </div></div>
 </sc-if>
 </div>
 
@@ -545,53 +503,20 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
 </div>
 
 <!-- ═══ L'ANNÉE ═══ -->
-<div data-pg="annee" data-screen-label="L'année du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" class="an2" style="position:absolute;inset:0;display:flex;flex-direction:column;transform:{{ tf.annee }};visibility:{{ vis.annee }};z-index:{{ zi.annee }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
+<div data-pg="annee" data-v2 data-screen-label="L'année du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;display:flex;flex-direction:column;transform:{{ tf.annee }};visibility:{{ vis.annee }};z-index:{{ zi.annee }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
 <sc-if value="{{ on.annee }}" hint-placeholder-val="{{ false }}">
-  <div style="flex:none;padding-top:{{ topPad }}"><div style="display:flex;align-items:center;height:52px;padding:0 8px"><button onClick="{{ back }}" aria-label="Retour" class="an2-ib"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span style="flex:1;text-align:center;font-size:var(--t-lead);font-weight:600">L'année du marché</span><span style="width:44px"></span></div></div>
-  <div class="an2-scroll">
-    <div class="an2-hero">
-      <h1 class="an2-h">Ce qui se récolte, <em>mois après mois.</em></h1>
-      {{ yearEl }}
-      <div class="an2-leg" aria-hidden="true"><span><i style="background:#6CC58C"></i>Pleine récolte</span><span><i style="background:#B5DEC1"></i>Ça commence</span><span><i style="background:#F2C230"></i>Ça se termine</span></div>
+  <!-- L'année du marché (lot 8, maquette « MGCI App v2 ») : en pleine récolte ce mois, grille de 12 mois, source sur chaque ligne (A.CAL, rien d'estimé) -->
+  <div class="v2-page" style="padding-top:{{ topPad }}"><div class="v2-page-sc">
+    <div class="v2-nav"><button class="v2-retour" onClick="{{ back }}" aria-label="Retour"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><span>Prix</span></div>
+    <h1 class="v2-h1">L’année du marché</h1>
+    <div class="v2-an-maint"><span>{{ ya.titre }}</span><div class="v2-pills"><sc-for list="{{ ya.pleins }}" as="p" hint-placeholder-count="2"><button class="vert" onClick="{{ p.go }}">{{ p.l }}</button></sc-for></div></div>
+    <div class="v2-an">
+      <div class="v2-an-l tete" aria-hidden="true"><span></span><span class="mois"><sc-for list="{{ ya.mois }}" as="m" hint-placeholder-count="12"><b class="{{ m.c }}">{{ m.l }}</b></sc-for></span></div>
+      <sc-for list="{{ ya.lignes }}" as="r" hint-placeholder-count="8"><button class="v2-an-l" onClick="{{ r.go }}" aria-label="{{ r.lab }}"><span class="tx"><b>{{ r.l }}</b><small>{{ r.src }}</small></span><span class="mois"><sc-for list="{{ r.cases }}" as="c" hint-placeholder-count="12"><i class="{{ c }}"></i></sc-for></span></button></sc-for>
     </div>
-    <div class="an2-nav">
-      <button onClick="{{ mPrev }}" aria-label="Mois précédent" class="an2-rd"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
-      <div class="an2-mo" aria-live="polite"><span class="an2-mn">{{ mName }}</span><span class="an2-mk">{{ mKicker }}</span></div>
-      <button onClick="{{ mNext }}" aria-label="Mois suivant" class="an2-rd"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button>
-    </div>
-    <div class="an2-strip" role="group" aria-label="Choisir un mois">
-      <sc-for list="{{ anStrip }}" as="b" hint-placeholder-count="12"><button onClick="{{ b.go }}" class="{{ b.cls }}" aria-label="{{ b.aria }}" aria-pressed="{{ b.cur }}"><span class="an2-bar" style="height:{{ b.h }}"><i style="height:{{ b.h2 }}"></i></span><small>{{ b.l }}</small></button></sc-for>
-    </div>
-    <p class="an2-res">{{ anResume }}</p>
-    <sc-for list="{{ mGroups }}" as="g" hint-placeholder-count="2">
-      <section class="an2-g">
-        <div class="an2-gh"><i style="background:{{ g.c }}"></i><div><h2>{{ g.label }}</h2><p>{{ g.sub }}</p></div></div>
-        <div class="an2-list">
-          <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="2">
-            <div class="an2-it">
-              <button onClick="{{ it.toggle }}" class="an2-row" aria-expanded="{{ it.exp }}">
-                <img sc-camel-src="{{ it.thumb }}" alt="" style="object-fit:{{ it.fit }};border-radius:{{ it.rad }}">
-                <span class="an2-tx"><b>{{ it.name }}</b><small>{{ it.note }}</small>
-                  <sc-if value="{{ it.hasOD }}" hint-placeholder-val="{{ false }}"><span class="an2-od"><sc-if value="{{ it.hasO }}" hint-placeholder-val="{{ false }}"><em class="o">{{ it.oTxt }}</em></sc-if><sc-if value="{{ it.hasD }}" hint-placeholder-val="{{ false }}"><em class="d">{{ it.dTxt }}</em></sc-if></span></sc-if>
-                </span>
-                <span class="{{ it.tCls }}">{{ it.tTxt }}</span>
-                <svg class="an2-chev" style="transform:{{ it.chev }}" width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
-              </button>
-              <sc-if value="{{ it.open }}" hint-placeholder-val="{{ false }}">
-                <div class="an2-det">
-                  <span class="an2-dk">Ce produit dans l’année</span>
-                  <div class="an2-frise" role="img" aria-label="{{ it.fLeg }}"><sc-for list="{{ it.frise }}" as="f" hint-placeholder-count="12"><span class="{{ f.sel }}" title="{{ f.t }}"><span class="an2-fc"><i style="height:{{ f.h }};background:{{ f.c }}"></i></span><small>{{ f.l }}</small></span></sc-for></div>
-                  <p class="an2-fl">{{ it.fLeg }} Source : {{ it.src }}.</p>
-                  <button onClick="{{ it.fiche }}" class="an2-go"><span class="an2-go-i" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 3 7-8"></path><path d="M14 7h5v5"></path></svg></span><span class="an2-go-t"><b>Voir la fiche</b></span><span class="an2-go-f" aria-hidden="true"><svg width="14" height="14" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></span></button>
-                </div>
-              </sc-if>
-            </div>
-          </sc-for>
-        </div>
-      </section>
-    </sc-for>
-    <p class="an2-src">Calendrier indicatif : il varie selon les pluies et les régions. Chaque culture renvoie à une source publique (FAO GIEWS, FEWS NET, IDESSA, AIP, Conseil café-cacao, Conseil coton-anacarde). Les tendances de prix sont générales, jamais une promesse.</p>
-  </div>
+    <div class="v2-an-leg"><span><i class="debut"></i>Ça commence</span><span><i class="plein"></i>Pleine récolte</span><span><i class="fin"></i>Ça se termine</span></div>
+    <p class="v2-an-note">Périodes tirées des sources citées sur chaque ligne. Rien n’est estimé.</p>
+  </div></div>
 </sc-if>
 </div>
 
@@ -1657,6 +1582,27 @@ class Component extends DCLogic {
       corres,
       bloque: String(step < 5 && !ok[step]), suiteT: step === 5 ? 'Retour au marché' : step === 4 ? (isO ? 'Publier mon offre' : 'Publier ma demande') : 'Continuer', suite };
   }
+  // ——— refonte 2026-11, lot 8 : Tous les produits et L'année du marché (maquette « MGCI App v2 ») ———
+  v2Tous() {
+    const S = this.state, A = window.MDGApp, O = this.offers(), D = this.demands(), nO = {}, nD = {};
+    O.forEach(o => nO[o.slug] = (nO[o.slug] || 0) + 1); D.forEach(d => nD[d.slug] = (nD[d.slug] || 0) + 1);
+    const fams = (this.FAMS || []).filter(f => f.prods.length), sel = fams.some(f => f.slug === S.v2fam) ? S.v2fam : '';
+    const prods = (sel ? fams.filter(f => f.slug === sel) : fams).reduce((l, f) => l.concat(f.prods), [])
+      .sort((a, b) => ((nO[b.slug] || 0) + (nD[b.slug] || 0)) - ((nO[a.slug] || 0) + (nD[a.slug] || 0)) || (A.SACK[b.slug] != null) - (A.SACK[a.slug] != null) || a.name.localeCompare(b.name, 'fr'));
+    return { fams: [{ l: 'Tous', on: String(!sel), go: () => this.setState({ v2fam: '' }) }].concat(fams.map(f => ({ l: f.name, on: String(f.slug === sel), go: () => this.setState({ v2fam: f.slug }) }))),
+      prods: prods.map(p => { const P = this.prod(p.slug), o = nO[p.slug] || 0, d = nD[p.slug] || 0;
+        return { nom: P.name, img: P.thumb, oOn: o > 0, o: o + ' offre' + (o > 1 ? 's' : ''), dOn: d > 0, d: d + ' dem.', rien: !o && !d,
+          lab: P.name + ', ' + o + ' offre' + (o > 1 ? 's' : '') + ', ' + d + ' demande' + (d > 1 ? 's' : ''), go: () => this.openFiche(p.slug) }; }) };
+  }
+  v2Annee() {
+    const A = window.MDGApp, mo = new Date().getMonth() + 1, L = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'], ok = s => window.MDG.products.some(p => p.slug === s);
+    const pleins = [], vus = new Set();
+    A.CAL.forEach(e => { if (e[2][mo] === 'plein' && !vus.has(e[1])) { vus.add(e[1]); pleins.push({ l: e[1], go: () => ok(e[0]) && this.openFiche(e[0]) }); } });
+    return { titre: pleins.length ? 'En pleine récolte en ' + A.MOIS[mo - 1].toLowerCase() : 'Rien en pleine récolte en ' + A.MOIS[mo - 1].toLowerCase(), pleins,
+      mois: L.map((l, i) => ({ l, c: i + 1 === mo ? 'auj' : '' })),
+      lignes: A.CAL.map(e => ({ l: e[1], src: e[3] || '', cases: L.map((_, i) => (e[2][i + 1] || 'vide') + (i + 1 === mo ? ' auj' : '')),
+        lab: e[1] + ' : ' + Object.keys(e[2]).map(m => A.MOIS[m - 1] + ' ' + ({ plein: 'pleine récolte', debut: 'début', fin: 'fin' })[e[2][m]]).join(', ') + (e[3] ? '. Source : ' + e[3] : ''), go: () => ok(e[0]) && this.openFiche(e[0]) })) };
+  }
   isDark() { return this.state.logoDark != null ? this.state.logoDark : ls('mdg-app:logo-noir') === true; }
   setIcons(d) { const n = d ? '-noir' : ''; document.querySelectorAll('link[rel="apple-touch-icon"]').forEach(l => l.href = 'icons/v2/apple-touch-icon' + n + '.png'); document.querySelectorAll('link[rel="icon"]').forEach(l => l.href = l.type === 'image/svg+xml' ? 'icons/v2/favicon' + n + '.svg' : 'icons/v2/favicon' + n + '-32.png'); }
   toggleLogo() { const d = !this.isDark(); ls('mdg-app:logo-noir', d); this.setIcons(d); this.setState({ logoDark: d }); }
@@ -2172,7 +2118,7 @@ class Component extends DCLogic {
       tendOn: !!(S.tendS && S.tendS === act.slug && S.tendM), tend: S.tendM ? Object.assign({}, S.tendM, { ico: (() => { const n = { '🔥': 'chaleur', '📈': 'tendance', '✅': 'verifie', '🤝': 'negoce', '🛒': 'panier' }[S.tendM.ico]; return n && window.MDGIco ? React.createElement('span', { style: { display: 'flex' }, dangerouslySetInnerHTML: { __html: MDGIco.svg(n, 17, 2) } }) : S.tendM.ico; })() }) : { ico: '', t: '', s: '', cls: '', dur: '5.2s' },   // icônes dessinées, pas d'emoji
       duoH: { jaiL: 'J\u2019ai ' + act.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + act.name.toLowerCase() + ' à acheter : publier une demande' }, duoF: { jaiL: 'J\u2019ai ' + FP.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + FP.name.toLowerCase() + ' à acheter : publier une demande' },
       openJai: () => this.openSheet('jai', top === 'fiche' ? S.slug : act.slug), openCherche: () => this.openSheet('cherche', top === 'fiche' ? S.slug : act.slug),
-      fp, fv: S.stack.includes('fiche') ? this.v2Fiche() : null, pvo: S.stack.includes('vendre') ? this.v2Pub('offre') : null, pvd: S.stack.includes('demande') ? this.v2Pub('demande') : null, share: () => { const u = location.href, t = FP.name + ' · Marché de Gros de Côte d\u2019Ivoire'; if (navigator.share) navigator.share({ title: t, url: u }).catch(() => {}); else { try { navigator.clipboard.writeText(u); this.say('Lien copié'); } catch (_) {} } },
+      fp, fv: S.stack.includes('fiche') ? this.v2Fiche() : null, pvo: S.stack.includes('vendre') ? this.v2Pub('offre') : null, pvd: S.stack.includes('demande') ? this.v2Pub('demande') : null, tp: S.stack.includes('categories') ? this.v2Tous() : null, ya: S.stack.includes('annee') ? this.v2Annee() : null, share: () => { const u = location.href, t = FP.name + ' · Marché de Gros de Côte d\u2019Ivoire'; if (navigator.share) navigator.share({ title: t, url: u }).catch(() => {}); else { try { navigator.clipboard.writeText(u); this.say('Lien copié'); } catch (_) {} } },
       ficheCarte: () => this.push('carte', { cprod: S.slug, csel: '' }),
       aRef: this.aRef, aq: S.aq, onAq: e => this.setState({ aq: e.target.value }), aqHas: !!S.aq, clearAq: () => this.setState({ aq: '' }),
       toggleFilters: () => this.setState(s => ({ fOpen: !s.fOpen })), fOpen: S.fOpen, fBtn: Object.assign(chip(nF > 0 || S.fOpen), { l: nF ? 'Filtres · ' + nF : 'Filtrer' }),

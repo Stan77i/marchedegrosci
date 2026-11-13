@@ -168,7 +168,7 @@ html[data-theme=sombre] .cm[data-v2]{color-scheme:dark}
 .cm[data-v2] .cm-pick{background:var(--carte);border-color:var(--t30);color:var(--vert)}
 .cm[data-v2] .cm-defi i{background:var(--champ);box-shadow:inset 0 0 0 1.5px var(--t22);color:var(--encre)}
 .cm[data-v2] .cm-ph a,.cm[data-v2] .cm-ph span{background:var(--lin)}
-.cm[data-v2] .cm-disc li{background:var(--lin);color:var(--encre)}.cm[data-v2] .cm-disc li.moi{background:var(--t12)}.cm[data-v2] .cm-disc li.mdg{background:rgba(242,194,48,.3)}.cm[data-v2] .cm-disc li small,.cm[data-v2] .cm-disc li.vide{color:var(--texte-3)}
+.cm[data-v2] .cm-disc li{background:var(--lin);color:var(--encre)}.cm[data-v2] .cm-disc li.moi{background:var(--t12)}.cm[data-v2] .cm-disc li.mdg{background:rgba(242,194,48,.3)}.cm[data-v2] .cm-disc li small,.cm[data-v2] .cm-disc li.vide{color:var(--texte-3)}.cm[data-v2] .cm-disc li.vide{background:none}
 .cm[data-v2] .cm-disc button{background:var(--vert);color:var(--action-t)}
 .cm[data-v2] .cm-disc,.cm[data-v2] .cm-sq,.cm[data-v2] .cm-lien{border-radius:18px;box-shadow:none;border:0;margin:0}
 .cm[data-v2] .cm-lien{background:var(--carte)}.cm[data-v2] .cm-lien-l li,.cm[data-v2] .cm-lien small{color:var(--texte-2)}.cm[data-v2] .cm-lien-e{background:var(--t08);color:var(--texte-2)}
@@ -233,7 +233,7 @@ html[data-theme=sombre] .cm[data-v2]{color-scheme:dark}
 .cv-b{box-sizing:border-box;min-height:54px;border:0;border-radius:999px;background:var(--vert);color:var(--action-t);font:700 16px Jost,sans-serif;padding:8px 20px;display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;cursor:pointer;width:100%}
 .cv-b.o{min-height:48px;border:1.5px solid var(--vert);background:none;color:var(--vert);font-size:15px}
 .cv-b.r{min-height:50px;border:1.5px solid var(--hausse);background:none;color:var(--hausse);font-size:15px}
-.cv-b.gris,.cv-b:disabled{background:var(--lin-2);color:var(--texte-3);cursor:default}
+.cv-b.gris,.cv-b:disabled{background:var(--lin-2);color:var(--texte-2);cursor:default}
 .cv-lien{align-self:center;min-height:44px;padding:0 8px;border:0;background:none;color:var(--texte-3);font:600 14px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:center}
 .cv-lien.v{color:var(--vert)}.cv-lien.g{align-self:flex-start;padding:0;margin-top:-8px}
 .cv-acts>.cv-p{margin-bottom:-2px}
@@ -556,7 +556,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
         if (L === 'auto' && SR) return ['Commande <em>clôturée</em>', V ? 'Close en votre faveur : l’acheteur n’a pas répondu.' : 'Close pour le vendeur : pas de réponse de votre part.'];
         const quandF = f ? 'le ' + jour(f.at).replace('.', '') + ' à ' + heure(f.at) : '';
         return V ? ['Vente <em>terminée</em>', L === 'admin' ? 'Clôturée par l’équipe du Marché de Gros.' : `Réception confirmée par ${c.partenaire_nom || 'l’acheteur'}`]
-          : ['Commande <em>terminée</em>', L === 'admin' ? 'Clôturée par l’équipe du Marché de Gros.' : ('Commande terminée ' + quandF).trim()];
+          : ['Commande <em>terminée</em>', L === 'admin' ? 'Clôturée par l’équipe du Marché de Gros.' : quandF ? 'Terminée ' + quandF : 'Commande terminée'];
       }
       case 'litige': {
         const R = S && S.refus;
@@ -579,7 +579,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
     let tr = TRC[R] || (c.mode_transport === 'acheteur' ? 'À la charge de l’acheteur' : c.mode_transport === 'vendeur' ? 'Par le vendeur' : MODES[c.mode_transport] || '—');
     if (R === 'a_part' && px != null) tr += ' · ' + F(px);
     lignes.push(L('Transport', esc(tr)));
-    if (D) lignes.push(`<div class="cv-l"><span>Au départ</span><button type="button" class="cv-dep" data-dep aria-expanded="${!!depOuvert[c.id]}">${(D.photos || []).length} photo${(D.photos || []).length > 1 ? 's' : ''} · ${esc(String(D.poids_kg).replace('.', ','))} kg pesés</button></div>`
+    if (D) lignes.push(`<div class="cv-l"><span>Au départ</span><button type="button" class="cv-dep" data-dep aria-expanded="${!!depOuvert[c.id]}">${(D.photos || []).length} photo${(D.photos || []).length > 1 ? 's' : ''} · ${nf(D.poids_kg, 1)} kg pesés</button></div>`
       + (depOuvert[c.id] ? `<div class="cm-ph cv-ph">${(D.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du colis au départ"></span>`).join('')}${D.mot_photo ? `<span data-ph="${esc(D.mot_photo)}" role="img" aria-label="Photo du papier du mot secret (équipe)"></span>` : ''}</div>` : ''));
     lignes.push(L('Paiement', S && S.actif ? 'Séquestre ' + esc(OPE[S.operateur] || '') : 'À la livraison, hors application'));
     if (V && c.commission_montant != null) {

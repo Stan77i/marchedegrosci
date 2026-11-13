@@ -418,7 +418,8 @@ label.cp-r{cursor:pointer}
     // une page plein écran au-dessus de l'accueil : la barre d'onglets reste visible en dessous (maquette, lot 13)
     const poser = () => { if (!moi.isConnected) return;
       const t = document.querySelector('[data-pg="home"] .v2-tabs'), r = t && t.getBoundingClientRect();
-      const vue = t && r.height > 0 && r.top < innerHeight && getComputedStyle(t).visibility !== 'hidden' && getComputedStyle(t.closest('[data-pg]') || t).visibility !== 'hidden';
+      // les onglets sont vraiment à l'écran (pas cachés sous une autre page) : on regarde ce qu'il y a sous le doigt, sans le compte
+      let vue = false; if (t && r.height > 0 && r.top < innerHeight) { moi.style.visibility = 'hidden'; const x = document.elementFromPoint(r.left + r.width / 2, r.top + Math.min(r.height / 2, 28)); moi.style.visibility = ''; vue = !!(x && t.contains(x)); }
       moi.classList.toggle('v2c-plein', !!vue);
       if (vue) { Object.assign(moi.style, { top: '0px', left: Math.max(0, r.left) + 'px', right: Math.max(0, innerWidth - r.right) + 'px', bottom: Math.max(0, innerHeight - r.top) + 'px' }); t.classList.add('cp-actif'); }
       else ['top', 'left', 'right', 'bottom'].forEach(k => { moi.style[k] = ''; });

@@ -163,11 +163,11 @@
       f.onsubmit = e => { e.preventDefault(); const q = +inp.value; if (!(q > 0)) { f.querySelector('[data-err]').textContent = 'Indiquez votre quantité.'; return; }
         agir(f.querySelector('[type=submit]'), () => N().rpc('groupe_rejoindre', { p_id: id, p_quantite: q }), r => m ? 'Quantité changée' : 'Vous êtes inscrit · prix actuel ' + F(r.prix)); };
     }
-    const qt = box.querySelector('[data-quitter]'); if (qt) qt.onclick = () => { if (confirm('Vous retirer de cet achat groupé ?')) agir(qt, () => N().rpc('groupe_quitter', { p_id: id }), () => 'Vous êtes retiré'); };
+    const qt = box.querySelector('[data-quitter]'); if (qt) qt.onclick = () => { (window.MDGDemande ? MDGDemande.oui('Vous retirer de cet achat groupé ?', { danger: true }) : Promise.resolve(confirm('Vous retirer de cet achat groupé ?'))).then(ok => { if (ok) agir(qt, () => N().rpc('groupe_quitter', { p_id: id }), () => 'Vous êtes retiré') }); };
     box.querySelectorAll('[data-conf]').forEach(b => b.onclick = () => agir(b, () => N().rpc('groupe_confirmer', { p_id: id, p_oui: b.dataset.conf === 'oui' }),
       r => b.dataset.conf === 'oui' ? (r === 'confirme' ? 'Achat groupé confirmé : votre commande est créée' : 'Confirmé · on attend les autres') : 'Vous êtes retiré'));
     const la = box.querySelector('[data-lancer]'); if (la) la.onclick = () => agir(la, () => N().rpc('groupe_lancer', { p_id: id }), () => 'Confirmation lancée');
-    const an = box.querySelector('[data-annuler]'); if (an) an.onclick = () => { if (confirm('Annuler cet achat groupé ? Aucune commande ne sera créée.')) agir(an, () => N().rpc('groupe_annuler', { p_id: id }), () => 'Groupe annulé'); };
+    const an = box.querySelector('[data-annuler]'); if (an) an.onclick = () => { (window.MDGDemande ? MDGDemande.oui('Annuler cet achat groupé ? Aucune commande ne sera créée.', { danger: true }) : Promise.resolve(confirm('Annuler cet achat groupé ? Aucune commande ne sera créée.'))).then(ok => { if (ok) agir(an, () => N().rpc('groupe_annuler', { p_id: id }), () => 'Groupe annulé') }); };
     box.querySelectorAll('[data-val]').forEach(b => b.onclick = () => { const pal = lirePaliers(box); if (pal.err) return gerr(pal.err);
       agir(b, () => N().rpc('groupe_valider', { p_id: id, p_oui: b.dataset.val === 'oui', p_paliers: pal.L, p_frais: pal.frais }), () => b.dataset.val === 'oui' ? 'Groupe ouvert' : 'Groupe refusé'); });
     const cm = box.querySelector('[data-cmd]'); if (cm) cm.onclick = () => { fermer(); window.MDGCommandes && MDGCommandes.ouvrir(cm.dataset.cmd); };

@@ -3,7 +3,7 @@
    niveau, fiabilité, ventes réalisées), et toutes ses offres avec leur état (disponible, stock faible, en pause, épuisé).
    Adresse : le pseudo s'il existe, sinon un code court ; lien partagé = page d'aperçu du site (site/boutiques/<adresse>/),
    qui renvoie vers l'application (#/boutique/<adresse>). Serveur : supabase/schema-86-boutiques.sql.
-   API : MDGBoutique.ouvrir(adresse, { offre, source, support }) · gerer() · adresseDe(uid) → Promise<adresse|null>
+   API : MDGBoutique.ouvrir(adresse, { offre, source, support }) · gerer({ dans, fermer }?) (page du Compte) · adresseDe(uid) → Promise<adresse|null>
          · connue(uid) · chercher(texte) → [{ adresse, nom }] · lien(adresse, support, offre) */
 (function () {
   'use strict';
@@ -241,7 +241,7 @@ html[data-theme=sombre] .bqg-msg{color:#F2A08E}`;
         MDGNegoce.proposer({ cible: 'offre', id: x.id, transport: x.transport || '', produit: nomProduit(x.produit, x.libelle), prix: x.prix, unite: x.unite, quantite: +x.quantite || null, qmin: x.qte_min || null, ville: lieu(x), nom: b.nom, negociable: x.negociable !== false });
       });
       c.querySelectorAll('[data-part]').forEach(btn => btn.onclick = () => partager(btn.dataset.part));
-      const g = c.querySelector('[data-gerer]'); if (g) g.onclick = () => gerer();
+      const g = c.querySelector('[data-gerer]'); if (g) g.onclick = () => { if (document.querySelector('.cp-bg')) fermer(); else { fermer(); gerer(); } };   // ouverte depuis le Compte : on y revient
       const s = c.querySelector('[data-stock]'); if (s) s.onclick = () => { fermer(); dispatchEvent(new CustomEvent('mdg:aller', { detail: { page: 'pubs' } })); };
     }
     charger1();
@@ -280,65 +280,71 @@ html[data-theme=sombre] .bqg-msg{color:#F2A08E}`;
   }
 
   // ——— Ma boutique (le vendeur) ———
-  async function gerer() {
+  // « Ma boutique » (maquette « MGCI App v2 », lot 13) : une page du Compte. o.dans = la zone où la dessiner (v3/compte.js) ;
+  // appelée d'ailleurs (notification, Mes publications), elle ouvre le Compte sur cette page.
+  let mbCache = null;   // la dernière réponse du serveur : la page s'ouvre avec, puis se met à jour
+  async function gerer(o = {}) {
     if (!N()) return;
     if (!N().session()) { N().open('Connectez-vous pour ouvrir votre boutique.'); addEventListener('mdg:connecte', () => setTimeout(gerer, 400), { once: true }); return; }
+    if (!o.dans) { if (window.MDGCompte) return MDGCompte.ouvrir('boutique'); return; }
     style();
-    const retour = document.activeElement, bg = document.createElement('div'); bg.className = 'bqg-bg';
-    bg.innerHTML = `<div class="bqg" role="dialog" aria-modal="true" aria-labelledby="bqgT"><button type="button" class="bqg-x" aria-label="Fermer"></button><h2 id="bqgT">Ma boutique</h2><div data-c>${window.MDGSac ? MDGSac.charge('', { t: 56 }) : ''}</div></div>`;
-    document.body.appendChild(bg);
-    const rendre = N().piege ? N().piege(bg) : null, k = e => { if (e.key === 'Escape') fermer(); };
-    function fermer() { bg.remove(); removeEventListener('keydown', k); rendre && rendre(); if (retour && retour.isConnected && retour.focus) retour.focus({ preventScroll: true }); }
-    addEventListener('keydown', k); bg.addEventListener('click', e => { if (e.target === bg) fermer(); }); bg.querySelector('.bqg-x').onclick = fermer;
-    const c = bg.querySelector('[data-c]'), h2 = bg.querySelector('h2');
-    let m = null;
-    const dire = t => { const z = c.querySelector('[data-msg]'); if (z) z.textContent = t || ''; };
+    const c = o.dans, fermer = o.fermer || (() => {});
+    let m = mbCache, enCours = false;
+    const dire = (t, bad) => { const z = c.querySelector('[data-msg]'); if (z) { z.textContent = t || ''; z.classList.toggle('bad', !!bad); } };
+    const err = x => window.MDGErreur ? MDGErreur(x) : x.message;
     async function lire() {
-      try { m = await N().rpc('ma_boutique', {}); } catch (x) { c.innerHTML = `<p class="bqg-msg">${esc(window.MDGErreur ? MDGErreur(x) : x.message)}</p><button type="button" class="bqg-go" data-re>Réessayer</button>`; c.querySelector('[data-re]').onclick = lire; return; }
-      if (!bg.isConnected) return; dessiner();
+      try { m = await N().rpc('ma_boutique', {}); mbCache = m; }
+      catch (x) { if (!c.isConnected) return; if (!m) { c.innerHTML = `<p class="v2c-msg bad">${esc(err(x))}</p><button type="button" class="v2c-go" data-re>Réessayer</button>`; c.querySelector('[data-re]').onclick = lire; } return; }
+      if (c.isConnected && !enCours) dessiner();
     }
+    const activer = async (oui, b) => { b.disabled = true; dire(''); enCours = true;
+      try { m = await N().rpc('boutique_activer', { p_oui: oui }); mbCache = m; N().toast(oui ? 'Votre boutique est ouverte' : 'Boutique en pause'); }
+      catch (x) { dire(err(x), true); }
+      enCours = false; b.disabled = false; if (c.isConnected) dessiner(); };
     function dessiner() {
-      h2.innerHTML = 'Ma boutique' + (m.active ? ' <span class="bqg-on">Ouverte</span>' : '');
+      if (!m) { c.innerHTML = '<p class="v2c-sous">Un instant…</p>'; return; }
+      const C = window.MDGCompte, p = C && C.profil ? C.profil() || {} : {}, ville = String(p.ville || '').replace(/\s*\(près de [^)]+\)\s*$/, '');
+      const nb = +m.disponibles || 0, nom = esc(m.nom || '') + (ville ? ' · ' + esc(ville) : '');
       if (!m.active) {
-        c.innerHTML = `<p style="margin:0 0 14px;color:inherit;opacity:.85">Une page à votre nom avec toutes vos offres, à envoyer sur WhatsApp ou à imprimer en QR code. Vos clients voient vos produits, vos prix et ce qui reste. Votre numéro reste caché.</p>
-          <button type="button" class="bqg-go" data-ouvrir>${ICO('vendre')}Ouvrir ma boutique</button>
-          <p class="bqg-n">Vous pouvez la fermer quand vous voulez. ${m.pseudo ? 'Son adresse sera votre pseudo : ' + esc(m.pseudo) + '.' : 'Sans pseudo, elle reçoit un code court. Un pseudo se choisit dans Profil et avatar.'}</p><p class="bqg-msg" data-msg aria-live="polite"></p>`;
-        c.querySelector('[data-ouvrir]').onclick = async ev => { ev.currentTarget.disabled = true; dire('');
-          try { m = await N().rpc('boutique_activer', { p_oui: true }); dessiner(); N().toast('Votre boutique est ouverte'); }
-          catch (x) { ev.currentTarget.disabled = false; dire(window.MDGErreur ? MDGErreur(x) : x.message); } };
+        // jamais ouverte, ou mise en pause : le lien et le QR code ne montrent plus les produits ; les offres restent sur le marché
+        const pause = !!m.adresse;
+        c.innerHTML = `<span class="v2c-etat">${pause ? 'En pause · votre lien ne montre plus vos produits' : 'Pas encore ouverte'}</span>
+          <p class="v2c-txt">Une page à votre nom avec toutes vos offres, à envoyer ou à imprimer en QR code. Vos clients voient vos produits, vos prix et ce qui reste. Votre numéro reste caché.</p>
+          <button type="button" class="v2c-go" data-ouvrir>${pause ? 'Rouvrir la boutique' : 'Ouvrir ma boutique'}</button>
+          <p class="v2c-note">${m.pseudo ? 'Son adresse : votre pseudo, ' + esc(m.pseudo) + '.' : 'Sans pseudo, elle reçoit un code court. Le pseudo se choisit dans Mon profil.'}</p>
+          <p class="v2c-msg" data-msg aria-live="polite"></p>`;
+        c.querySelector('[data-ouvrir]').onclick = e => activer(true, e.currentTarget);
         return;
       }
       const v = m.visites || {}, u = lien(m.adresse, 'lien');
-      c.innerHTML = `${m.cachee ? '<p class="bqg-msg" style="margin:0 0 10px">Votre boutique est cachée pour l’instant : votre compte est suspendu.</p>' : ''}
-        <div class="bqg-adr"><span>${esc(court(m.adresse))}</span><button type="button" class="bq-ib" data-copier aria-label="Copier le lien">${I_LIEN}</button></div>
-        <button type="button" class="bqg-go" data-partager>${ICO('partager')}Partager ma boutique</button>
-        <div class="bqg-duo"><button type="button" data-copier2>${I_LIEN}Copier le lien</button><button type="button" data-qr>${I_QR}Mon QR code</button></div>
-        <div class="bqg-qr"><div data-qrv aria-hidden="true"></div><p>Imprimez-le ou collez-le sur votre stand : on le scanne avec l’appareil photo et votre boutique s’ouvre.</p></div>
-        <div class="bqg-st"><h3>Visites</h3>
-          <div class="bqg-li"><span>Ces 7 derniers jours</span>${nb(v.vues_7j || 0)}</div>
-          <div class="bqg-li"><span>Ces 30 derniers jours</span>${nb(v.vues_30j || 0)}</div>
-          <div class="bqg-li"><span>Produits ouverts (30 jours)</span>${nb(v.produits_30j || 0)}</div>
-          <div class="bqg-li"><span>Vos partages</span>${nb(v.partages || 0)}</div>
-          <p class="bqg-n">Des totaux seulement : on ne sait jamais qui a visité. Un visiteur compte une fois par jour.</p></div>
-        <div style="margin-top:12px">
-          <button type="button" class="bqg-ln" data-voir>${ICO('vendre')}<span>Voir ma boutique</span></button>
-          <button type="button" class="bqg-ln" data-stock>${ICO('publications')}<span>Gérer mon stock</span></button>
-          <button type="button" class="bqg-ln bad" data-fermer>${ICO('fermer')}<span>Fermer ma boutique</span></button></div>
-        <p class="bqg-msg" data-msg aria-live="polite"></p>`;
-      qrSvg(lien(m.adresse, 'qr')).then(s => { const z = c.querySelector('[data-qrv]'); if (z) z.innerHTML = s; }).catch(() => { const z = c.querySelector('.bqg-qr'); if (z) z.hidden = true; });
+      c.innerHTML = `<span class="v2c-etat on">${m.cachee ? 'Cachée · votre compte est suspendu' : 'Ouverte · ' + nb + (nb > 1 ? ' annonces visibles' : ' annonce visible')}</span>
+        <div class="v2c-bq"><div class="v2c-qr" data-qrv role="img" aria-label="QR code de votre boutique"></div><b>${nom}</b><span>${esc(court(m.adresse))}</span></div>
+        <p class="v2c-txt">Imprimez le QR et posez-le sur votre étal, ou envoyez le lien. Celui qui le scanne voit vos offres et vous écrit dans l’application.</p>
+        <button type="button" class="v2c-go" data-copier>Copier le lien</button>
+        <div class="v2c-duo"><button type="button" class="v2c-cont" data-voir>Voir comme un client</button><button type="button" class="v2c-disc" data-pause>Mettre en pause</button></div>
+        <p class="v2c-msg" data-msg aria-live="polite"></p>
+        <div class="v2c-liste">
+          <button type="button" class="v2c-l" data-partager><span class="t">Partager ma boutique</span>${ICO('partager')}</button>
+          <button type="button" class="v2c-l" data-qr><span class="t">Enregistrer le QR code en image</span>${I_QR}</button>
+          <button type="button" class="v2c-l" data-stock><span class="t">Gérer mon stock</span>${ICO('publications')}</button>
+        </div>
+        <div class="v2c-bloc"><span class="v2c-lab">Visites</span>
+          <div class="v2c-chiffres"><div><b>${fmt(v.vues_7j || 0)}</b><small>Ces 7 derniers jours</small></div><div><b>${fmt(v.vues_30j || 0)}</b><small>Ces 30 derniers jours</small></div><div><b>${fmt(v.produits_30j || 0)}</b><small>Produits ouverts (30 jours)</small></div><div><b>${fmt(v.partages || 0)}</b><small>Vos partages</small></div></div>
+          <p class="v2c-note">Des totaux seulement : on ne sait jamais qui a visité. Un visiteur compte une fois par jour.</p></div>`;
+      const z = c.querySelector('[data-qrv]');
+      qrSvg(lien(m.adresse, 'qr')).then(s => { if (z.isConnected) z.innerHTML = s; }).catch(() => { z.classList.add('vide'); z.textContent = 'QR code indisponible pour l’instant'; });
       const cp = async () => { const ok = await copier(u); N().toast(ok ? 'Lien copié' : 'Copie impossible : touchez et gardez le lien pour le copier'); if (ok) mesurer(m.adresse, 'lien'); };
-      c.querySelector('[data-copier]').onclick = cp; c.querySelector('[data-copier2]').onclick = cp;
+      c.querySelector('[data-copier]').onclick = cp;
       c.querySelector('[data-partager]').onclick = () => { if (navigator.share) navigator.share({ title: 'Boutique ' + de(m.nom) + ' · Marché de Gros', text: 'Mes produits sur le Marché de Gros', url: u }).then(() => mesurer(m.adresse, 'partage')).catch(() => {}); else cp(); };
       c.querySelector('[data-qr]').onclick = async ev => { const bt = ev.currentTarget; bt.disabled = true; dire('');
-        try { await telecharger(m); N().toast('QR code enregistré dans vos téléchargements'); } catch (x) { dire('L’image n’a pas pu être préparée. Réessayez.'); } finally { bt.disabled = false; } };
-      c.querySelector('[data-voir]').onclick = () => { fermer(); ouvrir(m.adresse); };
+        try { await telecharger(m); N().toast('QR code enregistré dans vos téléchargements'); } catch (x) { dire('L’image n’a pas pu être préparée. Réessayez.', true); } finally { bt.disabled = false; } };
+      c.querySelector('[data-voir]').onclick = () => ouvrir(m.adresse);
       c.querySelector('[data-stock]').onclick = () => { fermer(); if (ouverte) ouverte.fermer(); dispatchEvent(new CustomEvent('mdg:aller', { detail: { page: 'pubs' } })); };
-      c.querySelector('[data-fermer]').onclick = async () => {
-        const oui = window.MDGDemande ? await MDGDemande.oui('Fermer votre boutique ? Son lien et son QR code ne montreront plus vos produits. Vos offres restent sur le marché.', { ok: 'Fermer', danger: true }) : true;
-        if (!oui) return;
-        try { m = await N().rpc('boutique_activer', { p_oui: false }); dessiner(); N().toast('Boutique fermée'); } catch (x) { dire(window.MDGErreur ? MDGErreur(x) : x.message); } };
+      c.querySelector('[data-pause]').onclick = async e => { const b = e.currentTarget;
+        const oui = window.MDGDemande ? await MDGDemande.oui('Mettre votre boutique en pause ? Son lien et son QR code ne montreront plus vos produits. Vos offres restent sur le marché.', { ok: 'Mettre en pause' }) : true;
+        if (oui) activer(false, b); };
     }
-    lire();
+    dessiner(); lire();
   }
 
   // notification « Ouvrez votre boutique » (schéma 91) : #/?maboutique=1 ouvre « Ma boutique »

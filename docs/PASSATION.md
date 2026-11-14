@@ -2259,6 +2259,17 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur.
 
+## 14/11/2026 · Refonte, lots 10 à 13 : Activité, Messages, Commande, Compte
+
+- Remarque du propriétaire : une ligne d'Activité menait à un écran de l'ancien dessin. **Nouvelle règle** (`CLAUDE.md`) : suivre la logique de la maquette (où mène chaque bouton), demander si elle n'est pas comprise.
+- Activité (`application.dc.html`, `v2Vals`) : commande et vente → `MDGCommandes.ouvrir(id)` (écran refait), proposition → `MDGNegoce.thread`, annonce → page `pubs` « Mes annonces » (retour « Activité »), Messages → `MDGMessages.boite({ de: 'Activité' })`.
+- Mes annonces (page `pubs`, `data-v2`) : état (Disponible, En pause, Épuisé, Expirée, Servie), prix, jours restants (`finLe`), Épuisé / Remettre en stock, Modifier la quantité, Retirer en deux touches, Pause / Reprendre, Prolonger 30 jours, quota réel (`MDGIdentite.gratuitesRestantes`). `MDGV2.annonces()` l'ouvre depuis le Compte. Correction : `pause` n'était pas lu par `offersAll()`.
+- Messages (`v3/messages.js`) : liste et conversation comme la maquette ; mention « lisibles par l'équipe » gardée.
+- Commande (`v3/commandes.js`) : plein écran, titre avec mot en voix, reçu « Total figé », panneau sombre du mot secret, suivi vertical, fil du suivi ; côté vendeur : préparation sur l'écran (photos, poids, papier avec code). **Mot secret dans le sens de l'application** (décision du propriétaire, 14/11/2026). `commande_probleme` et `commande_participation_*` : seulement sur le projet de test (repli sur `commande_litige` en production, arrangement caché).
+- Compte (`v3/compte.js`, nouveau `css/v2-compte.css`, `v3/boutique.js`, `v3/aide.js`, `v3/groupes.js`) : page plein écran au-dessus des onglets, sous-écrans refaits ; les `confirm()` passent par `MDGDemande.oui`.
+- Correction : le libellé « Publier » de la barre du bas était caché par la règle `.v2-pub` de la page Publier (lot 7).
+- Vérifié (iPhone émulé, 390 et 320 px, clair et sombre) : aucune erreur ; captures avec données factices injectées dans le navigateur seulement. Cache `mgci-v312`.
+
 ## 13/11/2026 · Refonte, lot 9 : carte du réseau (logique de la maquette)
 
 - Captures validées (« Ok »). La carte MapLibre est gardée (décision du propriétaire) ; seule la logique de la maquette est prise.

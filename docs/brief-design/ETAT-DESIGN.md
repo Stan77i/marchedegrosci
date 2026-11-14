@@ -30,15 +30,15 @@ Toutes les nouveautés de la maquette sont acceptées : onglets en bas et alerte
 | 7 | Publier | **fait** (13/11/2026). Écarts : « À la prochaine récolte » → « Ce mois-ci » (pas de date de récolte) ; « Chaque semaine » retiré des demandes (pas géré) ; prix obligatoire (règle du 25/10) |
 | 8 | Prix, Tous les produits, Année du marché | **fait** (13/11/2026). Prix : « offres publiées » (pas encore les commandes), pas de tendance sans prix réels de deux semaines ; Tous les produits : les 12 vraies familles ; Année du marché : toutes les récoltes sourcées (A.CAL) |
 | 9 | Carte | **fait** (13/11/2026). Décision du propriétaire : la carte MapLibre de l’application est gardée (plus pro) ; seule la logique de la maquette est prise : titre « Carte du réseau », Tout / Offres / Demandes en haut, produit et zone dans le panneau du bas, « Ce qui se rapproche » (offre et demande du même produit, de la plus proche à la plus loin). Distances à vol d’oiseau entre chefs-lieux. Rien à redessiner |
-| 10 | Activité + Messages | Activité **faite** (13/11/2026, avancée) ; Messages : à faire. Écart : le montant de la commande n'est pas encore sur la ligne |
-| 11 | Commande acheteur | à faire |
-| 12 | Côté vendeur | à faire |
-| 13 | Compte | à faire |
+| 10 | Activité + Messages | **fait** (14/11/2026). Chaque ligne d’Activité mène à l’écran de la maquette (commande, côté vendeur, discussion, Mes annonces, Messages). Écarts : bandeau « lisibles par l’équipe » (règle), heure, non lu et menu Signaler / Bloquer gardés ; montant de la commande pas encore sur la ligne |
+| 11 | Commande acheteur | **fait** (14/11/2026). Écarts : **mot secret dans le sens de l’application** (le vendeur l’écrit sur un papier dans le colis, l’acheteur le tape ; décision du propriétaire), 5 choix de problème du serveur (pas « Pas le bon produit »), « Commande passée » en première étape, « Votre marchandise est arrivée » |
+| 12 | Côté vendeur | **fait** (14/11/2026). Le vendeur voit « Votre mot secret » ; pas de champ pour taper le mot (c’est l’acheteur) ; « Commission prévue · 3,5 % · rien n’est prélevé » |
+| 13 | Compte | **fait** (14/11/2026) : Compte, Mon profil, Ma boutique, Mes annonces, Approvisionnement, Réglages, Sécurité, Aide. Écarts : nom « Awa K. » (vie privée), pas d’interrupteur par catégorie de notifications, pas de « Être rappelé », Espace équipe ouvre encore `admin.html` (lot 14) |
 | 14 | Espace équipe | à faire |
 | 15 | Porte et cas limites | à faire |
 | 16 | Passe finale (sombre, 320 px, contrastes) | à faire |
 
-Les captures de chaque lot terminé sont dans `docs/brief-design/captures/` (`lot2-…` à `lot9-…`, `lot10-…`).
+Les captures de chaque lot terminé sont dans `docs/brief-design/captures/` (`lot2-…` à `lot13-…`).
 
 ## 4. Le site pour ordinateur : ce qui existe, ce qui manque
 

@@ -12,22 +12,20 @@
   'use strict';
   const JOURS = 365;  // = dm_duree() (schéma 60 : gardés 1 an, l'équipe peut les lire)
   const KL = 'mdg-dm:liste';
-  const N = () => window.MDGNuage, A = () => window.MDGAvatar;
+  const N = () => window.MDGNuage;
   const TI = n => window.MDGIco ? '<span class="ic-t" aria-hidden="true">' + MDGIco.svg(n, 17, 1.9) + '</span>' : '';   // petite icône dessinée devant un texte (plus d'emoji)
   const J = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } };
   const W = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const me = () => { const s = N() && N().session(); return s && s.user && s.user.id; };
-  // l'avatar : celui que la liste du serveur donne, sinon celui des profils publics déjà connus (v3/compte.js), sinon les initiales
-  // le logo du Marché de Gros (messages de l'administration)
-  // le petit « dG » du logo Étal vert (app/marque.js), rond comme les autres avatars
-  const LOGO = t => window.MDGMarque ? MDGMarque.dg(t, { rond: true }) : `<span aria-hidden="true" style="flex:none;width:${t}px;height:${t}px;border-radius:50%;background:#10392B"></span>`;
   const OFF = '<span class="dm-off">Officiel</span>';
   const admin = () => { try { return JSON.parse(localStorage.getItem('mdg-nuage:admin')) === true; } catch (_) { return false; } };
   // seul le Marché de Gros officiel peut écrire des liens (supabase/schema-22) : dans ses messages, ils deviennent cliquables
   const lienOff = t => esc(t).replace(/\b(https?:\/\/[^\s<]+|www\.[^\s<]+)/gi, u => { const h = /^https?:/i.test(u) ? u : 'https://' + u; return /^https?:\/\/[^\s"'<>]+$/i.test(h) ? `<a href="${h}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:underline">${u}</a>` : u; });
-  const av = (uid, code, nom, t, officiel) => { if (officiel) return LOGO(t); const u = !code && uid && window.MDGCompte ? MDGCompte.avatar(uid, { size: t, nom: nom || '?' }).uri : A() ? A().uri(code, { size: t, nom: nom || '?', seed: uid }) : '';
-    return u ? `<img src="${u}" width="${t}" height="${t}" alt="">` : ''; };
+  // maquette : initiales dans un rond (plus d'avatars dessinés) ; le Marché de Gros : son logo carré
+  const initiales = n => { const m = String(n || '').trim().split(/\s+/).filter(Boolean); return esc(((m[0] || '?')[0] + (m.length > 1 ? m[m.length - 1][0] : (m[0] || '').slice(1, 2))).toUpperCase()); };
+  const rond = (nom, t, officiel) => officiel ? `<img class="dm-logo" src="logo/marque.svg" width="${t}" height="${t}" alt="" style="border-radius:${Math.round(t * .3)}px">`
+    : `<span class="dm-ini" aria-hidden="true" style="width:${t}px;height:${t}px;font-size:${t >= 46 ? 13.5 : 13}px">${initiales(nom)}</span>`;
   const heure = t => new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   const jour = t => { const d = new Date(t), a = new Date(); a.setHours(0, 0, 0, 0); const j = Math.round((a - new Date(d).setHours(0, 0, 0, 0)) / 864e5);
     return j <= 0 ? 'Aujourd’hui' : j === 1 ? 'Hier' : d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }); };
@@ -91,63 +89,88 @@
     annoncer(); return liste;
   }
 
-  // feuille (sombre, plein écran sur téléphone, comme une vraie messagerie)
-  const CSS = `.dm-bg{position:fixed;inset:0;z-index:9200;background:rgba(10,9,7,.6);display:flex;align-items:flex-end;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);animation:dmIn .2s ease both}
-.dm{--ink:#171512;--mute:#655C4D;--line:rgba(23,21,18,.1);--acc:#10392B;position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:100%;background:#F4EEE3;color:var(--ink);font:400 15px/1.45 Jost,system-ui,sans-serif;animation:dmUp .38s cubic-bezier(.22,1,.36,1) both;overflow:hidden}
+  // feuille plein écran (lot 10 de la refonte, maquette « MGCI App v2 ») : page papier, clair ou sombre selon le thème.
+  // Les couleurs sont posées ici (mêmes valeurs que css/mgci-tokens.css et css/sombre.css) : le module marche aussi sur le site.
+  const CSS = `.dm-bg{position:fixed;inset:0;z-index:9200;background:rgba(10,9,7,.6);display:flex;align-items:flex-end;justify-content:center;animation:dmIn .2s ease both}
+.dm{--papier:#F2EBDD;--carte:#FAF4E9;--champ:#FFFAF3;--lin:#E7DCC8;--encre:#171512;--texte-2:#484236;--texte-3:#655C4D;--mute:#6F6553;--vert:#10392B;--action-t:#F3EFE4;--hausse:#B23C24;
+--barre:rgba(250,244,233,.94);--t08:rgba(23,21,18,.08);--t14:rgba(23,21,18,.14);--heure-moi:#C5CFC4;--garde:#F6E2B0;--garde-t:#5B4300;--menu:#FFFDF8;--ombre-menu:0 14px 34px rgba(23,21,18,.18),0 2px 6px rgba(23,21,18,.08);
+position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:100%;background:var(--papier);color:var(--encre);font:400 15px/1.45 Jost,sans-serif;animation:dmUp .38s cubic-bezier(.22,1,.36,1) both;overflow:hidden}
+html[data-theme=sombre] .dm{--papier:#14120F;--carte:#1F1B16;--champ:#25211B;--lin:#2C2720;--encre:#F3EFE4;--texte-2:#DDD3C2;--texte-3:#BFB39E;--mute:#A89C88;--vert:#F2C230;--action-t:#171512;--hausse:#F3A08C;
+--barre:rgba(31,27,22,.94);--t08:rgba(243,239,228,.08);--t14:rgba(243,239,228,.14);--heure-moi:#4A3A0A;--garde:#2E2614;--garde-t:#F2D57A;--menu:#25211B;--ombre-menu:0 14px 34px rgba(0,0,0,.5);color-scheme:dark}
+.dm-bg.dm-sans,.dm-bg.dm-sans .dm{animation:none}
 @media (min-width:720px){.dm-bg{align-items:center;padding:24px}.dm{height:min(760px,92dvh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.55)}}
-.dm-h{flex:none;display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 10px 10px;border-bottom:1px solid var(--line);background:#EFE7D9}
-.dm-ib{flex:none;position:relative;width:44px;height:44px;border:0;border-radius:50%;background:rgba(23,21,18,.07);color:var(--ink);display:grid;place-items:center;cursor:pointer}
-.dm-ib svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.dm-ib:focus-visible,.dm button:focus-visible,.dm textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-.dm-qui{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;color:inherit;text-align:left;padding:4px;border-radius:14px;cursor:pointer;font:inherit}
-.dm-qui img{flex:none;border-radius:50%}.dm-qui span{min-width:0}.dm-qui b{display:block;font-weight:600;font-size:16.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dm-qui small{display:block;color:var(--mute);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dm-t{flex:1;min-width:0;margin:0 0 0 6px;font:600 21px/1.1 Jost,sans-serif;letter-spacing:-.015em}.dm-t small{display:block;margin-top:2px;font:400 12.5px Jost,sans-serif;color:var(--mute)}
-.dm-b{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:14px 14px 18px;-webkit-overflow-scrolling:touch}
-.dm-info{display:flex;align-items:center;justify-content:center;gap:7px;margin:2px auto 14px;padding:7px 12px;max-width:340px;border-radius:999px;background:rgba(23,21,18,.05);color:var(--mute);font-size:12.5px;text-align:center}
-.dm-garde{margin:-6px auto 14px;padding:9px 12px;max-width:380px;border-radius:14px;background:rgba(242,201,76,.22);color:#5B4300;font-size:12.5px;line-height:1.45;text-align:center}
-.dm-info svg{flex:none;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
-.dm-jour{margin:16px 0 8px;text-align:center;color:var(--mute);font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:capitalize}
-.dm-m{display:flex;margin:3px 0}.dm-m.me{justify-content:flex-end}
-.dm-m p{max-width:80%;margin:0;padding:9px 13px 7px;border-radius:20px 20px 20px 6px;background:rgba(23,21,18,.08);white-space:pre-wrap;overflow-wrap:anywhere;font-size:15.5px;line-height:1.4}
-.dm-m.me p{border-radius:20px 20px 6px 20px;background:#171512;color:#F5F0E6}
-.dm-m.suite p{border-top-left-radius:20px}.dm-m.me.suite p{border-top-right-radius:20px;border-top-left-radius:20px}
-.dm-m time{display:block;margin-top:2px;text-align:right;font-size:11.5px;color:var(--mute)}.dm-m.me time{color:rgba(245,240,230,.72)}
-.dm-m.envoi p{opacity:.6}.dm-m.rate p{box-shadow:inset 0 0 0 1.5px #E2735B}
-.dm-m.rate time{opacity:1;color:#E2735B;font-weight:600}.dm-m.rate{cursor:pointer}.dm-m.file p{opacity:.8}.dm-m.file time{opacity:1;font-weight:600}.dm-m.file{cursor:pointer}
-.dm-m.neuf p{animation:dmPop .3s cubic-bezier(.22,1,.36,1) both}
-.dm-f{flex:none;display:flex;align-items:flex-end;gap:8px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#EFE7D9}
-.dm-f textarea{flex:1;min-width:0;min-height:46px;max-height:132px;margin:0;padding:12px 16px;border:1px solid rgba(23,21,18,.14);border-radius:23px;background:#FFFFFF;color:var(--ink);font:400 16px/1.35 Jost,sans-serif;resize:none;box-sizing:border-box}
-.dm-f textarea:focus{outline:none;border-color:var(--acc)}
-.dm-env{flex:none;width:46px;height:46px;border:0;border-radius:50%;background:var(--acc);color:#F3EFE4;display:grid;place-items:center;cursor:pointer;transition:transform .15s,opacity .2s}
-.dm-env svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.dm-env:disabled{opacity:.35;cursor:default}.dm-env:not(:disabled):active{transform:scale(.92)}
-.dm-stop{flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;color:var(--mute);font-size:14px}
-.dm-stop button{flex:none;min-height:44px;padding:0 14px;border:0;border-radius:999px;background:#EFE7D9;color:var(--ink);font:600 13.5px Jost,sans-serif;cursor:pointer}
-.dm-menu{position:absolute;right:10px;top:calc(60px + env(safe-area-inset-top));z-index:3;min-width:220px;padding:6px;border-radius:18px;background:#FFFDF8;border:1px solid rgba(23,21,18,.08);box-shadow:0 14px 34px rgba(23,21,18,.18),0 2px 6px rgba(23,21,18,.08);animation:dmPop .2s ease both}
-.dm-menu button{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:0 12px;border:0;border-radius:12px;background:none;color:#171512;font:500 15px Jost,sans-serif;text-align:left;cursor:pointer}
-.dm-menu button:hover{background:rgba(23,21,18,.06)}.dm-menu .rouge{color:#C0442B}
-.dm-l{display:flex;flex-direction:column;gap:2px}
-.dm-c{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;align-items:center;width:100%;padding:10px 10px;border:0;border-radius:18px;background:#F4EEE3;color:var(--ink);text-align:left;font:inherit;cursor:pointer}
-.dm-c:hover{background:rgba(23,21,18,.06)}.dm-c img{grid-row:span 2;border-radius:50%}
-.dm-c b{font-weight:600;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dm-c small{grid-column:2;color:var(--mute);font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dm-c time{color:var(--mute);font-size:12px;text-align:right}.dm-c i{grid-column:3;justify-self:end;width:10px;height:10px;border-radius:50%;background:var(--acc)}
-.dm-c.neuf b,.dm-c.neuf small{color:var(--ink);font-weight:600}.dm-c.neuf time{color:#10392B}
-.dm-l .sw{border-radius:18px}.dm-l .sw+.sw{margin-top:2px}.dm-l .sw>.sw-row{background-color:#F4EEE3!important}
-.dm-off{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:rgba(16,57,43,.2);color:#10392B;font:700 11.5px/1.6 Jost,sans-serif;letter-spacing:.06em;text-transform:uppercase;vertical-align:2px}
-.dm-act{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
-.dm-act button,.dm-act a{flex:1 1 200px;display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 14px;border:1px solid rgba(23,21,18,.06);border-radius:18px;background:#FFFDF8;color:var(--ink);font:600 14.5px Jost,sans-serif;text-align:left;text-decoration:none;cursor:pointer;box-shadow:0 1px 2px rgba(23,21,18,.05),0 6px 18px rgba(23,21,18,.04)}
-.dm-act small{display:block;color:var(--mute);font-size:12px;font-weight:400}.dm-act a>svg{flex:none;width:34px;height:34px;padding:7px;border-radius:50%;background:rgba(16,57,43,.1);fill:none;stroke:#10392B;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;box-sizing:border-box}
-.dm-dif{display:flex;flex-direction:column;gap:12px;padding:16px}
-.dm-dif textarea{min-height:160px;padding:14px 16px;border:1px solid rgba(23,21,18,.16);border-radius:18px;background:#FFFFFF;color:var(--ink);font:400 16px/1.45 Jost,sans-serif;resize:vertical}
-.dm-dif textarea:focus{outline:none;border-color:var(--acc)}
-.dm-dif .go{min-height:52px;border:0;border-radius:999px;background:var(--acc);color:#F3EFE4;font:700 15.5px Jost,sans-serif;cursor:pointer}.dm-dif .go:disabled{opacity:.5}
-.dm-dif p{margin:0;color:var(--mute);font-size:13.5px;line-height:1.5}
-.dm-org{display:flex;margin:3px 0 1px;min-width:0}.dm-org:empty{display:none}.dm-org-l{font-style:normal;font-weight:600;color:#10392B}
-.dm-vide{padding:56px 18px;text-align:center;color:var(--mute);line-height:1.55}.dm-vide svg{width:54px;height:54px;margin:0 auto 14px;display:block;fill:none;stroke:#6F6553;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.dm ::selection{background:rgba(242,194,48,.45)}
+.dm-h{flex:none;display:flex;align-items:center;gap:6px;padding:calc(8px + env(safe-area-inset-top)) 12px 6px 5px}
+.dm-h.bas{border-bottom:1px solid var(--t08);padding-bottom:8px}
+.dm-ib{flex:none;position:relative;width:44px;height:44px;border:0;border-radius:50%;background:none;color:var(--encre);display:grid;place-items:center;cursor:pointer;padding:0}
+.dm-ib svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dm-ret{display:flex;align-items:center;min-height:44px;border:0;background:none;padding:0 10px 0 0;color:var(--texte-3);font:400 14px Jost,sans-serif;cursor:pointer}
+.dm-ret svg{width:22px;height:22px;margin:0 0 0 11px;fill:none;stroke:var(--encre);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dm-ret span{margin-left:11px}
+.dm button:focus-visible,.dm a:focus-visible,.dm textarea:focus-visible,.dm [tabindex]:focus-visible{outline:2px solid var(--vert);outline-offset:2px}
+.dm-qui{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;color:inherit;text-align:left;padding:2px 4px;border-radius:14px;cursor:pointer;font:inherit;min-height:44px}
+.dm-qui>span:last-child{min-width:0;display:flex;flex-direction:column}
+.dm-qui b{display:flex;align-items:center;gap:6px;min-width:0;font-weight:700;font-size:16px;line-height:1.25}.dm-qui b .nm{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-qui small{display:block;color:var(--texte-3);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.dm-qui small:empty{display:none}
+.dm-ini{flex:none;display:grid;place-items:center;border-radius:999px;background:var(--lin);color:var(--texte-2);font-weight:700;letter-spacing:.01em}
+.dm-logo{flex:none;display:block}.dm-ini svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.dm-tete{padding:0 16px 6px}
+.dm-tete h2{margin:6px 0 0;font:600 32px/1.05 Jost,sans-serif;letter-spacing:-.015em}
+.dm-tete p{margin:6px 0 0;color:var(--texte-3);font-size:13.5px}
+.dm-b{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:8px 16px 24px;-webkit-overflow-scrolling:touch}
+.dm-conv .dm-b{display:flex;flex-direction:column;padding:10px 16px 18px}
+.dm-info{align-self:center;max-width:310px;margin:0 auto 10px;padding:8px 12px;border-radius:12px;background:var(--lin);color:var(--texte-2);font-size:12.5px;line-height:1.4;text-align:center}
+.dm-garde{align-self:center;max-width:340px;margin:0 auto 10px;padding:9px 12px;border-radius:12px;background:var(--garde);color:var(--garde-t);font-size:12.5px;line-height:1.45;text-align:center}
+.dm-jour{margin:14px 0 6px;text-align:center;color:var(--mute);font-size:12px;font-weight:600;text-transform:capitalize}
+.dm-m{display:flex;margin:5px 0}.dm-m.me{justify-content:flex-end}.dm-m.suite{margin-top:2px}
+.dm-m p{max-width:80%;margin:0;padding:10px 14px 7px;border-radius:18px;background:var(--carte);color:var(--encre);white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;line-height:1.4}
+.dm-m.me p{background:var(--vert);color:var(--action-t)}
+.dm-m time{display:block;margin-top:2px;text-align:right;font-size:11.5px;color:var(--mute);font-variant-numeric:tabular-nums}.dm-m.me time{color:var(--heure-moi)}
+.dm-m.envoi p{opacity:.75}
+.dm-m.me.rate p{background:var(--carte);color:var(--encre);box-shadow:inset 0 0 0 1.5px var(--hausse)}.dm-m.me.rate time{color:var(--hausse);font-weight:600}.dm-m.rate,.dm-m.file{cursor:pointer}
+.dm-m.file time{font-weight:600}
+.dm-m.neuf p{animation:dmPop .28s cubic-bezier(.22,1,.36,1) both}
+.dm-f{flex:none;display:flex;align-items:flex-end;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--t08);background:var(--barre);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.dm-f textarea{flex:1;min-width:0;min-height:44px;max-height:132px;margin:0;padding:10px 16px;border:1px solid var(--t14);border-radius:22px;background:var(--champ);color:var(--encre);font:400 16px/1.35 Jost,sans-serif;resize:none;box-sizing:border-box;caret-color:var(--vert)}
+.dm-f textarea::placeholder{color:var(--mute)}
+.dm-f textarea:focus{outline:none;border-color:var(--vert)}
+.dm-env{flex:none;width:44px;height:44px;border:0;border-radius:999px;background:var(--vert);color:var(--action-t);display:grid;place-items:center;cursor:pointer;transition:transform .15s;padding:0}
+.dm-env svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.dm-env:disabled{cursor:default;background:var(--lin);color:var(--mute)}.dm-env:not(:disabled):active{transform:scale(.92)}
+.dm-stop{flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;color:var(--texte-3);font-size:14px}
+.dm-stop button{flex:none;min-height:44px;padding:0 16px;border:1.5px solid var(--vert);border-radius:999px;background:none;color:var(--vert);font:700 14px Jost,sans-serif;cursor:pointer}
+.dm .dm-f:has(.dm-sug){flex-wrap:wrap}
+.dm .dm-sug{margin:0 -12px 2px;padding:0 12px 2px}
+.dm .dm-sug button{min-height:44px;border:1px solid var(--t14);border-radius:999px;background:var(--carte);color:var(--encre);font:600 13.5px/1.2 Jost,sans-serif}
+.dm .dm-sug button.trouve{border-color:var(--vert)}
+.dm .dm-sug .dm-sug-aide{background:var(--vert);border-color:var(--vert);color:var(--action-t)}
+.dm-menu{position:absolute;right:10px;top:calc(56px + env(safe-area-inset-top));z-index:3;min-width:220px;max-width:calc(100% - 20px);padding:6px;border-radius:18px;background:var(--menu);border:1px solid var(--t08);box-shadow:var(--ombre-menu);animation:dmPop .2s ease both}
+.dm-menu button{display:flex;align-items:center;gap:10px;width:100%;min-height:46px;padding:0 12px;border:0;border-radius:12px;background:none;color:var(--encre);font:500 15px Jost,sans-serif;text-align:left;cursor:pointer}
+.dm-menu button:hover{background:var(--t08)}.dm-menu .rouge{color:var(--hausse)}
+.dm-l{display:flex;flex-direction:column}
+.dm-c{display:flex;align-items:center;gap:12px;width:100%;min-height:72px;padding:12px 0;border:0;border-bottom:1px solid var(--t08);background:var(--papier);color:var(--encre);text-align:left;font:inherit;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.dm-c .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.dm-c .nm{display:flex;align-items:center;gap:6px;min-width:0;font-size:15px;font-weight:700;line-height:1.3}.dm-c .nm>span:first-child{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-c .tx>small{color:var(--texte-3);font-size:13.5px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-c .md{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:5px;min-width:0}
+.dm-c time{color:var(--mute);font-size:12px;font-variant-numeric:tabular-nums}
+.dm-c i{display:block;width:10px;height:10px;border-radius:50%;background:var(--vert)}
+.dm-c>svg{flex:none;width:18px;height:18px;fill:none;stroke:var(--mute);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dm-c.neuf .tx>small{color:var(--encre);font-weight:600}.dm-c.neuf time{color:var(--encre);font-weight:600}
+.dm-l .sw{border-radius:0}.dm-l .sw+.sw{margin-top:0}.dm-l .sw>.sw-row{background-color:var(--papier)!important}
+.dm-off{flex:none;display:inline-block;padding:1px 7px;border-radius:999px;background:#10392B;color:#F2C230;font:700 11.5px/1.5 Jost,sans-serif}
+.dm-org-l{font-style:normal;font-weight:600;color:var(--texte-2)}
+.dm-org{display:flex;margin:2px 0 0;min-width:0}.dm-org:empty{display:none}
+.dm-tous{display:block;margin:4px 0 0;padding:12px 0;min-height:44px;border:0;background:none;color:var(--vert);font:700 14px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.dm-dif{display:flex;flex-direction:column;gap:12px;padding:6px 0 0}
+.dm-dif .qui{display:flex;align-items:center;gap:10px;font-weight:700}
+.dm-dif textarea{min-height:160px;padding:14px 16px;border:1px solid var(--t14);border-radius:18px;background:var(--champ);color:var(--encre);font:400 16px/1.45 Jost,sans-serif;resize:vertical;caret-color:var(--vert)}
+.dm-dif textarea:focus{outline:none;border-color:var(--vert)}
+.dm-dif .go{min-height:52px;border:0;border-radius:999px;background:var(--vert);color:var(--action-t);font:700 15.5px Jost,sans-serif;cursor:pointer}.dm-dif .go:disabled{background:var(--lin);color:var(--mute);cursor:default}
+.dm-dif p{margin:0;color:var(--texte-3);font-size:13.5px;line-height:1.5}
+.dm-vide{padding:40px 8px;text-align:center;color:var(--texte-3);line-height:1.55;font-size:14px}.dm-vide>svg{width:54px;height:54px;margin:0 auto 14px;display:block;fill:none;stroke:var(--mute);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .dm-vide svg.ms{width:auto;height:auto;fill:initial;stroke:none;margin:0 auto 12px}
-.dm-vide b{display:block;margin:0 0 6px;font:600 20px/1.2 Jost,sans-serif;letter-spacing:-.015em;color:var(--ink)}
-.dm-vide button{margin-top:16px;min-height:46px;padding:0 18px;border:0;border-radius:999px;background:#EFE7D9;color:var(--ink);font:600 14.5px Jost,sans-serif;cursor:pointer}
+.dm-vide b{display:block;margin:0 0 6px;font:600 20px/1.2 Jost,sans-serif;letter-spacing:-.015em;color:var(--encre)}
+.dm-vide button{margin-top:16px;min-height:44px;padding:0 18px;border:1.5px solid var(--vert);border-radius:999px;background:none;color:var(--vert);font:700 14px Jost,sans-serif;cursor:pointer}
 @keyframes dmIn{from{opacity:0}}@keyframes dmUp{from{transform:translateY(30px);opacity:0}}@keyframes dmPop{from{transform:scale(.94);opacity:0}}
 @media (prefers-reduced-motion:reduce){.dm-bg,.dm,.dm-m.neuf p,.dm-menu{animation:none}}`;
   const I0 = {
@@ -156,17 +179,20 @@
     plus: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>',
     horloge: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
     envoyer: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.4 20.4 21 12 3.4 3.6l2.2 7.1 8.4 1.3-8.4 1.3z"/></svg>',
-    bulle: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>'
+    bulle: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/></svg>',
+    chevron: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>'
   };
   // même jeu d'icônes que l'application (app/icones.js, Lucide), sinon les dessins ci-dessus
-  const LUC = { retour: 'retour', x: 'fermer', plus: 'options', horloge: 'horloge', envoyer: 'envoyer', bulle: 'messages' };
-  const I = {}; Object.keys(I0).forEach(k => { const L = window.MDGIco && window.MDGIco.corps(LUC[k]); I[k] = L ? '<svg viewBox="0 0 24 24" aria-hidden="true">' + L + '</svg>' : I0[k]; });
+  const LUC = { x: 'fermer', plus: 'options', horloge: 'horloge', envoyer: 'envoyer', bulle: 'messages' };
+  const I = {}; Object.keys(I0).forEach(k => { const L = LUC[k] && window.MDGIco && window.MDGIco.corps(LUC[k]); I[k] = L ? '<svg viewBox="0 0 24 24" aria-hidden="true">' + L + '</svg>' : I0[k]; });
   let bg = null, rendre = null, minuteur = 0;
-  function feuille(html, label) {
+  const cacheM = new Map();   // messages déjà lus pendant cette visite (en mémoire seulement)
+  function feuille(html, label, cls) {
     if (!document.getElementById('dmCss')) { const st = document.createElement('style'); st.id = 'dmCss'; st.textContent = CSS; document.head.appendChild(st); }
-    fermer(true);
-    bg = document.createElement('div'); bg.className = 'dm-bg';
-    bg.innerHTML = `<div class="dm" role="dialog" aria-modal="true" aria-label="${esc(label)}">${html}</div>`;
+    const deja = !!bg; fermer(true);
+    // d'un écran des messages à l'autre : la page change sur place, sans rejouer l'entrée (pas de clignotement)
+    bg = document.createElement('div'); bg.className = 'dm-bg' + (deja ? ' dm-sans' : '');
+    bg.innerHTML = `<div class="dm${cls ? ' ' + cls : ''}" role="dialog" aria-modal="true" aria-label="${esc(label)}">${html}</div>`;
     document.body.appendChild(bg);
     if (!rendre) rendre = N() && N().piege ? N().piege(bg) : null;
     bg.addEventListener('click', e => { if (e.target === bg) fermer(); });
@@ -188,32 +214,50 @@
   }
   if (window.visualViewport) { visualViewport.addEventListener('resize', ajuster); visualViewport.addEventListener('scroll', ajuster); }
 
-  // la boîte : toutes mes conversations
-  function boite() {
+  // les négociations en cours ou conclues (v3/negoce.js garde sa liste sur l'appareil) : en tête des messages, comme la maquette
+  const KN = 'mdg-negoce:liste';
+  const negos = () => { const u = me(); if (!u || !window.MDGNegoce) return [];
+    return J(KN, []).filter(n => n && n.id && (n.auteur_id === u || n.proprio_id === u) && (n.statut === 'ouverte' || n.statut === 'conclue')).slice(0, 5); };
+  const ligneNego = n => { const u = me(), lui = n.auteur_id === u ? n.proprio_id : n.auteur_id;
+    const roleLui = (n.cible === 'offre') === (lui === n.proprio_id) ? 'Le vendeur' : 'L’acheteur';
+    const connu = window.MDGCompte && MDGCompte.avatar ? MDGCompte.avatar(lui, { size: 46 }).nom : '', nom = connu || roleLui;
+    const lu = u === n.auteur_id ? n.lu_auteur : n.lu_proprio, neuf = Date.parse(n.updated_at) > (Date.parse(lu) || 0) + 500;
+    return `<button type="button" class="dm-c${neuf ? ' neuf' : ''}" data-nego="${esc(n.id)}">${connu || !window.MDGIco ? rond(nom, 46) : '<span class="dm-ini" aria-hidden="true" style="width:46px;height:46px">' + MDGIco.svg('negoce', 22, 1.8) + '</span>'}<span class="tx"><span class="nm"><span>${esc(nom)}</span></span><small>${n.statut === 'conclue' ? 'Accord conclu' : 'Négociation en cours'} · ${esc(n.produit || 'Annonce')}</small></span><span class="md"><time>${quand(n.updated_at)}</time>${neuf ? '<i aria-label="Non lu"></i>' : ''}</span>${I.chevron}</button>`; };
+
+  // la boîte : toutes mes conversations (o.de : le nom de l'écran d'où l'on vient, écrit à côté de la flèche, ex. « Activité »)
+  let deBoite = '';
+  function boite(o = {}) {
     if (!N() || !N().session()) { N() && N().open('Connectez-vous pour voir vos messages.'); return; }
-    const b = feuille(`<div class="dm-h"><h2 class="dm-t">Messages<small>Gardés 1 an · lisibles par l’équipe</small></h2><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div><div class="dm-b"><div class="dm-act" data-act></div><div class="dm-l" data-l></div></div>`, 'Messages');
+    if (o && o.de != null) deBoite = String(o.de);
+    const b = feuille(`<div class="dm-h"><button type="button" class="dm-ret" data-x aria-label="${deBoite ? 'Retour à ' + esc(deBoite) : 'Retour'}">${I.retour}${deBoite ? `<span>${esc(deBoite)}</span>` : ''}</button></div>
+      <div class="dm-b"><div class="dm-tete" style="padding:0 0 10px"><h2>Messages</h2><p>Gardés 1 an · lisibles par l’équipe</p></div><div class="dm-l" data-n></div><div class="dm-l" data-act></div><div class="dm-l" data-l></div></div>`, 'Messages');
     // « Écrire au Marché de Gros » seulement s'il n'y a pas déjà une conversation avec le Marché de Gros dans la liste ;
-    // si elle est retirée, la carte revient (demande du propriétaire, 24/10/2026 : pas de doublon). Rien n'est redessiné si rien ne change.
+    // si elle est retirée, la ligne revient (demande du propriétaire, 24/10/2026 : pas de doublon). Rien n'est redessiné si rien ne change.
     const actions = () => { const z = b.querySelector('[data-act]'); if (!z) return;
       const html = admin()
-        ? `<button type="button" data-tous>${LOGO(34)}<span>Message à tous les membres<small>Au nom du Marché de Gros, avec le logo</small></span></button><a href="admin.html#messages">${I.bulle}<span>Toutes les conversations<small>Lire, alertes de sortie de l’application</small></span></a>`
+        ? `<button type="button" class="dm-c" data-tous>${rond('', 46, true)}<span class="tx"><span class="nm"><span>Message à tous les membres</span></span><small>Au nom du Marché de Gros, avec le logo</small></span>${I.chevron}</button><a class="dm-c" href="admin.html#messages">${'<span class="dm-ini" aria-hidden="true" style="width:46px;height:46px">' + I.bulle + '</span>'}<span class="tx"><span class="nm"><span>Toutes les conversations</span></span><small>Lire, alertes de sortie de l’application</small></span>${I.chevron}</a>`
         : liste.some(c => c.officiel) ? ''
-        : `<button type="button" data-marche>${LOGO(34)}<span>Écrire au Marché de Gros<small>L’équipe vous répond ici</small></span></button>`;
-      if (z._h === html) return; z._h = html; z.innerHTML = html; z.style.display = html ? '' : 'none';
+        : `<button type="button" class="dm-c" data-marche>${rond('', 46, true)}<span class="tx"><span class="nm"><span>Marché de Gros</span>${OFF}</span><small>Écrire à l’équipe : elle vous répond ici</small></span>${I.chevron}</button>`;
+      if (z._h === html) return; z._h = html; z.innerHTML = html;
       const t = z.querySelector('[data-tous]'); if (t) t.onclick = () => diffuser();
       const m = z.querySelector('[data-marche]'); if (m) m.onclick = () => ecrireMarche(); };
+    const negociations = () => { const z = b.querySelector('[data-n]'); if (!z) return;
+      const html = negos().map(ligneNego).join('');
+      if (z._h === html) return; z._h = html; z.innerHTML = html;
+      z.querySelectorAll('[data-nego]').forEach(el => el.onclick = () => { const id = el.dataset.nego; fermer(); MDGNegoce.thread(id); }); };
     actions(); N().isAdmin().then(() => { if (bg === b) actions(); });
     const dessiner = () => {
-      actions();
+      negociations(); actions();
       const box = b.querySelector('[data-l]'); if (!box) return; const u = me();
       if (!liste.length) {
-        box._h = '';
-        box.innerHTML = `<div class="dm-vide">${window.MDGSac ? MDGSac.svg('vide', { t: 70 }) : I.bulle}<b>Aucune conversation</b>Touchez la photo d’un vendeur ou d’un acheteur, puis « Écrire ». Vous pouvez parler de tout, même sans acheter.${window.MDGRep ? '<br><button type="button" data-top>Voir les mieux notés</button>' : ''}</div>`;
+        const vide = `<div class="dm-vide">${window.MDGSac ? MDGSac.svg('vide', { t: 70 }) : I.bulle}<b>Aucune conversation</b>Touchez la photo d’un vendeur ou d’un acheteur, puis « Écrire ». Vous pouvez parler de tout, même sans acheter.${window.MDGRep ? '<br><button type="button" data-top>Voir les mieux notés</button>' : ''}</div>`;
+        if (box._h === vide) return; box._h = vide; box.innerHTML = vide;
         const t = box.querySelector('[data-top]'); if (t) t.onclick = () => { fermer(); MDGRep.classement(); };
         return;
       }
-      // relu toutes les 15 s : rien n'est redessiné si rien n'a changé (sinon les avatars clignotent et rejouent leur animation)
-      const html = liste.map(c => `<button type="button" class="dm-c${c.non_lu ? ' neuf' : ''}" data-id="${c.id}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 46, c.officiel)}<b>${esc(c.autre_nom)}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 14 }) : ''}</b><time>${quand(c.updated_at)}</time><small>${(() => { const st = !c.officiel && window.MDGCompte && MDGCompte.structure ? MDGCompte.structure(c.autre_id) : null; return st ? `<em class="dm-org-l">${esc(st.nom)} · </em>` : ''; })()}${c.dernier_par === u ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small>${c.non_lu ? '<i aria-label="Non lu"></i>' : ''}</button>`).join('');
+      // relu toutes les 15 s : rien n'est redessiné si rien n'a changé
+      const html = liste.map(c => { const st = !c.officiel && window.MDGCompte && MDGCompte.structure ? MDGCompte.structure(c.autre_id) : null;
+        return `<button type="button" class="dm-c${c.non_lu ? ' neuf' : ''}" data-id="${c.id}">${rond(c.autre_nom, 46, c.officiel)}<span class="tx"><span class="nm"><span>${esc(c.autre_nom)}</span>${c.officiel ? OFF : window.MDGStatut ? MDGStatut.puces(c.autre_id, { max: 0, t: 14 }) : ''}</span><small>${st ? `<em class="dm-org-l">${esc(st.nom)} · </em>` : ''}${c.dernier_par === u ? 'Vous : ' : ''}${esc(c.dernier_texte || '')}</small></span><span class="md"><time>${quand(c.updated_at)}</time>${c.non_lu ? '<i aria-label="Non lu"></i>' : ''}</span>${I.chevron}</button>`; }).join('');
       if (box._h === html && box.firstChild) return; box._h = html;
       box.innerHTML = html;
       box.querySelectorAll('[data-id]').forEach(el => {
@@ -223,6 +267,8 @@
     };
     dessiner();
     refresh().then(() => { if (bg === b) dessiner(); });
+    const surNego = () => { if (bg !== b) { removeEventListener('mdg:negoce', surNego); removeEventListener('mdg:activite', surNego); return; } negociations(); };
+    addEventListener('mdg:negoce', surNego); addEventListener('mdg:activite', surNego);
     clearInterval(minuteur); minuteur = setInterval(() => { if (!document.hidden && bg === b) refresh().then(() => { if (bg === b) dessiner(); }); }, 15000);
   }
 
@@ -267,8 +313,8 @@
   // l'administration écrit à tous les membres
   function diffuser() {
     if (!admin()) { N().toast('Réservé aux administrateurs.'); return; }
-    const b = feuille(`<div class="dm-h"><button type="button" class="dm-ib" data-back aria-label="Retour aux messages">${I.retour}</button><h2 class="dm-t">Message à tous<small>Au nom du Marché de Gros</small></h2><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div>
-      <div class="dm-b"><div class="dm-dif"><div style="display:flex;align-items:center;gap:10px">${LOGO(40)}<b>Marché de Gros</b>${OFF}</div>
+    const b = feuille(`<div class="dm-h"><button type="button" class="dm-ret" data-back aria-label="Retour à Messages">${I.retour}<span>Messages</span></button></div>
+      <div class="dm-b"><div class="dm-tete" style="padding:0 0 10px"><h2>Message à tous</h2></div><div class="dm-dif"><div class="qui">${rond('', 40, true)}<span>Marché de Gros</span>${OFF}</div>
       <textarea maxlength="2000" placeholder="Bonjour, …" aria-label="Message à tous les membres"></textarea>
       <p>Chaque membre le reçoit dans ses messages, avec le logo, et une notification sur son téléphone. Il peut vous répondre.</p>
       <button type="button" class="go" disabled>Envoyer à tous les membres</button></div></div>`, 'Message à tous les membres');
@@ -289,19 +335,19 @@
     const vsA = meta && meta.vs && meta.vs.city && window.MDGVilleSeule ? MDGVilleSeule.avertir(meta.vs.sens, meta.vs.city) : '';   // « Vente uniquement à Guiglo » (schéma 87)
     if (!c.autre_id) { await refresh(); c = liste.find(x => x.id === id) || c; }
     const u = me(); ouverte = id;
-    const b = feuille(`<div class="dm-h">${depuisBoite ? `<button type="button" class="dm-ib" data-back aria-label="Retour aux messages">${I.retour}</button>` : ''}
-      <button type="button" class="dm-qui" data-profil aria-label="${c.officiel ? 'Marché de Gros' : 'Voir le profil de ' + esc(c.autre_nom)}">${av(c.autre_id, c.autre_avatar, c.autre_nom, 40, c.officiel)}<span><b>${esc(c.autre_nom || 'Membre')}${c.officiel ? OFF : window.MDGStatut ? ' ' + MDGStatut.puces(c.autre_id, { max: 0, t: 15 }) : ''}</b>${!c.officiel && window.MDGCompte && MDGCompte.puceStructure ? `<span class="dm-org">${MDGCompte.puceStructure(c.autre_id)}</span>` : ''}<small data-rep>${c.officiel ? 'L’équipe du Marché de Gros' : window.MDGStatut && MDGStatut.liste(c.autre_id).length ? MDGStatut.puces(c.autre_id, { max: 2, sceau: false }) : 'Voir son profil'}</small></span></button>
-      <button type="button" class="dm-ib" data-plus aria-label="Plus d’options" aria-haspopup="menu">${I.plus}</button><button type="button" class="dm-ib" data-x aria-label="Fermer">${I.x}</button></div>
-      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">${I.horloge}Les échanges ne sont pas secrets : l’équipe du Marché de Gros peut les lire. Ils sont gardés 1 an. Restez ici : les numéros sont masqués.</div>${vsA}${!c.officiel && window.MDGIdentite && MDGIdentite.gardePaiement ? `<div class="dm-garde" data-garde>${MDGIdentite.gardePaiement(c.autre_id, c.autre_nom)}</div>` : ''}<div data-msgs></div></div>
-      <div class="dm-f" data-f></div>`, 'Conversation avec ' + (c.autre_nom || 'un membre'));
+    const b = feuille(`<div class="dm-h bas"><button type="button" class="dm-ib" data-back aria-label="${depuisBoite ? 'Retour aux messages' : 'Retour'}">${I.retour}</button>
+      <button type="button" class="dm-qui" data-profil aria-label="${c.officiel ? 'Marché de Gros' : 'Voir le profil de ' + esc(c.autre_nom)}">${rond(c.autre_nom, 40, c.officiel)}<span><b><span class="nm">${esc(c.autre_nom || 'Membre')}</span>${c.officiel ? OFF : window.MDGStatut ? MDGStatut.puces(c.autre_id, { max: 0, t: 15 }) : ''}</b>${!c.officiel && window.MDGCompte && MDGCompte.puceStructure ? `<span class="dm-org">${MDGCompte.puceStructure(c.autre_id)}</span>` : ''}<small data-rep>${!c.officiel && window.MDGStatut && MDGStatut.liste(c.autre_id).length ? MDGStatut.puces(c.autre_id, { max: 2, sceau: false }) : ''}</small></span></button>
+      <button type="button" class="dm-ib" data-plus aria-label="Plus d’options" aria-haspopup="menu">${I.plus}</button></div>
+      <div class="dm-b" data-b aria-live="polite"><div class="dm-info">Numéros et liens sont refusés. Messages lisibles par l’équipe, gardés 1 an.</div>${vsA}${!c.officiel && window.MDGIdentite && MDGIdentite.gardePaiement ? `<div class="dm-garde" data-garde>${MDGIdentite.gardePaiement(c.autre_id, c.autre_nom)}</div>` : ''}<div data-msgs></div></div>
+      <div class="dm-f" data-f></div>`, 'Conversation avec ' + (c.autre_nom || 'un membre'), 'dm-conv');
     const corps = b.querySelector('[data-b]'), zone = b.querySelector('[data-msgs]'), pied = b.querySelector('[data-f]');
     const garde = b.querySelector('[data-garde]');
     if (garde) { const maj = () => { if (!garde.isConnected) return removeEventListener('mdg:identite', maj); garde.innerHTML = MDGIdentite.gardePaiement(c.autre_id, c.autre_nom); }; addEventListener('mdg:identite', maj); }
-    if (depuisBoite) b.querySelector('[data-back]').onclick = () => boite();
+    b.querySelector('[data-back]').onclick = () => depuisBoite ? boite() : fermer();
     b.querySelector('[data-profil]').onclick = () => { if (c.officiel) return; if (window.MDGRep) { fermer(); MDGRep.profil(c.autre_id, { nom: c.autre_nom, avatar: c.autre_avatar }); } };
-    if (!c.officiel && window.MDGRep && MDGRep.charger) { const r = MDGRep.resume && MDGRep.resume(c.autre_id); if (r && r.n) b.querySelector('[data-rep]').innerHTML = (window.MDGStatut ? MDGStatut.puces(c.autre_id, { max: 1, sceau: false }) + ' ' : '') + MDGRep.texteNote(r) + ' · voir son profil'; }
+    if (!c.officiel && window.MDGRep && MDGRep.charger) { const r = MDGRep.resume && MDGRep.resume(c.autre_id); if (r && r.n) b.querySelector('[data-rep]').innerHTML = (window.MDGStatut ? MDGStatut.puces(c.autre_id, { max: 1, sceau: false }) + ' ' : '') + MDGRep.texteNote(r); }
 
-    let msgs = [], attente = fileLire().filter(x => x.disc === id && x.auteur_id === u).map(x => Object.assign({ id: 'tmp-' + x.cid, _etat: 'file' }, x));
+    let msgs = (cacheM.get(id) || []).slice(), attente = fileLire().filter(x => x.disc === id && x.auteur_id === u).map(x => Object.assign({ id: 'tmp-' + x.cid, _etat: 'file' }, x));
     // envoyé depuis la file pendant que la conversation est ouverte (vider) : la bulle « en attente » devient le message du serveur
     const surParti = e => { if (!b.isConnected) return removeEventListener('mdg:dm-parti', surParti); const d = e.detail || {}; if (d.disc !== id) return;
       attente = attente.filter(x => x.cid !== d.cid); if (d.r && !msgs.some(x => x.id === d.r.id)) msgs.push(d.r); dessiner(); };
@@ -318,17 +364,18 @@
         h += `<div class="dm-m${moi ? ' me' : ''}${suite ? ' suite' : ''}${m._etat ? ' ' + m._etat : ''}${neufs && neufs.has(m.id) ? ' neuf' : ''}" data-m="${m.id}"${m._etat === 'rate' || m._etat === 'file' ? ' role="button" tabindex="0"' : ''}><p>${(c.officiel && !moi) || (moi && admin()) ? lienOff(m.texte) : esc(m.texte)}<time title="Gardé encore ${reste(m.created_at)}">${etat}</time></p></div>`;
         prec = m;
       });
-      zone.innerHTML = h || `<div class="dm-vide" style="padding:30px 10px">${window.MDGSac ? MDGSac.svg('vide', { t: 60 }) : I.bulle}<b>Dites bonjour</b>Présentez-vous et dites ce que vous cherchez ou proposez.</div>`;
+      const html = h || `<div class="dm-vide" style="padding:30px 10px">${window.MDGSac ? MDGSac.svg('vide', { t: 60 }) : I.bulle}<b>Dites bonjour</b>Présentez-vous et dites ce que vous cherchez ou proposez.</div>`;
+      if (zone._h === html) return; zone._h = html; zone.innerHTML = html;
       zone.querySelectorAll('.dm-m.rate, .dm-m.file').forEach(el => { el.onclick = () => { const m = attente.find(x => x.id === el.dataset.m); if (m) partir(m); }; el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.onclick(); } }; });
     }
     async function charger(premiere) {
       const apres = msgs.length ? msgs[msgs.length - 1].created_at : null;
-      let r; try { r = await N().rpc('dm_messages', { p_discussion: id, p_apres: apres }) || []; } catch (x) { if (premiere) zone.innerHTML = `<div class="dm-vide" style="padding:30px 10px">${window.MDGSac ? MDGSac.svg('triste', { t: 60 }) : ''}<b>Impossible de charger</b>${esc(err(x))}</div>`; return; }
+      let r; try { r = await N().rpc('dm_messages', { p_discussion: id, p_apres: apres }) || []; } catch (x) { if (premiere && !msgs.length) zone._h = "", zone.innerHTML = `<div class="dm-vide" style="padding:30px 10px">${window.MDGSac ? MDGSac.svg('triste', { t: 60 }) : ''}<b>Impossible de charger</b>${esc(err(x))}</div>`; return; }
       if (bg !== b) return;
       const deja = new Set(msgs.map(m => m.id)), neufs = r.filter(m => !deja.has(m.id));
       if (!neufs.length && !premiere) return;
       const bas = premiere || enBas();
-      msgs = msgs.concat(neufs);
+      msgs = msgs.concat(neufs); cacheM.set(id, msgs.slice(-300));
       dessiner(premiere ? null : new Set(neufs.map(m => m.id)));
       if (bas) descendre();
       if (neufs.some(m => m.auteur_id !== u) || premiere) { N().rpc('dm_lu', { p_discussion: id }).catch(() => {}); const l = liste.find(x => x.id === id); if (l && l.non_lu) { l.non_lu = false; W(KL, liste); } annoncer(); }
@@ -338,7 +385,7 @@
       try {
         const r = await expedier(m);
         attente = attente.filter(x => x !== m && x.cid !== m.cid);
-        if (!msgs.some(x => x.id === r.id)) msgs.push(r);
+        if (!msgs.some(x => x.id === r.id)) msgs.push(r); cacheM.set(id, msgs.slice(-300));
         const l = liste.find(x => x.id === id);
         if (l) Object.assign(l, { dernier_texte: r.texte.slice(0, 140), dernier_par: u, updated_at: r.created_at }); else liste.unshift(Object.assign({}, c, { dernier_texte: r.texte, dernier_par: u, updated_at: r.created_at, non_lu: false }));
         liste.sort((a, z) => Date.parse(z.updated_at) - Date.parse(a.updated_at)); W(KL, liste);
@@ -395,7 +442,8 @@
         else if (a.dataset.a === 'signaler') MDGIdentite.signaler(c.autre_id, { nom: c.autre_nom, source: 'dm', ref: id, bloquer: c.je_bloque ? null : () => bloquer(true) });
         else if (a.dataset.a === 'bloquer') { if (c.je_bloque) bloquer(false); else (window.MDGDemande ? MDGDemande.oui('Bloquer ' + c.autre_nom + ' ? Vous ne pourrez plus vous écrire, ni l’un ni l’autre, tant que vous ne le débloquez pas.', { ok: 'Bloquer', danger: true }) : Promise.resolve(confirm('Bloquer ' + c.autre_nom + ' ? Vous ne pourrez plus vous écrire, ni l’un ni l’autre, tant que vous ne le débloquez pas.'))).then(v => { if (v) bloquer(true); }); } };
     };
-    piedDe(); dessiner(); zone.innerHTML = window.MDGSac ? MDGSac.charge('Vos messages arrivent…') : '<div class="dm-vide" style="padding:30px 10px">Chargement…</div>';
+    // déjà lue pendant cette visite : les messages sont là tout de suite, seuls les nouveaux arrivent ensuite
+    piedDe(); if (msgs.length || attente.length) { dessiner(); descendre(); } else zone._h = "", zone.innerHTML = window.MDGSac ? MDGSac.charge('Vos messages arrivent…') : '<div class="dm-vide" style="padding:30px 10px">Chargement…</div>';
     await charger(true);
     clearInterval(minuteur); minuteur = setInterval(() => { if (!document.hidden && navigator.onLine && bg === b) charger(false); }, 4000);
     const ta = pied.querySelector('textarea'); if (ta && matchMedia('(hover:hover) and (pointer:fine)').matches) ta.focus();
@@ -417,7 +465,7 @@
   const trouverAct = id => { const c = liste.find(x => x.id === id); return c ? ligneAct(c) : null; };
   window.MDGMessages = { boite, ecrire, ecrireMarche, parlerPersonne, diffuser, conversation, unread, unreadDepuis, refresh, JOURS, activite, trouverAct };
   addEventListener('mdg:connecte', () => { premier = true; setTimeout(refresh, 1200); });
-  addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte' && !(N() && N().session())) { liste = []; W(KL, []); fermer(); annoncer(); } });
+  addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte' && !(N() && N().session())) { liste = []; W(KL, []); cacheM.clear(); fermer(); annoncer(); } });
   addEventListener('hashchange', depuisAdresse);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) refresh(); });
   if (document.readyState === 'loading') addEventListener('DOMContentLoaded', depuisAdresse); else depuisAdresse();

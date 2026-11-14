@@ -12,7 +12,8 @@
    Le transporteur du réseau (fermé pour l'instant) convient son prix à trois : lui, l'acheteur et le vendeur (transport_agir).
    Aucun paiement : la commission de 3,5 % est seulement calculée et montrée au vendeur (« non prélevée »).
    Pas de faux suivi en direct : sans position réelle, on montre la dernière étape et son heure, rien d'autre.
-   API : MDGCommandes.ouvrir(id?) · MDGCommandes.depuisAccord(nego) · MDGCommandes.creer(nego) */
+   API : MDGCommandes.ouvrir(id?) · MDGCommandes.depuisAccord(nego) · MDGCommandes.creer(nego)
+   Écran d’une commande (lots 11-12, 13/11/2026) : plein écran, jetons data-v2 (clair et sombre), fidèle à la maquette de Claude Design. */
 (function () {
   'use strict';
   if (window.MDGCommandes) return;
@@ -94,79 +95,7 @@
 .cm-r.a{box-shadow:inset 0 0 0 2px #F2C230}
 .cm-tag{display:inline-flex;align-items:center;gap:4px;min-height:24px;padding:0 9px;border-radius:12px;background:rgba(16,57,43,.1);color:#10392B;font:600 12.5px Jost,sans-serif}
 .cm-tag.mais{background:rgba(242,194,48,.32);color:#4A3700}.cm-tag.rouge{background:rgba(196,72,52,.14);color:#8A2414}
-/* la scène : le camion, le sac dedans, la route */
-.cm-scene{position:relative;height:136px;margin:4px -18px 6px;overflow:hidden;background:linear-gradient(#F3EFE4 0 72%,#E7E0CF 72%)}
-.cm-route{position:absolute;left:0;right:0;bottom:22px;height:3px;background:repeating-linear-gradient(90deg,#B9AE95 0 18px,transparent 18px 34px)}
-.cm-camion{position:absolute;bottom:18px;left:var(--x,8%);width:150px;height:96px;transition:left .9s cubic-bezier(.3,.8,.3,1)}
-.cm-camion .sac{position:absolute;left:14px;bottom:30px;width:62px;height:62px}.cm-camion .sac svg{width:62px;height:62px}
-.cm-scene.roule .cm-camion{animation:cmBob 1.4s ease-in-out infinite}.cm-scene.roule .cm-route{animation:cmRoute 1.1s linear infinite}
-@keyframes cmBob{50%{transform:translateY(-2px)}}@keyframes cmRoute{to{background-position:-34px 0}}
-.cm-scene.arrive .cm-camion{animation:cmArrive 1s cubic-bezier(.2,.9,.3,1.2) both}.cm-scene.arrive .sac{animation:cmSaut .6s .9s ease-out both}
-@keyframes cmArrive{from{left:-40%}}@keyframes cmSaut{40%{transform:translateY(-16px) rotate(-6deg)}}
-/* arrivée : repère de livraison + étiquette */
-.cm-dest{position:absolute;right:10px;bottom:22px;display:flex;flex-direction:column;align-items:center;gap:2px;max-width:86px;color:#5E5546;opacity:.55}
-.cm-dest.la{opacity:1;color:#10392B}
-.cm-pin{display:grid;place-items:center;width:34px;height:34px;border-radius:50% 50% 50% 4px;transform:rotate(-45deg);background:#FFFDF8;box-shadow:0 2px 6px rgba(23,21,18,.18)}
-.cm-pin svg{transform:rotate(45deg)}.cm-dest.la .cm-pin{background:#F2C230;color:#10392B}
-.cm-dest small{max-width:86px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 11.5px Jost,sans-serif}
-.cm-arr{position:absolute;right:10px;top:6px;text-align:right;padding:5px 10px 6px;border-radius:14px;background:#10392B;color:#F3EFE4;box-shadow:0 6px 16px rgba(16,57,43,.25)}
-.cm-arr b{display:block;font:700 15px/1.1 Jost,sans-serif;color:#F2C230;white-space:nowrap}.cm-arr small{display:block;font-size:11.5px;white-space:nowrap;color:rgba(243,239,228,.82)}
-.cm-arr.ok{background:#1F6B40}.cm-arr.ok b{color:#fff}
-.cm-arr.pop{animation:cmPop .6s 1s cubic-bezier(.2,1.4,.4,1) both}@keyframes cmPop{from{opacity:0;transform:scale(.6) translateY(8px)}}
-.cm-scene.fini .cm-route{right:60px}
-.cm-scene .seul{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);width:104px;height:104px}.cm-scene .seul svg{width:104px;height:104px}
-/* progression */
-.cm-prog{margin:0 0 4px}
-.cm-pb{height:8px;border-radius:4px;background:rgba(16,57,43,.12);overflow:hidden}.cm-pb i{display:block;height:100%;width:100%;border-radius:4px;background:linear-gradient(90deg,#10392B,#2F6B4F);transform-origin:left;transform:scaleX(var(--p,0));transition:transform .8s cubic-bezier(.3,.8,.3,1)}
-.cm-et{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column}
-.cm-et li{position:relative;display:grid;grid-template-columns:28px 1fr;gap:10px;padding:0 0 14px;color:#675F50}
-.cm-et li::before{content:'';position:absolute;left:13px;top:24px;bottom:0;width:2px;background:rgba(16,57,43,.14)}.cm-et li:last-child::before{display:none}
-.cm-et .pt{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#E7E0CF;color:#675F50;font:700 12px Jost,sans-serif;position:relative;z-index:1}
-.cm-et li.fait{color:#171512}.cm-et li.fait .pt{background:#10392B;color:#F3EFE4}.cm-et li.fait::before{background:#10392B}
-.cm-et li.ici .pt{background:#F2C230;color:#10392B;box-shadow:0 0 0 5px rgba(242,194,48,.28)}
-.cm-et b{display:block;font-weight:600;line-height:28px}.cm-et small{display:block;font-size:12.5px;color:#5E5546;margin-top:-4px}
-.cm-st{position:relative;margin:12px 0 12px;padding:14px 16px;border-radius:18px;background:#FFFDF8;color:#171512;box-shadow:0 6px 20px rgba(23,21,18,.07),inset 0 0 0 1px rgba(23,21,18,.06);overflow:hidden}
-
-.cm-st b{display:block;font:600 18px/1.25 Jost,sans-serif}.cm-st b em{font-style:italic;font-weight:900;color:#10392B;background:linear-gradient(transparent 62%,rgba(242,194,48,.55) 62%)}
-.cm-st small{display:block;margin-top:4px;color:#6B6252;font-size:13px}
-.cm-tcode{margin:0 0 10px;padding:8px 12px;border-radius:12px;background:rgba(16,57,43,.08);color:#171512;font:400 13px/1.4 Jost,sans-serif}.cm-tcode b{display:inline;font:800 15px/1 Jost,sans-serif;letter-spacing:.06em;color:#10392B}.cm-garde b{display:inline;font:inherit;font-weight:800;letter-spacing:.04em}
-.cm-garde{margin:-2px 0 10px;padding:8px 12px;border-radius:12px;background:#F2C230;color:#171512;font:600 14px/1.35 Jost,sans-serif}
-.cm-act{display:flex;flex-direction:column;gap:8px;margin:0 0 12px}
-.cm-act button{min-height:50px;border-radius:25px;border:1px solid #10392B;background:none;color:#10392B;font:600 15.5px Jost,sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:0 16px}
-.cm-act button.p{background:#10392B;color:#F3EFE4}.cm-act button.m{border-color:transparent;background:none;text-decoration:underline;min-height:44px;font-weight:500}
-.cm-act button:disabled{opacity:.55;cursor:default}
-.cm-info{margin:0 0 12px;padding:12px 14px;border-radius:14px;background:rgba(242,194,48,.2);font-size:13.5px}
-.cm-lien{display:flex;flex-direction:column;gap:8px;margin:10px 0 4px;padding:14px;border-radius:16px;background:rgba(16,57,43,.06);border:1px solid rgba(16,57,43,.2)}
-.cm-lien b{font:600 15px Jost,sans-serif}
-.cm-lien-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.cm-lien-h b{flex:1;min-width:0}
-.cm-lien-i{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#FFFDF8;font:normal 20px/1 "Apple Color Emoji","Segoe UI Emoji",sans-serif}
-.cm-lien-l{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}.cm-lien-l li{display:flex;gap:8px;font-size:13.5px;line-height:1.4;color:#3B342A}
-.cm-lien-l li span{flex:none;font:normal 15px/1.3 "Apple Color Emoji","Segoe UI Emoji",sans-serif}
-.cm-lien-e{display:inline-flex;align-self:flex-start;padding:4px 10px;border-radius:999px;background:rgba(23,21,18,.06);font:500 13px Jost,sans-serif;color:#4A4336}.cm-lien-e.on{background:rgba(108,197,140,.2);color:#1F6B40}
-.cm-lien-f{font-size:12.5px!important;color:#5E5546!important}.cm-lien small{font-size:13.5px;line-height:1.4;color:#4A4336}
-.cm-lien code{display:block;padding:8px 10px;border-radius:10px;background:#FFFDF8;font:500 12.5px/1.35 Jost,sans-serif;word-break:break-all;color:#10392B}
-.cm-sch{margin:2px 0 0;padding:12px 10px 10px;border-radius:14px;background:#FFFDF8;list-style:none;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;position:relative}
-.cm-sch li{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;font:400 12.5px/1.3 Jost,sans-serif;color:#3B342A;min-width:0}
-.cm-sch li:not(:last-child)::after{content:'';position:absolute;top:24px;left:calc(50% + 30px);right:calc(-50% + 30px);border-top:2px dashed rgba(16,57,43,.28)}
-.cm-sch li b{font:600 13px/1.2 Jost,sans-serif;color:#10392B}
-.cm-sch .ic{position:relative;width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:#10392B;color:#F2C230}
-.cm-sch .ic svg{width:26px;height:26px}
-.cm-sch .ic i{position:absolute;top:-6px;left:-6px;width:20px;height:20px;border-radius:50%;background:#F2C230;color:#171512;font:600 11.5px/20px Jost,sans-serif;font-style:normal}
-.cm-sch li:last-child .ic{background:#F2C230;color:#10392B}.cm-sch li:last-child .ic i{background:#10392B;color:#F2C230}
-.cm-sch-t{font:600 12px/1 Jost,sans-serif;letter-spacing:.04em;color:#5E5546;margin:4px 0 -2px}
-.cm-ou{display:flex;align-items:center;gap:10px;font:500 12.5px Jost,sans-serif;color:#5E5546}.cm-ou::before,.cm-ou::after{content:'';flex:1;border-top:1px solid rgba(23,21,18,.14)}
-.cm-code{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:#10392B;color:#F3EFE4}
-.cm-code span{flex:1;min-width:0;font:400 12.5px/1.35 Jost,sans-serif;color:rgba(243,239,228,.78)}.cm-code span em{font-style:normal;color:#F3EFE4;word-break:break-all}
-.cm-code strong{flex:none;font:600 24px/1 Jost,sans-serif;letter-spacing:.12em;color:#F2C230;font-variant-numeric:tabular-nums}
-.cm-lien .cm-code button{flex:none;min-height:44px;padding:0 12px;border-color:rgba(243,239,228,.4);color:#F3EFE4}
-.cm-lien button{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid #10392B;background:none;color:#10392B;font:600 14.5px Jost,sans-serif;cursor:pointer}
-.cm-lien button.p{background:#10392B;color:#FFFDF8}.cm-lien-a{display:flex;gap:8px;flex-wrap:wrap}.cm-lien-a button{flex:1 1 auto}.cm-lien-a button.p{flex-basis:100%}
-.cm-info b{font-weight:600}
-.cm-dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 12px;padding:14px;border-radius:18px;background:#FFFDF8}
-.cm-dl dt{color:#5E5546;font-size:13.5px}.cm-dl dd{margin:0;text-align:right;font-weight:600}
-.cm-h3{margin:16px 0 8px;font:600 15px Jost,sans-serif}
-.cm-j{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-.cm-j li{padding:10px 12px;border-radius:14px;background:#FFFDF8;font-size:13.5px}.cm-j li b{font-weight:600}.cm-j li small{display:block;color:#5E5546;font-size:12.5px}
+.cm-st{position:relative;margin:12px 0;padding:14px 16px;border-radius:18px;background:#FFFDF8;color:#171512;overflow:hidden}.cm-st b{display:block;font:600 18px/1.25 Jost,sans-serif}.cm-st small{display:block;margin-top:4px;color:#6B6252;font-size:13px}
 /* formulaires */
 .cm-f label.t{display:block;margin:14px 0 6px;font-weight:600}
 .cm-opt{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start;padding:12px 14px;margin:0 0 8px;border-radius:16px;background:#FFFDF8;border:2px solid transparent;cursor:pointer}
@@ -184,16 +113,6 @@
 .cm-err{color:#8A2414;font-size:13.5px;margin:8px 0 0;min-height:1em}
 .cm-note{margin:12px 2px 0;font-size:12.5px;color:#5E5546}
 .cm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.cm-av{background:#FFFDF8;border-radius:18px;padding:14px 16px;margin:12px 0}.cm-av h3{margin:0 0 4px;font:600 17px/1.2 Jost,sans-serif}.cm-av p{margin:0 0 8px;color:#4A4336;font-size:14px}.cm-av small{color:#5E5546;font-size:12.5px}
-.cm-av-e{display:flex;gap:4px;margin:6px 0 2px}.cm-av-e button{width:48px;height:48px;border:0;background:transparent;padding:6px;cursor:pointer}.cm-av-e button svg{width:100%;height:100%;fill:transparent;stroke:#7D7462;stroke-width:1.4;stroke-linejoin:round}.cm-av-e button.on svg{fill:#F2C230;stroke:#7A5A00}.cm-av-e button:focus-visible{outline:3px solid #10392B;outline-offset:1px;border-radius:10px}
-.cm-av-l{min-height:20px;font-weight:600;color:#10392B!important}.cm-av-t{display:flex;flex-direction:column;gap:4px;font-size:13px;color:#5E5546}.cm-av-t textarea{min-height:70px;padding:10px 12px;border:1px solid #D9D1BE;border-radius:12px;background:#FFF;font:400 15px/1.4 Jost,system-ui,sans-serif;color:#171512;resize:vertical}
-.cm-av-f{display:inline-flex;gap:1px;vertical-align:-3px}.cm-av-f i{width:16px;height:16px}.cm-av-f svg{width:100%;height:100%;fill:transparent;stroke:#7D7462;stroke-width:1.4;stroke-linejoin:round}.cm-av-f i.on svg{fill:#F2C230;stroke:#7A5A00}
-.cm-av-recu,.cm-av-fid{margin:10px 0 0!important;padding-top:10px;border-top:1px solid #ECE6D6}.cm-av-fid{color:#10392B!important;font-weight:600}
-/* mot secret du vendeur */
-.cm-mot{display:flex;gap:12px;align-items:flex-start;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:#FFFDF8;box-shadow:inset 0 0 0 1px rgba(16,57,43,.14)}
-.cm-mot>span:first-child{font:normal 22px/1 "Apple Color Emoji","Segoe UI Emoji",sans-serif}.cm-mot small{display:block;font-size:12.5px;color:#5E5546}
-.cm-mot b{display:block;margin:2px 0 4px;font:800 22px/1.1 Jost,sans-serif;letter-spacing:.08em;color:#10392B}
-.cm-mot.fort{background:#F2C230;box-shadow:none}.cm-mot.fort small{color:#3B2E00}
 /* discussion à trois */
 .cm-disc{margin:0 0 12px;padding:14px;border-radius:18px;background:#FFFDF8;box-shadow:inset 0 0 0 1px rgba(16,57,43,.14)}
 .cm-disc h3{margin:0 0 4px;font:600 16px/1.2 Jost,sans-serif}.cm-disc>p{margin:0 0 8px;font-size:12.5px;color:#5E5546}
@@ -218,9 +137,7 @@
 .cm-rf{margin:0 0 12px;padding:14px;border-radius:18px;background:rgba(196,72,52,.08);box-shadow:inset 0 0 0 1px rgba(196,72,52,.25)}
 .cm-rf h3{margin:0 0 4px;font:600 16px/1.2 Jost,sans-serif;color:#8A2414}.cm-rf p{margin:4px 0;font-size:13.5px}
 .cm-ph{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.cm-ph a,.cm-ph span{display:block;width:72px;height:72px;border-radius:12px;overflow:hidden;background:#E7E0CF}.cm-ph img{width:100%;height:100%;object-fit:cover;display:block}
-.cm-dp{margin:0 0 12px;padding:14px;border-radius:18px;background:rgba(16,57,43,.06);box-shadow:inset 0 0 0 1px rgba(16,57,43,.16)}
-.cm-defi{display:flex;gap:8px;margin:6px 0 4px;font:600 30px/1 Jost,sans-serif;letter-spacing:.06em}.cm-defi i{font-style:normal;display:grid;place-items:center;width:46px;height:56px;border-radius:12px;background:#FFFDF8;box-shadow:inset 0 0 0 1.5px rgba(23,21,18,.2)}
-.cm-dp h3{display:flex;align-items:center;gap:8px;margin:0 0 4px;font:600 16px/1.2 Jost,sans-serif}.cm-dp p{margin:4px 0;font-size:13.5px}
+
 .cm-rf ul{margin:6px 0 0;padding:0;list-style:none;font-size:13px}.cm-rf li{padding:3px 0}
 .cm-wa{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:12px 14px;border-radius:16px;background:rgba(37,211,102,.1);font-size:13.5px}.cm-wa b{font-weight:600}.cm-wa a{color:#10392B;font-weight:600}
 .cm-f input[type=number]{width:100%;box-sizing:border-box;min-height:48px;border:1px solid rgba(23,21,18,.22);border-radius:14px;background:#FFFDF8;padding:10px 12px;font:400 16px Jost,sans-serif;color:#171512}
@@ -229,58 +146,163 @@
 .cm-f select:focus-visible{outline:2px solid #10392B;outline-offset:2px}
 .cm-pick{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:16px;border:2px dashed rgba(16,57,43,.35);background:#FFFDF8;color:#10392B;font:600 15px Jost,sans-serif;cursor:pointer}
 .cm-pick input{position:absolute;width:1px;height:1px;opacity:0}
-@media (prefers-reduced-motion:reduce){.cm-bg,.cm,.cm-camion,.cm-pb i,.cm-scene *{animation:none!important;transition:none!important}}
-/* ——— la livraison : un plan en haut (la vraie carte quand le camion roule), une fiche foncée qui monte dessus (23/10/2026) ——— */
-.cm-hero{position:relative;margin:4px -18px 14px}
-.cm-hero .sv{margin:0;height:300px}.cm-hero .sv .sv-bas{bottom:38px}.cm-hero .sv .maplibregl-ctrl-bottom-right{bottom:110px}
-.cm-plan{position:relative;height:250px;overflow:hidden;background:#ECEEE9}
-.cm-plan svg{position:absolute;inset:0;width:100%;height:100%;display:block}
-.cm-plan .cm-pchip{position:absolute;left:14px;top:12px;display:inline-flex;align-items:center;gap:7px;min-height:30px;padding:0 12px;border-radius:15px;background:rgba(255,253,248,.94);color:#3F3A30;font:500 12.5px Jost,sans-serif;box-shadow:0 2px 8px rgba(23,21,18,.12)}
-.cm-plan .cm-pchip i{width:7px;height:7px;border-radius:50%;background:#9AA59F}
-.cm-plan .rt{stroke-dasharray:100;stroke-dashoffset:0}
-@keyframes cmTrace{from{stroke-dashoffset:100}}
-.cm-plan .pulse{transform-box:fill-box;transform-origin:50% 50%;animation:cmPulse 2.2s ease-out 3}
-@keyframes cmPulse{0%{transform:scale(.6);opacity:.55}100%{transform:scale(2.3);opacity:0}}
-.cm-plan .nav{transform-box:fill-box;transform-origin:50% 50%}
-@keyframes cmNav{from{transform:scale(.3);opacity:0}}
-.cm-fiche{position:relative;z-index:2;margin:-28px 0 0;padding:12px 18px 16px;border-radius:26px;background:#10392B;color:#F3EFE4;box-shadow:0 -10px 30px rgba(16,57,43,.18)}
-@keyframes cmFiche{from{transform:translateY(26px);opacity:0}}
-.cm-poignee{display:block;width:40px;height:4px;margin:0 auto 12px;border-radius:2px;background:rgba(243,239,228,.28)}
-.cm-fiche small{display:block;color:rgba(243,239,228,.62);font:400 12.5px/1.3 Jost,sans-serif}
-.cm-f1{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.cm-f1 b{display:block;margin-top:2px;font:600 22px/1.1 Jost,sans-serif;letter-spacing:.01em;font-variant-numeric:tabular-nums}
-.cm-puce{flex:none;display:inline-flex;align-items:center;min-height:30px;padding:0 13px;border-radius:15px;background:rgba(243,239,228,.1);box-shadow:inset 0 0 0 1px rgba(243,239,228,.16);color:#F3EFE4;font:500 13px Jost,sans-serif;white-space:nowrap}
-.cm-puce.mais{background:#F2C230;box-shadow:none;color:#10392B;font-weight:600}.cm-puce.rouge{background:rgba(226,115,91,.2);box-shadow:inset 0 0 0 1px rgba(226,115,91,.45);color:#FFD9CF}
-.cm-pts{list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:16px 0 4px;padding:0}
-.cm-pts li{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;color:rgba(243,239,228,.62);font:500 11.5px/1.2 Jost,sans-serif;text-align:center}
-.cm-pts li::before{content:"";position:absolute;top:10px;left:calc(-50% + 14px);right:calc(50% + 14px);border-top:2px dotted rgba(243,239,228,.3)}
-.cm-pts li:first-child::before{display:none}
-.cm-pts li.fait::before,.cm-pts li.ici::before{border-top-color:#F2C230;border-top-style:solid}
-.cm-pts .o{position:relative;z-index:1;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(243,239,228,.35);color:#10392B}
-.cm-pts li.fait{color:#F3EFE4}.cm-pts li.fait .o{background:#F2C230;box-shadow:none}
-.cm-pts li.ici{color:#F2C230;font-weight:600}.cm-pts li.ici .o{background:#10392B;box-shadow:inset 0 0 0 2px #F2C230}
-.cm-pts li.ici .o::after{content:"";width:8px;height:8px;border-radius:50%;background:#F2C230;animation:cmIci 1.8s ease-in-out 3}
-@keyframes cmIci{50%{transform:scale(.55);opacity:.6}}
-.cm-pts li.off .o{box-shadow:inset 0 0 0 2px rgba(243,239,228,.2)}
-.cm-f2{display:flex;justify-content:space-between;gap:14px;margin:14px 0 0;padding:0 0 14px;border-bottom:1px solid rgba(243,239,228,.1)}
-.cm-f2 b,.cm-f3 b{display:block;margin-top:3px;font:500 15.5px/1.25 Jost,sans-serif;color:#F3EFE4;overflow-wrap:anywhere}
-.cm-f2 .r{text-align:right}
-.cm-f3{position:relative;min-height:150px;padding:14px 0 6px}
-.cm-f3 dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 14px;width:calc(100% - 118px);margin:0}
-.cm-f3 dt{color:rgba(243,239,228,.62);font:400 12.5px/1.3 Jost,sans-serif}.cm-f3 dd{margin:3px 0 0;font:500 15.5px/1.25 Jost,sans-serif;color:#F3EFE4;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
-.cm-f3 dd.t{color:#F2C230;font-weight:600}
-.cm-prod{position:absolute;right:-12px;top:4px;width:150px;height:150px;pointer-events:none}
-.cm-prod img,.cm-prod svg{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 16px 18px rgba(0,0,0,.35))}
-@keyframes cmProd{from{transform:translateX(30px) rotate(6deg);opacity:0}}
-@keyframes cmFlotte{50%{transform:translateY(-5px) rotate(-1.5deg)}}
-.cm-pers{display:flex;align-items:center;gap:12px;margin:10px 0 0;padding:10px 10px 10px 12px;border-radius:20px;background:rgba(243,239,228,.07)}
-.cm-pers .av{flex:none;width:44px;height:44px;border-radius:50%;overflow:hidden}.cm-pers .av svg{display:block;width:44px;height:44px}
-.cm-pers b{display:block;font:500 15.5px/1.2 Jost,sans-serif;color:#F3EFE4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cm-pers>div{flex:1;min-width:0}
-.cm-pers button{flex:none;display:grid;place-items:center;width:46px;height:46px;border:0;border-radius:50%;background:#F2C230;color:#10392B;cursor:pointer;transition:transform .15s}
-.cm-pers button:active{transform:scale(.94)}.cm-pers button:focus-visible{outline:2px solid #F3EFE4;outline-offset:2px}
-@media (max-width:360px){.cm-f3 dl{width:calc(100% - 96px)}.cm-prod{width:124px;height:124px;right:-10px}}
-@media (prefers-reduced-motion:reduce){.cm-plan *,.cm-fiche,.cm-fiche *{animation:none!important}}`;
+@media (prefers-reduced-motion:reduce){.cm-bg,.cm{animation:none!important;transition:none!important}}
+/* ——— refonte 2026-11 (lots 11 et 12) : jetons data-v2, clair et sombre ; l'écran d'une commande est en plein écran ——— */
+.cm[data-v2]{background:var(--papier);color:var(--encre)}
+html[data-theme=sombre] .cm[data-v2]{color-scheme:dark}
+.cm-bg.plein{animation:none;background:var(--papier, #F2EBDD)}
+.cm[data-v2].plein{max-width:560px;height:100dvh;max-height:100dvh;border-radius:0;padding:calc(6px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));animation:none}
+.cm[data-v2] h2 em{color:var(--vert);background:linear-gradient(transparent 60%,var(--hl) 60%,var(--hl) 94%,transparent 94%)}
+.cm[data-v2] .cm-sous,.cm[data-v2] .cm-note,.cm[data-v2] .cm-r small,.cm[data-v2] .cm-opt small,.cm[data-v2] .cm-disc>p,.cm[data-v2] .cm-sq p{color:var(--texte-3)}
+.cm[data-v2] .cm-x{background:var(--t08);color:var(--encre)}
+.cm[data-v2] .cm-seg{background:var(--t08)}.cm[data-v2] .cm-seg button{color:var(--texte-2)}.cm[data-v2] .cm-seg button[aria-pressed=true]{background:var(--carte);color:var(--encre)}
+.cm[data-v2] .cm-r,.cm[data-v2] .cm-opt,.cm[data-v2] .cm-dl,.cm[data-v2] .cm-j li,.cm[data-v2] .cm-av,.cm[data-v2] .cm-disc,.cm[data-v2] .cm-sq,.cm[data-v2] .cm-lien code,.cm[data-v2] .cm-sch{background:var(--carte);color:var(--encre)}
+.cm[data-v2] .cm-r .bar{background:var(--t12)}.cm[data-v2] .cm-r .bar i{background:var(--vert)}
+.cm[data-v2] .cm-tag{background:var(--t08);color:var(--encre)}.cm[data-v2] .cm-tag.mais{background:rgba(242,194,48,.32);color:var(--encre)}.cm[data-v2] .cm-tag.rouge{background:rgba(196,72,52,.14);color:var(--hausse)}
+.cm[data-v2] .cm-act button{border-color:var(--vert);color:var(--vert)}.cm[data-v2] .cm-act button.p{background:var(--vert);color:var(--action-t)}.cm[data-v2] .cm-act button.m{border-color:transparent}
+.cm[data-v2] .cm-info{background:rgba(242,194,48,.2);color:var(--encre)}
+.cm[data-v2] .cm-f input[type=text],.cm[data-v2] .cm-f input[type=number],.cm[data-v2] .cm-f input[type=datetime-local],.cm[data-v2] .cm-f textarea,.cm[data-v2] .cm-f select,.cm[data-v2] .cm-disc textarea{background:var(--champ);border-color:var(--t22);color:var(--encre)}
+.cm[data-v2] .cm-f input::placeholder,.cm[data-v2] textarea::placeholder{color:var(--mute);opacity:1}
+.cm[data-v2] .cm-opt:has(input:checked){border-color:var(--vert)}.cm[data-v2] .cm-opt input,.cm[data-v2] .cm-ck input{accent-color:var(--vert)}
+.cm[data-v2] .cm-pil label{background:var(--carte);box-shadow:inset 0 0 0 1.5px var(--t22);color:var(--vert)}.cm[data-v2] .cm-pil label:has(input:checked){background:var(--vert);color:var(--action-t)}
+.cm[data-v2] .cm-err{color:var(--hausse)}
+.cm[data-v2] .cm-pick{background:var(--carte);border-color:var(--t30);color:var(--vert)}
+.cm[data-v2] .cm-defi i{background:var(--champ);box-shadow:inset 0 0 0 1.5px var(--t22);color:var(--encre)}
+.cm[data-v2] .cm-ph a,.cm[data-v2] .cm-ph span{background:var(--lin)}
+.cm[data-v2] .cm-disc li{background:var(--lin);color:var(--encre)}.cm[data-v2] .cm-disc li.moi{background:var(--t12)}.cm[data-v2] .cm-disc li.mdg{background:rgba(242,194,48,.3)}.cm[data-v2] .cm-disc li small,.cm[data-v2] .cm-disc li.vide{color:var(--texte-3)}.cm[data-v2] .cm-disc li.vide{background:none}
+.cm[data-v2] .cm-disc button{background:var(--vert);color:var(--action-t)}
+.cm[data-v2] .cm-disc,.cm[data-v2] .cm-sq,.cm[data-v2] .cm-lien{border-radius:18px;box-shadow:none;border:0;margin:0}
+.cm[data-v2] .cm-lien{background:var(--carte)}.cm[data-v2] .cm-lien-l li,.cm[data-v2] .cm-lien small{color:var(--texte-2)}.cm[data-v2] .cm-lien-e{background:var(--t08);color:var(--texte-2)}
+.cm[data-v2] .cm-lien button{border-color:var(--vert);color:var(--vert)}.cm[data-v2] .cm-lien button.p{background:var(--vert);color:var(--action-t)}.cm[data-v2] .cm-lien-i{background:var(--champ)}
+.cm[data-v2] .cm-sch li,.cm[data-v2] .cm-sch-t,.cm[data-v2] .cm-ou{color:var(--texte-3)}.cm[data-v2] .cm-sch li b{color:var(--encre)}
+.cm[data-v2] .cm-rf{border-radius:18px;margin:0;background:rgba(196,72,52,.08);box-shadow:inset 0 0 0 1.5px var(--hausse)}.cm[data-v2] .cm-rf h3{color:var(--hausse)}
+.cm[data-v2] .cm-sq td{border-top-color:var(--t10)}.cm[data-v2] .cm-sq tr.tot td{border-top-color:var(--vert)}.cm[data-v2] .cm-sq td small{color:var(--texte-3)}
+.cm[data-v2] .cm-av-recu,.cm[data-v2] .cm-av-fid{border-top-color:var(--t10)}
+.cm[data-v2] [style*="#5E5546"]{color:var(--texte-3)!important}
+.cm[data-v2] [style*="background:#FFFDF8"]{background:var(--recu)!important;color:var(--encre)!important;box-shadow:inset 0 0 0 1.5px var(--t14)!important}
+.cm[data-v2] [style*="color:#10392B"]{color:var(--vert)!important}
+.cm[data-v2] .cm-tcode{background:var(--t08);color:var(--encre)}.cm[data-v2] .cm-tcode b{color:var(--vert)}
+.cm[data-v2] .cm-st{background:var(--recu);color:var(--encre);margin:0}
+.cm[data-v2] .cm-f label.t,.cm[data-v2] .cm-motif legend.t{color:var(--encre)}
+/* l'écran */
+.cv{display:flex;flex-direction:column;gap:18px}
+.cv-haut{display:flex;align-items:center;margin:0 0 -6px -11px;min-height:44px}
+.cv-ret{display:flex;align-items:center;gap:0;min-height:44px;padding:0 8px 0 0;border:0;background:none;color:inherit;font:400 14px Jost,sans-serif;cursor:pointer}
+.cv-ret svg{width:44px;height:22px}.cv-ret span{color:var(--texte-3)}
+.cv-ret:focus-visible,.cv-lien:focus-visible,.cv-b:focus-visible,.cv-dep:focus-visible,.cv-opt:focus-visible,.cv-case:focus-visible,.cv-papier:focus-visible,.cv-etoiles button:focus-visible{outline:2px solid var(--vert);outline-offset:2px}
+.cv-tete{display:flex;flex-direction:column;gap:6px}
+.cv-h1{margin:0;font:600 28px/1.08 Jost,sans-serif;letter-spacing:-.015em;text-wrap:balance;overflow-wrap:anywhere}
+.cv-h1 em{font-weight:900;font-style:italic;color:var(--vert);letter-spacing:-.02em;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,var(--hl) 60%,var(--hl) 94%,transparent 94%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.cv-h1[tabindex="-1"]:focus{outline:none}
+.cv-sous{margin:0;font-size:14px;line-height:1.4;color:var(--texte-2)}
+.cv-h2{margin:0;font:700 19px/1.2 Jost,sans-serif;color:var(--encre)}
+.cv-p{margin:0;font-size:14px;line-height:1.45;color:var(--texte-2)}.cv-p.petit{font-size:12.5px;color:var(--texte-3)}
+.cv-num{margin:0;font-size:12.5px;color:var(--texte-3)}
+.cv-tt{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.cv-tt>span{font-size:12.5px;font-weight:600;color:var(--texte-3);white-space:nowrap}.cv-tt>span.ok{color:var(--vert-texte)}
+/* reçu */
+.cv-recu{background:var(--recu);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--ombre)}
+.cv-l{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:14px;line-height:1.35}
+.cv-l>span:first-child{color:var(--texte-3);flex:none}.cv-l>:last-child{text-align:right;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
+.cv-dep{border:0;background:none;padding:0;min-height:24px;font:inherit;color:var(--encre);text-decoration:underline;text-decoration-color:var(--t30);text-underline-offset:3px;cursor:pointer;text-align:right}
+.cv-ph{margin:0}
+.cv-trait{height:1px;background:var(--t10)}
+.cv-tot{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.cv-tot span{font-size:14px;font-weight:600}
+.cv-tot b{font-size:28px;font-weight:800;color:var(--vert);letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* mot secret */
+.cv-mot{background:var(--panneau);color:#F5F0E6;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.cv-mot-t{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700}
+.cv-mot-v{font:italic 900 32px/1.1 Jost,sans-serif;letter-spacing:.04em;color:#F2C230;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.cv-mot p{margin:0;font-size:13.5px;line-height:1.45;color:#C9BEA9}
+.cv-mot button{align-self:flex-start;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid rgba(245,240,230,.3);background:none;color:#F5F0E6;font:600 14px Jost,sans-serif;display:flex;align-items:center;gap:8px;cursor:pointer}
+.cv-mot button:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
+/* suivi */
+.cv-suivi{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column}
+.cv-et{display:flex;gap:14px;min-height:46px}
+.cv-et .g{width:22px;flex:none;display:flex;flex-direction:column;align-items:center}
+.cv-et .d{box-sizing:border-box;width:18px;height:18px;margin-top:2px;border-radius:999px;border:2px solid var(--t22);flex:none;display:grid;place-items:center}
+.cv-et.fait .d{background:var(--vert);border:0;color:var(--action-t)}
+.cv-et.ici .d{width:22px;height:22px;margin-top:0;background:#F2C230;border:0}
+.cv-et .ln{flex:1;width:2px;background:var(--t14);margin:3px 0}.cv-et.fait .ln{background:var(--vert)}.cv-et:last-child .ln{background:transparent}
+.cv-et .x{flex:1;min-width:0;display:flex;justify-content:space-between;gap:8px;padding-bottom:12px}
+.cv-et .x b{font-size:15px;font-weight:500;color:var(--mute)}.cv-et.fait .x b,.cv-et.ici .x b{color:var(--encre)}.cv-et.ici .x b{font-weight:700}.cv-et.pb .x b{color:var(--hausse)}
+.cv-et .x small{font-size:12.5px;color:var(--mute);font-variant-numeric:tabular-nums;padding-top:2px;white-space:nowrap}
+.cv-fil{display:flex;flex-direction:column;gap:2px}.cv-fil h3{margin-bottom:6px}
+.cv-fil div{display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--t08)}
+.cv-fil small{flex:none;font-size:12.5px;color:var(--mute);font-variant-numeric:tabular-nums;padding-top:2px}.cv-fil span{font-size:14px;line-height:1.4;min-width:0;overflow-wrap:anywhere}
+/* boutons */
+.cv-acts{display:flex;flex-direction:column;gap:10px}
+.cv-b{box-sizing:border-box;min-height:54px;border:0;border-radius:999px;background:var(--vert);color:var(--action-t);font:700 16px Jost,sans-serif;padding:8px 20px;display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;cursor:pointer;width:100%}
+.cv-b.o{min-height:48px;border:1.5px solid var(--vert);background:none;color:var(--vert);font-size:15px}
+.cv-b.r{min-height:50px;border:1.5px solid var(--hausse);background:none;color:var(--hausse);font-size:15px}
+.cv-b.gris,.cv-b:disabled{background:var(--lin-2);color:var(--texte-2);cursor:default}
+.cv-lien{align-self:center;min-height:44px;padding:0 8px;border:0;background:none;color:var(--texte-3);font:600 14px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:center}
+.cv-lien.v{color:var(--vert)}.cv-lien.g{align-self:flex-start;padding:0;margin-top:-8px}
+.cv-acts>.cv-p{margin-bottom:-2px}
+/* cartes */
+.cv-jaune{background:#F6E2B0;color:#3D2E05;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.cv-jaune b{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}.cv-jaune span{font-size:14px;line-height:1.45}
+.cv-vertc{background:#DCEFE3;color:#10392B;border-radius:16px;padding:14px 16px;font-size:14px;font-weight:600;line-height:1.45;display:flex;gap:10px;align-items:flex-start}
+.cv-carte{background:var(--carte);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.cv-carte b{font-size:15px;font-weight:700}.cv-carte span{font-size:13.5px;line-height:1.4;color:var(--texte-3)}
+.cv-retard{flex-direction:row;gap:12px;border:1.5px solid #F2C94C;color:var(--encre)}.cv-retard>svg{color:#765802;margin-top:1px}
+html[data-theme=sombre] .cv-retard>svg{color:#F2C94C}
+.cv-retard>span{display:flex;flex-direction:column;gap:2px}.cv-retard>span>span{color:var(--texte-3)}
+.cv-pb{background:var(--carte);border:1.5px solid var(--hausse);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.cv-pb b{font-size:16px;font-weight:700}.cv-pb>span{font-size:14px;line-height:1.45;color:var(--texte-2)}.cv-pb .cv-num{font-size:12.5px;color:var(--texte-3)}
+/* terminée, avis */
+.cv-fin{background:var(--carte);border-radius:20px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.cv-tampon{transform:rotate(-5deg);border:2px solid var(--vert);color:var(--vert);border-radius:6px;padding:3px 10px;font-size:13.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.cv-fin-t{font-size:15px;font-weight:600}
+.cv-etoiles{display:flex;gap:2px}
+.cv-etoiles button{width:44px;height:44px;border:0;background:none;display:grid;place-items:center;padding:0;cursor:pointer;border-radius:10px}
+.cv-etoiles svg{fill:none;stroke:var(--mute)}.cv-etoiles button.on svg{fill:#F2C230;stroke:#F2C230}
+.cv-fin textarea{box-sizing:border-box;width:100%;min-height:80px;border-radius:14px;border:1px solid var(--t22);background:var(--champ);padding:10px 12px;font:400 16px/1.4 Jost,sans-serif;color:var(--encre);resize:none}
+.cv-fin textarea::placeholder{color:var(--mute);opacity:1}
+.cv-fin .cv-b.o{min-height:44px;font-size:14px}.cv-fin .cm-err{margin:0;min-height:0}
+.cv-ok{font-size:13.5px;font-weight:600;color:var(--vert-texte)}
+.cv-fin .cm-av-f svg{stroke:var(--mute)}
+/* préparation du chargement */
+.cv-prepa{display:flex;flex-direction:column;gap:12px}
+.cv-grille{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.cv-case{position:relative;aspect-ratio:1;border-radius:14px;border:1.5px dashed var(--t30);background:var(--carte);display:grid;place-items:center;color:var(--texte-3);padding:0;overflow:hidden;cursor:pointer;min-height:44px}
+.cv-case.on{border:0;background:var(--sable-clair)}.cv-case img{width:100%;height:100%;object-fit:cover;display:block}
+.cv-case input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.cv-case:focus-within{outline:2px solid var(--vert);outline-offset:2px}
+.cv-champ{display:flex;align-items:center;gap:8px;height:56px;border-radius:16px;border:1.5px solid var(--t22);background:var(--champ);padding:0 16px}
+.cv-champ:focus-within{border-color:var(--vert)}
+.cv-champ input{flex:1;min-width:0;border:0;background:none;outline:none;font:600 18px Jost,sans-serif;color:var(--encre);font-variant-numeric:tabular-nums}
+.cv-champ input::placeholder{color:var(--mute);font-weight:400;opacity:1}.cv-champ span{font-size:16px;font-weight:600;color:var(--texte-3)}
+.cv-papier{min-height:60px;border-radius:16px;border:1.5px dashed var(--t30);background:var(--carte);color:var(--encre);font:600 15px Jost,sans-serif;display:flex;align-items:center;gap:12px;padding:10px 16px;text-align:left;cursor:pointer}
+.cv-papier>span{display:flex;flex-direction:column;gap:2px}.cv-papier small{font-size:12.5px;font-weight:500;color:var(--texte-3)}
+div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-papier.ok{flex-direction:row;align-items:center;border-style:solid;border-color:var(--vert-texte);color:var(--vert-texte)}
+.cv-papier .cm-defi{margin:0}.cv-papier .cv-b{position:relative}
+.cv-chk{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.cv-chk li{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--texte-3)}.cv-chk li.ok{color:var(--encre)}.cv-chk li.ok svg{color:var(--vert-texte)}
+.cv-prepa .cm-err{margin:0;min-height:0}.cv-prepa .cm-err:empty{display:none}
+/* arrangement à trois */
+.cv-part{display:flex;flex-direction:column;gap:12px}
+.cv-avs{display:flex}.cv-avs i{width:28px;height:28px;border-radius:999px;font:700 11.5px/1 Jost,sans-serif;font-style:normal;display:grid;place-items:center;border:2px solid var(--papier)}
+.cv-avs .a{background:var(--lin);color:var(--texte-2)}.cv-avs .m{background:#F6E2B0;color:#3D2E05;margin-left:-8px}
+.cv-opt{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 16px;border-radius:16px;border:1.5px solid var(--t10);background:var(--carte);color:var(--encre);text-align:left;font:inherit;cursor:pointer;width:100%;box-sizing:border-box}
+.cv-opt .rb{width:22px;height:22px;flex:none;border-radius:999px;border:2px solid var(--t30);display:grid;place-items:center;box-sizing:border-box}.cv-opt .rb span{width:10px;height:10px;border-radius:999px}
+.cv-opt.on{border-color:var(--vert)}.cv-opt.on .rb{border-color:var(--vert)}.cv-opt.on .rb span{background:var(--vert)}
+.cv-opt .l{flex:1;font-size:15px;font-weight:600}.cv-opt .s{font-size:12.5px;color:var(--texte-3);text-align:right}
+.cv-opt:focus-within{outline:2px solid var(--vert);outline-offset:2px}
+.cv-pas{display:flex;align-items:center;justify-content:space-between;background:var(--champ);border:1px solid var(--t14);border-radius:18px;padding:6px}
+.cv-pas button{width:44px;height:44px;border-radius:999px;border:0;background:var(--lin);display:grid;place-items:center;color:var(--encre);cursor:pointer}.cv-pas span{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.cv-total{display:flex;justify-content:space-between;align-items:baseline;gap:10px;background:var(--recu);border-radius:16px;padding:14px 16px}
+.cv-total span{font-size:14px;color:var(--texte-3)}.cv-total b{font-size:22px;font-weight:800;color:var(--vert);font-variant-numeric:tabular-nums}
+.cv-fil3{display:flex;flex-direction:column;gap:8px}
+.cv-bul{align-self:flex-start;max-width:88%;background:var(--carte);color:var(--encre);border-radius:16px;padding:10px 14px;display:flex;flex-direction:column;gap:4px}
+.cv-bul.moi{align-self:flex-end;background:var(--vert);color:var(--action-t)}.cv-bul.mdg{background:#F6E2B0;color:#3D2E05}
+.cv-bul b{font-size:12.5px;font-weight:700;opacity:.85}.cv-bul>span{font-size:14px;line-height:1.4}.cv-bul strong{font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}.cv-bul small{font-size:12.5px;opacity:.85}
+.cv-bul .cv-b{min-height:44px;font-size:14px;margin-top:4px}.cv-bul .cv-lien{color:inherit;align-self:flex-start;padding:0}
+.cv-part .cm-err{margin:0;min-height:0}
+/* signaler un problème */
+.cv-form{display:flex;flex-direction:column;gap:10px;margin-top:6px}.cv-form .cm-motif{display:flex;flex-direction:column;gap:10px}
+.cv-form label.t{margin:6px 0 -4px}.cv-form .cv-pick{position:relative;cursor:pointer}.cv-form .cm-ph{margin:0}.cv-form .cm-ph:empty{display:none}
+.cv-carteVive{margin:0 -16px;position:relative}.cv-carteVive .sv{margin:0;height:240px}
+@media (max-width:340px){.cv-h1{font-size:25px}.cv-tot b{font-size:24px}.cv-mot-v{font-size:28px}}`;
   function css() { if (document.getElementById('cmCss')) return; const s = document.createElement('style'); s.id = 'cmCss'; s.textContent = CSS; document.head.appendChild(s); }
 
 
@@ -291,93 +313,13 @@
     return c.etat === 'a_confirmer' ? 0 : i < 0 ? 0 : i / (L.length - 1);
   }
 
-  // la livraison : plan, fiche, image du produit (23/10/2026)
-  // l'image détourée du produit (sac d'aubergines, bidon d'huile, panier de poisson…) à la place d'un carton ; sinon le sac de l'application
-  const sansAcc = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, ' ').trim();
-  function imgProduit(nom) {
-    const M = window.MDG, A = window.MDGApp, n = sansAcc(nom);
-    if (!n || !M || !M.products || !A || !A.SACK) return null;
-    const P = M.products, nm = x => sansAcc(x.name);
-    const p = P.find(x => nm(x) === n) || P.find(x => (x.aliases || []).some(a => sansAcc(a) === n))
-      || P.find(x => n.startsWith(nm(x) + ' ')) || P.find(x => nm(x).startsWith(n + ' '));
-    return p && A.SACK[p.slug] != null ? (A.IMG || 'v2/img/') + 'produit-' + p.slug + '.webp' : null;
-  }
-  // les quatre temps de la livraison, et où en est la commande (k : le point en cours ; fini : tout est fait)
-  const TEMPS = ['Confirmée', 'Chargée', 'En route', 'Livrée'];
-  const tempsK = c => c.etat === 'a_confirmer' ? -1 : ({ confirmee: 0, preparation: 0, chargement: 1, transport: 2, transbordement: 2, arrivee: 3, reception: 3, terminee: 3 })[c.etape] ?? 0;
-  const tempsFini = c => c.etat === 'terminee' || ['reception', 'terminee'].includes(c.etape);
-  function puce(c) {
-    if (c.etat === 'a_confirmer') return ['À confirmer', 'mais'];
-    if (c.etat === 'annulee') return ['Annulée', 'rouge'];
-    if (c.etat === 'litige') return ['Litige', 'rouge'];
-    if (tempsFini(c)) return [c.etat === 'terminee' ? 'Livrée' : 'Reçue', ''];
-    return [({ confirmee: 'Confirmée', preparation: 'En préparation', chargement: 'Chargée', transport: 'En route', transbordement: 'Transbordement', arrivee: 'Arrivé' })[c.etape] || 'En cours', 'mais'];
-  }
-  // le plan dessiné (pas une carte) : une ville, une route en lacets du départ à la livraison.
-  // Il ne montre aucune position : le camion est au départ tant que rien n'est chargé, à l'arrivée une fois livré.
-  function plan(c) {
-    const fin = tempsFini(c), mort = c.etat === 'annulee', attente = c.etat === 'a_confirmer';
-    const R = 'M70 184V160Q70 148 82 148H168Q180 148 180 136V104Q180 92 192 92H298Q310 92 310 80V62';
-    const blocs = [[14, 14, 86, 52], [112, 14, 70, 30], [196, 14, 92, 46], [302, 14, 84, 30], [14, 80, 40, 64], [96, 56, 70, 34], [196, 122, 92, 22], [324, 56, 62, 88], [14, 182, 40, 40], [96, 174, 70, 48], [196, 174, 112, 48], [324, 170, 62, 52], [112, 118, 54, 26]]
-      .map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="5" fill="#E0E4DD"/>`).join('');
-    const nav = (x, y, a) => `<g class="nav" transform="translate(${x} ${y})"><circle r="15" fill="#10392B" stroke="#FFFDF8" stroke-width="3"/><path d="M0 -7L6 6L0 3L-6 6Z" fill="#F2C230" transform="rotate(${a})"/></g>`;
-    const route = mort ? `<path d="${R}" fill="none" stroke="#B5BBB6" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 9"/>`
-      : `<path d="${R}" fill="none" stroke="#FFFDF8" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>` +
-        `<path class="rt" pathLength="100" d="${R}" fill="none" stroke="${fin ? '#A9B1AC' : '#10392B'}" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"${attente ? ' stroke-dasharray="1.5 2.5" style="animation:none"' : ''}/>`;
-    const dep = `<circle cx="70" cy="184" r="6.5" fill="#FFFDF8" stroke="#9AA59F" stroke-width="3"/>`;
-    const arr = `<circle class="pulse" cx="310" cy="50" r="12" fill="${fin ? '#2F8A5B' : '#F2C230'}"/>` +
-      `<circle cx="310" cy="50" r="12" fill="${fin ? '#2F8A5B' : '#F2C230'}" stroke="#FFFDF8" stroke-width="3"/>` +
-      (fin ? `<path d="M304.5 50.5l3.8 3.8 7.4-8" fill="none" stroke="#FFFDF8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>` : `<circle cx="310" cy="50" r="4" fill="#10392B"/>`);
-    const camion = mort || attente ? '' : fin ? nav(310, 84, 0) : nav(70, 156, 0);
-    const lab = (x, y, t, a) => `<g transform="translate(${x} ${y})"><rect x="${a === 'end' ? -8 - t.length * 6.4 : -8}" y="-12" width="${t.length * 6.4 + 16}" height="22" rx="11" fill="#FFFDF8" stroke="rgba(23,21,18,.08)"/><text x="${a === 'end' ? 0 : 0}" y="3.5" text-anchor="${a}" font-family="Jost,system-ui,sans-serif" font-size="11.5" font-weight="500" fill="#3F3A30">${esc(t)}</text></g>`;
-    const court = s => { s = String(s || ''); return s.length > 22 ? s.slice(0, 21) + '…' : s; };
-    const chip = mort ? 'Commande annulée' : attente ? 'Trajet prévu' : fin ? 'Livraison faite' : 'Plan · suivi par étapes';
-    return `<div class="cm-plan" aria-hidden="true"><svg viewBox="0 0 400 236" preserveAspectRatio="xMidYMid slice">
-      <rect width="400" height="236" fill="#ECEEE9"/>${blocs}
-      <path d="M232 60Q262 66 286 60Q296 58 296 70V92Q296 108 280 106Q252 102 232 106Q218 108 218 94V74Q218 58 232 60Z" fill="#D3E2CB"/>
-      <path d="M-10 128Q60 112 120 132T260 148T410 136" fill="none" stroke="#D2E2EA" stroke-width="9" stroke-linecap="round"/>
-      <path d="M-10 66L410 50M58 -10L66 246M380 -10L372 246" stroke="#F7F8F5" stroke-width="7" fill="none"/>
-      ${route}${dep}${arr}${camion}
-      ${c.ville_depart ? lab(86, 184, court(c.ville_depart), 'start') : ''}${lab(292, 50, court(c.lieu_livraison || 'Livraison'), 'end')}
-    </svg><span class="cm-pchip"><i></i>${chip}</span></div>`;
-  }
-  // la fiche : numéro, état, les quatre temps, d'où vers où, les chiffres, le produit, la personne en face
-  function fiche(c, Jr) {
-    const [lab, cl] = puce(c), k = tempsK(c), fini = tempsFini(c), mort = c.etat === 'annulee';
-    const k0 = c.etat === 'a_confirmer' ? 0 : k;   // en attente de confirmation : la première étape est « en cours »
-    const pts = TEMPS.map((t, i) => { const s = mort ? 'off' : fini || i < k0 ? 'fait' : i === k0 ? 'ici' : ''; if (i === 0 && c.etat === 'a_confirmer' && !mort) t = 'À confirmer';
-      return `<li class="${s}"><span class="o">${s === 'fait' ? '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2.5 6.3l2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}</span>${t}</li>`; }).join('');
-    const ev = n => (Jr || []).find(e => e.evenement === n);
-    const fin = ev('reception') || ev('terminee'), la = ev('arrivee');
-    const droite = mort ? 'Annulée' : fin ? 'Reçue le ' + jour(fin.at) : la ? 'Arrivé le ' + jour(la.at) : 'Livraison à venir';
-    const img = imgProduit(c.produit);
-    const autre = c.role === 'vendeur' ? 'Acheteur' : 'Vendeur';
-    const avC = c.partenaire_id && window.MDGCompte && MDGCompte.avatar ? MDGCompte.avatar(c.partenaire_id, { size: 44 }) : null;
-    const av = avC && avC.svg ? avC.svg : window.MDGAvatar ? MDGAvatar.svg('', { size: 44, nom: c.partenaire_nom || '?' }) : '';
-    const TR = { reseau: 'Réseau Marché de Gros', acheteur: 'Par l’acheteur', vendeur: 'Par le vendeur' };
-    return `<section class="cm-fiche" aria-label="Fiche de la commande"><span class="cm-poignee" aria-hidden="true"></span>
-      <div class="cm-f1"><div><small>Commande</small><b>n° ${esc(c.numero || '—')}</b></div><span class="cm-puce ${cl}">${esc(lab)}</span></div>
-      <ol class="cm-pts" aria-label="Avancement : ${esc(lab)}">${pts}</ol>
-      <div class="cm-f2"><div><small>Créée le ${jour(c.created_at)}</small><b>${esc(c.ville_depart || 'Départ')}</b></div><div class="r"><small>${esc(droite)}</small><b>${esc(c.lieu_livraison || 'À convenir')}</b></div></div>
-      <div class="cm-f3"><dl>
-        <div><dt>Produit</dt><dd>${esc(c.produit || '—')}</dd></div>
-        <div><dt>Quantité</dt><dd>${c.quantite != null ? qte(c.quantite, c.unite) : '—'}</dd></div>
-        <div><dt>Prix convenu</dt><dd>${c.prix_unitaire != null ? F(c.prix_unitaire) + ' / ' + esc(c.unite || 'unité') : '—'}</dd></div>
-        <div><dt>Total</dt><dd class="t">${c.montant != null ? F(c.montant) : '—'}</dd></div>
-        <div><dt>Transport</dt><dd>${esc(TR[c.mode_transport] || '—')}</dd></div>
-        <div><dt>Paiement</dt><dd>${seq[c.id] && seq[c.id].actif ? 'Séquestre' : 'À la livraison'}</dd></div>
-      </dl><span class="cm-prod" aria-hidden="true">${img ? `<img src="${img}" alt="" decoding="async">` : sac(humeur(c), 150)}</span></div>
-      ${c.partenaire_nom ? `<div class="cm-pers"><span class="av" aria-hidden="true">${av}</span><div><b>${esc(c.partenaire_nom)}</b><small>${autre}</small></div>${c.partenaire_id && window.MDGMessages ? `<button type="button" data-ecrire aria-label="Écrire à ${esc(c.partenaire_nom)}">${IC('messages', 20)}</button>` : ''}</div>` : ''}
-    </section>`;
-  }
-
   // état
   let lu = false, bg = null, vue = 'liste', filtre = 'cours', liste = [], journal = {}, transport = {}, lien = {}, pos = {}, carte = null, sel = null, charge = false, minuteur = null, echec = false;
   const trouve = id => liste.find(x => x.id === id);
   const enRoute = c => c.etat === 'en_cours' && ['chargement', 'transport', 'transbordement', 'arrivee'].includes(c.etape);
   function oublierCarte() { if (carte && carte.api) carte.api.detruire(); carte = null; }
   let retourFocus = null;
-  function fermer() { oublierCarte(); if (!bg) return; bg.remove(); bg = null; if (retourFocus && retourFocus.focus) try { retourFocus.focus({ preventScroll: true }); } catch (_) {} retourFocus = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); }
+  function fermer() { oublierCarte(); if (!bg) return; bg.remove(); bg = null; if (retourFocus && retourFocus.focus) try { retourFocus.focus({ preventScroll: true }); } catch (_) {} retourFocus = null; clearInterval(minuteur); minuteur = null; clearInterval(prepaChrono); document.removeEventListener('keydown', clavier); }
   const clavier = e => { if (e.key === 'Escape') fermer(); };
   const horsLigne = e => navigator.onLine === false || /Failed to fetch|NetworkError|Load failed|network|ERR_INTERNET/i.test(String((e && e.message) || e || ''));
   const erreurTxt = e => { if (horsLigne(e)) return 'Pas de connexion : rien n’a été enregistré. Réessayez quand le réseau revient.'; const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : (window.MDGErreur ? MDGErreur(e) : (m.replace(/^[A-Z_]{4,} : /, '') || 'Réessayez dans un instant.')); };
@@ -403,6 +345,7 @@
     if (j) journal[id] = j; if (t) transport[id] = t; if (p) pos[id] = p; lien[id] = l || null;
     if (c && ['terminee', 'litige', 'en_cours', 'a_confirmer'].includes(c.etat)) { const s = await N().rpc('commande_sequestre', { p_id: id }).catch(() => null); if (s) seq[id] = s; }
     if (c && (c.etat === 'litige' || c.refus_le)) { const d = await N().rpc('litige_messages_lire', { p_cmd: id }).catch(() => null); if (d) disc[id] = d; }
+    if (c && c.etat === 'litige') part[id] = await N().rpc('commande_participation_lire', { p_id: id }).catch(() => null);
     // délais (schéma 92) : échéance de chargement, livraison déclarée, essais du mot secret ; serveur pas à jour : rien
     // schéma 97b : aussi pendant un litige, pour savoir s'il s'est ouvert tout seul (acheteur muet 1 h après « livré »)
     // schéma 99a : le fil du suivi (retards, demandes de nouvelles, délai), lu à côté du journal des étapes ; serveur pas à jour : rien
@@ -419,9 +362,10 @@
     if (!bg) return;
     // un formulaire est ouvert (créer la commande, refuser, confirmer une étape) : on ne le redessine pas, sinon ce qu'on a choisi ou écrit disparaît
     if (dernierEcran === 'creer' || dernierEcran === 'geste') return;
+    const fo = document.activeElement; if (fo && bg.contains(fo) && /^(INPUT|TEXTAREA|SELECT)$/.test(fo.tagName)) return;
     const apres = sel && trouve(sel) && trouve(sel).etape;
     // rien de neuf depuis la dernière relecture : on ne redessine pas (sinon l'écran clignote et le défilement saute toutes les 20 s)
-    let sig = ''; try { sig = JSON.stringify([vue, sel, filtre, liste, sel ? journal[sel] : null, sel ? suivi[sel] : null, sel ? dl[sel] : null]); } catch (_) {}
+    let sig = ''; try { sig = JSON.stringify([vue, sel, filtre, liste, sel ? journal[sel] : null, sel ? suivi[sel] : null, sel ? dl[sel] : null, sel ? seq[sel] : null, sel ? part[sel] : null, sel ? avis[sel] : null, sel ? lien[sel] : null]); } catch (_) {}
     if (sig && sig === sigAvant) return; sigAvant = sig;
     peindre(avant && apres && avant !== apres ? apres : null);
   }
@@ -534,119 +478,513 @@
     }
   }
   const MOT = c => c.validation === 'declaration' && c.mode_transport !== 'reseau';   // réception avec le mot secret du vendeur
-  function actions(c) {
-    const B = [];
-    const b = (g, t, cls) => B.push(`<button type="button" class="${cls || ''}" data-g="${g}">${t}</button>`);
-    if (c.etat === 'a_confirmer') { if (!c.cree_par_moi) { b('oui', 'Confirmer la commande', 'p'); b('non', 'Refuser'); } else b('annuler', 'Retirer la commande', 'm'); }
-    if (c.etat === 'en_cours') {
-      if (c.annulation === 'autre') { b('annul-oui', 'Accepter l’annulation', 'p'); b('annul-non', 'Refuser l’annulation'); }
-      else {
-        const K = c.validation === 'code';
-        // schéma 90 : pas de chargement sans les photos du colis et le poids
-        const SD = seq[c.id], DEP = !!(SD && SD.depart && (SD.depart.mot_ok || !SD.mot));
-        if (c.role === 'vendeur' && c.etape === 'confirmee') { b('preparation', 'En préparation', 'p'); if (!DEP) b('depart', TI('photo') + 'Photographier le colis'); else if (!K) b('chargement', 'Chargement confirmé'); }
-        if (c.role === 'vendeur' && c.etape === 'preparation') { if (!DEP) b('depart', TI('photo') + 'Photographier le colis', 'p'); else if (!K) b('chargement', 'Chargement confirmé', 'p'); }
-        // schéma 65 : avec son propre transporteur, « Chargée » attend « Le camion est parti » (vendeur, ou celui qui transporte)
-        const PARTI = !K && c.etape === 'chargement' && c.mode_transport !== 'reseau' && (c.role === 'vendeur' || c.role === c.mode_transport);
-        if (PARTI) b('transport', TI('camion') + 'Le camion est parti', 'p');
-        // schéma 92 : l'acheteur dit «\u00a0La marchandise est arrivée\u00a0» (le transporteur n'est souvent pas dans l'application) ;
-        // le vendeur peut aussi déclarer «\u00a0Marchandise livrée\u00a0», une fois, pour lancer le délai si l'acheteur se tait
-        const DL = dl[c.id];
-        if (c.role === 'acheteur' && (['transport', 'transbordement'].includes(c.etape) || (!K && c.etape === 'chargement'))) b('arrivee', 'La marchandise est arrivée', c.etape === 'chargement' ? '' : 'p');
-        if (c.role === 'vendeur' && (DL ? DL.peut_declarer_arrivee : ['transport', 'transbordement'].includes(c.etape)) && ['transport', 'transbordement', 'arrivee'].includes(c.etape)) b('arrivee', TI('camion') + 'Marchandise livrée', c.etape === 'arrivee' ? 'm' : '');
-        if (c.role === 'acheteur' && !K && ['chargement', 'transport', 'transbordement'].includes(c.etape)) b('reception', 'Réception confirmée');
-        // schéma 99a : en route, rien d'automatique ; le vendeur signale un retard, l'acheteur demande des nouvelles autant qu'il veut
-        if (DL && DL.peut_signaler_retard) b('retard-sig', TI('horloge') + 'Signaler un retard');
-        if (c.role === 'acheteur' && DL && DL.peut_annuler_retard && ['confirmee', 'preparation'].includes(c.etape)) b('retard', DL.vendeur_banni ? 'Annuler la commande' : 'Annuler : le vendeur n’a pas chargé à temps', DL.vendeur_banni ? '' : 'm');
-        if (c.role === 'acheteur' && DL && DL.peut_demander_nouvelles) b('nouvelles', TI('cloche') + 'Demander des nouvelles');
-        if (c.role === 'acheteur' && c.etape === 'arrivee' && !K) b('reception', MOT(c) ? 'Confirmer avec le mot secret' : 'Réception confirmée', 'p');
-        if (['transport', 'transbordement'].includes(c.etape)) b('transbordement', 'Signaler un transbordement', 'm');
-        // commande confirmée : seul le vendeur peut demander l'annulation (l'acheteur peut l'accepter), avant le chargement
-        if (c.role === 'vendeur' && ['confirmee', 'preparation'].includes(c.etape) && c.annulation !== 'moi' && !(DL && DL.peut_redemander === false)) b('annuler', 'Demander l’annulation', 'm');
-      }
-      // schéma 92 : un problème se signale dès la confirmation
-      if (['confirmee', 'preparation', 'chargement', 'transport', 'transbordement', 'arrivee', 'reception'].includes(c.etape)) b('litige', 'Signaler un problème', 'm');
-      // schéma 99a : après « arrivé », un seul délai de 2, 6 ou 24 h, avec sa cause
-      if (c.role === 'acheteur' && c.etape === 'arrivee' && c.annulation !== 'autre' && dl[c.id] && dl[c.id].peut_demander_delai) b('delai', 'Demander un délai', 'm');
-      // une fois la commande confirmée, l'acheteur ne peut plus l'annuler seul : seulement d'un commun accord, avant le chargement
-    }
-    // schéma 97b : pendant le litige ouvert tout seul, l'acheteur peut encore confirmer la réception (mot secret) ou refuser avec des photos
-    const LA = c.etat === 'litige' && c.role === 'acheteur' && c.validation !== 'code' && dl[c.id] && dl[c.id].litige_auto;
-    if (LA) b('reception', MOT(c) ? 'Confirmer avec le mot secret' : 'Réception confirmée', 'p');
+  // ——— l'écran d'une commande (lots 11 et 12, maquette « MGCI App v2 » de Claude Design, 13/11/2026) ———
+  // Plein écran, jetons data-v2 (clair et sombre). Tout vient de la commande, de son journal, de son suivi et de ses délais (serveur).
+  const SVGR = {
+    retour: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
+    horloge: s => `<svg width="${s || 20}" height="${s || 20}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>`,
+    cadenas: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F2C230" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="9.5" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 017 0v2.5"/></svg>',
+    oeil: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></svg>',
+    coche: (s, w) => `<svg width="${s || 12}" height="${s || 12}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w || 3.4}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>`,
+    rond: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="7"/></svg>',
+    photo: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5h3l1.6-2.5h6.8L17 8.5h3v10H4z"/><circle cx="12" cy="13.2" r="3.2"/></svg>',
+    moins: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"/></svg>',
+    plus: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>',
+    etoile: '<svg width="30" height="30" viewBox="0 0 24 24" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></svg>'
+  };
+  // « 10 nov · 14:20 »
+  const jh = t => jour(t).replace('.', '') + ' · ' + heure(t);
+  // une durée restante, dite simplement : « 59 min », « 6 h 59 min », « 71 h 40 min »
+  const reste = t => { const m = Math.max(0, Math.round((Date.parse(t) - Date.now()) / 60000)); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : ''); };
+  const minus = s => { s = String(s || ''); return /^[A-ZÉÈ][a-zéèêàâîïôûç]/.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s; };
+  const ini = s => String(s || '?').split(/[\s.]+/).filter(Boolean).slice(0, 2).map(x => x.charAt(0).toUpperCase()).join('') || '?';
+  const prix = c => c.prix_unitaire != null ? F(c.prix_unitaire) : null;
+
+  // la phase de la commande, vue par l'écran
+  function phase(c) {
+    if (c.etat === 'a_confirmer') return 'attente';
+    if (c.etat === 'annulee') return 'annulee';
+    if (c.etat === 'litige') return 'litige';
     const S = seq[c.id];
-    if (c.role === 'acheteur' && (S ? S.peut_liberer : aVerifier(c))) b('liberer', 'Tout est conforme', 'p');
-    if (c.role === 'acheteur' && (LA || (S ? S.peut_refuser : dansDelai(c)))) b('refuser', 'Refuser la marchandise');
-    if (c.role === 'acheteur' && c.etat === 'terminee' && aVerifier(c)) b('litige', 'Pas de papier ? Signaler un problème', 'm');
-    if (S && S.peut_repondre) { b('rf-oui', 'Je reconnais le problème', 'p'); b('rf-non', 'Je conteste'); }
-    return B.length ? `<div class="cm-act">${B.join('')}</div>` : '';
+    if (c.etat === 'terminee') return aVerifier(c) || (S && !S.libere_le && !c.liberation) ? 'verif' : 'fini';
+    return ({ confirmee: 'prep', preparation: 'prep', chargement: 'charge', transport: 'route', transbordement: 'route', arrivee: 'arrive', reception: 'verif' })[c.etape] || 'prep';
   }
-  function peindreDetail(change) {
-    const c = trouve(sel), box = bg.querySelector('.cm');
-    // commande pas encore en mémoire (notification touchée) : on attend la réponse du serveur avant de revenir à la liste
-    if (!c) { if (!lu && navigator.onLine !== false) { box.innerHTML = window.MDGSac ? MDGSac.charge('La commande arrive…') : ''; return; } vue = 'liste'; return peindreListe(); }
-    const Jr = journal[c.id] || [], L = ordre(c, Jr), [titre, sous] = prochaine(c);
-    const der = Jr.length ? Jr[Jr.length - 1].at : c.updated_at;
-    const fait = k => Jr.find(e => e.evenement === k);
-    const iEt = L.findIndex(([k]) => k === c.etape);
-    const etapes = L.map(([k, l], i) => { const e = fait(k), f = c.etat !== 'a_confirmer' && i <= iEt;
-      if (k === 'terminee' && (c.liberation || c.libere_le)) l = 'Commande clôturée';   // reçue, puis close après l'heure de vérification
-      return `<li class="${f ? 'fait' : ''}${i === iEt && c.etat === 'en_cours' ? ' ici' : ''}"><span class="pt">${f ? '✓' : i + 1}</span><span><b>${esc(l)}</b>${e ? `<small>${quand(e.at)} · ${esc(PREUVE[e.preuve] || '')}${e.lieu ? ' · ' + esc(e.lieu) : ''}</small>` : ''}</span></li>`; }).join('');
-    const arrive = change === 'arrivee';
-    box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
-      <h2>${esc(c.produit || 'Commande')}</h2>
-      <p class="cm-sous">${c.role === 'vendeur' ? 'Vente à' : 'Achat chez'} ${esc(c.partenaire_nom)} · n° ${esc(c.numero)}</p>
-      <div class="cm-hero">${enRoute(c) && window.MDGSuivi ? `<div data-carte></div>
-        <p class="cm-sr" aria-live="polite">${esc(MDGSuivi.texte(pos[c.id]).t)}</p>` : plan(c)}${fiche(c, Jr)}</div>
-      <div class="cm-st" role="status" aria-live="polite"><b>${titre}</b>${sous ? `<small>${esc(sous)}</small>` : ''}${enRouteLigne(c)}<small>Dernière actualisation : ${ilya(der)}</small></div>
-      ${actions(c)}
-      ${c.etat === 'terminee' && c.role === 'acheteur' && window.MDGRacheter ? `<div class="cm-act"><button type="button" class="p" data-racheter>Racheter · prix du jour</button></div>` : ''}
-      ${blocDepart(c)}${blocMot(c)}${blocRefus(c)}${blocDisc(c)}${blocSequestre(c)}${c.etat === 'litige' || seq[c.id] && seq[c.id].refus ? blocWa(c) : ''}
-      ${blocAvis(c)}
-      ${c.validation === 'declaration' && c.mode_transport !== 'reseau' && ['a_confirmer', 'en_cours'].includes(c.etat) ? `<p class="cm-info"><b>Réception avec le mot secret du vendeur.</b> Le vendeur glisse un mot secret dans la marchandise ; à l’arrivée, l’acheteur le retrouve et le tape pour confirmer la réception. Le transporteur n’a rien à faire dans l’application.</p>` : ''}
-      ${blocCode(c)}
-      ${blocTransport(c)}${blocLien(c)}
-      <ol class="cm-et">${etapes}</ol>
-      <dl class="cm-dl">
-        ${c.role === 'vendeur' && c.commission_montant != null ? (() => { const clos = c.etat === 'terminee' && !aVerifier(c), k = seq[c.id] && seq[c.id].repartition ? seq[c.id].repartition.vendeur_commission : c.commission_montant;
-          return `<dt>${c.etat === 'annulee' ? 'Commission (3,5 %) annulée' : c.etat === 'litige' ? 'Commission (3,5 %) suspendue' : clos ? 'Commission calculée (3,5 %)' : 'Commission prévue (3,5 %)'}</dt><dd>${c.etat === 'annulee' ? '0 F' : F(clos ? k : c.commission_montant)}<br><small style="font-weight:400;color:#5E5546">${c.etat === 'annulee' ? 'commande annulée : rien n’est dû' : clos ? 'rien n’est prélevé ni réclamé : pas encore de paiement dans l’application' : 'calculée à la clôture · rien n’est prélevé'}</small></dd>`; })() : ''}
-        ${ddTransport(c)}
-        <dt>Paiement</dt><dd>${seq[c.id] && seq[c.id].actif ? 'Séquestre ' + esc(OPE[seq[c.id].operateur] || '') : 'À la livraison<br><small style="font-weight:400;color:#5E5546">séquestre en construction</small>'}</dd>
-      </dl>
-      ${historique(c, Jr)}
-      <button type="button" class="cm-act" style="all:unset;display:block;margin:16px auto 0;padding:10px;min-height:44px;box-sizing:border-box;color:#10392B;text-decoration:underline;cursor:pointer" data-retour>Toutes mes commandes</button>`;
-    box.querySelector('[data-x]').onclick = fermer;
-    box.querySelector('[data-retour]').onclick = () => { oublierCarte(); sel = null; vue = 'liste'; peindre(); };
-    box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => geste(c, b.dataset.g));
-    const rb = box.querySelector('[data-racheter]'); if (rb) rb.onclick = () => { fermer(); MDGRacheter.ouvrir(c.id); };
-    const ec = box.querySelector('[data-ecrire]'); if (ec) ec.onclick = () => { fermer(); MDGMessages.ecrire(c.partenaire_id, { nom: c.partenaire_nom }); };
-    lierTransport(c, box); lierTrois(c, box); lierLien(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box); photos(box); lierDisc(c, box);
-    if (arrive) { if (navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {} toast('Le chauffeur est arrivé', { type: 'ok', sous: c.role === 'acheteur' ? 'Vérifiez la marchandise avant de confirmer.' : esc(c.produit || '') }); }
+  const dernierRetard = c => (suivi[c.id] || []).filter(x => x.genre === 'retard').sort((a, b) => new Date(b.at) - new Date(a.at))[0] || null;
+  // qui transporte, dit du point de vue de chacun
+  function quiTransporte(c) {
+    const V = c.role === 'vendeur', lui = c.partenaire_nom || '';
+    if (c.mode_transport === 'vendeur') return V ? 'Votre livreur' : 'Livreur de ' + lui;
+    if (c.mode_transport === 'acheteur') return V ? 'Transporteur de ' + lui : 'Votre transporteur';
+    return 'Transporteur du réseau';
   }
-  // schéma 99a : le fil du suivi (retards, demandes de nouvelles, délai) rangé dans l'historique, avec les étapes, du plus récent au plus ancien.
-  // Plusieurs demandes de nouvelles d'affilée font une seule ligne avec leur nombre (pas de liste qui se répète).
-  const CAUSE_R = { panne: 'Panne', route: 'Route difficile', pluie: 'Pluie', controle: 'Contrôle routier', autre: 'Autre' };
-  const CAUSE_D = { pas_sur_place: 'Pas sur place', dechargement: 'Déchargement en cours', controle: 'Contrôle de la marchandise', autre: 'Autre' };
-  function historique(c, Jr) {
-    const qui = r => r === c.role ? 'vous' : ROLE[r] || '';
-    const L = Jr.map(e => ({ at: e.at, h: `<li><b>${esc(evLib(e))}</b> · ${esc(e.par_moi ? 'vous' : ROLE[e.role] || '')}<small>${quand(e.at)} · ${esc(PREUVE[e.preuve] || '')}${e.lieu ? ' · ' + esc(e.lieu) : ''}${e.lat != null ? ' · position jointe' : ''}</small>${e.note ? `<small>« ${esc(e.note)} »</small>` : ''}</li>` }));
+  // le titre (un mot en voix) et la ligne dessous
+  function entete(c) {
+    const V = c.role === 'vendeur', lui = esc(c.partenaire_nom || ''), p = esc(minus(c.produit || 'commande')), D = dl[c.id] || {}, S = seq[c.id], ph = phase(c), Jr = journal[c.id] || [];
+    const ev = k => Jr.slice().reverse().find(e => e.evenement === k);
+    if (c.annulation === 'autre' && c.etat === 'en_cours') return [`${lui} demande l’<em>annulation</em>`, 'Acceptez ou refusez.'];
+    if (c.annulation === 'moi' && c.etat === 'en_cours') return ['Annulation <em>demandée</em>', `${c.partenaire_nom || 'L’autre partie'} doit répondre.`];
+    switch (ph) {
+      case 'attente': return c.cree_par_moi ? ['En attente de <em>confirmation</em>', `${c.partenaire_nom || 'L’autre partie'} doit confirmer la commande.`]
+        : V ? ['Nouvelle <em>commande</em>', [c.partenaire_nom, c.lieu_livraison, 'reçue ' + quand(c.created_at)].filter(Boolean).join(' · ')]
+        : ['Commande à <em>confirmer</em>', `${c.partenaire_nom || 'Le vendeur'} vous la propose.`];
+      case 'annulee': return ['Commande <em>annulée</em>', 'Le stock est revenu sur l’annonce.'];
+      case 'prep': {
+        if (D.vendeur_banni && D.peut_annuler_retard && !V) return ['Vendeur <em>banni</em>', 'Vous pouvez annuler la commande.'];
+        if (D.peut_annuler_retard && !V) return ['Chargement <em>en retard</em>', 'Le vendeur n’a pas chargé à temps.'];
+        const ech = D.chargement_echeance ? (Date.parse(D.chargement_echeance) > Date.now() ? reste(D.chargement_echeance) + ' pour charger' : 'Délai de chargement dépassé') : '';
+        return V ? ['Préparez le <em>chargement</em>', ech || 'Photos du colis, poids, puis chargement']
+          : [`Votre ${p} est en <em>préparation</em>`, D.chargement_echeance ? 'Chargement prévu avant ' + quand(D.chargement_echeance) : `${c.partenaire_nom || 'Le vendeur'} prépare la marchandise.`];
+      }
+      case 'charge': return ['Marchandise <em>chargée</em>', V || c.role === c.mode_transport ? 'Touchez « Le camion est parti » au départ.' : quiTransporte(c) + ' · départ signalé ici'];
+      case 'route': {
+        const R = dernierRetard(c), qui = quiTransporte(c);
+        const sous = R ? 'Retard signalé' + (R.date_estimee ? ' · nouvelle arrivée vers ' + echeance(R.date_estimee) : '')
+          : qui + (D.arrivee_estimee ? ' · arrivée prévue vers ' + echeance(D.arrivee_estimee) : ev('transport') ? ' · parti ' + quand(ev('transport').at) : '');
+        return V ? [`Votre ${p} <em>roule</em>`, sous] : [`Votre ${p} est <em>en route</em>`, sous];
+      }
+      case 'arrive': {
+        const a = ev('arrivee'), q = a ? (D.livre_le ? 'Livrée ' : 'Arrivée ') + quand(a.at) : '';
+        return V ? [D.livre_le ? 'Marchandise <em>livrée</em>' : 'Marchandise <em>arrivée</em>', (q ? q + ' · ' : '') + (MOT(c) ? 'l’acheteur vérifie, puis tape votre mot' : 'l’acheteur vérifie')]
+          : ['Votre marchandise est <em>arrivée</em>', (q ? q + ' · ' : '') + 'vérifiez avant de confirmer'];
+      }
+      case 'verif': { const r = ev('reception');
+        return V ? ['Réception <em>confirmée</em>', `${c.partenaire_nom || 'L’acheteur'} vérifie la marchandise.`]
+          : ['Réception <em>confirmée</em>', r ? 'Confirmée ' + quand(r.at) : 'Vous avez 1 h pour signaler un problème.']; }
+      case 'fini': {
+        const L = c.liberation || (S && S.liberation), mr = Number(c.montant_refuse || (S && S.montant_refuse) || 0), f = ev('terminee');
+        if (L === 'refus' || mr > 0) return ['Commande <em>clôturée</em>', mr >= Number(c.montant || 0) ? 'Marchandise refusée : elle n’est pas due.' : `Refus partiel : ${F(mr)} de marchandise ne sont pas dus.`];
+        const SR = Jr.some(e => e.evenement === 'terminee' && /^En faveur du vendeur/.test(e.note || ''));
+        if (L === 'auto' && SR) return ['Commande <em>clôturée</em>', V ? 'Close en votre faveur : l’acheteur n’a pas répondu.' : 'Close pour le vendeur : pas de réponse de votre part.'];
+        const quandF = f ? 'le ' + jour(f.at).replace('.', '') + ' à ' + heure(f.at) : '';
+        return V ? ['Vente <em>terminée</em>', L === 'admin' ? 'Clôturée par l’équipe du Marché de Gros.' : `Réception confirmée par ${c.partenaire_nom || 'l’acheteur'}`]
+          : ['Commande <em>terminée</em>', L === 'admin' ? 'Clôturée par l’équipe du Marché de Gros.' : quandF ? 'Terminée ' + quandF : 'Commande terminée'];
+      }
+      case 'litige': {
+        const R = S && S.refus;
+        if (R) return V ? (R.vendeur ? ['Refus <em>contesté</em>', 'L’équipe du Marché de Gros juge.'] : [`${lui} refuse la <em>marchandise</em>`, 'Regardez les photos, puis répondez.']) : ['Refus <em>envoyé</em>', 'Le vendeur va répondre.'];
+        if (D.litige_auto && D.cloture_echeance) return ['Litige <em>ouvert</em>', V ? `Sans réponse de l’acheteur avant ${heure(D.cloture_echeance)}, la commande est close en votre faveur.` : `Réception non confirmée. Répondez avant ${heure(D.cloture_echeance)}.`];
+        return ['Problème <em>signalé</em>', D.litige_echeance ? 'L’équipe tranche avant ' + quand(D.litige_echeance) : 'L’équipe du Marché de Gros examine la commande.'];
+      }
+    }
+    return prochaine(c);
+  }
+
+  // le reçu : marchandise, transport, départ, paiement, total figé ; commission (vendeur) seulement calculée
+  const TRC = { inclus: 'Compris', a_part: 'À part', livreur_vendeur: 'Livreur du vendeur, payé par l’acheteur', retrait: 'Retrait par l’acheteur', acheteur: 'À la charge de l’acheteur', mgci: 'Transporteur du réseau' };
+  const depOuvert = {};
+  function recu(c) {
+    const T = transport[c.id] || {}, R = T.regle || c.transport_regle, px = T.prix_transport, S = seq[c.id], D = S && S.depart, V = c.role === 'vendeur';
+    const L = (a, b) => `<div class="cv-l"><span>${a}</span><span>${b}</span></div>`;
+    const lignes = [];
+    lignes.push(L('Marchandise', c.quantite != null ? qte(c.quantite, c.unite) + (prix(c) ? ' × ' + prix(c) : '') : '—'));
+    let tr = TRC[R] || (c.mode_transport === 'acheteur' ? 'À la charge de l’acheteur' : c.mode_transport === 'vendeur' ? 'Par le vendeur' : MODES[c.mode_transport] || '—');
+    if (R === 'a_part' && px != null) tr += ' · ' + F(px);
+    lignes.push(L('Transport', esc(tr)));
+    if (D) lignes.push(`<div class="cv-l"><span>Au départ</span><button type="button" class="cv-dep" data-dep aria-expanded="${!!depOuvert[c.id]}">${(D.photos || []).length} photo${(D.photos || []).length > 1 ? 's' : ''} · ${nf(D.poids_kg, 1)} kg pesés</button></div>`
+      + (depOuvert[c.id] ? `<div class="cm-ph cv-ph">${(D.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du colis au départ"></span>`).join('')}${D.mot_photo ? `<span data-ph="${esc(D.mot_photo)}" role="img" aria-label="Photo du papier du mot secret (équipe)"></span>` : ''}</div>` : ''));
+    lignes.push(L('Paiement', S && S.actif ? 'Séquestre ' + esc(OPE[S.operateur] || '') : 'À la livraison, hors application'));
+    if (V && c.commission_montant != null) {
+      const clos = c.etat === 'terminee' && !aVerifier(c), k = S && S.repartition ? S.repartition.vendeur_commission : c.commission_montant;
+      lignes.push(c.etat === 'annulee' ? L('Commission', '0 F · commande annulée') : c.etat === 'litige' ? L('Commission prévue', '3,5 % · suspendue')
+        : clos ? L('Commission calculée', F(k) + ' · rien n’est prélevé') : L('Commission prévue', '3,5 % · rien n’est prélevé'));
+    }
+    const tot = T.total_livraison != null && c.etat !== 'annulee' ? T.total_livraison : c.montant;
+    return `<section class="cv-recu" aria-label="Reçu de la commande">${lignes.join('')}<div class="cv-trait"></div>
+      <div class="cv-tot"><span>Total figé</span><b>${tot != null ? F(tot) : '—'}</b></div></section>`;
+  }
+
+  // le mot secret, sur le panneau sombre : le vendeur le voit (il l'écrit sur le papier) ; l'acheteur sait seulement qu'il le tapera
+  const motVu = {};
+  function panneauMot(c) {
+    const S = seq[c.id], V = c.role === 'vendeur', D = dl[c.id] || {}, ph = phase(c);
+    if (!MOT(c) || !['prep', 'charge', 'route', 'arrive', 'litige'].includes(ph)) return '';
+    if (V) {
+      if (!S || !S.mot) return '';
+      const ouvert = ph === 'prep' || motVu[c.id];
+      return `<section class="cv-mot" aria-label="Votre mot secret"><div class="cv-mot-t">${SVGR.cadenas}<span>Votre mot secret</span></div>
+        <span class="cv-mot-v"${ouvert ? '' : ' aria-label="Mot caché"'}>${ouvert ? esc(S.mot) : '•••••  ••'}</span>
+        <p>${ph === 'prep' ? 'Écrivez-le sur un papier glissé dans le colis. L’acheteur le tape à l’arrivée. Ne le donnez à personne, ni par message.' : 'Il est dans la marchandise. Ne le donnez à personne. L’acheteur a 5 essais pour le taper.'}</p>
+        ${ph === 'prep' ? '' : `<button type="button" data-motvu>${SVGR.oeil}${motVu[c.id] ? 'Cacher' : 'Montrer le mot'}</button>`}</section>`;
+    }
+    if (ph === 'prep' || ph === 'litige' && !(D.litige_auto)) return '';
+    const n = D.mot_essais_restants;
+    return `<section class="cv-mot" aria-label="Le mot secret du vendeur"><div class="cv-mot-t">${SVGR.cadenas}<span>Le mot secret du vendeur</span></div>
+      <span class="cv-mot-v">${n === 0 ? 'Bloqué' : (n != null ? n : 5) + ' essai' + ((n != null ? n : 5) > 1 ? 's' : '')}</span>
+      <p>${n === 0 ? 'Trop d’essais faux : l’équipe est prévenue.' : 'Il est écrit sur un papier glissé dans la marchandise. Tapez-le seulement quand vous avez vérifié la marchandise.'}</p></section>`;
+  }
+
+  // le suivi vertical : chaque étape réelle avec son heure (journal du serveur)
+  function suiviEtapes(c, Jr) {
+    const L = [['creee', 'Commande passée']].concat(ordre(c, Jr).map(([k, l]) => [k, ({ confirmee: 'Commande confirmée', preparation: 'Préparation', chargement: 'Chargement', transport: 'En route', transbordement: 'Transbordement', arrivee: 'Arrivée', reception: MOT(c) ? 'Réception avec le mot secret' : 'Réception confirmée', terminee: 'Terminée' })[k] || l]));
+    const ev = k => Jr.slice().reverse().find(e => e.evenement === k);
+    const ph = phase(c), mort = c.etat === 'annulee';
+    let i0 = c.etat === 'a_confirmer' ? 0 : L.findIndex(([k]) => k === c.etape);
+    if (c.etat === 'terminee' && (c.liberation || c.libere_le || ph === 'fini')) i0 = L.length;   // tout est fait
+    else if (c.etat === 'terminee') i0 = Math.max(i0, L.findIndex(([k]) => k === 'terminee'));
+    const pb = c.etat === 'litige';
+    return `<section aria-label="Suivi"><h3 class="cv-h2">Suivi</h3><ol class="cv-suivi">${L.map(([k, l], i) => {
+      const e = k === 'creee' ? (ev('creee') || { at: c.created_at }) : ev(k), fait = !mort && i < i0, ici = !mort && i === i0 && c.etat !== 'terminee';
+      const lab = pb && i === i0 ? (k === 'arrivee' ? 'Arrivée · problème signalé' : l + ' · problème signalé') : k === 'terminee' && (c.liberation || c.libere_le) ? 'Terminée' : l;
+      const h = (fait || ici) && e && e.at ? jh(e.at) : '';
+      return `<li class="cv-et${fait ? ' fait' : ''}${ici ? ' ici' : ''}${pb && i === i0 ? ' pb' : ''}"><span class="g" aria-hidden="true"><span class="d">${fait ? SVGR.coche() : ''}</span><span class="ln"></span></span>
+        <span class="x"><b>${esc(lab)}<span class="cm-sr">${fait ? ' : fait' : ici ? ' : en cours' : ' : à venir'}</span></b>${h ? `<small>${h}</small>` : ''}</span></li>`; }).join('')}</ol></section>`;
+  }
+  // le fil du suivi : retards, nouvelles, délai, et les avis du journal qui ne sont pas des étapes (rappels, annulation, litige…)
+  function fil(c, Jr) {
+    const ET = new Set(ETAPES.map(([k]) => k).concat(['creee']));
+    const qui = r => r === c.role ? 'Vous' : r === 'vendeur' ? (c.partenaire_nom || 'Le vendeur') : r === 'acheteur' ? (c.partenaire_nom || 'L’acheteur') : r === 'admin' ? 'L’équipe' : '';
+    const L = Jr.filter(e => !ET.has(e.evenement) || (e.evenement === 'terminee' && e.role !== 'systeme' && e.note))
+      .map(e => ({ at: e.at, t: [e.par_moi ? 'Vous' : '', evLib(e)].filter(Boolean).join(' : ') + (e.note ? ' · « ' + e.note + ' »' : '') }));
     const S = (suivi[c.id] || []).slice().sort((a, b) => new Date(a.at) - new Date(b.at)), G = [];
     S.forEach(x => { const p = G[G.length - 1]; if (x.genre === 'nouvelles' && p && p.genre === 'nouvelles') { p.n++; p.at = x.at; } else G.push(Object.assign({ n: 1 }, x)); });
     G.forEach(x => {
-      const pied = t => `<small>${quand(x.at)}${t ? ' · ' + esc(t) : ''}</small>${x.texte ? `<small>« ${esc(x.texte)} »</small>` : ''}`;
-      const h = x.genre === 'retard' ? `<li><b>Retard signalé</b> · ${esc(qui(x.role))}${pied((CAUSE_R[x.motif] || '') + (x.date_estimee ? ' · arrivée estimée ' + quand(x.date_estimee) : ''))}</li>`
-        : x.genre === 'nouvelles' ? `<li><b>Nouvelles demandées</b>${x.n > 1 ? ` <span class="nbul">${x.n}</span>` : ''} · ${esc(qui(x.role))}${pied('')}</li>`
-        : x.genre === 'delai' ? `<li><b>Délai demandé : ${esc(x.heures)} h</b> · ${esc(qui(x.role))}${pied(CAUSE_D[x.motif] || '')}</li>` : '';
-      if (h) L.push({ at: x.at, h });
+      const w = qui(x.role);
+      const t = x.genre === 'retard' ? `${w ? w + ' a signalé un retard' : 'Retard signalé'} : ${(CAUSE_R[x.motif] || 'autre').toLowerCase()}${x.date_estimee ? '. Nouvelle arrivée vers ' + quand(x.date_estimee) : ''}${x.texte ? ' · « ' + x.texte + ' »' : ''}`
+        : x.genre === 'nouvelles' ? `${w === 'Vous' ? 'Vous avez demandé des nouvelles' : (w || 'L’acheteur') + ' a demandé des nouvelles'}${x.n > 1 ? ' (' + x.n + ' fois)' : ''}`
+        : x.genre === 'delai' ? `Délai demandé : ${x.heures} h · ${(CAUSE_D[x.motif] || '').toLowerCase()}${x.texte ? ' · « ' + x.texte + ' »' : ''}` : '';
+      if (t) L.push({ at: x.at, t });
     });
-    return L.length ? `<h3 class="cm-h3">Historique</h3><ul class="cm-j">${L.sort((a, b) => new Date(b.at) - new Date(a.at)).map(x => x.h).join('')}</ul>` : '';
+    if (!L.length) return '';
+    return `<section class="cv-fil" aria-label="Fil du suivi"><h3 class="cv-h2">Fil du suivi</h3>${L.sort((a, b) => new Date(a.at) - new Date(b.at)).map(x => `<div><small>${new Date(x.at).toDateString() === new Date().toDateString() ? heure(x.at) : jh(x.at)}</small><span>${esc(x.t)}</span></div>`).join('')}</section>`;
   }
-  // en route : l'arrivée estimée et le dernier retard signalé, en une ligne
-  function enRouteLigne(c) {
-    const D = dl[c.id]; if (c.etat !== 'en_cours' || !['chargement', 'transport', 'transbordement'].includes(c.etape)) return '';
-    const R = (suivi[c.id] || []).filter(x => x.genre === 'retard').sort((a, b) => new Date(b.at) - new Date(a.at))[0];
-    const t = [R ? 'Retard signalé : ' + (CAUSE_R[R.motif] || 'autre').toLowerCase() : '', D && D.arrivee_estimee ? 'Arrivée estimée ' + quand(D.arrivee_estimee) : ''].filter(Boolean).join(' · ');
-    return t ? `<small>${esc(t)}</small>` : '';
+
+  // les gestes de chaque phase, branchés sur les vraies fonctions (data-g → geste)
+  function boutons(c) {
+    const V = c.role === 'vendeur', A = !V, D = dl[c.id], S = seq[c.id], K = c.validation === 'code', ph = phase(c), B = [];
+    const b = (g, t, cls) => B.push(`<button type="button" class="${cls}" data-g="${g}">${t}</button>`);
+    const pbAvant = D && (D.mettre_en_avant_probleme || D.date_depassee || D.nouvelles_sans_reponse);
+    const signaler = () => b(A ? 'probleme' : 'litige', 'Signaler un problème', pbAvant ? 'cv-b r' : 'cv-lien');
+    if (ph === 'attente') {
+      if (!c.cree_par_moi) { if (V) B.push(`<p class="cv-p">En confirmant, vous avez ${(D && D.chargement_heures) || 72} h pour charger. Rappel 12 h avant.</p>`); b('oui', 'Confirmer la commande', 'cv-b'); b('non', 'Refuser', 'cv-lien'); }
+      else b('annuler', 'Retirer la commande', 'cv-lien');
+      return B.join('');
+    }
+    if (c.etat === 'en_cours' && c.annulation === 'autre') { b('annul-oui', 'Accepter l’annulation', 'cv-b'); b('annul-non', 'Refuser l’annulation', 'cv-b o'); return B.join(''); }
+    if (ph === 'prep') {
+      if (V) { if (c.etape === 'confirmee') b('preparation', 'Marquer « en préparation »', 'cv-lien v'); if (S && S.depart && (S.depart.mot_ok || !S.mot) && !K) b('chargement', 'Déclarer le chargement', 'cv-b'); }
+      if (A && D && D.peut_annuler_retard) b('retard', D.vendeur_banni ? 'Annuler la commande' : 'Annuler : le vendeur n’a pas chargé à temps', 'cv-b o');
+      if (D && D.peut_demander_nouvelles && A) b('nouvelles', 'Demander des nouvelles', 'cv-b o');
+      if (V && c.annulation !== 'moi' && !(D && D.peut_redemander === false)) b('annuler', 'Demander l’annulation', 'cv-lien');
+      if (A) signaler();
+      return B.join('');
+    }
+    if (ph === 'charge' || ph === 'route') {
+      if (ph === 'charge' && !K && c.mode_transport !== 'reseau' && (V || c.role === c.mode_transport)) b('transport', 'Le camion est parti', 'cv-b');
+      if (A && (ph === 'route' || !K)) b('arrivee', 'La marchandise est arrivée', ph === 'route' ? 'cv-b' : 'cv-b o');
+      if (V && ph === 'route' && (D ? D.peut_declarer_arrivee : true)) b('arrivee', 'Le camion est arrivé', 'cv-b');
+      if (V && c.mode_transport !== 'reseau' && ['a_confirmer', 'en_cours'].includes(c.etat)) B.push(`<button type="button" class="cv-b o" data-lienvu aria-expanded="${!!lienOuvert[c.id]}">Lien de suivi pour le chauffeur</button>`);
+      if (D && D.peut_signaler_retard) b('retard-sig', 'Signaler un retard', 'cv-b o');
+      if (A && D && D.peut_demander_nouvelles) b('nouvelles', 'Demander des nouvelles', 'cv-b o');
+      if (ph === 'route') b('transbordement', 'Signaler un transbordement', 'cv-lien');
+      if (A && !K) b('reception', 'Déjà vérifiée ? Confirmer la réception', 'cv-lien');
+      signaler();
+      return B.join('');
+    }
+    if (ph === 'arrive') {
+      if (A) {
+        const fin = D && D.reception_echeance;
+        B.push(`<div class="cv-jaune" role="status">${fin ? `<b>${SVGR.horloge()}${esc(Date.parse(fin) > Date.now() ? reste(fin) + ' pour vérifier' : 'Délai de vérification dépassé')}</b>` : ''}<span>Comptez et regardez la marchandise. ${MOT(c) ? 'Tapez le mot du vendeur seulement si tout est bon.' : 'Confirmez seulement si tout est bon.'}</span></div>`);
+        if (D && D.peut_demander_delai && c.annulation !== 'autre') b('delai', 'Demander plus de temps', 'cv-lien v g');
+        else if (D && D.delai_heures) B.push(`<p class="cv-p">Délai accordé : ${esc(D.delai_heures)} h de plus. C’est possible une seule fois.</p>`);
+        if (!K) b('reception', MOT(c) ? 'Tout est bon : taper le mot secret' : 'Tout est bon : confirmer la réception', 'cv-b');
+        b('probleme', 'Signaler un problème', 'cv-b r');
+      } else {
+        if (D && D.reception_echeance) B.push(`<div class="cv-carte" role="status"><b>${MOT(c) ? 'L’acheteur vérifie, puis tape votre mot' : 'L’acheteur vérifie la marchandise'}</b><span>Il a jusqu’à ${esc(echeance(D.reception_echeance))}${D.delai_heures ? ' (délai de ' + esc(D.delai_heures) + ' h compris)' : ''} pour répondre. Sinon, un litige s’ouvre.</span></div>`);
+        if (D && D.peut_declarer_arrivee) b('arrivee', 'Marchandise livrée', 'cv-b o');
+        if (D && D.peut_signaler_retard) b('retard-sig', 'Signaler un retard', 'cv-b o');
+        signaler();
+      }
+      return B.join('');
+    }
+    if (ph === 'verif') {
+      if (A) {
+        if (S ? S.peut_liberer : aVerifier(c)) b('liberer', 'Tout est conforme', 'cv-b');
+        if (S ? S.peut_refuser : dansDelai(c)) b('refuser', 'Un problème ? Vous avez 1 h pour le signaler', 'cv-lien v');
+        if (aVerifier(c)) b('probleme', 'Pas de papier ? Signaler un problème', 'cv-lien');
+      } else B.push(`<div class="cv-vertc" role="status">${SVGR.coche(20, 2.4)}<span>L’acheteur a ${S && S.echeance ? 'jusqu’à ' + esc(echeance(S.echeance)) : 'encore 1 h'} pour signaler un problème. Ensuite la commande se clôt toute seule.</span></div>`);
+      return B.join('');
+    }
+    if (ph === 'litige') {
+      const LA = A && !K && D && D.litige_auto;
+      if (LA) b('reception', MOT(c) ? 'Confirmer avec le mot secret' : 'Réception confirmée', 'cv-b');
+      if (A && (LA || (S && S.peut_refuser))) b('refuser', 'Refuser la marchandise', 'cv-b o');
+      if (S && S.peut_repondre) { b('rf-oui', 'Je reconnais le problème', 'cv-b'); b('rf-non', 'Je conteste', 'cv-b o'); }
+      return B.join('');
+    }
+    return B.join('');
   }
+
+  // l'avis : la carte « Terminée » de la maquette (étoiles 44 px, avis écrit 300 caractères), branchée sur avis_commande_*
+  function carteFin(c) {
+    const ph = phase(c); if (!['verif', 'fini'].includes(ph)) return '';
+    const a = avis[c.id], n = avisNote[c.id] || (a && a.note) || 0, lui = esc(c.partenaire_nom || '');
+    let corps = '';
+    if (a && a.peut) corps = `<span class="cv-fin-t" aria-live="polite">${n ? esc(LIBA[n]) : 'Notez ' + lui}</span>
+      <div class="cv-etoiles" role="radiogroup" aria-label="Note de ${lui}">${[1, 2, 3, 4, 5].map(i => `<button type="button" role="radio" aria-checked="${i === n}" aria-label="${i} étoile${i > 1 ? 's' : ''}" data-av="${i}" class="${i <= n ? 'on' : ''}">${SVGR.etoile}</button>`).join('')}</div>
+      ${n || a.note ? `<label class="cm-sr" for="cvAv">Votre avis</label><textarea id="cvAv" maxlength="300" data-av-t placeholder="Un mot sur cette commande (facultatif)">${esc(a.texte || '')}</textarea>
+      <p class="cm-err" data-av-err role="alert"></p><button type="button" class="cv-b o" data-av-ok>${a.note ? 'Corriger mon avis' : 'Publier l’avis'}</button>` : '<p class="cm-err" data-av-err role="alert"></p>'}
+      ${a.note && a.modifiable_jusqua ? `<span class="cv-ok">Avis publié. Modifiable jusqu’à ${esc(echeance(a.modifiable_jusqua))}.</span>` : ''}`;
+    else if (a && a.note) corps = `<span class="cv-fin-t">Votre avis sur ${lui}</span>${etoilesFixes(a.note)}${a.texte ? `<span class="cv-p">« ${esc(a.texte)} »</span>` : ''}`;
+    const recu_ = a && a.recu ? `<span class="cv-p">${lui} vous a donné ${etoilesFixes(a.recu.note)}${a.recu.texte ? ' · « ' + esc(a.recu.texte) + ' »' : ''}</span>` : '';
+    const fid = a && +a.ensemble >= 2 ? `<span class="cv-ok">${+a.ensemble}<sup>e</sup> commande terminée ensemble.</span>` : '';
+    return `<section class="cv-fin" aria-label="Commande ${ph === 'fini' ? 'terminée' : 'reçue'}"><span class="cv-tampon">${ph === 'fini' ? 'Terminée' : 'Reçue'}</span>${corps}${recu_}${fid}</section>`;
+  }
+
+  // la carte du litige : le problème signalé, et la règle (l'acheteur ne paie rien tant que ce n'est pas réglé)
+  function carteLitige(c, Jr) {
+    if (phase(c) !== 'litige') return '';
+    const e = Jr.slice().reverse().find(x => x.evenement === 'litige'), lib = e && e.note ? String(e.note).split(' · ')[0] : 'Problème signalé';
+    return `<section class="cv-pb" aria-label="Le problème"><b>${esc(lib)}</b><span>${c.role === 'acheteur' ? 'Vous ne payez rien tant que ce n’est pas réglé : ni la marchandise, ni le transport. L’équipe regarde vos photos et celles du départ.' : 'L’équipe regarde les photos du départ et celles de l’acheteur.'}</span>
+      <span class="cv-num">Commande n° ${esc(c.numero)} · nous ne demandons jamais d’argent ni de code.</span></section>`;
+  }
+  // la carte « Retard signalé » (bord jaune)
+  function carteRetard(c) {
+    const ph = phase(c), R = dernierRetard(c); if (!R || !['charge', 'route'].includes(ph)) return '';
+    const qui = R.role === c.role ? 'vous' : c.partenaire_nom || (R.role === 'vendeur' ? 'le vendeur' : 'l’acheteur');
+    return `<section class="cv-carte cv-retard" role="status">${SVGR.horloge(22)}<span><b>Retard signalé par ${esc(qui)}</b><span>${esc(CAUSE_R[R.motif] || 'Autre')}${R.texte ? ' · « ' + esc(R.texte) + ' »' : ''}. ${R.date_estimee ? 'Nouvelle arrivée vers ' + esc(quand(R.date_estimee)) + '. ' : ''}Le prix et la quantité ne changent pas.</span></span></section>`;
+  }
+
+  // ——— préparation du chargement (vendeur) : photos, poids, papier du mot secret, sur l'écran même ———
+  const prepa = {};   // commande → { fichiers, poids, papier, defi, fin, err }
+  function blocPrepa(c) {
+    const S = seq[c.id], V = c.role === 'vendeur';
+    if (!V || phase(c) !== 'prep' || c.annulation || (S && S.depart && (S.depart.mot_ok || !S.mot))) return '';
+    const P = prepa[c.id] || (prepa[c.id] = { fichiers: [], poids: '', papier: null, defi: null, fin: 0, err: '' });
+    const besoinMot = !!(S && S.mot), nb = P.fichiers.length, okPh = nb >= 2, okPd = Number(String(P.poids).replace(',', '.')) > 0, okMot = !besoinMot || !!P.papier || !!(S && S.depart && S.depart.mot_ok);
+    const fait = S && S.depart;   // photos déjà enregistrées, il manque seulement le papier
+    const cases = [0, 1, 2, 3].map(i => P.fichiers[i]
+      ? `<button type="button" class="cv-case on" data-prx="${i}" aria-label="Retirer la photo ${i + 1}"><img src="${P.urls && P.urls[i] || ''}" alt=""></button>`
+      : `<label class="cv-case" aria-label="Ajouter une photo">${SVGR.photo}<input type="file" accept="image/*" ${i === nb ? 'multiple' : 'tabindex="-1"'} data-prf></label>`).join('');
+    const papier = !besoinMot ? '' : P.papier || (S.depart && S.depart.mot_ok) ? `<div class="cv-papier ok">${SVGR.coche(20, 2.4)}<span>Papier du mot secret envoyé à l’équipe</span></div>`
+      : P.defi && P.fin > Date.now() ? `<div class="cv-papier"><div class="cm-defi" aria-label="Code ${esc(P.defi)}">${String(P.defi).split('').map(x => `<i>${esc(x)}</i>`).join('')}</div>
+          <small data-reste aria-live="off">Écrivez ce code à côté du mot · ${resteSec(P.fin)} restantes</small>
+          <label class="cv-b o">${SVGR.photo}Photographier le papier<input type="file" accept="image/*" capture="environment" data-prm class="cm-sr"></label></div>`
+      : `<button type="button" class="cv-papier" data-prd>${SVGR.photo}<span><span>${P.defi ? 'Nouveau code (temps écoulé)' : 'Photo du papier avec le code'}</span><small>Écrivez le code sur le papier posé sur le colis · 3 min</small></span></button>`;
+    const chk = [[fait || okPh, 'Photos du colis emballé'], [fait || okPd, 'Poids pesé']].concat(besoinMot ? [[okMot, 'Photo du papier (seule l’équipe la voit)']] : []);
+    const pret = (fait || (okPh && okPd)) && okMot;
+    return `<section class="cv-prepa" aria-label="Préparer le chargement">
+      ${fait ? '' : `<div class="cv-tt"><h3 class="cv-h2">Photos du colis emballé</h3><span class="${okPh ? 'ok' : ''}">${nb} sur 4 · au moins 2</span></div>
+      <div class="cv-grille">${cases}</div>
+      <div class="cv-tt"><h3 class="cv-h2"><label for="cvPoids">Poids pesé</label></h3></div>
+      <div class="cv-champ"><input id="cvPoids" type="text" inputmode="decimal" autocomplete="off" placeholder="Par exemple 4 200" value="${esc(P.poids)}" data-prp><span>kg</span></div>`}
+      ${papier}
+      <ul class="cv-chk">${chk.map(([ok, l]) => `<li class="${ok ? 'ok' : ''}">${ok ? SVGR.coche(16, 2.6) : SVGR.rond}${l}<span class="cm-sr">${ok ? ' : fait' : ' : à faire'}</span></li>`).join('')}</ul>
+      <p class="cm-err" role="alert" data-pre>${esc(P.err || '')}</p>
+      <button type="button" class="cv-b${pret ? '' : ' gris'}" data-prgo aria-disabled="${!pret}">Déclarer le chargement</button></section>`;
+  }
+  const resteSec = fin => { const t = Math.max(0, Math.round((fin - Date.now()) / 1000)); return Math.floor(t / 60) + ' min ' + String(t % 60).padStart(2, '0'); };
+  let prepaChrono = null;
+  function lierPrepa(c, box) {
+    const P = prepa[c.id], z = box.querySelector('.cv-prepa'); if (!P || !z) return;
+    const err = z.querySelector('[data-pre]'), dire = t => { P.err = t; if (err) err.textContent = t; };
+    z.querySelectorAll('[data-prf]').forEach(inp => inp.onchange = async e => {
+      dire('');
+      for (const fi of Array.from(e.target.files || [])) {
+        if (P.fichiers.length >= 4) { dire('4 photos au plus.'); break; }
+        try { const b = await reduirePhoto(fi); P.fichiers.push(b); (P.urls = P.urls || []).push(URL.createObjectURL(b)); } catch (x) { dire(x.message); }
+      }
+      P.chemins = null; peindre();
+    });
+    z.querySelectorAll('[data-prx]').forEach(x => x.onclick = () => { const i = +x.dataset.prx; P.fichiers.splice(i, 1); if (P.urls) { try { URL.revokeObjectURL(P.urls[i]); } catch (_) {} P.urls.splice(i, 1); } P.chemins = null; peindre(); });
+    const pd = z.querySelector('[data-prp]'); if (pd) pd.oninput = () => { P.poids = pd.value; };
+    if (pd) pd.onblur = () => peindre();
+    const dfi = z.querySelector('[data-prd]');
+    if (dfi) dfi.onclick = async () => {
+      dfi.disabled = true; dire('');
+      try { P.defi = await N().rpc('commande_depart_defi', { p_id: c.id }); P.fin = Date.now() + 180000; } catch (x) { dire(erreurTxt(x)); }
+      peindre();
+    };
+    clearInterval(prepaChrono);
+    if (P.defi && P.fin > Date.now()) prepaChrono = setInterval(() => {
+      const r = bg && bg.querySelector('.cv-prepa [data-reste]'); if (!r) { clearInterval(prepaChrono); return; }
+      if (P.fin <= Date.now()) { clearInterval(prepaChrono); peindre(); return; }
+      r.textContent = 'Écrivez ce code à côté du mot · ' + resteSec(P.fin) + ' restantes';
+    }, 1000);
+    const pm = z.querySelector('[data-prm]');
+    if (pm) pm.onchange = async e => {
+      const fi = e.target.files && e.target.files[0]; e.target.value = ''; if (!fi) return;
+      dire('Envoi de la photo du papier…');
+      try { const ph = await reduirePhoto(fi), ch = me() + '/motpapier-' + c.id.slice(0, 8) + '-' + Date.now() + '.jpg';
+        await N().deposerPrive('preuves', ch, ph); await N().rpc('commande_depart_mot', { p_id: c.id, p_photo: ch });
+        P.papier = ch; dire(''); peindre();
+      } catch (x) { dire(erreurTxt(x)); }
+    };
+    const go = z.querySelector('[data-prgo]');
+    go.onclick = async () => {
+      const S = seq[c.id], fait = S && S.depart, poids = Number(String(P.poids).replace(',', '.'));
+      if (!fait && P.fichiers.length < 2) return dire('Ajoutez au moins 2 photos du colis emballé.');
+      if (!fait && !(poids > 0)) { dire('Indiquez le poids pesé, en kilos.'); const i = z.querySelector('[data-prp]'); if (i) i.focus(); return; }
+      if (S && S.mot && !P.papier && !(fait && fait.mot_ok)) return dire('Photographiez le papier du mot secret, avec le code écrit à côté.');
+      go.disabled = true; dire(fait ? '' : 'Envoi des photos…');
+      try {
+        if (!fait) {
+          if (!P.chemins) { const u = me(), ch = []; for (let i = 0; i < P.fichiers.length; i++) { const k = u + '/depart-' + c.id.slice(0, 8) + '-' + Date.now() + '-' + i + '.jpg'; await N().deposerPrive('preuves', k, P.fichiers[i]); ch.push(k); } P.chemins = ch; }
+          await N().rpc('commande_depart_preuves', { p_id: c.id, p_photos: P.chemins, p_poids_kg: poids });
+        }
+        // le chargement suit les preuves (validation par mot secret) ; avec les codes du réseau, c'est le chauffeur qui le valide
+        if (c.validation !== 'code') await N().rpc('commande_avancer', { p_id: c.id, p_etape: 'chargement', p_lieu: null, p_lat: null, p_lon: null, p_note: null });
+        (P.urls || []).forEach(u => { try { URL.revokeObjectURL(u); } catch (_) {} }); delete prepa[c.id];
+        await lireListe(); await lireJournal(c.id);
+        toast(c.validation !== 'code' ? 'Chargement déclaré' : 'Colis enregistré', { type: 'ok', sous: c.validation !== 'code' ? 'L’acheteur est prévenu.' : 'Donnez le code de prise en charge au chauffeur.' });
+        peindre('chargement');
+      } catch (x) { go.disabled = false; dire(erreurTxt(x)); }
+    };
+  }
+
+  // ——— « Trouver un arrangement » (schémas 102a/102d) : seulement si le serveur répond ; aucun argent ne bouge ———
+  const part = {}, partF = {};
+  const PART_MODES = [['transport', 'Le transport seulement'], ['partie', 'Garder une partie'], ['montant', 'Un montant']];
+  function partTexte(c, x) {
+    return x.mode === 'transport' ? 'Payer le transport seulement' : x.mode === 'partie' ? `Garder ${qte(x.quantite_gardee, c.unite)} au prix à l’unité` : 'Participer avec un montant';
+  }
+  function blocPart(c) {
+    const P = part[c.id]; if (!P || phase(c) !== 'litige') return '';
+    const L = P.propositions || []; if (!P.peut_proposer && !L.length) return '';
+    const moi = P.role, nomR = r => r === moi ? 'Vous' : r === 'equipe' ? 'L’équipe' : esc(c.partenaire_nom || (r === 'vendeur' ? 'Le vendeur' : 'L’acheteur'));
+    const f = partF[c.id] || (partF[c.id] = { mode: null, q: 1, m: '' });
+    const modes = PART_MODES.filter(([k]) => k !== 'transport' || P.transport_possible);
+    const pu = Number(P.prix_unitaire || c.prix_unitaire || 0), qmax = Number(P.quantite || c.quantite || 0);
+    const val = f.mode === 'transport' ? Number(P.prix_transport || 0) : f.mode === 'partie' ? f.q * pu : Number(f.m || 0);
+    const conclu = L.find(x => x.statut === 'acceptee');
+    const form = P.peut_proposer && !conclu ? `<p class="cv-p">${moi === 'acheteur' && !P.contre ? 'Facultatif. Si vous gardez une partie, vous pouvez proposer de participer. Le vendeur et l’équipe en discutent avec vous.' : 'Acceptez la proposition, ou faites la vôtre.'}</p>
+      ${modes.map(([k, l]) => `<button type="button" class="cv-opt${f.mode === k ? ' on' : ''}" role="radio" aria-checked="${f.mode === k}" data-pm="${k}"><span class="rb" aria-hidden="true"><span></span></span><span class="l">${l}</span><span class="s">${k === 'transport' ? F(P.prix_transport) : k === 'partie' ? 'au prix à l’unité' : 'à proposer'}</span></button>`).join('')}
+      ${f.mode === 'partie' ? `<div class="cv-pas"><button type="button" data-pq="-1" aria-label="Moins">${SVGR.moins}</button><span aria-live="polite">${qte(f.q, c.unite)}</span><button type="button" data-pq="1" aria-label="Plus">${SVGR.plus}</button></div>` : ''}
+      ${f.mode === 'montant' ? `<div class="cv-champ"><label class="cm-sr" for="cvPm">Montant proposé, en francs</label><input id="cvPm" type="text" inputmode="numeric" autocomplete="off" placeholder="Par exemple 40 000" value="${esc(f.m)}" data-pmv><span>F</span></div>` : ''}
+      ${f.mode ? `<div class="cv-total"><span>Vous proposez de payer</span><b data-pval>${F(val)}</b></div><p class="cm-err" role="alert" data-perr></p><button type="button" class="cv-b" data-psend>Envoyer ma proposition</button>` : ''}` : '';
+    const ST = { ouverte: '', acceptee: 'Acceptée', refusee: 'Refusée', retiree: 'Retirée', caduque: 'Caduque' };
+    const fil_ = L.map(x => {
+      const ouv = P.ouverte && P.ouverte.id === x.id, cls = x.role === moi ? 'moi' : x.role === 'equipe' ? 'mdg' : 'lui';
+      return `<div class="cv-bul ${cls}"><b>${nomR(x.role)}</b><span>${esc(partTexte(c, x))}${x.message ? ' · « ' + esc(x.message) + ' »' : ''}</span><strong>${F(x.montant)}</strong>
+        ${ST[x.statut] ? `<small>${ST[x.statut]}</small>` : ouv ? `<small>Réponse avant ${esc(quand(x.echeance))}</small>` : ''}
+        ${ouv && P.peut_repondre ? `<button type="button" class="cv-b" data-prep="1">J’accepte</button><button type="button" class="cv-lien" data-prep="0">Refuser</button>` : ''}
+        ${ouv && P.peut_retirer ? `<button type="button" class="cv-lien" data-pret>Retirer ma proposition</button>` : ''}</div>`; }).join('');
+    return `<section class="cv-part" aria-label="Trouver un arrangement"><div class="cv-tt"><h3 class="cv-h2">Trouver un arrangement</h3><span class="cv-avs" aria-hidden="true"><i class="a">${esc(ini(c.partenaire_nom))}</i><i class="m">MG</i></span></div>
+      ${form}${fil_ ? `<div class="cv-fil3">${fil_}</div>` : ''}
+      ${conclu ? `<div class="cv-vertc">${SVGR.coche(20, 2.4)}<span>Accord trouvé : ${F(conclu.montant)}. Aucun argent ne bouge : le montant est seulement noté.</span></div>` : '<p class="cv-p petit">Aucun argent ne bouge : le montant est seulement noté. Sans accord, l’équipe tranche.</p>'}</section>`;
+  }
+  function lierPart(c, box) {
+    const P = part[c.id], f = partF[c.id], z = box.querySelector('.cv-part'); if (!P || !z) return;
+    const err = z.querySelector('[data-perr]');
+    z.querySelectorAll('[data-pm]').forEach(b => b.onclick = () => { f.mode = b.dataset.pm; peindre(); });
+    const qmax = Number(P.quantite || c.quantite || 0), pas = ENTIERES.includes(String(c.unite || '').toLowerCase()) || qmax >= 2 ? 1 : 0.5;
+    z.querySelectorAll('[data-pq]').forEach(b => b.onclick = () => { f.q = Math.min(Math.max(pas, f.q + Number(b.dataset.pq) * pas), qmax || f.q + 1); peindre(); });
+    const mv = z.querySelector('[data-pmv]');
+    if (mv) mv.oninput = () => { f.m = mv.value.replace(/[^\d]/g, ''); const v = z.querySelector('[data-pval]'); if (v) v.textContent = F(Number(f.m || 0)); };
+    const go = async (fn, a, ok) => { try { await N().rpc(fn, a); part[c.id] = await N().rpc('commande_participation_lire', { p_id: c.id }).catch(() => part[c.id]); if (ok) toast(ok, { type: 'ok' }); await lireListe(); await lireJournal(c.id); peindre(); } catch (x) { if (err) err.textContent = erreurTxt(x); else toast(erreurTxt(x), { type: 'erreur' }); } };
+    const s = z.querySelector('[data-psend]');
+    if (s) s.onclick = () => {
+      if (f.mode === 'montant' && !(Number(f.m) > 0)) { if (err) err.textContent = 'Indiquez un montant, en francs.'; return; }
+      s.disabled = true;
+      go('commande_participation_proposer', { p_id: c.id, p_mode: f.mode, p_quantite_gardee: f.mode === 'partie' ? f.q : null, p_montant: f.mode === 'montant' ? Number(f.m) : null, p_motif: null }, 'Proposition envoyée').then(() => { partF[c.id] = { mode: null, q: 1, m: '' }; });
+    };
+    z.querySelectorAll('[data-prep]').forEach(b => b.onclick = async () => {
+      const oui = b.dataset.prep === '1';
+      if (oui && window.MDGDemande && !await MDGDemande.oui('Accepter cette proposition ? La commande se termine avec ce montant. Aucun argent ne bouge.', { ok: 'J’accepte' })) return;
+      b.disabled = true; go('commande_participation_repondre', { p_id: c.id, p_accepte: oui, p_note: null }, oui ? 'Proposition acceptée' : 'Proposition refusée');
+    });
+    const r = z.querySelector('[data-pret]'); if (r) r.onclick = () => { r.disabled = true; go('commande_participation_retirer', { p_id: c.id }, 'Proposition retirée'); };
+  }
+
+  // ——— « Signaler un problème » (acheteur) : 5 choix, photo obligatoire pour cassé et mauvaise qualité (schéma 103b) ———
+  const PROBLEMES = [['casse', 'Cassé ou abîmé', true], ['qualite', 'Mauvaise qualité', true], ['manquant', 'Marchandise manquante', false], ['quantite', 'Pas la bonne quantité', false], ['autre', 'Autre problème', false]];
+  function probleme(c) {
+    const box = bg.querySelector('.cm'); box.scrollTop = 0; dernierEcran = 'geste';
+    const fichiers = [];
+    box.innerHTML = `${haut(c)}
+      <h2 class="cv-h1">Signaler un <em>problème</em></h2><p class="cv-sous">L’équipe du Marché de Gros examine la commande.</p>
+      <form class="cm-f cv-form" novalidate>
+        <fieldset class="cm-motif"><legend class="cm-sr">Le problème</legend>${PROBLEMES.map(([k, l, ph]) => `<label class="cv-opt"><input type="radio" name="cvPb" value="${k}" class="cm-sr"><span class="rb" aria-hidden="true"><span></span></span><span class="l">${l}</span><span class="s">${ph ? 'photo obligatoire' : ''}</span></label>`).join('')}</fieldset>
+        <div class="cm-ph" data-apercu></div>
+        <label class="cv-b o cv-pick">${SVGR.photo}<span data-phl>Ajouter des photos</span><input type="file" accept="image/*" multiple data-fic class="cm-sr"></label>
+        <label class="t" for="cvPbT">Un mot <small style="font-weight:400">(obligatoire pour « Autre »)</small></label>
+        <textarea id="cvPbT" maxlength="240" placeholder="Ex. : 4 régimes pourris, sacs mouillés…"></textarea>
+        <p class="cm-err" role="alert"></p>
+        <button type="submit" class="cv-b">Envoyer à l’équipe</button>
+        <button type="button" class="cv-lien" data-ann>Retour</button>
+      </form>`;
+    lierHaut(c, box, () => peindre());
+    box.querySelector('[data-ann]').onclick = () => peindre();
+    const f = box.querySelector('form'), err = f.querySelector('.cm-err'), ap = f.querySelector('[data-apercu]');
+    f.querySelectorAll('[name=cvPb]').forEach(r => r.onchange = () => f.querySelectorAll('.cv-opt').forEach(l => l.classList.toggle('on', l.querySelector('input').checked)));
+    const apercu = () => { ap.innerHTML = fichiers.map((b, i) => `<span><img src="${URL.createObjectURL(b)}" alt="Photo ${i + 1}"></span>`).join(''); f.querySelector('[data-phl]').textContent = fichiers.length ? fichiers.length + ' photo' + (fichiers.length > 1 ? 's' : '') + ' · en ajouter' : 'Ajouter des photos'; };
+    f.querySelector('[data-fic]').onchange = async e => {
+      err.textContent = ''; f._chemins = null;
+      for (const fi of Array.from(e.target.files || [])) { if (fichiers.length >= 4) { err.textContent = '4 photos au plus.'; break; } try { fichiers.push(await reduirePhoto(fi)); } catch (x) { err.textContent = x.message; } }
+      e.target.value = ''; apercu();
+    };
+    f.onsubmit = async e => {
+      e.preventDefault();
+      const r = f.querySelector('[name=cvPb]:checked'), t = f.querySelector('#cvPbT').value.trim();
+      if (!r) { err.textContent = 'Choisissez le problème.'; f.querySelector('[name=cvPb]').focus(); return; }
+      const [k, lib, photoOblig] = PROBLEMES.find(x => x[0] === r.value);
+      if (photoOblig && !fichiers.length) { err.textContent = 'Ajoutez au moins une photo de la marchandise.'; return; }
+      if (k === 'autre' && t.length < 3) { err.textContent = 'Dites le problème en quelques mots.'; f.querySelector('#cvPbT').focus(); return; }
+      if (t && N().texteRefus) { const x = N().texteRefus(t); if (x) { err.textContent = x; return; } }
+      const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = fichiers.length ? 'Envoi des photos…' : '';
+      try {
+        if (fichiers.length && !f._chemins) { const u = me(), ch = []; for (let i = 0; i < fichiers.length; i++) { const p = u + '/probleme-' + c.id.slice(0, 8) + '-' + Date.now() + '-' + i + '.jpg'; await N().deposerPrive('preuves', p, fichiers[i]); ch.push(p); } f._chemins = ch; }
+        err.textContent = '';
+        await N().rpc('commande_probleme', { p_id: c.id, p_type: k, p_texte: t || null, p_photos: f._chemins || null })
+          .catch(x => ancien(x) ? N().rpc('commande_litige', { p_id: c.id, p_motif: lib + (t ? ' · ' + t : '') }) : Promise.reject(x));
+        await lireListe(); await lireJournal(c.id);
+        toast('Problème envoyé à l’équipe', { type: 'ok' });
+        peindre();
+      } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }
+    };
+  }
+
+  // le haut de l'écran : « < Activité » (ou « < Mes commandes » depuis la liste)
+  let retourTxt = 'Activité';
+  // le haut d'un geste (confirmer, refuser…) : « < Commande » revient à l'écran de la commande
+  const hautGeste = () => `<div class="cv-haut"><button type="button" class="cv-ret" data-x>${SVGR.retour}<span>Commande</span></button></div>`;
+  const haut = () => `<div class="cv-haut"><button type="button" class="cv-ret" data-retour>${SVGR.retour}<span>${esc(retourTxt)}</span></button></div>`;
+  function lierHaut(c, box, fn) { const r = box.querySelector('[data-retour]'); if (r) r.onclick = fn; }
+  function retour() { oublierCarte(); if (retourTxt === 'Mes commandes') { sel = null; vue = 'liste'; peindre(); } else fermer(); }
+
+  const lienOuvert = {};
+  function peindreDetail(change) {
+    const c = trouve(sel), box = bg.querySelector('.cm');
+    // commande pas encore en mémoire (notification touchée) : on attend la réponse du serveur avant de revenir à la liste
+    if (!c) { if (!lu && navigator.onLine !== false) { box.innerHTML = haut() + (window.MDGSac ? MDGSac.charge('La commande arrive…') : ''); lierHaut(null, box, retour); return; } vue = 'liste'; return peindreListe(); }
+    const Jr = journal[c.id] || [], [titre, sous] = entete(c), ph = phase(c), V = c.role === 'vendeur';
+    const carteVive = enRoute(c) && window.MDGSuivi && pos[c.id] && pos[c.id].derniere;
+    const S = seq[c.id];
+    // où vont les gestes : en haut pour le vendeur (après le reçu), en bas pour l'acheteur en route (après le suivi), comme la maquette
+    const dejaHaut = ph === 'verif' || ph === 'fini' || (ph === 'arrive' && !V);
+    const enBas = !dejaHaut && !V && ['prep', 'charge', 'route'].includes(ph), enHaut = !dejaHaut && !enBas;
+    box.innerHTML = `<div class="cv">${haut()}
+      <div class="cv-tete"><h2 class="cv-h1">${titre}</h2>${sous ? `<p class="cv-sous">${esc(sous)}</p>` : ''}</div>
+      ${carteVive ? `<div class="cv-carteVive"><div data-carte></div><p class="cm-sr" aria-live="polite">${esc(MDGSuivi.texte(pos[c.id]).t)}</p></div>` : ''}
+      ${carteRetard(c)}${carteLitige(c, Jr)}${carteFin(c)}
+      ${ph === 'arrive' && !V ? `<div class="cv-acts">${boutons(c)}</div>` : ''}
+      ${ph === 'verif' || ph === 'fini' ? `<div class="cv-acts">${boutons(c)}${c.role === 'acheteur' && window.MDGRacheter && c.etat === 'terminee' ? '<button type="button" class="cv-b" data-racheter>Racheter le même</button>' : ''}</div>` : ''}
+      ${blocPart(c)}
+      ${recu(c)}
+      ${panneauMot(c)}
+      ${blocPrepa(c)}
+      ${S && S.refus ? blocRefus(c) : ''}${blocDisc(c)}${S && S.actif ? blocSequestre(c) : ''}
+      ${blocCode(c)}${blocTransport(c)}
+      ${enHaut ? `<div class="cv-acts">${boutons(c)}</div>` : ''}
+      ${(V && lienOuvert[c.id]) || (!V && lien[c.id] && (lien[c.id].vu_le || lien[c.id].ouvert_le)) ? blocLien(c) : ''}
+      ${c.etat !== 'a_confirmer' ? suiviEtapes(c, Jr) : ''}
+      ${fil(c, Jr)}
+      ${enBas ? `<div class="cv-acts">${boutons(c)}</div>` : ''}
+      <p class="cv-num">Commande n° ${esc(c.numero || '—')} · ${V ? 'vente à' : 'achat chez'} ${esc(c.partenaire_nom || '')}</p>
+      ${c.partenaire_id && window.MDGMessages ? `<button type="button" class="cv-lien v" data-ecrire>Écrire à ${esc(c.partenaire_nom || 'l’autre partie')}</button>` : ''}
+    </div>`;
+    lierHaut(c, box, retour);
+    box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => geste(c, b.dataset.g));
+    const rb = box.querySelector('[data-racheter]'); if (rb) rb.onclick = () => { fermer(); MDGRacheter.ouvrir(c.id); };
+    const ec = box.querySelector('[data-ecrire]'); if (ec) ec.onclick = () => { fermer(); MDGMessages.ecrire(c.partenaire_id, { nom: c.partenaire_nom }); };
+    const dp = box.querySelector('[data-dep]'); if (dp) dp.onclick = () => { depOuvert[c.id] = !depOuvert[c.id]; peindre(); };
+    const mv = box.querySelector('[data-motvu]'); if (mv) mv.onclick = () => { motVu[c.id] = !motVu[c.id]; peindre(); };
+    const lv = box.querySelector('[data-lienvu]'); if (lv) lv.onclick = () => { lienOuvert[c.id] = !lienOuvert[c.id]; peindre(); };
+    lierTransport(c, box); lierTrois(c, box); lierLien(c, box); lierCode(c, box); lierAvis(c, box); placerCarte(c, box); photos(box); lierDisc(c, box); lierPrepa(c, box); lierPart(c, box);
+    if (change === 'arrivee') { if (navigator.vibrate) try { navigator.vibrate([40, 60, 40]); } catch (_) {} toast('Marchandise arrivée', { type: 'ok', sous: c.role === 'acheteur' ? 'Vérifiez-la avant de confirmer.' : esc(c.produit || '') }); }
+  }
+  // schéma 99a : causes des retards et des délais
+  const CAUSE_R = { panne: 'Panne', route: 'Route difficile', pluie: 'Pluie', controle: 'Contrôle routier', autre: 'Autre' };
+  const CAUSE_D = { pas_sur_place: 'Pas sur place', dechargement: 'Déchargement en cours', controle: 'Contrôle de la marchandise', autre: 'Autre' };
   // qui paie quoi : où en est l'argent, et qui reçoit quoi à la clôture (schéma 57, transport « à part » : schéma 95)
   const OPE = { wave: 'Wave', orange: 'Orange Money', mtn: 'MTN MoMo', moov: 'Moov Money' };
   function blocSequestre(c) {
@@ -684,96 +1022,6 @@
       <div class="cm-ph">${(R.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du refus"></span>`).join('')}</div>
       <ul>${mot ? `<li>${mot}</li>` : ''}${R.chauffeur || c.etat === 'litige' ? `<li>${ch}</li>` : ''}${R.vendeur || c.etat === 'litige' ? `<li>${ve}</li>` : ''}</ul>
       ${c.etat === 'litige' ? `<p style="color:#5E5546;font-size:12.5px">${regle}</p>` : ''}</section>`;
-  }
-  // le colis au départ (schéma 90) : photos et poids du vendeur, vus par l'acheteur, le transporteur et l'équipe
-  function blocDepart(c) {
-    const S = seq[c.id], D = S && S.depart;
-    if (!D) return c.role === 'vendeur' && c.etat === 'en_cours' && ['confirmee', 'preparation'].includes(c.etape)
-      ? `<section class="cm-dp"><h3>${TI('photo')}Le colis au départ</h3><p>Avant le chargement : 2 à 4 photos du colis emballé et son poids. Sans elles, le chargement ne peut pas être confirmé.</p></section>` : '';
-    return `<section class="cm-dp" aria-label="Le colis au départ"><h3>${TI('photo')}Le colis au départ</h3>
-      <div class="cm-ph">${(D.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du colis au départ"></span>`).join('')}</div>
-      <p><b>${esc(String(D.poids_kg).replace('.', ','))} kg</b> pesés · photographié ${quand(D.le)}</p>
-      ${D.mot_photo ? `<p style="margin-top:10px"><b>Papier du mot secret</b> (équipe seulement) · code ${esc(D.defi || '')} · mot ${esc(S.mot || '')}</p><div class="cm-ph"><span data-ph="${esc(D.mot_photo)}" role="img" aria-label="Photo du papier du mot secret"></span></div>`
-        : D.mot_ok && c.role === 'vendeur' ? '<p>✓ Papier du mot secret photographié (vu seulement par l’équipe)</p>' : ''}</section>`;
-  }
-  // le vendeur photographie le colis emballé et indique le poids, avant le chargement
-  function depart(c) {
-    const box = bg.querySelector('.cm'); box.scrollTop = 0; dernierEcran = 'geste';
-    const fichiers = [], S0 = seq[c.id]; let papier = null;
-    box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
-      <h2>Le colis au <em>départ</em></h2><p class="cm-sous">${esc(c.produit || '')} · ${esc(c.partenaire_nom)} · n° ${esc(c.numero)}</p>
-      <form class="cm-f" novalidate>
-        <span class="t" style="display:block;margin:4px 0 6px;font-weight:600">Photos du colis emballé (2 à 4)</span>
-        <div class="cm-ph" data-apercu></div>
-        <label class="cm-pick">${TI('photo')}Ajouter des photos<input type="file" accept="image/*" multiple data-fic></label>
-        ${S0 && S0.mot ? `<span class="t" style="display:block;margin:14px 0 6px;font-weight:600">Le papier du mot secret</span>
-        <p class="cm-note" style="font-size:13.5px;margin-top:0">Ayez le papier et un stylo en main. Touchez « Afficher le code » : vous aurez <b>3 minutes</b> pour l’écrire à côté du mot secret et photographier le papier. Seule l’équipe du Marché de Gros verra cette photo.</p>
-        <div data-motz><button type="button" class="cm-pick" data-motgo style="width:100%">Afficher le code</button></div>` : ''}
-        <label class="t" for="cmDp">Poids pesé (kg)</label>
-        <input type="number" id="cmDp" inputmode="decimal" min="0" step="any" placeholder="Ex. : 200">
-        <p class="cm-note" style="font-size:13.5px">Montrez la marchandise propre et bien emballée. L’acheteur et le transporteur verront ces photos : en cas de réclamation, elles servent de preuve.</p>
-        <p class="cm-err" role="alert"></p>
-        <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">Enregistrer</button><button type="button" data-ann>Retour</button></div>
-      </form>`;
-    box.querySelector('[data-x]').onclick = fermer;
-    box.querySelector('[data-ann]').onclick = () => peindre();
-    const f = box.querySelector('form'), err = f.querySelector('.cm-err'), ap = f.querySelector('[data-apercu]');
-    const apercu = () => { ap.innerHTML = fichiers.map((b, i) => `<span><img src="${URL.createObjectURL(b)}" alt="Photo ${i + 1}"></span>`).join(''); };
-    f.querySelector('[data-fic]').onchange = async e => {
-      err.textContent = ''; f._chemins = null;
-      for (const fi of Array.from(e.target.files || [])) {
-        if (fichiers.length >= 4) { err.textContent = '4 photos au plus.'; break; }
-        try { fichiers.push(await reduirePhoto(fi)); } catch (x) { err.textContent = x.message; }
-      }
-      e.target.value = ''; apercu();
-    };
-    // le papier du mot secret (schéma 90b) : code au hasard à la demande, 3 minutes pour envoyer la photo
-    const zm = f.querySelector('[data-motz]'); let chrono = null;
-    const motCode = async () => {
-      clearInterval(chrono); zm.innerHTML = '<p class="cm-note">…</p>';
-      let k; try { k = await N().rpc('commande_depart_defi', { p_id: c.id }); } catch (x) { zm.innerHTML = `<p class="cm-err">${esc(erreurTxt(x))}</p><button type="button" class="cm-pick" data-motgo style="width:100%">Afficher le code</button>`; zm.querySelector('[data-motgo]').onclick = motCode; return; }
-      const fin = Date.now() + 180000;
-      zm.innerHTML = `<div class="cm-defi" aria-label="Code ${esc(k)}">${String(k).split('').map(x => `<i>${esc(x)}</i>`).join('')}</div>
-        <p class="cm-note" data-reste aria-live="off" style="margin:4px 0 8px">Reste 3:00</p>
-        <label class="cm-pick">${TI('photo')}Photographier le papier<input type="file" accept="image/*" capture="environment" data-ficmot></label>`;
-      const rz = zm.querySelector('[data-reste]');
-      chrono = setInterval(() => { if (!rz.isConnected) return clearInterval(chrono); const t = Math.max(0, Math.round((fin - Date.now()) / 1000));
-        rz.textContent = 'Reste ' + Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
-        if (!t) { clearInterval(chrono); zm.innerHTML = '<p class="cm-err">Temps écoulé.</p><button type="button" class="cm-pick" data-motgo style="width:100%">Nouveau code</button>'; zm.querySelector('[data-motgo]').onclick = motCode; } }, 1000);
-      zm.querySelector('[data-ficmot]').onchange = async e => { const fi = e.target.files && e.target.files[0]; e.target.value = ''; if (!fi) return;
-        err.textContent = 'Envoi de la photo du papier…';
-        try { const ph = await reduirePhoto(fi), ch = me() + '/motpapier-' + c.id.slice(0, 8) + '-' + Date.now() + '.jpg';
-          await N().deposerPrive('preuves', ch, ph); await N().rpc('commande_depart_mot', { p_id: c.id, p_photo: ch });
-          clearInterval(chrono); papier = ch; err.textContent = '';
-          zm.innerHTML = `<div class="cm-ph"><span><img src="${URL.createObjectURL(ph)}" alt="Photo du papier"></span></div><p class="cm-note" style="margin:4px 0">✓ Papier envoyé à l’équipe</p>`;
-        } catch (x) { err.textContent = erreurTxt(x); } };
-    };
-    if (zm) zm.querySelector('[data-motgo]').onclick = motCode;
-    f.onsubmit = async e => {
-      e.preventDefault();
-      const pv = f.querySelector('#cmDp').value.trim(), poids = Number(pv.replace(',', '.'));
-      if (fichiers.length < 2) { err.textContent = 'Ajoutez au moins 2 photos du colis emballé.'; return; }
-      if (zm && !papier) { err.textContent = 'Photographiez le papier du mot secret, avec le code écrit à côté.'; return; }
-      if (!(poids > 0)) { err.textContent = 'Indiquez le poids pesé, en kilos.'; f.querySelector('#cmDp').focus(); return; }
-      const btn = f.querySelector('[type=submit]'); btn.disabled = true; err.textContent = 'Envoi des photos…';
-      try {
-        const u = me(), chemins = [];
-        if (!f._chemins) { for (let i = 0; i < fichiers.length; i++) { const ch = u + '/depart-' + c.id.slice(0, 8) + '-' + Date.now() + '-' + i + '.jpg'; await N().deposerPrive('preuves', ch, fichiers[i]); chemins.push(ch); } f._chemins = chemins; }
-        err.textContent = '';
-        await N().rpc('commande_depart_preuves', { p_id: c.id, p_photos: f._chemins, p_poids_kg: poids });
-        await lireJournal(c.id);
-        toast('Colis enregistré', { type: 'ok', sous: 'Vous pouvez confirmer le chargement.' });
-        peindre();
-      } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }
-    };
-  }
-  // le mot secret : le vendeur l'écrit sur un papier glissé dans la marchandise ; l'acheteur le retrouve à l'arrivée
-  function blocMot(c) {
-    const S = seq[c.id]; if (!S || !S.mot || c.role !== 'vendeur' || !['en_cours', 'litige'].includes(c.etat)) return '';
-    const avant = c.etat === 'en_cours' && ['confirmee', 'preparation'].includes(c.etape);
-    return `<section class="cm-mot${avant ? ' fort' : ''}" aria-label="Mot secret à glisser dans la marchandise">${TI('crayon')}<span>
-      <small>Mot secret à glisser dans la marchandise</small><b>${esc(S.mot)}</b>
-      <small>${avant ? 'Écrivez-le sur un papier et mettez-le dans le colis avant le chargement. À l’arrivée, l’acheteur le retrouve et le tape pour confirmer la réception : c’est la preuve que c’est bien votre marchandise qui est arrivée. Ne le donnez à personne, ni par message.' : 'Il est dans la marchandise. Ne le donnez à personne.'}</small></span></section>`;
   }
   // la discussion à trois (acheteur, vendeur, Marché de Gros) pendant un litige
   const ROLE_D = { acheteur: 'Acheteur', vendeur: 'Vendeur', admin: 'Marché de Gros' };
@@ -824,8 +1072,8 @@
   function refuser(c) {
     const box = bg.querySelector('.cm'); box.scrollTop = 0; dernierEcran = 'geste';
     const fichiers = [];
-    box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
-      <h2>Refuser la <em>marchandise</em></h2><p class="cm-sous">${esc(c.produit || '')} · ${esc(c.partenaire_nom)} · n° ${esc(c.numero)}</p>
+    box.innerHTML = `${hautGeste()}
+      <h2 class="cv-h1">Refuser la <em>marchandise</em></h2><p class="cm-sous">${esc(c.produit || '')} · ${esc(c.partenaire_nom)} · n° ${esc(c.numero)}</p>
       <form class="cm-f" novalidate>
         <label class="t" for="cmRq">Quantité refusée</label>
         <input type="number" id="cmRq" inputmode="decimal" min="0" step="any" ${c.quantite != null ? `max="${c.quantite}" value="${c.quantite}"` : ''}>
@@ -842,7 +1090,7 @@
         <p class="cm-err" role="alert"></p>
         <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">Envoyer le refus</button><button type="button" data-ann>Retour</button></div>
       </form>`;
-    box.querySelector('[data-x]').onclick = fermer;
+    box.querySelector('[data-x]').onclick = () => peindre();
     box.querySelector('[data-ann]').onclick = () => peindre();
     const f = box.querySelector('form'), err = f.querySelector('.cm-err'), ap = f.querySelector('[data-apercu]');
     const apercu = () => { ap.innerHTML = fichiers.map((b, i) => `<span><img src="${URL.createObjectURL(b)}" alt="Photo ${i + 1}"></span>`).join(''); };
@@ -898,32 +1146,13 @@
   const ETOILE = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.6l2.6 5.3 5.8.8-4.2 4.1 1 5.8L10 14.9 4.8 17.6l1-5.8L1.6 7.7l5.8-.8z"/></svg>';
   const LIBA = ['', 'Mauvaise expérience', 'Décevant', 'Correct', 'Bon partenaire', 'Excellent partenaire'];
   const etoilesFixes = n => `<span class="cm-av-f" aria-label="${n} sur 5">${[1, 2, 3, 4, 5].map(i => `<i class="${i <= n ? 'on' : ''}">${ETOILE}</i>`).join('')}</span>`;
-  function blocAvis(c) {
-    if (c.etat !== 'terminee') return '';
-    const a = avis[c.id]; if (!a) return '';
-    const qui = c.role === 'vendeur' ? 'l’acheteur' : 'le vendeur', ens = +a.ensemble || 0;
-    const fid = ens >= 2 ? `<p class="cm-av-fid">${ens}<sup>e</sup> commande terminée ensemble avec ${esc(String(c.partenaire_nom || '').replace(/\.$/, ''))}.</p>` : '';
-    const recu = a.recu ? `<p class="cm-av-recu">${esc(c.partenaire_nom)} vous a donné ${etoilesFixes(a.recu.note)}${a.recu.texte ? ' · « ' + esc(a.recu.texte) + ' »' : ''}</p>` : '';
-    if (!a.peut) return a.note ? `<section class="cm-av"><h3>Votre avis sur ${esc(c.partenaire_nom)}</h3><p>${etoilesFixes(a.note)} ${esc(LIBA[a.note])}${a.texte ? '<br>« ' + esc(a.texte) + ' »' : ''}</p><small>Figé : un avis ne se modifie plus après 24 heures.</small>${recu}${fid}</section>`
-      : (recu || fid ? `<section class="cm-av">${recu}${fid}</section>` : '');
-    const n = avisNote[c.id] || a.note || 0;
-    return `<section class="cm-av"><h3>${a.note ? 'Votre avis sur' : 'Notez'} ${esc(c.partenaire_nom)}</h3>
-      <p>Votre note compte pour sa réputation de ${c.role === 'vendeur' ? 'acheteur' : 'vendeur'}. ${a.note ? 'Vous pouvez la corriger jusqu’à ' + heure(a.modifiable_jusqua) + ' (' + jour(a.modifiable_jusqua) + ').' : 'Corrigeable pendant 24 heures, puis figée.'}</p>
-      <div class="cm-av-e" role="radiogroup" aria-label="Note de ${qui}">${[1, 2, 3, 4, 5].map(i => `<button type="button" role="radio" aria-checked="${i === n}" aria-label="${i} étoile${i > 1 ? 's' : ''}" data-av="${i}" class="${i <= n ? 'on' : ''}">${ETOILE}</button>`).join('')}</div>
-      <p class="cm-av-l" aria-live="polite">${esc(LIBA[n] || '')}</p>
-      <label class="cm-av-t"><span>Un mot (facultatif)</span><textarea maxlength="300" data-av-t placeholder="Qualité, quantité, ponctualité, respect du prix…">${esc(a.texte || '')}</textarea></label>
-      <p class="cm-err" data-av-err role="alert"></p>
-      <div class="cm-act"><button type="button" class="p" data-av-ok ${n ? '' : 'disabled'}>${a.note ? 'Corriger mon avis' : 'Publier mon avis'}</button></div>${recu}${fid}</section>`;
-  }
   function lierAvis(c, box) {
-    box.querySelectorAll('[data-av]').forEach(b => b.onclick = () => {
-      const n = +b.dataset.av; avisNote[c.id] = n;
-      box.querySelectorAll('[data-av]').forEach(x => { x.classList.toggle('on', +x.dataset.av <= n); x.setAttribute('aria-checked', String(+x.dataset.av === n)); });
-      const l = box.querySelector('.cm-av-l'); if (l) l.textContent = LIBA[n]; const ok = box.querySelector('[data-av-ok]'); if (ok) ok.disabled = false;
-    });
+    // une étoile touchée : la note s'affiche, puis le champ de l'avis
+    box.querySelectorAll('[data-av]').forEach(b => b.onclick = () => { avisNote[c.id] = +b.dataset.av; peindre(); const t = bg && bg.querySelector('[data-av-t]'); if (t && matchMedia('(hover:hover)').matches) t.focus(); });
     const ok = box.querySelector('[data-av-ok]'); if (!ok) return;
     ok.onclick = async () => {
       const n = avisNote[c.id] || (avis[c.id] && avis[c.id].note), t = box.querySelector('[data-av-t]').value.trim(), err = box.querySelector('[data-av-err]');
+      if (!n) { err.textContent = 'Choisissez une note.'; return; }
       const rf = t && N().texteRefus ? N().texteRefus(t) : ''; if (rf) { err.textContent = rf; return; }
       ok.disabled = true; err.textContent = '';
       try { await N().rpc('avis_commande_donner', { p_cmd: c.id, p_note: n, p_texte: t || null }); delete avisNote[c.id];
@@ -931,6 +1160,7 @@
       catch (x) { ok.disabled = false; err.textContent = x.code === 'texte' ? x.message : erreurTxt(x); }
     };
   }
+
 
   // les codes : le vendeur voit le code de prise en charge, l'acheteur le code de réception ; le chauffeur les tape
   // Le code n'est gardé qu'en mémoire, le temps de l'écran : jamais dans le téléphone, jamais dans un message.
@@ -1048,7 +1278,8 @@
   function peindre(change) {
     if (!bg) return;
     const ecran = vue + ':' + (sel || ''), box = bg.querySelector('.cm'), y = box.scrollTop;
-    if (vue === 'detail' && sel) peindreDetail(change); else peindreListe();
+    const plein = vue === 'detail' && !!sel; box.classList.toggle('plein', plein); bg.classList.toggle('plein', plein);
+    if (plein) peindreDetail(change); else peindreListe();
     const nouveau = ecran !== dernierEcran;
     box.scrollTop = nouveau ? 0 : y; dernierEcran = ecran;
     // le titre reçoit le focus une fois par écran, dès qu'il existe (le premier rendu peut être un « chargement… »)
@@ -1065,8 +1296,8 @@
   }
   function confirmer(c, o) {
     const box = bg.querySelector('.cm'); box.scrollTop = 0; dernierEcran = 'geste';
-    box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
-      <h2>${o.titre}</h2><p class="cm-sous">${esc(c.produit || '')} · ${esc(c.partenaire_nom)}</p>
+    box.innerHTML = `${hautGeste()}
+      <h2 class="cv-h1">${o.titre}</h2><p class="cm-sous">${esc(c.produit || '')} · ${esc(c.partenaire_nom)}</p>
       <form class="cm-f" novalidate>
         ${o.mot ? `<label class="t" for="cmM">Mot secret du vendeur</label>
         <p class="cm-note" style="margin:-2px 0 8px;font-size:13.5px">Il est écrit sur le papier que le vendeur a glissé dans la marchandise (par exemple « MANGUE 47 »).</p>
@@ -1091,7 +1322,7 @@
         <p class="cm-err" role="alert"></p>
         <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">${o.ok}</button><button type="button" data-ann>Retour</button></div>
       </form>`;
-    box.querySelector('[data-x]').onclick = fermer;
+    box.querySelector('[data-x]').onclick = () => peindre();
     box.querySelector('[data-ann]').onclick = () => peindre();
     const f = box.querySelector('form'), err = f.querySelector('.cm-err');
     // n° 12 (25/10/2026) : « Panne ou météo » propose d'écrire la source publique ; la photo attend une place sur le serveur
@@ -1165,7 +1396,7 @@
       case 'non': return confirmer(c, { titre: 'Refuser la commande', ok: 'Refuser', motifs: true, note: 'Un mot (obligatoire pour « Autre »)', fait: 'Commande refusée',
         texte: 'Avant confirmation, un refus ne compte pas dans votre fiabilité.', fn: v => repondreMotif(c, false, v) });
       case 'preparation': return av('preparation', 'Marchandise en préparation', { gps: false });
-      case 'depart': return depart(c);
+      case 'probleme': return probleme(c);
       case 'chargement': return av('chargement', 'Chargement confirmé', { texte: c.mode_transport === 'reseau' ? 'Confirmez seulement quand la marchandise est dans le camion. Le transport commence alors.' : 'Confirmez seulement quand la marchandise est dans le camion. Ensuite, touchez « Le camion est parti » au départ (ou laissez le lien de suivi du chauffeur le détecter).' });
       case 'transport': return av('transport', 'Le camion est parti', { texte: 'Touchez quand le camion démarre avec la marchandise. ' + (c.role === 'vendeur' ? 'L’acheteur' : 'Le vendeur') + ' est prévenu.', fait: 'Départ signalé : le camion est en route' });
       case 'transbordement': return av('transbordement', 'Signaler un transbordement', { lieu: 'Où la marchandise change-t-elle de véhicule ?', lieuRequis: true });
@@ -1355,7 +1586,7 @@
         // schéma 93b : l'ancienne commande_creer n'est plus ouverte aux membres (elle contournait « ville seulement »)
         const id = await N().rpc('commande_creer2', { p_nego: n.id, p_mode: mode, p_lieu: lieu || null, p_ville_arrivee: offre ? ville : null, p_ville_depart: offre ? null : ville });
         toast('Commande envoyée', { type: 'ok', sous: 'Elle démarre dès que l’autre partie la confirme.' });
-        await lireListe(); await lireJournal(id); sel = id; vue = 'detail'; peindre();
+        await lireListe(); await lireJournal(id); retourTxt = 'Négociation'; sel = id; vue = 'detail'; peindre();
       } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }
     };
   }
@@ -1366,16 +1597,16 @@
     monter(); bg.querySelector('.cm').innerHTML = window.MDGSac ? MDGSac.charge('Un instant…') : '';
     await lireListe();
     const c = liste.find(x => x.negociation_id === n.id);
-    if (c) { await lireJournal(c.id); sel = c.id; vue = 'detail'; peindre(); } else creer(n);
+    if (c) { await lireJournal(c.id); retourTxt = 'Négociation'; sel = c.id; vue = 'detail'; peindre(); } else creer(n);
   }
 
-  async function detail(id) { sel = id; vue = 'detail'; peindre(); await lireJournal(id); peindre(); }
+  async function detail(id) { retourTxt = 'Mes commandes'; sel = id; vue = 'detail'; peindre(); await lireJournal(id); peindre(); }
 
   function monter() {
     css(); if (bg) return;
     retourFocus = document.activeElement;
-    bg = document.createElement('div'); bg.className = 'cm-bg'; bg.setAttribute('role', 'dialog'); bg.setAttribute('aria-modal', 'true'); bg.setAttribute('aria-label', 'Mes commandes');
-    bg.innerHTML = '<div class="cm"></div>'; document.body.appendChild(bg);
+    bg = document.createElement('div'); bg.className = 'cm-bg'; bg.setAttribute('role', 'dialog'); bg.setAttribute('aria-modal', 'true'); bg.setAttribute('aria-label', 'Commande');
+    bg.setAttribute('data-v2', ''); bg.innerHTML = '<div class="cm" data-v2></div>'; document.body.appendChild(bg);
     bg.addEventListener('click', e => { if (e.target === bg) fermer(); });
     document.addEventListener('keydown', clavier);
     // le serveur fait foi : on relit toutes les 20 s quand l'écran est visible (pas de suivi inventé entre deux lectures)
@@ -1383,7 +1614,7 @@
   }
   async function ouvrir(id, auCode) {
     if (!N() || !N().session()) { if (N()) N().open(); return; }
-    monter(); sel = id || null; vue = id ? 'detail' : 'liste';
+    monter(); sel = id || null; vue = id ? 'detail' : 'liste'; retourTxt = 'Activité';
     if (id && window.MDGActivite) MDGActivite.noter('cmd', id);
     liste = J(KC(), []); peindre();
     await lireListe(); if (id) await lireJournal(id); peindre();

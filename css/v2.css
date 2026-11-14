@@ -277,7 +277,7 @@ html[data-theme=sombre] .v2-of-cta.plein { color: #171512; }
 .nx-bg .nx-pm { width: 44px; height: 44px; flex: none; border: 0; border-radius: 999px; background: #E7DCC8; color: #171512; display: grid; place-items: center; padding: 0; cursor: pointer; }
 .nx-bg .nx-pm[disabled] { opacity: .4; cursor: default; }
 .nx-bg .nx-pv { flex: 1; min-width: 0; display: flex; align-items: baseline; justify-content: center; gap: 6px; font: 800 24px/1 Jost, sans-serif; color: #171512; letter-spacing: -.01em; }
-.nx-bg .nx-pv input { width: 6ch; min-width: 0; flex: 0 1 auto; border: 0; background: none; padding: 0; text-align: right; font: inherit; color: inherit; font-variant-numeric: tabular-nums lining-nums; outline: none; }
+.nx-bg .nx-pv input { width: 6ch; min-width: 0; max-width: 100%; flex: 0 1 auto; border: 0; background: none; padding: 0; text-align: center; font: inherit; color: inherit; font-variant-numeric: tabular-nums lining-nums; outline: none; }
 .nx-bg .nx-pv input:focus-visible { outline: none !important; }
 .nx-bg .nx-pas:focus-within { box-shadow: 0 0 0 3px rgba(242, 194, 48, .62); }
 .nx-bg .nx-pas-p .nx-pv { color: #10392B; }

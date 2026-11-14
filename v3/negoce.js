@@ -142,6 +142,12 @@
 @media (min-width:720px){.nx-bg{align-items:center;padding:24px}}
 .nx{--v:#6CC58C;--a:#F2C94C;--ok:#1F8A55;--ink:#171512;--mute:#655C4D;--line:rgba(23,21,18,.12);--acc:#10392B;position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:min(92dvh,820px);background:#F4EEE3;color:var(--ink);border-radius:28px 28px 0 0;box-shadow:0 30px 80px rgba(0,0,0,.5);font-family:Jost,system-ui,sans-serif;font-variant-numeric:lining-nums;animation:nxUp .38s cubic-bezier(.22,1,.36,1) both;overflow:hidden}
 @media (min-width:720px){.nx{border-radius:28px}}
+/* feuille « Proposer un prix » comme la maquette : l'annonce reste visible derrière, titre en grand, sans trait */
+.nx-pbg{background:rgba(23,21,18,.45);-webkit-backdrop-filter:none;backdrop-filter:none}
+.nx-pbg .nx{height:auto;max-height:88dvh;box-shadow:0 -12px 32px rgba(0,0,0,.18)}
+.nx-pbg .nx-h{border-bottom:0;padding:18px 16px 4px;align-items:flex-start}
+.nx-pbg .nx-h h2{font:600 24px/1.15 Jost,sans-serif;letter-spacing:-.01em}
+.nx-pbg .nx-h h2 small{margin-top:4px;font-size:14px;white-space:normal;color:var(--mute)}
 .nx-h{display:flex;align-items:center;gap:10px;padding:18px 18px 12px;border-bottom:1px solid var(--line)}
 .nx-h h2{flex:1;min-width:0;margin:0;font:600 21px/1.1 Jost,sans-serif;letter-spacing:-.015em}.nx-h h2 em{font:900 italic 1em Jost,sans-serif;color:#10392B;letter-spacing:-.02em;padding:0 .06em 0 .02em;background:linear-gradient(transparent 60%,rgba(242,194,48,.62) 60%,rgba(242,194,48,.62) 94%,transparent 94%);-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .nx-h h2 small{display:block;margin-top:3px;font:400 13.5px/1.35 Jost,sans-serif;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -320,7 +326,7 @@
   const CHEV = (window.MDGIco && window.MDGIco.svg('retour', 22, 2)) || '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
   // la voix du logo : le dernier mot du titre en Jost 900 italique (« Mes négociations »), sauf noms et titres composés
   const voix = t => /·|\d/.test(t) || !/\s/.test(t.trim()) ? esc(t) : esc(t).replace(/(\S+)\s*$/, '<em>$1</em>');
-  const head = (t, sub, back) => `<div class="nx-h">${back ? '<button type="button" class="nx-ib nx-back" data-back aria-label="Retour à mes négociations">' + CHEV + '</button>' : ''}<h2>${voix(t)}${sub ? `<small>${esc(sub)}</small>` : ''}</h2><button type="button" class="nx-ib" data-x aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`;
+  const head = (t, sub, back, simple) => `<div class="nx-h">${back ? '<button type="button" class="nx-ib nx-back" data-back aria-label="Retour à mes négociations">' + CHEV + '</button>' : ''}<h2>${simple ? esc(t) : voix(t)}${sub ? `<small>${esc(sub)}</small>` : ''}</h2><button type="button" class="nx-ib" data-x aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>`;
   const bindSnd = () => { const b = bg && bg.querySelector('.nx-snd'); if (b) b.onclick = () => { close(); MDGSons.panneau(); }; };
 
   // la règle des prix : repère du prix affiché, dernier prix de chaque partie (atténué s'il n'est plus valable), écart
@@ -420,6 +426,8 @@
       const { p, q, pt } = vals(), qFrac = q && q % 1 && entier, trop = p && q && p * q > MONTANT_MAX;   // schéma 99d : le serveur refuse aussi
       go.disabled = !p || p < 1 || qFrac || trop || (ctx.qmax && q > ctx.qmax) || (qmin && !(q >= qmin)) || (tr === 'apart' && !pt);
       $('.nx-pu').textContent = q ? uQ(q, u) : u;
+      // le nombre prend la largeur de ce qu'il contient : quantité et prix restent bien centrés entre − et +
+      [ip, iq].forEach(i => { i.style.width = Math.max(1, String(i.value || i.placeholder || '').length) + 0.1 + 'ch'; });
       // l'écart avec le prix demandé (ou son budget, ou sa dernière proposition)
       const base = ctx.dernier && ctx.dernier !== ref ? ctx.dernier : ref, ec = $('.nx-ecart');
       if (p && base) { const pc = Math.round(Math.abs(p - base) / base * 100); ec.textContent = Math.abs(p - base) < 1 ? 'Au prix ' + (ctx.dernier && ctx.dernier !== ref ? 'de sa proposition' : ctx.cible === 'offre' ? 'demandé' : 'de son budget')
@@ -467,12 +475,13 @@
     if (deja) return thread(deja.id);
     const prix = +a.prix || 0, u = a.unite || 'kg', q = +a.quantite || 0, lui = cible === 'offre' ? 'vendeur' : 'acheteur';
     redessiner = null;
-    sheet(head((cible === 'offre' ? 'Acheter à ' : 'Vendre à ') + (a.nom || Le(lui)), (a.produit || 'Annonce') + (a.ville ? ' · ' + a.ville : '')) + `
+    const kmT = +a.km > 0 ? ' · ≈ ' + fmt(+a.km) + ' km' : '';
+    sheet(head((cible === 'offre' ? 'Acheter à ' : 'Vendre à ') + (a.nom || Le(lui)), (a.produit || 'Annonce') + (a.ville ? ' · ' + a.ville : '') + kmT, false, true) + `
       <div class="nx-b">
         ${a.villeSeule && a.villeAnn && window.MDGVilleSeule ? MDGVilleSeule.avertir(cible, a.villeAnn) : ''}
         <p class="nx-lock">${CADENAS}Numéros cachés : tout se dit ici.</p>
         <div class="nx-edbox"></div>
-      </div>`, 'Proposer un prix');
+      </div>`, 'Proposer un prix').classList.add('nx-pbg');
     bindSnd();
     const fake = { cible, prix_annonce: prix || null, unite: u, statut: 'ouverte', proprio_id: 'lui', auteur_id: me() };
     editeur(bg.querySelector('.nx-edbox'), { cible, tr0: trAnnonce(cible, a.transport), prixRef: prix, unite: u, qmax: q || null, q0: q || null, qmin: +a.qmin || 0, negociable: a.negociable, pour: lui, moi: 'auteur', preview: p => rail(fake, [{ genre: 'prix', auteur_id: me(), prix: p, issue: 'en_attente', expire_le: new Date(Date.now() + 864e5).toISOString() }]) },

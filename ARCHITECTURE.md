@@ -39,8 +39,8 @@ En une phrase : des pages statiques hébergées gratuitement sur GitHub Pages, q
 | Moteur de gabarits | `support.js` (« dc-runtime », fichier généré, ne pas modifier à la main). Il charge React depuis `vendor/react.production.min.js` et `vendor/react-dom.production.min.js` |
 | Gabarits | balises `sc-if`, `sc-for` et `{{ … }}` dans `application.dc.html`, plus le script `type="text/x-dc"` (l. 811) qui contient la classe du composant et le calcul des écrans (`renderVals()`) |
 | Socle chargé au démarrage | `v3/nuage.js`, `app/admin-pc.js`, `v3/personnages.js`, `v3/avatar.js`, `app/icones.js`, `app/effets.js`, `app/marque.js`, `app/sac.js`, `app/garanties.js`, `app/toast.js`, `app/theme.js`, `v2/data.js` (catalogue), `app/marche-app.js`, `app/villes.js` |
-| Chargés après coup (`defer`) | `app/nuit.js`, `app/stable.js`, `app/vibre.js`, `app/prixmoment.js`, `app/demo-orbite.js`, `app/activite.js` |
-| Chargés à la demande (`window.MDGPlus`, l. 39) | guide, astuces, scène, porte, sons, négociation, compte, souffle, notifications, réputation, statuts, messages, aide, alertes, relevé, commandes, tableau, chauffeur, suivi, prix par zone, racheter, approvisionnement, groupes, carte (`app/carte-app.js`, `app/carte-gl.js`), identité, boutique (`v3/boutique.js`, schéma 86) |
+| Chargés après coup (`defer`) | `app/nuit.js`, `app/stable.js`, `app/vibre.js`, `app/activite.js` |
+| Chargés à la demande (`window.MDGPlus`, l. 39) | guide, astuces, scène, porte, sons, négociation, compte, notifications, réputation, statuts, messages, aide, alertes, relevé, commandes, chauffeur, suivi, prix par zone, racheter, approvisionnement, groupes, carte (`app/carte-app.js`, `app/carte-gl.js`), identité, boutique (`v3/boutique.js`, schéma 86) |
 | Bibliothèques embarquées (`vendor/`) | React, MapLibre GL, Tesseract (lecture de la pièce d'identité dans le téléphone), qrcode-generator, d3, topojson, GSAP, Lenis, Lucide |
 | Police | Jost, fichiers `fonts/*.woff2` dans le dépôt (aucun appel à Google Fonts) |
 | Page chauffeur sans compte | `suivi.html` (appels `/rest/v1/rpc/suivi_lien_*` avec la clé publique) |
@@ -211,7 +211,7 @@ Stockage (buckets) :
 - **Profil public et réputation** : `profils_publics3`, `profil_public`, `reputation_publique`, `delais_publics` (schéma 89 : livraison du vendeur, validation de l'acheteur), `notes_publiques`, `avis_de2`, `mieux_notes`, `statuts_publics`, `avis_commande_donner`.
 - **Identité** : `identite_commencer`, `identite_soumettre`, `identite_statut`, `identite_ok`, `admin_identite_*`.
 - **Confiance** : `garde_publication`, `limite_annonces`, `annonces_gratuites` (3), `garde_textes` et `texte_refus` (pas de liens ni de numéros), `admin_bannir`, `signaler_membre`.
-- **Annonces et marché** : `annonces_version`, `tableau_produits`, `tableau_marche`, `prix_zones`, `produits_activite`, `ventes_recentes`, `fil_public`, `stats_publiques`.
+- **Annonces et marché** : `annonces_version`, `tableau_produits`, `tableau_marche`, `prix_zones`, `produits_activite`, `ventes_recentes` (plus appelées par l'application depuis le 14/11/2026), `fil_public`, `stats_publiques`.
 - **Négociation et messages** : `nego_ouvrir`, `nego_agir`, `nego_transport`, `marquer_lu`, `dm_*`, `contact_marche`, `admin_diffuser`.
 - **Commandes et transport** : `commande_creer`, `commande_repondre`, `commande_avancer`, `commande_annuler`, `mes_commandes2`, `transporteur_*`, `chauffeur_*`, `commande_valider_code`, `suivi_lien_*`.
 - **Colis au départ** (schémas 90, 90b) : `commande_depart_preuves`, `commande_depart_defi`, `commande_depart_mot` ; déclencheur `commande_etapes_chargement_preuves` (pas de chargement sans photos, poids et photo du papier du mot secret).

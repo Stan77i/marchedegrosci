@@ -79,7 +79,7 @@ Service worker : `mgci-v80`.
 
 # Mise à jour — 18 octobre 2026 (Prix du marché, L'année du marché, Catégories)
 
-Service worker : `mgci-v79`. Les nouvelles feuilles de style (`css/annee-app.css`, `css/categories-app.css`) sont gardées pour le hors-ligne.
+Service worker : `mgci-v79`. Les nouvelles feuilles de style (`css/annee-app.css`, `css/categories-app.css`) étaient gardées pour le hors-ligne ; elles sont supprimées depuis le 14/11/2026 (cache `mgci-v321`).
 
 ## Prix du marché
 - « Le juste prix, en direct » : prix vendeurs (● vert) et budgets acheteurs (■ jaune) de chaque produit, sur une même échelle.

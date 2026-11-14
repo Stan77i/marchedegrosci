@@ -10,7 +10,7 @@
   'use strict';
   const N = () => window.MDGNuage;
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const fmt = n => n == null || isNaN(n) ? '—' : Math.round(+n).toLocaleString('fr-FR').replace(/\s/g, ' ');
+  const fmt = n => n == null || isNaN(n) ? '—' : Math.round(+n).toLocaleString('fr-FR').replace(/[\u202F\u00A0 ]/g, '\u00A0');
   const tel = t => String(t || '').replace(/^225/, '').replace(/(\d{2})(?=\d)/g, '$1 ');
   const jour = t => new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
   const heure = t => jour(t) + ' · ' + new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });

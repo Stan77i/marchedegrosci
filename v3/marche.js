@@ -60,7 +60,7 @@
     observe: SVG('<path d="M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M7 14V9M12 14V5M17 14v-3" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'),
     vide: SVG('<circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="2.5 3"/>')
   };
-  const fmt = n => Math.round(n).toLocaleString('fr-FR').replace(/\u202f/g, ' ');
+  const fmt = n => Math.round(n).toLocaleString('fr-FR').replace(/[\u202F\u00A0 ]/g, '\u00A0');
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const date = d => d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : '';
   // repère commun : héros, fiches, Acheter, Prix du marché

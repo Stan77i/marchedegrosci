@@ -1691,7 +1691,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
     return J(KC(), []).filter(enCours).map(x => {
       const st = x.etat === 'a_confirmer' ? (x.cree_par_moi ? 'En attente de confirmation' : 'À confirmer') : x.etat === 'litige' ? (x.refus_le ? 'Marchandise refusée' : 'Litige en cours') : aVerifier(x) ? (x.role === 'acheteur' ? 'À vérifier' : 'Vérification par l’acheteur') : LIB[x.etape] || 'En cours';
       return { k: 'cmd', id: x.id, titre: (x.produit || 'Commande') + (x.quantite != null ? ' · ' + qte(x.quantite, x.unite) : ''), avec: x.partenaire_nom || '', role: x.role, nego: x.negociation_id || null,
-        etat: x.etat === 'litige' ? 'litige' : aAgir(x) ? 'moi' : enRoute(x) ? 'route' : 'attente', route: enRoute(x), tag: st, ts: Date.parse(x.updated_at || x.maj_le || x.created_at) || 0, ouvrir: () => ouvrir(x.id) }; });
+        etat: x.etat === 'litige' ? 'litige' : aAgir(x) ? 'moi' : enRoute(x) ? 'route' : 'attente', route: enRoute(x), tag: st, montant: x.montant, ts: Date.parse(x.updated_at || x.maj_le || x.created_at) || 0, ouvrir: () => ouvrir(x.id) }; });
   }
   // Accueil → Alertes → « Mes codes » : les commandes où je détiens un code MAINTENANT (vendeur avant le chargement,
   // acheteur pendant le transport). Les chiffres ne sont donnés que s'ils ont été affichés pendant cette visite (gardés en mémoire seulement).

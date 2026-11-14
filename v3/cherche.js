@@ -128,7 +128,7 @@
       const chips = [];
       if (p.intent) chips.push(INT[p.intent]);
       if (p.product) chips.push(p.product.name);
-      if (p.quantity != null) chips.push(p.quantity.toLocaleString('fr-FR') + (p.unit ? ' ' + p.unit.label + (p.quantity > 1 && !/s$/.test(p.unit.label) ? 's' : '') : ''));
+      if (p.quantity != null) chips.push(p.quantity.toLocaleString('fr-FR').replace(/[\u202F\u00A0 ]/g, '\u00A0') + (p.unit ? ' ' + p.unit.label + (p.quantity > 1 && !/s$/.test(p.unit.label) ? 's' : '') : ''));
       if (p.location) chips.push(p.location.name + (p.location.kind === 'ville' && p.location.regionName ? ' (' + p.location.regionName + ')' : ''));
       und.innerHTML = chips.length > 1 || p.intent || p.location ? `<span>Compris</span>${chips.map(c => `<b>${esc(c)}</b>`).join('')}` : '';
       // produits : reconnu, puis candidats, puis suggestions par préfixe
@@ -179,7 +179,7 @@
     if (pv.dataset.slug === r.slug && pv.classList.contains('is-on')) return;
     const x = C.prodBy[r.slug], im = C.img(r.slug), o = C.offersOf(r.slug).length, d = C.demandsOf(r.slug).length, z = smap[r.slug] || {};
     const P = window.MDGMarche && MDGMarche.prix ? MDGMarche.prix(r.slug, C.OFFERS) : { type: 'aucun' };
-    const fmt = v => Math.round(v).toLocaleString('fr-FR').replace(/\u202f/g, ' ');
+    const fmt = v => Math.round(v).toLocaleString('fr-FR').replace(/[\u202F\u00A0 ]/g, '\u00A0');
     const price = P.type === 'observe' ? `<b>${fmt(P.min)} – ${fmt(P.max)} FCFA</b><small>Prix observé du marché · ${P.n} prix, 30 jours</small>`
       : P.type === 'vendeur' ? `<b>${fmt(P.offre.price)} FCFA${P.offre.unit ? ' / ' + esc(P.offre.unit) : ''}</b><small>Prix vendeur le plus bas · ${P.n > 1 ? P.n + ' offres' : '1 offre'}</small>`
       : '<small>Pas assez de données pour un prix du marché.</small>';

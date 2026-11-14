@@ -9,7 +9,7 @@
   if (window.MDGPrixZone) return;
   const N = () => window.MDGNuage;
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const nf = v => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Math.round(v || 0)).replace(/ /g, ' ');
+  const nf = v => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(Math.round(v || 0)).replace(/[\u202F\u00A0 ]/g, '\u00A0');
   const F = v => nf(v) + ' F';
   const REG = { abidjan: 'Abidjan', yamoussoukro: 'Yamoussoukro', 'bas-sassandra': 'Bas-Sassandra', comoe: 'Comoé', denguele: 'Denguélé', 'goh-djiboua': 'Gôh-Djiboua',
     lacs: 'Lacs', lagunes: 'Lagunes', montagnes: 'Montagnes', 'sassandra-marahoue': 'Sassandra-Marahoué', savanes: 'Savanes', 'vallee-du-bandama': 'Vallée du Bandama',

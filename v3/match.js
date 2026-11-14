@@ -13,7 +13,7 @@
   let od = null, card = null, cur = null, anchor = null, drag = null, lastRegion = 'abidjan';
   const q = s => od.querySelector(s);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const fmt = n => Math.round(n).toLocaleString('fr-FR').replace(/\u202f/g, ' ');
+  const fmt = n => Math.round(n).toLocaleString('fr-FR').replace(/[\u202F\u00A0 ]/g, '\u00A0');
   // « Vente uniquement à Guiglo » (schéma 87, app/ville-seule.js) : la pastille courte à la place de la ville
   const lieuVS = (x, sens, txt) => x.villeSeule && x.city && window.MDGVilleSeule ? MDGVilleSeule.pastille(sens, x.city) : esc(txt);
   const regName = s => { const r = CX().regBy[s]; return r ? r.name : ''; };

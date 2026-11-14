@@ -261,6 +261,8 @@ Jamais sur la production. Jamais de `drop`, `delete`, `truncate`. Le MCP Supabas
 
 Règle de `CLAUDE.md` : à chaque changement du front, monter le `?v=` du fichier modifié dans les pages HTML, monter `CACHE` dans `sw.js` (`mgci-vNNN`), ajouter les nouvelles images à `IMAGES` de `sw.js`.
 
+- [ ] **I8. Passe finale de la refonte et discussion de négociation (lot 16)** : contraste des onglets du bas en sombre au moins 4,5:1 ; aucun débordement à 320 px ni en mouvement réduit ; cibles tactiles utiles d'au moins 32 px ; le menu « ⋯ » de la discussion garde ses 5 fonctions (Voir son profil, Écrire en privé, Retirer de ma liste, Signaler, Arrêter la négociation) ; une réponse rapide envoie `nego_agir` tout de suite ; « Ne payez jamais d'avance » si le membre n'est pas vérifié ; carte en « jour » par défaut quand l'application est en clair.
+  - Vérifier : `rg -n "nego_agir" v3/negoce.js` ; `rg -n "nx-full" css/v2.css v3/negoce.js` ; captures `docs/brief-design/captures/lot16-*` (iPhone émulé, clair, sombre, 320 px).
 - [ ] **J1. Chaque fichier front changé depuis le dernier rapport a son `?v=` monté** dans toutes les pages qui le chargent.
   - Vérifier : `git log --since="<date du rapport précédent>" --name-only --format= origin/main -- app v3 css v2 | sort -u`, puis pour chaque fichier, `git log -1 --format=%H -- <fichier>` et `git log -1 --format=%H -S"<fichier>?v=" -- application.dc.html admin.html index-v3.html` : la page doit avoir changé son `?v=` dans le même commit ou après.
 - [ ] **J2. `CACHE` de `sw.js` monté** à chaque commit qui change le front.

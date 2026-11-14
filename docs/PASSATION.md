@@ -2259,6 +2259,18 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur.
 
+## 14/11/2026 · Refonte, lot 16 : passe finale (sombre, 320 px, contrastes) et discussion de négociation
+
+- Vérification de 39 écrans refaits (390 et 320 px, clair et sombre, mouvement réduit) : aucun débordement, aucune erreur console.
+- Corrections (`css/v2.css`, `v3/commandes.js`, `app/carte-gl.js`) : onglets du bas en sombre (contraste 3,0 → 6,3:1), feuille Publier en sombre, contrastes de la discussion (Refusée, Refuser, prix barré), 4 casses à 320 px (prix de la fiche, total de Proposer, nombre « Offres » de la carte, lignes d'Activité), 6 petites cibles agrandies.
+- 5 décisions du propriétaire (« ok pour tout », 14/11/2026) : (1) titre de la porte en mouvement réduit : alternance nette toutes les 5 s, sans mouvement (`v3/nuage.js`) ; (2) carte en « jour » par défaut quand l'application est en clair, panneau clair, choix du bouton soleil gardé (`app/carte-gl.js`, `css/v2.css`) ; (3) propositions remplacées ou expirées : seul le prix est pâli ; (4) achats groupés : plus de « reste NaN jours » (`v3/groupes.js`) ; (5) noms longs à la ligne, 2 lignes au plus (Messages `v3/messages.js`, Mes annonces).
+- Discussion de négociation refaite comme la maquette (`v3/negoce.js`, fonction `thread`, style `.nx-full`) : écran plein, en-tête initiales + nom + « produit · prix demandé » (toucher = profil), bandeau « Ne payez jamais d'avance » si non vérifié, message de l'équipe, bulles, carte de proposition de 280 px (état en couleur, expiration réelle, Accepter / Contre-proposer, Refuser en texte), carte « Accord conclu », barre du bas (réponses rapides qui partent tout de suite, Prix, champ, envoyer), menu « ⋯ ».
+- Écarts avec la maquette : menu « ⋯ » (absent de la maquette, gardé : Voir son profil, Écrire en privé, Retirer de ma liste, Signaler, Arrêter la négociation) ; « Retirer ma proposition », transport et heure ajoutés ; tampon `#17633D` pour le contraste ; « À la charge de l'acheteur ». Style mort laissé pour le nettoyage : `.nx-tk`, `.nx-plus`, `.nx-stop`, `.nx-deal`.
+- Inventaire de l'ancien code fait : le propriétaire a dit « ok pour tout » aux 11 propositions de retrait ; le retrait se fait dans les PR suivantes (3 PR).
+- **Anomalie ouverte** (ANO-059) : les liens « Montrer dans l'app » du guide, de l'aide, des astuces et de `app/garanties.js` mènent encore aux anciens onglets du haut (`.acc-ong`), et le guide parle encore de faire tourner la roue. Correction validée par le propriétaire, à faire.
+- **Demande du propriétaire** (14/11/2026) : « assure-toi que toutes les scènes d'écran de l'app sont identiques à ce que Claude Design a fait » : règle ajoutée à `CLAUDE.md` ; prochaine étape après le retrait de l'ancien code.
+- Vérifié dans un navigateur (iPhone 13 émulé, clair, sombre, 320 px) avec de fausses données seulement : aucune base touchée. Captures `docs/brief-design/captures/lot16-*`. Cache `mgci-v318`.
+
 ## 14/11/2026 · Refonte : « Proposer un prix » repris (demande du propriétaire)
 
 - Le propriétaire a montré la feuille de la maquette : « la rendre identique », puis « centre bien les écritures ».

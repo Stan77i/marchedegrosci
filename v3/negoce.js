@@ -301,6 +301,77 @@
 .nx-pied::before{content:"";position:absolute;left:0;right:0;bottom:100%;height:22px;background:linear-gradient(rgba(244,238,227,0),#F4EEE3);pointer-events:none}
 .nx-pied .nx-send{margin-top:0}.nx-pied .nx-err:empty{display:none}
 @media (prefers-reduced-motion:reduce){.nx-px::after{transition:none}}
+/* refonte 2026-11 (maquette « MGCI App v2 », écran Discussion) : le fil d'une négociation en plein écran.
+   Couleurs claires écrites en dur, comme le reste du module : app/nuit.js les traduit en mode nuit ; le vert d'action y devient maïs (jetons nuit de la maquette). */
+.nx-bg.nx-full{align-items:stretch;background:#F2EBDD;-webkit-backdrop-filter:none;backdrop-filter:none;animation:none}
+.nx-bg.nx-full .nx{height:100%;max-width:560px;border-radius:0;background:#F2EBDD;box-shadow:none}
+.nx-bg.nx-full .nx::before{content:none;display:none}
+@media (min-width:720px){.nx-bg.nx-full{align-items:center;background:rgba(10,9,7,.62)}.nx-bg.nx-full .nx{height:min(820px,92dvh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.5)}}
+.nx-bg.nx-full .nx-hd{flex:none;gap:4px;padding:calc(6px + env(safe-area-inset-top)) 6px 8px 5px;border-bottom:1px solid rgba(23,21,18,.08);background:#F2EBDD}
+.nx-bg.nx-full .nx-hd .nx-ib{flex:none;width:44px;height:44px;margin:0;border-radius:50%;background:none;color:#171512}
+.nx-bg.nx-full .nx-qui{flex:1;min-width:0;display:flex;align-items:center;gap:10px;min-height:44px;padding:0;border:0;border-radius:14px;background:none;color:#171512;text-align:left;font:inherit;cursor:pointer}
+.nx-bg.nx-full .nx-qui[disabled]{cursor:default;opacity:1}
+.nx-bg.nx-full .nx-ini{flex:none;width:42px;height:42px;border-radius:999px;background:#E7DCC8;color:#484236;display:grid;place-items:center;font:700 13.5px Jost,sans-serif}
+.nx-bg.nx-full img.nx-ini{border-radius:12px;background:none}
+.nx-bg.nx-full .nx-qt{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.nx-bg.nx-full .nx-qt b{display:flex;align-items:center;gap:6px;min-width:0;font:700 16px/1.25 Jost,sans-serif}
+.nx-bg.nx-full .nx-qt .nm{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.nx-bg.nx-full .nx-qt b svg{flex:none;display:block}
+.nx-bg.nx-full .nx-qt small{font-size:12.5px;line-height:1.35;color:#655C4D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nx-bg.nx-full .nx-b{display:flex;flex-direction:column;gap:10px;padding:12px 16px 20px}
+.nx-bg.nx-full :is(.nx-top,.nx-msgs,.nx-bottom){display:flex;flex-direction:column;gap:10px;margin:0}.nx-bg.nx-full :is(.nx-top,.nx-bottom):empty{display:none}
+.nx-bg.nx-full .nx-avance{margin:0;padding:10px 12px;border-radius:14px;background:#F6E2B0;color:#3D2E05;font-size:13.5px;font-weight:600;line-height:1.4}
+.nx-bg.nx-full .nx-sys{display:block;align-self:center;max-width:310px;margin:0;padding:8px 12px;border-radius:12px;background:#E7DCC8;color:#484236;font-size:12.5px;line-height:1.4;text-align:center}
+.nx-bg.nx-full .nx-dispo{margin:0;text-align:center;font-size:12.5px;color:#655C4D}
+.nx-bg.nx-full .nx-m{max-width:80%;padding:10px 14px 8px;border-radius:18px;background:#FAF4E9;color:#171512;font-size:15px;line-height:1.4}
+.nx-bg.nx-full .nx-m.me{background:#10392B;color:#F3EFE4}
+.nx-bg.nx-full .nx-m time{margin-top:2px;text-align:right;font-size:11.5px;color:#6F6553}.nx-bg.nx-full .nx-m.me time{color:#C5CFC4}
+.nx-bg.nx-full .nx-ev{align-self:center;max-width:310px;padding:8px 12px;border-radius:12px;background:#E7DCC8;color:#484236;font-size:12.5px;line-height:1.4;text-align:center}
+.nx-pc{align-self:flex-start;width:280px;max-width:86%;box-sizing:border-box;display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:18px;background:#FFFDF8;border:1.5px solid rgba(23,21,18,.14);color:#171512}
+.nx-pc.me{align-self:flex-end;border-color:#10392B}
+.nx-pc .t{font-size:12.5px;font-weight:700;color:#655C4D}
+.nx-pc .l{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums lining-nums}
+.nx-pc .x{margin-top:-4px;font-size:12.5px;color:#655C4D}
+.nx-pc .c{font-size:13.5px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
+.nx-pc .tot{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.nx-pc .tot>span{font-size:13.5px;color:#655C4D}
+.nx-pc .tot b{font:800 22px/1.1 Jost,sans-serif;color:#10392B;letter-spacing:-.01em;font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+.nx-pc .st{font-size:12.5px;font-weight:700}.nx-pc .st.wait{color:#765802}.nx-pc .st.mute{color:#6F6553}.nx-pc .st.ok{color:#4A6A53}.nx-pc .st.bad{color:#B23C24}
+.nx-pc-act{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.nx-pc-act button{flex:1 1 auto;min-height:44px;padding:0 12px;border-radius:999px;font:700 14px Jost,sans-serif;white-space:nowrap;cursor:pointer}
+.nx-pc-act .ok{border:0;background:#10392B;color:#F3EFE4}
+.nx-pc-act .ct{border:1.5px solid #10392B;background:none;color:#10392B}
+.nx-pc-act .no{position:relative;flex-basis:100%;min-height:36px;height:36px;border:0;background:none;color:#655C4D;font-size:13.5px;font-weight:600}.nx-pc-act .no::after{content:"";position:absolute;inset:-4px 0}
+.nx-acc{align-self:stretch;display:flex;flex-direction:column;gap:9px;margin-top:4px;padding:16px;border-radius:20px;background:#FFFDF8;border:1.5px solid #1F8A55;color:#171512}
+.nx-acc .hd{display:flex;align-items:center;justify-content:space-between;gap:10px}.nx-acc .hd small{font-size:12.5px;color:#655C4D;text-align:right}
+.nx-tampon{flex:none;transform:rotate(-4deg);border:2px solid #17633D;color:#17633D;border-radius:6px;padding:2px 9px;font:800 12.5px/1.5 Jost,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.nx-acc .r{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:14px}.nx-acc .r>span{flex:none;color:#655C4D}.nx-acc .r b{font-weight:400;text-align:right;font-variant-numeric:tabular-nums lining-nums;overflow-wrap:anywhere}
+.nx-acc hr{height:1px;margin:0;border:0;background:rgba(23,21,18,.1)}
+.nx-acc .tot{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.nx-acc .tot span{font-size:14px;font-weight:600}
+.nx-acc .tot b{font:800 26px/1.05 Jost,sans-serif;color:#10392B;letter-spacing:-.02em;font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+.nx-acc .n{font-size:12.5px;color:#655C4D}
+.nx-acc .cmd{min-height:52px;border:0;border-radius:999px;background:#10392B;color:#F3EFE4;font:700 16px Jost,sans-serif;cursor:pointer}
+.nx-acc .voir{min-height:46px;border:1.5px solid #10392B;border-radius:999px;background:none;color:#10392B;font:700 15px Jost,sans-serif;cursor:pointer}
+.nx-bg.nx-full .nx-f{display:flex;flex-direction:column;gap:8px;padding:8px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid rgba(23,21,18,.08);background:rgba(250,244,233,.94);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.nx-bg.nx-full .nx-f .nx-err:empty{display:none}.nx-bg.nx-full .nx-f .nx-err{margin:0}
+.nx-bg.nx-full .nx-f :is(.nx-act,.nx-pend){margin:0}
+.nx-bg.nx-full .nx-rap{display:flex;gap:6px;overflow-x:auto;margin:-5px -12px;padding:5px 12px;scrollbar-width:none}.nx-bg.nx-full .nx-rap::-webkit-scrollbar{display:none}
+.nx-bg.nx-full .nx-rap .nx-chip{position:relative;flex:none;min-height:34px;height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(23,21,18,.14);background:#FAF4E9;color:#171512;font:600 13.5px Jost,sans-serif}
+.nx-bg.nx-full .nx-rap .nx-chip::after{content:"";position:absolute;inset:-5px 0}
+.nx-bg.nx-full .nx-comp{display:flex;align-items:flex-end;gap:8px}
+.nx-bg.nx-full .nx-prixb{flex:none;height:44px;padding:0 14px;border-radius:999px;border:1.5px solid #10392B;background:none;color:#10392B;font:700 14px Jost,sans-serif;cursor:pointer}
+.nx-bg.nx-full .nx-comp textarea{flex:1;min-width:0;min-height:44px;height:44px;margin:0;padding:11px 16px;border:1px solid rgba(23,21,18,.14);border-radius:22px;background:#FFFAF3;color:#171512;font:400 16px/1.3 Jost,sans-serif;resize:none;box-sizing:border-box}
+.nx-bg.nx-full .nx-comp .nx-ib{width:44px;height:44px;border-radius:999px;background:#10392B;color:#F3EFE4}
+.nx-menu{position:absolute;right:10px;top:calc(58px + env(safe-area-inset-top));z-index:6;min-width:230px;max-width:calc(100% - 20px);padding:6px;border-radius:18px;background:#FFFDF8;border:1px solid rgba(23,21,18,.08);box-shadow:0 14px 34px rgba(23,21,18,.18),0 2px 6px rgba(23,21,18,.08);animation:nxPop .2s ease both}
+.nx-menu button{display:flex;align-items:center;width:100%;min-height:46px;padding:0 12px;border:0;border-radius:12px;background:none;color:#171512;font:500 15px Jost,sans-serif;text-align:left;cursor:pointer}
+.nx-menu button:hover{background:rgba(23,21,18,.06)}.nx-menu .rouge{color:#B23C24}
+.nx-full :is(.nx-pc,.nx-acc,.nx-menu,.nx-qui) button:focus-visible,.nx-full .nx-qui:focus-visible{outline:2px solid #10392B;outline-offset:2px}
+html[data-theme=sombre] .nx-bg.nx-full .nx-m.me{background:#F2C230;color:#171512}html[data-theme=sombre] .nx-bg.nx-full .nx-m.me time{color:#4A3A0A}
+html[data-theme=sombre] .nx-full .nx-pc.me{border-color:#F2C230}
+html[data-theme=sombre] .nx-full :is(.nx-pc,.nx-acc) .tot b{color:#F2C230}
+html[data-theme=sombre] .nx-full :is(.nx-pc-act .ok,.nx-acc .cmd),html[data-theme=sombre] .nx-bg.nx-full .nx-comp .nx-ib{background:#F2C230;color:#171512}
+html[data-theme=sombre] .nx-full :is(.nx-pc-act .ct,.nx-acc .voir),html[data-theme=sombre] .nx-bg.nx-full .nx-prixb{border-color:#F2C230;color:#F2C230}
+html[data-theme=sombre] .nx-full :is(.nx-pc,.nx-acc,.nx-menu,.nx-qui) button:focus-visible,html[data-theme=sombre] .nx-full .nx-qui:focus-visible{outline-color:#F2C230}
+html[data-theme=sombre] .nx-tampon{border-color:#9FDCB2;color:#9FDCB2}
+@media (prefers-reduced-motion:reduce){.nx-menu{animation:none}}
 @media (prefers-reduced-motion:reduce){.nx-bg,.nx,.nx-new{animation:none}.nx-rail .gap,.nx-rail .pin{transition:none}}`;
   let css = false, bg = null, poll = 0;
   const autreId = n => n.auteur_id === me() ? n.proprio_id : n.auteur_id;
@@ -517,64 +588,107 @@
     if (!N() || !N().session()) return N() && N().open();
     if (window.MDGActivite) MDGActivite.noter('nego', id);   // pour « Reprendre » dans Accueil → Activité
     let n = liste.find(x => x.id === id), msgs = null, mode = '', dispo = null;
-    sheet(head(n ? (n.produit || 'Négociation') : 'Négociation', '', true) + `<div class="nx-b"><div class="nx-top"></div><div class="nx-msgs" aria-live="polite"></div><div class="nx-bottom"></div></div><div class="nx-f"></div>`, 'Négociation');
+    /* refonte 2026-11 (maquette « MGCI App v2 », écran Discussion) : plein écran, en-tête = la personne (toucher → son profil),
+       cartes de proposition en reçu, carte « Accord conclu », barre de saisie (réponses rapides, Prix, message).
+       Profil, message privé, retrait de la liste, signalement et arrêt de la négociation passent dans le menu « ⋯ ». */
+    const TROIS = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>';
+    sheet(`<div class="nx-h nx-hd"><button type="button" class="nx-ib nx-back" data-back aria-label="Retour à mes négociations">${CHEV}</button><button type="button" class="nx-qui" data-qui></button><button type="button" class="nx-ib" data-plus aria-label="Plus d’options" aria-haspopup="menu" aria-expanded="false">${TROIS}</button></div>`
+      + `<div class="nx-b"><div class="nx-top"></div><div class="nx-msgs" aria-live="polite"></div><div class="nx-bottom"></div></div><div class="nx-f"></div>`, 'Négociation');
+    bg.classList.add('nx-full');
     bindSnd();
     bg.querySelector('[data-back]').onclick = () => inbox();
     const $ = s => bg && bg.querySelector(s);
     const annonce = () => { const k = n.cible === 'offre' ? 'offres' : 'demandes'; return N().list(k).find(x => x._rid === n.cible_id); };
+    const initiales = t => { const m = String(t || '').trim().split(/\s+/).filter(Boolean); return m.length ? esc(((m[0][0] || '') + (m.length > 1 ? m[m.length - 1][0] : m[0].slice(1, 2))).toUpperCase()) : '?'; };
+    const officiel = () => !!(window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(autreId(n)));
+    const nomDe = () => avDe(n, 40).nom || '';
+    // transport d'une proposition, en une ligne : réel, jamais deviné
+    const trLigne = (v, pt) => v === true ? 'Transport compris' : v === false && +pt > 0 ? 'Transport à part · ' + fmt(pt) + ' F' : v === false ? 'Transport à la charge de l’acheteur' : '';
     const ticket = (m, i, seen, anim) => {
       const R = roles(n), mine = m.auteur_id === me(), who = mine ? 'Vous' : Le(R[m.auteur_id]), u = n.unite || 'unité';
       const cls = (mine ? ' me' : '') + (anim && i >= seen ? ' nx-new' : ''), when = `<time datetime="${m.created_at}">${ago(m.created_at)}</time>`;
       if (m.genre === 'texte') return `<div class="nx-m${cls}">${esc(m.texte)}${when}</div>`;
       if (m.genre === 'fin') return `<div class="nx-ev${cls}">${who} ${mine ? 'avez' : 'a'} arrêté la négociation${m.texte ? ' : « ' + esc(m.texte) + ' »' : ''} · ${ago(m.created_at)}</div>`;
       if (m.genre === 'refus' || m.genre === 'retrait') return `<div class="nx-ev${cls}">${who} ${mine ? 'avez' : 'a'} ${m.genre === 'refus' ? 'refusé' : 'retiré'} la proposition à ${fmt(m.prix)} F${m.texte ? ' : « ' + esc(m.texte) + ' »' : ''} · ${ago(m.created_at)}</div>`;
-      if (m.genre === 'accord') return `<div class="nx-ev nx-ev-ok${cls}">${who} ${mine ? 'avez' : 'a'} accepté : ${m.quantite ? fq(m.quantite) + ' ' + esc(uQ(m.quantite, u)) + ' × ' : ''}${fmt(m.prix)} F${trTxt(m.transport_inclus, m.prix_transport)} · ${ago(m.created_at)}</div>`;
+      // l'accord : la carte « Accord conclu » prend sa place dans le fil
+      if (m.genre === 'accord') return n.statut === 'conclue' && !(msgs || []).slice(i + 1).some(x => x.genre === 'accord') ? deal() : `<div class="nx-ev nx-ev-ok${cls}">${who} ${mine ? 'avez' : 'a'} accepté : ${m.quantite ? fq(m.quantite) + ' ' + esc(uQ(m.quantite, u)) + ' × ' : ''}${fmt(m.prix)} F${trTxt(m.transport_inclus, m.prix_transport)} · ${ago(m.created_at)}</div>`;
       const iss = m.issue === 'en_attente' && Date.parse(m.expire_le) <= Date.now() ? 'expiree' : m.issue;
-      const IS = { en_attente: ['En attente · ' + reste(m.expire_le), 'acc'], acceptee: ['Acceptée', 'ok'], refusee: ['Refusée', 'bad'], retiree: ['Retirée', ''], remplacee: ['Remplacée par une nouvelle proposition', ''], expiree: ['Expirée sans réponse', ''] }[iss] || ['', ''];
-      const aRep = !mine && iss === 'en_attente' && m.id === n.dernier_msg && n.statut === 'ouverte' && aMoi(n) && mode === '';
-      return `<div class="nx-tk${cls} is-${iss || 'x'}"><div class="who">${mk(R[m.auteur_id])}${who} ${mine ? 'proposez' : 'propose'}<span class="nx-tag ${IS[1]}">${IS[0]}</span></div>
-        <div class="amt">${fmt(m.prix)} <small>F / ${esc(u)}</small></div>${trTag(m.transport_inclus, m.prix_transport)}${m.quantite ? `<div class="qty">${fq(m.quantite)} ${esc(uQ(m.quantite, u))} · total ${fmt(m.prix * m.quantite)} F${+m.prix_transport > 0 && m.transport_inclus === false ? ' + transport ' + fmt(m.prix_transport) + ' F' : ''}</div>` : ''}${m.texte ? `<div class="t">${esc(m.texte)}</div>` : ''}${when}${aRep ? `<div class="nx-tk-act"><button type="button" class="nx-go" data-g="accord">Accepter</button><button type="button" class="nx-alt" data-g="edit">Contre-proposer</button><button type="button" class="nx-alt nx-non" data-g="refus">Refuser</button></div>` : ''}</div>`;
+      const actuelle = m.id === n.dernier_msg && n.statut === 'ouverte';
+      // l'état en texte coloré, comme la maquette ; « répondu » quand l'autre a fait une contre-proposition
+      const suite = (msgs || []).slice(i + 1).find(x => x.genre === 'prix'), contre = suite && suite.auteur_id !== m.auteur_id;
+      const ST = iss === 'en_attente' ? [(mine ? 'En attente de sa réponse' : actuelle ? 'À vous de répondre' : 'En attente') + ' · ' + reste(m.expire_le), 'wait']
+        : iss === 'remplacee' ? [contre ? (mine ? 'Il a répondu' : 'Vous avez répondu') : 'Remplacée', 'mute']
+        : ({ acceptee: ['Acceptée', 'ok'], refusee: ['Refusée', 'bad'], retiree: ['Retirée', 'mute'], expiree: ['Expirée sans réponse', 'mute'] }[iss] || ['', 'mute']);
+      const aRep = !mine && iss === 'en_attente' && actuelle && aMoi(n) && mode === '';
+      const aRetirer = mine && iss === 'en_attente' && actuelle && enCours(n) && mode === '';
+      const pt = m.transport_inclus === false && +m.prix_transport > 0 ? +m.prix_transport : 0, tr = trLigne(m.transport_inclus, m.prix_transport);
+      const titre = mine ? 'Votre proposition' : nomDe() ? 'Proposition de ' + esc(nomDe()) : 'Proposition ' + (R[m.auteur_id] === 'vendeur' ? 'du vendeur' : 'de l’acheteur');
+      return `<div class="nx-pc${cls} is-${iss || 'x'}"><span class="t">${titre}</span>
+        <span class="l">${m.quantite ? fq(m.quantite) + ' ' + esc(uQ(m.quantite, u)) + ' × ' + fmt(m.prix) + ' F' : fmt(m.prix) + ' F / ' + esc(u)}</span>${tr ? `<span class="x">${tr}</span>` : ''}${m.texte ? `<span class="c">${esc(m.texte)}</span>` : ''}
+        ${m.quantite ? `<span class="tot"><span>Total</span><b>${fmt(m.prix * m.quantite + pt)} F</b></span>` : ''}${ST[0] ? `<span class="st ${ST[1]}">${esc(ST[0])}</span>` : ''}
+        ${aRep ? `<div class="nx-pc-act"><button type="button" class="ok" data-g="accord">Accepter</button><button type="button" class="ct" data-g="edit">Contre-proposer</button><button type="button" class="no" data-g="refus">Refuser</button></div>` : ''}${aRetirer ? `<div class="nx-pc-act"><button type="button" class="no" data-g="retrait">Retirer ma proposition</button></div>` : ''}</div>`;
     };
+    // la carte « Accord conclu » : données figées par le serveur (prix, quantité, transport, conditions)
     const deal = () => { const u = n.unite || 'unité', q = n.quantite_finale, tr = n.transport_final, pt = tr === false && +n.prix_transport_final > 0 ? +n.prix_transport_final : 0;
-      const ic = (d, t) => `<svg width="${t || 16}" height="${t || 16}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
-      const lien = window.MDGMessages ? `<a href="#" class="nx-dlink" data-deal-dm>${ic('<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>', 18)}Écrire ${autre(monRole(n)) === 'vendeur' ? 'au vendeur' : 'à l’acheteur'}</a>` : '';
-      return `<div class="nx-deal" role="status">
-      <div class="nx-dh"><span class="nx-dck">${ic('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 22).replace('stroke-width="2"', 'stroke-width="2.6"')}</span><div><b>Accord conclu</b><small>le ${jour(n.conclu_le || n.updated_at)}</small></div></div>
-      <div class="nx-dl">${q ? `<div><span>Quantité</span><b>${fq(q)} ${esc(uQ(q, u))}</b></div>` : ''}<div><span>Prix convenu</span><b>${fmt(n.prix_final)} F / ${esc(u)}</b></div>${tr === true || tr === false ? `<div><span>Transport</span><b>${tr ? 'Compris dans le prix' : pt ? 'À part · ' + fmt(pt) + ' F' : 'Non compris'}</b></div>` : ''}${q ? `<div class="tot"><span>Total${pt ? ' avec le transport' : ''}</span><b>${fmt(n.prix_final * q + pt)} F</b></div>` : ''}</div>
-      ${n.conditions_finales ? `<p class="nx-cond"><span>Conditions</span>${esc(n.conditions_finales)}</p>` : ''}
-      <p class="nx-dnote">${ic('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>', 15)}Prix${pt ? ', transport' : ''} et quantité sont figés. Rien n’est encore payé ni livré.</p>
-      ${window.MDGIdentite && MDGIdentite.gardePaiement ? `<p class="nx-warn">${MDGIdentite.gardePaiement(autreId(n), avDe(n, 40).nom || '')}</p>` : '<p class="nx-dnote">Voyez la marchandise avant de payer.</p>'}
-      ${window.MDGCommandes && !(MDGCommandes.parNego && MDGCommandes.parNego(n.id)) ? '<p class="nx-dnote">Sans commande sous 72 h, l’accord devient « sans suite ».</p>' : ''}${window.MDGCommandes ? `<button type="button" class="nx-go" data-deal-cmd>${ic('<path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.34a4 4 0 0 0-1.17-2.83L19 9h-5v8h1"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>', 20)}${MDGCommandes.parNego && MDGCommandes.parNego(n.id) ? 'Suivre la commande' : 'Passer la commande'}</button>` : ''}
-      ${lien}${lien ? `<p class="nx-dsafe">${ic('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>', 13)}Restez ici : en cas de litige, l’équipe peut vérifier vos échanges.</p>` : ''}</div>`; };
+      const cmd = window.MDGCommandes ? (MDGCommandes.parNego && MDGCommandes.parNego(n.id)) : null;
+      return `<div class="nx-acc" role="status"><div class="hd"><span class="nx-tampon">Accord conclu</span><small>le ${jour(n.conclu_le || n.updated_at)}</small></div>
+      <div class="r"><span>Marchandise</span><b>${q ? fq(q) + ' ' + esc(uQ(q, u)) + ' × ' : ''}${fmt(n.prix_final)} F${q ? '' : ' / ' + esc(u)}</b></div>
+      <div class="r"><span>Transport</span><b>${tr === true ? 'Compris' : pt ? 'À part · ' + fmt(pt) + ' F' : tr === false ? 'À la charge de l’acheteur' : 'À convenir'}</b></div>
+      <div class="r"><span>Paiement</span><b>À la livraison, hors application</b></div>
+      ${n.conditions_finales ? `<div class="r"><span>Conditions</span><b>${esc(n.conditions_finales)}</b></div>` : ''}
+      ${q ? `<hr><div class="tot"><span>Total figé</span><b>${fmt(n.prix_final * q + pt)} F</b></div>` : ''}
+      ${window.MDGCommandes && !cmd ? '<span class="n">Sans commande sous 72 h, l’accord devient « sans suite ».</span>' : ''}
+      ${window.MDGCommandes ? `<button type="button" class="${cmd ? 'voir' : 'cmd'}" data-deal-cmd>${cmd ? 'Voir la commande' : 'Passer la commande'}</button>` : ''}</div>`; };
+    // le menu « ⋯ » : les gestes sur la personne et sur la négociation (mêmes fonctions qu'avant)
+    const fermerMenu = rendre => { const m = $('.nx-menu'); if (!m) return; m.remove(); const p = $('[data-plus]'); if (p) { p.setAttribute('aria-expanded', 'false'); if (rendre) p.focus(); } };
+    function menu() {
+      if ($('.nx-menu')) { fermerMenu(true); return; }
+      const idLui = autreId(n), off = officiel(), R = window.MDGRep, nom = nomDe();
+      const m = document.createElement('div'); m.className = 'nx-menu'; m.setAttribute('role', 'menu'); m.setAttribute('aria-label', 'Options');
+      m.innerHTML = (R && !off ? '<button type="button" role="menuitem" data-a="profil">Voir son profil</button>' : '')
+        + (window.MDGMessages ? '<button type="button" role="menuitem" data-a="ecrire">Écrire en privé</button>' : '')
+        + '<button type="button" role="menuitem" data-a="cacher">Retirer de ma liste</button>'
+        + (!off && window.MDGIdentite && MDGIdentite.signaler ? '<button type="button" role="menuitem" class="rouge" data-a="signaler">Signaler cette personne</button>' : '')
+        + (n.statut === 'ouverte' ? '<button type="button" role="menuitem" class="rouge" data-a="fin">Arrêter la négociation</button>' : '');
+      $('.nx').appendChild(m); $('[data-plus]').setAttribute('aria-expanded', 'true');
+      const items = [...m.querySelectorAll('button')]; if (items[0]) items[0].focus();
+      m.addEventListener('keydown', e => { const k = items.indexOf(document.activeElement); if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); items[(k + (e.key === 'ArrowDown' ? 1 : items.length - 1)) % items.length].focus(); } else if (e.key === 'Tab') fermerMenu(false); });
+      m.onclick = async e => { const a = e.target.closest('[data-a]'); if (!a) return; fermerMenu(false);
+        if (a.dataset.a === 'profil') R.profil(idLui, { nom: nom || 'Membre', uri: avDe(n, 72).uri || '' });
+        else if (a.dataset.a === 'ecrire') { close(); MDGMessages.ecrire(idLui, { nom: nom || 'Membre' }); }
+        else if (a.dataset.a === 'cacher') { try { await masquer(n.id); inbox(); } catch (_) { N().toast('Impossible pour l’instant. Réessayez.'); } }
+        else if (a.dataset.a === 'signaler') MDGIdentite.signaler(idLui, { nom, source: 'negociation', ref: n.id });
+        else if (a.dataset.a === 'fin') act('fin'); };
+    }
+    bg.querySelector('[data-plus]').onclick = e => { e.stopPropagation(); if (n) menu(); };
+    bg.addEventListener('click', e => { if (!e.target.closest('.nx-menu,[data-plus]')) fermerMenu(false); });
+    bg.addEventListener('keydown', e => { if (e.key === 'Escape' && $('.nx-menu')) { e.stopPropagation(); fermerMenu(true); } }, true);
     const paint = anim => {
       if (!bg || !n) return;
-      const lui = autre(monRole(n)), u = n.unite || 'unité', proprio = me() === n.proprio_id;
-      const av = avDe(n, 40); $('.nx-h').classList.toggle('has-av', !!av.svg); let ha = $('.nx-h .nx-hav'); if (!ha && av.svg) { ha = document.createElement('span'); ha.className = 'nx-hav'; $('.nx-h h2').before(ha); } if (ha) ha.innerHTML = av.svg;
-      $('.nx-h h2').innerHTML = esc(n.produit || 'Négociation') + `<small>Avec ${leLa(lui)}${av.nom ? ' ' + esc(av.nom) : ''}${window.MDGStatut ? ' ' + MDGStatut.puces(autreId(n), { max: 1, t: 14 }) : ''}${n.ville ? ' · ' + esc(n.ville) : ''}${n.quantite ? ' · annonce de ' + fq(n.quantite) + ' ' + esc(uQ(n.quantite, u)) : ''}</small>`;
-      const e = etat(n);
-      const verifie = !!(window.MDGStatut ? MDGStatut.estVerifie(autreId(n)) || (MDGStatut.estOfficiel && MDGStatut.estOfficiel(autreId(n))) : window.MDGIdentite && MDGIdentite.estVerifie(autreId(n)));
-      $('.nx-top').innerHTML = `<p class="nx-sys">${CADENAS}Numéros cachés : tout se dit ici. L’équipe du Marché de Gros peut lire ces échanges.</p>` + (verifie ? '' : `<p class="nx-avance">Ne payez jamais d’avance : ${esc(av.nom || leLa(lui))} n’a pas d’identité vérifiée.</p>`) + `<div class="nx-state"><span class="nx-tag ${e.c}">${esc(e.t)}</span>${n.prix_annonce ? `<span>Prix affiché ${fmt(n.prix_annonce)} F / ${esc(u)}</span>` : ''}</div>` + rail(n, msgs)
+      const lui = autre(monRole(n)), u = n.unite || 'unité', proprio = me() === n.proprio_id, nom = nomDe(), off = officiel();
+      const verifie = !!(window.MDGStatut ? MDGStatut.estVerifie(autreId(n)) || off : window.MDGIdentite && MDGIdentite.estVerifie(autreId(n)));
+      // en-tête : initiales, nom (+ rond vert si l'identité est vérifiée), produit et prix de l'annonce
+      const sous = esc(n.produit || 'Négociation') + (n.prix_annonce ? ' · ' + (n.cible === 'offre' ? fmt(n.prix_annonce) + ' F / ' + esc(u) + ' demandé' : 'budget ' + fmt(n.prix_annonce) + ' F / ' + esc(u)) : n.ville ? ' · ' + esc(n.ville) : '');
+      const VERIF = '<svg width="16" height="16" viewBox="0 0 24 24" role="img" aria-label="Identité vérifiée"><circle cx="12" cy="12" r="10" fill="#10392B"/><path d="M7.5 12.3l3 3 6-6.3" fill="none" stroke="#F3EFE4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      const qui = `${off ? '<img class="nx-ini" src="logo/marque.svg" alt="" width="42" height="42">' : `<span class="nx-ini" aria-hidden="true">${initiales(nom || Le(lui))}</span>`}<span class="nx-qt"><b><span class="nm">${esc(nom || Le(lui))}</span>${verifie && !off ? VERIF : ''}</b><small>${sous}</small></span>`;
+      const bq = $('[data-qui]'), peutProfil = !!(window.MDGRep && !off);
+      if (bq.dataset.h !== qui) { bq.dataset.h = qui; bq.innerHTML = qui; }
+      bq.disabled = !peutProfil; bq.setAttribute('aria-label', peutProfil ? 'Voir le profil de ' + (nom || leLa(lui)) : (nom || Le(lui)));
+      bq.onclick = () => { if (peutProfil) MDGRep.profil(autreId(n), { nom: nom || 'Membre', uri: avDe(n, 72).uri || '' }); };
+      $('.nx-top').innerHTML = (verifie ? '' : `<p class="nx-avance">${esc(nom || Le(lui))} n’a pas encore vérifié son identité. Ne payez jamais d’avance : vous payez à la livraison.</p>`)
+        + `<p class="nx-sys">Numéros cachés : tout se dit ici. L’équipe du Marché de Gros peut lire ces échanges.</p>`
         + (proprio && dispo && dispo.quantite ? `<p class="nx-dispo">Sur votre annonce : ${fq(dispo.convenue)} / ${fq(dispo.quantite)} ${esc(uQ(dispo.quantite, u))} déjà convenus${dispo.en_cours > 1 ? ' · ' + (dispo.en_cours - 1) + ' autre' + (dispo.en_cours > 2 ? 's' : '') + ' négociation' + (dispo.en_cours > 2 ? 's' : '') + ' en cours' : ''}</p>` : '');
       const box = $('.nx-msgs'), seen = box.childElementCount;
       box.innerHTML = (msgs || []).map((m, i) => ticket(m, i, seen, anim)).join('');
       box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => act(b.dataset.g));
-      $('.nx-bottom').innerHTML = n.statut === 'conclue' ? deal() : '';
-      // en bas du fil : noter la personne (étoiles, v3/reputation.js) et retirer la négociation de sa liste
-      const idLui = autreId(n), R = window.MDGRep;
-      const offL = !!(window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(idLui));   // le Marché de Gros officiel : ni note ni signalement
-      $('.nx-bottom').insertAdjacentHTML('beforeend', `<div class="nx-plus">${R && !offL ? `<button type="button" class="nx-pl" data-profil>Voir son profil</button>` : ''}${window.MDGMessages ? '<button type="button" class="nx-pl" data-ecrire>Écrire en privé</button>' : ''}<button type="button" class="nx-pl" data-cacher>Retirer de ma liste</button>${!offL && window.MDGIdentite && MDGIdentite.signaler ? '<button type="button" class="nx-pl" data-signaler>Signaler cette personne</button>' : ''}</div>`);
-      const bS = $('[data-signaler]'); if (bS) bS.onclick = () => MDGIdentite.signaler(idLui, { nom: av.nom || '', source: 'negociation', ref: n.id });
-      const bN = $('[data-noter]'), bP = $('[data-profil]'), bC = $('[data-cacher]'), bE = $('[data-ecrire]');
-      if (bE) bE.onclick = () => { close(); MDGMessages.ecrire(idLui, { nom: av.nom || 'Membre' }); };
+      // accord sans trace dans le fil (ancien serveur) : la carte va en bas
+      $('.nx-bottom').innerHTML = n.statut === 'conclue' && !box.querySelector('.nx-acc') ? deal() : '';
       const bCmd = $('[data-deal-cmd]'); if (bCmd) bCmd.onclick = () => { const nn = n; close(); MDGCommandes.depuisAccord(nn); };
-      const bD = $('[data-deal-dm]'); if (bD) bD.onclick = e => { e.preventDefault(); close(); MDGMessages.ecrire(idLui, { nom: av.nom || 'Membre' }); };
-      // l'avis se donne après une commande terminée, depuis Mes commandes (schéma 32) : plus de bouton « Noter » ici
-      if (bP) bP.onclick = () => R.profil(idLui, { nom: av.nom || 'Membre', uri: avDe(n, 72).uri || '' });
-      if (bC) bC.onclick = async () => { try { await masquer(n.id); inbox(); } catch (_) { N().toast('Impossible pour l’instant. Réessayez.'); } };
+      // l'avis se donne après une commande terminée, depuis Mes commandes (schéma 32) : pas de bouton « Noter » ici
       pied();
       if (anim) { const b = $('.nx-b'); b.scrollTop = b.scrollHeight; }
     };
-    // pied : les actions possibles selon l'état et le rôle
+    // pied : la barre de saisie (réponses rapides, Prix, message) et, selon l'état, la confirmation d'un accord ou l'éditeur
     function pied() {
       const f = $('.nx-f'), u = n.unite || 'unité', lui = autre(monRole(n)), a = annonce(), keep = f.querySelector('.nx-comp textarea') ? f.querySelector('.nx-comp textarea').value : '';
       let h = '';
@@ -585,22 +699,21 @@
         <div class="nx-act"><button type="button" class="nx-go" data-g="accord-ok">Confirmer l’accord</button><button type="button" class="nx-alt" data-g="annuler" style="grid-column:1 / -1">Retour</button></div><p class="nx-err" role="alert"></p></div>`;
       else {
         const dansCarte = (msgs || []).some(m => m.id === n.dernier_msg && m.genre === 'prix');
-        if (n.statut === 'ouverte' && aMoi(n) && dansCarte) h += '';
-        else if (n.statut === 'ouverte' && aMoi(n)) h += `<div class="nx-pend"><span>${Le(lui)} propose ${Q ? fq(Q) + ' ' + esc(uQ(Q, u)) + ' × ' : ''}<b>${fmt(P)} F</b>${Q ? ' = ' + fmt(P * Q) + ' F' : ''}${trTxt(n.dernier_transport, n.dernier_prix_transport)} · ${reste(n.expire_le)}</span></div>
+        // sans carte dans le fil (fil pas encore chargé) : la proposition en cours et ses gestes restent ici
+        if (n.statut === 'ouverte' && aMoi(n) && !dansCarte) h += `<div class="nx-pend"><span>${Le(lui)} propose ${Q ? fq(Q) + ' ' + esc(uQ(Q, u)) + ' × ' : ''}<b>${fmt(P)} F</b>${Q ? ' = ' + fmt(P * Q) + ' F' : ''}${trTxt(n.dernier_transport, n.dernier_prix_transport)} · ${reste(n.expire_le)}</span></div>
           <div class="nx-act"><button type="button" class="nx-go" data-g="accord">Accepter ${fmt(P)} F / ${esc(u)}</button><button type="button" class="nx-alt" data-g="edit">Contre-proposer</button><button type="button" class="nx-alt" data-g="refus">Refuser</button></div>`;
-        else if (n.statut === 'ouverte' && enCours(n)) h += `<div class="nx-pend"><span>Votre proposition : ${Q ? fq(Q) + ' ' + esc(uQ(Q, u)) + ' × ' : ''}<b>${fmt(P)} F</b> · en attente, ${reste(n.expire_le)}</span></div>
-          <div class="nx-act"><button type="button" class="nx-alt" data-g="edit">Modifier ma proposition</button><button type="button" class="nx-alt" data-g="retrait">Retirer ma proposition</button></div>`;
-        else if (n.statut === 'ouverte') h += `<div class="nx-act"><button type="button" class="nx-go" data-g="edit">${expiree(n) ? 'Faire une nouvelle proposition' : 'Faire une proposition'}</button></div>`;
+        else if (n.statut === 'ouverte' && enCours(n) && !dansCarte) h += `<div class="nx-pend"><span>Votre proposition : ${Q ? fq(Q) + ' ' + esc(uQ(Q, u)) + ' × ' : ''}<b>${fmt(P)} F</b> · en attente, ${reste(n.expire_le)}</span></div>
+          <div class="nx-act"><button type="button" class="nx-alt" data-g="retrait" style="grid-column:1 / -1">Retirer ma proposition</button></div>`;
         else if (n.statut === 'close' && n.motif_fin !== 'annonce_retiree' && a) h += `<div class="nx-act"><button type="button" class="nx-alt" data-g="edit" style="grid-column:1 / -1">Relancer avec une proposition</button></div>`;
         const rapides = monRole(n) === 'acheteur' ? ['Disponible quand ?', 'Transport compris ?', 'Des photos ?'] : ['C’est disponible', 'Je livre', 'Je vous envoie des photos'];
         if (n.statut === 'ouverte') h += `<div class="nx-rap" role="group" aria-label="Réponses rapides">${rapides.map(r => `<button type="button" class="nx-chip" data-rap="${esc(r)}">${esc(r)}</button>`).join('')}</div>`;
-        h += `<div class="nx-comp">${n.statut === 'ouverte' && !(aMoi(n) && dansCarte) && !enCours(n) ? '' : n.statut === 'ouverte' ? '<button type="button" class="nx-prixb" data-g="edit">Prix</button>' : ''}<textarea maxlength="500" placeholder="Écrire un message" aria-label="Message à ${leLa(lui)}"></textarea><button type="button" class="nx-ib" data-g="texte" aria-label="Envoyer le message">${window.MDGIco ? MDGIco.svg('envoyer', 20, 2) : '↑'}</button></div>
-          ${n.statut === 'ouverte' ? '<p class="nx-stop"><button type="button" data-g="fin">Arrêter la négociation</button></p>' : ''}<p class="nx-err" role="alert"></p>`;
+        h += `<div class="nx-comp">${n.statut === 'ouverte' ? `<button type="button" class="nx-prixb" data-g="edit" aria-label="${enCours(n) && !aMoi(n) ? 'Modifier ma proposition' : 'Proposer un prix'}">Prix</button>` : ''}<textarea maxlength="500" rows="1" placeholder="Écrire un message" aria-label="Message à ${leLa(lui)}"></textarea><button type="button" class="nx-ib" data-g="texte" aria-label="Envoyer le message">${window.MDGIco ? MDGIco.svg('envoyer', 20, 2) : '↑'}</button></div><p class="nx-err" role="alert"></p>`;
       }
       f.innerHTML = h;
       const ta = f.querySelector('.nx-comp textarea'); if (ta) ta.value = keep;
       f.querySelectorAll('[data-g]').forEach(b => b.onclick = () => act(b.dataset.g));
-      f.querySelectorAll('[data-rap]').forEach(b => b.onclick = () => { const ta2 = f.querySelector('.nx-comp textarea'); if (!ta2) return; ta2.value = (ta2.value ? ta2.value.trim() + ' ' : '') + b.dataset.rap; ta2.focus(); });
+      // une réponse rapide part tout de suite, comme dans la maquette
+      f.querySelectorAll('[data-rap]').forEach(b => b.onclick = () => act('texte', b.dataset.rap));
       const c = f.querySelector('.nx-cancel'); if (c) c.onclick = () => { mode = ''; pied(); };
       if (mode === 'edit') {
         const proprio = me() === n.proprio_id;
@@ -609,19 +722,19 @@
           aMoi(n) ? 'Contre-proposer' : 'Proposer');
       }
     }
-    async function act(g) {
+    async function act(g, rapide) {
       const f = $('.nx-f'), e = f.querySelector('.nx-err');
       if (g === 'edit' || g === 'accord') { mode = g; pied(); return; }
       if (g === 'annuler') { mode = ''; pied(); return; }
       if (g === 'fin' && !await (window.MDGDemande ? MDGDemande.oui('Arrêter cette négociation ? Une proposition en attente sera retirée. Vous pourrez relancer plus tard.', { ok: 'Arrêter', danger: true }) : Promise.resolve(confirm('Arrêter cette négociation ? Une proposition en attente sera retirée. Vous pourrez relancer plus tard.')))) return;
       if (g === 'refus' && !await (window.MDGDemande ? MDGDemande.oui('Refuser cette proposition ? Vous pourrez ensuite faire la vôtre.', { ok: 'Refuser' }) : Promise.resolve(confirm('Refuser cette proposition ? Vous pourrez ensuite faire la vôtre.')))) return;
       const args = { nego: n.id, action: g === 'accord-ok' ? 'accord' : g, prix: null, quantite: null, texte: null, ref: ['accord-ok', 'refus'].includes(g) ? n.dernier_msg : null };
-      if (g === 'texte') { args.texte = f.querySelector('textarea').value.trim(); if (!args.texte) return; }
+      if (g === 'texte') { args.texte = rapide || f.querySelector('textarea').value.trim(); if (!args.texte) return; }
       if (!navigator.onLine) { if (e) e.textContent = 'Pas de connexion internet. Réessayez quand le réseau revient.'; return; }
       f.querySelectorAll('button').forEach(b => { b.disabled = true; });
       try {
         await N().rpc('nego_agir', args);
-        if (g === 'texte') f.querySelector('textarea').value = '';
+        if (g === 'texte' && !rapide) f.querySelector('textarea').value = '';
         mode = ''; await load(true);
         if (g === 'accord-ok') { N().toast('Accord conclu. Convenez de la livraison et du paiement.'); window.MDGSons && MDGSons.signal('accord'); }
         if (g === 'retrait') N().toast('Proposition retirée.');

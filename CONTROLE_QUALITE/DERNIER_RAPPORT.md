@@ -1,5 +1,5 @@
-<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-14-11h01-apres-modif.md). Ne pas modifier à la main. -->
-# Rapport du contrôle qualité · 14/11/2026 à 11 h 01 (UTC = heure d’Abidjan)
+<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-14-11h14-apres-modif.md). Ne pas modifier à la main. -->
+# Rapport du contrôle qualité · 14/11/2026 à 11 h 14 (UTC = heure d’Abidjan)
 
 > Gabarit : `CONTROLE_QUALITE/modeles/RAPPORT.md`. Fait par `tools/controle/lancer.sh apres-modif`. Les tests SQL ne sont jamais exécutés par ce script : ils sont « non exécuté » tant que Claude ne les a pas joués via MCP sur le projet de test.
 
@@ -7,19 +7,18 @@
 
 | Champ | Valeur |
 |---|---|
-| Date | 14/11/2026 à 11 h 01 |
-| Commit | `4c2e565` (branche `claude/refonte-lot16-finale`, avec des changements non enregistrés) |
+| Date | 14/11/2026 à 11 h 14 |
+| Commit | `a4e6d86` (branche `claude/refonte-lot16-finale`, avec des changements non enregistrés) |
 | Mode | `apres-modif` |
 | Base de comparaison | `origin/main` |
-| Durée | 5 s |
+| Durée | 4 s |
 | Lancé par | à la main ou par Claude |
 
 ## 2. En bref
 
-- **ÉCHEC BLOQUANT (1)** ; réussis 12, échoués 5, bloqués 0, non exécutés 1, en attente 0.
+- **Aucun échec bloquant** ; réussis 13, échoués 4, bloqués 0, non exécutés 1, en attente 0.
 - Unités avec au moins un contrôle exécuté : U01, U03, U09, U10, U12, U13.
 - Unités non exécutées dans ce passage : U02, U04, U05, U06, U07, U08, U11, U14.
-- Bloquant : fichiers du front changés mais CACHE de sw.js inchangé (mgci-v315)
 
 ## 3. Tests
 
@@ -39,9 +38,9 @@
 | STA-12 | U09 | normal | Contrôle « sql » | aucun constat | rien à signaler (166 fichiers supabase/schema-*.sql ; voir « Pour information ») | réussi | — | tools/controle/controle.js |
 | STA-13 | U13 | normal | Contrôle « liens » | aucun constat | rien à signaler (CLAUDE.md, CONTROLE_QUALITE/CALENDRIER.md, CONTROLE_QUALITE/HISTORIQUE.md, CONTROLE_QUALITE/INVENTAIRE_OUTILS.md, CONTROLE_QUALITE/LISTES_DE_CONTROLE.md, CONTROLE_QUALITE/MATRICE_TESTS.md, CONTROLE_QUALITE/README.md, CONTROLE_QUALITE/REGISTRE_ANOMALIES.md, CONTROLE_QUALITE/REGISTRE_DES_TESTS.md, CONTROLE_QUALITE/modeles/RAPPORT.md, CONTROLE_QUALITE/procedures/APRES_INCIDENT.md, CONTROLE_QUALITE/procedures/APRES_MODIFICATION.md, CONTROLE_QUALITE/procedures/AVANT_PRODUCTION.md, CONTROLE_QUALITE/procedures/CONTROLE_GENERAL.md, CONTROLE_QUALITE/tests/navigateur/README.md, CONTROLE_QUALITE/tests/sql/README.md) | réussi | — | tools/controle/controle.js |
 | STA-14 | U10 | normal | Contrôle « navigateur » | contrôle fait | désactivé (--sans-navigateur) | non exécuté | — | tools/controle/controle.js |
-| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (d2a6dda) | liste | 5 fichier(s) | réussi | — | git diff --name-only d2a6dda |
-| APM-02 | U10 | régression | node --check sur les 3 fichier(s) JS changé(s) | aucune erreur | aucune erreur | réussi | — | app/carte-gl.js, tools/site-public.js, v3/commandes.js |
-| APM-05 | U10 | régression | 4 fichier(s) du front changé(s) : CACHE de sw.js monté | CACHE différent de la base | mgci-v315 → mgci-v315 | échoué | P1 | sw.js ; fichiers : app/carte-gl.js, application.dc.html, css/v2.css, v3/commandes.js |
+| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (d2a6dda) | liste | 14 fichier(s) | réussi | — | git diff --name-only d2a6dda |
+| APM-02 | U10 | régression | node --check sur les 7 fichier(s) JS changé(s) | aucune erreur | aucune erreur | réussi | — | app/carte-gl.js, sw.js, tools/site-public.js, v3/commandes.js, v3/groupes.js, v3/messages.js, v3/nuage.js |
+| APM-05 | U10 | régression | 9 fichier(s) du front changé(s) : CACHE de sw.js monté | CACHE différent de la base | mgci-v315 → mgci-v316 | réussi | — | sw.js ; fichiers : admin.html, app/carte-gl.js, application.dc.html, css/v2.css, index-v3.html, v3/commandes.js… |
 | APM-06 | U10 | régression | ?v= monté pour chaque JS/CSS changé appelé avec ?v= | nouvelle version | monté partout | réussi | — | application.dc.html, index-v3.html, index.html, admin.html, suivi.html, sw.js |
 
 ## 4. Anomalies (P0 à P3)
@@ -52,7 +51,6 @@ Gravité donnée par le script, à confirmer par Claude dans `CONTROLE_QUALITE/R
 - **STA-05** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 30 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/chauffeur.js:24 ; app/theme.js:130 ; index-v3.html:2347 ; ….
 - **STA-08** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 40 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/identite.js:493 ; v3/identite.js:432 ; v3/commandes.js:1010 ; ….
 - **STA-11** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 5 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; index-v3.html:2047 ; v3/avatar.js:13 ; v3/avatar.js:14 ; ….
-- **APM-05** (P1, U10) : mgci-v315 → mgci-v315. Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; sw.js ; fichiers : app/carte-gl.js, application.dc.html, css/v2.css, v3/commandes.js.
 
 ## 5. Risque métier, correctif, non-régression
 

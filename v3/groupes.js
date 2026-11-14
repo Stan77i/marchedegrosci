@@ -12,8 +12,9 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const nf = v => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 }).format(+v || 0).replace(/ /g, ' ');
   const F = v => nf(Math.round(+v || 0)) + ' F';
-  const quand = t => t ? new Date(t).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
-  const reste = t => { const m = (Date.parse(t) - Date.now()) / 6e4; return m <= 0 ? 'terminé' : m < 60 ? Math.round(m) + ' min' : m < 2880 ? Math.round(m / 60) + ' h' : Math.round(m / 1440) + ' jours'; };
+  const quand = t => t && !isNaN(Date.parse(t)) ? new Date(t).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+  // sans date de fin connue, aucune durée (jamais « reste NaN jours »)
+  const reste = t => { const m = (Date.parse(t) - Date.now()) / 6e4; return isNaN(m) ? '' : m <= 0 ? 'terminé' : m < 60 ? Math.round(m) + ' min' : m < 2880 ? Math.round(m / 60) + ' h' : Math.round(m / 1440) + ' jours'; };
   const hors = e => navigator.onLine === false || /Failed to fetch|NetworkError|Load failed|network/i.test(String((e && e.message) || e || ''));
   const errTxt = e => hors(e) ? 'Pas de connexion : rien n’a été enregistré. Réessayez quand le réseau revient.' : String((e && e.message) || 'Une erreur est survenue.').replace(/^[A-Z_]+ : /, '');
   const toast = (t, o) => window.MDGToast ? MDGToast.dire(t, o) : (N() && N().toast && N().toast(t));
@@ -94,7 +95,7 @@
           <small>${esc(g.vendeur)} · ${g.participants} participant${g.participants > 1 ? 's' : ''} · ${nf(g.total)} / ${nf(g.objectif)} ${esc(g.unite)}</small>
           ${jauge(+g.total, +g.objectif)}
           <span class="gr-t ${ST[g.statut][1]}">${ST[g.statut][0]}</span><span class="gr-t">${F(g.prix_courant)} / ${esc(g.unite)}${g.meilleur_prix && +g.meilleur_prix < +g.prix_courant ? ' · jusqu’à ' + F(g.meilleur_prix) : ''}</span>
-          ${['ouvert', 'seuil_atteint'].includes(g.statut) ? `<span class="gr-t">reste ${reste(g.date_limite)}</span>` : ''}${g.mon_statut && g.mon_statut !== 'retire' ? '<span class="gr-t v">J’y participe</span>' : ''}${g.je_suis_vendeur ? '<span class="gr-t">Votre offre</span>' : ''}</button>`).join('')
+          ${['ouvert', 'seuil_atteint'].includes(g.statut) && reste(g.date_limite) ? `<span class="gr-t">reste ${reste(g.date_limite)}</span>` : ''}${g.mon_statut && g.mon_statut !== 'retire' ? '<span class="gr-t v">J’y participe</span>' : ''}${g.je_suis_vendeur ? '<span class="gr-t">Votre offre</span>' : ''}</button>`).join('')
         : `<div class="gr-vide">${window.MDGSac ? MDGSac.svg('vide') : ''}<b>${vue === 'miens' ? 'Aucun groupe pour l’instant' : 'Aucun achat groupé ouvert'}</b>Ouvrez une offre avec un prix et touchez « Achat groupé » pour lancer le premier.</div>`);
     box.querySelectorAll('[data-v]').forEach(b => b.onclick = () => { if (b.dataset.v === 'miens' && !connecte()) return; ouvrir(b.dataset.v); });
     box.querySelectorAll('[data-g]').forEach(b => b.onclick = () => groupe(b.dataset.g));
@@ -120,7 +121,7 @@
         ${jauge(+g.total, +g.objectif)}<p class="gr-note" style="margin:0">${nf(g.total)} ${esc(g.unite)} sur ${nf(g.objectif)} visés · ${g.participants} participant${g.participants > 1 ? 's' : ''} sur ${g.min_participants} minimum</p>
         ${P.length ? `<ul class="gr-pal" aria-label="Prix selon le volume"><li class="${+g.total < P[0].quantite ? 'on' : ''}"><span>Moins de ${nf(P[0].quantite)} ${esc(g.unite)}</span><span>${F(g.prix_base)}</span></li>${P.map((p, i) => `<li class="${+g.total >= p.quantite && (!P[i + 1] || +g.total < P[i + 1].quantite) ? 'on' : ''}"><span>Dès ${nf(p.quantite)} ${esc(g.unite)}</span><span>${F(p.prix)}</span></li>`).join('')}</ul>` : '<p class="gr-note">Pas de réduction selon le volume : prix de l’offre.</p>'}</section>
       <section class="gr-bloc"><dl class="gr-dl">
-        <dt>Date limite</dt><dd>${quand(g.date_limite)}</dd>${att ? `<dt>Confirmer avant</dt><dd>${quand(g.confirmer_avant)}</dd>` : ''}
+        ${quand(g.date_limite) ? `<dt>Date limite</dt><dd>${quand(g.date_limite)}</dd>` : ''}${att && quand(g.confirmer_avant) ? `<dt>Confirmer avant</dt><dd>${quand(g.confirmer_avant)}</dd>` : ''}
         <dt>Livraison</dt><dd>${esc(g.zone)}</dd>
         <dt>Transport partagé</dt><dd>${g.frais_transport ? 'environ ' + F(g.frais_transport) + ' au total' : 'non précisé'}</dd>
         ${g.note ? `<dt>Note</dt><dd>${esc(g.note)}</dd>` : ''}</dl>

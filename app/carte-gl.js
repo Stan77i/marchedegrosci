@@ -136,7 +136,8 @@
     return Promise.all([lib(), geo()]).then(([ml, base]) => new Promise(resolve => {
       if (!document.getElementById('cglCss')) { const st = document.createElement('style'); st.id = 'cglCss'; st.textContent = CSS; document.head.appendChild(st); }
       const A = window.MDGApp, LS = k => { try { return localStorage.getItem(k); } catch (_) { return null; } }, SS = (k, v) => { try { localStorage.setItem(k, v); } catch (_) {} };
-      let theme = LS('mdg-carte:theme') === 'jour' ? 'jour' : 'nuit', P = PAL[theme], chaleur = LS('mdg-carte:chaleur') === 'oui';
+      // sans choix enregistré (bouton soleil), la carte suit le thème de l'application : jour en clair, nuit en sombre
+      const choix = LS('mdg-carte:theme'); let theme = choix === 'jour' || choix === 'nuit' ? choix : (document.documentElement.getAttribute('data-theme') === 'clair' ? 'jour' : 'nuit'), P = PAL[theme], chaleur = LS('mdg-carte:chaleur') === 'oui';
       const box = document.createElement('div'); box.className = 'cgl' + (theme === 'jour' ? ' jour' : ''); host.appendChild(box);
       // toucher un repère ne doit jamais faire défiler la page qui contient la carte (le navigateur « montre » l'élément touché)
       const bloque = [], fige = e => { const t = e.currentTarget; if (t.scrollTop || t.scrollLeft) { t.scrollTop = 0; t.scrollLeft = 0; } };

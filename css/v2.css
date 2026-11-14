@@ -491,7 +491,7 @@ html[data-theme=sombre] .v2-pub-go:not([aria-disabled=true]) { color: #171512; }
 .v2-mes-h .ph img { width: 40px; height: 40px; }
 .v2-mes-h .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .v2-mes-h .l1 { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.v2-mes-h .l1 > b { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2-mes-h .l1 > b { font-size: 15px; font-weight: 700; line-height: 1.25; min-width: 0; overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .v2-mes-h .l1 > i { flex: none; font-style: normal; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #DCEFE3; color: #10392B; }
 .v2-mes-h .l1 > i.r { background: #F6D2C8; color: #6E2414; }
 .v2-mes-h .l1 > i.n { background: var(--lin); color: var(--texte-2); }
@@ -530,3 +530,38 @@ html[data-theme=sombre] .v2-feuille {
   --papier: #14120F; --carte: #1F1B16; --champ: #25211B; --lin: #2C2720; --lin-2: #3A342A;
   --encre: #F3EFE4; --texte-2: #DDD3C2; --texte-3: #BFB39E; --mute: #A89C88; color-scheme: dark;
 }
+/* carte du réseau en « jour » (par défaut quand l'application est en clair ; bouton soleil) : le haut et le panneau du bas passent en clair.
+   L'interface de la carte est écrite en styles en ligne pour la nuit (le navigateur les réécrit « rgba(23, 21, 18, 0.7) ») :
+   on retourne ici ses jetons et ses fonds sombres, seulement en jour. */
+[data-pg=carte]:has(.cgl.jour) { --encre: #FAF4E9; --ivoire: #171512; --sable: #655C4D; --terre-clair: #765802; --vous: #5B3FA8; background: #F7F2E8 !important; }
+[data-pg=carte]:has(.cgl.jour) .carte-hote { background: #F7F2E8 !important; }
+[data-pg=carte]:has(.cgl.jour) [style*="rgba(18, 20, 23, 0.96)"] { background: linear-gradient(rgba(250, 244, 233, .96) 0%, rgba(250, 244, 233, .88) 70%, rgba(250, 244, 233, 0) 100%) !important; }
+[data-pg=carte]:has(.cgl.jour) [style*="background: var(--encre)"] { box-shadow: 0 -6px 24px rgba(80, 60, 30, .16); }
+[data-pg=carte]:has(.cgl.jour) :is([style*="background: rgba(23, 21, 18, 0.7)"], [style*="background: rgba(23, 21, 18, 0.85)"]) { background: rgba(255, 253, 248, .94) !important; }
+[data-pg=carte]:has(.cgl.jour) :is([style*="border: 1px solid rgba(245, 240, 230"], [style*="border: 1px dashed rgba(245, 240, 230"]) { border-color: rgba(23, 21, 18, .16) !important; }
+[data-pg=carte]:has(.cgl.jour) [style*="background: rgba(245, 240, 230, 0.25)"] { background: rgba(23, 21, 18, .2) !important; }
+[data-pg=carte]:has(.cgl.jour) :is([style*="background: rgba(245, 240, 230, 0.05)"], [style*="background: rgba(245, 240, 230, 0.06)"]) { background: #FFFDF8 !important; box-shadow: inset 0 0 0 1px rgba(23, 21, 18, .08) !important; }
+[data-pg=carte]:has(.cgl.jour) [style*="background: rgb(106, 174, 240)"] { color: #171512 !important; }
+[data-pg=carte]:has(.cgl.jour) :is([style*="color: rgb(243, 160, 140)"], [style*="color: rgb(233, 194, 182)"]) { color: #9E3420 !important; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-liens button { color: #171512; border-bottom-color: rgba(23, 21, 18, .08); }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-liens .im { background: #EFE7D9; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-liens .im i { box-shadow: 0 0 0 2px #FAF4E9; }
+[data-pg=carte]:has(.cgl.jour) :is(.v2-ct-liens .tx small, .v2-ct-st) { color: #655C4D; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-liens .km { color: #765802; }
+[data-pg=carte]:has(.cgl.jour) .cz-moi { background: linear-gradient(120deg, rgba(176, 149, 240, .2), rgba(255, 253, 248, .94) 65%); border-color: rgba(91, 63, 168, .4); }
+[data-pg=carte]:has(.cgl.jour) .cz-moi[data-on="oui"] { background: linear-gradient(120deg, rgba(176, 149, 240, .34), rgba(255, 253, 248, .94) 75%); border-color: rgba(91, 63, 168, .7); }
+[data-pg=carte]:has(.cgl.jour) :is(.cz-moi-t small, .cz-moi-ch) { color: #5B3FA8; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-t { color: #171512; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-f button { background: rgba(255, 253, 248, .94); border-color: rgba(23, 21, 18, .12); color: #171512; box-shadow: 0 2px 8px rgba(80, 60, 30, .15); }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-f button[aria-pressed=true] { background: #171512; border-color: #171512; color: #F5F0E6; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-f .n { background: rgba(23, 21, 18, .08); }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-f button[aria-pressed=true] .n { background: #F5F0E6; color: #171512; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-f i.tt { background: #F5F0E6; box-shadow: inset 0 0 0 1.5px #171512; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-f button[aria-pressed=true] i.tt { background: #F5F0E6; box-shadow: none; }
+/* les cartes d'annonce posées sur la carte gardent leurs jetons d'origine */
+[data-pg=carte]:has(.cgl.jour) .an-carte { --encre: #171512; --ivoire: #F5F0E6; --sable: #B9AD98; --terre-clair: var(--logo-mais); --vous: #B095F0; }
+/* une proposition remplacée, retirée ou expirée : seul le prix pâlit, le reste de la carte reste lisible */
+.nx-bg .nx-tk:is(.is-remplacee, .is-retiree, .is-expiree) { opacity: 1; }
+.nx-bg .nx-tk:is(.is-remplacee, .is-retiree, .is-expiree) .amt { opacity: .85; }
+/* 320 px : le tampon « Disponible maintenant » de la liste de la carte tient mot par mot, sans couper « DISPONIBL-E » */
+@media (max-width: 359px) { [data-pg=carte] .qd.nuit[data-u] { font-size: 10.5px; letter-spacing: 0; gap: 4px; padding: 4px 7px 4px 5px; } }

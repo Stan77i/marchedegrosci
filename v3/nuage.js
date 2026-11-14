@@ -392,6 +392,9 @@
 @keyframes ngTtS{from{background-position:100% 0}to{background-position:0 0}}
 @media (min-width:760px){.ng-tt-a{font-size:18px}.ng-tt-b{font-size:48px}}
 @media (prefers-reduced-motion:reduce){.ng-tt.is-on .ng-tt-a,.ng-tt.is-on .ng-tt-m>span,.ng-tt.is-on .ng-tt-g,.ng-tt.is-on .ng-tt-x,.ng-tt.is-on .ng-tt-x .ng-tt-t,.ng-tt.is-on .ng-tt-y,.ng-tt.is-on .ng-tt-y .ng-tt-t{animation:none}}
+/* mouvement réduit : l'alternance reste, sans mouvement ; « de Gros » et « du pays » se remplacent net toutes les 5 s */
+@media (prefers-reduced-motion:reduce){.ng-tt.is-on .ng-tt-x{animation:ngTtPasX 10s steps(1,end) infinite}.ng-tt.is-on .ng-tt-y{animation:ngTtPasY 10s steps(1,end) infinite}}
+@keyframes ngTtPasX{0%{opacity:1}50%{opacity:0}}@keyframes ngTtPasY{0%{opacity:0}50%{opacity:1}}
 /* bureau : la scène à gauche, le formulaire à droite, sans trait entre les deux */
 @media (min-width:760px){
   .ng-bg:has(.ng--porte){padding:24px}

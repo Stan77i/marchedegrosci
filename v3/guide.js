@@ -66,7 +66,7 @@
   }
   function fermer(parOnglet) {
     if (!el) return; el.remove(); el = null; document.removeEventListener('keydown', cle);
-    if (!parOnglet && !(window.MDGAide && MDGAide.ouvert && MDGAide.ouvert()) && window.MDGOnglets && MDGOnglets.cacher) try { MDGOnglets.cacher(); } catch (_) {}
+    if (!parOnglet && !(window.MDGAide && MDGAide.ouvert && MDGAide.ouvert()) && !document.querySelector('.cp-bg') && window.MDGOnglets && MDGOnglets.cacher) try { MDGOnglets.cacher(); } catch (_) {}
   }
 
   window.MDGGuide = { ouvrir, fermer, ETAPES };

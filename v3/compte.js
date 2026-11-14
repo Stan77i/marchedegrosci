@@ -385,7 +385,7 @@ label.cp-r{cursor:pointer}
     document.addEventListener('keydown', onKey);
     return bg;
   }
-  function fermer(garder) { if (bg) { if (bg.lacher) bg.lacher(); bg.remove(); bg = null; } if (!garder) { document.removeEventListener('keydown', onKey); if (rendre) { rendre(); rendre = null; } } }
+  function fermer(garder) { if (bg) { if (bg.lacher) bg.lacher(); bg.remove(); bg = null; if (!garder && window.MDGOnglets && MDGOnglets.actif && MDGOnglets.actif() === 'compte') try { MDGOnglets.cacher(); } catch (_) {} } if (!garder) { document.removeEventListener('keydown', onKey); if (rendre) { rendre(); rendre = null; } } }
   function onKey(e) { if (e.key === 'Escape' && bg && !bg.dataset.lock) fermer(); }
 
   /* ——— notifications (journal des vrais événements, alimenté par v3/negoce.js) ——— */
@@ -419,7 +419,8 @@ label.cp-r{cursor:pointer}
     const poser = () => { if (!moi.isConnected) return;
       const t = document.querySelector('.v2-tabs'), r = t && t.getBoundingClientRect();
       // les onglets sont vraiment à l'écran (pas cachés sous une autre page) : on regarde ce qu'il y a sous le doigt, sans le compte
-      let vue = false; if (t && r.height > 0 && r.top < innerHeight) { moi.style.visibility = 'hidden'; const x = document.elementFromPoint(r.left + r.width / 2, r.top + Math.min(r.height / 2, 28)); moi.style.visibility = ''; vue = !!(x && t.contains(x)); }
+      // maquette (14/11/2026) : le Compte est toujours une page pleine, au-dessus de la barre d'onglets, dès que la barre existe (application)
+      const vue = !!(t && r.height > 0 && r.top < innerHeight && getComputedStyle(t).display !== 'none');
       moi.classList.toggle('v2c-plein', !!vue);
       // la hauteur suit le clavier (règle de v3/nuage.js : height = --vvh), moins la barre d'onglets
       if (vue) { Object.assign(moi.style, { left: Math.max(0, r.left) + 'px', right: Math.max(0, innerWidth - r.right) + 'px' }); moi.style.setProperty('height', `calc(var(--vvh, 100%) - ${Math.max(0, innerHeight - r.top)}px)`, 'important'); t.classList.add('cp-actif'); }
@@ -437,6 +438,8 @@ label.cp-r{cursor:pointer}
     moi.lacher = () => { document.removeEventListener('click', onglets, true); removeEventListener('resize', poser); removeEventListener('mdg:aller', partir); removeEventListener('hashchange', partir);
       removeEventListener('mdg:boutiques', neuf); removeEventListener('mdg:profil', neuf); if (moi._ro) moi._ro.disconnect(); if (moi._tabs) moi._tabs.classList.remove('cp-actif'); };
     poser();
+    // l'onglet « Compte » allumé ; un autre onglet touché ferme le Compte (MDGOnglets, application.dc.html)
+    if (window.MDGOnglets && MDGOnglets.montrer) try { MDGOnglets.montrer('compte', () => { if (moi.isConnected) fermer(); }); } catch (_) {}
     // le contenu est là tout de suite (aucun fondu) ; une page s'ouvre en haut
     const aller = (p, calme) => {
       page = p;

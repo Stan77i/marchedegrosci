@@ -52,11 +52,6 @@ html[data-theme=sombre] :is([data-pg=fiche], [data-pg=acheter], [data-pg=vendre]
 
 /* ce qui était un PANNEAU sombre posé sur le papier (bandeau d'une fiche, en-tête vendeur, tuiles des familles) reste sombre :
    on lui rend ses jetons d'origine (texte crème) */
-html[data-theme=sombre] :is([data-pg=fiche], [data-pg=acheter], [data-pg=vendre], [data-pg=demande], [data-pg=categories], [data-pg=prix], [data-pg=pubs], [data-pg=vendeur])
-  :is([style*="background:var(--nuit-2)"], [style*="background: var(--nuit-2)"], .fam-tile) {
-  --nuit-2: #26221C; --encre: #26221C; --ivoire: #F5F0E6; --sable: #B9AD98; --mute-d: #A39784; --texte-3: #B9AD98;
-  box-shadow: inset 0 0 0 1px rgba(243, 239, 228, .07);
-}
 
 /* ——— annonces, prix, catégories (css/mgci-app.css) ——— */
 html[data-theme=sombre] :is(.an-infos span:not(.qd), .an-moi) { background: rgba(243, 239, 228, .06); }
@@ -75,16 +70,7 @@ html[data-theme=sombre] .px-vide { border-color: rgba(243, 239, 228, .2); }
 html[data-theme=sombre] .px-cta .o { background: #F2C230; color: #171512; }
 html[data-theme=sombre] .px-cta .d { background: rgba(242, 194, 48, .14); color: #F2C230; box-shadow: inset 0 0 0 1px rgba(242, 194, 48, .35); }
 html[data-theme=sombre] :is(.px-c img, .px-hero img, [data-pg=prix] img) { background-color: #2A251E !important; }
-html[data-theme=sombre] .ct-cherche { background: #25211B; border-color: rgba(243, 239, 228, .14); color: #F3EFE4; }
-html[data-theme=sombre] .ct-cherche input { color: #F3EFE4; }
 html[data-theme=sombre] .px-jauge i { background: #F2C230; }
-html[data-theme=sombre] .ct-cherche:focus-within { box-shadow: 0 0 0 2px #F2C230; }
-html[data-theme=sombre] :is(.ct-puce, .ct-retour) { background: rgba(243, 239, 228, .08); }
-html[data-theme=sombre] .ct-puce[aria-pressed="true"] { background: #F2C230; color: #171512; }
-html[data-theme=sombre] .ct-puce[aria-pressed="true"] em { background: #171512; color: #F2C230; }
-html[data-theme=sombre] .ct-tete { background: #1D3A2E; }
-html[data-theme=sombre] .ct-pr { background: #1F1B16; box-shadow: 0 0 0 1px rgba(243, 239, 228, .08); }
-html[data-theme=sombre] .ct-pr .ct-prix { color: #F2C230; }
 
 /* ——— menu ☰ et fenêtres ——— */
 html[data-theme=sombre] .dr-clair { --dr-s: #B9AD98; --dr-nbg: rgba(243, 239, 228, .1); --dr-nfg: #F3EFE4; }

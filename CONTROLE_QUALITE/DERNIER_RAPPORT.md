@@ -1,5 +1,5 @@
-<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-14-06h27-apres-modif.md). Ne pas modifier à la main. -->
-# Rapport du contrôle qualité · 14/11/2026 à 06 h 27 (UTC = heure d’Abidjan)
+<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-14-06h41-apres-modif.md). Ne pas modifier à la main. -->
+# Rapport du contrôle qualité · 14/11/2026 à 06 h 41 (UTC = heure d’Abidjan)
 
 > Gabarit : `CONTROLE_QUALITE/modeles/RAPPORT.md`. Fait par `tools/controle/lancer.sh apres-modif`. Les tests SQL ne sont jamais exécutés par ce script : ils sont « non exécuté » tant que Claude ne les a pas joués via MCP sur le projet de test.
 
@@ -7,18 +7,20 @@
 
 | Champ | Valeur |
 |---|---|
-| Date | 14/11/2026 à 06 h 27 |
-| Commit | `82e131d` (branche `claude/refonte-lot14-equipe`, avec des changements non enregistrés) |
+| Date | 14/11/2026 à 06 h 41 |
+| Commit | `8873326` (branche `claude/refonte-lot15-porte`, avec des changements non enregistrés) |
 | Mode | `apres-modif` |
 | Base de comparaison | `origin/main` |
-| Durée | 3 s |
+| Durée | 4 s |
 | Lancé par | à la main ou par Claude |
 
 ## 2. En bref
 
-- **Aucun échec bloquant** ; réussis 13, échoués 4, bloqués 0, non exécutés 1, en attente 0.
+- **ÉCHEC BLOQUANT (2)** ; réussis 11, échoués 6, bloqués 0, non exécutés 1, en attente 0.
 - Unités avec au moins un contrôle exécuté : U01, U03, U09, U10, U12, U13.
 - Unités non exécutées dans ce passage : U02, U04, U05, U06, U07, U08, U11, U14.
+- Bloquant : fichiers du front changés mais CACHE de sw.js inchangé (mgci-v313)
+- Bloquant : ?v= non monté : v3/identite.js?v=20261207je, v3/nuage.js?v=20261131gq1
 
 ## 3. Tests
 
@@ -31,17 +33,17 @@
 | STA-05 | U12 | normal | Contrôle « doublon-texte » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 30 orange(s) | échoué | P2 | v3/chauffeur.js:24 ; app/theme.js:130 ; index-v3.html:2347 ; … |
 | STA-06 | U10 | normal | Contrôle « doublon-fonction » | aucun constat | rien à signaler (78 fichiers JS et les scripts des pages) | réussi | — | tools/controle/controle.js |
 | STA-07 | U10 | normal | Contrôle « doublon-id » | aucun constat | rien à signaler (identifiants du HTML de application.dc.html et index-v3.html) | réussi | — | tools/controle/controle.js |
-| STA-08 | U12 | normal | Contrôle « long-texte » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 41 orange(s) | échoué | P2 | v3/identite.js:493 ; v3/identite.js:432 ; v3/chauffeur.js:187 ; … |
+| STA-08 | U12 | normal | Contrôle « long-texte » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 40 orange(s) | échoué | P2 | v3/identite.js:493 ; v3/identite.js:432 ; v3/commandes.js:1009 ; … |
 | STA-09 | U12, U13 | normal | Contrôle « slogan » | aucun constat | rien à signaler (tournures publicitaires toutes faites) | réussi | — | tools/controle/controle.js |
 | STA-10 | U12 | normal | Contrôle « police » | aucun constat | rien à signaler (96 fichiers de style et de code) | réussi | — | tools/controle/controle.js |
 | STA-11 | U12 | normal | Contrôle « bleu » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 5 orange(s) | échoué | P2 | index-v3.html:2047 ; v3/avatar.js:13 ; v3/avatar.js:14 ; … |
 | STA-12 | U09 | normal | Contrôle « sql » | aucun constat | rien à signaler (166 fichiers supabase/schema-*.sql ; voir « Pour information ») | réussi | — | tools/controle/controle.js |
 | STA-13 | U13 | normal | Contrôle « liens » | aucun constat | rien à signaler (CLAUDE.md, CONTROLE_QUALITE/CALENDRIER.md, CONTROLE_QUALITE/HISTORIQUE.md, CONTROLE_QUALITE/INVENTAIRE_OUTILS.md, CONTROLE_QUALITE/LISTES_DE_CONTROLE.md, CONTROLE_QUALITE/MATRICE_TESTS.md, CONTROLE_QUALITE/README.md, CONTROLE_QUALITE/REGISTRE_ANOMALIES.md, CONTROLE_QUALITE/REGISTRE_DES_TESTS.md, CONTROLE_QUALITE/modeles/RAPPORT.md, CONTROLE_QUALITE/procedures/APRES_INCIDENT.md, CONTROLE_QUALITE/procedures/APRES_MODIFICATION.md, CONTROLE_QUALITE/procedures/AVANT_PRODUCTION.md, CONTROLE_QUALITE/procedures/CONTROLE_GENERAL.md, CONTROLE_QUALITE/tests/navigateur/README.md, CONTROLE_QUALITE/tests/sql/README.md) | réussi | — | tools/controle/controle.js |
 | STA-14 | U10 | normal | Contrôle « navigateur » | contrôle fait | désactivé (--sans-navigateur) | non exécuté | — | tools/controle/controle.js |
-| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (7466b78) | liste | 32 fichier(s) | réussi | — | git diff --name-only 7466b78 |
-| APM-02 | U10 | régression | node --check sur les 3 fichier(s) JS changé(s) | aucune erreur | aucune erreur | réussi | — | sw.js, v3/compte.js, v3/equipe.js |
-| APM-05 | U10 | régression | 5 fichier(s) du front changé(s) : CACHE de sw.js monté | CACHE différent de la base | mgci-v312 → mgci-v313 | réussi | — | sw.js ; fichiers : application.dc.html, css/v2-equipe.css, index-v3.html, v3/compte.js, v3/equipe.js |
-| APM-06 | U10 | régression | ?v= monté pour chaque JS/CSS changé appelé avec ?v= | nouvelle version | monté partout | réussi | — | application.dc.html, index-v3.html, index.html, admin.html, suivi.html, sw.js |
+| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (8873326) | liste | 4 fichier(s) | réussi | — | git diff --name-only 8873326 |
+| APM-02 | U10 | régression | node --check sur les 3 fichier(s) JS changé(s) | aucune erreur | aucune erreur | réussi | — | v3/chauffeur.js, v3/identite.js, v3/nuage.js |
+| APM-05 | U10 | régression | 4 fichier(s) du front changé(s) : CACHE de sw.js monté | CACHE différent de la base | mgci-v313 → mgci-v313 | échoué | P1 | sw.js ; fichiers : application.dc.html, v3/chauffeur.js, v3/identite.js, v3/nuage.js |
+| APM-06 | U10 | régression | ?v= monté pour chaque JS/CSS changé appelé avec ?v= | nouvelle version | non monté : v3/identite.js?v=20261207je, v3/nuage.js?v=20261131gq1 | échoué | P1 | application.dc.html, index-v3.html, index.html, admin.html, suivi.html, sw.js |
 
 ## 4. Anomalies (P0 à P3)
 
@@ -49,8 +51,10 @@ Gravité donnée par le script, à confirmer par Claude dans `CONTROLE_QUALITE/R
 
 - **STA-03** (P2, U13, U03) : 0 rouge(s) dont 0 nouveau(x), 1 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/commandes.js:1196.
 - **STA-05** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 30 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/chauffeur.js:24 ; app/theme.js:130 ; index-v3.html:2347 ; ….
-- **STA-08** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 41 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/identite.js:493 ; v3/identite.js:432 ; v3/chauffeur.js:187 ; ….
+- **STA-08** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 40 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/identite.js:493 ; v3/identite.js:432 ; v3/commandes.js:1009 ; ….
 - **STA-11** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 5 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; index-v3.html:2047 ; v3/avatar.js:13 ; v3/avatar.js:14 ; ….
+- **APM-05** (P1, U10) : mgci-v313 → mgci-v313. Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; sw.js ; fichiers : application.dc.html, v3/chauffeur.js, v3/identite.js, v3/nuage.js.
+- **APM-06** (P1, U10) : non monté : v3/identite.js?v=20261207je, v3/nuage.js?v=20261131gq1. Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; application.dc.html, index-v3.html, index.html, admin.html, suivi.html, sw.js.
 
 ## 5. Risque métier, correctif, non-régression
 

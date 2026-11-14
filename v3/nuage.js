@@ -423,7 +423,61 @@
 @media (min-width:760px){.pt-txt{left:40px;right:40px;bottom:40px}.pt-m{font-size:clamp(34px,3.4vw,46px)!important;line-height:1.05!important;max-width:16ch}.pt-k{font-size:13.5px}}
 @media (prefers-reduced-motion:reduce){.pt-txt,.ng-ck,.ng-glob{transition:none;animation:none}}`;
   const groupe = c => String(c || '').replace(/(.{4})(?=.)/g, '$1 ');
-  function style() { if (!css) { const st = document.createElement('style'); st.textContent = CSS + CSS2; document.head.appendChild(st); css = true; } }
+  /* la porte de la maquette « MGCI App v2 » (lot 15) : en-tête Retour + barre maïs, le logo en titre, une question, les champs, le bouton en bas */
+  const CSS3 = `.ng--porte .ng-x{display:none}
+.po-hd{display:flex;align-items:center;gap:8px;margin:0 0 0 -11px}
+.po-back{flex:none;width:44px;height:44px;padding:0;border:0;border-radius:12px;background:none;color:#F5F0E6;display:grid;place-items:center;cursor:pointer}
+.po-back:focus-visible,.po-lien:focus-visible,.po-eye:focus-visible,.po-ville:focus-visible,.po-autre:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
+.po-bar{flex:1;display:flex;gap:4px;padding-right:8px}.po-bar span{flex:1;height:4px;border-radius:999px;background:rgba(245,240,230,.16)}.po-bar span.on{background:#F2C230}
+.po-marque{margin:22px 0 0}
+.po-marque .ng-tt-b{display:flex;flex-direction:column;align-items:flex-start;gap:2px;font:600 30px/1 Jost,sans-serif;letter-spacing:-.015em;color:#F5F0E6}
+.po-marque .ng-tt-g{font-size:44px;font-weight:900;line-height:1.02;letter-spacing:-.025em}
+.ng--porte .po-q{margin:30px 0 22px}
+.ng--porte .po-q h2{margin:0;font:600 26px/1.1 Jost,sans-serif;letter-spacing:-.01em;color:#F5F0E6;text-wrap:balance}.po-q h2:focus{outline:none}
+.ng--porte .po-q .ng-lede{margin:6px 0 0;color:#B9AD98;font-size:15px;line-height:1.45}
+.po-f{flex:1;display:flex;flex-direction:column;gap:22px}
+.po-s{display:flex;flex-direction:column;gap:8px}.ng--porte .po-s .ng-fe{margin:0!important;font-weight:600;font-size:14px!important}
+.po-tel{display:flex;gap:8px}.po-tel>span{flex:none;height:58px;box-sizing:border-box;padding:0 14px;border-radius:16px;border:1px solid rgba(245,240,230,.2);display:grid;place-items:center;font:600 18px Jost,sans-serif;color:#B9AD98}
+.po-tel .ng-ip{flex:1;min-width:0}
+.ng--porte .po-box{border:1px solid rgba(245,240,230,.2);border-radius:16px;background:rgba(245,240,230,.06)}
+.ng--porte .po-box input{height:58px;font:600 20px Jost,sans-serif;letter-spacing:.02em}
+.ng--porte .po-id .po-box input{font-size:18px;letter-spacing:0}
+.ng--porte #ngCle{font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.ng--porte .ng-ip.is-bad{border-color:#E2735B;box-shadow:inset 0 0 0 1px #E2735B}
+.po-lab{margin:0!important;font:500 14px/1.2 Jost,sans-serif;color:#B9AD98!important}.po-lab i{font-style:normal;color:#A89D89;margin-left:6px;font-size:13px}
+.po-code{position:relative;height:64px}
+.po-cases{position:absolute;inset:0;display:flex;gap:10px;pointer-events:none}
+.po-cases i{flex:1;min-width:0;border-radius:14px;border:2px solid rgba(245,240,230,.3);display:grid;place-items:center;font:700 22px Jost,sans-serif;font-style:normal;color:#F5F0E6;transition:border-color .16s cubic-bezier(.22,1,.36,1)}
+.po-cases i.plein:empty::after{content:"";width:14px;height:14px;border-radius:50%;background:#F2C230}
+.po-code:focus-within .po-cases i.ici{border-color:#F2C230}
+.po-code.is-bad .po-cases i{border-color:#E2735B}
+.ng--porte .po-code input{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;border:0;opacity:0;font-size:16px;caret-color:transparent;cursor:text}
+.po-liens{flex-direction:row;flex-wrap:wrap;align-items:center;gap:0 22px;margin-top:-10px}
+.po-lien,.po-eye{min-height:44px;padding:0;border:0;background:none;color:#F2C230;font:700 15px Jost,sans-serif;text-align:left;cursor:pointer}
+.po-eye{color:#CFC4B1;font-weight:500;font-size:14px}.po-lien2{color:#CFC4B1;font-weight:600}
+.po-id{gap:14px}.po-id2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px}@media (max-width:359px){.po-id2{grid-template-columns:minmax(0,1fr)}}
+.po-id .ng-fe{margin-top:6px!important}
+.po-villes{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.po-ville,.po-autre{min-height:44px;box-sizing:border-box;padding:0 16px;border-radius:999px;border:1px solid rgba(245,240,230,.18);background:rgba(245,240,230,.06);color:#F5F0E6;font:600 14.5px Jost,sans-serif;cursor:pointer}
+.po-ville[aria-pressed=true],.po-autre.on{background-color:#F2C230;border-color:#F2C230;color:#171512}
+.po-autre{max-width:100%;padding-right:36px;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23B9AD98' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+.po-autre option{background:#1F1B16;color:#F5F0E6}
+.po-carte{background:#24201A;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.po-carte span{font-size:13.5px;line-height:1.4;color:#B9AD98}.po-carte b{font:700 18px/1.25 Jost,sans-serif;color:#F5F0E6;overflow-wrap:anywhere}
+.po-sec{padding:22px 16px;align-items:center;text-align:center;gap:8px}
+.po-cle{font:800 clamp(21px,7vw,26px)/1.1 Jost,sans-serif;letter-spacing:.08em;color:#F2C230;font-variant-numeric:tabular-nums;white-space:nowrap;user-select:all}
+.ng--porte .po-s .ng-alt{margin:0}
+.po-pied{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.ng--porte .po-pied .ng-go{min-height:56px;border-radius:999px;font:700 17px Jost,sans-serif;box-shadow:none}
+.ng--porte .po-free{margin:0!important;text-align:center;font-size:12.5px!important;color:#A39784!important}
+@media (max-width:759px){
+  .ng-bg:has(.ng--porte){padding:0;align-items:stretch;background:#171512;animation:none}
+  .ng--porte{width:100%;max-width:none;height:100dvh;max-height:none;border-radius:0;grid-template-rows:minmax(0,1fr);background:#171512;box-shadow:none;animation:none}
+  .ng--porte .ng-scene{display:none}
+  .ng--porte .ng-form{display:flex;flex-direction:column;padding:calc(8px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom))}
+}
+@media (min-width:760px){.ng--porte .po-q{margin-top:22px}.po-marque{margin-top:14px}}`;
+  function style() { if (!css) { const st = document.createElement('style'); st.textContent = CSS + CSS2 + CSS3; document.head.appendChild(st); css = true; } }
   // fenêtre modale : le focus y entre, y reste (Tab boucle), et revient d'où il venait à la fermeture
   function piege(root) {
     const avant = document.activeElement;
@@ -442,7 +496,8 @@
     const bg = document.createElement('div'); bg.className = 'ng-bg';
     bg.innerHTML = opt.porte ? `<div class="ng ng--porte" role="dialog" aria-modal="true" aria-labelledby="ngT"><div class="ng-scene"></div><div class="ng-form"><button type="button" class="ng-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button>${html}</div></div>` : `<div class="ng" role="dialog" aria-modal="true" aria-labelledby="ngT"><button type="button" class="ng-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button>${html}</div>`;
     document.body.appendChild(bg);
-    if (opt.porte && window.MDGPorte) bg.porte = MDGPorte.monter(bg.querySelector('.ng-scene'), { compact: !matchMedia('(min-width:760px)').matches });
+    // téléphone : la porte prend tout l'écran, sans la scène (maquette du lot 15) ; ordinateur : la scène à gauche, le formulaire à droite
+    if (opt.porte && window.MDGPorte && matchMedia('(min-width:760px)').matches) bg.porte = MDGPorte.monter(bg.querySelector('.ng-scene'), { compact: false });
     const rendre = piege(bg), close = () => { if (bg.porte) bg.porte.arreter(); bg.remove(); removeEventListener('keydown', onK); rendre(); }, onK = e => { if (e.key === 'Escape' && !bg.dataset.lock) close(); };
     addEventListener('keydown', onK); bg.addEventListener('click', e => { if (e.target === bg && !bg.dataset.lock) close(); }); bg.querySelector('.ng-x').onclick = close;
     bg.close = close; return bg;
@@ -458,67 +513,106 @@
     bg.querySelector('.ng-copy').onclick = e => { (navigator.clipboard ? navigator.clipboard.writeText(cle) : Promise.reject()).then(() => { e.target.textContent = 'Code copié'; }).catch(() => { e.target.textContent = 'Copie impossible : notez-le à la main'; }); };
     bg.querySelector('.ng-ok').onclick = () => { bg.close(); apres && apres(); };
   }
+  /* la porte (lot 15 de la refonte, maquette « MGCI App v2 ») : une question par étape, une barre de progression maïs.
+     Inscription : numéro → code secret (deux fois) → prénom, nom, ville → ce que les autres verront → code de secours.
+     Connexion : numéro + code. Code oublié : numéro + code de secours → nouveau code → nouveau code de secours.
+     Les appels au serveur et les vérifications ne changent pas (signUp, signIn, recover, pseudo_libre, profils). */
   function open(raison) {
     const s = session();
     if (s) return window.MDGCompte ? MDGCompte.ouvrir() : openCompte(s, waiting());
-    const TITRE = { in: raison === 'publie' ? 'Rendez votre annonce visible de tous' : raison === 'negocie' ? 'Connectez-vous pour proposer un prix' : 'Entrez dans le marché.', up: 'Rejoignez le marché.', sos: 'Choisir un nouveau code' };
-    const LEDE = {
-      in: raison === 'publie' ? 'Elle est enregistrée sur ce téléphone. Connectez-vous pour que les acheteurs et les vendeurs de tout le pays la voient.' : raison === 'negocie' ? 'Le vendeur doit savoir qui lui écrit. Votre numéro et votre code secret suffisent.' : '',
-      up: '',
-      sos: 'Votre numéro, le code de secours reçu à la création du compte, puis un nouveau code secret.' };
-    const BTN = { in: 'Se connecter', up: 'Créer mon compte', sos: 'Choisir mon nouveau code' }, ENC = { in: 'Connexion en cours', up: 'Création du compte', sos: 'Vérification du code de secours' };
-    const bg = shell(`<h2 id="ngT"></h2><p class="ng-lede"></p>
-        <div class="ng-tabs" role="tablist" aria-label="Connexion ou inscription"><button type="button" role="tab" data-m="in" aria-selected="true">J’ai déjà un compte</button><button type="button" role="tab" data-m="up" aria-selected="false">Créer mon compte</button></div>
+    const ETAPES = { up: ['tel', 'code', 'id', 'apercu', 'secours'], in: ['login'], sos: ['cle', 'code', 'secours'] };
+    const Q = {
+      up: { tel: ['Quel est votre numéro ?', 'Il reste caché. Personne ne le voit sur le marché.'], code: ['Choisissez un code secret', '6 chiffres. Il vous sert à entrer dans l’application.'],
+        id: ['Comment vous appelle-t-on ?', 'Sur le marché, on verra votre prénom et l’initiale de votre nom.'], apercu: ['Dernière étape', ''],
+        secours: ['Votre code de secours', 'Notez-le sur un papier. Il sert si vous oubliez votre code secret. On ne vous le montrera plus.'] },
+      in: { login: raison === 'publie' ? ['Rendez votre annonce visible de tous', 'Elle est enregistrée sur ce téléphone. Connectez-vous pour que tout le pays la voie.']
+        : raison === 'negocie' ? ['Connectez-vous pour proposer un prix', 'Le vendeur doit savoir qui lui écrit.'] : ['Bon retour', 'Votre numéro et votre code secret.'] },
+      sos: { cle: ['Code secret oublié', 'Votre numéro et le code de secours reçu à l’inscription.'], code: ['Choisissez un nouveau code', '6 chiffres. Il remplace l’ancien.'],
+        secours: ['Votre nouveau code de secours', 'L’ancien ne marche plus. Notez celui-ci : on ne vous le montrera plus.'] }
+    };
+    const BTN = { tel: 'Continuer', code: 'Continuer', id: 'Continuer', apercu: 'Créer mon compte', secours: 'J’ai noté, entrer au marché', login: 'Entrer', cle: 'Continuer' };
+    const ENC = { in: 'Connexion en cours', up: 'Création du compte', sos: 'Vérification du code de secours' };
+    const VILLES = ['Abidjan', 'Bouaké', 'Daloa', 'Korhogo', 'San-Pédro', 'Yamoussoukro'], V = window.MDGVilles;
+    const autres = V && V.toutes ? V.toutes().map(x => x.nom).filter(n => !VILLES.includes(n)).sort((a, b) => a.localeCompare(b, 'fr')) : [];
+    const cases = () => `<span class="po-cases" aria-hidden="true">${'<i></i>'.repeat(6)}</span>`;
+    const bg = shell(`<div class="po-hd"><button type="button" class="po-back" aria-label="Retour"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><div class="po-bar" aria-hidden="true"></div></div>
+        <div class="po-marque ng-tt"><span class="ng-tt-b"><span class="ng-tt-m"><span>marché</span></span> <span class="ng-tt-g"><span class="ng-tt-pile"><span class="ng-tt-x"><span class="ng-tt-t">de Gros</span></span><span class="ng-tt-y" aria-hidden="true"><span class="ng-tt-t">du pays</span></span></span></span></span></div>
+        <div class="po-q"><h2 id="ngT" tabindex="-1"></h2><p class="ng-lede"></p></div>
         <div class="ng-glob" role="alert" hidden><p></p><button type="button" class="ng-link" hidden></button></div>
-        <form novalidate>
-          <div class="ng-id" hidden>
-            <div class="ng-id2"><div class="ng-fd"><label for="ngPrenom">Prénom</label><div class="ng-ip"><input id="ngPrenom" autocomplete="given-name" maxlength="40" placeholder="Awa" aria-describedby="ngPrenomE"></div><p class="ng-fe" id="ngPrenomE"></p></div>
-            <div class="ng-fd"><label for="ngNom">Nom</label><div class="ng-ip"><input id="ngNom" autocomplete="family-name" maxlength="60" placeholder="Koné" aria-describedby="ngNomE"></div><p class="ng-fe" id="ngNomE"></p></div></div>
-            <div class="ng-fd"><label for="ngPseudo">Pseudonyme <i>facultatif</i></label><div class="ng-ip"><input id="ngPseudo" autocomplete="nickname" autocapitalize="off" spellcheck="false" maxlength="24" placeholder="awa_mais" aria-describedby="ngPseudoE"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngPseudoE"></p></div>
+        <form novalidate class="po-f">
+          <div class="po-s" data-k="tel login cle"><div class="po-tel"><span aria-hidden="true">+225</span><div class="ng-ip po-box"><input id="ngTel" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="07 00 00 00 00" maxlength="14" aria-label="Numéro de téléphone" aria-describedby="ngTelE"><b class="ng-ck" aria-hidden="true"></b></div></div><p class="ng-fe" id="ngTelE" role="alert"></p></div>
+          <div class="po-s" data-k="cle"><div class="ng-ip po-box"><input id="ngCle" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" placeholder="XXXX-XXXX-XXXX" aria-label="Code de secours, 12 caractères" aria-describedby="ngCleE"></div><p class="ng-fe" id="ngCleE" role="alert"></p></div>
+          <div class="po-s" data-k="code login"><p class="po-lab" id="ngCodeL">Code secret</p><div class="po-code">${cases()}<input id="ngCode" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" maxlength="6" aria-labelledby="ngCodeL" aria-describedby="ngCodeE"></div><p class="ng-fe" id="ngCodeE" role="alert"></p></div>
+          <div class="po-s" data-k="code"><p class="po-lab" id="ngCode2L">Retapez-le</p><div class="po-code">${cases()}<input id="ngCode2" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" maxlength="6" aria-labelledby="ngCode2L" aria-describedby="ngCode2E"></div><p class="ng-fe" id="ngCode2E" role="alert"></p></div>
+          <div class="po-s po-liens" data-k="code login"><button type="button" class="po-eye" aria-pressed="false">Afficher le code</button></div>
+          <div class="po-s po-id" data-k="id">
+            <div class="po-id2"><div><label for="ngPrenom">Prénom</label><div class="ng-ip po-box"><input id="ngPrenom" autocomplete="given-name" maxlength="40" placeholder="Awa" aria-describedby="ngPrenomE"></div><p class="ng-fe" id="ngPrenomE" role="alert"></p></div>
+            <div><label for="ngNom">Nom</label><div class="ng-ip po-box"><input id="ngNom" autocomplete="family-name" maxlength="60" placeholder="Koné" aria-describedby="ngNomE"></div><p class="ng-fe" id="ngNomE" role="alert"></p></div></div>
+            <div><label for="ngPseudo">Pseudonyme <i>facultatif</i></label><div class="ng-ip po-box"><input id="ngPseudo" autocomplete="nickname" autocapitalize="off" spellcheck="false" maxlength="24" placeholder="awa_mais" aria-describedby="ngPseudoE"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngPseudoE" role="alert"></p></div>
+            ${V ? `<div role="group" aria-labelledby="ngVilleL"><p class="po-lab" id="ngVilleL">Votre ville <i>facultatif</i></p><div class="po-villes">${VILLES.map(v => `<button type="button" class="po-ville" data-v="${esc(v)}" aria-pressed="false">${esc(v)}</button>`).join('')}
+              <select class="po-autre" aria-label="Autre ville"><option value="">Autre ville</option>${autres.map(v => `<option>${esc(v)}</option>`).join('')}</select></div></div>` : ''}
           </div>
-          <div class="ng-fd"><label for="ngTel">Votre numéro</label><div class="ng-ip ng-ip--tel"><span aria-hidden="true">+225</span><input id="ngTel" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="07 01 02 03 04" maxlength="14" aria-describedby="ngTelE"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngTelE"></p></div>
-          <div class="ng-fd ng-cle" hidden><label for="ngCle">Code de secours <i>12 caractères</i></label><div class="ng-ip"><input id="ngCle" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="16" placeholder="ABCD EFGH JKLM" aria-describedby="ngCleE"></div><p class="ng-fe" id="ngCleE"></p></div>
-          <div class="ng-fd"><label for="ngCode" class="ng-lc">Code secret <i>6 chiffres</i></label><div class="ng-ip"><input id="ngCode" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="current-password" maxlength="6" placeholder="••••••" aria-describedby="ngCodeE"><button type="button" class="ng-eye" aria-pressed="false">Afficher</button></div><p class="ng-fe" id="ngCodeE"></p></div>
-          <div class="ng-fd ng-c2" hidden><label for="ngCode2">Retapez le code</label><div class="ng-ip"><input id="ngCode2" type="password" inputmode="numeric" pattern="[0-9]*" autocomplete="new-password" maxlength="6" placeholder="••••••" aria-describedby="ngCode2E"><b class="ng-ck" aria-hidden="true"></b></div><p class="ng-fe" id="ngCode2E"></p></div>
-          <div class="ng-row ng-oubli"><button type="button" class="ng-link">Code oublié ?</button></div>
-          <button type="submit" class="ng-go"><span>Se connecter</span></button>
-        </form>
-        <p class="ng-sw"><span></span> <button type="button" class="ng-link"></button></p>
-        <p class="ng-note">Gardez votre code secret pour vous, comme celui de Mobile Money. À la création du compte, vous recevez aussi un code de secours : notez-le.</p>`, { porte: true });
-    let mode = 'in'; const f = bg.querySelector('form'), go = bg.querySelector('.ng-go'), $ = q => bg.querySelector(q), P = bg.porte;
+          <div class="po-s" data-k="apercu"><div class="po-carte"><span>Sur le marché, on verra</span><b class="po-public"></b><span>Jamais votre numéro.</span></div></div>
+          <div class="po-s" data-k="secours"><div class="po-carte po-sec"><output class="po-cle"></output><span>Gardé chiffré. Personne ne peut le relire, même l’équipe.</span></div><button type="button" class="ng-alt ng-copy">Copier le code</button></div>
+          <div class="po-s po-liens" data-k="tel"><button type="button" class="po-lien" data-m="in">J’ai déjà un compte</button></div>
+          <div class="po-s po-liens" data-k="login"><button type="button" class="po-lien" data-m="sos">Code secret oublié ?</button><button type="button" class="po-lien po-lien2" data-m="up">Créer un compte</button></div>
+          <div class="po-pied"><button type="submit" class="ng-go"><span></span></button><p class="po-free">Gratuit. Aucun paiement dans l’application.</p></div>
+        </form>`, { porte: true });
+    bg.querySelector('.po-marque').classList.add('is-on');   // le titre se pose une fois ; il ne se rejoue pas à chaque étape
+    let mode = 'up', etape = 0, ville = '', secours = '', fini = null;
+    const f = bg.querySelector('form'), go = bg.querySelector('.ng-go'), $ = q => bg.querySelector(q), P = bg.porte;
+    const cle = () => ETAPES[mode][etape];
     const digits = v => { let d = String(v || '').replace(/\D/g, ''); if (d.length > 10 && d.startsWith('225')) d = d.slice(3); return d.slice(0, 10); };
-    const champErr = (id, msg) => { const i = $('#' + id), e = $('#' + id + 'E'); i.setAttribute('aria-invalid', msg ? 'true' : 'false'); i.closest('.ng-ip').classList.toggle('is-bad', !!msg); e.textContent = msg || ''; };
+    const champErr = (id, msg) => { const i = $('#' + id), e = $('#' + id + 'E'); if (!i) return; i.setAttribute('aria-invalid', msg ? 'true' : 'false'); (i.closest('.ng-ip') || i.closest('.po-code')).classList.toggle('is-bad', !!msg); e.textContent = msg || ''; };
     const ok = (id, v) => $('#' + id).closest('.ng-ip').classList.toggle('is-ok', !!v);
     const glob = (msg, action, fn) => { const g = $('.ng-glob'); g.hidden = !msg; g.querySelector('p').textContent = msg || ''; const b = g.querySelector('button'); b.hidden = !action; b.textContent = action || ''; b.onclick = fn || null; };
-    const setMode = m => {
-      mode = m; P && P.mode && P.mode(m); bg.querySelectorAll('.ng-tabs button').forEach(x => x.setAttribute('aria-selected', String(x.dataset.m === m)));
-      $('.ng-tabs').hidden = m === 'sos'; $('.ng-id').hidden = m !== 'up'; $('.ng-c2').hidden = m === 'in'; $('.ng-cle').hidden = m !== 'sos'; $('.ng-oubli').hidden = m !== 'in';
-      const SW = { in: ['Pas encore de compte ?', 'Créer un compte', 'up'], up: ['Déjà un compte ?', 'Se connecter', 'in'], sos: ['', 'Retour à la connexion', 'in'] }[m];
-      $('.ng-sw span').textContent = SW[0]; $('.ng-sw button').textContent = SW[1]; $('.ng-sw button').onclick = () => setMode(SW[2]);
-      const t = $('#ngT'), dm = raison !== 'publie' && raison !== 'negocie' ? { in: 'Entrez dans le', up: 'Rejoignez le' }[m] : '';
-      t.classList.toggle('ng-tt', !!dm);
-      // le titre de la porte reprend le logo : « marché » crème, « de Gros » maïs, gras italique ; il se rejoue à chaque bascule.
-      // « de Gros » passe à « du pays » 3 s après l'apparition, puis revient ; recommence toutes les 10 s (choix du propriétaire, 24/10/2026), en CSS seulement
-      if (dm) { t.innerHTML = `<span class="ng-tt-a">${dm}</span><span class="ng-tt-b"><span class="ng-tt-m"><span>marché</span></span> <span class="ng-tt-g"><span class="ng-tt-pile"><span class="ng-tt-x"><span class="ng-tt-t">de Gros</span></span><span class="ng-tt-y" aria-hidden="true"><span class="ng-tt-t">du pays</span></span></span></span></span>`; t.classList.remove('is-on'); void t.offsetWidth; t.classList.add('is-on'); }
-      else t.textContent = TITRE[m]; $('.ng-lede').textContent = LEDE[m]; $('.ng-lede').hidden = !LEDE[m];
-      $('.ng-lc').innerHTML = (m === 'sos' ? 'Nouveau code secret' : m === 'up' ? 'Choisissez un code secret' : 'Code secret') + ' <i>6 chiffres</i>';
-      $('#ngCode').autocomplete = m === 'in' ? 'current-password' : 'new-password'; go.querySelector('span').textContent = BTN[m]; glob('');
-      ['ngCode', 'ngCode2', 'ngCle', 'ngPrenom', 'ngNom', 'ngPseudo'].forEach(id => champErr(id, '')); bg.querySelector('.ng-form').scrollTop = 0;
+    const CHAMPS = ['ngTel', 'ngCle', 'ngCode', 'ngCode2', 'ngPrenom', 'ngNom', 'ngPseudo'];
+    const peindre = (focus = true) => {
+      const k = cle(), n = ETAPES[mode].length, q = Q[mode][k];
+      bg.querySelectorAll('.po-s').forEach(x => { x.hidden = !x.dataset.k.split(' ').includes(k); });
+      $('.po-bar').innerHTML = Array.from({ length: n }, (_, i) => `<span${i <= etape ? ' class="on"' : ''}></span>`).join('');
+      $('#ngT').textContent = q[0]; $('.ng-lede').textContent = q[1]; $('.ng-lede').hidden = !q[1];
+      $('#ngCodeL').textContent = mode === 'in' ? 'Code secret' : mode === 'sos' ? 'Nouveau code secret' : 'Votre code secret';
+      $('#ngCode').autocomplete = mode === 'in' ? 'current-password' : 'new-password';
+      go.querySelector('span').textContent = mode === 'sos' && k === 'code' ? 'Choisir ce code' : BTN[k];
+      $('.po-back').style.visibility = k === 'secours' ? 'hidden' : '';
+      if (k === 'apercu') { const pr = $('#ngPrenom').value.trim(), no = $('#ngNom').value.trim(), ps = $('#ngPseudo').value.trim();
+        $('.po-public').textContent = (ps || (pr + (no ? ' ' + no.charAt(0).toUpperCase() + '.' : ''))) + (ville ? ' · ' + ville : ''); }
+      if (k === 'secours') { $('.po-cle').textContent = String(secours).replace(/(.{4})(?=.)/g, '$1-'); bg.dataset.lock = '1'; }
+      glob(''); peindreCases();
+      const form = bg.querySelector('.ng-form'); if (form) form.scrollTop = 0;
+      if (focus) setTimeout(() => { const cible = { tel: '#ngTel', login: digits($('#ngTel').value).length === 10 ? '#ngCode' : '#ngTel', cle: digits($('#ngTel').value).length === 10 ? '#ngCle' : '#ngTel', code: '#ngCode', id: '#ngPrenom' }[k]; ($(cible || '#ngT')).focus({ preventScroll: true }); }, 60);
     };
-    setMode('in');
-    bg.querySelectorAll('.ng-tabs button').forEach(b => b.onclick = () => setMode(b.dataset.m));
-    $('.ng-oubli button').onclick = () => { setMode('sos'); $('#ngCle').focus(); };
+    const setMode = (m, e = 0) => { mode = m; etape = e; P && P.mode && P.mode(m); CHAMPS.forEach(id => champErr(id, '')); peindre(); };
+    // les 6 cases du code : un point par chiffre (ou le chiffre, si « Afficher »), la case suivante en maïs
+    const peindreCases = () => ['ngCode', 'ngCode2'].forEach(id => { const i = $('#' + id), v = i.value, voir = i.type === 'text';
+      i.closest('.po-code').querySelectorAll('.po-cases i').forEach((c, n) => { c.textContent = voir && v[n] ? v[n] : ''; c.className = (n < v.length ? 'plein' : '') + (n === v.length || (n === 5 && v.length === 6) ? ' ici' : ''); }); });
+    const allerA = id => { const i = ETAPES[mode].findIndex(k => bg.querySelector('.po-s[data-k~="' + k + '"] #' + id)); if (i >= 0 && i !== etape) { etape = i; peindre(false); } setTimeout(() => $('#' + id).focus(), 60); };
+    bg.querySelectorAll('.po-lien').forEach(b => b.onclick = () => setMode(b.dataset.m));
+    $('.po-back').onclick = () => {
+      if (etape > 0) { etape--; peindre(); return; }
+      if (mode === 'sos') return setMode('in');
+      if (mode === 'in') return setMode('up');
+      bg.close();
+    };
+    bg.querySelector('.ng-x').hidden = true;   // la flèche Retour ferme la porte depuis la première étape
     // numéro : chiffres groupés par deux pendant la saisie ; l'erreur n'apparaît qu'en quittant le champ
     const tel = $('#ngTel');
     tel.addEventListener('input', () => { const d = digits(tel.value); tel.value = d.replace(/(\d{2})(?=\d)/g, '$1 '); ok('ngTel', d.length === 10); if (d.length === 10) champErr('ngTel', ''); });
     tel.addEventListener('blur', () => { const d = digits(tel.value); champErr('ngTel', d && d.length !== 10 ? 'Le numéro fait 10 chiffres, par exemple 07 01 02 03 04.' : ''); });
-    ['ngCode', 'ngCode2'].forEach(id => { const i = $('#' + id); i.addEventListener('input', () => { i.value = i.value.replace(/\D/g, '').slice(0, 6); if (i.value.length === 6) champErr(id, ''); compare(); }); });
-    $('#ngCode').addEventListener('blur', () => { const v = $('#ngCode').value; champErr('ngCode', v && v.length !== 6 ? 'Le code secret fait exactement 6 chiffres.' : ''); });
-    const compare = () => { const a = $('#ngCode').value, b = $('#ngCode2').value; if (mode === 'in') return; ok('ngCode2', b.length === 6 && a === b); champErr('ngCode2', b.length === 6 && a !== b ? 'Les deux codes ne sont pas identiques.' : ''); };
-    const eye = $('.ng-eye'); eye.onclick = () => { const on = eye.getAttribute('aria-pressed') !== 'true'; eye.setAttribute('aria-pressed', String(on)); eye.textContent = on ? 'Masquer' : 'Afficher'; ['ngCode', 'ngCode2'].forEach(id => { $('#' + id).type = on ? 'text' : 'password'; }); };
+    ['ngCode', 'ngCode2'].forEach(id => { const i = $('#' + id); i.addEventListener('input', () => { i.value = i.value.replace(/\D/g, '').slice(0, 6); if (i.value.length === 6) champErr(id, ''); compare(); peindreCases(); });
+      i.addEventListener('keyup', peindreCases); i.addEventListener('focus', peindreCases); });
+    const compare = () => { const a = $('#ngCode').value, b = $('#ngCode2').value; if (mode === 'in') return; champErr('ngCode2', b.length === 6 && a !== b ? 'Les deux codes ne sont pas identiques.' : ''); };
+    const eye = $('.po-eye'); eye.onclick = () => { const on = eye.getAttribute('aria-pressed') !== 'true'; eye.setAttribute('aria-pressed', String(on)); eye.textContent = on ? 'Masquer le code' : 'Afficher le code'; ['ngCode', 'ngCode2'].forEach(id => { $('#' + id).type = on ? 'text' : 'password'; }); peindreCases(); };
     f.addEventListener('focusin', () => P && P.etat('saisie'));
+    // la ville (facultative) : une des grandes villes, ou une autre de la liste ; Abidjan est une seule ville (ses communes ne sont pas proposées)
+    const choisirVille = v => { ville = v; bg.querySelectorAll('.po-ville').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v))); const a = $('.po-autre'); if (a) { a.value = VILLES.includes(v) ? '' : v; a.classList.toggle('on', !!v && !VILLES.includes(v)); } };
+    bg.querySelectorAll('.po-ville').forEach(b => b.onclick = () => choisirVille(ville === b.dataset.v ? '' : b.dataset.v));
+    if ($('.po-autre')) $('.po-autre').onchange = e => choisirVille(e.target.value);
+    $('.ng-copy').onclick = e => { (navigator.clipboard ? navigator.clipboard.writeText(secours) : Promise.reject()).then(() => { e.target.textContent = 'Code copié'; }).catch(() => { e.target.textContent = 'Copie impossible : notez-le à la main'; }); };
+    // un compte a déjà servi sur ce téléphone (ou son numéro est connu) : la porte s'ouvre sur la connexion ; sinon sur l'inscription
     const me = (window.MDGApp && J('mdg-app:moi', {}).phone) || ''; if (me) { tel.value = fmtTel(digits(me)); ok('ngTel', digits(me).length === 10); }
-    setTimeout(() => $(me ? '#ngCode' : '#ngTel').focus(), 80);
+    setMode(me || J(KOWN, null) ? 'in' : 'up');
     // identité à l'inscription : prénom et nom ; pseudonyme facultatif (s'il est rempli : unique, vérifié avant de créer le compte)
     const idErr = () => { const pr = $('#ngPrenom').value.trim(), no = $('#ngNom').value.trim(), ps = $('#ngPseudo').value.trim(), L = /^[\p{L}][\p{L} '’.-]*$/u;
       return { ngPrenom: !pr ? 'Entrez votre prénom.' : !L.test(pr) ? 'Des lettres uniquement (espaces, tirets et apostrophes acceptés).' : '',
@@ -527,37 +621,58 @@
     ['ngPrenom', 'ngNom', 'ngPseudo'].forEach(id => $('#' + id).addEventListener('blur', () => { if ($('#' + id).value) champErr(id, idErr()[id]); }));
     let pseudoT = 0; $('#ngPseudo').addEventListener('input', () => { const ps = $('#ngPseudo').value.trim(); ok('ngPseudo', false); clearTimeout(pseudoT); if (!/^[A-Za-z0-9_.-]{3,24}$/.test(ps) || !navigator.onLine) return;
       pseudoT = setTimeout(async () => { try { const libre = await rpc('pseudo_libre', { p: ps }, false); if ($('#ngPseudo').value.trim() !== ps) return; ok('ngPseudo', libre); champErr('ngPseudo', libre ? '' : 'Ce pseudonyme est déjà pris. Essayez-en un autre.'); } catch (_) {} }, 400); });
-    const valider = () => {
+    // les vérifications de l'étape en cours (les mêmes qu'avant, posées étape par étape)
+    const valider = k => {
       const d = digits(tel.value), c = $('#ngCode').value, errs = [];
-      if (d.length !== 10) errs.push(['ngTel', d ? 'Le numéro fait 10 chiffres, par exemple 07 01 02 03 04.' : 'Entrez votre numéro.']);
-      if (mode === 'sos' && String($('#ngCle').value).replace(/[^A-Za-z0-9]/g, '').length !== 12) errs.push(['ngCle', 'Le code de secours fait 12 caractères.']);
-      if (!/^\d{6}$/.test(c)) errs.push(['ngCode', c ? 'Le code secret fait exactement 6 chiffres.' : 'Entrez votre code secret.']);
-      if (mode !== 'in' && c !== $('#ngCode2').value) errs.push(['ngCode2', 'Les deux codes ne sont pas identiques.']);
-      if (mode === 'up') { const e = idErr(); ['ngPseudo', 'ngNom', 'ngPrenom'].forEach(k => { if (e[k]) errs.unshift([k, e[k]]); }); }
-      ['ngPrenom', 'ngNom', 'ngPseudo', 'ngTel', 'ngCle', 'ngCode', 'ngCode2'].forEach(id => champErr(id, (errs.find(e => e[0] === id) || [])[1] || ''));
+      if (['tel', 'login', 'cle'].includes(k) && d.length !== 10) errs.push(['ngTel', d ? 'Le numéro fait 10 chiffres, par exemple 07 01 02 03 04.' : 'Entrez votre numéro.']);
+      if (k === 'cle' && String($('#ngCle').value).replace(/[^A-Za-z0-9]/g, '').length !== 12) errs.push(['ngCle', 'Le code de secours fait 12 caractères.']);
+      if (['login', 'code'].includes(k)) {
+        if (!/^\d{6}$/.test(c)) errs.push(['ngCode', c ? 'Le code secret fait exactement 6 chiffres.' : 'Entrez votre code secret.']);
+        else if (mode === 'up' && (/^(\d)\1{5}$/.test(c) || c === '123456' || c === '654321')) errs.push(['ngCode', 'Code trop facile à deviner : évitez 123456 ou 6 fois le même chiffre.']);
+        if (k === 'code' && c !== $('#ngCode2').value) errs.push(['ngCode2', $('#ngCode2').value ? 'Les deux codes ne sont pas identiques.' : 'Retapez le code pour le confirmer.']);
+      }
+      if (k === 'id') { const e = idErr(); ['ngPseudo', 'ngNom', 'ngPrenom'].forEach(x => { if (e[x]) errs.unshift([x, e[x]]); }); }
+      CHAMPS.forEach(id => champErr(id, (errs.find(e => e[0] === id) || [])[1] || ''));
       if (errs.length) $('#' + errs[0][0]).focus();
       return !errs.length;
     };
-    const occupe = on => { go.disabled = on; if (on) go.setAttribute('aria-busy', 'true'); else go.removeAttribute('aria-busy'); bg.querySelectorAll('.ng-tabs button,.ng-oubli button').forEach(b => { b.disabled = on; }); };
+    const occupe = on => { go.disabled = on; if (on) go.setAttribute('aria-busy', 'true'); else go.removeAttribute('aria-busy'); bg.querySelectorAll('.po-lien,.po-back').forEach(b => { b.disabled = on; }); };
+    // la fin : on « entre dans le marché » (la porte s'ouvre, on la traverse), puis l'accueil par son prénom
+    const entrer = () => {
+      occupe(true); P && P.etat('ok');
+      setTimeout(() => {
+        const fermer = () => { bg.close(); dispatchEvent(new CustomEvent('mdg:connecte', { detail: { raison } })); };
+        // la transition recouvre d'abord la fenêtre de connexion, qui se ferme dessous (pas d'éclair de l'accueil entre les deux)
+        if (window.MDGPorte && MDGPorte.entrer && document.documentElement.hasAttribute('data-app')) MDGPorte.entrer(fini, fermer); else { fermer(); fini(); }
+      }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 250 : 750);
+    };
     f.onsubmit = async e => {
       e.preventDefault(); glob('');
-      if (!valider()) return;
+      const k = cle();
+      if (k === 'secours') return entrer();
+      if (!valider(k)) return;
+      if (k === 'id') {   // le pseudonyme est vérifié avant d'aller plus loin (comme avant la création du compte)
+        const ps = $('#ngPseudo').value.trim();
+        if (ps && navigator.onLine) { occupe(true); const libre = await rpc('pseudo_libre', { p: ps }, false).catch(() => true); occupe(false); if (!libre) { champErr('ngPseudo', 'Ce pseudonyme est déjà pris. Essayez-en un autre.'); $('#ngPseudo').focus(); return; } }
+      }
+      const envoi = (mode === 'up' && k === 'apercu') || k === 'login' || (mode === 'sos' && k === 'code');
+      if (!envoi) { etape++; peindre(); return; }
       if (!navigator.onLine) { glob('Pas de connexion internet. Vos annonces restent sur ce téléphone ; réessayez quand le réseau revient.', 'Réessayer', () => f.requestSubmit()); return; }
       const m0 = mode; occupe(true); go.querySelector('span').textContent = ENC[m0]; P && P.etat('envoi');
       try {
         const t = tel.value, c = $('#ngCode').value, ident = { prenom: $('#ngPrenom').value.trim(), nom: $('#ngNom').value.trim(), pseudo: $('#ngPseudo').value.trim() || null };
+        if (ville) Object.assign(ident, { ville, region_slug: (V && V.region(ville)) || null });
         if (m0 === 'up' && ident.pseudo) { const libre = await rpc('pseudo_libre', { p: ident.pseudo }, false).catch(() => true); if (!libre) throw new Error('PSEUDO_PRIS'); }
         const r = await (m0 === 'up' ? signUp(t, c) : m0 === 'sos' ? recover(t, $('#ngCle').value, c) : signIn(t, c));
         if (m0 === 'up') { try { await api('/rest/v1/profils', { method: 'POST', auth: true, body: Object.assign({ user_id: r.user.id }, ident), prefer: 'return=minimal' }).catch(e => { if (e.status === 409) return api('/rest/v1/profils?user_id=eq.' + r.user.id, { method: 'PATCH', auth: true, body: ident, prefer: 'return=minimal' }); throw e; }); say('compte'); } catch (e) { console.warn('[nuage] profil non enregistré', e.message); } }
         // réussite confirmée par le serveur : seulement maintenant
-        // pas de message dans le bouton (demande du propriétaire) : il reste en attente, la notification de bienvenue suffit
-        P && P.etat('ok');
         // l'accueil après la connexion : par son prénom, puis ce qui l'attend (messages, propositions), avec le geste pour y aller
-        const fin = () => {
+        fini = () => {
           const pf = window.MDGCompte && MDGCompte.profil ? (MDGCompte.profil() || {}) : {}, prenom = (m0 === 'up' ? ident.pseudo || ident.prenom : pf.pseudo || pf.prenom) || '';
           const qui = prenom ? ', *' + prenom.replace(/\*/g, '') + '*' : '';
           toast(m0 === 'up' ? 'Bienvenue' + (qui || ' sur le *marché*') : m0 === 'sos' ? 'Nouveau code enregistré' : 'Bon retour' + (qui || ' au *marché*'),
             { type: 'ok', sous: m0 === 'sos' ? 'Vous êtes connecté. Gardez ce code pour vous.' : 'Vos annonces partent sur le marché.' });
+          if (m0 === 'up' && window.MDGCompte) setTimeout(() => MDGCompte.bienvenue({ identite: true }), 300);
           if (m0 !== 'up') setTimeout(() => {
             const dm = window.MDGMessages && MDGMessages.unread ? MDGMessages.unread() : 0, ng = window.MDGNegoce && MDGNegoce.unread ? MDGNegoce.unread() : 0;
             if (!dm && !ng) return;
@@ -565,24 +680,19 @@
             toast(parts.join(' et ') + (dm + ng > 1 ? ' vous attendent' : ' vous attend'), { type: 'info', action: { t: 'Voir', fn: () => { if (ng && window.MDGNegoce) MDGNegoce.inbox(); else if (window.MDGMessages) MDGMessages.boite(); } } });
           }, 3200);
         };
-        const bienvenue = () => { fin(); if (m0 === 'up' && window.MDGCompte) setTimeout(() => MDGCompte.bienvenue({ identite: true }), 300); };
-        // application : on « entre dans le marché » (la porte s'ouvre, on la traverse) avant la suite (code de secours, bienvenue)
-        const suite = () => { if (r && r.secours) showSecours(r.secours, bienvenue); else bienvenue(); };
-        setTimeout(() => {
-          const fermer = () => { bg.close(); dispatchEvent(new CustomEvent('mdg:connecte', { detail: { raison } })); };
-          // la transition recouvre d'abord la fenêtre de connexion, qui se ferme dessous (pas d'éclair de l'accueil entre les deux)
-          if (window.MDGPorte && MDGPorte.entrer && document.documentElement.hasAttribute('data-app')) MDGPorte.entrer(suite, fermer); else { fermer(); suite(); }
-        }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 250 : 750);
+        // le code de secours (nouveau compte, ou code oublié) se montre une seule fois, dans la porte, avant d'entrer
+        if (r && r.secours) { secours = r.secours; occupe(false); etape = ETAPES[m0].indexOf('secours'); peindre(); P && P.etat('ok'); return; }
+        entrer();
       } catch (x) {
-        occupe(false); go.querySelector('span').textContent = BTN[mode]; P && P.etat('erreur'); setTimeout(() => P && P.etat('saisie'), 1400);
+        occupe(false); go.querySelector('span').textContent = mode === 'sos' && cle() === 'code' ? 'Choisir ce code' : BTN[cle()]; P && P.etat('erreur'); setTimeout(() => P && P.etat('saisie'), 1400);
         const msg = String(x.message || '');
         if (msg === 'Failed to fetch') glob('Le serveur ne répond pas. Vérifiez votre connexion, puis réessayez.', 'Réessayer', () => f.requestSubmit());
-        else if (/incorrect|invalid/i.test(msg) && mode === 'in') { glob('Numéro ou code secret incorrect. Vérifiez les deux.', 'Code oublié ?', () => { setMode('sos'); $('#ngCle').focus(); }); $('#ngCode').select(); }
-        else if (msg === 'PSEUDO_PRIS') { champErr('ngPseudo', 'Ce pseudonyme est déjà pris. Essayez-en un autre.'); $('#ngPseudo').focus(); }
-        else if (/déjà un compte/i.test(msg)) glob('Ce numéro a déjà un compte.', 'Me connecter avec ce numéro', () => { setMode('in'); $('#ngCode').focus(); });
+        else if (/incorrect|invalid/i.test(msg) && mode === 'in') { glob('Numéro ou code secret incorrect. Vérifiez les deux.', 'Code oublié ?', () => setMode('sos')); $('#ngCode').select(); }
+        else if (msg === 'PSEUDO_PRIS') { allerA('ngPseudo'); champErr('ngPseudo', 'Ce pseudonyme est déjà pris. Essayez-en un autre.'); }
+        else if (/déjà un compte/i.test(msg)) glob('Ce numéro a déjà un compte.', 'Me connecter avec ce numéro', () => setMode('in'));
         else if (/rate|too many|trop de|429/i.test(msg + (x.status || ''))) glob('Trop d’essais d’affilée. Attendez quelques minutes, puis réessayez.');
-        else if (/trop facile/i.test(msg)) { champErr('ngCode', msg); $('#ngCode').focus(); }
-        else if (/secours/i.test(msg) && mode === 'sos') champErr('ngCle', msg);
+        else if (/trop facile/i.test(msg)) { allerA('ngCode'); champErr('ngCode', msg); }
+        else if (/secours/i.test(msg) && mode === 'sos') { allerA('ngCle'); champErr('ngCle', msg); }
         else glob(msg);
       }
     };

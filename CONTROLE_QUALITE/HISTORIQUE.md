@@ -19,3 +19,4 @@
 | 14/11/2026 à 05 h 59 | `apres-modif` | `a010232` | 13 | 4 | 0 | 1 | 0 | non | [rapport](rapports/2026-11-14-05h59-apres-modif.md) |
 | 14/11/2026 à 06 h 23 | `apres-modif` | `7466b78` | 13 | 4 | 0 | 1 | 0 | non | [rapport](rapports/2026-11-14-06h23-apres-modif.md) |
 | 14/11/2026 à 06 h 27 | `apres-modif` | `82e131d` | 13 | 4 | 0 | 1 | 0 | non | [rapport](rapports/2026-11-14-06h27-apres-modif.md) |
+| 14/11/2026 à 06 h 41 | `apres-modif` | `8873326` | 11 | 6 | 0 | 1 | 0 | oui (2) | [rapport](rapports/2026-11-14-06h41-apres-modif.md) |

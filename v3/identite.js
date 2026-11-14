@@ -580,24 +580,33 @@
      Serveur : supabase/schema-101z-bannissement-contester.sql. Le reste de l'application lui est fermé : le serveur refuse déjà
      publier, négocier, écrire et agir sur une commande (COMPTE_BANNI) ; seule la lecture de ses commandes reste ouverte. ——— */
   const MOTIF_BAN = { arnaque: 'Arnaque', mauvais_produits: 'Mauvais produits à répétition', insultes: 'Insultes dans les discussions', autre: 'Autre raison' };
-  const CSS_BN = `.bn{position:fixed;inset:0;z-index:2147482000;overflow-y:auto;background:#F4EEE3;color:#171512;font:400 16px/1.5 Jost,system-ui,sans-serif;--mute:#5E5546;--line:rgba(23,21,18,.16);--card:#FFFDF8;--focus:#10392B}
-.bn-in{box-sizing:border-box;min-height:100%;max-width:480px;margin:0 auto;padding:calc(48px + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
-.bn-rond{width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:rgba(192,68,43,.12);color:#A8361F}
-.bn h1{margin:6px 0 0;font:600 30px/1.1 Jost,sans-serif;letter-spacing:-.015em}
-.bn p{margin:0;color:var(--mute)}.bn p b{color:#171512;font-weight:600}
-.bn-rep{padding:12px 14px;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);color:#171512}
-.bn label{font-weight:600;margin-top:6px}
-.bn textarea{box-sizing:border-box;width:100%;min-height:132px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fff;color:#171512;font:400 16px/1.45 Jost,sans-serif;resize:vertical}
-.bn-err{color:#A8361F;font-size:14.5px;min-height:1px}
-.bn-act{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-top:14px}
-.bn-go{min-height:54px;border:0;border-radius:27px;background:#10392B;color:#F3EFE4;font:600 16px Jost,sans-serif;cursor:pointer}.bn-go[disabled]{opacity:.55;cursor:default}
-.bn-lien{min-height:44px;border:0;background:none;color:#171512;font:500 15px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-.bn button:focus-visible,.bn textarea:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-html[data-theme=sombre] .bn{background:#171512;color:#F3EFE4;--mute:#B9AD98;--line:rgba(243,239,228,.18);--card:#25211B;--focus:#F2C230}
-html[data-theme=sombre] .bn p b,html[data-theme=sombre] .bn-rep,html[data-theme=sombre] .bn-lien{color:#F3EFE4}
-html[data-theme=sombre] .bn-rond{background:rgba(227,138,115,.16);color:#E38A73}
-html[data-theme=sombre] .bn textarea{background:#25211B;color:#F3EFE4}
-html[data-theme=sombre] .bn-err{color:#E38A73}`;
+  // écran de la maquette « MGCI App v2 » (lot 15) : le logo, « Compte banni », la décision, puis « Contester » qui ouvre une feuille
+  const CSS_BN = `.bn{position:fixed;inset:0;z-index:2147482000;overflow-y:auto;background:var(--bn-papier);color:var(--bn-encre);font:400 16px/1.5 Jost,system-ui,sans-serif;
+--bn-papier:#F2EBDD;--bn-carte:#FAF4E9;--bn-champ:#FFFAF3;--bn-encre:#171512;--bn-t2:#484236;--bn-t3:#655C4D;--bn-vert:#10392B;--bn-action:#F3EFE4;--bn-lin:#DDD3C2;--bn-mute:#6F6553;--bn-trait:rgba(23,21,18,.14);--bn-alerte:#B23C24}
+.bn-in{box-sizing:border-box;min-height:100%;max-width:480px;margin:0 auto;padding:calc(60px + env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:center;gap:14px}
+.bn-logo{width:52px;height:52px;border-radius:15px}
+.bn h1{margin:8px 0 0;font:600 32px/1.05 Jost,sans-serif;letter-spacing:-.015em}
+.bn p{margin:0}.bn-dec{font-size:15px;line-height:1.5;color:var(--bn-t2)}.bn-lim{font-size:14px;color:var(--bn-t3)}
+.bn-env{display:flex;gap:10px;background:#F6E2B0;color:#3D2E05;border-radius:16px;padding:14px 16px;font-size:14px;font-weight:600;line-height:1.45}
+.bn-rep{padding:14px 16px;border-radius:16px;background:var(--bn-carte);font-size:14.5px;line-height:1.45}
+.bn-go{min-height:54px;margin-top:6px;border:0;border-radius:999px;background:var(--bn-vert);color:var(--bn-action);font:700 16px Jost,sans-serif;cursor:pointer}
+.bn-go:disabled{background:var(--bn-lin);color:var(--bn-mute);cursor:default}
+.bn-liens{display:flex;flex-wrap:wrap;gap:0 20px;margin-top:6px}
+.bn-lien{min-height:44px;padding:0;border:0;background:none;color:var(--bn-t3);font:600 14px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.bn-voile{position:fixed;inset:0;z-index:1;background:rgba(23,21,18,.5)}
+.bn-feuille{position:fixed;left:0;right:0;bottom:0;z-index:2;box-sizing:border-box;max-width:480px;margin:0 auto;max-height:92dvh;overflow-y:auto;padding:16px 20px calc(24px + env(safe-area-inset-bottom));border-radius:26px 26px 0 0;background:var(--bn-carte);display:flex;flex-direction:column;gap:12px;animation:bnUp .28s cubic-bezier(.22,1,.36,1) both}
+.bn-poignee{align-self:center;width:40px;height:5px;border-radius:999px;background:var(--bn-trait)}
+.bn-x{position:absolute;top:10px;right:12px;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:none;color:var(--bn-encre);display:grid;place-items:center;cursor:pointer}
+.bn-feuille h2{margin:0;padding-right:44px;font:600 24px/1.15 Jost,sans-serif;letter-spacing:-.01em}
+.bn-feuille p{font-size:14px;line-height:1.45;color:var(--bn-t3)}
+.bn textarea{box-sizing:border-box;width:100%;min-height:120px;padding:12px 14px;border:1px solid var(--bn-trait);border-radius:16px;background:var(--bn-champ);color:var(--bn-encre);font:400 16px/1.4 Jost,sans-serif;resize:none}
+.bn textarea::placeholder{color:var(--bn-mute)}
+.bn-feuille .bn-err{font-size:14px;font-weight:600;color:var(--bn-alerte)}.bn-err:empty{display:none}
+.bn button:focus-visible,.bn textarea:focus-visible{outline:2px solid var(--bn-vert);outline-offset:2px}
+@keyframes bnUp{from{transform:translateY(100%)}}
+@media (prefers-reduced-motion:reduce){.bn-feuille{animation:none}}
+html[data-theme=sombre] .bn{--bn-papier:#14120F;--bn-carte:#1F1B16;--bn-champ:#25211B;--bn-encre:#F3EFE4;--bn-t2:#DDD3C2;--bn-t3:#BFB39E;--bn-vert:#F2C230;--bn-action:#171512;--bn-lin:#3A342A;--bn-mute:#A89C88;--bn-trait:rgba(243,239,228,.18);--bn-alerte:#F3A08C}
+html[data-theme=sombre] .bn-voile{background:rgba(0,0,0,.6)}`;
   let bn = null, bnRendre = null, bnCss = false;
   function bnRetirer() { if (!bn) return; bn.remove(); bn = null; if (bnRendre) { bnRendre(); bnRendre = null; } }
   // e : réponse de bannissement_etat() ; undefined = fonction pas encore installée sur ce serveur
@@ -606,33 +615,41 @@ html[data-theme=sombre] .bn-err{color:#E38A73}`;
     if (!bn) { bn = document.createElement('div'); bn.className = 'bn'; bn.setAttribute('role', 'alertdialog'); bn.setAttribute('aria-modal', 'true'); bn.setAttribute('aria-labelledby', 'bnT'); document.body.appendChild(bn); bnRendre = N() && N().piege ? N().piege(bn) : null; }
     const c = e && e !== 'hors' && e.contestation, avant = e && e.contester_avant, peut = e && !c && avant && Date.parse(avant) > Date.now();
     const motif = e && e !== 'hors' && e.motif ? MOTIF_BAN[e.motif] || '' : '';
+    const dec = e && e !== 'hors' && e.le ? `<p class="bn-dec">Décision de l’équipe le ${dateFr(e.le)}${motif ? ' : ' + esc(motif.charAt(0).toLowerCase() + motif.slice(1)) : ''}. Vous ne pouvez plus publier, négocier, commander ni écrire.</p>` : '';
     let corps;
-    if (e === 'hors') { e = null; corps = '<p>Pas de connexion : réessayez quand le réseau revient.</p>'; }
-    else if (e === undefined) corps = '<p>La contestation n’est pas encore disponible. Réessayez plus tard.</p>';
-    else if (c && c.statut === 'ouverte') corps = `<p>Contestation envoyée le ${dateFr(c.cree_le)}. L’équipe répond avant le <b>${dateFr(c.repondre_avant)}</b>.</p>`;
-    else if (c) corps = `<p>Bannissement maintenu le ${dateFr(c.decide_le)}.</p>${c.reponse ? `<div class="bn-rep">${esc(c.reponse)}</div>` : ''}`;
-    else if (peut && ecrire) corps = `<label for="bnTx">Pourquoi contestez-vous ?</label><textarea id="bnTx" maxlength="500" placeholder="Expliquez ce qui s’est passé."></textarea><p class="bn-err" role="alert"></p>`;
-    else if (peut) corps = `<p>Vous pouvez contester jusqu’au <b>${dateFr(avant)}</b>. L’équipe répond sous 7 jours.</p>`;
-    else corps = '<p>Le délai pour contester (7 jours) est passé.</p>';
+    if (e === 'hors') { e = null; corps = '<p class="bn-dec">Pas de connexion : réessayez quand le réseau revient.</p>'; }
+    else if (e === undefined) corps = '<p class="bn-dec">La contestation n’est pas encore disponible. Réessayez plus tard.</p>';
+    else if (c && c.statut === 'ouverte') corps = `<div class="bn-env" role="status">Contestation envoyée le ${dateFr(c.cree_le)}. Réponse de l’équipe avant le ${dateFr(c.repondre_avant)}.</div>`;
+    else if (c) corps = `<p class="bn-lim">Bannissement maintenu le ${dateFr(c.decide_le)}.</p>${c.reponse ? `<div class="bn-rep">${esc(c.reponse)}</div>` : ''}`;
+    else if (peut) corps = `<p class="bn-lim">Vous avez jusqu’au ${dateFr(avant)} pour contester.</p><button type="button" class="bn-go" data-bn-ok>Contester</button>`;
+    else corps = '<p class="bn-lim">Le délai pour contester (7 jours) est passé.</p>';
     const cmd = window.MDGCommandes && MDGCommandes.ouvrir;
-    bn.innerHTML = `<div class="bn-in"><div class="bn-rond" aria-hidden="true">${IC('fermer', 32)}</div><h1 id="bnT">Compte banni</h1>
-      ${motif ? `<p>Motif : <b>${esc(motif)}</b></p>` : ''}${corps}
-      <div class="bn-act">${peut ? `<button type="button" class="bn-go" data-bn-ok>${ecrire ? 'Envoyer la contestation' : 'Contester'}</button>` : ''}
-      ${ecrire ? '<button type="button" class="bn-lien" data-bn-ret>Retour</button>' : `${cmd ? '<button type="button" class="bn-lien" data-bn-cmd>Mes commandes</button>' : ''}<button type="button" class="bn-lien" data-bn-out>Se déconnecter</button>`}</div></div>`;
+    bn.innerHTML = `<div class="bn-in"><img class="bn-logo" src="logo/marque.svg" alt="Marché de Gros CI"><h1 id="bnT">Compte banni</h1>${dec}${corps}
+      <div class="bn-liens">${cmd ? '<button type="button" class="bn-lien" data-bn-cmd>Mes commandes</button>' : ''}<button type="button" class="bn-lien" data-bn-out>Se déconnecter</button></div></div>
+      ${peut && ecrire ? `<div class="bn-voile" data-bn-ret></div><div class="bn-feuille" role="dialog" aria-modal="true" aria-labelledby="bnF"><span class="bn-poignee" aria-hidden="true"></span><button type="button" class="bn-x" data-bn-ret aria-label="Fermer">${IC('fermer', 20)}</button>
+        <h2 id="bnF">Contester</h2><p>Expliquez ce qui s’est passé. L’équipe répond en 7 jours au plus.</p>
+        <textarea id="bnTx" maxlength="500" aria-label="Votre explication" aria-describedby="bnErr" placeholder="Par exemple : la commande a été annulée parce que le camion est tombé en panne."></textarea>
+        <p class="bn-err" id="bnErr" role="alert"></p><button type="button" class="bn-go" data-bn-env disabled>Envoyer</button></div>` : ''}`;
     const q = x => bn.querySelector(x);
     if (q('[data-bn-out]')) q('[data-bn-out]').onclick = () => { bnRetirer(); if (N()) N().signOut(); };
     if (q('[data-bn-cmd]')) q('[data-bn-cmd]').onclick = () => MDGCommandes.ouvrir();
-    if (q('[data-bn-ret]')) q('[data-bn-ret]').onclick = () => bnPeindre(e, false);
-    const ok = q('[data-bn-ok]');
-    if (ok && !ecrire) ok.onclick = () => { bnPeindre(e, true); const t = bn.querySelector('#bnTx'); if (t) t.focus(); };
-    if (ok && ecrire) ok.onclick = async () => {
-      const t = bn.querySelector('#bnTx'), err = bn.querySelector('.bn-err'), v = t.value.trim();
-      if (v.length < 10) { err.textContent = 'Expliquez en quelques mots (10 caractères au moins).'; t.focus(); return; }
-      const r = N().texteRefus ? N().texteRefus(v) : ''; if (r) { err.textContent = r; return; }
-      ok.disabled = true; err.textContent = '';
-      try { await N().rpc('bannissement_contester', { p_texte: v }); bnPeindre(await N().rpc('bannissement_etat'), false); }
-      catch (x) { ok.disabled = false; err.textContent = window.MDGErreur ? MDGErreur(x) : 'Impossible pour l’instant. Réessayez.'; }
-    };
+    bn.querySelectorAll('[data-bn-ret]').forEach(b => b.onclick = () => { bnPeindre(e, false); const o = bn.querySelector('[data-bn-ok]'); if (o) o.focus(); });
+    if (q('[data-bn-ok]')) q('[data-bn-ok]').onclick = () => { bnPeindre(e, true); const t = bn.querySelector('#bnTx'); if (t) t.focus(); };
+    const env = q('[data-bn-env]');
+    if (env) {
+      const t = q('#bnTx'), err = q('.bn-err');
+      t.addEventListener('input', () => { env.disabled = t.value.trim().length < 10; err.textContent = ''; });
+      t.addEventListener('keydown', ev => { if (ev.key === 'Escape') { ev.stopPropagation(); bnPeindre(e, false); } });
+      env.onclick = async () => {
+        const v = t.value.trim();
+        if (v.length < 10) { err.textContent = 'Expliquez en quelques mots (10 caractères au moins).'; t.focus(); return; }
+        const r = N().texteRefus ? N().texteRefus(v) : ''; if (r) { err.textContent = r; return; }
+        env.disabled = true; env.textContent = 'Envoi…'; err.textContent = '';
+        // « envoyée » seulement quand le serveur l'a enregistrée : on relit l'état avant de le dire
+        try { await N().rpc('bannissement_contester', { p_texte: v }); bnPeindre(await N().rpc('bannissement_etat'), false); }
+        catch (x) { env.disabled = false; env.textContent = 'Envoyer'; err.textContent = window.MDGErreur ? MDGErreur(x) : 'Impossible pour l’instant. Réessayez.'; }
+      };
+    }
   }
   let bnEnCours = false;
   async function gardeBanni() {

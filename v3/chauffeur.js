@@ -2,9 +2,10 @@
    Pour les transporteurs : s'inscrire (gratuit), suivre la vérification par l'équipe, se dire disponible,
    recevoir les missions du réseau Marché de Gros (son code T-4K7P prouve qui il est), accepter ou refuser une mission,
    puis signaler l'arrivée ou un transbordement. Serveur : supabase/schema-27-transporteurs.sql.
-   Le chargement reste confirmé par le vendeur et la réception par l'acheteur (codes à venir).
+   Le chargement reste confirmé par le vendeur et la réception par l'acheteur (mot secret).
    Le numéro du chauffeur n'est jamais montré aux membres ; le chauffeur ne voit pas leurs numéros.
-   Réutilise l'habillage de Mes commandes (v3/commandes.js : MDGCommandes.css()).
+   Dessin : maquette « MGCI App v2 » de Claude Design (lot 15) : page pleine, croix + logo en haut, carte de mission,
+   interrupteur « Partager ma position », état en grand, gros bouton vert. Couleurs : jetons des écrans refaits (data-v2).
    API : MDGChauffeur.ouvrir() · MDGChauffeur.etat() → { inscrit, statut, propositions } (dernier état connu) */
 (function () {
   'use strict';
@@ -16,21 +17,103 @@
   const W = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const IC = (n, t) => window.MDGIco ? MDGIco.svg(n, t || 18, 1.9) : '';
-  const TI = n => `<span class="ic-t" aria-hidden="true">${IC(n, 17)}</span>`;   // petite icône dessinée devant un texte (plus d'emoji)
+  const TI = n => `<span class="chv-ic" aria-hidden="true">${IC(n, 17)}</span>`;
   const nf = (v, d) => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: d == null ? 0 : d }).format(v || 0);
   const toast = (t, o) => window.MDGToast ? MDGToast.dire(t, o) : null;
-  const sac = (h, t) => window.MDGSac ? MDGSac.svg(h, { t }) : '';
   const horsLigne = e => navigator.onLine === false || /Failed to fetch|NetworkError|Load failed|network|ERR_INTERNET/i.test(String((e && e.message) || e || ''));
   const erreurTxt = e => { if (horsLigne(e)) return 'Pas de connexion : rien n’a été enregistré. Réessayez quand le réseau revient.'; const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : (window.MDGErreur ? MDGErreur(e) : (m || 'Réessayez dans un instant.')); };
   const REGIONS = () => (window.MDG && MDG.regions) || [];
   const VEH = [['moto', 'Moto'], ['tricycle', 'Tricycle'], ['camionnette', 'Camionnette'], ['camion', 'Camion'], ['semi', 'Semi-remorque'], ['autre', 'Autre']];
   const VLIB = Object.fromEntries(VEH);
   const STATUT = { en_attente: ['En attente de vérification', 'L’équipe vérifie votre profil. Vous pouvez déjà recevoir une mission d’un acheteur ou d’un vendeur qui vous choisit.', 'mais'],
-    verifie: ['Profil vérifié', 'Le service transport Marché de Gros n’est pas encore ouvert : les missions du réseau viendront à son ouverture. Un vendeur ou un acheteur peut déjà vous choisir.', ''],
+    verifie: ['Profil vérifié', 'Le service transport Marché de Gros n’est pas encore ouvert : les missions du réseau viendront à son ouverture. Un vendeur ou un acheteur peut déjà vous choisir.', 'ok'],
     refuse: ['Profil refusé', '', 'rouge'], suspendu: ['Profil suspendu', '', 'rouge'] };
   const ETAPE = { confirmee: 'En attente du chargement', preparation: 'Marchandise en préparation', chargement: 'Chargé', transport: 'En route',
     transbordement: 'Transbordement', arrivee: 'Arrivé', reception: 'Reçue', terminee: 'Livraison terminée' };
   const unites = (q, u) => { u = String(u || ''); return q > 1 && u && !/[sx]$|^(kg|t|l|L)$/.test(u) ? u + 's' : u; };
+
+  // l'habillage de la page (une seule fois) : jetons des écrans refaits, clair et sombre (css/mgci-tokens.css, css/sombre.css)
+  function css() {
+    if (document.getElementById('chv-css')) return;
+    const s = document.createElement('style'); s.id = 'chv-css';
+    s.textContent = `
+.chv-bg{position:fixed;inset:0;z-index:9400;background:var(--papier);color:var(--encre);font:400 15px/1.45 Jost,system-ui,sans-serif}
+.chv{display:flex;flex-direction:column;height:100%;max-width:560px;margin:0 auto}
+.chv-top{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top) + 10px) 16px 0 5px}
+.chv-x{flex:none;width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:999px;background:none;color:var(--encre);cursor:pointer}
+.chv-logo{flex:none;width:34px;height:34px;border-radius:10px}
+.chv-top b{font-size:16px;font-weight:700}
+.chv-main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:14px 16px calc(96px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px}
+.chv-h1{margin:0;font:600 30px/1.08 Jost,sans-serif;letter-spacing:-.015em;outline:none;overflow-wrap:anywhere}
+.chv-sous{margin:-10px 0 0;font-size:15px;line-height:1.45;color:var(--texte-2);overflow-wrap:anywhere}
+.chv-h2{margin:6px 0 -6px;font:700 19px/1.2 Jost,sans-serif}
+.chv-note{margin:0;font-size:13px;line-height:1.45;color:var(--texte-3)}
+.chv-ic{display:inline-flex;vertical-align:-3px;margin-right:6px}
+.chv-recu{background:var(--recu);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--ombre);min-width:0}
+.chv-lab{font-size:13px;font-weight:700;color:var(--texte-3)}
+.chv-titre{font-size:18px;font-weight:700;line-height:1.25;overflow-wrap:anywhere}
+.chv-code{font-size:30px;font-weight:800;letter-spacing:.08em;font-variant-numeric:tabular-nums;line-height:1.1}
+.chv-l{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:14px}
+.chv-l>span:first-child{flex:none;color:var(--texte-3)}
+.chv-l>span:last-child{text-align:right;min-width:0;overflow-wrap:anywhere}
+.chv-tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--texte-3)}
+.chv-tag{display:inline-flex;align-items:center;font-size:12.5px;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--lin);color:var(--texte-2)}
+.chv-tag.mais{background:#F6E2B0;color:#3D2E05}
+.chv-tag.ok{background:var(--vert);color:var(--action-t)}
+.chv-tag.rouge{background:rgba(178,60,36,.12);color:var(--hausse)}
+html[data-theme=sombre] .chv-tag.rouge{background:rgba(243,160,140,.14)}
+.chv-row{display:flex;align-items:center;gap:12px;background:var(--carte);border-radius:16px;padding:14px 16px;min-width:0}
+.chv-row>span{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.chv-row b{font-size:15px;font-weight:700}
+.chv-row small{font-size:13px;line-height:1.4;color:var(--texte-3)}
+.chv-row small.bad{color:var(--hausse);font-weight:600}
+.chv-sw{flex:none;position:relative;width:52px;height:44px;border:0;padding:0;background:none;cursor:pointer}
+.chv-sw::before{content:"";position:absolute;left:2px;top:8px;width:48px;height:28px;border-radius:999px;background:var(--t22);transition:background 160ms}
+.chv-sw::after{content:"";position:absolute;left:4px;top:10px;width:24px;height:24px;border-radius:999px;background:#FFFDF8;box-shadow:0 1px 3px rgba(23,21,18,.3);transition:left 160ms cubic-bezier(.22,1,.36,1)}
+.chv-sw[aria-checked=true]::before{background:var(--vert)}
+.chv-sw[aria-checked=true]::after{left:24px}
+.chv-sw:disabled{opacity:.5}
+.chv-etat{font-size:17px;font-weight:700;line-height:1.3;overflow-wrap:anywhere}
+.chv-mi{display:flex;flex-direction:column;gap:12px;min-width:0}
+.chv-mi+.chv-mi{padding-top:18px;border-top:1px solid var(--t08)}
+.chv-info{margin:0;font-size:14px;line-height:1.45;color:var(--texte-2);overflow-wrap:anywhere}
+.chv-info b{color:var(--encre)}
+.chv-garde{margin:0;padding:12px 14px;border-radius:16px;background:var(--carte);font-size:14px;line-height:1.45;color:var(--texte-2)}
+.chv-garde b{color:var(--encre)}
+.chv-fin{padding:14px 16px;border-radius:16px;background:#DCEFE3;color:#10392B;font-size:15px;font-weight:700}
+html[data-theme=sombre] .chv-fin{background:rgba(108,197,140,.16);color:#9FDCB2}
+.chv-refus{display:flex;flex-direction:column;gap:6px;padding:14px;border-radius:16px;background:rgba(178,60,36,.08);box-shadow:inset 0 0 0 1px rgba(178,60,36,.25)}
+html[data-theme=sombre] .chv-refus{background:rgba(243,160,140,.1);box-shadow:inset 0 0 0 1px rgba(243,160,140,.3)}
+.chv-refus>b{color:var(--hausse)}
+.chv-refus small{font-size:13.5px;line-height:1.45;color:var(--texte-2)}
+.chv-phs{display:flex;gap:8px;flex-wrap:wrap}
+.chv-ph{display:block;width:64px;height:64px;border-radius:10px;overflow:hidden;background:var(--sable-clair)}
+.chv-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.chv-act{display:flex;flex-direction:column;gap:10px}
+.chv-b{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;padding:0 18px;border-radius:999px;border:1.5px solid var(--vert);background:none;color:var(--vert);font:700 15px/1.2 Jost,sans-serif;text-align:center;cursor:pointer}
+.chv-b.p{min-height:56px;border:0;background:var(--vert);color:var(--action-t);font-size:17px}
+.chv-b.m{border-color:transparent;color:var(--texte-2);font-weight:600;min-height:44px}
+.chv-b:disabled{opacity:.5;cursor:default}
+.chv-x:focus-visible,.chv-b:focus-visible,.chv-sw:focus-visible,.chv-opt:focus-within,.chv-ck:focus-within{outline:2px solid var(--vert);outline-offset:2px}
+.chv-f{display:flex;flex-direction:column;gap:10px;margin:0}
+.chv-lb{display:block;margin:6px 0 -4px;font-size:14px;font-weight:600;color:var(--encre)}
+.chv-lb small{font-weight:400;color:var(--texte-3)}
+.chv-in{box-sizing:border-box;width:100%;height:56px;border-radius:16px;border:1.5px solid var(--t22);background:var(--champ);padding:0 16px;font:500 16px Jost,sans-serif;color:var(--encre);outline:none}
+.chv-in:focus{border-color:var(--vert)}
+.chv-in.gros{height:64px;border-radius:18px;font-size:26px;font-weight:800;letter-spacing:.1em;text-align:center}
+.chv-in::placeholder{color:var(--mute);opacity:1}
+.chv-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.chv-opt{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 14px;border-radius:14px;background:var(--carte);font-size:15px;font-weight:600;cursor:pointer;min-width:0}
+.chv-opt input,.chv-ck input{flex:none;width:20px;height:20px;margin:0;accent-color:var(--vert)}
+.chv-zones{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:2px 10px;border:0;margin:0;padding:0;min-width:0}
+.chv-zones legend{padding:0;margin:6px 0 6px;font-size:14px;font-weight:600}
+.chv-ck{display:flex;align-items:center;gap:10px;min-height:44px;font-size:14.5px;cursor:pointer;min-width:0}
+.chv-err{margin:0;font-size:14px;font-weight:600;color:var(--hausse)}
+.chv-err:empty{display:none}
+.chv-grand{text-align:center;font-size:44px;font-weight:800;letter-spacing:.18em;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:reduce){.chv-sw::before,.chv-sw::after{transition:none}}`;
+    document.head.appendChild(s);
+  }
 
   let bg = null, moi = null, missions = [], transferts = [], vue = 'accueil', minuteur = null;
   // prix du transport (schéma 42) : le chauffeur le fixe en acceptant, et peut le corriger jusqu'au chargement.
@@ -38,8 +121,9 @@
   // Le livreur choisi par le vendeur ou l'acheteur ne doit rien. Rien n'est prélevé dans l'application.
   const TAUX_TR = 0.069, comTr = p => Math.round(Math.round(p) * TAUX_TR);
   let prixOuvert = null;   // mission dont le formulaire de prix est ouvert
+  const corps = () => bg && bg.querySelector('.chv-main');
   function fermer() { if (!bg) return; bg.remove(); bg = null; clearInterval(minuteur); minuteur = null; document.removeEventListener('keydown', clavier); if (retourFocus && retourFocus.focus) try { retourFocus.focus({ preventScroll: true }); } catch (_) {} retourFocus = null; }
-  const clavier = e => { if (e.key === 'Escape') fermer(); };
+  const clavier = e => { if (e.key === 'Escape' && !document.querySelector('.dq-bg')) fermer(); };
   function memoriser() { W(K(), { inscrit: !!moi, statut: moi && moi.statut, propositions: missions.filter(m => m.mission === 'proposee').length, moi, missions }); }
 
   async function lire() {
@@ -52,29 +136,27 @@
 
   // inscription ou modification du profil
   function formulaire() {
-    const box = bg.querySelector('.cm'), t = moi || {}, Z = new Set(t.zones || []);
+    const box = corps(), t = moi || {}, Z = new Set(t.zones || []);
     box.scrollTop = 0;
-    box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
-      <h2>${moi ? 'Mon profil de <em>transporteur</em>' : 'Devenir <em>transporteur</em>'}</h2>
-      <p class="cm-sous">Gratuit. L’équipe du Marché de Gros vérifie chaque profil. Votre numéro n’est jamais montré aux membres.</p>
-      <form class="cm-f" novalidate>
-        <label class="t" for="chN">Nom affiché (vous ou votre entreprise)</label>
-        <input type="text" id="chN" maxlength="80" value="${esc(t.nom || '')}" autocomplete="organization">
-        <label class="t">Véhicule</label>
-        ${VEH.map(([k, l]) => `<label class="cm-opt" style="grid-template-columns:24px 1fr;padding:10px 14px"><input type="radio" name="veh" value="${k}"${t.vehicule === k ? ' checked' : ''}><span><b>${l}</b></span></label>`).join('')}
-        <label class="t" for="chI">Plaque d’immatriculation <small style="font-weight:400;color:#5E5546">(facultatif)</small></label>
-        <input type="text" id="chI" maxlength="20" value="${esc(t.immatriculation || '')}" autocapitalize="characters" autocomplete="off">
-        <label class="t" for="chC">Charge maximale en kg <small style="font-weight:400;color:#5E5546">(facultatif)</small></label>
-        <input type="text" id="chC" inputmode="numeric" maxlength="7" value="${t.capacite_kg ? esc(t.capacite_kg) : ''}" autocomplete="off">
-        <fieldset style="border:0;margin:0;padding:0"><legend class="t" style="display:block;margin:14px 0 6px;font-weight:600">Régions où vous travaillez</legend>
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:4px 10px">${REGIONS().map(r => `<label class="cm-ck" style="margin:0"><input type="checkbox" name="z" value="${esc(r.slug)}"${Z.has(r.slug) ? ' checked' : ''}> ${esc(r.name)}</label>`).join('')}</div></fieldset>
-        ${moi && moi.statut === 'verifie' ? '<p class="cm-info">Un changement de véhicule ou de plaque sera vérifié de nouveau par l’équipe.</p>' : ''}
-        <p class="cm-err" role="alert"></p>
-        <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">${moi ? 'Enregistrer' : 'Envoyer mon inscription'}</button>${moi ? '<button type="button" data-ann>Retour</button>' : ''}</div>
+    box.innerHTML = `<h1 class="chv-h1">${moi ? 'Mon profil de transporteur' : 'Devenir transporteur'}</h1>
+      <p class="chv-sous">Gratuit. L’équipe du Marché de Gros vérifie chaque profil. Votre numéro n’est jamais montré aux membres.</p>
+      <form class="chv-f" novalidate>
+        <label class="chv-lb" for="chN">Nom affiché (vous ou votre entreprise)</label>
+        <input class="chv-in" type="text" id="chN" maxlength="80" value="${esc(t.nom || '')}" autocomplete="organization">
+        <fieldset class="chv-zones" style="display:block"><legend>Véhicule</legend>
+          <div class="chv-opts">${VEH.map(([k, l]) => `<label class="chv-opt"><input type="radio" name="veh" value="${k}"${t.vehicule === k ? ' checked' : ''}><span>${l}</span></label>`).join('')}</div></fieldset>
+        <label class="chv-lb" for="chI">Plaque d’immatriculation <small>(facultatif)</small></label>
+        <input class="chv-in" type="text" id="chI" maxlength="20" value="${esc(t.immatriculation || '')}" autocapitalize="characters" autocomplete="off">
+        <label class="chv-lb" for="chC">Charge maximale en kg <small>(facultatif)</small></label>
+        <input class="chv-in" type="text" id="chC" inputmode="numeric" maxlength="7" value="${t.capacite_kg ? esc(t.capacite_kg) : ''}" autocomplete="off">
+        <fieldset class="chv-zones"><legend>Régions où vous travaillez</legend>
+          ${REGIONS().map(r => `<label class="chv-ck"><input type="checkbox" name="z" value="${esc(r.slug)}"${Z.has(r.slug) ? ' checked' : ''}> ${esc(r.name)}</label>`).join('')}</fieldset>
+        ${moi && moi.statut === 'verifie' ? '<p class="chv-garde">Un changement de véhicule ou de plaque sera vérifié de nouveau par l’équipe.</p>' : ''}
+        <p class="chv-err" role="alert"></p>
+        <div class="chv-act" style="margin-top:6px"><button type="submit" class="chv-b p">${moi ? 'Enregistrer' : 'Envoyer mon inscription'}</button>${moi ? '<button type="button" class="chv-b" data-ann>Retour</button>' : ''}</div>
       </form>`;
-    box.querySelector('[data-x]').onclick = fermer;
     const ann = box.querySelector('[data-ann]'); if (ann) ann.onclick = () => { vue = 'accueil'; peindre(); };
-    const f = box.querySelector('form'), err = f.querySelector('.cm-err');
+    const f = box.querySelector('form'), err = f.querySelector('.chv-err');
     f.onsubmit = async e => {
       e.preventDefault();
       const nom = f.querySelector('#chN').value.trim(), veh = (f.querySelector('[name=veh]:checked') || {}).value;
@@ -92,68 +174,82 @@
     };
   }
 
-  // accueil : statut, code, disponibilité, missions
+  // une mission : la carte (reçu), l'interrupteur de position, l'état en grand, puis les gestes possibles
   function carteMission(m) {
-    const q = m.quantite != null ? ' · ' + nf(m.quantite, 2) + ' ' + esc(unites(m.quantite, m.unite)) : '';
+    const q = m.quantite != null ? nf(m.quantite, 2) + ' ' + esc(unites(m.quantite, m.unite)) + ' · ' : '';
     const B = [];
     const avantChargement = ['confirmee', 'preparation', null, undefined].includes(m.etape) && ['a_confirmer', 'en_cours'].includes(m.etat);
     // réseau Marché de Gros (schéma 83) : le prix se convient à trois ; le transporteur propose, l'acheteur et le vendeur répondent
     const R3 = m.mode === 'reseau' ? (m.prix_trois || {}) : null, A3 = R3 && R3.en_attente;
     if (R3 && avantChargement && R3.convenu == null && prixOuvert !== m.mission_id) {
-      if (A3 && A3.role !== 'transporteur' && !A3.ok_transporteur) B.push(`<button type="button" class="p" data-t3a="${m.mission_id}" data-t3ref="${A3.id}">Accepter ${nf(A3.prix)} F</button>`, `<button type="button" data-acc="${m.mission_id}">Proposer un autre prix</button>`, `<button type="button" class="m" data-t3r="${m.mission_id}" data-t3ref="${A3.id}">Refuser ce prix</button>`);
-      else if (!A3) B.push(`<button type="button" class="p" data-acc="${m.mission_id}">Proposer mon prix</button>`);
-      if (m.mission === 'proposee' && !A3) B.push(`<button type="button" data-ref="${m.mission_id}">Refuser la mission</button>`);
+      if (A3 && A3.role !== 'transporteur' && !A3.ok_transporteur) B.push(`<button type="button" class="chv-b p" data-t3a="${m.mission_id}" data-t3ref="${A3.id}">Accepter ${nf(A3.prix)} F</button>`, `<button type="button" class="chv-b" data-acc="${m.mission_id}">Proposer un autre prix</button>`, `<button type="button" class="chv-b m" data-t3r="${m.mission_id}" data-t3ref="${A3.id}">Refuser ce prix</button>`);
+      else if (!A3) B.push(`<button type="button" class="chv-b p" data-acc="${m.mission_id}">Proposer mon prix</button>`);
+      if (m.mission === 'proposee' && !A3) B.push(`<button type="button" class="chv-b" data-ref="${m.mission_id}">Refuser la mission</button>`);
     } else if (!R3) {
-      if (m.mission === 'proposee' && prixOuvert !== m.mission_id) B.push(`<button type="button" class="p" data-acc="${m.mission_id}">Accepter et fixer mon prix</button>`, `<button type="button" data-ref="${m.mission_id}">Refuser</button>`);
-      if (m.mission === 'acceptee' && avantChargement && prixOuvert !== m.mission_id) B.push(`<button type="button" data-chpx="${m.mission_id}">${m.prix != null ? 'Changer mon prix' : 'Indiquer mon prix'}</button>`);
+      if (m.mission === 'proposee' && prixOuvert !== m.mission_id) B.push(`<button type="button" class="chv-b p" data-acc="${m.mission_id}">Accepter et fixer mon prix</button>`, `<button type="button" class="chv-b" data-ref="${m.mission_id}">Refuser</button>`);
+      if (m.mission === 'acceptee' && avantChargement && prixOuvert !== m.mission_id) B.push(`<button type="button" class="chv-b" data-chpx="${m.mission_id}">${m.prix != null ? 'Changer mon prix' : 'Indiquer mon prix'}</button>`);
     }
-    const etat3 = !R3 ? '' : R3.convenu != null ? `<small style="margin-top:6px;color:inherit"><b>Prix convenu par les trois : ${nf(R3.convenu)} F</b> · il ne change plus, même après un transbordement.</small>`
-      : A3 ? `<small style="margin-top:6px;color:inherit">${A3.role === 'transporteur' ? 'Votre prix' : A3.role === 'acheteur' ? 'L’acheteur propose' : 'Le vendeur propose'} : <b>${nf(A3.prix)} F</b> · acheteur : ${A3.ok_acheteur ? 'accepté' : 'pas encore'} · vendeur : ${A3.ok_vendeur ? 'accepté' : 'pas encore'}</small>`
-      : avantChargement ? '<small style="margin-top:6px;color:#8A6400"><b>Proposez votre prix</b> : la mission démarre quand l’acheteur et le vendeur l’ont accepté (48 h pour répondre).</small>' : '';
-    const K = m.validation === 'code', go = m.mission === 'acceptee' && m.etat === 'en_cours';
-    if (go && K && ['confirmee', 'preparation'].includes(m.etape)) B.push(`<button type="button" class="p" data-tap="${m.commande_id}" data-quoi="prise">Taper le code de prise en charge</button>`,
-      `<button type="button" data-dem="${m.commande_id}">${TI('cle')}Demander le code au vendeur</button>`);
-    if (go && ['transport', 'transbordement', 'arrivee'].includes(m.etape))
-      B.push(partage && partage.cmd === m.commande_id ? `<button type="button" data-gps-stop>${IC('localiser', 18)} Arrêter le partage de position</button>`
-        : `<button type="button" class="p" data-gps="${m.commande_id}">${IC('localiser', 18)} Partager ma position</button>`);
+    const etat3 = !R3 ? '' : R3.convenu != null ? `<p class="chv-info"><b>Prix convenu par les trois : ${nf(R3.convenu)} F</b> · il ne change plus, même après un transbordement.</p>`
+      : A3 ? `<p class="chv-info">${A3.role === 'transporteur' ? 'Votre prix' : A3.role === 'acheteur' ? 'L’acheteur propose' : 'Le vendeur propose'} : <b>${nf(A3.prix)} F</b> · acheteur : ${A3.ok_acheteur ? 'accepté' : 'pas encore'} · vendeur : ${A3.ok_vendeur ? 'accepté' : 'pas encore'}</p>`
+      : avantChargement ? '<p class="chv-garde"><b>Proposez votre prix</b> : la mission démarre quand l’acheteur et le vendeur l’ont accepté (48 h pour répondre).</p>' : '';
+    const Kc = m.validation === 'code', go = m.mission === 'acceptee' && m.etat === 'en_cours';
+    if (go && Kc && ['confirmee', 'preparation'].includes(m.etape)) B.push(`<button type="button" class="chv-b p" data-tap="${m.commande_id}" data-quoi="prise">Taper le code de prise en charge</button>`,
+      `<button type="button" class="chv-b" data-dem="${m.commande_id}">${TI('cle')}Demander le code au vendeur</button>`);
     if (go && ['transport', 'transbordement'].includes(m.etape))
-      B.push(`<button type="button" class="${K ? '' : 'p'}" data-arr="${m.commande_id}">Je suis arrivé</button>`);
-    if (go && K && ['transport', 'transbordement', 'arrivee'].includes(m.etape)) B.push(`<button type="button" class="p" data-tap="${m.commande_id}" data-quoi="reception">Taper le code de réception</button>`,
-      `<button type="button" data-dem="${m.commande_id}">${TI('cle')}Demander le code à l’acheteur</button>`);
+      B.push(`<button type="button" class="chv-b${Kc ? '' : ' p'}" data-arr="${m.commande_id}">Je suis arrivé</button>`);
+    if (go && Kc && ['transport', 'transbordement', 'arrivee'].includes(m.etape)) B.push(`<button type="button" class="chv-b p" data-tap="${m.commande_id}" data-quoi="reception">Taper le code de réception</button>`,
+      `<button type="button" class="chv-b" data-dem="${m.commande_id}">${TI('cle')}Demander le code à l’acheteur</button>`);
     // schéma 51 : chacun exige le code de l'autre, sur place ; la demande passe par l'application, jamais par WhatsApp
     const moiCode = moi && moi.code ? ` Montrez-lui aussi votre code transporteur <b>${esc(moi.code)}</b> : il doit le vérifier.` : '';
-    const exige = go && K ? (['confirmee', 'preparation'].includes(m.etape) ? `${TI('cle')}Quand la marchandise est chargée, exigez que le vendeur vous montre son code de prise en charge.${moiCode}`
+    const exige = go && Kc ? (['confirmee', 'preparation'].includes(m.etape) ? `${TI('cle')}Quand la marchandise est chargée, exigez que le vendeur vous montre son code de prise en charge.${moiCode}`
       : ['transport', 'transbordement', 'arrivee'].includes(m.etape) ? `${TI('cle')}À la livraison, exigez que l’acheteur vous montre son code de réception, après sa vérification.${moiCode}` : '') : '';
     if (go && ['transport', 'transbordement'].includes(m.etape))
-      B.push(K ? `<button type="button" class="m" data-pas="${m.commande_id}">Passer la marchandise à un autre chauffeur</button>` : `<button type="button" class="m" data-trb="${m.commande_id}">Signaler un transbordement</button>`);
+      B.push(Kc ? `<button type="button" class="chv-b m" data-pas="${m.commande_id}">Passer la marchandise à un autre chauffeur</button>` : `<button type="button" class="chv-b m" data-trb="${m.commande_id}">Signaler un transbordement</button>`);
     // schéma 57 : l'acheteur refuse la marchandise après réception ; le chauffeur dit ce qu'il a vu à la livraison
     const Rf = m.refus;
-    if (Rf && Rf.a_repondre) B.unshift(`<button type="button" class="p" data-rfo="${m.commande_id}">Oui, c’est ce que j’ai vu</button>`, `<button type="button" data-rfn="${m.commande_id}">Non, ce n’est pas vrai</button>`);
-    const refus = Rf ? `<div style="margin:10px 0 0;padding:12px;border-radius:14px;background:rgba(196,72,52,.08);box-shadow:inset 0 0 0 1px rgba(196,72,52,.25)">
-        <b style="display:block;color:#8A2414">L’acheteur refuse ${Rf.quantite != null ? nf(Rf.quantite, 2) + ' ' + esc(unites(Rf.quantite, m.unite)) : 'toute la marchandise'}</b>
-        <small style="display:block;margin-top:2px;color:inherit">« ${esc(Rf.motif || '')} »</small>
-        <span style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">${(Rf.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du refus" style="display:block;width:64px;height:64px;border-radius:10px;overflow:hidden;background:#E7E0CF"></span>`).join('')}</span>
-        <small style="display:block;color:#5E5546">${Rf.a_repondre ? 'À la livraison, la marchandise était-elle dans cet état ? Répondez honnêtement : votre réponse est enregistrée avec la commande n° ' + esc(m.numero) + '.' + (Rf.suffit ? ' Vous êtes un chauffeur vérifié du Marché de Gros : si vous confirmez, l’acheteur ne doit pas la partie refusée.' : ' L’équipe du Marché de Gros tiendra compte de votre réponse.') + ' Votre transport est payé quand même : par le vendeur si le refus est accepté, par l’acheteur s’il est rejeté.'
+    if (Rf && Rf.a_repondre) B.unshift(`<button type="button" class="chv-b p" data-rfo="${m.commande_id}">Oui, c’est ce que j’ai vu</button>`, `<button type="button" class="chv-b" data-rfn="${m.commande_id}">Non, ce n’est pas vrai</button>`);
+    const refus = Rf ? `<div class="chv-refus">
+        <b>L’acheteur refuse ${Rf.quantite != null ? nf(Rf.quantite, 2) + ' ' + esc(unites(Rf.quantite, m.unite)) : 'toute la marchandise'}</b>
+        <small>« ${esc(Rf.motif || '')} »</small>
+        ${(Rf.photos || []).length ? `<span class="chv-phs">${Rf.photos.map(x => `<span class="chv-ph" data-ph="${esc(x)}" role="img" aria-label="Photo du refus"></span>`).join('')}</span>` : ''}
+        <small>${Rf.a_repondre ? 'À la livraison, la marchandise était-elle dans cet état ? Répondez honnêtement : votre réponse est enregistrée avec la commande n° ' + esc(m.numero) + '.' + (Rf.suffit ? ' Vous êtes un chauffeur vérifié du Marché de Gros : si vous confirmez, l’acheteur ne doit pas la partie refusée.' : ' L’équipe du Marché de Gros tiendra compte de votre réponse.') + ' Votre transport est payé quand même : par le vendeur si le refus est accepté, par l’acheteur s’il est rejeté.'
           : Rf.reponse === 'confirme' ? 'Vous avez confirmé le refus.' : Rf.reponse === 'conteste' ? 'Vous avez contesté le refus : l’équipe va trancher.' : 'Refus traité.'}</small></div>` : '';
     const st = m.mission === 'proposee' ? ['Nouvelle mission', 'mais'] : m.mission === 'refusee' ? ['Refusée', 'rouge'] : m.etat === 'annulee' ? ['Commande annulée', 'rouge'] : m.etat === 'litige' ? [Rf ? 'Marchandise refusée' : 'Litige en cours', 'rouge'] : [ETAPE[m.etape] || 'Acceptée', ''];
-    return `<div class="cm-r" style="cursor:default;grid-template-columns:1fr"><span>
-      <b>${esc(m.produit || 'Marchandise')}${q}</b>
-      <small>${esc(m.ville_depart || 'Départ à préciser')} → ${esc(m.lieu_livraison || 'livraison à préciser')}</small>
-      <small>Vendeur : ${esc(m.vendeur)} · Acheteur : ${esc(m.acheteur)}</small>
-      <small style="margin-top:6px"><span class="cm-tag ${st[1]}">${esc(st[0])}</span> ${m.propose_role === 'admin' ? '· confiée par l’équipe' : m.propose_role === 'acheteur' ? '· choisi par l’acheteur' : m.propose_role === 'vendeur' ? '· choisi par le vendeur' : ''}</small>
-      ${m.mission === 'acceptee' && m.prix != null ? `<small style="margin-top:6px;color:inherit"><b>Votre prix : ${nf(m.prix)} F</b>${Number(m.commission) > 0 ? ` · commission du service transport Marché de Gros (6,9 %) : ${nf(m.commission)} F · vous gardez ${nf(m.net)} F` : '<br>Aucune commission : vous gardez tout.'}</small>` : ''}
-      ${!R3 && m.mission === 'acceptee' && m.prix == null && avantChargement ? '<small style="margin-top:6px;color:#8A6400"><b>Prix du transport à indiquer</b> : l’acheteur le verra dans sa commande.</small>' : ''}${etat3}
+    const qui = m.propose_role === 'admin' ? 'Confiée par l’équipe' : m.propose_role === 'acheteur' ? 'Choisi par l’acheteur' : m.propose_role === 'vendeur' ? 'Choisi par le vendeur' : '';
+    // position : seulement pendant le trajet (le serveur arrête de lui-même ensuite)
+    const enRoute = go && ['transport', 'transbordement', 'arrivee'].includes(m.etape), pOn = !!(partage && partage.cmd === m.commande_id);
+    const pTxt = !pOn ? 'Position non partagée' : partage.erreur ? esc(partage.erreur) : 'Position partagée · l’acheteur et le vendeur voient le camion';
+    // l'état en grand, comme la maquette (« En route vers Abidjan »)
+    const grand = !go ? '' : m.etape === 'transport' ? 'En route' + (m.lieu_livraison ? ' vers ' + esc(m.lieu_livraison) : '')
+      : m.etape === 'arrivee' ? (Kc ? 'Arrivé · demandez le code de réception' : 'Arrivé · l’acheteur vérifie la marchandise')
+      : m.etape === 'transbordement' ? 'Transbordement · toujours en route' : '';
+    const fini = m.etape === 'terminee' || m.etape === 'reception';
+    return `<article class="chv-mi">
+      <div class="chv-recu">
+        <span class="chv-lab">${m.numero ? 'Commande n° ' + esc(m.numero) : 'Mission'}</span>
+        <span class="chv-titre">${q}${esc(m.produit || 'Marchandise')}</span>
+        <div class="chv-l"><span>De</span><span>${esc(m.ville_depart || 'Départ à préciser')}${m.vendeur ? ' · ' + esc(m.vendeur) : ''}</span></div>
+        <div class="chv-l"><span>À</span><span>${esc(m.lieu_livraison || 'Livraison à préciser')}${m.acheteur ? ' · ' + esc(m.acheteur) : ''}</span></div>
+        ${m.mission === 'acceptee' && m.prix != null ? `<div class="chv-l"><span>Votre prix</span><span style="font-variant-numeric:tabular-nums;font-weight:700">${nf(m.prix)} F</span></div>` : ''}
+        <div class="chv-tags"><span class="chv-tag ${st[1]}">${esc(st[0])}</span>${qui ? `<span>${qui}</span>` : ''}</div>
+      </div>
+      ${m.mission === 'acceptee' && m.prix != null ? `<p class="chv-info">${Number(m.commission) > 0 ? `Commission du service transport Marché de Gros (6,9 %) : ${nf(m.commission)} F · vous gardez <b>${nf(m.net)} F</b>.` : 'Aucune commission : vous gardez tout.'}</p>` : ''}
+      ${!R3 && m.mission === 'acceptee' && m.prix == null && avantChargement ? '<p class="chv-garde"><b>Prix du transport à indiquer</b> : l’acheteur le verra dans sa commande.</p>' : ''}${etat3}
+      ${enRoute ? `<div class="chv-row"><span><b id="chPl-${esc(m.commande_id)}">Partager ma position</b><small${pOn && partage.erreur ? ' class="bad"' : ''}>${pTxt}</small></span><button type="button" class="chv-sw" role="switch" aria-checked="${pOn}" aria-labelledby="chPl-${esc(m.commande_id)}" data-gps="${m.commande_id}"></button></div>` : ''}
+      ${grand ? `<span class="chv-etat">${grand}</span>` : ''}
       ${prixOuvert === m.mission_id ? formPrix(m) : ''}
-      ${exige ? `<p class="cm-garde" style="margin:10px 0 0">${exige}</p>` : ''}${refus}
-      ${B.length ? `<div class="cm-act" style="margin:10px 0 0">${B.join('')}</div>` : ''}</span></div>`;
+      ${exige ? `<p class="chv-garde">${exige}</p>` : ''}${refus}
+      ${fini ? '<div class="chv-fin" role="status">Livraison terminée. Merci.</div>' : ''}
+      ${B.length ? `<div class="chv-act">${B.join('')}</div>` : ''}</article>`;
   }
   function formPrix(m) {
     const acc = m.mission === 'proposee' && m.mode !== 'reseau';
-    return `<form class="cm-f" data-pxf="${m.mission_id}" data-acc2="${acc ? 1 : ''}" data-res="${m.mode === 'reseau' ? 1 : ''}" style="margin:10px 0 0">
-      <label>Votre prix pour ce transport (F CFA)<input type="number" inputmode="numeric" min="1" step="1" data-pxv value="${m.prix != null ? Math.round(m.prix) : ''}" placeholder="ex. 10000" required></label>
-      <small data-pxi style="display:block;margin:6px 0 0;color:#5E5546;line-height:1.4"></small>
-      <p class="cm-err" data-pxe role="alert" style="margin:4px 0 0"></p>
-      <div class="cm-act" style="margin:8px 0 0"><button type="submit" class="p">${acc ? 'Accepter la mission' : 'Enregistrer le prix'}</button><button type="button" data-pxx>Annuler</button></div></form>`;
+    return `<form class="chv-f" data-pxf="${m.mission_id}" data-acc2="${acc ? 1 : ''}" data-res="${m.mode === 'reseau' ? 1 : ''}">
+      <label class="chv-lb" for="chPx-${esc(m.mission_id)}">Votre prix pour ce transport (F CFA)</label>
+      <input class="chv-in" id="chPx-${esc(m.mission_id)}" type="number" inputmode="numeric" min="1" step="1" data-pxv value="${m.prix != null ? Math.round(m.prix) : ''}" placeholder="ex. 10000" required>
+      <p class="chv-note" data-pxi></p>
+      <p class="chv-err" data-pxe role="alert"></p>
+      <div class="chv-act"><button type="submit" class="chv-b p">${acc ? 'Accepter la mission' : 'Enregistrer le prix'}</button><button type="button" class="chv-b" data-pxx>Annuler</button></div></form>`;
   }
   function lierPrix(box) {
     const f = box.querySelector('[data-pxf]'); if (!f) return;
@@ -180,30 +276,37 @@
     };
   }
   function accueil() {
-    const box = bg.querySelector('.cm');
+    const box = corps();
     if (!moi) return formulaire();
     const [st, sous, cls] = STATUT[moi.statut] || ['', '', ''];
     const prop = missions.filter(m => m.mission === 'proposee'), act = missions.filter(m => m.mission === 'acceptee'), autres = missions.filter(m => m.mission === 'refusee');
-    box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
-      <h2>Espace <em>chauffeur</em></h2>
-      <p class="cm-sous">${esc(moi.nom)} · ${esc(VLIB[moi.vehicule] || '')}${moi.immatriculation ? ' · ' + esc(moi.immatriculation) : ''}</p>
-      <div class="cm-st" role="status"><b>Votre code : <em style="letter-spacing:.06em">${esc(moi.code)}</em></b><small>Votre code de transporteur du réseau Marché de Gros. Montrez-le au vendeur et à l’acheteur au chargement et à la livraison : il prouve que c’est bien vous. Les missions du réseau arriveront ici quand le service ouvrira.</small></div>
-      <p class="cm-info" style="${cls === 'rouge' ? 'background:rgba(196,72,52,.14)' : ''}"><b>${esc(st)}.</b> ${esc(moi.motif && cls === 'rouge' ? 'Motif : ' + moi.motif : sous)}</p>
-      ${moi.statut === 'verifie' ? `<label class="cm-ck" style="padding:10px 14px;border-radius:16px;background:#FFFDF8;margin:0 0 12px"><input type="checkbox" data-dispo${moi.disponible ? ' checked' : ''}> <span><b>Disponible pour des missions du réseau</b><small style="display:block;color:#5E5546;font-size:12.5px">À l’ouverture du service, l’équipe vous proposera des missions dans vos régions.</small></span></label>` : ''}
-      ${transferts.length ? `<h3 class="cm-h3">Marchandise à recevoir</h3><div class="cm-li">${transferts.map(t => `<div class="cm-r" style="cursor:default;grid-template-columns:1fr"><span>
-        <b>${esc(t.produit || 'Marchandise')}${t.quantite != null ? ' · ' + nf(t.quantite, 2) + ' ' + esc(unites(t.quantite, t.unite)) : ''}</b>
-        <small>${esc(t.de || 'Un chauffeur')} vous la transmet à ${esc(t.lieu || '?')} · livraison : ${esc(t.lieu_livraison || 'à préciser')}</small>
-        <div class="cm-act" style="margin:10px 0 0"><button type="button" class="p" data-tap="${t.commande_id}" data-quoi="transfert">Taper le code de transfert</button></div></span></div>`).join('')}</div>` : ''}
-      ${prop.length ? `<h3 class="cm-h3">À accepter</h3><div class="cm-li">${prop.map(carteMission).join('')}</div>` : ''}
-      <h3 class="cm-h3">Mes missions</h3>
-      <div class="cm-li">${act.length ? act.map(carteMission).join('') : (window.MDGSac ? MDGSac.vide('Aucune mission en cours', 'Les missions acceptées s’affichent ici, avec les étapes à signaler.') : '<p>Aucune mission.</p>')}</div>
-      ${autres.length ? `<h3 class="cm-h3">Refusées (7 derniers jours)</h3><div class="cm-li">${autres.map(carteMission).join('')}</div>` : ''}
-      <div class="cm-act" style="margin-top:16px"><button type="button" data-prof>${IC('crayon', 18)} Modifier mon profil</button></div>
-      <p class="cm-note">Commande avec codes : vous tapez le code du vendeur au chargement, puis celui de l’acheteur à la réception. Sans code : le vendeur et l’acheteur déclarent eux-mêmes. Votre numéro n’est jamais montré aux membres.</p>`;
-    box.querySelector('[data-x]').onclick = fermer;
+    box.innerHTML = `<h1 class="chv-h1">Mes missions</h1>
+      <p class="chv-sous">${esc(moi.nom)} · ${esc(VLIB[moi.vehicule] || '')}${moi.immatriculation ? ' · ' + esc(moi.immatriculation) : ''}</p>
+      ${transferts.length ? `<h2 class="chv-h2">Marchandise à recevoir</h2>${transferts.map(t => `<article class="chv-mi"><div class="chv-recu">
+        <span class="chv-lab">Transfert</span>
+        <span class="chv-titre">${t.quantite != null ? nf(t.quantite, 2) + ' ' + esc(unites(t.quantite, t.unite)) + ' · ' : ''}${esc(t.produit || 'Marchandise')}</span>
+        <div class="chv-l"><span>De</span><span>${esc(t.de || 'Un chauffeur')} · à ${esc(t.lieu || '?')}</span></div>
+        <div class="chv-l"><span>À</span><span>${esc(t.lieu_livraison || 'à préciser')}</span></div></div>
+        <div class="chv-act"><button type="button" class="chv-b p" data-tap="${t.commande_id}" data-quoi="transfert">Taper le code de transfert</button></div></article>`).join('')}` : ''}
+      ${prop.length ? `<h2 class="chv-h2">À accepter</h2>${prop.map(carteMission).join('')}` : ''}
+      ${prop.length || transferts.length ? '<h2 class="chv-h2">En cours</h2>' : ''}
+      ${act.length ? act.map(carteMission).join('') : '<p class="chv-info"><b>Aucune mission en cours.</b> Les missions acceptées s’affichent ici, avec les étapes à signaler.</p>'}
+      <div class="chv-recu" style="margin-top:8px">
+        <span class="chv-lab">Votre code transporteur</span>
+        <span class="chv-code">${esc(moi.code)}</span>
+        <span class="chv-note">Montrez-le au vendeur et à l’acheteur au chargement et à la livraison : il prouve que c’est bien vous.</span>
+        <div class="chv-tags"><span class="chv-tag ${cls}">${esc(st)}</span></div>
+        ${(moi.motif && cls === 'rouge') || (sous && cls !== 'rouge') ? `<span class="chv-note">${esc(moi.motif && cls === 'rouge' ? 'Motif : ' + moi.motif : sous)}</span>` : ''}
+      </div>
+      ${moi.statut === 'verifie' ? `<div class="chv-row"><span><b id="chDl">Disponible pour des missions du réseau</b><small>À l’ouverture du service, l’équipe vous proposera des missions dans vos régions.</small></span><button type="button" class="chv-sw" role="switch" aria-checked="${!!moi.disponible}" aria-labelledby="chDl" data-dispo></button></div>` : ''}
+      ${autres.length ? `<h2 class="chv-h2">Refusées (7 derniers jours)</h2>${autres.map(carteMission).join('')}` : ''}
+      <button type="button" class="chv-b" data-prof>${IC('crayon', 18)} Modifier mon profil</button>
+      <p class="chv-note">Commande avec codes : vous tapez le code du vendeur au chargement, puis celui de l’acheteur à la réception. Sans code : le vendeur et l’acheteur déclarent eux-mêmes. Votre numéro n’est jamais montré aux membres.</p>`;
     box.querySelector('[data-prof]').onclick = () => { vue = 'profil'; peindre(); };
     const d = box.querySelector('[data-dispo]');
-    if (d) d.onchange = async () => { d.disabled = true; try { await N().rpc('transporteur_disponible', { p_oui: d.checked }); moi.disponible = d.checked; memoriser(); toast(d.checked ? 'Vous êtes disponible' : 'Vous n’êtes plus disponible', { type: 'ok' }); } catch (x) { d.checked = !d.checked; toast(erreurTxt(x), { type: 'erreur' }); } d.disabled = false; };
+    if (d) d.onclick = async () => { const oui = d.getAttribute('aria-checked') !== 'true'; d.disabled = true; d.setAttribute('aria-checked', oui);
+      try { await N().rpc('transporteur_disponible', { p_oui: oui }); moi.disponible = oui; memoriser(); toast(oui ? 'Vous êtes disponible' : 'Vous n’êtes plus disponible', { type: 'ok' }); }
+      catch (x) { d.setAttribute('aria-checked', !oui); toast(erreurTxt(x), { type: 'erreur' }); } d.disabled = false; };
     box.querySelectorAll('[data-acc]').forEach(b => b.onclick = () => { prixOuvert = b.dataset.acc; peindre(); });
     box.querySelectorAll('[data-chpx]').forEach(b => b.onclick = () => { prixOuvert = b.dataset.chpx; peindre(); });
     lierPrix(box);
@@ -243,10 +346,12 @@
     box.querySelectorAll('[data-rfn]').forEach(b => b.onclick = () => constat(b.dataset.rfn, false, b));
     box.querySelectorAll('[data-ph]').forEach(async el => {
       const u = await N().lienSigne('preuves', el.dataset.ph, 600).catch(() => null); if (!u || !el.isConnected) return;
-      el.innerHTML = `<a href="${esc(u)}" target="_blank" rel="noopener" aria-label="Agrandir la photo"><img src="${esc(u)}" alt="Photo de la marchandise refusée" style="width:100%;height:100%;object-fit:cover;display:block"></a>`;
+      el.innerHTML = `<a href="${esc(u)}" target="_blank" rel="noopener" aria-label="Agrandir la photo"><img src="${esc(u)}" alt="Photo de la marchandise refusée"></a>`;
     });
-    box.querySelectorAll('[data-gps]').forEach(b => b.onclick = () => partager(b.dataset.gps));
-    box.querySelectorAll('[data-gps-stop]').forEach(b => b.onclick = () => { arreterPartage('Partage arrêté.'); peindre(); });
+    // l'interrupteur de position : allumé = partage pour cette commande ; éteint = arrêt
+    box.querySelectorAll('[data-gps]').forEach(b => b.onclick = () => {
+      if (partage && partage.cmd === b.dataset.gps) { arreterPartage('Partage arrêté.'); peindre(); } else partager(b.dataset.gps);
+    });
   }
   async function repondre(id, oui, b) {
     if (!oui && !await (window.MDGDemande ? MDGDemande.oui('Refuser cette mission ? L’acheteur et le vendeur seront prévenus.', { ok: 'Refuser', danger: true }) : Promise.resolve(confirm('Refuser cette mission ? L’acheteur et le vendeur seront prévenus.')))) return;
@@ -310,24 +415,21 @@
 
   // taper un code (prise en charge, réception, transfert) : le serveur dit s'il est bon et combien d'essais restent
   function taper(cmd, quoi) {
-    const box = bg.querySelector('.cm');
-    const T = { prise: ['Code de <em>prise en charge</em>', 'Le vendeur vous le donne quand la marchandise est dans votre véhicule.'],
-      reception: ['Code de <em>réception</em>', 'L’acheteur vous le donne après avoir vérifié la marchandise.'],
-      transfert: ['Code de <em>transfert</em>', 'Le chauffeur qui vous passe la marchandise vous le donne.'] }[quoi];
+    const box = corps();
+    const T = { prise: ['Code de prise en charge', 'Le vendeur vous le donne quand la marchandise est dans votre véhicule.'],
+      reception: ['Code de réception', 'L’acheteur vous le donne après avoir vérifié la marchandise.'],
+      transfert: ['Code de transfert', 'Le chauffeur qui vous passe la marchandise vous le donne.'] }[quoi];
     box.scrollTop = 0;
-    box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
-      <h2>${T[0]}</h2><p class="cm-sous">${T[1]}</p>
-      <form class="cm-f" novalidate>
-        <label class="t" for="chK">Les 6 chiffres</label>
-        <input type="text" id="chK" inputmode="numeric" autocomplete="one-time-code" maxlength="7" pattern="[0-9 ]*" style="font:800 30px/1 Jost,sans-serif;letter-spacing:.2em;text-align:center;min-height:64px">
-        <label class="cm-ck"><input type="checkbox" id="chG" checked> Joindre ma position actuelle (une seule fois)</label>
-        <p class="cm-err" role="alert"></p>
-        <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">Valider</button><button type="button" data-ann>Retour</button></div>
-        <p class="cm-note">5 essais au plus : ensuite le code est bloqué et il faut en demander un nouveau.</p>
+    box.innerHTML = `<h1 class="chv-h1">${T[0]}</h1><p class="chv-sous">${T[1]}</p>
+      <form class="chv-f" novalidate>
+        <input class="chv-in gros" type="text" id="chK" inputmode="numeric" autocomplete="one-time-code" maxlength="7" pattern="[0-9 ]*" placeholder="000 000" aria-label="Les 6 chiffres du code">
+        <p class="chv-err" role="alert"></p>
+        <label class="chv-ck"><input type="checkbox" id="chG" checked> Joindre ma position actuelle (une seule fois)</label>
+        <div class="chv-act"><button type="submit" class="chv-b p">Valider</button><button type="button" class="chv-b" data-ann>Retour</button></div>
+        <p class="chv-note">5 essais au plus : ensuite le code est bloqué et il faut en demander un nouveau.</p>
       </form>`;
-    box.querySelector('[data-x]').onclick = fermer;
     box.querySelector('[data-ann]').onclick = () => peindre();
-    const f = box.querySelector('form'), err = f.querySelector('.cm-err'), inp = f.querySelector('#chK');
+    const f = box.querySelector('form'), err = f.querySelector('.chv-err'), inp = f.querySelector('#chK');
     if (matchMedia('(hover:hover)').matches) inp.focus();
     f.onsubmit = async e => {
       e.preventDefault();
@@ -347,21 +449,19 @@
 
   // passer la marchandise à un autre chauffeur : son code transporteur, le lieu, puis le code à lui donner
   function passer(cmd) {
-    const box = bg.querySelector('.cm');
+    const box = corps();
     box.scrollTop = 0;
-    box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
-      <h2>Passer la <em>marchandise</em></h2><p class="cm-sous">Le nouveau chauffeur doit avoir l’application. Il prendra la mission quand il aura tapé le code que vous allez lui donner.</p>
-      <form class="cm-f" novalidate>
-        <label class="t" for="chT">Code transporteur du nouveau chauffeur</label>
-        <input type="text" id="chT" maxlength="8" placeholder="T-4K7P" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase">
-        <label class="t" for="chL">Lieu du transfert</label>
-        <input type="text" id="chL" maxlength="120" autocomplete="off">
-        <p class="cm-err" role="alert"></p>
-        <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">Obtenir le code de transfert</button><button type="button" data-ann>Retour</button></div>
+    box.innerHTML = `<h1 class="chv-h1">Passer la marchandise</h1><p class="chv-sous">Le nouveau chauffeur doit avoir l’application. Il prendra la mission quand il aura tapé le code que vous allez lui donner.</p>
+      <form class="chv-f" novalidate>
+        <label class="chv-lb" for="chT">Code transporteur du nouveau chauffeur</label>
+        <input class="chv-in" type="text" id="chT" maxlength="8" placeholder="T-4K7P" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase">
+        <label class="chv-lb" for="chL">Lieu du transfert</label>
+        <input class="chv-in" type="text" id="chL" maxlength="120" autocomplete="off">
+        <p class="chv-err" role="alert"></p>
+        <div class="chv-act" style="margin-top:6px"><button type="submit" class="chv-b p">Obtenir le code de transfert</button><button type="button" class="chv-b" data-ann>Retour</button></div>
       </form>`;
-    box.querySelector('[data-x]').onclick = fermer;
     box.querySelector('[data-ann]').onclick = () => peindre();
-    const f = box.querySelector('form'), err = f.querySelector('.cm-err');
+    const f = box.querySelector('form'), err = f.querySelector('.chv-err');
     f.onsubmit = async e => {
       e.preventDefault();
       const t = f.querySelector('#chT').value.trim(), lieu = f.querySelector('#chL').value.trim();
@@ -371,33 +471,29 @@
       const b = f.querySelector('[type=submit]'); b.disabled = true; err.textContent = '';
       try {
         const r = await N().rpc('commande_transfert_preparer', { p_cmd: cmd, p_code_transporteur: t, p_lieu: lieu });
-        box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
-          <h2>Code de <em>transfert</em></h2><p class="cm-sous">À donner à ${esc(r.nom)}, de vive voix, quand la marchandise est dans son véhicule.</p>
-          <div class="cm-st" style="text-align:center"><b style="font:800 44px/1 Jost,sans-serif;letter-spacing:.18em;color:#10392B">${esc(r.code.slice(0, 3))} ${esc(r.code.slice(3))}</b>
-            <small>Valable jusqu’à ${new Date(r.expire_le).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}. Un seul usage. Ne l’envoyez pas par message.</small></div>
-          <div class="cm-act"><button type="button" class="p" data-ann>J’ai donné le code</button></div>
-          <p class="cm-note">Tant qu’il ne l’a pas tapé, la mission reste la vôtre.</p>`;
-        box.querySelector('[data-x]').onclick = fermer;
+        box.innerHTML = `<h1 class="chv-h1">Code de transfert</h1><p class="chv-sous">À donner à ${esc(r.nom)}, de vive voix, quand la marchandise est dans son véhicule.</p>
+          <div class="chv-recu"><span class="chv-grand">${esc(r.code.slice(0, 3))} ${esc(r.code.slice(3))}</span>
+            <span class="chv-note" style="text-align:center">Valable jusqu’à ${new Date(r.expire_le).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}. Un seul usage. Ne l’envoyez pas par message.</span></div>
+          <button type="button" class="chv-b p" data-ann>J’ai donné le code</button>
+          <p class="chv-note">Tant qu’il ne l’a pas tapé, la mission reste la vôtre.</p>`;
         box.querySelector('[data-ann]').onclick = async () => { await lire(); peindre(); };
       } catch (x) { err.textContent = erreurTxt(x); b.disabled = false; }
     };
   }
 
   function etape(cmd, quoi) {
-    const box = bg.querySelector('.cm'), trb = quoi === 'transbordement';
+    const box = corps(), trb = quoi === 'transbordement';
     box.scrollTop = 0;
-    box.innerHTML = `<button type="button" class="cm-x" data-x aria-label="Fermer">${IC('fermer', 20)}</button>
-      <h2>${trb ? 'Signaler un <em>transbordement</em>' : 'Je suis <em>arrivé</em>'}</h2>
-      <form class="cm-f" novalidate>
-        ${trb ? '<label class="t" for="chL">Où la marchandise change-t-elle de véhicule ?</label><input type="text" id="chL" maxlength="120" autocomplete="off">' : ''}
-        <label class="cm-ck"><input type="checkbox" id="chG"${trb ? '' : ' checked'}> Joindre ma position actuelle (une seule fois)</label>
-        <p class="cm-note" style="font-size:13.5px">${trb ? 'L’acheteur et le vendeur verront le lieu et l’heure.' : 'L’acheteur est prévenu. Il vérifie la marchandise, puis confirme la réception.'}</p>
-        <p class="cm-err" role="alert"></p>
-        <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">${trb ? 'Signaler' : 'Confirmer mon arrivée'}</button><button type="button" data-ann>Retour</button></div>
+    box.innerHTML = `<h1 class="chv-h1">${trb ? 'Signaler un transbordement' : 'Je suis arrivé'}</h1>
+      <p class="chv-sous">${trb ? 'L’acheteur et le vendeur verront le lieu et l’heure.' : 'L’acheteur est prévenu. Il vérifie la marchandise, puis confirme la réception.'}</p>
+      <form class="chv-f" novalidate>
+        ${trb ? '<label class="chv-lb" for="chL">Où la marchandise change-t-elle de véhicule ?</label><input class="chv-in" type="text" id="chL" maxlength="120" autocomplete="off">' : ''}
+        <label class="chv-ck"><input type="checkbox" id="chG"${trb ? '' : ' checked'}> Joindre ma position actuelle (une seule fois)</label>
+        <p class="chv-err" role="alert"></p>
+        <div class="chv-act" style="margin-top:6px"><button type="submit" class="chv-b p">${trb ? 'Signaler' : 'Confirmer mon arrivée'}</button><button type="button" class="chv-b" data-ann>Retour</button></div>
       </form>`;
-    box.querySelector('[data-x]').onclick = fermer;
     box.querySelector('[data-ann]').onclick = () => peindre();
-    const f = box.querySelector('form'), err = f.querySelector('.cm-err');
+    const f = box.querySelector('form'), err = f.querySelector('.chv-err');
     f.onsubmit = async e => {
       e.preventDefault();
       const L = f.querySelector('#chL'), lieu = L ? L.value.trim() : null;
@@ -414,20 +510,27 @@
   }
 
   let retourFocus = null;
-  function peindre() { if (!bg) return; const box = bg.querySelector('.cm'); if (vue === 'profil') formulaire(); else { const y = box.scrollTop; accueil(); box.scrollTop = y; } }
-  function focusTitre() { const h = bg && bg.querySelector('.cm h2'); if (h) { h.tabIndex = -1; try { h.focus({ preventScroll: true }); } catch (_) {} } }
+  function peindre() { if (!bg) return; const box = corps(); if (vue === 'profil') formulaire(); else { const y = box.scrollTop; accueil(); box.scrollTop = y; } }
+  function focusTitre() { const h = bg && bg.querySelector('.chv-h1'); if (h) { h.tabIndex = -1; try { h.focus({ preventScroll: true }); } catch (_) {} } }
   async function ouvrir(tap, quoi) {
     if (!N() || !N().session()) { if (N()) N().open(); return; }
-    if (window.MDGCommandes && MDGCommandes.css) MDGCommandes.css();
+    css();
     fermer(); retourFocus = document.activeElement;
-    bg = document.createElement('div'); bg.className = 'cm-bg'; bg.setAttribute('role', 'dialog'); bg.setAttribute('aria-modal', 'true'); bg.setAttribute('aria-label', 'Espace chauffeur');
-    bg.innerHTML = `<div class="cm">${window.MDGSac ? MDGSac.charge('Un instant…') : ''}</div>`; document.body.appendChild(bg);
-    bg.addEventListener('click', e => { if (e.target === bg) fermer(); });
+    bg = document.createElement('div'); bg.className = 'chv-bg'; bg.setAttribute('data-v2', ''); bg.setAttribute('role', 'dialog'); bg.setAttribute('aria-modal', 'true'); bg.setAttribute('aria-label', 'Espace chauffeur');
+    bg.innerHTML = `<div class="chv"><div class="chv-top"><button type="button" class="chv-x" data-x aria-label="Fermer">${IC('fermer', 22)}</button><img class="chv-logo" src="logo/marque.svg" alt=""><b>Espace chauffeur</b></div>
+      <div class="chv-main"><p class="chv-info">Un instant…</p></div></div>`;
+    document.body.appendChild(bg);
+    bg.querySelector('[data-x]').onclick = fermer;
     document.addEventListener('keydown', clavier);
     vue = 'accueil';
-    await lire(); peindre(); focusTitre();
+    // dernier état connu : la page s'ouvre avec son contenu, puis se met à jour sans clignoter
+    const c = J(K(), null); if (c && c.moi && !moi) { moi = c.moi; missions = c.missions || []; }
+    if (moi) { peindre(); focusTitre(); }
+    const avant = moi;
+    await lire(); if (!bg) return;
+    peindre(); if (!avant) focusTitre();
     if (tap && quoi && missions.some(m => m.commande_id === tap)) taper(tap, quoi);   // depuis Accueil → Alertes → Mes codes
-    minuteur = setInterval(async () => { if (!bg || document.hidden || vue !== 'accueil') return; await lire(); peindre(); }, 30000);
+    minuteur = setInterval(async () => { if (!bg || document.hidden || vue !== 'accueil' || corps().querySelector('form')) return; await lire(); peindre(); }, 30000);
   }
 
   // notification touchée : #/?chauffeur=1, ou message du service worker si l'application est déjà ouverte

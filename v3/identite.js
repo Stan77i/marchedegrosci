@@ -227,6 +227,8 @@
 .idv{--bg:#F4EEE3;--card:#FFFDF8;--card2:#EFE7D9;--ink:#171512;--mute:#655C4D;--faint:#6F6553;--line2:rgba(23,21,18,.14);--acc:#10392B;--acc-t:#10392B;--ok:#2E7D4F;--bad:#C0442B;--blue:#10392B;
   position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:min(94dvh,860px);background:var(--bg);color:var(--ink);border-radius:28px 28px 0 0;font:400 15px/1.45 Jost,system-ui,sans-serif;overflow:hidden;animation:idvUp .32s cubic-bezier(.22,1,.36,1) both}
 @media (min-width:760px){.idv{border-radius:28px;height:min(90dvh,820px);box-shadow:0 30px 90px rgba(0,0,0,.5)}}
+/* la première feuille (maquette) : hauteur selon le contenu */
+.idv.court{height:auto;max-height:min(94dvh,860px)}.idv.court .idv-act{margin-top:4px}
 .idv-top{flex:none;display:grid;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;min-height:60px;padding:10px 8px 4px}
 .idv-top b{text-align:center;font:600 16px/1.2 Jost,sans-serif}
 .idv-ib{width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:50%;background:rgba(23,21,18,.07);color:var(--ink);cursor:pointer;font-size:22px;line-height:1}
@@ -269,6 +271,11 @@
 .idv-pv button{position:absolute;top:4px;right:4px;width:30px;height:30px;border:0;border-radius:50%;background:rgba(23,21,18,.72);color:#fff;font-size:18px;line-height:1;cursor:pointer}
 .idv-pv-add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1.5px dashed rgba(23,21,18,.25);color:var(--mute);font-size:13px;font-weight:500;cursor:pointer;text-align:center;padding:6px}
 .idv-pv-add input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.idv-ligne{display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 16px;border-radius:16px;border:1.5px dashed var(--line2);background:var(--card);color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.idv-ligne svg{flex:none}.idv-ligne span{display:flex;flex-direction:column;gap:1px}.idv-ligne b{font-size:15px;font-weight:600}.idv-ligne small{font-size:12.5px;color:var(--mute)}
+.idv-ligne:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.idv-pied{margin:-4px 0 0;font-size:12.5px!important;color:var(--faint)!important;text-align:center}
+.idv-chk.rappel span{color:var(--bad)}
 .idv-chk{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45;color:var(--ink)}.idv-chk input{width:22px;height:22px;flex:none;margin:0;accent-color:var(--acc)}
 .idv-etat{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:18px 6px}
 .idv-etat .rond{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:rgba(23,21,18,.06);color:var(--mute)}
@@ -462,7 +469,9 @@
     let i = 0;
     const aller = n => { i = Math.max(0, Math.min(liste().length - 1, n)); dessiner(); main.scrollTop = 0; };
     ret.onclick = () => aller(i - 1);
-    const pas = () => { const L = liste(); bg.querySelector('.idv-pas').innerHTML = L.slice(1, -1).map((_, k) => `<i class="${k < i ? 'on' : ''}"></i>`).join(''); ret.hidden = i === 0 || L[i] === 'envoi'; };
+    const pas = () => { const L = liste(); bg.querySelector('.idv-pas').innerHTML = L.slice(1, -1).map((_, k) => `<i class="${k < i ? 'on' : ''}"></i>`).join(''); ret.hidden = i === 0 || L[i] === 'envoi';
+      // maquette : sur la première feuille, seulement la croix (le titre est dans la feuille)
+      bg.querySelector('.idv-top b').style.visibility = i === 0 ? 'hidden' : ''; bg.querySelector('.idv-pas').style.display = i === 0 ? 'none' : ''; bg.querySelector('.idv').classList.toggle('court', i === 0); };
     const actions = (go, label, alt) => `<div class="idv-act"><button type="button" class="idv-go" data-go ${go ? '' : 'disabled'}>${label}</button>${alt || ''}</div>`;
     const prendre = (cle, titre, aide, face) => {
       const b = st[cle];
@@ -490,17 +499,16 @@
     function dessiner() {
       pas(); const e = liste()[i];
       if (e === 'intro') {
-        main.innerHTML = `<h2>Faites vérifier votre identité</h2><p>Le badge apparaît sur votre profil et à côté de votre nom.</p>
-          <div class="idv-card">
-            <div class="idv-li">${IC('photo')}<span><b>Trois photos</b> : votre pièce (recto et verso) et un selfie en tenant un code écrit sur un papier.</span></div>
-            <div class="idv-li">${IC('comptes')}<span><b>Examinées par une personne</b> de l’équipe du Marché de Gros, jamais par une machine seule. Comptez quelques jours.</span></div>
-            <div class="idv-li">${IC('cadenas')}<span><b>Gardées à l’abri, 5 ans</b> : vos photos, votre nom, le numéro et la date d’expiration de votre pièce sont conservés dans un coffre privé. Seule l’équipe peut les ouvrir, et chaque ouverture est notée. Ils ne servent qu’en cas de fraude ou de plainte, pour être remis aux autorités sur leur demande. Ils sont effacés 5 ans après la suppression de votre compte (ou 5 ans après un refus).</span></div>
-            <div class="idv-li">${IC('verifie')}<span><b>Ce que dit le badge</b> : l’équipe a comparé votre pièce et votre selfie. Il ne remplace pas une vérification officielle.</span></div>
-          </div>
-          <label class="idv-chk"><input type="checkbox" data-ok> <span>J’accepte d’envoyer ces photos au Marché de Gros pour vérifier mon identité, et qu’elles soient conservées 5 ans comme expliqué ci-dessus.</span></label>
-          ${actions(false, 'Commencer')}`;
+        // la feuille de la maquette : deux lignes (la pièce, le visage), puis le bouton ; le détail vient étape par étape
+        main.innerHTML = `<h2>Vérifier votre identité</h2><p>L’équipe compare votre pièce et votre visage. Vous recevez le badge vert « Identité vérifiée ».</p>
+          <button type="button" class="idv-ligne" data-l>${IC('etiquette', 24)}<span><b>Photo de votre pièce d’identité</b><small>Recto et verso, ou la page du passeport</small></span></button>
+          <button type="button" class="idv-ligne" data-l>${IC('compte', 24)}<span><b>Photo de votre visage</b><small>En tenant un code écrit sur un papier</small></span></button>
+          <label class="idv-chk"><input type="checkbox" data-ok> <span>J’accepte que ces photos soient gardées 5 ans, à l’abri, pour vérifier mon identité.</span></label>
+          ${actions(false, 'Commencer')}
+          <p class="idv-pied">Seule l’équipe voit ces photos. Elles ne servent qu’en cas de fraude ou de plainte.</p>`;
         const ok = main.querySelector('[data-ok]'), go = main.querySelector('[data-go]');
         ok.onchange = () => { go.disabled = !ok.checked; };
+        main.querySelectorAll('[data-l]').forEach(l => l.onclick = () => { if (ok.checked) aller(1); else { ok.focus(); ok.closest('label').classList.add('rappel'); } });
         go.onclick = () => aller(1);
       } else if (e === 'piece') {
         main.innerHTML = `<h2>Quelle pièce avez-vous&nbsp;?</h2><p>Une pièce en cours de validité, à votre nom. Une pièce expirée est refusée.</p>

@@ -19,7 +19,7 @@
   const J = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (_) { return d; } };
   const W = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (_) {} };
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const fmt = n => n == null || n === '' || isNaN(n) ? '—' : Math.round(+n).toLocaleString('fr-FR').replace(/ | /g, ' ');
+  const fmt = n => n == null || n === '' || isNaN(n) ? '—' : Math.round(+n).toLocaleString('fr-FR').replace(/\u202f/g, '\u00a0');   // espace insécable normale (maquette)
   const fq = n => n == null || isNaN(n) ? '' : (+n % 1 ? (+n).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) : fmt(n));
   const me = () => { const s = N() && N().session(); return s && s.user && s.user.id; };
   const ago = t => { const m = Math.max(0, (Date.now() - Date.parse(t)) / 60000); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + Math.round(m) + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : m < 2880 ? 'hier' : new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }); };
@@ -546,6 +546,8 @@ html[data-theme=sombre] .nx-tampon{border-color:#9FDCB2;color:#9FDCB2}
     const cible = a.cible === 'demande' ? 'demande' : 'offre', deja = liste.find(n => n.cible === cible && n.cible_id === a.id && n.auteur_id === me() && n.statut === 'ouverte');   // une seule ouverte à la fois ; après un accord, on peut racheter (schéma 36)
     if (deja) return thread(deja.id);
     const prix = +a.prix || 0, u = a.unite || 'kg', q = +a.quantite || 0, lui = cible === 'offre' ? 'vendeur' : 'acheteur';
+    // la quantité de départ : celle que la personne a réglée sur la fiche (« Il vous faut » / « Vous avez »), dans les limites de l'annonce (maquette)
+    const q0 = +a.voulu > 0 ? Math.max(+a.qmin || 0, +a.voulu) : q, q0b = q ? Math.min(q, q0) : q0;
     redessiner = null;
     const kmT = +a.km > 0 ? ' · ≈ ' + fmt(+a.km) + ' km' : '';
     sheet(head((cible === 'offre' ? 'Acheter à ' : 'Vendre à ') + (a.nom || Le(lui)), (a.produit || 'Annonce') + (a.ville ? ' · ' + a.ville : '') + kmT, false, true) + `
@@ -556,7 +558,7 @@ html[data-theme=sombre] .nx-tampon{border-color:#9FDCB2;color:#9FDCB2}
       </div>`, 'Proposer un prix').classList.add('nx-pbg');
     bindSnd();
     const fake = { cible, prix_annonce: prix || null, unite: u, statut: 'ouverte', proprio_id: 'lui', auteur_id: me() };
-    editeur(bg.querySelector('.nx-edbox'), { cible, tr0: trAnnonce(cible, a.transport), prixRef: prix, unite: u, qmax: q || null, q0: q || null, qmin: +a.qmin || 0, negociable: a.negociable, pour: lui, moi: 'auteur', preview: p => rail(fake, [{ genre: 'prix', auteur_id: me(), prix: p, issue: 'en_attente', expire_le: new Date(Date.now() + 864e5).toISOString() }]) },
+    editeur(bg.querySelector('.nx-edbox'), { cible, tr0: trAnnonce(cible, a.transport), prixRef: prix, unite: u, qmax: q || null, q0: q0b || null, qmin: +a.qmin || 0, negociable: a.negociable, pour: lui, moi: 'auteur', preview: p => rail(fake, [{ genre: 'prix', auteur_id: me(), prix: p, issue: 'en_attente', expire_le: new Date(Date.now() + 864e5).toISOString() }]) },
       async v => { const id = await envoyer('nego_ouvrir', { cible, cible_id: a.id, prix: v.p, quantite: v.q, texte: v.t || null }, v); await refresh(); thread(id, true); N().toast('Proposition envoyée. Réponse attendue sous 48 h.'); });
   }
 

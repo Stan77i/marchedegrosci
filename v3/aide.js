@@ -23,8 +23,9 @@
   // aller quelque part dans l'application (comme le guide)
   const PAGE = p => () => dispatchEvent(new CustomEvent('mdg:aller', { detail: { page: p } }));
   const FEN = (mod, fn) => () => { const m = window[mod]; if (m && typeof m[fn] === 'function') m[fn](); };
+  // un onglet de la barre du bas (Marché, Prix, Publier, Activité, Compte ; refonte du 13/11/2026)
   const ONGLET = nom => () => { if (location.hash && location.hash !== '#/') location.hash = '#/';
-    setTimeout(() => { const b = [...document.querySelectorAll('.acc-ong button')].find(x => x.textContent.trim().startsWith(nom)); if (b) b.click(); }, 450); };
+    setTimeout(() => { const b = [...document.querySelectorAll('.v2-tabs .v2-tab')].find(x => (x.querySelector('.lb') || x).textContent.trim() === nom); if (b) b.click(); }, 300); };
   const ALLER = {
     vendre: ['Publier une offre', PAGE('vendre')], demande: ['Publier une demande', PAGE('demande')], acheter: ['Voir les offres', PAGE('acheter')],
     carte: ['Ouvrir la carte', PAGE('carte')], categories: ['Ouvrir les catégories', PAGE('categories')], prix: ['Ouvrir le prix du marché', PAGE('prix')],
@@ -142,7 +143,7 @@
     ['appli', 'Comment passer en mode sombre ?', 'Menu → « *Réglages* » : Clair, Sombre, ou Comme le téléphone.', 'mode sombre nuit noir clair theme couleur', 'reglages'],
     ['appli', 'Ça marche sans internet ?', 'Les annonces déjà vues restent affichées. Ce que vous publiez sans réseau est gardé sur le téléphone, puis envoyé dès que le réseau revient.', 'sans internet hors ligne reseau connexion data pas de reseau', null],
     ['appli', 'L’application est bloquée ou lente', 'Fermez-la *complètement*, puis rouvrez-la. Vérifiez le réseau. Après une mise à jour, attendez une minute avant de rouvrir. Toujours un souci ? Écrivez à l’équipe ci-dessous.', 'bloque lent bug plante marche pas erreur page blanche', null],
-    ['appli', 'Revoir les tutoriels', 'Ici, dans L’aide : effacez la recherche, puis en bas de la page touchez « *Revoir un tutoriel* » (la démo de la roue y est aussi). Le guide complet est dans le menu : « *Comment ça marche* ».', 'tutoriel tuto aide revoir guide comment ca marche explication', 'guide']
+    ['appli', 'Revoir les tutoriels', 'Ici, dans L’aide : effacez la recherche, puis en bas de la page touchez « *Revoir un tutoriel* » . Le guide complet est dans le menu : « *Comment ça marche* ».', 'tutoriel tuto aide revoir guide comment ca marche explication', 'guide']
   ].map(([t, q, r, m, a], i) => ({ id: 'q' + i, t, q, r, m: m || '', a }));
 
   // les plus utiles d'abord, quand rien n'est encore écrit
@@ -247,12 +248,11 @@
     <div class="ai-r"><p>${gras(e.r)}</p>${e.a && ALLER[e.a] ? `<button type="button" class="ai-go" data-aller="${e.a}">${esc(ALLER[e.a][0])} ${IC('fleche', 18, 2)}</button>` : ''}
     <div class="ai-ok" data-ok><span>Ça vous a aidé ?</span><button type="button" data-oui>Oui</button><button type="button" data-non>Non</button></div></div></li>`;
 
-  // revoir un tutoriel ou la démo de la roue (déplacés de Réglages le 24/10/2026)
+  // revoir un tutoriel (déplacés de Réglages le 24/10/2026)
   function tutoriels() {
     const T = window.MDGAstuces && MDGAstuces.TOURS; if (!T) return '';
     const n = Object.keys(T).length;
     return `<details class="ai-tuto"><summary>${IC('comment', 20, 2)}<span>Revoir un tutoriel</span><span class="nbul">${n}</span>${IC('bas', 18, 2)}</summary>
-      ${window.MDGDemo ? `<button type="button" class="ai-demo" data-demo>${IC('suite', 16, 2)}Voir la démo : la roue et les prix</button>` : ''}
       <div class="ai-th ai-tours">${Object.keys(T).map(k => `<button type="button" data-tour="${k}">${esc(T[k].t)}</button>`).join('')}</div></details>`;
   }
   function liste() {
@@ -305,8 +305,6 @@
   }
   function brancherRes(b) {
     b.querySelectorAll('[data-tour]').forEach(x => x.onclick = () => { const k = x.dataset.tour; fermer(); setTimeout(() => MDGAstuces.tour(k, true), 400); });
-    const dm = b.querySelector('[data-demo]'); if (dm) dm.onclick = () => { fermer(); if (location.hash && location.hash !== '#/') location.hash = '#/';
-      setTimeout(() => { const o = [...document.querySelectorAll('.acc-ong button')].find(x => x.textContent.trim().startsWith('Marché')); if (o) o.click(); setTimeout(() => MDGDemo.lancer(), 600); }, 450); };
     b.querySelectorAll('.ai-th button[data-th]').forEach(x => x.onclick = () => { etat.theme = etat.theme === x.dataset.th ? '' : x.dataset.th; etat.ouv = ''; dessiner(); });
     b.querySelectorAll('.ai-it').forEach(li => {
       li.querySelector('.ai-q').onclick = () => { const id = li.dataset.id, ouvre = etat.ouv !== id; etat.ouv = ouvre ? id : '';
@@ -342,7 +340,26 @@
     };
   }
 
+  /* ——— l'Aide de la maquette (14/11/2026) : la page est dans Mon compte (v3/compte.js, « Aide ») ; ses cinq questions
+     s'ouvrent ici, dans la feuille du bas (MDGFeuille). Réponses écrites selon les règles de l'application. ——— */
+  const FEUILLES = [
+    ['casse', 'La marchandise est cassée en route', ['Le risque reste au vendeur jusqu’à la réception, même si le transport est à votre charge.', 'Ne tapez pas le mot secret. Prenez des photos et touchez « Signaler un problème ».', 'Vous ne payez ni la marchandise ni le transport. Les photos du départ servent à trancher.', 'Si vous gardez une partie, vous pouvez proposer de participer. Rien n’est obligatoire.']],
+    ['refus', 'Je refuse la marchandise', ['Refus accepté : vous ne payez rien.', 'Refus rejeté (marchandise conforme) : vous payez tout.', 'Refus en partie accepté : vous payez la partie gardée, le vendeur paie le transport.']],
+    ['panne', 'Panne ou météo', ['Le vendeur envoie une photo ou une information publique (radio, presse, autorités).', 'L’équipe juge. Une vraie force majeure ne compte pas comme une faute.']],
+    ['mot', 'À quoi sert le mot secret ?', ['Il prouve que vous avez bien reçu le colis du vendeur.', 'Le vendeur l’écrit sur un papier glissé dans la marchandise. Tapez-le seulement après avoir vérifié : 5 essais.', 'Après la réception, vous avez encore 1 h pour signaler un problème.']],
+    ['argent', 'Comment je paie ?', ['Aucun paiement ne passe par l’application pour l’instant.', 'Vous payez à la livraison, directement au vendeur ou à son livreur.']]
+  ];
+  const COCHE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;margin-top:1px;color:var(--vert-texte, #1F8A55)"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  function feuille(id) {
+    const q = FEUILLES.find(x => x[0] === id); if (!q || !window.MDGFeuille) return;
+    const F = MDGFeuille.ouvrir({ label: q[1] });
+    F.corps.innerHTML = `<h2 class="fl-h">${esc(q[1])}</h2>${q[2].map(t => `<div style="display:flex;gap:12px;padding:6px 0">${COCHE}<span style="font-size:15px;line-height:1.45">${esc(t)}</span></div>`).join('')}
+      <button type="button" class="fl-b o" data-eq>Parler à l’équipe</button>`;
+    F.corps.querySelector('[data-eq]').onclick = () => { F.fermer(); if (window.MDGMessages) MDGMessages.ecrireMarche({ direct: true }); };
+  }
   function ouvrir(o = {}) {
+    // sans question précise : l'Aide de la maquette, dans Mon compte (avec la barre d'onglets)
+    if (!o.q && !o.id && !o.personne && window.MDGCompte && MDGCompte.ouvrir && N() && N().session && N().session()) { MDGCompte.ouvrir('aide'); return; }
     style();
     etat = { q: o.q || '', theme: '', ouv: o.id || '', vue: o.personne ? 'personne' : 'liste', dernier: null };
     if (o.id) { const e = QR.find(x => x.id === o.id); if (e) { etat.theme = e.t; etat.dernier = e.q; } }
@@ -364,6 +381,6 @@
   }
   function fermer() { if (!el) return; el.classList.remove('on'); const e = el; el = null; setTimeout(() => e.remove(), 400); }
 
-  window.MDGAide = { ouvrir, fermer, chercher: (t, n) => chercher(t, n).map(e => ({ id: e.id, q: e.q })),
+  window.MDGAide = { ouvrir, fermer, feuille, FEUILLES, ouvert: () => !!el, chercher: (t, n) => chercher(t, n).map(e => ({ id: e.id, q: e.q })),
     frequentes: n => FREQ.slice(0, n || 4).map(t => QR.find(e => e.q === t)).filter(Boolean).map(e => ({ id: e.id, q: e.q })), QR, THEMES };
 })();

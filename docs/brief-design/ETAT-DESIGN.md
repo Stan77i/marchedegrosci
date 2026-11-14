@@ -2,7 +2,7 @@
 
 Page pour Claude Design. À lire avant chaque nouvelle proposition, pour ne jamais refaire ce qui existe. Mise à jour par Claude Code à chaque nouvel écran ou nouvelle fonctionnalité.
 
-**Dernière mise à jour : 14/11/2026 (lot 16 : passe finale ; discussion de négociation refaite)**
+**Dernière mise à jour : 14/11/2026 (fidélité écran par écran à la maquette)**
 
 ## 1. Ce que Claude Design a déjà livré
 
@@ -37,6 +37,16 @@ Toutes les nouveautés de la maquette sont acceptées : onglets en bas et alerte
 | 14 | Espace équipe | **fait** (14/11/2026) : écran plein `v3/equipe.js`, ouvert depuis Compte → Espace équipe et le menu ; 7 onglets (Identités, Litiges, Signalements, Comptes, Commissions, Diffusion, Journal), accès vérifié par le serveur (`est_admin`), motif demandé à chaque geste. Écarts : « Calculée » au lieu de « Encaissé 0 F » (règle) ; Identités sans ville, « Vérifier » demande la date d’expiration de la pièce ; Litiges sans photos ni poids du départ (le serveur ne les renvoie pas), case « Compter un litige perdu » ajoutée ; Signalements : une annonce encore en ligne se « Masque » seulement, les personnes signalées restent dans `admin.html` ; Comptes : numéro au lieu du nom. Lien « Ouvrir le tableau complet » vers `admin.html`, qui reste |
 | 15 | Porte et cas limites | **fait** (14/11/2026) : porte (`v3/nuage.js`) en étapes avec barre maïs (numéro, code retapé, nom et ville facultative, aperçu, code de secours), connexion « Bon retour », code oublié en 3 étapes ; compte banni (`v3/identite.js`) avec date, délai de contestation et « Contester » ; espace chauffeur (`v3/chauffeur.js`) « Mes missions ». Écarts : pas de case « J'accepte » (attend le juriste) ; nom en 3 champs (prénom, nom, pseudonyme facultatif) ; ville facultative (6 grandes villes + « Autre ville », communes d'Abidjan jamais proposées) ; code oublié en 3 étapes ; le chauffeur sans compte de la maquette (code K7P-492) est la page `suivi.html`, pas refaite dans ce lot ; le chauffeur ne tape pas le mot secret (c'est l'acheteur, décision du 14/11) ; pas de « Je suis parti ». |
 | 16 | Passe finale (sombre, 320 px, contrastes) | **fait** (14/11/2026). 39 écrans vérifiés (390 et 320 px, clair, sombre, mouvement réduit) : aucun débordement, aucune erreur console. Corrigés : onglets du bas en sombre (contraste 3,0 → 6,3:1), feuille Publier en sombre, contrastes de la discussion (Refusée, Refuser, prix barré), 4 casses à 320 px (prix de la fiche, total de Proposer, nombre « Offres » de la carte, lignes d’Activité), 6 petites cibles agrandies. 5 décisions du propriétaire (« ok pour tout », 14/11/2026) : titre de la porte en mouvement réduit (alternance nette toutes les 5 s, sans mouvement) ; carte en « jour » par défaut quand l’application est en clair (panneau clair, choix du bouton soleil gardé) ; propositions remplacées ou expirées : seul le prix est pâli ; achats groupés : plus de « reste NaN jours » ; noms longs à la ligne (2 lignes au plus) dans Messages et Mes annonces. Discussion de négociation refaite (voir ligne 6). Reste : retrait de l’ancien code (11 propositions validées, 3 PR), puis vérification écran par écran que chaque scène est identique à la maquette ; `suivi.html` à refaire |
+
+## 3 bis. Fidélité écran par écran : fait (14/11/2026)
+
+Déjà fait : tous les écrans de l'application ont été comparés à la maquette (environ 115 écarts corrigés) : barre d'onglets partout sauf Publier, Discussion, conversation privée, porte et chauffeur ; bande hors connexion, toast et feuille du bas communes ; accueil, recherche, fiche, Publier, Prix, Carte, Activité, profil public en écran plein, Alertes, formulaires de commande, Messages, Compte, Aide, Guide. Captures : `captures/fidelite-avant-apres-1.jpg` à `-3.jpg`.
+
+Décisions du propriétaire (« OK pour tout », 14/11/2026), gardés : second groupe de lignes du Compte ; Rôle, Région et Ville de Mon profil ; Partager, QR, Gérer mon stock et Visites de Ma boutique ; « Modifier la quantité » ; heure et non lu de Messages ; « Numéro du compte » et « Me déconnecter » de Sécurité ; ville choisie d'avance dans Publier ; « Astuces et tutoriels » et « Choisir les sons » dans Réglages ; « Chercher un numéro » dans l'Espace équipe ; « Mes commandes » et « Se déconnecter » du compte banni. Retirée : la pastille « Comment ça marche ? ».
+
+Écarts gardés à cause des règles : mot secret dans le sens de l'application ; pas de « Être rappelé » ; « Calculée » ; « Awa K. » ; « Signaler » avec motif, phrase et preuve ; notifications du marché jamais entre 21 h et 7 h ; « Transport à la charge de l'acheteur » ; titre du panneau de la carte ; pas de photo pour une demande.
+
+Fais maintenant : rien sur l'application. Reste à Claude Code : retrait de l'ancien code, puis `suivi.html`.
 
 Les captures de chaque lot terminé sont dans `docs/brief-design/captures/` (`lot2-…` à `lot16-…`).
 

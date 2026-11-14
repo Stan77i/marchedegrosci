@@ -10,7 +10,7 @@
    Le code (pages, JS, CSS, manifeste) sans « ?v= » part du RÉSEAU D'ABORD : une mise à jour publiée arrive aussi dans l'application
    installée sur l'écran d'accueil. Le cache ne sert qu'hors connexion (ou si le réseau traîne).
    Les publications des usagers restent dans le localStorage (mdg-v2:offres / mdg-v2:demandes) : ce fichier n'y touche pas. */
-const CACHE = 'mgci-v318';
+const CACHE = 'mgci-v320';
 const FICHIERS = 'fichiers-mgci', INVENTAIRE = 'mgci-inventaire.json';
 // tuiles de la carte en relief déjà vues (relief Terrarium, rues OpenFreeMap) : gardées d'une version à l'autre, 1 500 au plus
 const TUILES = 'tuiles-mgci', TUILES_MAX = 1500, HOTES_TUILES = ['s3.amazonaws.com', 'tiles.openfreemap.org'];
@@ -52,6 +52,7 @@ const CORE = [
   "css/v2.css",
   "css/v2-compte.css",
   "css/v2-equipe.css",
+  "css/v2-profil.css",
   "css/annee-app.css",
   "css/categories-app.css",
   "index-v3.html",
@@ -113,7 +114,7 @@ const CORE = [
   "v3/identite.js"
 ];
 // modules plus récents : gardés au mieux, sans bloquer l'installation si l'un manque
-const MODULES = ['v3/releve.js', 'app/garanties.js', 'v3/commandes.js', 'v3/chauffeur.js', 'v3/suivi.js', 'v3/prixzone.js', 'v3/racheter.js', 'v3/appro.js', 'v3/groupes.js', 'v3/astuces.js', 'v3/tableau.js', 'v3/equipe.js'];
+const MODULES = ['v3/releve.js', 'app/garanties.js', 'v3/commandes.js', 'v3/chauffeur.js', 'v3/suivi.js', 'v3/prixzone.js', 'v3/racheter.js', 'v3/appro.js', 'v3/groupes.js', 'v3/astuces.js', 'v3/tableau.js', 'v3/equipe.js', 'v3/alertes-v2.js'];
 
 // Fichiers durables indispensables (réserve FICHIERS) : bibliothèques, polices, icônes.
 const DURABLES = [

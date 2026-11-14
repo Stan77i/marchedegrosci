@@ -360,7 +360,7 @@ html[data-theme=sombre] .acc-ong button .acc-n.doux{background:#F2C230;color:#10
 
 /* ═══ Mode sombre (Réglages → Apparence, app/theme.js) : accueil, menu, notifications ═══
    Fond brun nuit #12110E, cartes #1E1B16, texte crème #F3EFE4, accent maïs #F2C230. */
-html[data-theme=sombre] .acc{background:#12110E!important;color:#F3EFE4!important}
+html[data-theme=sombre] .acc{background:var(--papier)!important;color:#F3EFE4!important}
 html[data-theme=sombre] .acc-tete{background:#1E1B16;box-shadow:0 10px 30px rgba(0,0,0,.35),0 0 0 1px rgba(243,239,228,.07)}
 html[data-theme=sombre] .acc-r{background:#2A2620;border-color:rgba(243,239,228,.08);color:#F3EFE4}
 html[data-theme=sombre] .acc-r.plein{background:#F2C230;color:#10392B;box-shadow:0 8px 18px rgba(242,194,48,.25)}

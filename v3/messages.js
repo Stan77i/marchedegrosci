@@ -101,7 +101,7 @@ html[data-theme=sombre] .dm{--papier:#14120F;--carte:#1F1B16;--champ:#25211B;--l
 @media (min-width:720px){.dm-bg{align-items:center;padding:24px}.dm{height:min(760px,92dvh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.55)}}
 .dm ::selection{background:rgba(242,194,48,.45)}
 .dm-h{flex:none;display:flex;align-items:center;gap:6px;padding:calc(8px + env(safe-area-inset-top)) 12px 6px 5px}
-.dm-h.bas{border-bottom:1px solid var(--t08);padding-bottom:8px}
+.dm-h.bas{padding-bottom:8px}
 .dm-ib{flex:none;position:relative;width:44px;height:44px;border:0;border-radius:50%;background:none;color:var(--encre);display:grid;place-items:center;cursor:pointer;padding:0}
 .dm-ib svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .dm-ret{display:flex;align-items:center;min-height:44px;border:0;background:none;padding:0 10px 0 0;color:var(--texte-3);font:400 14px Jost,sans-serif;cursor:pointer}
@@ -119,13 +119,17 @@ html[data-theme=sombre] .dm{--papier:#14120F;--carte:#1F1B16;--champ:#25211B;--l
 .dm-tete p{margin:6px 0 0;color:var(--texte-3);font-size:13.5px}
 .dm-b{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:8px 16px 24px;-webkit-overflow-scrolling:touch}
 .dm-conv .dm-b{display:flex;flex-direction:column;padding:10px 16px 18px}
+/* la liste finit au-dessus de la barre d'onglets du bas (« Activité » allumé) ; la conversation la couvre (maquette) */
+.dm-bg.liste{bottom:var(--barre-h, 0px)}
 .dm-info{align-self:center;max-width:310px;margin:0 auto 10px;padding:8px 12px;border-radius:12px;background:var(--lin);color:var(--texte-2);font-size:12.5px;line-height:1.4;text-align:center}
 .dm-garde{align-self:center;max-width:340px;margin:0 auto 10px;padding:9px 12px;border-radius:12px;background:var(--garde);color:var(--garde-t);font-size:12.5px;line-height:1.45;text-align:center}
 .dm-jour{margin:14px 0 6px;text-align:center;color:var(--mute);font-size:12px;font-weight:600;text-transform:capitalize}
 .dm-m{display:flex;margin:5px 0}.dm-m.me{justify-content:flex-end}.dm-m.suite{margin-top:2px}
-.dm-m p{max-width:80%;margin:0;padding:10px 14px 7px;border-radius:18px;background:var(--carte);color:var(--encre);white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;line-height:1.4}
+.dm-m p{max-width:80%;margin:0;padding:10px 14px;border-radius:18px;background:var(--carte);color:var(--encre);white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;line-height:1.4}
 .dm-m.me p{background:var(--vert);color:var(--action-t)}
 .dm-m time{display:block;margin-top:2px;text-align:right;font-size:11.5px;color:var(--mute);font-variant-numeric:tabular-nums}.dm-m.me time{color:var(--heure-moi)}
+/* maquette : pas d'heure sous chaque bulle (gardée pour les lecteurs d'écran) ; seul l'état d'un message pas encore parti se voit */
+.dm-m:not(.rate):not(.file):not(.envoi) time{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .dm-m.envoi p{opacity:.75}
 .dm-m.me.rate p{background:var(--carte);color:var(--encre);box-shadow:inset 0 0 0 1.5px var(--hausse)}.dm-m.me.rate time{color:var(--hausse);font-weight:600}.dm-m.rate,.dm-m.file{cursor:pointer}
 .dm-m.file time{font-weight:600}
@@ -135,7 +139,7 @@ html[data-theme=sombre] .dm{--papier:#14120F;--carte:#1F1B16;--champ:#25211B;--l
 .dm-f textarea::placeholder{color:var(--mute)}
 .dm-f textarea:focus{outline:none;border-color:var(--vert)}
 .dm-env{flex:none;width:44px;height:44px;border:0;border-radius:999px;background:var(--vert);color:var(--action-t);display:grid;place-items:center;cursor:pointer;transition:transform .15s;padding:0}
-.dm-env svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.dm-env:disabled{cursor:default;background:var(--lin);color:var(--mute)}.dm-env:not(:disabled):active{transform:scale(.92)}
+.dm-env svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.dm-env:disabled{cursor:default}.dm-env:not(:disabled):active{transform:scale(.92)}
 .dm-stop{flex:1;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;color:var(--texte-3);font-size:14px}
 .dm-stop button{flex:none;min-height:44px;padding:0 16px;border:1.5px solid var(--vert);border-radius:999px;background:none;color:var(--vert);font:700 14px Jost,sans-serif;cursor:pointer}
 .dm .dm-f:has(.dm-sug){flex-wrap:wrap}
@@ -191,7 +195,7 @@ html[data-theme=sombre] .dm{--papier:#14120F;--carte:#1F1B16;--champ:#25211B;--l
     if (!document.getElementById('dmCss')) { const st = document.createElement('style'); st.id = 'dmCss'; st.textContent = CSS; document.head.appendChild(st); }
     const deja = !!bg; fermer(true);
     // d'un écran des messages à l'autre : la page change sur place, sans rejouer l'entrée (pas de clignotement)
-    bg = document.createElement('div'); bg.className = 'dm-bg' + (deja ? ' dm-sans' : '');
+    bg = document.createElement('div'); bg.className = 'dm-bg' + (deja ? ' dm-sans' : '') + (cls ? '' : ' liste');
     bg.innerHTML = `<div class="dm${cls ? ' ' + cls : ''}" role="dialog" aria-modal="true" aria-label="${esc(label)}">${html}</div>`;
     document.body.appendChild(bg);
     if (!rendre) rendre = N() && N().piege ? N().piege(bg) : null;
@@ -201,16 +205,17 @@ html[data-theme=sombre] .dm{--papier:#14120F;--carte:#1F1B16;--champ:#25211B;--l
     ajuster();
     return bg;
   }
-  function fermer(garder) {
+  function fermer(garder, parOnglet) {
     clearInterval(minuteur); minuteur = 0; ouverte = null;
-    if (bg) { bg.remove(); bg = null; }
+    if (bg) { bg.remove(); bg = null; if (!garder && !parOnglet && window.MDGOnglets && MDGOnglets.cacher) try { MDGOnglets.cacher(); } catch (_) {} }
     if (!garder) { document.removeEventListener('keydown', touche); if (rendre) { rendre(); rendre = null; } annoncer(); }
   }
   function touche(e) { if (e.key === 'Escape' && bg) { const m = bg.querySelector('.dm-menu'); if (m) m.remove(); else fermer(); } }
   // iPhone : la page ne rétrécit pas quand le clavier s'ouvre ; la feuille suit la zone visible pour garder le champ au-dessus du clavier
   function ajuster() {
     const vv = window.visualViewport; if (!bg || !vv || matchMedia('(min-width:720px)').matches) return;
-    bg.style.top = vv.offsetTop + 'px'; bg.style.height = vv.height + 'px'; bg.style.bottom = 'auto';
+    const bh = bg.classList.contains('liste') ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--barre-h')) || 0 : 0;
+    bg.style.top = vv.offsetTop + 'px'; bg.style.height = Math.max(0, vv.height - bh) + 'px'; bg.style.bottom = 'auto';
   }
   if (window.visualViewport) { visualViewport.addEventListener('resize', ajuster); visualViewport.addEventListener('scroll', ajuster); }
 
@@ -231,6 +236,7 @@ html[data-theme=sombre] .dm{--papier:#14120F;--carte:#1F1B16;--champ:#25211B;--l
     if (o && o.de != null) deBoite = String(o.de);
     const b = feuille(`<div class="dm-h"><button type="button" class="dm-ret" data-x aria-label="${deBoite ? 'Retour à ' + esc(deBoite) : 'Retour'}">${I.retour}${deBoite ? `<span>${esc(deBoite)}</span>` : ''}</button></div>
       <div class="dm-b"><div class="dm-tete" style="padding:0 0 10px"><h2>Messages</h2><p>Gardés 1 an · lisibles par l’équipe</p></div><div class="dm-l" data-n></div><div class="dm-l" data-act></div><div class="dm-l" data-l></div></div>`, 'Messages');
+    if (window.MDGOnglets && MDGOnglets.montrer) try { MDGOnglets.montrer('activite', () => fermer(false, true)); } catch (_) {}
     // « Écrire au Marché de Gros » seulement s'il n'y a pas déjà une conversation avec le Marché de Gros dans la liste ;
     // si elle est retirée, la ligne revient (demande du propriétaire, 24/10/2026 : pas de doublon). Rien n'est redessiné si rien ne change.
     const actions = () => { const z = b.querySelector('[data-act]'); if (!z) return;
@@ -358,7 +364,7 @@ html[data-theme=sombre] .dm{--papier:#14120F;--carte:#1F1B16;--champ:#25211B;--l
     function dessiner(neufs) {
       const tout = msgs.concat(attente); let j = '', prec = null, h = '';
       tout.forEach(m => {
-        const jj = jour(m.created_at); if (jj !== j) { j = jj; h += `<div class="dm-jour">${esc(jj)}</div>`; prec = null; }
+        const jj = jour(m.created_at); if (jj !== j) { j = jj; prec = null; }   // maquette : pas de séparateur « Hier / Aujourd'hui »
         const moi = m.auteur_id === u, suite = prec && prec.auteur_id === m.auteur_id && Date.parse(m.created_at) - Date.parse(prec.created_at) < 3e5;
         const etat = m._etat === 'envoi' ? 'Envoi…' : m._etat === 'rate' ? 'Non envoyé · toucher pour réessayer' : m._etat === 'file' ? 'Partira dès le retour du réseau' : heure(m.created_at);
         h += `<div class="dm-m${moi ? ' me' : ''}${suite ? ' suite' : ''}${m._etat ? ' ' + m._etat : ''}${neufs && neufs.has(m.id) ? ' neuf' : ''}" data-m="${m.id}"${m._etat === 'rate' || m._etat === 'file' ? ' role="button" tabindex="0"' : ''}><p>${(c.officiel && !moi) || (moi && admin()) ? lienOff(m.texte) : esc(m.texte)}<time title="Gardé encore ${reste(m.created_at)}">${etat}</time></p></div>`;

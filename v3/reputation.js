@@ -226,69 +226,141 @@
     return `${fl}${moi && f ? '<button type="button" class="rp-alt rp-fb-btn" data-mafiab>Mon historique de fiabilité</button>' : ''}<div class="rp-rep">${col('Comme vendeur', r.vendeur)}${col('Comme acheteur', r.acheteur)}</div>
       ${!moi && r.ensemble ? `<p class="rp-rep-n rp-rep-ens">Vous avez terminé ${r.ensemble} commande${r.ensemble > 1 ? 's' : ''} ensemble.</p>` : ''}`;
   }
+  // profil public, écran plein (maquette « MGCI App v2 », 5.13) : initiales, badges, « Ville · membre depuis », totaux en une ligne,
+  // Partager, sa boutique (ses annonces), Écrire, Signaler, Bloquer. Le détail d'avant (réputation, avis, volumes…) reste plus bas, replié.
+  const CSSV = 'css/v2-profil.css?v=20261114g2';
+  const lienCss = () => { if (document.querySelector('link[data-pp2]')) return; const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = CSSV; l.dataset.pp2 = '1'; document.head.appendChild(l); };
+  const ini = n => { const m = String(n || '').replace(/[^\p{L}\s'-]/gu, ' ').trim().split(/\s+/).filter(Boolean); return ((m[0] || '?').charAt(0) + (m[1] ? m[1].charAt(0) : '')).toUpperCase(); };
+  // couleurs des niveaux (maquette, LV) ; « Grand » prend celles d'« Excellent »
+  const NIV = { Fiable: ['#DCEFE3', '#10392B'], Bon: ['#6CC58C', '#0d2a1c'], Excellent: ['#F2C230', '#10392B'], Grand: ['#F2C230', '#10392B'], Officiel: ['#10392B', '#F2C230'], 'Acheteur en gros': ['#F6E2B0', '#3D2E05'] };
+  const pastille = (t, c) => `<span class="pp2-pa" style="background:${c[0]};color:${c[1]}">${esc(t)}</span>`;
+  const RETOUR = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>';
+  const unites = (q, u) => window.MDGApp && MDGApp.unites ? MDGApp.unites(q, u) : u;
+  const bloquesLoc = () => { try { return JSON.parse(localStorage.getItem('mdg-rep:bloques')) || {}; } catch (_) { return {}; } };
+  let ecranOuvert = null;
+  function ecran(label) {
+    lienCss();
+    if (ecranOuvert) ecranOuvert.fermer();
+    const el = document.createElement('div'); el.className = 'pp2'; el.setAttribute('data-v2', ''); el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', label);
+    document.body.appendChild(el);
+    // la barre d'onglets reste visible (maquette : onglet « Prix » actif sur le profil) : l'écran s'arrête au-dessus d'elle (--barre-h),
+    // et un onglet touché ferme le profil (MDGOnglets, application.dc.html)
+    const O = window.MDGOnglets;
+    if (O && O.montrer) O.montrer('prix', () => fermer(true));
+    const k = e => { if (e.key === 'Escape' && !document.querySelector('.rp-bg, .idv-bg, .dq-bg')) fermer(); };
+    addEventListener('keydown', k);
+    const rendre = N() && N().piege ? N().piege(el) : null;
+    function fermer(parOnglet) { if (!el.isConnected) return; el.remove(); ecranOuvert = null; removeEventListener('keydown', k);
+      if (!parOnglet && O && O.cacher) O.cacher(); rendre && rendre(); }
+    el.fermer = fermer; ecranOuvert = el; return el;
+  }
   async function profil(uid, o = {}) {
     if (!uid) return;
-    const moi = N() && N().session() && N().session().user.id === uid;
-    const bg = feuille(`<div class="rp-tete">${avatar(uid, o.avatar, o.nom, 72, o.uri)}<span><b data-nom>${esc(o.nom || 'Membre')}</b><small data-sc>…</small><small data-dep></small></span></div><div data-org></div><div data-pp></div><div data-corps>${window.MDGSac ? MDGSac.charge('Le profil arrive…') : '<div class="rp-vide">Chargement du profil…</div>'}</div><div data-bq></div>`, 'Profil de ' + (o.nom || 'membre'));
-    // sa boutique (schéma 86) : un bouton en bas, seulement si elle est ouverte (rien ne bouge au-dessus)
-    if (window.MDGBoutique) MDGBoutique.adresseDe(uid).then(a => { const z = bg.querySelector('[data-bq]'); if (!z || !a || !bg.isConnected) return;
-      z.innerHTML = `<button type="button" class="rp-go rp-bq" data-bqv>${window.MDGIco ? MDGIco.svg('vendre', 20, 2) : ''}<span>${moi ? 'Voir ma boutique' : 'Voir sa boutique'}</span></button>`;
-      z.querySelector('[data-bqv]').onclick = () => { bg.fermer(); MDGBoutique.ouvrir(a); }; });
-    const auth = !!N().session();
-    // la structure qu'il représente (supabase/schema-23) : en tête du profil, avec ses preuves ; jamais pour le compte officiel
-    if (!(window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(uid))) N().rpc('structure_publique', { p_uid: uid }, false).then(st => {
-      const z = bg.querySelector('[data-org]'); if (!z || !st || !st.nom) return;
-      z.innerHTML = carteStructure(st, uid); lierPreuves(z, st.preuves || []);
-    }).catch(() => {});
+    const ss = N() && N().session(), moi = !!(ss && ss.user.id === uid), auth = !!ss;
+    const offM = () => !!(window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(uid));
+    const el = ecran('Profil de ' + (o.nom || 'membre'));
+    el.innerHTML = `<div class="pp2-sc"><div class="pp2-in">
+      <div class="pp2-ret"><button type="button" data-ret aria-label="Retour">${RETOUR}</button><span>Retour</span></div>
+      <div class="pp2-tete"><span class="pp2-av" aria-hidden="true">${esc(ini(o.nom))}</span><h1 class="pp2-nom" data-nom>${esc(o.nom || 'Membre')}</h1>
+        <div class="pp2-bd" data-bd></div><span class="pp2-meta" data-meta>&nbsp;</span><span class="pp2-tot" data-tot>&nbsp;</span></div>
+      <div data-part></div><div data-ann></div><div data-act></div><div data-plus></div></div></div>`;
+    const q = s => el.querySelector(s), vivant = () => el.isConnected;
+    q('[data-ret]').onclick = () => el.fermer(); el.tabIndex = -1; setTimeout(() => { if (vivant() && !el.contains(document.activeElement)) el.focus({ preventScroll: true }); }, 30);
+
+    // ses annonces en ce moment (celles que ce téléphone connaît) : offres = sa boutique, demandes = ce qu'il cherche
+    const ligne = (k, x) => { const s = x.productSlug, P = window.MDGV2 && MDGV2.prod ? MDGV2.prod(s) : { name: x.productLabel || s, thumb: '' }, qn = +x.quantity || 0, u = x.unit || '', px = k === 'o' ? +x.price : +x.budget;
+      return `<button type="button" class="pp2-l" data-slug="${esc(s)}"><span class="pp2-vi">${P.thumb ? `<img src="${esc(P.thumb)}" alt="" style="object-fit:${P.fit || 'contain'}">` : ''}</span><span class="pp2-tx"><b>${esc(x.productLabel || P.name)}</b><small>${qn ? fq(qn) + ' ' + esc(unites(qn, u)) + (k === 'o' ? ' disponible' + (qn > 1 ? 's' : '') : ' recherché' + (qn > 1 ? 's' : '')) : k === 'o' ? 'Offre' : 'Demande'}</small></span>${px > 0 ? `<span class="pp2-px">${fq(px)} F / ${esc(u)}</span>` : ''}</button>`; };
+    const lire = k => { const r = N() && N().list ? N().list(k).filter(x => x._uid === uid) : []; if (!moi) return r; let m = []; try { m = JSON.parse(localStorage.getItem('mdg-v2:' + k)) || []; } catch (_) {} return r.length ? r : m; };   // les miennes : aussi celles de ce téléphone
+    const annonces = () => { const L = lire('offres').filter(x => x && x.productSlug && !x.epuise && !x.expiree), D = lire('demandes').filter(x => x && x.productSlug && !x.servie && !x.expiree);
+      const sec = (t, l, k, voir) => l.length ? `<section class="pp2-sec"><div class="pp2-h2"><h2>${t}</h2>${voir}</div>${l.slice(0, 8).map(x => ligne(k, x)).join('')}</section>` : '';
+      return sec(moi ? 'Ma boutique' : 'Sa boutique', L, 'o', adr ? `<button type="button" class="pp2-voir" data-bqv>Voir</button>` : '') + sec(moi ? 'Ce que je cherche' : 'Ce qu’il cherche', D, 'd', '')
+        || (moi ? '' : `<section class="pp2-sec"><div class="pp2-h2"><h2>Sa boutique</h2>${adr ? '<button type="button" class="pp2-voir" data-bqv>Voir</button>' : ''}</div><p class="pp2-vide">Aucune annonce en ce moment.</p></section>`); };
+    let adr;
+    const peindreAnn = () => { if (!vivant() || adr === undefined) return; const z = q('[data-ann]'), h = annonces(); if (z.innerHTML !== h) z.innerHTML = h;
+      z.querySelectorAll('[data-slug]').forEach(b => b.onclick = () => { el.fermer(); if (window.MDGV2 && MDGV2.fiche) MDGV2.fiche(b.dataset.slug); });
+      const v = z.querySelector('[data-bqv]'); if (v) v.onclick = () => { el.fermer(); MDGBoutique.ouvrir(adr); }; };
+    // partager la boutique : seulement si elle est ouverte (schéma 86). Le bouton et la liste arrivent ensemble (rien ne bouge ensuite)
+    const B = window.MDGBoutique, adrP = B ? Promise.race([B.adresseDe(uid), new Promise(r => setTimeout(() => r(B.connue(uid)), 900))]).catch(() => null) : Promise.resolve(null);
+    adrP.then(a => { if (!vivant()) return; adr = a || null; peindreAnn(); peindreAct(); if (!a) return;
+      const z = q('[data-part]'); z.innerHTML = `<button type="button" class="${moi ? 'pp2-plein' : 'pp2-contour'}" data-partager>${moi ? 'Partager ma boutique' : 'Partager sa boutique'}</button>`;
+      z.querySelector('[data-partager]').onclick = () => { const u = MDGBoutique.lien(a, 'lien'), t = (q('[data-nom]').textContent || 'Boutique') + ' · Marché de Gros';
+        if (navigator.share) navigator.share({ title: t, text: 'Une boutique sur le Marché de Gros', url: u }).catch(() => {});
+        else (navigator.clipboard ? navigator.clipboard.writeText(u).then(() => true, () => false) : Promise.resolve(false)).then(ok => N().toast(ok ? 'Lien de la boutique copié' : 'Copiez le lien : ' + u)); }; });
+
+    // actions : Écrire, puis Signaler et Bloquer (jamais sur soi ; le compte officiel : seulement Écrire)
+    let offV = offM();
+    const peindreAct = off => { if (off != null) offV = off; off = offV; if (!vivant() || adr === undefined) return; const z = q('[data-act]');
+      if (moi) { z.innerHTML = `<button type="button" class="pp2-contour" data-modif>Modifier mon profil public</button>`; return; }
+      let bl = !!bloquesLoc()[uid]; try { const c = (JSON.parse(localStorage.getItem('mdg-dm:liste')) || []).find(x => x.autre_id === uid); if (c) bl = !!c.je_bloque; } catch (_) {}
+      z.innerHTML = `${window.MDGMessages ? `<button type="button" class="pp2-plein" data-ecrire>${off ? 'Écrire au Marché de Gros' : 'Écrire'}</button>` : ''}
+        ${off ? '' : `<div class="pp2-liens">${window.MDGIdentite && MDGIdentite.signaler ? '<button type="button" data-sig>Signaler</button>' : ''}<button type="button" data-bloq>${bl ? 'Débloquer' : 'Bloquer'}</button></div>`}`;
+      const e = z.querySelector('[data-ecrire]'); if (e) e.onclick = () => { el.fermer(); MDGMessages.ecrire(uid, { nom: o.nom, avatar: o.avatar }); };
+      const sg = z.querySelector('[data-sig]'); if (sg) sg.onclick = () => MDGIdentite.signaler(uid, { nom: q('[data-nom]').textContent, source: 'profil', bloquer: bl ? null : () => bloquer(true) });
+      const bq = z.querySelector('[data-bloq]'); if (bq) bq.onclick = () => { if (!N().session()) return N().open(); if (bl) return bloquer(false);
+        const t = 'Bloquer ' + (o.nom || 'ce membre') + ' ? Vous ne pourrez plus vous écrire, ni l’un ni l’autre, tant que vous ne le débloquez pas.';
+        (window.MDGDemande ? MDGDemande.oui(t, { ok: 'Bloquer', danger: true }) : Promise.resolve(confirm(t))).then(v => { if (v) bloquer(true); }); };
+      async function bloquer(oui) {
+        try { await N().rpc('dm_bloquer', { p_autre: uid, p_oui: oui }); const b = bloquesLoc(); if (oui) b[uid] = 1; else delete b[uid]; try { localStorage.setItem('mdg-rep:bloques', JSON.stringify(b)); } catch (_) {}
+          try { const L = JSON.parse(localStorage.getItem('mdg-dm:liste')) || [], c = L.find(x => x.autre_id === uid); if (c) { c.je_bloque = oui; localStorage.setItem('mdg-dm:liste', JSON.stringify(L)); } } catch (_) {}
+          N().toast(oui ? 'Bloqué : il ne peut plus vous écrire' : 'Débloqué'); peindreAct(); }
+        catch (_) { N().toast('Le blocage n’a pas abouti. Vérifiez la connexion, puis réessayez.'); } }
+    };
+
     const repP = Promise.all([N().rpc('reputation_publique', { p_uid: uid }, auth).catch(() => null), N().rpc('delais_publics', { p_uid: uid }, auth).catch(() => null)])
       .then(([r, d]) => { if (r && d) r.delais = d; return r; });
-    const [liste, pp] = await Promise.all([N().rpc('avis_de2', { p_cible: uid }, auth).catch(() => N().rpc('avis_de', { p_cible: uid }, auth)).catch(() => null), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null)]);
-    if (!bg.isConnected) return;
-    // schéma 77 : un avis par personne — seul le plus récent de chaque auteur compte dans la note (« compte » absent = ancien serveur : tout compte)
+    const [liste, pp, rep] = await Promise.all([N().rpc('avis_de2', { p_cible: uid }, auth).catch(() => N().rpc('avis_de', { p_cible: uid }, auth)).catch(() => null), N().rpc('profil_public', { p_uid: uid }, auth).catch(() => null), repP]);
+    if (!vivant()) return;
     const comptes = (liste || []).filter(a => a.compte !== false);
-    const nb = comptes.length, moy = nb ? comptes.reduce((s, a) => s + a.note, 0) / nb : 0, rep = [5, 4, 3, 2, 1].map(k => comptes.filter(a => a.note === k).length);
-    // compte officiel (l'administrateur) : « Marché de Gros », sans étoiles ni avis (supabase/schema-20)
-    const off = !!((pp && pp.officiel) || (window.MDGStatut && MDGStatut.estOfficiel && MDGStatut.estOfficiel(uid)));
-    bg.querySelector('[data-sc]').innerHTML = off ? 'Compte officiel du Marché de Gros' : nb ? etoiles(moy, nb, 14) + ' ' + moy.toFixed(1).replace('.', ',') + ' · ' + nb + ' avis' : 'Pas encore noté';
+    const nb = comptes.length, moy = nb ? comptes.reduce((s, a) => s + a.note, 0) / nb : 0, rp = [5, 4, 3, 2, 1].map(k => comptes.filter(a => a.note === k).length);
+    const off = !!((pp && pp.officiel) || offM());
+    const nom = (pp && pp.affichage) || o.nom || 'Membre';
+    q('[data-nom]').textContent = nom; el.setAttribute('aria-label', 'Profil de ' + nom); el.querySelector('.pp2-av').textContent = ini(nom);
+    // badges : identité (seulement quand le serveur a répondu), puis le niveau ; le compte officiel n'a que « Officiel »
+    const badges = () => { if (!vivant()) return removeEventListener('mdg:identite', badges);
+      let h = '';
+      if (off) h = pastille('Officiel', NIV.Officiel);
+      else { if (window.MDGIdentite) { const c = MDGIdentite.connu ? MDGIdentite.connu(uid) : null; if (MDGIdentite.estVerifie(uid) || c === true) h += `<span class="pp2-pa pp2-ver">Identité vérifiée</span>`; else if (c === false) h += `<span class="pp2-pa pp2-nonid">Non identifié</span>`; }
+        const v = rep && rep.vendeur || {}, a = rep && rep.acheteur || {}, nv = v.niveau_libelle || a.niveau_libelle;
+        if (nv) h += pastille(nv, NIV[nv] || NIV.Fiable); else if (a.gros) h += pastille('Acheteur en gros', NIV['Acheteur en gros']); }
+      const z = q('[data-bd]'); if (z.innerHTML !== h) z.innerHTML = h; };
+    badges(); addEventListener('mdg:identite', badges);
+    if (pp) q('[data-meta]').textContent = off ? 'Compte officiel du Marché de Gros' : [pp.ville || (pp.region_slug ? REGN(pp.region_slug) : ''), pp.membre_depuis ? 'membre depuis ' + mois(pp.membre_depuis) : ''].filter(Boolean).join(' · ') || ' ';
+    // totaux en une ligne : commandes terminées (serveur, schéma 32) et note moyenne
+    const nc = rep ? ((rep.vendeur && rep.vendeur.terminees) || 0) + ((rep.acheteur && rep.acheteur.terminees) || 0) : (pp && pp.transactions) || 0;
+    q('[data-tot]').textContent = off ? ' ' : [nc ? fq(nc) + (nc > 1 ? ' commandes terminées' : ' commande terminée') : '', nb ? moy.toFixed(1).replace('.', ',') + ' / 5 sur ' + nb + ' avis' : ''].filter(Boolean).join(' · ') || 'Nouveau sur le marché';
+    if (off) q('[data-tot]').hidden = true;
+    peindreAct(off);
+    if (adr !== undefined) peindreAnn();
+
+    // le reste du profil d'avant, replié : structure, statuts, réputation, présentation, photos, volumes, historique, avis
     let haut = '';
     if (pp) {
-      const nomH = () => esc(pp.affichage || o.nom || 'Membre') + (off ? ' ' + (window.MDGStatut ? MDGStatut.puces(uid, { max: 1 }) : '<span class="rp-off">Officiel</span>') : '') + (off || !window.MDGIdentite ? '' : MDGIdentite.estVerifie(uid) ? ' ' + MDGIdentite.badge(18, true) : (MDGIdentite.connu ? MDGIdentite.connu(uid) === false : false) ? ' <span class="rp-nonid">Non identifié</span>' : '');
-      bg.querySelector('[data-nom]').innerHTML = nomH();
-      if (window.MDGIdentite) { const maj = () => { if (!bg.isConnected) return removeEventListener('mdg:identite', maj); bg.querySelector('[data-nom]').innerHTML = nomH(); }; addEventListener('mdg:identite', maj); }
-      bg.querySelector('[data-dep]').textContent = [pp.membre_depuis ? 'Membre depuis ' + mois(pp.membre_depuis) : '', actif(pp.vu_le)].filter(Boolean).join(' · ');
       const enLigne = (pp.offres_actives || 0) + (pp.demandes_actives || 0);
+      if (actif(pp.vu_le)) haut += `<p class="rp-fb-l">${esc(actif(pp.vu_le).replace(/^a/, 'A'))}</p>`;
       haut += `<div class="rp-stats"><div><b>${fq(pp.ventes || 0)}</b><small>vente${pp.ventes > 1 ? 's' : ''} conclue${pp.ventes > 1 ? 's' : ''}</small></div><div><b>${fq(pp.achats || 0)}</b><small>achat${pp.achats > 1 ? 's' : ''}</small></div><div><b>${fq(enLigne)}</b><small>annonce${enLigne > 1 ? 's' : ''} en ligne · ${fq(pp.annonces_total || 0)} en tout</small></div></div>`;
-      // statuts gagnés (v3/statuts.js) : ce que chacun prouve
-      if (window.MDGStatut) haut += `<div class="rp-sec"><h3>Ses statuts</h3><div data-st>${MDGStatut.detail(uid) || (window.MDGSac ? MDGSac.charge('', { t: 44 }) : '<div class="rp-vide">Chargement…</div>')}</div></div>`;
-      if (!off) haut += `<div class="rp-sec"><h3>Réputation sur les commandes</h3><div data-rep>${window.MDGSac ? MDGSac.charge('', { t: 44 }) : ''}</div></div>`;
-      if (pp.bio) haut += `<div class="rp-sec"><h3>${pp.role === 'acheteur' ? 'Acheteur' : pp.role === 'vendeur' ? 'Vendeur' : pp.role === 'les_deux' ? 'Vendeur et acheteur' : 'Présentation'}${pp.ville || pp.region_slug ? ' · ' + esc(pp.ville || REGN(pp.region_slug)) : ''}</h3><p class="rp-bio">${esc(pp.bio)}</p></div>`;
+      if (window.MDGStatut) haut += `<div class="rp-sec"><h3>Ses statuts</h3><div data-st>${MDGStatut.detail(uid) || '<div class="rp-vide">Pas encore de statut : ce membre commence sur le Marché de Gros.</div>'}</div></div>`;
+      if (!off) haut += `<div class="rp-sec"><h3>Réputation sur les commandes</h3><div data-rep>${blocReputation(rep, moi)}</div></div>`;
+      if (pp.bio) haut += `<div class="rp-sec"><h3>${pp.role === 'acheteur' ? 'Acheteur' : pp.role === 'vendeur' ? 'Vendeur' : pp.role === 'les_deux' ? 'Vendeur et acheteur' : 'Présentation'}</h3><p class="rp-bio">${esc(pp.bio)}</p></div>`;
       if (pp.activites) haut += `<div class="rp-sec"><h3>Ses activités</h3><div class="rp-tags">${pp.activites.split(/[,;·\n]/).map(x => x.trim()).filter(Boolean).slice(0, 12).map(x => `<span>${esc(x)}</span>`).join('')}</div></div>`;
       if (pp.photos && pp.photos.filter(photoUrl).length) haut += `<div class="rp-sec"><h3>En images</h3><div class="rp-ph">${pp.photos.filter(photoUrl).map(p => `<img src="${esc(photoUrl(p))}" alt="" loading="lazy">`).join('')}</div></div>`;
-      // ses annonces en ce moment (celles que ce téléphone connaît déjà)
-      const L = N().list ? N().list('offres').filter(x => x._uid === uid).map(x => ['o', x]).concat(N().list('demandes').filter(x => x._uid === uid).map(x => ['d', x])) : [];
-      if (L.length) haut += `<div class="rp-sec"><h3>En ce moment</h3><div class="rp-li">${L.slice(0, 8).map(([k, x]) => `<div><i class="${k}"></i><span>${esc(x.productLabel || x.productSlug)} · ${fq(x.quantity)} ${esc(x.unit || '')}</span><small>${esc(x.city || REGN(x.regionSlug))}</small></div>`).join('')}</div></div>`;
       if (pp.lieux && pp.lieux.length) haut += `<div class="rp-sec"><h3>Déjà publié à</h3><div class="rp-tags">${pp.lieux.slice(0, 14).map(l => `<span>${esc(REGN(l))}</span>`).join('')}</div></div>`;
-      // volumes échangés (schéma 24) : jamais de montants en public, seulement des quantités et le nombre de transactions
-      const vol = (pp.volumes || []).map(v => { let q = +v.quantite, u = String(v.unite || 'unité'); if (/^(kg|kilo)/i.test(u) && q >= 1000) { q /= 1000; u = 't'; } else if (/^(t|tonne)/i.test(u)) u = 't'; else if (/^kg/i.test(u)) u = 'kg';
-        const pl = q > 1 && !/[sx]$|^(kg|t)$/i.test(u) ? u + 's' : u; return fq(Math.round(q * 100) / 100) + ' ' + pl + (v.sens === 'vente' ? ' vendu' : ' acheté') + (/^(t|tonne|unité|caisse|cagette|botte|boîte|bassine)/i.test(u) ? 'e' : '') + (q > 1 ? 's' : ''); });
+      const vol = (pp.volumes || []).map(v => { let qv = +v.quantite, u = String(v.unite || 'unité'); if (/^(kg|kilo)/i.test(u) && qv >= 1000) { qv /= 1000; u = 't'; } else if (/^(t|tonne)/i.test(u)) u = 't'; else if (/^kg/i.test(u)) u = 'kg';
+        const pl = qv > 1 && !/[sx]$|^(kg|t)$/i.test(u) ? u + 's' : u; return fq(Math.round(qv * 100) / 100) + ' ' + pl + (v.sens === 'vente' ? ' vendu' : ' acheté') + (/^(t|tonne|unité|caisse|cagette|botte|boîte|bassine)/i.test(u) ? 'e' : '') + (qv > 1 ? 's' : ''); });
       if (pp.transactions) haut += `<div class="rp-sec"><h3>Volumes échangés</h3><div class="rp-tags"><span>${fq(pp.transactions)} transaction${pp.transactions > 1 ? 's' : ''} conclue${pp.transactions > 1 ? 's' : ''}</span>${vol.map(t => `<span>${esc(t)}</span>`).join('')}</div></div>`;
-      if (pp.historique && pp.historique.length) haut += `<div class="rp-sec"><h3>Ventes et achats conclus</h3><div class="rp-li">${pp.historique.map(h => `<div><i class="${h.sens === 'vente' ? 'o' : 'v'}"></i><span>${h.sens === 'vente' ? 'Vendu' : 'Acheté'} : ${esc(h.produit || 'produit')}${h.quantite ? ' · ' + fq(h.quantite) + ' ' + esc(h.unite || '') : ''}${h.ville ? ' · ' + esc(h.ville) : ''}</span><small>${quand(h.quand)}</small></div>`).join('')}</div></div>`;
-      // sans compte (schéma 101a, décision n° 21) : seulement les totaux ; le détail est réservé aux membres connectés
+      if (pp.historique && pp.historique.length) haut += `<div class="rp-sec"><h3>Ventes et achats conclus</h3><div class="rp-li">${pp.historique.map(h => `<div><i class="${h.sens === 'vente' ? 'o' : 'v'}"></i><span>${h.sens === 'vente' ? 'Vendu' : 'Acheté'} : ${esc(h.produit || 'produit')}${h.quantite ? ' · ' + fq(h.quantite) + ' ' + esc(unites(h.quantite, h.unite || '')) : ''}${h.ville ? ' · ' + esc(h.ville) : ''}</span><small>${quand(h.quand)}</small></div>`).join('')}</div></div>`;
       else if (pp.detail === false) { if (pp.transactions) haut += `<div class="rp-sec"><h3>Ventes et achats conclus</h3><div class="rp-vide">Connectez-vous pour voir le détail.</div></div>`; }
-      else if (!moi && !pp.transactions) haut += `<div class="rp-sec"><h3>Ventes et achats conclus</h3><div class="rp-vide">Aucune vente conclue dans l’application pour l’instant.</div></div>`;
-      if (!off) haut += `<div class="rp-sec"><h3>Avis</h3></div>`;
     }
-    bg.querySelector('[data-pp]').innerHTML = haut;
-    repP.then(r => { const z = bg.querySelector('[data-rep]'); if (!z) return; z.innerHTML = blocReputation(r, moi);
-      const mf = z.querySelector('[data-mafiab]'); if (mf) mf.onclick = () => { bg.fermer(); fiabilite(); }; });
-    if (window.MDGStatut && bg.querySelector('[data-st]')) { const majSt = () => { const z = bg.querySelector('[data-st]'); if (!bg.isConnected || !z) return removeEventListener('mdg:rep', majSt); z.innerHTML = MDGStatut.detail(uid) || '<div class="rp-vide">Pas encore de statut : ce membre commence sur le Marché de Gros.</div>'; }; addEventListener('mdg:rep', majSt); }
-    bg.querySelector('[data-corps]').innerHTML = off ? (moi ? '' : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire au Marché de Gros</button>` : ''}</div>`) : ((nb ? `<div class="rp-score"><strong>${moy.toFixed(1).replace('.', ',')}</strong><span>${etoiles(moy, nb, 15)}${nb} avis</span><div class="rp-barres">${rep.map((c, i) => `<div><em style="font-style:normal">${5 - i}</em><i><b style="width:${nb ? c / nb * 100 : 0}%"></b></i></div>`).join('')}</div></div>
-      <div class="rp-av">${liste.map(a => `<article><header>${avatar(a.auteur, a.avatar, a.auteur, 26)}<b>${esc(a.auteur)}</b>${a.verifie ? '<span class="rp-av-v" title="Identité vérifiée par l’équipe">✓ vérifié</span>' : ''}${etoiles(a.note, 1, 11)}<small>${quand(a.quand)}</small></header>${a.role ? `<span class="rp-av-r">comme ${a.role === 'vendeur' ? 'vendeur' : 'acheteur'}${a.produit ? ' · ' + esc(a.produit) : ''}</span>` : ''}${a.texte ? `<p>${esc(a.texte)}</p>` : ''}</article>`).join('')}</div>`
-      : `<div class="rp-vide">${liste === null ? (navigator.onLine === false ? 'Pas de connexion : les avis s’afficheront quand le réseau revient.' : 'Les avis n’ont pas pu être lus. Réessayez dans un instant.') : moi ? 'Vous n’avez pas encore d’avis. Ils arrivent quand vos partenaires vous notent après une commande terminée.' : 'Pas encore d’avis. Les avis se donnent après une commande terminée, depuis Mes commandes.'}</div>`)
-      + (moi ? `<button type="button" class="rp-go" data-modif>Modifier mon profil public</button>` : `<div class="rp-duo">${window.MDGMessages ? `<button type="button" class="rp-go rp-ecr" data-ecrire>Écrire</button>` : ''}</div>`));
-    const b = bg.querySelector('[data-noter]'); if (b) b.onclick = () => { bg.fermer(); noter(uid, o.nom, () => profil(uid, o)); };
-    const e = bg.querySelector('[data-ecrire]'); if (e) e.onclick = () => { bg.fermer(); MDGMessages.ecrire(uid, { nom: o.nom, avatar: o.avatar }); };
-    const m = bg.querySelector('[data-modif]'); if (m) m.onclick = () => { bg.fermer(); modifier(pp || {}, () => profil(uid, o)); };
+    if (!off) haut += `<div class="rp-sec"><h3>Avis</h3>${nb ? `<div class="rp-score"><strong>${moy.toFixed(1).replace('.', ',')}</strong><span>${etoiles(moy, nb, 15)}${nb} avis</span><div class="rp-barres">${rp.map((c, i) => `<div><em style="font-style:normal">${5 - i}</em><i><b style="width:${c / nb * 100}%"></b></i></div>`).join('')}</div></div>
+      <div class="rp-av">${liste.map(a => `<article><header><b>${esc(a.auteur)}</b>${a.verifie ? '<span class="rp-av-v">Identité vérifiée</span>' : ''}${etoiles(a.note, 1, 11)}<small>${quand(a.quand)}</small></header>${a.role ? `<span class="rp-av-r">comme ${a.role === 'vendeur' ? 'vendeur' : 'acheteur'}${a.produit ? ' · ' + esc(a.produit) : ''}</span>` : ''}${a.texte ? `<p>${esc(a.texte)}</p>` : ''}</article>`).join('')}</div>`
+      : `<div class="rp-vide">${liste === null ? (navigator.onLine === false ? 'Pas de connexion : les avis s’afficheront quand le réseau revient.' : 'Les avis n’ont pas pu être lus. Réessayez dans un instant.') : moi ? 'Pas encore d’avis : ils arrivent après une commande terminée.' : 'Pas encore d’avis. Les avis se donnent après une commande terminée, depuis Mes commandes.'}</div>`}</div>`;
+    const z = q('[data-plus]');
+    z.innerHTML = `<details class="pp2-plus"><summary>Réputation et avis</summary><div class="pp2-plus-in rp"><div data-org></div>${haut}</div></details>`;
+    if (!off) N().rpc('structure_publique', { p_uid: uid }, false).then(st => { const zz = q('[data-org]'); if (!zz || !st || !st.nom) return; zz.innerHTML = carteStructure(st, uid); lierPreuves(zz, st.preuves || []); }).catch(() => {});
+    if (!document.getElementById('rpCss')) { const st = document.createElement('style'); st.id = 'rpCss'; st.textContent = CSS; document.head.appendChild(st); }
+    const mf = z.querySelector('[data-mafiab]'); if (mf) mf.onclick = () => { el.fermer(); fiabilite(); };
+    const m = q('[data-modif]'); if (m) m.onclick = () => { el.fermer(); modifier(pp || {}, () => profil(uid, o)); };
+    if (window.MDGStatut && z.querySelector('[data-st]')) { const majSt = () => { const s = z.querySelector('[data-st]'); if (!vivant() || !s) return removeEventListener('mdg:rep', majSt); const h = MDGStatut.detail(uid); if (h && s.innerHTML !== h) s.innerHTML = h; }; addEventListener('mdg:rep', majSt); }
+    const majAnn = () => { if (!vivant()) return removeEventListener('mdg:change', majAnn); peindreAnn(); }; addEventListener('mdg:change', majAnn);
   }
 
   // modifier son profil public : présentation, activités, photos (6 au plus)

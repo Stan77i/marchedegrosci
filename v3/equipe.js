@@ -10,7 +10,7 @@
   'use strict';
   const N = () => window.MDGNuage;
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const fmt = n => n == null || isNaN(n) ? '—' : Math.round(+n).toLocaleString('fr-FR').replace(/\s/g, ' ');
+  const fmt = n => n == null || isNaN(n) ? '—' : Math.round(+n).toLocaleString('fr-FR').replace(/[\u202F\u00A0 ]/g, '\u00A0');
   const tel = t => String(t || '').replace(/^225/, '').replace(/(\d{2})(?=\d)/g, '$1 ');
   const jour = t => new Date(t).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
   const heure = t => jour(t) + ' · ' + new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
@@ -70,6 +70,8 @@
     document.body.appendChild(bg);
     bg.querySelector('[data-retour]').onclick = () => fermer();
     document.addEventListener('keydown', cle);
+    // la barre d'onglets reste visible, « Compte » allumé ; un onglet touché ferme l'espace équipe
+    if (window.MDGOnglets && MDGOnglets.montrer) try { MDGOnglets.montrer('compte', () => fermer(true)); } catch (_) {}
     bg.querySelector('h1').focus({ preventScroll: true });
     const moi = S;
     rpc('est_admin').then(async a => {
@@ -83,7 +85,7 @@
   }
   function fermer(calme) {
     document.removeEventListener('keydown', cle);
-    if (bg) { bg.remove(); bg = null; }
+    if (bg) { bg.remove(); bg = null; if (!calme && window.MDGOnglets && MDGOnglets.cacher) try { MDGOnglets.cacher(); } catch (_) {} }
     if (!calme && S && S.depuis !== 'compte' && window.MDGCompte && MDGCompte.ouvrir && !document.querySelector('.cp-bg')) MDGCompte.ouvrir('accueil');
     if (!calme) S = null;
   }

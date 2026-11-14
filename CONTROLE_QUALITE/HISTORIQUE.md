@@ -26,3 +26,10 @@
 | 14/11/2026 à 11 h 14 | `apres-modif` | `a4e6d86` | 13 | 4 | 0 | 1 | 0 | non | [rapport](rapports/2026-11-14-11h14-apres-modif.md) |
 | 14/11/2026 à 11 h 31 | `apres-modif` | `0455bdf` | 13 | 4 | 0 | 1 | 0 | non | [rapport](rapports/2026-11-14-11h31-apres-modif.md) |
 | 14/11/2026 à 11 h 40 | `apres-modif` | `b43f445` | 13 | 4 | 0 | 1 | 0 | non | [rapport](rapports/2026-11-14-11h40-apres-modif.md) |
+| 14/11/2026 à 16 h 09 | `apres-modif` | `79c02df` | 10 | 7 | 0 | 1 | 0 | oui (2) | [rapport](rapports/2026-11-14-16h09-apres-modif.md) |
+| 14/11/2026 à 16 h 09 | `apres-modif` | `79c02df` | 10 | 7 | 0 | 1 | 0 | oui (2) | [rapport](rapports/2026-11-14-16h09-apres-modif.md) |
+| 14/11/2026 à 16 h 15 | `apres-modif` | `7a0c9c7` | 12 | 5 | 0 | 1 | 0 | oui (1) | [rapport](rapports/2026-11-14-16h15-apres-modif.md) |
+| 14/11/2026 à 16 h 22 | `apres-modif` | `7a0c9c7` | 12 | 5 | 0 | 1 | 0 | oui (1) | [rapport](rapports/2026-11-14-16h22-apres-modif.md) |
+| 14/11/2026 à 20 h 52 | `apres-modif` | `c8dff51` | 12 | 5 | 0 | 1 | 0 | oui (1) | [rapport](rapports/2026-11-14-20h52-apres-modif.md) |
+| 14/11/2026 à 20 h 57 | `apres-modif` | `b17f002` | 13 | 4 | 0 | 1 | 0 | non | [rapport](rapports/2026-11-14-20h57-apres-modif.md) |
+| 14/11/2026 à 21 h 03 | `apres-modif` | `3c2686f` | 13 | 4 | 0 | 1 | 0 | non | [rapport](rapports/2026-11-14-21h03-apres-modif.md) |

@@ -44,8 +44,8 @@
   // ouvrent directement la fonction. Seulement ce que l'application fait déjà.
   const PAGE = p => () => dispatchEvent(new CustomEvent('mdg:aller', { detail: { page: p } }));
   const FEN = (m, f, a) => () => { const o = window[m]; if (!o || typeof o[f] !== 'function') return false; o[f].apply(o, a || []); };
-  // un onglet de l'accueil (Marché, Prix, Activité, Alertes)
-  const ONGLET = nom => () => { const x = [...document.querySelectorAll('.acc-ong button')].find(y => y.textContent.trim().startsWith(nom)); if (!x) return false; x.click(); };
+  // un onglet de la barre du bas (Marché, Prix, Publier, Activité, Compte ; refonte du 13/11/2026)
+  const ONGLET = nom => () => { const x = [...document.querySelectorAll('.v2-tabs .v2-tab')].find(y => (y.querySelector('.lb') || y).textContent.trim() === nom); if (!x) return false; x.click(); };
   // Toutes les phrases d'accroche vivent ici (22/10/2026 : la barre du haut est libérée, elle ne montre plus que le nom 5 s).
   // Garanties, nouveautés et fonctions utiles alternent ; seulement ce que l'application fait vraiment.
   const BANDE = [

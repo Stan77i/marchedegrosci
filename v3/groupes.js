@@ -10,7 +10,7 @@
   const N = () => window.MDGNuage;
   const me = () => { const s = N() && N().session(); return s && s.user && s.user.id; };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const nf = v => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 }).format(+v || 0).replace(/ /g, ' ');
+  const nf = v => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 }).format(+v || 0).replace(/[\u202F\u00A0 ]/g, '\u00A0');
   const F = v => nf(Math.round(+v || 0)) + ' F';
   const quand = t => t && !isNaN(Date.parse(t)) ? new Date(t).toLocaleString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
   // sans date de fin connue, aucune durée (jamais « reste NaN jours »)

@@ -2259,6 +2259,14 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur.
 
+## 14/11/2026 · Refonte : « Proposer un prix » repris (demande du propriétaire)
+
+- Le propriétaire a montré la feuille de la maquette : « la rendre identique », puis « centre bien les écritures ».
+- `v3/negoce.js` : `head(t, sub, back, simple)` (titre sans surlignage), classe `nx-pbg` sur la feuille de `proposer()` : hauteur selon le contenu (88 dvh au plus), voile `rgba(23,21,18,.45)` sans flou, titre 24 px sans trait, sous-titre 14 px ; `a.km` affiché « · ≈ N km » ; la largeur des champs quantité et prix suit leur contenu (centrage entre − et +).
+- `application.dc.html` (fiche produit) : `dist(x)` passe la distance à vol d’oiseau entre la région du membre et celle de l’annonce (rien dans la même ville ou la même région) ; `card().neg(ext)` accepte des champs en plus.
+- `css/v2.css` : champ centré. `?v=20261114n3` (negoce), `?v=20261114n2` (v2.css), cache `mgci-v315`.
+- Vérifié dans le navigateur (iPhone 13, clair et sombre, fausses données) : aucune erreur.
+
 ## 14/11/2026 · Refonte, lot 15 : Porte, compte banni, espace chauffeur
 
 - Porte (`v3/nuage.js`, fonction `open`) au dessin de la maquette, sombre dans les deux modes ; le titre garde l'alternance « de Gros » / « du pays ». Inscription en étapes avec barre maïs : numéro, code à 6 chiffres retapé (codes faciles refusés), prénom, nom et pseudonyme facultatif avec ville facultative (6 grandes villes + « Autre ville » ; les communes d'Abidjan ne sont jamais proposées), aperçu public puis « Créer mon compte », code de secours affiché seulement après la réponse du serveur. Connexion « Bon retour » avec lien « Créer un compte ». Code oublié en 3 étapes (numéro et code de secours, nouveau code, nouveau code de secours). Mêmes appels serveur qu'avant : `signUp`, `signIn`, `recover` / `secours_reinitialiser`, `creer_secours`, `pseudo_libre`.

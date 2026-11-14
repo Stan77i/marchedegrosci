@@ -6,6 +6,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 14/11/2026
 
+- Refonte, « Proposer un prix » plus fidèle à la maquette (`v3/negoce.js`, `css/v2.css`) : titre en grand sans trait, ligne « produit · ville · ≈ distance » (distance à vol d’oiseau entre deux régions, absente dans la même ville), l’écran reste visible derrière la feuille (voile sans flou), quantité et prix centrés entre − et +. Cache `mgci-v315`.
 - Refonte, lot 15 : porte refaite (`v3/nuage.js`) : inscription en étapes avec barre maïs, code retapé et codes faciles refusés, ville facultative, code de secours affiché après la réponse du serveur, connexion « Bon retour », code oublié en 3 étapes ; compte banni avec date, délai et « Contester » (`v3/identite.js`) ; espace chauffeur « Mes missions » (`v3/chauffeur.js`). Cache `mgci-v314`.
 - Refonte, lot 14 : Espace équipe dans l’application (`v3/equipe.js`, `css/v2-equipe.css`) avec 7 onglets (Identités, Litiges, Signalements, Comptes, Commissions « Calculée », Diffusion, Journal), accès vérifié par le serveur, motif demandé à chaque geste ; `admin.html` reste disponible. Cache `mgci-v313`.
 - Refonte, lots 10 à 13 : chaque ligne d’Activité mène à l’écran de la maquette ; Messages, écran de la commande (acheteur et vendeur, mot secret dans le sens de l’application), Mes annonces et Compte refaits comme la maquette. Correction du libellé « Publier » caché. Cache `mgci-v312`.

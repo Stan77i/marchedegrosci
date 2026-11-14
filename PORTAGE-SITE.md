@@ -80,10 +80,10 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Litige en 1 h après « livré », clôture en faveur du vendeur sans réponse : textes « Répondez avant … », boutons pendant le litige | `v3/commandes.js` (`prochaine0`, `actions`), schéma 97b | haute (avec les commandes) |
 | Suivi de livraison : « Signaler un retard », « Demander des nouvelles », « Demander un délai » (2, 6, 24 h), échéance réelle, fil du suivi dans l'historique, « Annuler » quand le vendeur est banni | `v3/commandes.js` (`historique`, `nouvelles`, `geste`), schéma 99a | haute (avec les commandes) |
 | Quantité entière pour les unités qui se comptent, contrôlée dans les formulaires de publication | `application.dc.html` (`qFrac`), schéma 99d | moyenne |
-| Quantité minimale sur les annonces (offre et demande) : champ des formulaires, « Disponible » et pastille « Minimum … » sur les cartes d'annonce | `application.dc.html` (formulaires, carte d'annonce), `v3/tableau.js`, schéma 97c | haute |
+| Quantité minimale sur les annonces (offre et demande) : champ des formulaires, « Disponible » et pastille « Minimum … » sur les cartes d'annonce | `application.dc.html` (Publier, carte d'annonce), schéma 97c | haute |
 | Accord conclu en reçu (quantité, prix, total), « Suivre la commande » | `v3/negoce.js` (commun : déjà là) mais le bouton s'appuie sur `v3/commandes.js` | haute |
-| Tableau du marché façon P2P (50 meilleures annonces par unité) | `v3/tableau.js` (schémas 59, 70) | haute |
-| « Ici, chacun place son prix » : pop-up du prix du moment, placer son prix dans les deux sens | `app/prixmoment.js` | haute |
+| Tableau du marché façon P2P (50 meilleures annonces par unité) | écran Prix de `application.dc.html` (schémas 59, 70) ; l'ancien `v3/tableau.js` est supprimé (14/11/2026) | haute |
+| « Ici, chacun place son prix » : pop-up du prix du moment, placer son prix dans les deux sens | écran Prix et `v3/negoce.js` (l'ancien `app/prixmoment.js` est supprimé le 14/11/2026) | haute |
 | Prix par zone et tendance | `v3/prixzone.js` | moyenne |
 | Approvisionnement pro (restaurants, cantines) | `v3/appro.js` | moyenne |
 | Achats groupés | `v3/groupes.js` | moyenne |
@@ -110,7 +110,7 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Annulation avec motif obligatoire (liste fermée), accord ou non de l'autre partie sur le motif, expiration à 48 h (schéma 84) | `v3/commandes.js` (`confirmer`, `annulerMotif`, `repondreMotif`) | haute |
 | « Ma fiabilité » : score, annulations qui comptent ou non, avertissements, contestation ; ligne « Fiabilité : 96 % sur 25 commandes » du profil (schéma 84) | `v3/reputation.js` (`fiabilite`, commun) et la ligne de `v3/compte.js` (commun) : à vérifier sur le site | moyenne |
 | « Mes niveaux » : niveau vendeur et acheteur, ce qui manque pour le suivant, sursis de 30 jours, historique, contestation ; ligne « Mes niveaux » de Mon compte avec pastille (schéma 85) | `v3/reputation.js` (`niveaux`, commun) et la ligne de `v3/compte.js` (commun) : à vérifier sur le site | moyenne |
-| Puces de niveau (Vendeur fiable … Grand vendeur, Acheteur fiable … Grand acheteur, Acheteur en gros) sur les cartes, fiches et messages ; niveau dans le tableau du marché (schéma 85) | `v3/statuts.js` (commun : suit tout seul), `v3/tableau.js` ; pages fabriquées de `site/` : lire `niveaux_publics(ids)` | moyenne |
+| Puces de niveau (Vendeur fiable … Grand vendeur, Acheteur fiable … Grand acheteur, Acheteur en gros) sur les cartes, fiches et messages ; niveau dans le tableau du marché (schéma 85) | `v3/statuts.js` (commun : suit tout seul) ; pages fabriquées de `site/` : lire `niveaux_publics(ids)` | moyenne |
 
 ### Accueil et navigation
 
@@ -119,14 +119,14 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Accueil à onglets Marché / Prix / Activité / Alertes, salutation, chiffres réels | `application.dc.html`, méthode `accueil()` | haute |
 | « En cours » : négociations, commandes, messages ; « Reprendre là où vous en étiez » ; un accord et sa commande sur une seule ligne | `app/activite.js` | haute |
 | Fil « Dernières annonces » avec les ventes conclues (la carte n'existe que s'il y a au moins une annonce, 23/10/2026) | `application.dc.html`, `ventesCharger()` (schéma 55) | moyenne |
-| Bande d'accroches (garanties, nouveautés) | `app/garanties.js`, `v3/souffle.js` | basse |
+| Bande d'accroches (garanties, nouveautés) | `app/garanties.js` (`v3/souffle.js` supprimé le 14/11/2026) | basse |
 | Roue des produits et sac, scène d'entrée | `app/scene.js`, `app/sac.js`, `app/effets.js` | moyenne |
-| Démo de la roue et des prix | `app/demo-orbite.js` | basse |
+| Démo de la roue et des prix | retirée de l'application le 14/11/2026 (`app/demo-orbite.js` supprimé) : rien à porter | sans objet |
 | Tutoriels à l'entrée de chaque écran, astuces, réglages de l'aide | `v3/astuces.js`, `v3/guide.js`, `app/theme.js` (Réglages) | moyenne |
 | Aide : questions et réponses, puis une personne | `v3/aide.js` | moyenne |
 | Thème jour / nuit, et nuit des fenêtres | `app/theme.js`, `app/nuit.js`, `css/sombre.css` | haute |
 | Carte du réseau MapLibre : filtres dans le panneau du bas, boutons en colonne | `app/carte-gl.js`, `app/carte-app.js`, `vendor/maplibre/` | moyenne |
-| Catalogue (12 familles, produits en saison) et L'année du marché | `css/categories-app.css`, `css/annee-app.css`, pages de l'application | moyenne |
+| Catalogue (12 familles, produits en saison) et L'année du marché | pages `categories` et `annee` de l'application (`css/v2.css` ; les anciens `css/categories-app.css` et `css/annee-app.css` sont supprimés le 14/11/2026) | moyenne |
 | Régions et villes reliées | `app/villes.js` | moyenne |
 | Retour au toucher (vibrations), écrans stables | `app/vibre.js`, `app/stable.js` (commun) | basse |
 
@@ -141,9 +141,9 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 - Croix de fermeture dessinées en SVG, flèche de retour lisible, surfaces du navigateur aux couleurs de la marque (sélection, curseur, cases).
 - Rien ne bouge en boucle sans raison ; les avatars sautent seulement quand il y a du nouveau.
 - La tomate est montrée **en carton**. Ne jamais écrire « PAYÉ ».
-- **Onglets** : pastille du nombre de produits sur « Prix », états vides « Aucune activité / Aucune alerte » avec le sac, pastilles panier / caddie « 2 offres · 1 demande » au tableau (`application.dc.html`, `v3/tableau.js`).
+- **Onglets** : pastille du nombre de produits sur « Prix », états vides « Aucune activité / Aucune alerte » avec le sac, pastilles panier / caddie « 2 offres · 1 demande » au tableau.
 - **Fidélité à la maquette (14/11/2026)** : `v3/reputation.js` (profil public en écran plein), `v3/compte.js`, `v3/identite.js`, `v3/negoce.js`, `v3/messages.js` et `app/toast.js` (feuille du bas commune `MDGFeuille`) ont changé ; `index-v3.html` les charge : vérifier le site à 1280 px avant son ouverture. La barre d'onglets en bas est propre à l'application.
-- **Hors connexion** : bandeau rouge en haut « Pas de connexion · Réessayer » et carte du sac qui dort (`app/sac.js`, `v3/tableau.js`, application seulement). Le site doit charger `app/sac.js` pour l'avoir.
+- **Hors connexion** : bandeau rouge en haut « Pas de connexion · Réessayer » et carte du sac qui dort (`app/sac.js`, application seulement). Le site doit charger `app/sac.js` pour l'avoir.
 
 ## 5. Ce qu'on peut retirer du site : à valider par le propriétaire
 
@@ -206,7 +206,7 @@ Ce qu’ils font est déjà sur les deux : une correction dans l’un de ces fic
 
 ### Propres à l’application (43) : ce que le site n’a pas
 
-`app/activite.js` · `app/carte-app.js` · `app/carte-gl.js` · `app/demo-orbite.js` · `app/effets.js` · `app/garanties.js` · `app/icone.js` · `app/marche-app.js` · `app/nuit.js` · `app/prixmoment.js` · `app/sac.js` · `app/scene.js` · `app/theme.js` · `app/vibre.js` · `app/villes.js` · `css/annee-app.css` · `css/categories-app.css` · `css/mgci-app.css` · `css/mgci-tokens.css` · `css/sombre.css` · `css/v2-compte.css` · `css/v2-equipe.css` · `css/v2.css` · `support.js` · `v3/aide.js` · `v3/alertes-v2.js` · `v3/alertes.js` · `v3/appro.js` · `v3/astuces.js` · `v3/boutique.js` · `v3/chauffeur.js` · `v3/commandes.js` · `v3/equipe.js` · `v3/groupes.js` · `v3/guide.js` · `v3/prixzone.js` · `v3/racheter.js` · `v3/releve.js` · `v3/souffle.js` · `v3/suivi.js` · `v3/tableau.js` · `vendor/maplibre/maplibre-gl.css` · `vendor/maplibre/maplibre-gl.js`
+`app/activite.js` · `app/carte-app.js` · `app/carte-gl.js` · `app/effets.js` · `app/garanties.js` · `app/icone.js` · `app/marche-app.js` · `app/nuit.js` · `app/sac.js` · `app/scene.js` · `app/theme.js` · `app/vibre.js` · `app/villes.js` · `css/mgci-app.css` · `css/mgci-tokens.css` · `css/sombre.css` · `css/v2-compte.css` · `css/v2-equipe.css` · `css/v2.css` · `support.js` · `v3/aide.js` · `v3/alertes-v2.js` · `v3/alertes.js` · `v3/appro.js` · `v3/astuces.js` · `v3/boutique.js` · `v3/chauffeur.js` · `v3/commandes.js` · `v3/equipe.js` · `v3/groupes.js` · `v3/guide.js` · `v3/prixzone.js` · `v3/racheter.js` · `v3/releve.js` · `v3/suivi.js` · `vendor/maplibre/maplibre-gl.css` · `vendor/maplibre/maplibre-gl.js`
 
 ### Propres au site (43)
 

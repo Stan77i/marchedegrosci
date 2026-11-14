@@ -2259,6 +2259,19 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur.
 
+## 14/11/2026 · Refonte : retrait de l'ancien code
+
+- Les propositions n° 1 à 10 du rapport de retrait sont validées par le propriétaire (« ok pour tout », 14/11/2026) ; la n° 11 (libellé « Retrait par l'acheteur ») est faite dans la PR #347 (ANO-059). Branche `claude/retrait-ancien-code`, 3 commits, aucune base touchée.
+- Étape 1 (`application.dc.html`, 379 288 → 309 201 octets) : retirés la roue et les bulles, 2 appels serveur dont rien ne s'affichait (`produits_activite`, `ventes_recentes`), l'ancien accueil (onglets du haut, liste « En cours », glisser), les anciens Vendre et Demander, l'ancienne Année et l'ancien catalogue, les fenêtres « Familles » et « Tout voir », `mapSVG`, `splashLine` et 8 `keyframes` inutilisées.
+- Étape 2 : fichiers supprimés `v3/tableau.js`, `app/prixmoment.js`, `app/demo-orbite.js`, `v3/souffle.js`, `css/categories-app.css`, `css/annee-app.css` (87 723 octets). Dans `app/effets.js`, seule la partie morte `<mdg-nb>` est retirée (le tracé maïs et le coup de tampon servent encore). Styles morts retirés de `css/mgci-app.css` (−30 538 octets) et `css/sombre.css` (−1 211 octets). `sw.js` nettoyé, cache `mgci-v321`.
+- Gardés : la fenêtre « J'ai / Je cherche » (les liens du site `#/publier` l'utilisent), les branches `doPick` vendre et demande (bouton « autre » de Publier), `masques()`, `v3/personnages.js`, `app/carte-app.js`, la page Acheter, les pages Comprendre, le menu, `v3/ux.css`.
+- Mesure : octets chargés au démarrage 3 002 550 → 2 740 077 (−8,7 %) ; 78 → 72 fichiers.
+- Vérifié : 74 écrans (clair et sombre) comparés avant et après : identiques. Seule différence : la bande d'ombre grise sous la barre d'onglets en mode clair (ombre des fenêtres cachées) a disparu. Liens `#/publier`, `#/vendre`, `#/demande`, `#/comment-ca-marche`, `#/groupes`, ouverture par notification et hors ligne : identiques.
+- ANO-060 corrigée : « L'acheteur vient chercher » devient « Retrait par l'acheteur » (`v3/commandes.js`, décision « Ok » du propriétaire, 14/11/2026).
+- Nouvelle anomalie ANO-061 : `css/mgci-app.css` (vers la ligne 144) a une accolade « } » de trop, antérieure à ce travail ; le navigateur ignore donc la règle `.mq-menu` qui suit. Laissée telle quelle pour ne rien changer à l'écran. Code inactif signalé, pas retiré : `app/theme.js` lignes 119 à 143 (réglages démo), `v3/astuces.js` ligne 185 et `app/sac.js` ligne 136 (cherchent `mdg-tableau`, qui n'existe plus).
+- Documents mis à jour : `FONCTIONNALITES.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `PORTAGE-SITE.md`, `MISE-A-JOUR.md`, `CHANGELOG.md`, `TABLEAU-DE-BORD.md`, `docs/REPRISE.md`, `docs/brief-design/ETAT-DESIGN.md`, registre des anomalies et listes de contrôle. Le rapport de départ est dans le dossier de travail de la session (`lot16-ancien-code.md`).
+- Reste : refaire `suivi.html` (chauffeur sans compte) au dessin de la maquette.
+
 ## 14/11/2026 · Refonte, lot 16 : passe finale (sombre, 320 px, contrastes) et discussion de négociation
 
 - Vérification de 39 écrans refaits (390 et 320 px, clair et sombre, mouvement réduit) : aucun débordement, aucune erreur console.

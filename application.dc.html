@@ -27,7 +27,7 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script src="v3/personnages.js?v=20261124h"></script>
 <script src="v3/avatar.js?v=20261124c"></script>
 <script src="app/icones.js?v=20261025a"></script>
-<script src="app/effets.js?v=20261124d"></script>
+<script src="app/effets.js?v=20261115r1"></script>
 <script src="app/marque.js?v=20261023v"></script>
 <script src="app/sac.js?v=20261114g3"></script>
 <script src="app/garanties.js?v=20261114g3"></script>
@@ -36,7 +36,7 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261114g4','v3/astuces.js?v=20261114g3','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261131lq2','v3/negoce.js?v=20261114g1','v3/compte.js?v=20261114g4','v3/souffle.js?v=20261128cf','v3/pousse.js?v=20261124nt','v3/reputation.js?v=20261114g2','v3/statuts.js?v=20261124n1','v3/messages.js?v=20261114g3','v3/aide.js?v=20261114g3','v3/alertes.js?v=20261114g2','v3/alertes-v2.js?v=20261114g2','v3/releve.js?v=20261114g3','v3/commandes.js?v=20261114g3','v3/tableau.js?v=20261203cq','v3/chauffeur.js?v=20261114g3','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261114g3','v3/racheter.js?v=20261114g3','v3/appro.js?v=20261114g3','v3/groupes.js?v=20261114g3','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261114f2','v3/identite.js?v=20261114g3','v3/boutique.js?v=20261113t1','v3/equipe.js?v=20261114g3'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261114g4','v3/astuces.js?v=20261114g3','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261131lq2','v3/negoce.js?v=20261114g1','v3/compte.js?v=20261114g4','v3/pousse.js?v=20261124nt','v3/reputation.js?v=20261114g2','v3/statuts.js?v=20261124n1','v3/messages.js?v=20261114g3','v3/aide.js?v=20261114g3','v3/alertes.js?v=20261114g2','v3/alertes-v2.js?v=20261114g2','v3/releve.js?v=20261114g3','v3/commandes.js?v=20261115r1','v3/chauffeur.js?v=20261114g3','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261114g3','v3/racheter.js?v=20261114g3','v3/appro.js?v=20261114g3','v3/groupes.js?v=20261114g3','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261114f2','v3/identite.js?v=20261114g3','v3/boutique.js?v=20261113t1','v3/equipe.js?v=20261114g3'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief (1,5 Mo) se télécharge en avance quand tout est calme : l'ouvrir devient presque immédiat.
    Jamais à la toute première ouverture (FIA-58 : le forfait de qui découvre l'application), ni en économie de données, en 2G ou en 3G. */
@@ -55,18 +55,14 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <script src="app/nuit.js?v=20261114p1" defer></script>
 <script src="app/stable.js?v=20261103a" defer></script>
 <script src="app/vibre.js?v=20261025a" defer></script>
-<script src="app/prixmoment.js?v=20261130mt" defer></script>
-<script src="app/demo-orbite.js?v=20261124h" defer></script>
 <script src="app/activite.js?v=20261101a" defer></script>
 <link rel="preload" href="fonts/jost-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/jost-latin-900-italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/symboles.css?v=20261102d">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261113r1">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261114g1">
-<link rel="stylesheet" href="css/sombre.css?v=20261113r1">
-<link rel="stylesheet" href="css/annee-app.css?v=20261124h">
-<link rel="stylesheet" href="css/categories-app.css?v=20261124f">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261115r1">
+<link rel="stylesheet" href="css/sombre.css?v=20261115r1">
 <link rel="stylesheet" href="css/v2.css?v=20261114g1">
 <link rel="stylesheet" href="css/v2-compte.css?v=20261114g3">
 <link rel="stylesheet" href="css/v2-equipe.css?v=20261114g3">
@@ -75,18 +71,10 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <script src="app/marche-app.js?v=20261114g1"></script>
 <script src="app/ville-seule.js?v=20261124cm"></script>
 <script src="app/villes.js?v=20261124cm"></script>
-<style>html,body{margin:0;height:100%;position:fixed;inset:0;width:100%;overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}input,select,textarea{font-size:16px!important;min-width:0;max-width:100%}label{min-width:0}[data-pg],[data-screen-label="Application"]{overflow:clip!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"]{overflow-x:hidden!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"],[style*="overflow-x:auto"]{overscroll-behavior:none;-webkit-overflow-scrolling:touch}[style*="overflow-x:auto"]{overflow-y:hidden!important;touch-action:pan-x}*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}img,svg,a{-webkit-user-drag:none}textarea{resize:none}button{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}html,body{background:#0d0c0a;font-variant-numeric:lining-nums;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box;scrollbar-width:none}a{color:var(--terre)}a:hover{color:var(--terre);opacity:.85}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}:where(a,button,input,select,textarea):focus-visible{outline:2px solid var(--terre);outline-offset:2px}button:active{transform:scale(.97);transition:transform 120ms cubic-bezier(.2,.8,.2,1)}.ux-pip::before{content:'';position:absolute;inset:-8px 0}@media (prefers-reduced-motion:reduce){button:active{transform:none}}
+<style>html,body{margin:0;height:100%;position:fixed;inset:0;width:100%;overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}input,select,textarea{font-size:16px!important;min-width:0;max-width:100%}label{min-width:0}[data-pg],[data-screen-label="Application"]{overflow:clip!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"]{overflow-x:hidden!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"],[style*="overflow-x:auto"]{overscroll-behavior:none;-webkit-overflow-scrolling:touch}[style*="overflow-x:auto"]{overflow-y:hidden!important;touch-action:pan-x}*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}img,svg,a{-webkit-user-drag:none}textarea{resize:none}button{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}html,body{background:#0d0c0a;font-variant-numeric:lining-nums;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box;scrollbar-width:none}a{color:var(--terre)}a:hover{color:var(--terre);opacity:.85}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}:where(a,button,input,select,textarea):focus-visible{outline:2px solid var(--terre);outline-offset:2px}button:active{transform:scale(.97);transition:transform 120ms cubic-bezier(.2,.8,.2,1)}@media (prefers-reduced-motion:reduce){button:active{transform:none}}
 @keyframes mkWave{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.3);opacity:0}}
-@keyframes mkBreath{0%,100%{transform:scale(.82)}50%{transform:scale(1.12)}}
-@keyframes mkFlow{to{stroke-dashoffset:-12}}
-@keyframes mkBlink{0%,100%{opacity:.35}50%{opacity:1}}
-@keyframes mkRise{0%{transform:scaleY(.25)}45%,70%{transform:scaleY(1)}100%{transform:scaleY(.25)}}
-@keyframes mkOrbit{to{transform:rotate(360deg)}}
-@keyframes mkDraw{0%{stroke-dashoffset:18}45%,75%{stroke-dashoffset:0}100%{stroke-dashoffset:-18}}
-@keyframes mkArc{to{stroke-dashoffset:0}}
 @keyframes mkLine{from{stroke-dashoffset:200}to{stroke-dashoffset:0}}
 @keyframes mkPop{0%{transform:scale(0);opacity:0}70%{transform:scale(1.15);opacity:1}100%{transform:scale(1)}}
-@keyframes mkFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 /* région Abidjan : la ville « Abidjan » est fixée, le choix est grisé */
 select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
 </style>
@@ -130,7 +118,7 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
   </div>
   </div>
 
-  <!-- Prix : le tableau du marché, classé comme Binance P2P (v3/tableau.js, schéma 59) ; refait au lot 8 -->
+  <!-- Prix : le tableau du marché (refait au lot 8) -->
   <div style="display:{{ accP }}">
   <!-- Prix du moment (lot 8, maquette « MGCI App v2 ») : fourchette et médiane des prix publiés, par produit, jamais sous 4 prix -->
   <div class="v2-px">
@@ -597,30 +585,6 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
   <div style="flex:none;padding:6px 12px {{ botPad }} 0;border-top:1px solid rgba(23,21,18,.07)"><button onClick="{{ goPorte }}" style="width:100%;border:0;background:transparent;color:#A4472C;display:flex;align-items:center;gap:14px;padding:6px 16px 6px 16px;border-radius:0 26px 26px 0;text-align:left;min-height:56px;font-family:Jost,system-ui,sans-serif;font-size:var(--t-lg);font-weight:500" style-active="background:rgba(242,194,48,.12)"><span aria-hidden="true" style="width:40px;height:40px;flex:none;display:flex;align-items:center;justify-content:center">{{ porteEl }}</span>{{ porteTxt }}</button></div>
 </div>
 
-<!-- ═══ FAMILLES ═══ -->
-<div class="fl-sheet fl-fam" role="dialog" aria-modal="true" aria-label="Familles de produits" style="position:absolute;left:0;right:0;bottom:0;max-height:84%;display:flex;flex-direction:column;background:var(--nuit-2);color:var(--ivoire);border-radius:28px 28px 0 0;transform:{{ famTf }};transition:{{ sheetTr }};box-shadow:0 -10px 40px rgba(0,0,0,.4)">
-  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" onPointerCancel="{{ sUp }}" onLostPointerCapture="{{ sUp }}" style="height:28px;flex:none;display:flex;align-items:center;justify-content:center;touch-action:none"><span style="width:38px;height:5px;border-radius:3px;background:rgba(245,240,230,.25)"></span></div>
-  <div style="padding:0 20px 10px;font-size:24px" class="voix">Familles de <em>produits</em></div>
-  <div style="overflow-y:auto;padding:0 14px {{ botPad }};display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-rows:max-content;align-content:start;gap:10px">
-    <sc-for list="{{ famGrid }}" as="f" hint-placeholder-count="11"><button class="fam-tile" onClick="{{ f.go }}" aria-label="{{ f.lab }}" style="border:1.5px solid {{ f.bd }};border-radius:18px;padding:0;overflow:hidden;background:var(--encre);color:var(--ivoire);text-align:left;display:flex;flex-direction:column"><img sc-camel-src="{{ f.img }}" alt=""><span class="fam-pills"><sc-if value="{{ f.hasO }}" hint-placeholder-val="{{ true }}"><span class="fam-pill"><i></i>{{ f.o }}</span></sc-if><sc-if value="{{ f.hasD }}" hint-placeholder-val="{{ true }}"><span class="fam-pill d"><i></i>{{ f.d }}</span></sc-if><sc-if value="{{ f.hasNeuf }}" hint-placeholder-val="{{ false }}"><span class="fam-pill neuf">{{ f.neufL }}</span></sc-if></span><span style="padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:var(--t-base);font-weight:500;line-height:1.25">{{ f.name }}</span><span style="font-size:var(--t-sm);color:var(--sable)">{{ f.sub }}</span></span></button></sc-for>
-  </div>
-</div>
-
-<!-- ═══ TOUS LES PRODUITS (bouton « Tout voir » de la roue) : grille de 3 ou 4 colonnes, recherche, familles, offres et demandes en direct ═══ -->
-<div class="tv fl-sheet fl-tout" role="dialog" aria-modal="true" aria-label="Tous les produits" aria-hidden="{{ toutCache }}" style="transform:{{ toutTf }};transition:{{ sheetTr }}">
-  <div onPointerDown="{{ sDown }}" onPointerMove="{{ sMove }}" onPointerUp="{{ sUp }}" onPointerCancel="{{ sUp }}" onLostPointerCapture="{{ sUp }}" class="tv-poignee"><span></span></div>
-  <div class="tv-tete"><div class="voix tv-titre"><span>Tous les <em>produits</em></span><small>{{ toutSous }}</small></div><button onClick="{{ closeAll }}" class="tv-x" aria-label="Fermer"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div>
-  <label class="tv-cherche"><svg width="18" height="18" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><input type="search" value="{{ tq }}" onChange="{{ tqh }}" placeholder="Chercher : tomate, igname, poulet…" aria-label="Chercher un produit" enterkeyhint="search"><sc-if value="{{ tqOn }}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{ tqVide }}" aria-label="Effacer" class="tv-eff"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="display:block;margin:auto"><path d="M18 6 6 18M6 6l12 12"/></svg></button></sc-if></label>
-  <div class="tv-fams" role="group" aria-label="Familles"><sc-for list="{{ toutFams }}" as="c" hint-placeholder-count="6"><button type="button" aria-pressed="{{ c.on }}" onClick="{{ c.go }}"><sc-if value="{{ c.vif }}" hint-placeholder-val="{{ false }}"><i></i></sc-if>{{ c.t }}<span class="nbul">{{ c.n }}</span></button></sc-for></div>
-  <div class="tv-corps">
-    <sc-for list="{{ toutSecs }}" as="g" hint-placeholder-count="0"><section class="tv-sec"><sc-if value="{{ g.titreOn }}" hint-placeholder-val="{{ false }}"><h3>{{ g.t }}<span class="nbul">{{ g.n }}</span></h3></sc-if><div class="tv-grille">
-      <sc-for list="{{ g.items }}" as="p" hint-placeholder-count="0"><div class="tv-case"><button type="button" class="tv-p" aria-current="{{ p.ici }}" onClick="{{ p.go }}" aria-label="{{ p.lab }}"><span class="tv-img"><img sc-camel-src="{{ p.img }}" alt="" loading="lazy" decoding="async" style="object-fit:{{ p.fit }};border-radius:{{ p.rad }}"></span><span class="tv-n">{{ p.name }}</span><sc-if value="{{ p.vif }}" hint-placeholder-val="{{ false }}"><span class="tv-c"><sc-if value="{{ p.hasO }}" hint-placeholder-val="{{ false }}"><span class="o"><i></i>{{ p.o }}</span></sc-if><sc-if value="{{ p.hasD }}" hint-placeholder-val="{{ false }}"><span class="d"><i></i>{{ p.d }}</span></sc-if></span></sc-if></button><button type="button" class="tv-plus" onClick="{{ p.plus }}" aria-label="{{ p.plusL }}" aria-expanded="{{ p.plusX }}"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg></button><sc-if value="{{ p.plusOn }}" hint-placeholder-val="{{ false }}"><div class="tv-choix" role="group" aria-label="{{ p.choixL }}"><button type="button" class="o" onClick="{{ p.jai }}"><i class="od od-o" aria-hidden="true"></i><span><b>J’ai</b><small>à vendre</small></span></button><button type="button" class="d" onClick="{{ p.cherche }}"><i class="od od-d" aria-hidden="true"></i><span><b>Je cherche</b><small>à acheter</small></span></button></div></sc-if></div></sc-for>
-    </div></section></sc-for>
-    <sc-if value="{{ toutVide }}" hint-placeholder-val="{{ false }}"><p class="tv-vide">{{ toutVideTxt }}</p></sc-if>
-    <div style="height:{{ botPad }}"></div>
-  </div>
-</div>
-
 <!-- ═══ notification en haut : une annonce vient d'arriver ═══ -->
 <sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}"><button class="ui-toast" onClick="{{ toast.go }}" role="status" aria-live="polite" style="top:{{ toastTop }}">{{ toast.ico }}<span class="tx"><b>{{ toast.t }}</b><span>{{ toast.x }}</span></span><span style="flex:none;font-size:var(--t-sm);font-weight:600;color:var(--terre-clair)">Voir</span></button></sc-if>
 
@@ -767,13 +731,13 @@ class Component extends DCLogic {
     this.me = me;
     const draft = ls('mdg-app:brouillon-offre') || {};
     if (draft.city && draft.region && this.accord(draft.region, draft.city) !== draft.city) { draft.city = this.accord(draft.region, draft.city); draft.cityAutre = false; }
-    this.state = { ready: false, stack: ['home'], fam: 0, rot: 0, dragging: false, slug: 'tomate', vid: null, infoK: 'comment-ca-marche',
+    this.state = { ready: false, stack: ['home'], slug: 'tomate', vid: null, infoK: 'comment-ca-marche',
       menu: false, sheet: null, sheetDy: 0, pick: null, pq: '', mode: 'jai', mf: this.blankM('tomate'), mErr: {}, done: null,
       aq: '', af: { cat: '', reg: '', qmin: '', pmax: '', vf: false }, fOpen: false,
       vf: Object.assign({ step: 1, mode: 'moi', slug: '', photo: '', qty: '', qmin: '', unit: 'kg', price: '', neg: true, region: me.region || '', city: me.city || '', avail: 'maintenant', date: '', agent: '', name: me.name || '' }, draft, { step: 1 }), vErr: {},
       df: { slug: '', qty: '', qmin: '', unit: 'kg', region: me.region || '', city: me.city || '', deadline: 'semaine', budget: '', name: me.name || '' }, dErr: {},
       cprod: '', cme: me.region || '', csel: '', month: new Date().getMonth() + 1,
-      toast: '', toastOn: false, splash: this.props.splash === false ? 'off' : 'on', splashLine: false, vw: window.innerWidth, vh: window.innerHeight, clock: '', tick: 0, accTab: 'marche' };
+      toast: '', toastOn: false, splash: this.props.splash === false ? 'off' : 'on', vw: window.innerWidth, vh: window.innerHeight, clock: '', tick: 0, accTab: 'marche' };
     this.aRef = React.createRef(); this.pRef = React.createRef(); this.mapRef = React.createRef(); this.hist = 0;
   }
   // une ville qui n'est pas de la région choisie n'a rien à faire là (« Guiglo » gardé alors que la région est Abidjan) : on la vide
@@ -851,7 +815,7 @@ class Component extends DCLogic {
       let deja = false; try { deja = sessionStorage.getItem('mdg-relance') === '1'; sessionStorage.setItem('mdg-relance', '1'); } catch (_) { deja = true; }
       if (!deja) { const go = () => location.reload(); try { navigator.serviceWorker.getRegistration().then(r => r ? r.update().catch(() => {}).then(go) : go(), go); } catch (_) { go(); } setTimeout(go, 3000); }
       else this.setState({ splBloque: true }); }, 9000);
-    if (this.state.splash === 'on') { const t0 = Date.now(); setTimeout(() => this.setState({ splashLine: true }), 80);
+    if (this.state.splash === 'on') { const t0 = Date.now(); 
       const fin = () => { if (this.state.splash !== 'on') return; const r = Math.max(0, 2400 - (Date.now() - t0)); setTimeout(() => this.setState({ splash: 'fade' }), r); setTimeout(() => this.setState({ splash: 'off' }), r + 450); };
       this.finSplash = fin; const chk = setInterval(() => { if (this.state.ready) { clearInterval(chk); fin(); } }, 100); setTimeout(() => { clearInterval(chk); fin(); }, 2600); }
   }
@@ -863,7 +827,7 @@ class Component extends DCLogic {
     if (st.includes(prev)) { go(top, T_OFF, T_IN); go(prev, T_IN, T_UNDER); } else { go(prev, T_IN, T_OFF); go(top, T_UNDER, T_IN); }
     this.animT = setTimeout(() => { (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; }, 650);
   }
-  componentDidUpdate(pp, ps) { this.barreH(); this.focusFeuille(); this.rejouerAccueil(); this.tendVeille(); this.ventesCharger(); if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
+  componentDidUpdate(pp, ps) { this.barreH(); this.focusFeuille(); if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
   /* carte en profondeur (app/carte-gl.js) : chargée après l'affichage de la carte Canvas, elle la remplace en fondu.
      Sans WebGL, sur un appareil faible ou si un fichier manque, la carte Canvas reste. */
   /* la carte : une seule, sans changement visible. Téléphone capable → la carte en relief directement (fond de la même couleur pendant
@@ -913,7 +877,6 @@ class Component extends DCLogic {
     const M = window.MDG, A = window.MDGApp;
     this.cats = M.categories.slice().sort((a, b) => (a.order || 0) - (b.order || 0));
     this.FAMS = this.cats.map(c => ({ slug: c.slug, name: c.name, prods: M.products.filter(p => p.categorySlug === c.slug).sort((a, b) => (A.SACK[b.slug] != null) - (A.SACK[a.slug] != null)) })).filter(f => f.prods.length);
-    const i = this.FAMS.findIndex(f => f.slug === 'legumes-et-fruits'); if (i >= 0 && !this.state.ready) this.state.fam = i;
   }
   fromHash() {
     const h = (location.hash || '#/').slice(2).split('?')[0].split('/'), r = h[0], st = this.props.startScreen;
@@ -1020,7 +983,6 @@ class Component extends DCLogic {
   isMine(x) { const N = window.MDGNuage, ss = N && N.session(); return !x.remote || !!(ss && x.uid && ss.user.id === x.uid); }
   /* le numéro de l'annonce = celui du compte, jamais un numéro écrit à la main */
   telCompte() { const N = window.MDGNuage, ss = N && N.session(); return window.MDGApp.tel10(ss && ss.user && ss.user.tel) || ''; }
-  acctTxt() { const t = this.telCompte(); return t ? 'Numéro de votre compte : ' + t.replace(/(\d{2})(?=\d)/g, '$1 ') + '. Il est enregistré à l\u2019inscription et ne s\u2019affiche pas : les membres vous écrivent dans l\u2019application.' : 'Votre numéro sera celui de votre compte. À la publication, connectez-vous ou créez votre compte : il ne pourra plus être changé.'; }
   /* choix de la ville : la région montre ses villes ; une ville choisie (ou écrite) remplit la région */
   cityUI(f, set) {
     const V = window.MDGVilles, A = window.MDGApp; if (!V) return { sel: '', opts: [], ph: 'Choisir', fixe: false, autre: true, txt: f.city || '', pick: () => {}, type: e => set({ city: e.target.value }), done: () => {}, hint: false, hintTxt: '', presOn: false, presOpts: [], presSel: '', presPick: () => {} };
@@ -1046,15 +1008,6 @@ class Component extends DCLogic {
   chezMoi() { const C = window.MDGCompte, P = window.MDGNuage && MDGNuage.session() && C && C.profil ? C.profil() : null; return { region: (P && P.region_slug) || this.me.region || '', city: (P && P.ville) || this.me.city || '' }; }
   ailleurs(f) { const h = this.chezMoi(), V = window.MDGVilles, k = x => V ? V.cle(x) : String(x || '').toLowerCase(); if (!h.region || !f.region) return false; return f.region !== h.region || !!(f.city && h.city && k(f.city) !== k(h.city)); }
   lieuDe(f) { return this.ailleurs(f) ? (f.lieu || 'secteur') : ''; }
-  lieuEl(f, set) {
-    if (!this.ailleurs(f)) return null; const h = React.createElement, home = this.chezMoi(), ou = home.city || this.regName(home.region), cur = f.lieu || 'secteur';
-    // un choix net, le même en clair et en sombre (l'encadré reste crème) : bord vert + coche quand il est retenu, rond vide sinon
-    const b = (k, t, x) => h('button', { key: k, type: 'button', role: 'radio', 'aria-checked': cur === k ? 'true' : 'false', className: 'lieu-b', onClick: () => set({ lieu: k }) },
-      h('span', { className: 'lieu-c', 'aria-hidden': 'true' }), h('span', { className: 'lieu-tx' }, h('b', null, t), h('small', null, x)));
-    return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 16, background: '#fff4dd' } },
-      h('span', { style: { fontSize: 13.5, color: '#563e01', lineHeight: 1.45 } }, 'Ce lieu n\u2019est pas celui de votre profil (' + ou + '). Sur la carte, ce sera toujours vous. Précisez :'),
-      h('div', { role: 'radiogroup', 'aria-label': 'Ce lieu', style: { display: 'flex', gap: 8, flexWrap: 'wrap' } }, b('intermediaire', 'Je suis intermédiaire', 'Je vends pour d\u2019autres, ici'), b('secteur', 'J\u2019ai un stock ici aussi', 'Plusieurs secteurs ou un gros tas ailleurs')));
-  }
   /* administration : marquer une forte demande sur la carte (district, ville, produit, note, durée) — supabase/schema-11-zones.sql */
   zoneForm() {
     const N = window.MDGNuage, M = window.MDG, V = window.MDGVilles; if (!N || !N.zoneAjouter) return;
@@ -1229,45 +1182,13 @@ class Component extends DCLogic {
     if (n > 0) { this._bk = Date.now(); try { history.go(-n); } catch (_) {} } }
   // un onglet touché pendant qu'un module est ouvert (commande, messages, aide…) : il est prévenu et se ferme (MDGOnglets)
   ongletQuitte() { if (!this.state.ongMod) return; const f = this._ongFermer; this._ongFermer = null; this.setState({ ongMod: null }); try { dispatchEvent(new CustomEvent('mdg:onglet')); } catch (_) {} if (f) try { f(); } catch (_) {} }
-  // les lignes du calendrier regroupées par produit (Sud / Nord, précoce / tardive…) : pour chaque mois, le niveau le plus fort
-  anParProduit() {
-    const A = window.MDGApp, RK = A.RANK, M = new Map();
-    A.CAL.forEach(e => { const r = M.get(e[0]) || [e[0], e[1].replace(/ \(.*\)$/, ''), {}]; Object.entries(e[2]).forEach(([m, l]) => { if (!r[2][m] || RK[l] > RK[r[2][m]]) r[2][m] = l; }); M.set(e[0], r); });
-    return [...M.values()];
-  }
-  // « L'année du marché » : cadran annuel (un anneau par culture sourcée, un secteur par mois ; css/annee-app.css)
-  anDial(month, now, anim) {
-    const A = window.MDGApp, rows = this.anParProduit(), cx = 170, cy = 170, r0 = 60, step = Math.min(7.8, 93.8 / Math.max(1, rows.length - 1)), W = step * .74, rOut = r0 + (rows.length - 1) * step;  // un anneau par produit ; le cadran garde la même taille quand des cultures s'ajoutent
-    const COL = { plein: '#6CC58C', debut: '#B5DEC1', fin: '#F2C230' };
-    const am = m => (m - 1) / 12 * Math.PI * 2 - Math.PI / 2, pt = (r, a) => [(cx + r * Math.cos(a)).toFixed(1), (cy + r * Math.sin(a)).toFixed(1)];
-    const arc = (r, a0, a1) => { const [x0, y0] = pt(r, a0), [x1, y1] = pt(r, a1); return `M${x0} ${y0}A${r} ${r} 0 0 1 ${x1} ${y1}`; };
-    const secteur = (ri, ro, a0, a1) => { const [a, b] = pt(ro, a0), [c, d] = pt(ro, a1), [e, f] = pt(ri, a1), [g, h] = pt(ri, a0); return `M${a} ${b}A${ro} ${ro} 0 0 1 ${c} ${d}L${e} ${f}A${ri} ${ri} 0 0 0 ${g} ${h}Z`; };
-    const n = rows.filter(e => e[2][month]).length;
-    let s = `<svg class="an2-svg" viewBox="-14 -14 368 368" role="img" aria-label="Calendrier des récoltes, ${A.MOIS[month - 1]} sélectionné">`;
-    s += `<circle cx="${cx}" cy="${cy}" r="${rOut + 12}" fill="rgba(243,239,228,.03)"/>`;
-    s += `<path d="${secteur(r0 - 9, rOut + 9, am(month) + .004, am(month + 1) - .004)}" fill="rgba(242,194,48,.13)" stroke="rgba(242,194,48,.55)" stroke-width="1"/>`;
-    rows.forEach((e, i) => { const r = r0 + i * step;
-      s += `<circle cx="${cx}" cy="${cy}" r="${r}" stroke="rgba(243,239,228,.07)" stroke-width="${W}" fill="none"/>`;
-      Object.entries(e[2]).forEach(([m, lv]) => { m = +m; const on = m === month;
-        s += `<path d="${arc(r, am(m) + .035, am(m + 1) - .035)}" stroke="${COL[lv]}" stroke-opacity="${on ? 1 : .42}" stroke-width="${W}" stroke-linecap="round" fill="none"${anim ? ` style="stroke-dasharray:60;stroke-dashoffset:60;animation:mkArc .9s ${(i * .04 + m * .02).toFixed(2)}s cubic-bezier(.22,1,.36,1) forwards"` : ''}/>`; }); });
-    const LAB = ['JANV', 'FÉVR', 'MARS', 'AVR', 'MAI', 'JUIN', 'JUIL', 'AOÛT', 'SEPT', 'OCT', 'NOV', 'DÉC'];
-    LAB.forEach((t, i) => { const m = i + 1, a = am(m) + Math.PI / 12, [x, y] = pt(rOut + 25, a), sel = m === month, auj = m === now;
-      s += `<text x="${x}" y="${(+y + 4).toFixed(1)}" text-anchor="middle" class="an2-mois${sel ? ' sel' : ''}${auj ? ' auj' : ''}" data-m="${m}">${t}</text>`;
-    });
-    for (let m = 1; m <= 12; m++) s += `<path d="${secteur(r0 - 12, rOut + 34, am(m), am(m + 1))}" fill="transparent" data-m="${m}" class="an2-zone"><title>${A.MOIS[m - 1]}</title></path>`;
-    s += `<text x="${cx}" y="${cy - 2}" text-anchor="middle" class="an2-c1">${A.MOIS[month - 1]}</text>`;
-    s += `<text x="${cx}" y="${cy + 17}" text-anchor="middle" class="an2-c2">${n ? n + ' récolte' + (n > 1 ? 's' : '') + ' en cours' : 'Hors récoltes'}</text></svg>`;
-    return s;
-  }
   openVendeur(vid) { this.push('vendeur', { vid }); }
   openSheet(mode, slug) { this.setState(st => ({ sheet: 'match', mode, menu: false, done: null, mErr: {}, sheetDy: 0, mf: Object.assign(this.blankM(slug || st.mf.slug), { unit: st.mf.unit }) })); }
   // ——— accueil clair : onglets Marché / Activité / Alertes, salutation, chiffres réels du marché, dernières annonces, alertes ———
   accueil({ h, mine, moiS, moiP, moiC, moiN }) {
-    const S = this.state, A = window.MDGApp, I = window.MDGIco, tab = S.accTab || 'marche';
+    const S = this.state, I = window.MDGIco, tab = S.accTab || 'marche';
     const ico = (n, t) => h('span', { style: { display: 'flex' }, dangerouslySetInnerHTML: { __html: I ? I.svg(n, t || 20, 1.9) : '' } });
-    const emo = (e, d) => h('span', { className: 'acc-emo' + (d ? ' d' : ''), 'aria-hidden': 'true' }, e);   // 🧺 offre · 🛒 demande, comme J'ai / Je cherche
-    const off = this.offersAll().filter(o => o.qty > 0 && !o.epuise), dem = this.demands();
-    const nP = l => new Set(l.map(x => x.slug)).size, pl = (n, m) => n + ' ' + m + (n > 1 ? 's' : '');
+    const pl = (n, m) => n + ' ' + m + (n > 1 ? 's' : '');
     // les alertes : seulement ce qui existe vraiment (rien d'inventé)
     const al = [];
     if (!moiS) al.push({ tint: 'n', ico: ico('compte'), t: 'Connectez-vous', s: 'Pour voir vos propositions, messages et stocks.', go: () => moiN && moiN.open() });
@@ -1288,42 +1209,8 @@ class Component extends DCLogic {
     // éléments retirés par la personne (glisser vers la gauche ou « Tout effacer ») : seulement sur ce téléphone.
     // Une démarche retirée revient si elle bouge (nouvelle réponse, nouvelle étape) ; une annonce retirée ne revient pas.
     const AV = window.MDGActivite, MQ = this.masques(), cacheE = x => (MQ['e:' + x.k + ':' + x.id] || 0) >= (x.ts || 1);
-    const ecT = (moiS && AV ? AV.tout() : []).filter(x => !cacheE(x)), ecD0 = moiS && AV ? AV.dernier() : null, ecD = ecD0 && !cacheE(ecD0) ? ecD0 : null;
-    const nAf = ecT.filter(x => x.etat === 'moi' || x.etat === 'litige').length;
-    const cleE = x => ['e:' + x.k + ':' + x.id, Math.max(x.ts || 0, Date.now())];
-    const EMO = { nego: 'negoce', cmd: 'camion', dm: 'messages' };   // icônes dessinées (app/icones.js), pas d'emoji
-    const ecEl = x => { const roule = x.k === 'cmd' && !!x.route, emo = ico(x.k === 'cmd' && !roule ? 'boite' : x.k === 'nego' && x.etat === 'ok' ? 'verifie' : EMO[x.k] || 'activite', 22);
-      const avec = x.avec ? (x.k === 'cmd' ? (x.role === 'vendeur' ? ' · pour ' : ' · de ') : x.k === 'nego' ? ' · avec ' : '') + x.avec : '';
-      const sous = x.k === 'dm' ? (x.apercu ? ' · « ' + x.apercu + ' »' : '') : (x.prix ? ' · ' + x.prix : '') + (x.k === 'dm' ? '' : avec);
-      return { k: x.k, etat: x.etat, emo, titre: x.titre, tag: x.tag, sous, route: roule, vague: x.etat === 'attente' && x.k !== 'dm',
-        anim: roule ? 'ec-roule' + (x.etat === 'moi' ? ' ec-appel' : '') : x.etat === 'moi' || x.etat === 'litige' ? 'ec-appel' : '', lab: x.titre + ' : ' + x.tag + sous, go: () => x.ouvrir(),
-        glis: this.glisser([cleE(x)], x.titre + ' retiré de votre activité'), ret: () => this.masquer([cleE(x)], x.titre + ' retiré de votre activité') }; };
-    const ecRepE = ecD ? ecEl(ecD) : null;
-    // Prix : combien de produits ont une annonce en ce moment (comme les lignes du tableau du marché), dans une pastille (demande du propriétaire, 23/10/2026)
-    const nPx = new Set(this.offers().concat(this.demands()).map(x => x.slug)).size;
-    const ongs = [['marche', 'Marché'], ['prix', 'Prix'], ['activite', 'Activité'], ['alertes', 'Alertes']].map(([k, t]) => ({ t, sel: String(tab === k), cls: tab === k ? 'on' : '', hasN: (k === 'alertes' && nAl > 0) || (k === 'activite' && ecT.length > 0) || (k === 'prix' && nPx > 0), n: k === 'activite' ? ecT.length : k === 'prix' ? nPx : nAl, nC: k === 'activite' ? (nAf ? 'vif' : 'doux') : k === 'prix' ? 'info' : '',
-      go: () => { this.setState({ accTab: k }); const sc = document.querySelector('[data-pg="home"] .acc-sc'); if (sc) sc.scrollTop = 0; if (k === 'activite') this.astuceGlisser(); } }));
-    // la salutation : par son prénom quand on le connaît
-    const prenom = moiS && moiP ? (moiP.pseudo || moiP.prenom || '') : '';
-    const titre = h('h1', { className: 'acc-h1' }, prenom ? 'Bonjour, ' : 'Bienvenue au ', h('em', null, prenom || 'marché'), prenom ? ' !' : '');
-    // les nombres sont dans les cartes plus bas : la phrase ne les répète pas (audit antislop n° 42)
-    const sous = off.length || dem.length ? 'Choisissez un produit sur la roue, ou publiez le vôtre.' : 'Les premières offres arrivent : publiez la vôtre.';
-    const nO = mine.filter(x => x.kind === 'offre').length, nD = mine.length - nO;
-    const stats = [
-      { cls: 'acc-k', t: 'Offres en ligne', tint: 'v', ico: emo(''), v: String(off.length), s: 'sur ' + pl(nP(off), 'produit'), go: () => this.push('acheter') },
-      { cls: 'acc-k', t: 'Demandes', tint: 'j', ico: emo('', 1), v: String(dem.length), s: 'sur ' + pl(nP(dem), 'produit'), go: () => this.push('carte', { cprod: '', csel: '', cOpen: true }) },
-      mine.length ? { cls: 'acc-k large', t: 'Mes annonces', tint: 't', ico: ico('vendre'), v: String(mine.length), s: pl(nO, 'offre') + ' · ' + pl(nD, 'demande'), go: () => this.push('pubs') }
-        : { cls: 'acc-k large', t: 'Prix du marché', tint: 't', ico: ico('tendance'), v: 'Par zone', s: 'Les prix relevés, produit par produit', go: () => this.push('prix') } ];
-    const ventes = (this.ventesR || ls('mdg-app:ventes') || []).filter(v => v && v.conclu_le && !MQ['v:' + v.cle]).map(v => ({ kind: 'vente', id: v.cle, slug: v.product_slug, at: v.conclu_le, qty: +v.quantite || 0, unit: v.unite || '', ville: v.ville, nom: v.produit }));
-    const acts = [...this.offers(), ...dem, ...ventes].filter(x => x.at && !MQ['a:' + x.id]).sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 15).map(x => {
-      if (x.kind === 'vente') { const P = x.slug ? this.prod(x.slug) : null, nom = (P && P.name) || x.nom || 'Produit', u = x.unit && x.qty > 1 && !/[sx]$|^(kg|t|l)$/i.test(x.unit) ? x.unit + 's' : x.unit;
-        return { tint: 'v', ico: ico('verifie'), t: nom + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + u : ''), s: 'Vente conclue · ' + (x.ville || 'Côte d’Ivoire'), h: A.ago(x.at), cle: 'v:' + x.id,
-          go: () => { if (x.slug) this.openFiche(x.slug); }, glis: this.glisser([['v:' + x.id]], 'Vente retirée de votre activité'), ret: () => this.masquer([['v:' + x.id]], 'Vente retirée de votre activité') }; }
-      const o = x.kind === 'offre', P = this.prod(x.slug);
-      return { tint: o ? 'v' : 'j', ico: emo('', !o), t: P.name + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + A.unites(x.qty, x.unit) : ''), s: (o ? 'Offre' : 'Demande') + ' · ' + this.place(x) + (x.name ? ' · ' + x.name : ''), h: A.ago(x.at), cle: 'a:' + x.id, go: () => this.openFiche(x.slug),
-        glis: this.glisser([['a:' + x.id]], 'Annonce retirée de votre activité'), ret: () => this.masquer([['a:' + x.id]], 'Annonce retirée de votre activité') }; });
+    const ecT = (moiS && AV ? AV.tout() : []).filter(x => !cacheE(x));
     return {
-      accLogo: window.MDGSac ? h('span', { className: 'acc-sac', dangerouslySetInnerHTML: { __html: MDGSac.svg('plein', { t: 34 }) } }) : null,
       accIco: { chercher: ico('chercher'), plus: ico('plus', 22), suite: ico('suite', 18), cloche: ico('cloche', 21) },
       // la cloche : notifications non lues (Mon compte → Notifications) + messages non lus ; elle se balance quand il y a du nouveau
       // Un toucher sur la cloche = « vu » : on retient l'heure (mdg-cloche:vu) ; la pastille et le balancement ne reviennent que pour ce qui arrive après.
@@ -1336,28 +1223,15 @@ class Component extends DCLogic {
           go: () => { if (!moiS) { moiN && moiN.open(); return; }
             try { localStorage.setItem('mdg-cloche:vu', String(Date.now())); } catch (_) {} this.setState({ clVu: Date.now() });
             if (!nl && dm && M) { M.boite(); return; } moiC && moiC.ouvrir('notifs'); } }; })(),
-      accMoi: moiS && window.MDGAvatar ? h('img', { src: window.MDGAvatar.uri(moiP && moiP.avatar, { size: 38, anime: true, nom: (moiP && moiC && moiC.nomAffiche(moiP)) || String(moiS.user.tel || ''), seed: moiS.user.id }), alt: '', width: 38, height: 38, style: { borderRadius: '50%', display: 'block' } }) : ico('compte', 22),
-      accOngs: ongs, accOngI: String(['marche', 'prix', 'activite', 'alertes'].indexOf(tab)), accM: tab === 'marche' ? 'block' : 'none', accP: tab === 'prix' ? 'block' : 'none', accA: tab === 'activite' ? 'block' : 'none', accL: tab === 'alertes' ? 'block' : 'none',
+      accM: tab === 'marche' ? 'block' : 'none', accP: tab === 'prix' ? 'block' : 'none', accA: tab === 'activite' ? 'block' : 'none', accL: tab === 'alertes' ? 'block' : 'none',
       accActN: ecT.length, accAlN: nAl, v2Mine: mine,
-      accTitre: titre, accSous: sous, accStats: stats,
-      ecRepOn: !!ecRepE, ecRep: ecRepE ? Object.assign({}, ecRepE, { sous: ecRepE.tag + ecRepE.sous }) : { k: '', etat: '', emo: '', titre: '', sous: '', route: false, anim: '', lab: '', go: () => {}, glis: () => {}, ret: () => {} },
-      ecEffOn: ecT.length + (ecD ? 1 : 0) > 1, ecEff: () => this.masquer(ecT.concat(ecD ? [ecD] : []).map(cleE), 'Activité en cours effacée'),
-      actEffOn: acts.length > 1, actEff: () => this.masquer(acts.map(a => [a.cle]), 'Dernières annonces effacées'),
-      ecListe: ecT.filter(x => !ecD || x.k !== ecD.k || x.id !== ecD.id).map(ecEl), ecVide: !ecT.length && !ecRepE,
-      ecSous: !moiS ? 'Connectez-vous pour retrouver vos négociations, commandes et messages.' : nAf ? nAf + ' démarche' + (nAf > 1 ? 's attendent' : ' attend') + ' votre réponse.' : ecT.length ? 'Vos démarches en cours, pour reprendre en un geste.' : 'Vos négociations, commandes et messages en cours apparaîtront ici.',
-      ecOn: !!moiS, ecVideOn: !!(moiS && !ecT.length && !ecRepE),   // « En cours » n'existe que pour une personne connectée
-      ecVideTxt: moiS ? 'Rien en cours. Proposez un prix sur une annonce : la négociation s’affichera ici.' : 'Connectez-vous pour voir vos démarches.',
-      accActs: acts, // J'ai / Je cherche : seulement sur l'onglet Marché (Activité et Alertes n'ont rien à publier)
-      accBasC: (S.accTab || 'marche') === 'marche' ? '' : 'cache', accBasH: String((S.accTab || 'marche') !== 'marche'), accActOn: acts.length > 0, accAlertes: al, accAlVide: !al.length && !nCd, accAlQqc: !!(al.length || nCd),
-      actRien: !acts.length && !ecT.length && !ecRepE, actQqc: !!(acts.length || ecT.length || ecRepE),
-      actRienEl: h('div', { dangerouslySetInnerHTML: { __html: window.MDGSac ? MDGSac.vide('Aucune activité', moiS ? 'Vos négociations, commandes et messages apparaîtront ici.' : 'Connectez-vous : vos négociations, commandes et messages apparaîtront ici.', { t: 92 }) : '<p class="acc-vide">Aucune activité</p>' } }),
-      alRienEl: h('div', { dangerouslySetInnerHTML: { __html: window.MDGSac ? MDGSac.vide('Aucune alerte', 'Tout est en ordre. Ce qui demande votre attention apparaîtra ici.', { t: 92 }) : '<p class="acc-vide">Aucune alerte</p>' } }), accAlRien: !!moiS && !al.length && nCd > 0,
+      accAlertes: al, accAlVide: !al.length && !nCd, alRienEl: h('div', { dangerouslySetInnerHTML: { __html: window.MDGSac ? MDGSac.vide('Aucune alerte', 'Tout est en ordre. Ce qui demande votre attention apparaîtra ici.', { t: 92 }) : '<p class="acc-vide">Aucune alerte</p>' } }), accAlRien: !!moiS && !al.length && nCd > 0,
       codesOn: nCd > 0, codesL, codesGarde: cdMoi ? 'Gardez bien ce code : vous aurez à le présenter au chauffeur. Donnez-le de vive voix, jamais par message.' : 'Demandez le code au bon moment, puis tapez-le dans votre Espace chauffeur.',
       codesNote: cdMoi ? 'Pour votre sécurité, le code n’est jamais enregistré dans le téléphone : touchez la ligne pour l’afficher au moment voulu. Un nouveau code remplace l’ancien.' : 'Le code fait 6 chiffres. 5 essais au plus.' };
   }
   // ——— refonte 2026-11 (maquette « MGCI App v2 », lots 2 et 3) : onglets du bas et accueil « Duo », avec les vraies annonces (rien d'inventé) ———
   v2Vals(ac, { moiS, moiP, moiC }) {
-    const S = this.state, A = window.MDGApp, I = window.MDGIco, tab = S.accTab || 'marche', me = this.me || {};
+    const S = this.state, A = window.MDGApp, tab = S.accTab || 'marche', me = this.me || {};
     // icônes des onglets, dessinées comme la maquette (trait 1,8)
     const TI = { marche: '<path d="M4 9.5L5.5 4.5h13L20 9.5"/><path d="M4 9.5a2.7 2.7 0 005.3 0 2.7 2.7 0 005.4 0 2.7 2.7 0 005.3 0"/><path d="M5.5 11.5V20h13v-8.5"/><path d="M10 20v-4.5h4V20"/>',
       tendance: '<path d="M4 19h16"/><path d="M5 15l4.5-4.5 3.5 3 6-6.5"/><path d="M15 7h4v4"/>', activite: '<path d="M3.5 12h3.5l2.5-6 5 12 2.5-6h3.5"/>',
@@ -1661,16 +1535,9 @@ class Component extends DCLogic {
   qFrac(f) { const q = +String(f.qty || '').replace(/\s/g, '').replace(',', '.'); return q > 0 && q % 1 !== 0 && ['sac', 'carton', 'régime', 'cageot', 'unité', 'tas', 'pièce', 'alvéole', 'caisse', 'cagette', 'botte'].includes(String(f.unit || '').toLowerCase()) ? 'Quantité en nombre entier pour « ' + f.unit + ' ».' : ''; }
   manque(e) { const N = { slug: 'le produit', qty: 'la quantité', qmin: 'une quantité minimale qui ne dépasse pas la quantité', region: 'la région', phone: 'le numéro' };
     const l = Object.keys(e).map(k => N[k]).filter(Boolean); return l.length ? 'Indiquez ' + (l.length > 1 ? l.slice(0, -1).join(', ') + ' et ' + l[l.length - 1] : l[0]) + '.' : 'Complétez le formulaire.'; }
-  // décision du propriétaire (24/10/2026, « calmer l'accueil ») : les effets de la roue se jouent une fois, puis rejouent
-  // seulement quand on change de produit (comète, point, sac qui flotte, halo, triangles du prix, reflet « En saison », lumières du fond)
-  rejouerAccueil() { const k = Math.round(this.state.rot || 0); if (this._rotJoue === undefined) { this._rotJoue = k; return; } if (k === this._rotJoue) return; this._rotJoue = k;
-    clearTimeout(this._rejoue); this._rejoue = setTimeout(() => { if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      // une animation CSS finie n'existe plus : on la retire puis on la remet (classe .rejoue, css/mgci-app.css), ce qui la relance
-      const els = [...document.querySelectorAll('.acc-comete, .acc-pouls, .acc-flotte, .acc-flotte .acc-ombre, .acc-halo, .acc-px-tri s, .en-saison, .mf-bk i')];
-      els.forEach(el => el.classList.add('rejoue')); void document.body.offsetWidth; els.forEach(el => el.classList.remove('rejoue')); }, 350); }
   // à l'ouverture, le focus entre dans la feuille ; à la fermeture, il revient là d'où on venait
   focusFeuille() { const S = this.state, avant = this._flOuvert || null, apres = (S.menu ? 'menu' : S.sheet) || null; if (avant === apres) return; this._flOuvert = apres;
-    const CL = { menu: '.fl-menu', fam: '.fl-fam', tout: '.fl-tout', match: '.fl-match' };
+    const CL = { menu: '.fl-menu', match: '.fl-match' };
     if (!this._clavier) { this._retourFocus = null; return; }
     if (apres && CL[apres]) { if (!avant) this._retourFocus = document.activeElement;
       setTimeout(() => { const f = document.querySelector(CL[apres]); if (!f || f.contains(document.activeElement)) return;
@@ -1678,101 +1545,8 @@ class Component extends DCLogic {
     else if (!apres) { const r = this._retourFocus; this._retourFocus = null; if (r && r.isConnected && typeof r.focus === 'function') r.focus({ preventScroll: true }); } }
   // messages après une action : la bannière commune (app/toast.js) ; l'ancienne pastille reste en secours
   say(t, o) { if (window.MDGToast) return window.MDGToast.dire(t, o); clearTimeout(this.tt); this.setState({ toast: t, toastOn: true }); this.tt = setTimeout(() => this.setState({ toastOn: false }), 2400); }
-  /* « Tout voir » : tous les produits en grille. Par défaut la famille affichée dans la roue ; « Avec annonces » ne garde que ce qui a des offres
-     ou des demandes ; la recherche porte sur le nom et les autres noms (alias). Toucher un produit le met au centre de la roue ; son « + » propose J'ai / Je cherche et ouvre la publication. Calculé seulement
-     quand la fenêtre est ouverte (des centaines de vignettes). */
-  toutVoir(S, O, D, F) {
-    const nP = this.FAMS.reduce((a, f) => a + f.prods.length, 0), base = { openTout: () => this.setState({ sheet: 'tout', sheetDy: 0, tq: '', tvF: this.state.fam, tvPlus: null }), toutL: 'Tout voir : les ' + nP + ' produits en grille' };
-    if (S.sheet !== 'tout') return Object.assign(base, { toutSecs: [], toutFams: [], toutSous: '', tq: '', tqOn: false, toutVide: false });
-    const A = window.MDGApp, cO = {}, cD = {}; O.forEach(x => { cO[x.slug] = (cO[x.slug] || 0) + 1; }); D.forEach(x => { cD[x.slug] = (cD[x.slug] || 0) + 1; });
-    const vif = p => (cO[p.slug] || 0) + (cD[p.slug] || 0) > 0, q = A.norm((S.tq || '').trim()), tf = S.tvF == null ? S.fam : S.tvF;
-    const trouve = p => { if (!q) return true; const P = (window.MDG.products || []).find(x => x.slug === p.slug) || {}; return [p.name, ...(P.aliases || [])].some(t => A.norm(t || '').includes(q)); };
-    const act = F.prods[Math.round(S.rot)] || {};
-    const tuile = (p, f, i) => { const P = this.prod(p.slug), o = cO[p.slug] || 0, d = cD[p.slug] || 0;
-      return { name: p.name, img: P.thumb, fit: P.fit, rad: P.sack ? '0' : '14px', ici: String(p.slug === act.slug), vif: o + d > 0, hasO: o > 0, hasD: d > 0, o, d,
-        lab: p.name + (o ? ', ' + o + ' offre' + (o > 1 ? 's' : '') : '') + (d ? ', ' + d + ' demande' + (d > 1 ? 's' : '') : ''),
-        go: () => this.setState({ fam: f, rot: i, dragging: false, sheet: null, sheetDy: 0, tq: '', tvPlus: null }),
-        // « + » : la case se coupe en deux (J'ai / Je cherche) ; le choix ouvre la publication déjà réglée sur ce produit
-        plusOn: S.tvPlus === p.slug, plusX: String(S.tvPlus === p.slug), plusL: S.tvPlus === p.slug ? 'Fermer le choix' : 'Publier pour ' + p.name + ' : j’ai ou je cherche', choixL: p.name + ' : que voulez-vous publier ?',
-        plus: () => this.setState({ tvPlus: this.state.tvPlus === p.slug ? null : p.slug }),
-        jai: () => { this.setState({ fam: f, rot: i, dragging: false, tvPlus: null, tq: '' }); this.openSheet('jai', p.slug); },
-        cherche: () => { this.setState({ fam: f, rot: i, dragging: false, tvPlus: null, tq: '' }); this.openSheet('cherche', p.slug); } }; };
-    // en cherchant, toutes les familles ; sinon la famille choisie, « avec annonces » ou toutes
-    const secs = this.FAMS.map((f, fi) => ({ f, fi, items: f.prods.map((p, i) => ({ p, i })).filter(({ p }) => trouve(p) && (q || tf === 'tout' || (tf === 'vif' ? vif(p) : fi === tf))) }))
-      .filter(g => g.items.length).map(g => ({ t: g.f.name, n: g.items.length, titreOn: !!q || tf === 'tout' || tf === 'vif', items: g.items.map(({ p, i }) => tuile(p, g.fi, i)) }));
-    const nVif = this.FAMS.reduce((a, f) => a + f.prods.filter(vif).length, 0), nb = secs.reduce((a, g) => a + g.n, 0);
-    const chip = (k, t, n, v) => ({ on: String(!q && tf === k), t, n, vif: !!v, go: () => this.setState({ tvF: k, tq: '' }) });
-    return Object.assign(base, { tq: S.tq || '', tqOn: !!q, tqh: e => this.setState({ tq: e.target.value }), tqVide: () => this.setState({ tq: '' }),
-      toutFams: [chip('vif', 'Avec annonces', nVif, true), chip('tout', 'Tout', nP), ...this.FAMS.map((f, fi) => chip(fi, f.name, f.prods.length))],
-      toutSecs: secs, toutSous: q ? nb + ' résultat' + (nb > 1 ? 's' : '') : nb + ' produit' + (nb > 1 ? 's' : '') + (tf === 'vif' ? ' avec des annonces' : ''),
-      toutVide: !secs.length, toutVideTxt: q ? 'Aucun produit ne correspond à « ' + S.tq.trim() + ' ».' : 'Aucune annonce pour l’instant : publiez la première.' });
-  }
-  // ——— roue de l'accueil : la petite bulle « très vendu / très demandé / vendu il y a… » (schéma 53, chiffres réels du serveur) ———
-  // Elle sort de derrière le sac quand un produit s'arrête devant soi, reste 5 s, puis repart ; elle revient chaque fois qu'on revient sur le produit.
-  tendCharger() { if (this._tendL || !window.MDGNuage || !MDGNuage.rpc) return; const c = ls('mdg-app:tendance'); if (c && c.t && Date.now() - c.t < 3e5 && this.tendData) return;
-    if (c && c.d && !this.tendData) this.tendData = c.d;
-    this._tendL = true; MDGNuage.rpc('produits_activite', {}, false).then(d => { const m = {}; (Array.isArray(d) ? d : []).forEach(x => { m[x.slug] = x; }); const neuf = !this.tendData; this.tendData = m; ls('mdg-app:tendance', { t: Date.now(), d: m }); if (neuf) { this._tendSlug = null; this.tendVeille(); } })
-      .catch(() => {}).then(() => { this._tendL = false; }); }
-  // fil public « Dernières annonces » : les ventes conclues (schéma 55, anonymes : produit, quantité, ville, date), visibles même sans compte
-  ventesCharger() { if (this._vrL || !window.MDGNuage || !MDGNuage.rpc || Date.now() - (this._vrT || 0) < 18e4) return;
-    if (!this.ventesR) this.ventesR = ls('mdg-app:ventes') || [];
-    this._vrL = true; this._vrT = Date.now();
-    MDGNuage.rpc('ventes_recentes', { p_limite: 12 }, false).then(d => { this.ventesR = Array.isArray(d) ? d : []; ls('mdg-app:ventes', this.ventesR); this.setState(s => ({ tick: s.tick + 1 })); })
-      .catch(() => {}).then(() => { this._vrL = false; }); }
-  tendMsg(slug) { const x = this.tendData && this.tendData[slug]; if (!x) return null;
-    const il = t => { const m = Math.max(0, Math.round((Date.now() - new Date(t)) / 6e4)); return m < 1 ? 'à l’instant' : m < 60 ? 'il y a ' + m + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
-    const pl = (n, w) => n + ' ' + w + (n > 1 ? 's' : '');
-    if (x.ventes >= 3) return { ico: '🔥', t: 'Très vendu', s: pl(x.ventes, 'vente') + ' en 2 semaines · la dernière ' + il(x.derniere_vente), cls: 'vente' };
-    if (x.demandes >= 3) return { ico: '📈', t: 'Très demandé', s: pl(x.demandes, 'demande') + ' en 2 semaines' + (x.derniere_demande ? ' · la dernière ' + il(x.derniere_demande) : ''), cls: 'demande' };
-    if (x.forte_demande) return { ico: '📈', t: 'Forte demande', s: 'Signalée par l’équipe du Marché de Gros', cls: 'demande' };
-    if (x.ventes > 0 && x.derniere_vente) return { ico: '✅', t: 'Vendu ' + il(x.derniere_vente), s: x.ventes > 1 ? pl(x.ventes, 'vente') + ' en 2 semaines' : 'Une vente conclue sur le marché', cls: 'vente' };
-    if (x.negociations > 0) return { ico: '🤝', t: x.negociations > 1 ? x.negociations + ' négociations en cours' : 'Négocié en ce moment', s: 'Des acheteurs et des vendeurs discutent le prix', cls: 'nego' };
-    if (x.demandes > 0 && x.derniere_demande) return { ico: '🛒', t: 'Demandé ' + il(x.derniere_demande), s: x.demandes > 1 ? pl(x.demandes, 'demande') + ' en 2 semaines' : 'Quelqu’un le cherche', cls: 'demande' };
-    return null; }
-  // les bulles « qui a placé ce prix » : le meilleur vendeur (vert) et le meilleur acheteur (maïs), dans la même file que la bulle d'activité
-  prixBulle(slug, cote) {
-    const L = this.prixListes(slug, this.offers(), this.demands()), v = cote === 'v';
-    const x = v ? L.of[0] : (L.of.length ? L.de : this.prixListes(slug, [], this.demands()).de)[0]; if (!x) return null;
-    const A = window.MDGApp, prix = A && A.fmt ? A.fmt(v ? x.price : x.budget) : String(v ? x.price : x.budget), moi = this.isMine(x);
-    const nom = moi ? 'Vous' : String(x.name || (v ? 'Un vendeur' : 'Un acheteur'));
-    const ini = moi ? '★' : nom.trim().split(/\s+/).slice(0, 2).map(w => w.charAt(0).toUpperCase()).join('');
-    const il = t => { const m = Math.max(0, Math.round((Date.now() - new Date(t)) / 6e4)); return !t || isNaN(m) ? '' : m < 60 ? 'il y a ' + (m || 1) + ' min' : m < 1440 ? 'il y a ' + Math.round(m / 60) + ' h' : 'il y a ' + Math.round(m / 1440) + ' j'; };
-    const u = String(x.unit || ''), q = x.qty ? A.fmt(x.qty) + ' ' + (x.qty > 1 && u && !/[sx]$|^(kg|t|l|L)$/.test(u) ? u + 's' : u) : '';
-    return { ico: ini, t: v ? nom + (moi ? ' vendez' : ' vend') + ' à ' + prix + ' F' : nom + (moi ? ' achetez' : ' achète') + ' jusqu’à ' + prix + ' F', s: [this.place(x), q, il(x.at)].filter(Boolean).join(' · '), cls: v ? 'px-v' : 'px-a', dur: '4.2s' };
-  }
-  tendVeille() { const S = this.state, home = S.stack.length === 1 && S.ready && (S.accTab || 'marche') === 'marche' && !S.sheet && !S.menu && !document.hidden;
-    if (!home || S.dragging) { if (!home) this._tendSlug = null; clearTimeout(this._tendT); if (S.tendS) this.setState({ tendS: null }); return; }
-    this.tendCharger();
-    if (!this.tendData && !this.offers().length && !this.demands().length) { clearTimeout(this._tendR); this._tendR = setTimeout(() => this.tendVeille(), 1500); return; }   // modules pas encore chargés : on réessaie
-    const F = this.FAMS[S.fam], p = F && F.prods[Math.max(0, Math.min(F.prods.length - 1, Math.round(S.rot)))], slug = p && p.slug;
-    if (!slug || slug === this._tendSlug) return;
-    this._tendSlug = slug; clearTimeout(this._tendT); if (S.tendS) this.setState({ tendS: null });
-    // une bulle à la fois, dans l'ordre : qui vend le moins cher, qui achète le plus cher, puis l'activité (« Très vendu »…)
-    this._tendT = setTimeout(() => { if (this._tendSlug !== slug) return; this.tendCharger();
-      const file = [this.prixBulle(slug, 'v'), this.prixBulle(slug, 'a'), this.tendMsg(slug)].filter(Boolean); let k = 0;
-      const suite = () => { if (this._tendSlug !== slug || document.querySelector('.pm-bg')) return;
-        if (k >= file.length) { if (this.state.tendS === slug) this.setState({ tendS: null }); return; }
-        const m = Object.assign({ dur: '4.6s' }, file[k++]);
-        this.setState({ tendS: null }); setTimeout(() => { if (this._tendSlug !== slug || document.querySelector('.pm-bg')) return; this.setState({ tendS: slug, tendM: m }); this._tendT = setTimeout(suite, parseFloat(m.dur) * 1000); }, 80); };
-      suite(); }, 650); }
-  // Accueil → Activité : retirer des éléments (sur ce téléphone seulement), avec « Annuler »
+  // Accueil → Activité : les éléments retirés avant sur ce téléphone restent cachés
   masques() { try { return JSON.parse(localStorage.getItem('mdg-activite:masques')) || {}; } catch (_) { return {}; } }
-  masquer(cles, texte) {
-    const avant = this.masques(), m = Object.assign({}, avant), lim = Date.now() - 60 * 864e5;
-    cles.forEach(([k, ts]) => { m[k] = ts || Date.now(); });
-    Object.keys(m).forEach(k => { if (m[k] < lim) delete m[k]; });   // on oublie au bout de 60 jours
-    const ecrire = v => { try { localStorage.setItem('mdg-activite:masques', JSON.stringify(v)); } catch (_) {} this.setState(s => ({ tick: s.tick + 1 })); };
-    ecrire(m);
-    if (window.MDGToast) MDGToast.dire(texte, { type: 'info', sous: cles.length > 1 ? cles.length + ' éléments, sur ce téléphone seulement' : 'Sur ce téléphone seulement', action: { t: 'Annuler', fn: () => ecrire(avant) } });
-  }
-  // les 3 premières fois : la première ligne glisse un peu puis revient, pour montrer le geste
-  astuceGlisser() { let n = 0; try { n = +localStorage.getItem('mdg-activite:astuce') || 0; } catch (_) {} if (n >= 3 || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    try { localStorage.setItem('mdg-activite:astuce', n + 1); } catch (_) {}
-    setTimeout(() => { const g = document.querySelector('[data-pg="home"] .glis:not(.glis-rep)'); if (!g) return; g.style.scrollSnapType = 'none'; g.scrollTo({ left: 72, behavior: 'smooth' });
-      setTimeout(() => { g.scrollTo({ left: 0, behavior: 'smooth' }); setTimeout(() => { g.style.scrollSnapType = ''; }, 450); }, 650); }, 700); }
-  // glisser une ligne vers la gauche : au-delà de la moitié, elle part ; la bande est remise à zéro avant de redessiner
-  glisser(cles, texte) { return e => { const el = e.currentTarget; if (el._part || el.scrollLeft < el.clientWidth * .55) return; el._part = true; el.classList.add('glis-out');
-    setTimeout(() => { el.scrollLeft = 0; el.classList.remove('glis-out'); el._part = false; this.masquer(cles, texte); }, 200); }; }
   // carte : aller à l'annonce i du groupe ; inviter à glisser (la bande avance un peu puis revient)
   cPickAller(i) { const el = document.querySelector('[data-cpick]'), c = el && el.firstElementChild; if (!c) return; const n = el.children.length; i = Math.max(0, Math.min(n - 1, i));
     el.scrollTo({ left: i * (c.offsetWidth + 10), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); this.setState({ cPickI: i, cPickVu: true }); }
@@ -1780,72 +1554,16 @@ class Component extends DCLogic {
     this.cpT = setTimeout(() => { const el = document.querySelector('[data-cpick]'); if (!el || el.scrollLeft || el.children.length < 2) return;
       el.style.scrollSnapType = 'none'; el.scrollTo({ left: 56, behavior: 'smooth' });
       this.cpT = setTimeout(() => { el.scrollTo({ left: 0, behavior: 'smooth' }); setTimeout(() => { el.style.scrollSnapType = ''; }, 450); }, 520); }, 650); }
-  famStep(d, toEnd) { const n = this.FAMS.length; this.setState(s => { const f = ((s.fam + d) % n + n) % n; return { fam: f, dragging: false, rot: toEnd ? this.FAMS[f].prods.length - 1 : 0 }; }); }
-  snap(r) { const n = this.FAMS[this.state.fam].prods.length; if (r > n - 1) { this.famStep(1); } else if (r < 0) { this.famStep(-1, true); } else this.setState({ rot: r, dragging: false }); }
-  wDown(e) { this.wd = { x: e.clientX, y: e.clientY, rot: this.state.rot, moved: false, id: e.pointerId, el: e.currentTarget }; }
-  wMove(e) { const d = this.wd; if (!d) return; const dx = (e.clientX - d.x) / this.sc; if (!d.moved && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(e.clientY - d.y)) { d.moved = true; try { d.el.setPointerCapture(d.id); } catch (_) {} } if (d.moved) { const r = d.rot - dx / 70, k = Math.round(r); if (d.k == null) d.k = Math.round(d.rot); if (k !== d.k) { d.k = k; if (window.MDGVibre) MDGVibre.cran(); } this.setState({ rot: r, dragging: true }); } }
-  wUp() { const d = this.wd; this.wd = null; if (d && d.moved) { if (window.MDGVibre) MDGVibre.cran(); this.setState({ dragging: false }); this.snap(Math.round(this.state.rot)); } }
   sDown(e) { this.sd = { y: e.clientY }; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {} }
   sMove(e) { if (this.sd) this.setState({ sheetDy: Math.max(0, (e.clientY - this.sd.y) / this.sc) }); }
   sUp() { if (!this.sd) return; this.sd = null; if (this.state.sheetDy > 110) this.closeAll(); else this.setState({ sheetDy: 0 }); }
   edgeDown(e) { const r = e.currentTarget.getBoundingClientRect(), S = this.state; this.ed = !S.menu && !S.sheet && !S.pick && (e.clientX - r.left) / this.sc < 26 ? { x: e.clientX, y: e.clientY } : null; }
   edgeUp(e) { const d = this.ed; this.ed = null; if (d && (e.clientX - d.x) / this.sc > 70 && Math.abs(e.clientY - d.y) < Math.abs(e.clientX - d.x)) this.back(); }
   openPick(kind) { this.setState({ pick: kind, pq: '' }); }
-  tw(txt, font, ls) { const k = font + '|' + txt, c = this._w || (this._w = {}); if (c[k] == null) { const x = this._mc || (this._mc = document.createElement('canvas').getContext('2d')); x.font = font; c[k] = x.measureText(txt).width + (ls || 0) * txt.length; } return c[k]; }
-  // le prix du moment sous l'orbite : la meilleure offre (dans l'unité la plus courante), sinon le meilleur budget, sinon une phrase
-  // les prix publiés d'un produit, chacun dans l'unité la plus courante : offres du moins cher au plus cher, demandes du meilleur budget au plus bas
-  prixListes(slug, O, D) {
-    const art = u => !u ? '' : ({ tonne: 'la tonne', unité: 'l’unité', unite: 'l’unité' })[u] || 'le ' + u;
-    const unite = L => { const c = {}; L.forEach(x => { c[x.unit] = (c[x.unit] || 0) + 1; }); return Object.keys(c).sort((a, b) => c[b] - c[a])[0]; };
-    const of0 = O.filter(o => o.slug === slug && o.price > 0), de0 = D.filter(d => d.slug === slug && d.budget > 0);
-    const uo = of0.length ? unite(of0) : null, ud = de0.length ? unite(of0.length ? of0 : de0) : null;
-    const of = of0.filter(x => x.unit === uo).sort((a, b) => a.price - b.price);
-    let de = de0.filter(x => x.unit === ud).sort((a, b) => b.budget - a.budget);
-    if (!de.length && de0.length && uo) de = [];   // pas de demande dans l'unité des offres : on ne compare pas des sacs et des kilos
-    return { of, de, uo, ud, art };
-  }
-  prixMoment(act, O, D, saison, maxW) {
-    const { of, de, uo, art } = this.prixListes(act.slug, O, D), dd = of.length ? [] : D.filter(d => d.slug === act.slug && d.budget > 0);
-    const aria = ' Touchez pour voir qui a publié ce prix et placer le vôtre.';
-    if (of.length) return { pOn: true, tOn: false, pk: 'Meilleur prix · ' + art(uo), pv: String(of[0].price), pt: '', tfs: '', pAria: 'Meilleur prix : ' + of[0].price + ' francs ' + art(uo) + '.' + aria };
-    if (dd.length) { const L = this.prixListes(act.slug, [], D); return { pOn: true, tOn: false, pk: 'Meilleur budget · ' + art(L.ud), pv: String(L.de[0].budget), pt: '', tfs: '', pAria: 'Meilleur budget : ' + L.de[0].budget + ' francs ' + art(L.ud) + '.' + aria }; }
-    const pt = 'Publiez le premier prix', f = this.fitName(pt, maxW);
-    return { pOn: false, tOn: true, pk: saison ? 'En saison · aucun prix publié' : 'Aucun prix publié', pv: '0', pt, tfs: Math.min(26, parseInt(f.fs, 10)) + 'px', pAria: 'Aucun prix publié. Touchez pour placer le premier.' };
-  }
-  // « Ici, chacun place son prix » : l'échelle, qui a publié, et placer le sien (app/prixmoment.js)
-  prixPop(slug, O, D) {
-    if (!window.MDGPrixMoment) return this.openFiche(slug);
-    const P = this.prod(slug), L0 = this.prixListes(slug, O, D), L = L0.of.length ? L0 : this.prixListes(slug, [], D);
-    const m = (x, off) => ({ prix: off ? x.price : x.budget, nom: x.name, lieu: this.place(x), at: x.at, qte: x.qty, unite: x.unit, moi: this.isMine(x), neg: !!(x.remote && x.rid), x });
-    const offres = L0.of.map(x => m(x, true)), demandes = L.de.map(x => m(x, false)), u = L0.uo || L.ud || '';
-    // la bulle d'activité (« Très vendu »…) se retire : son information passe en tête du pop-up, dans le même style
-    clearTimeout(this._tendT); if (this.state.tendS) this.setState({ tendS: null }); this.tendCharger();
-    MDGPrixMoment.ouvrir({ nom: P.name, img: P.sack ? P.thumb : null, art: L0.art(u), cote: offres.length ? 'v' : 'a', activite: this.tendMsg(slug), offres, demandes,
-      placer: k => { if (k === 'offre') { this.setVf({ slug, unit: u || this.state.vf && this.state.vf.unit }); this.push('vendre'); } else { this.setState(s => ({ df: Object.assign({}, s.df, { slug, unit: u || (s.df && s.df.unit) }) })); this.push('demande'); } },
-      negocier: (k, i) => { const r = (k === 'offre' ? offres : demandes)[i]; if (r && r.x) { const c = this.card(r.x); if (c.canNeg) c.neg(); else this.openFiche(slug); } } });
-  }
-  fitName(name, maxW) { const F = fs => 'italic 900 ' + fs + 'px Jost'; for (const fs of [44, 40, 36, 32]) if (this.tw(name, F(fs)) <= maxW) return { fs: fs + 'px', lh: '1' }; return { fs: (this.tw(name, F(30)) > maxW * 1.9 ? 26 : 30) + 'px', lh: '1.04' }; }
   locate() { const A = window.MDGApp; if (!navigator.geolocation) { this.say('Localisation indisponible : choisissez votre région'); return; } this.say('Recherche de votre position…'); navigator.geolocation.getCurrentPosition(p => { let best = '', bd = 1e9; Object.keys(A.REG).forEach(s => { const d = A.km([p.coords.latitude, p.coords.longitude], A.REG[s]); if (d < bd) { bd = d; best = s; } }); if (bd > 400) { this.say('Vous semblez hors de Côte d\u2019Ivoire'); return; } this.me.region = best; this.me.city = this.accord(best, this.me.city); ls('mdg-app:moi', this.me); this.setState({ cme: best, csel: '' }); this.say('Repéré près de ' + A.REG[best][2]); }, () => this.say('Position refusée : choisissez votre région'), { timeout: 8000, maximumAge: 600000 }); }
   doPick(slug) { const k = this.state.pick; this.setState(s => k === 'match' ? { mf: Object.assign({}, s.mf, { slug }), pick: null } : k === 'vendre' ? { vf: Object.assign({}, s.vf, { slug }), vErr: {}, pick: null } : k === 'demande' ? { df: Object.assign({}, s.df, { slug }), dErr: {}, pick: null } : { cprod: slug, csel: '', pick: null, cPick: null }); }
   setVf(patch) { this.setState(s => { const vf = Object.assign({}, s.vf, patch); ls('mdg-app:brouillon-offre', Object.assign({}, vf, { photo: '' })); return { vf, vErr: {} }; }); }
 
-  mapSVG(O, D, me, sel) {
-    const A = window.MDGApp, P = (s) => { const r = A.REG[s]; return r ? A.proj(r[0], r[1]) : null; };
-    const by = (L) => { const m = {}; L.forEach(x => { if (A.REG[x.region]) m[x.region] = (m[x.region] || 0) + 1; }); return m; };
-    const oc = by(O), dc = by(D), pairs = {};
-    O.forEach(o => D.forEach(d => { if (o.slug === d.slug && A.REG[o.region] && A.REG[d.region] && o.region !== d.region) pairs[o.region + '>' + d.region] = 1; }));
-    let s = `<svg viewBox="0 0 340 360" width="100%" style="display:block;overflow:visible"><path d="${A.OUTLINE}" fill="rgba(245,240,230,.035)" stroke="rgba(245,240,230,.28)" stroke-width="1.2" stroke-linejoin="round"></path>`;
-    Object.keys(pairs).forEach((k, i) => { const [a, b] = k.split('>'), p = P(a), q = P(b), mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2, dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy) || 1, cx = mx - dy / L * 28, cy = my + dx / L * 28, d = `M${p[0]} ${p[1]}Q${cx.toFixed(1)} ${cy.toFixed(1)} ${q[0]} ${q[1]}`;
-      s += `<path d="${d}" fill="none" stroke="#6AAEF0" stroke-opacity=".75" stroke-width="1.6" stroke-dasharray="4 4" style="animation:mkFlow .9s linear infinite"></path><circle r="2.6" fill="#6AAEF0"><animateMotion dur="${(2.2 + i * .3).toFixed(1)}s" repeatCount="indefinite" path="${d}"></animateMotion></circle>`; });
-    Object.entries(A.REG).forEach(([slug, r]) => { const [x, y] = A.proj(r[0], r[1]), o = oc[slug] || 0, d = dc[slug] || 0, on = sel === slug;
-      if (on) s += `<circle cx="${x}" cy="${y}" r="17" fill="none" stroke="#F2C230" stroke-width="1.5"></circle>`;
-      s += `<circle cx="${x}" cy="${y}" r="2.4" fill="#847966"></circle><text x="${x}" y="${y + 19}" text-anchor="middle" font-family="Jost,sans-serif" font-size="8.5" fill="${o || d || on ? '#F5F0E6' : '#847966'}">${r[2]}</text>`;
-      if (o) { const rr = 4 + Math.min(o, 6); s += `<circle cx="${x - 7}" cy="${y - 4}" r="${rr}" fill="#6CC58C" style="transform-box:fill-box;transform-origin:center;animation:mkPop .6s both"></circle>${o > 1 ? `<text x="${x - 7}" y="${y - 1}" text-anchor="middle" font-family="Jost" font-size="8" font-weight="700" fill="#171512">${o}</text>` : ''}`; }
-      if (d) { const z = 8 + Math.min(d, 6) * 1.5; s += `<rect x="${x + 2}" y="${y - 4 - z / 2}" width="${z}" height="${z}" rx="2" fill="#F2C94C" style="transform-box:fill-box;transform-origin:center;animation:mkPop .6s .1s both"></rect><rect x="${x + 2}" y="${y - 4 - z / 2}" width="${z}" height="${z}" rx="2" fill="none" stroke="#F2C94C" style="transform-box:fill-box;transform-origin:center;animation:mkWave 2.4s ease-out infinite"></rect>${d > 1 ? `<text x="${x + 2 + z / 2}" y="${y - 1}" text-anchor="middle" font-family="Jost" font-size="8" font-weight="700" fill="#171512">${d}</text>` : ''}`; }
-      s += `<circle cx="${x}" cy="${y}" r="20" fill="transparent" data-reg="${slug}" style="cursor:pointer"></circle>`; });
-    if (me && A.REG[me]) { const [x, y] = P(me); s += `<path d="M${x} ${y - 13}l8 13h-16z" fill="#B095F0" pointer-events="none"></path><circle cx="${x}" cy="${y - 4}" r="10" fill="none" stroke="#B095F0" pointer-events="none" style="transform-box:fill-box;transform-origin:center;animation:mkWave 2.6s ease-out infinite"></circle>`; }
-    return s + '</svg>';
-  }
   doneSVG(done) {
     const off = done.kind === 'offre', own = off ? '<circle cx="54" cy="75" r="13" fill="#6CC58C"></circle>' : '<rect x="41" y="62" width="26" height="26" rx="4" fill="#F2C94C"></rect>';
     let s = '<svg viewBox="0 0 260 150" width="260" height="150" style="overflow:visible">';
@@ -1871,7 +1589,7 @@ class Component extends DCLogic {
     const base = { shellAlign: framed ? 'center' : 'flex-start', shellPad: framed ? '11px' : '0', shellRad: framed ? '64px' : '0', scale: sc, W: framed ? '390px' : '100vw', H: framed ? '844px' : kbH ? kbH + 'px' : '100dvh', rad: framed ? '53px' : '0', framed,
       topPad: framed ? '50px' : 'max(12px, env(safe-area-inset-top))', botPad: framed ? '34px' : 'max(18px, env(safe-area-inset-bottom))', clock: S.clock,
       splashBg: this.isDark() ? '#141414' : '#10392B', splashTxt: S.splBloque ? 'Le chargement n’aboutit pas. Vérifiez internet, puis réessayez.' : 'On remplit les étals…', splBloque: !!S.splBloque && !S.ready,
-      splRe: () => { try { sessionStorage.removeItem('mdg-relance'); } catch (_) {} location.reload(); }, splashOp: S.splash === 'on' || !S.ready ? 1 : 0, splashPe: S.splash === 'off' && S.ready ? 'none' : 'auto', splashLine: S.splashLine ? '56px' : '0px', splashMark: S.splash === 'off' && S.ready ? null : this.splashMark(), toastMsg: typeof S.toast === 'string' ? S.toast : '', toastMasque: S.toastOn && typeof S.toast === 'string' ? 'false' : 'true', toastOp: S.toastOn ? 1 : 0, toastY: S.toastOn ? '0' : '12px' };
+      splRe: () => { try { sessionStorage.removeItem('mdg-relance'); } catch (_) {} location.reload(); }, splashOp: S.splash === 'on' || !S.ready ? 1 : 0, splashPe: S.splash === 'off' && S.ready ? 'none' : 'auto', splashMark: S.splash === 'off' && S.ready ? null : this.splashMark(), toastMsg: typeof S.toast === 'string' ? S.toast : '', toastMasque: S.toastOn && typeof S.toast === 'string' ? 'false' : 'true', toastOp: S.toastOn ? 1 : 0, toastY: S.toastOn ? '0' : '12px' };
     if (!S.ready) return base;
     const A = window.MDGApp, M = window.MDG, h = React.createElement, html = (x, extra) => h('div', Object.assign({ dangerouslySetInnerHTML: { __html: x } }, extra || {}));
     // icônes : une tuile teintée par le sens (css/mgci-app.css .ui-tile) ; « nom:ton » ou une clé ci-dessous
@@ -1880,42 +1598,15 @@ class Component extends DCLogic {
       comment: ['comment', 'aide'], aide: ['producteur', 'aide'], confiance: ['confiance', 'aide'], pubs: ['publications', 'offre'], ordi: ['ordi', 'aide'] };
     const ico = (k, cl) => { const v = k.indexOf(':') > 0 ? k.split(':') : (ICOK[k] || [k, 'aide']); return tuile(v[0], v[1], cl); };
     const O = this.offers(), D = this.demands(), cm = new Date().getMonth() + 1, top = S.stack[S.stack.length - 1];
-    const regions = M.regions, tf = {}, dim = {}, on = {};
+    const regions = M.regions, tf = {}, on = {};
     const vis = {}, zi = {};
     ['home', ...PAGES].forEach(s => { const i = S.stack.indexOf(s); tf[s] = i < 0 ? T_OFF : (s === top ? T_IN : T_UNDER); on[s] = i >= 0 || S.leaving === s; vis[s] = on[s] ? 'visible' : 'hidden'; zi[s] = s === S.leaving ? 40 : i < 0 ? 0 : i + 1; });
     tf.home = top === 'home' ? T_IN : T_UNDER; vis.home = 'visible'; zi.home = 1;
     const inSeason = (slug, m) => A.CAL.some(e => e[0] === slug && e[2][m]);
     const mini = p => { const P = this.prod(p.slug); return { thumb: P.thumb, fit: P.fit, rad: P.rad, name: p.name, sub: P.catName }; };
 
-    /* roue : la famille active seulement */
-    const F = this.FAMS[S.fam], n = F.prods.length, act = this.prod(F.prods[Math.max(0, Math.min(n - 1, Math.round(S.rot)))].slug), tr = S.dragging ? 'none' : 'transform .55s cubic-bezier(.22,1,.36,1),opacity .4s,color .3s';
-    /* arc : chaque nom occupe un angle proportionnel à sa largeur mesurée (police réelle) + un écart fixe → jamais deux noms qui se touchent */
-    const Hpx = framed ? 844 : (S.vh || 800), sT = framed ? 50 : Math.max(12, this.safeT || 0), sB = framed ? 34 : Math.max(18, this.safeB || 0), aW = framed ? 390 : S.vw;
-    const wheelSc = Math.max(.5, Math.min(1, (aW - 24) / 390));   // la roue dans la carte sombre de l'accueil (marges de 12 px)
-    const RAD = 352, GAPPX = 26, DEG = 180 / Math.PI, ws = F.prods.map(p => this.tw(p.name.toUpperCase(), '600 13px Jost, sans-serif', 13 * .16) + 8);
-    const ang = [0]; for (let i = 1; i < n; i++) ang[i] = ang[i - 1] + ((ws[i - 1] + ws[i]) / 2 + GAPPX) / RAD * DEG;
-    const angAt = r => n < 2 ? 0 : r <= 0 ? r * ang[1] : r >= n - 1 ? ang[n - 1] + (r - n + 1) * (ang[n - 1] - ang[n - 2]) : ang[Math.floor(r)] + (ang[Math.floor(r) + 1] - ang[Math.floor(r)]) * (r - Math.floor(r));
-    const a0 = angAt(S.rot), halfV = Math.asin(Math.min(1, (Math.min(390, aW / wheelSc) / 2 - 6) / RAD)) * DEG;
-    const labels = F.prods.map((p, i) => { const off = ang[i] - a0, act0 = Math.abs(i - S.rot) < .5, edge = Math.abs(off) + ws[i] / 2 / RAD * DEG, op = act0 ? 1 : Math.max(0, Math.min(.78, (halfV - edge) / 4));
-      return { name: p.name, fs: act0 ? '13px' : '11.5px', color: act0 ? '#F5F0E6' : '#B9AD98', weight: act0 ? 600 : 400, tf: 'rotate(' + off.toFixed(2) + 'deg) translate(-50%,-352px)', op, pe: op < .15 ? 'none' : 'auto', tr, go: () => this.setState({ rot: i }) }; });
-    const ticks = F.prods.map((p, i) => { const off = ang[i] - a0, a = Math.abs(i - S.rot); return { op: Math.abs(off) > halfV + 4 ? 0 : (a < .5 ? .9 : .35), tf: 'rotate(' + off.toFixed(2) + 'deg) translate(-50%,-322px)', tr }; });
-    // sacs : seule la photo affichée et ses voisines se téléchargent (une fois vue, elle reste) — avant, toute la famille d'un coup
-    const vus = this._sacsVus || (this._sacsVus = new Set()), VIDE = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-    const sacks = F.prods.filter(p => A.SACK[p.slug] != null).map(p => { const i = F.prods.indexOf(p), off = i - S.rot, a = Math.abs(off);
-      if (a < 1.6) vus.add(p.slug);
-      return { src: vus.has(p.slug) ? A.IMG + 'produit-' + p.slug + '.webp' : VIDE, alt: p.name, op: Math.max(0, 1 - a * 1.4), tf: 'translateX(' + (off * 70) + 'px) scale(' + (1 - Math.min(a, 1) * .14) + ')', tr: S.dragging ? 'none' : 'opacity .45s,transform .55s cubic-bezier(.22,1,.36,1)' }; });
-    const ao = O.filter(o => o.slug === act.slug).length, ad = D.filter(d => d.slug === act.slug).length;
-
     /* fiche */
-    const FP = this.prod(S.slug), fo = O.filter(o => o.slug === S.slug), fd = D.filter(d => d.slug === S.slug), mk = this.market(S.slug, O), low = fo.filter(o => o.price).sort((a, b) => a.price - b.price)[0];
-    const calE = A.CAL.filter(c => c[0] === S.slug);
-    const fp = Object.assign({}, FP, { famCaps: FP.catName, imgSize: FP.sack ? '230px' : '190px', imgRad: FP.sack ? '0' : '28px', nOff: fo.length, nDem: fd.length,
-      items: [...fo, ...fd].sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0)).map(x => this.card(x)), empty: !fo.length && !fd.length,
-      emptyTxt: 'Pas encore d\u2019offre ni de demande pour ' + FP.name.toLowerCase() + '. Publiez la première : le réseau commence par vous.',
-      low: low ? A.fmt(low.price) + ' F CFA / ' + low.unit : '—', market: mk.ok ? mk.range : 'Pas assez de données pour calculer un prix du marché',
-      meter: [{ pct: Math.min(100, mk.obs / 5 * 100) + '%', txt: mk.obs + ' / 5 observations' }, { pct: Math.min(100, mk.vend / 3 * 100) + '%', txt: mk.vend + ' / 3 vendeurs' }, { pct: '100%', txt: 'sur 30 jours' }],
-      hasSeason: !!calE.length, noSeason: !calE.length, seasonNote: calE.map(e => e[1] + ' : ' + e[4] + ' (' + e[3] + ')').join(' · '),
-      season: 'JFMAMJJASOND'.split('').map((l, i) => { const lv = calE.reduce((b, c) => c[2][i + 1] && (!b || A.RANK[c[2][i + 1]] > A.RANK[b]) ? c[2][i + 1] : b, null); return { l, bg: lv ? A.LV[lv][1] : '#ddd3c2', ring: i + 1 === cm ? '1.5px solid #171512' : 'none', w: i + 1 === cm ? 700 : 400 }; }) });
+    const FP = this.prod(S.slug);
 
     /* acheter */
     const parsed = S.aq.trim() && M.search ? M.search.parse(S.aq) : null, pslug = parsed && parsed.product ? parsed.product.slug : '';
@@ -1931,32 +1622,14 @@ class Component extends DCLogic {
     const aDem = () => { const pu = uCode && A.UNITS.includes(uCode) ? uCode : 'kg'; this.setState(s => ({ df: Object.assign({}, s.df, { slug: pslug || s.df.slug, qty: parsed && parsed.quantity ? String(parsed.quantity) : s.df.qty, unit: pu, region: lreg || s.df.region }) })); this.push('demande'); };
 
     /* vendre */
-    const vf = S.vf, VP = vf.slug ? this.prod(vf.slug) : null, vmk = vf.slug ? this.market(vf.slug, O) : null, vlow = vf.slug ? O.filter(o => o.slug === vf.slug && o.price && o.unit === vf.unit).sort((a, b) => a.price - b.price)[0] : null, vdn = vf.slug ? D.filter(d => d.slug === vf.slug).length : 0;
-    const vNext = () => { const e = {};
-      if (vf.step === 1) { if (!vf.slug) e.slug = 1; if (!(+String(vf.qty).replace(',', '.') > 0)) e.qty = 1; const qm = String(vf.qmin || '').trim().replace(',', '.'); if (qm && !(+qm > 0 && +qm <= +String(vf.qty).replace(',', '.'))) e.qmin = 1; }
-      if (vf.step === 2 && !vf.region) e.region = 1;
-      if (Object.keys(e).length) { this.setState({ vErr: e }); this.say(this.manque(e)); this.montrerChamp('v', e); return; }
-      if (vf.step === 1 && this.qFrac(vf)) { this.setState({ vErr: { qty: 1 } }); this.say(this.qFrac(vf)); this.montrerChamp('v', { qty: 1 }); return; }
-      if (vf.step < 3) { this.setState(s => ({ vf: Object.assign({}, s.vf, { step: s.vf.step + 1 }) })); return; }
-      { const rf = this.refusTexte(vf); if (rf) { this.say(rf); return; } }
-      const ok = this.pubOffer({ slug: vf.slug, qty: vf.qty, unit: vf.unit, price: vf.price, region: vf.region, city: vf.city, when: vf.avail === 'date' && vf.date ? vf.date : 'maintenant', name: vf.name, agent: vf.mode === 'agent' ? (this.nomCompte() || 'Agent') : '', photo: vf.photo, neg: vf.neg !== false, lieu: this.lieuDe(vf), qmin: vf.qmin, vs: vf.vs });
-      if (!ok) { this.say('Mémoire pleine : retirez une ancienne publication'); return; }
-      ls('mdg-app:brouillon-offre', null); this.setState(s => ({ vf: Object.assign({}, s.vf, { step: 1, slug: '', qty: '', qmin: '', price: '', photo: '', date: '' }) })); this.celebrate('offre', ok.productSlug); };
+    const vf = S.vf;
     const eb = (err, k) => err[k] ? '#C0442B' : 'rgba(23,21,18,.18)';
-    const setD = k => e => { const v = e.target.value; this.setState(s => ({ df: Object.assign({}, s.df, { [k]: v }), dErr: {} })); };
     const setM = k => e => { const v = e.target.value; this.setState(s => ({ mf: Object.assign({}, s.mf, { [k]: v }), mErr: {} })); };
-    const setV = k => e => this.setVf({ [k]: e.target.value });
-    const patchD = o => this.setState(s => ({ df: Object.assign({}, s.df, o), dErr: {} })), patchM = o => this.setState(s => ({ mf: Object.assign({}, s.mf, o), mErr: {} }));
+    const patchM = o => this.setState(s => ({ mf: Object.assign({}, s.mf, o), mErr: {} }));
     const setA = k => e => { const v = e.target.value; this.setState(s => ({ af: Object.assign({}, s.af, { [k]: v }) })); };
 
     /* demander */
-    const df = S.df, dOf = df.slug ? O.filter(o => o.slug === df.slug).sort((a, b) => (b.region === df.region) - (a.region === df.region)) : [];
-    const dPublish = () => { const e = {}; if (!df.slug) e.slug = 1; if (!(+String(df.qty).replace(',', '.') > 0)) e.qty = 1; if (!df.region) e.region = 1;
-      { const qm = String(df.qmin || '').trim().replace(',', '.'); if (qm && !(+qm > 0 && +qm <= +String(df.qty).replace(',', '.'))) e.qmin = 1; }   // schéma 97c : le serveur refuse aussi
-      if (Object.keys(e).length) { this.setState({ dErr: e }); this.say(this.manque(e)); this.montrerChamp('d', e); return; }
-      if (this.qFrac(df)) { this.setState({ dErr: { qty: 1 } }); this.say(this.qFrac(df)); this.montrerChamp('d', { qty: 1 }); return; }
-      { const rf = this.refusTexte(df); if (rf) { this.say(rf); return; } }
-      const ok = this.pubDemand(Object.assign({}, df, { lieu: this.lieuDe(df) })); if (!ok) { this.say('Mémoire pleine : retirez une ancienne publication'); return; } this.setState(s => ({ df: Object.assign({}, s.df, { qty: '', qmin: '', budget: '' }) })); this.celebrate('demande', df.slug); };
+    const df = S.df;
 
     /* feuille rapide */
     const mf = S.mf, isJai = S.mode === 'jai', MP = this.prod(mf.slug), opp = (isJai ? D : O).filter(x => x.slug === mf.slug);
@@ -2015,38 +1688,6 @@ class Component extends DCLogic {
     const cOpen = !!S.cOpen, nTot = cItems.length + (S.csel ? 0 : cZ.length);
     const cSheet = { open: cOpen, h: cOpen ? Math.round((framed ? 844 : (S.vh || 800)) * .45) + 'px' : cBotPx + 'px', chev: cOpen ? 'rotate(180deg)' : 'none', l: cOpen ? 'Voir la carte' : nTot + ' à voir', toggle: () => this.setState(s => ({ cOpen: !s.cOpen })) };
 
-    /* année */
-    // chaque culture du calendrier est rangée pour le mois choisi : pleine récolte, ça commence, ça se termine, bientôt, hors saison
-    const anM = S.month, mn = k => ((anM - 1 + k) % 12) + 1;
-    const anCOL = { plein: '#6CC58C', debut: '#B5DEC1', fin: '#F2C230' };
-    const GRP = {
-      plein: ['En pleine récolte', 'Beaucoup de marchandise : en général, les prix baissent.', 'bas', '↓ moins cher'],
-      debut: ['Ça commence', 'Les premières quantités arrivent sur les marchés.', 'baisse', '↘ arrive'],
-      fin: ['Ça se termine', 'Les dernières quantités : le produit se raréfie.', 'hausse', '↗ se raréfie'],
-      bientot: ['Arrive bientôt', 'La récolte commence dans un ou deux mois.', 'neutre', ''],
-      hors: ['Hors saison, plus rare', 'Vendu sur les stocks : en général, les prix sont plus hauts. C’est la soudure.', 'haut', '↑ plus cher']
-    };
-    const anRang = e => { const lv = e[2][anM]; if (lv) return lv; for (let k = 1; k <= 2; k++) if (e[2][mn(k)]) return 'bientot'; return 'hors'; };
-    const anRow = (e, i) => { const k = anRang(e), P = this.prod(e[0]), o = O.filter(x => x.slug === e[0]).length, d = D.filter(x => x.slug === e[0]).length, open = S.anOpen === i;
-      let dans = 0; if (k === 'bientot') for (let j = 1; j <= 2 && !dans; j++) if (e[2][mn(j)]) dans = j;
-      return { name: e[1], note: e[4], src: e[3], thumb: P.thumb, fit: P.fit, rad: P.rad, tTxt: k === 'bientot' ? 'dans ' + dans + ' mois' : GRP[k][3], tCls: 'an2-t ' + GRP[k][2],
-        hasO: !!o, oTxt: o + ' offre' + (o > 1 ? 's' : ''), hasD: !!d, dTxt: d + ' demande' + (d > 1 ? 's' : ''), hasOD: !!(o || d),
-        open, exp: open ? 'true' : 'false', chev: open ? 'rotate(180deg)' : 'none', toggle: () => this.setState(s => ({ anOpen: s.anOpen === i ? null : i })),
-        fiche: () => this.openFiche(e[0]),
-        frise: A.MOIS.map((mo, j) => { const lv = e[2][j + 1]; return { l: mo[0], h: lv === 'plein' ? '100%' : lv ? '62%' : '14%', c: lv ? anCOL[lv] : 'rgba(243,239,228,.16)', sel: j + 1 === anM ? 'an2-fb sel' : 'an2-fb', t: mo + ' : ' + (lv ? A.LV[lv][0].toLowerCase() : 'hors récolte') }; }),
-        fLeg: 'Récolte : ' + A.MOIS.filter((_, j) => e[2][j + 1]).map(x => x.toLowerCase()).join(', ') + '.' };
-    };
-    const anAll = A.CAL.map((e, i) => [anRang(e), anRow(e, i)]);
-    const mGroups = ['plein', 'debut', 'fin', 'bientot', 'hors'].map(k => ({ k, label: GRP[k][0], sub: GRP[k][1], c: k === 'bientot' ? 'rgba(243,239,228,.5)' : k === 'hors' ? '#E2735B' : anCOL[k],
-      items: anAll.filter(x => x[0] === k).map(x => x[1]) })).filter(g => g.items.length);
-    const anP = this.anParProduit(), anN = anP.filter(e => e[2][anM]).length;
-    const anMax = Math.max(1, ...A.MOIS.map((_, j) => anP.filter(e => e[2][j + 1]).length));
-    if (top === 'annee' && !this._anVu && !this._anT) this._anT = setTimeout(() => { this._anVu = true; }, 1600);
-    const anLab = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
-    const anStrip = A.MOIS.map((mo, j) => { const m = j + 1, L = anP.filter(e => e[2][m]), pl = L.filter(e => e[2][m] === 'plein').length;
-      return { l: anLab[j], h: Math.round(6 + 34 * L.length / anMax) + 'px', h2: Math.round(34 * pl / anMax) + 'px', cls: 'an2-sm' + (m === anM ? ' sel' : '') + (m === cm ? ' auj' : ''),
-        aria: mo + ' : ' + L.length + ' récolte' + (L.length > 1 ? 's' : ''), cur: m === anM ? 'true' : 'false', go: () => this.setState({ month: m, anOpen: null }) }; });
-
     /* publications */
     const mine = [...this.offersAll(), ...this.demandsAll()].filter(x => !x.remote).sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0));
     const myPubs = mine.map(x => { const P = this.prod(x.slug), c = this.card(x), m = (x.kind === 'offre' ? D : O).filter(y => y.slug === x.slug).length;
@@ -2076,8 +1717,6 @@ class Component extends DCLogic {
           this.say('Annonce retirée', { sous: 'Elle est cachée, pas effacée. Les négociations en cours s\u2019arrêtent.' }); } }; });
     myPubs.forEach(p => { p.btnsOn = !!(p.canPause || p.prolOn); });
 
-    const stockMap = {}; mine.filter(x => x.kind === 'offre' && x.qty > 0 && !x.epuise).forEach(x => { const k = x.slug + '|' + x.unit; stockMap[k] = stockMap[k] || { n: this.prod(x.slug).name.toLowerCase(), u: x.unit, q: 0 }; stockMap[k].q += x.qty; });
-    const stockSum = Object.values(stockMap).map(k => ({ q: A.fmt(k.q) + ' ' + A.unites(k.q, k.u), n: k.n }));
     /* vendeur */
     const vo = O.find(o => o.id === S.vid), vkey = vo ? (vo.uid || (vo.remote ? 'n:' + vo.name : 'moi')) : null, vlist = vo ? O.filter(o => (o.uid || (o.remote ? 'n:' + o.name : 'moi')) === vkey) : [], vMine = vo ? this.isMine(vo) : false;
     const vBq = vo && vo.uid && window.MDGBoutique ? MDGBoutique.connue(vo.uid) : null;
@@ -2146,38 +1785,20 @@ class Component extends DCLogic {
     if (S.pick === 'carte' && !pq) pickGroups.unshift({ t: 'RÉSEAU', items: [{ name: 'Tous les produits', sub: '', thumb: A.IMG + 'famille-autres-produits-vivriers.webp', fit: 'cover', rad: '10px', pick: () => this.doPick('') }] });
 
     const light = ['acheter', 'vendre', 'demande', 'categories', 'prix', 'pubs'].includes(top) || !!S.pick;
-    const sheetOn = S.sheet === 'match', dy = S.sheetDy, anyS = S.menu || sheetOn || S.sheet === 'fam' || S.sheet === 'tout';
-    const mi = (k, t, s, go) => ({ ico: ico(k), t, s, go });
+    const sheetOn = S.sheet === 'match', dy = S.sheetDy, anyS = S.menu || sheetOn;
     const logoIco = (sz) => window.MDGMarque ? h('span', { style: { display: 'block', flex: 'none' }, dangerouslySetInnerHTML: { __html: MDGMarque.dg(sz, { fond: this.isDark() ? 'noir' : 'vert' }) } }) : null;
     // le compte, à droite de la barre du haut : votre avatar (ou une silhouette pour se connecter)
     const moiN = window.MDGNuage, moiS = moiN && moiN.session(), moiC = window.MDGCompte, moiP = moiS ? (moiC ? moiC.profil() : this.profilGarde(moiS)) : null;
-    const moiEl = moiS && window.MDGAvatar
-      ? h('img', { src: window.MDGAvatar.uri(moiP && moiP.avatar, { size: 34, nom: (moiP && moiC && moiC.nomAffiche(moiP)) || String(moiS.user.tel || ''), seed: moiS.user.id }), alt: '', width: 34, height: 34, style: { borderRadius: '50%', display: 'block', boxShadow: '0 0 0 2px rgba(245,240,230,.14)' } })
-      : h('span', { style: { width: 34, height: 34, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(245,240,230,.1)' } }, h('svg', { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: '#F5F0E6', strokeWidth: 1.7, strokeLinecap: 'round' }, h('circle', { cx: 12, cy: 8.5, r: 3.6 }), h('path', { d: 'M5 20a7 7 0 0 1 14 0' })));
     return Object.assign(base, {
-      tf, vis, zi, on, regions, halo: act.tint, sbColor: light && !anyS ? '#171512' : '#F5F0E6',
+      tf, vis, zi, on, regions, sbColor: light && !anyS ? '#171512' : '#F5F0E6',
       back: () => this.back(), edgeDown: e => this.edgeDown(e), edgeUp: e => this.edgeUp(e), stop: e => e.stopPropagation(),
-      goAcheter: () => this.push('acheter'), goVendre: () => this.push('vendre'), openMenu: () => { this.ouvertures = (this.ouvertures || 0) + 1; this.setState({ menu: true, sheetDy: 0, drDx: 0 }); compterIdent(n => this.setState({ identN: n })); setTimeout(() => { const l = document.querySelector('[role=dialog][aria-label="Menu"] [style*="overflow-y"]'); if (l) l.scrollTop = 0; }, 0); },
+      goVendre: () => this.push('vendre'), openMenu: () => { this.ouvertures = (this.ouvertures || 0) + 1; this.setState({ menu: true, sheetDy: 0, drDx: 0 }); compterIdent(n => this.setState({ identN: n })); setTimeout(() => { const l = document.querySelector('[role=dialog][aria-label="Menu"] [style*="overflow-y"]'); if (l) l.scrollTop = 0; }, 0); },
       porteTxt: moiS ? 'Se déconnecter' : 'Se connecter', porteEl: moiS ? tuile('sortir', 'marche') : tuile('compte', 'vous'),
       goPorte: () => { const N = window.MDGNuage; this.setState({ menu: false }); if (!N) return; if (!N.session()) { setTimeout(() => N.open(), 250); return; }
         const fin = () => N.toast('Vous êtes sorti du marché. Vos annonces restent publiées.');
-        setTimeout(() => { if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N.signOut()); else { N.signOut(); fin(); } }, 320); }, moiEl, moiLabel: moiS ? 'Mon compte' : 'Se connecter', sfGo: S.splash !== 'on' && S.ready ? '1' : '0', moiDot: !!(moiS && ((window.MDGNegoce && window.MDGNegoce.unread()) || (window.MDGMessages && window.MDGMessages.unread()))), goMoi: () => { if (!moiN) return; if (moiS && moiC) moiC.ouvrir(); else moiN.open(); }, hasPubs: false,   // plus de point corail permanent sur le menu : il n'annonçait rien à faire (audit antislop n° 43)
-     
-      famPips: this.FAMS.map((f, i) => ({ name: f.name, w: i === S.fam ? '18px' : '6px', bg: i === S.fam ? '#F2C230' : 'rgba(245,240,230,.22)', go: () => this.setState({ fam: i, rot: 0 }) })),
-      ...this.toutVoir(S, O, D, F),
-      famName: F.name, prevFam: () => this.famStep(-1), nextFam: () => this.famStep(1), openFams: () => { this._famDepuis = +ls('mdg-app:famVu') || Date.now(); ls('mdg-app:famVu', Date.now()); this.setState({ sheet: 'fam', sheetDy: 0 }); },
-      wDown: e => this.wDown(e), wMove: e => this.wMove(e), wUp: () => this.wUp(), labels, ticks, sacks,
-      jute: { op: act.sack ? 0 : 1, tf: act.sack ? 'scale(.86)' : 'none', mound: act.tint, l1: act.name.toUpperCase(), fs: act.name.length > 14 ? '14px' : act.name.length > 9 ? '17px' : '21px' },
-      prev: () => this.snap(Math.round(S.rot) - 1), next: () => this.snap(Math.round(S.rot) + 1),
-      ...(() => { const ac = this.accueil({ h, mine, moiS, moiP, moiC, moiN }); return Object.assign(ac, { v2: this.v2Vals(ac, { moiS, moiP, moiC }) }); })(),
+        setTimeout(() => { if (window.MDGPorte && MDGPorte.sortir) MDGPorte.sortir(fin, () => N.signOut()); else { N.signOut(); fin(); } }, 320); }, ...(() => { const ac = this.accueil({ h, mine, moiS, moiP, moiC, moiN }); return Object.assign(ac, { v2: this.v2Vals(ac, { moiS, moiP, moiC }) }); })(),
       markEl: window.MDGMarque ? h('span', { style: { display: 'block' }, dangerouslySetInnerHTML: { __html: MDGMarque.ligne({ fond: 'clair', h: 24 }) } }) : 'Marché de Gros',
-      act: Object.assign({ name: act.name }, this.fitName(act.name, Math.min(aW, 390) - 48), { oTxt: ao ? ao + ' offre' + (ao > 1 ? 's' : '') : 'Aucune offre', oOp: ao ? 1 : .35, dTxt: ad ? ad + ' demande' + (ad > 1 ? 's' : '') : 'Aucune demande', dOp: ad ? 1 : .35, season: inSeason(act.slug, cm), cta: 'Voir la fiche' }, this.prixMoment(act, O, D, inSeason(act.slug, cm), Math.min(aW, 390) - 48)), wheelSc, wheelH: Math.round(388 * wheelSc) + 'px',
-      openFicheAct: () => this.openFiche(act.slug), openPrix: () => this.prixPop(act.slug, O, D), demoGo: () => window.MDGDemo && MDGDemo.basculer(),
-      tendOn: !!(S.tendS && S.tendS === act.slug && S.tendM), tend: S.tendM ? Object.assign({}, S.tendM, { ico: (() => { const n = { '🔥': 'chaleur', '📈': 'tendance', '✅': 'verifie', '🤝': 'negoce', '🛒': 'panier' }[S.tendM.ico]; return n && window.MDGIco ? React.createElement('span', { style: { display: 'flex' }, dangerouslySetInnerHTML: { __html: MDGIco.svg(n, 17, 2) } }) : S.tendM.ico; })() }) : { ico: '', t: '', s: '', cls: '', dur: '5.2s' },   // icônes dessinées, pas d'emoji
-      duoH: { jaiL: 'J\u2019ai ' + act.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + act.name.toLowerCase() + ' à acheter : publier une demande' }, duoF: { jaiL: 'J\u2019ai ' + FP.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + FP.name.toLowerCase() + ' à acheter : publier une demande' },
-      openJai: () => this.openSheet('jai', top === 'fiche' ? S.slug : act.slug), openCherche: () => this.openSheet('cherche', top === 'fiche' ? S.slug : act.slug),
-      fp, fv: S.stack.includes('fiche') ? this.v2Fiche() : null, pvo: S.stack.includes('vendre') ? this.v2Pub('offre') : null, pvd: S.stack.includes('demande') ? this.v2Pub('demande') : null, tp: S.stack.includes('categories') ? this.v2Tous() : null, ya: S.stack.includes('annee') ? this.v2Annee() : null, share: () => { const u = location.href, t = FP.name + ' · Marché de Gros de Côte d\u2019Ivoire'; if (navigator.share) navigator.share({ title: t, url: u }).catch(() => {}); else { try { navigator.clipboard.writeText(u); this.say('Lien copié'); } catch (_) {} } },
-      ficheCarte: () => this.push('carte', { cprod: S.slug, csel: '', cOpen: true }),
+      fv: S.stack.includes('fiche') ? this.v2Fiche() : null, pvo: S.stack.includes('vendre') ? this.v2Pub('offre') : null, pvd: S.stack.includes('demande') ? this.v2Pub('demande') : null, tp: S.stack.includes('categories') ? this.v2Tous() : null, ya: S.stack.includes('annee') ? this.v2Annee() : null, share: () => { const u = location.href, t = FP.name + ' · Marché de Gros de Côte d\u2019Ivoire'; if (navigator.share) navigator.share({ title: t, url: u }).catch(() => {}); else { try { navigator.clipboard.writeText(u); this.say('Lien copié'); } catch (_) {} } },
       aRef: this.aRef, aq: S.aq, onAq: e => this.setState({ aq: e.target.value }), aqHas: !!S.aq, clearAq: () => this.setState({ aq: '' }),
       toggleFilters: () => this.setState(s => ({ fOpen: !s.fOpen })), fOpen: S.fOpen, fBtn: Object.assign(chip(nF > 0 || S.fOpen), { l: nF ? 'Filtres · ' + nF : 'Filtrer' }),
       famChips: [{ slug: '', name: 'Tout' }, ...this.cats].map(c => Object.assign(chip(S.af.cat === c.slug), { l: c.name.split(/[ ,]/)[0], go: () => this.setState(s => ({ af: Object.assign({}, s.af, { cat: c.slug }) })) })),
@@ -2192,28 +1813,8 @@ class Component extends DCLogic {
       aEmptyT: aK === 'demande' ? 'Pas encore de demande' + (pslug ? ' pour ' + this.prod(pslug).name.toLowerCase() : ' qui correspond') : O.length ? 'Pas encore d\u2019offre' + (pslug ? ' pour ' + this.prod(pslug).name.toLowerCase() : ' qui correspond') : 'Le marché attend sa première offre',
       aEmptyX: O.length ? 'Publiez une demande : les vendeurs de ce produit la verront et vous contacteront.' : 'Rien n\u2019a encore été publié sur cet appareil. Une demande suffit pour lancer le réseau.',
       aDemande: aDem, aDemandeL: pslug ? 'Demander ' + this.prod(pslug).name.toLowerCase() : 'Publier une demande',
-      vStepTxt: vf.step + ' / 3', vBars: [1, 2, 3].map(i => ({ bg: i <= vf.step ? 'var(--terre)' : 'var(--lin-2)' })),
-      vPrevVs: vf.vs && vf.city ? this.vsEl({ vs: true, kind: 'offre', city: vf.city }) : null,
-      vPrev: { img: vf.photo || (VP ? VP.thumb : 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 72"><rect width="72" height="72" fill="#efe7d9"/><path d="M22 28c-1 10-2 20-1 28 1 4 6 5 15 5s14-1 15-5c1-8 0-18-1-28-6 3-22 3-28 0z" fill="none" stroke="#b9ad98" stroke-width="2"/><path d="M21 24c5-3 25-3 30 0v5c-6 3-24 3-30 0z" fill="none" stroke="#b9ad98" stroke-width="2"/></svg>')), fit: vf.photo || !VP || !VP.sack ? 'cover' : 'contain', product: VP ? VP.name : 'Votre produit',
-        line: (vf.qty ? A.fmt(+String(vf.qty).replace(',', '.') || 0) + ' ' + vf.unit : 'Quantité') + ' · ' + (vf.city || (A.REG[vf.region] || [])[2] || 'Lieu'), ...(Q => ({ qT: Q.t, qU: Q.u }))(this.quand({ kind: 'offre', when: vf.avail === 'date' && vf.date ? vf.date : 'maintenant' })),
-        price: A.digits(vf.price) ? A.fmt(+A.digits(vf.price)) + ' F CFA / ' + vf.unit : 'Prix à discuter', who: identAdm() ? 'Marché de Gros' : this.nomCompte() || 'Votre nom' },
-      vDem: { on: vdn > 0, txt: vdn + ' demande' + (vdn > 1 ? 's' : '') + ' ' + deDe(VP ? VP.name.toLowerCase() : '') + ' attend' + (vdn > 1 ? 'ent' : '') + ' déjà un vendeur.' },
-      vModes: [['moi', 'Je vends'], ['agent', 'Pour un producteur']].map(m => ({ l: m[1], bg: vf.mode === m[0] ? 'var(--encre)' : 'transparent', color: vf.mode === m[0] ? 'var(--ivoire)' : 'var(--texte-2)', go: () => this.setVf({ mode: m[0] }) })),
-      vS1: vf.step === 1, vS2: vf.step === 2, vS3: vf.step === 3, pickVendre: () => this.openPick('vendre'), vInv: { slug: S.vErr.slug ? 'true' : 'false', qty: S.vErr.qty ? 'true' : 'false', qmin: S.vErr.qmin ? 'true' : 'false', region: S.vErr.region ? 'true' : 'false' }, vEb: { slug: eb(S.vErr, 'slug'), qty: eb(S.vErr, 'qty'), qmin: eb(S.vErr, 'qmin'), region: eb(S.vErr, 'region'), phone: eb(S.vErr, 'phone') },
-      vProdL: VP ? VP.name : 'Choisir un produit', vPhotoL: vf.photo ? 'Photo ajoutée · changer' : 'Prendre ou choisir une photo',
       onPhoto: e => { const f = e.target.files && e.target.files[0]; if (f) A.photo(f).then(d => this.setState(s => ({ vf: Object.assign({}, s.vf, { photo: d }) }))).catch(() => this.say('Photo illisible')); },
-      vf, vCity: this.cityUI(vf, o => this.setVf(o)), vVsEl: window.MDGVilleSeule ? window.MDGVilleSeule.interrupteur(vf, 'offre', o => this.setVf(o)) : null, vLieuEl: this.lieuEl(vf, o => this.setVf(o)), acct: this.acctTxt(), estOff: identAdm(), pasOff: !identAdm(), pasOffV: !identAdm() || vf.mode === 'agent', offLogo: identAdm() && window.MDGMarque ? React.createElement('span', { style: { display: 'flex' }, dangerouslySetInnerHTML: { __html: window.MDGMarque.dg(40, { fond: 'vert', rond: true }) } }) : null, vfh: { neg: () => this.setState(s => ({ vf: Object.assign({}, s.vf, { neg: s.vf.neg === false }) })), negBg: vf.neg === false ? 'transparent' : 'var(--encre)', negFg: vf.neg === false ? 'var(--encre)' : 'var(--ivoire)', negTxt: vf.neg === false ? 'Prix ferme : pas de proposition' : 'J’accepte les propositions de prix', qty: setV('qty'), qmin: setV('qmin'), price: setV('price'), region: e => this.setVf(this.regionPatch(S.vf, e.target.value)), city: setV('city'), date: setV('date'), agent: setV('agent'), name: setV('name'), phone: setV('phone') },
-      vUnits: A.UNITS.map(u => Object.assign(chip(vf.unit === u), { l: u, go: () => this.setVf({ unit: u }) })),
-      vRef: { on: !!(vmk && (vmk.ok || vlow)), txt: vmk && vmk.ok ? 'Prix observé du marché : ' + vmk.range : vlow ? 'Autre vendeur : ' + A.fmt(vlow.price) + ' F / ' + vlow.unit + ' à ' + this.place(vlow) : '' },
-      vCityPh: (A.REG[vf.region] || [])[2] ? 'ex. ' + A.REG[vf.region][2] : 'ex. Bouaké', vTr: this.trBloc('vf', 'offre'), vAvail: [['maintenant', 'Maintenant'], ['date', 'À partir du…']].map(a => Object.assign(chip(vf.avail === a[0]), { l: a[1], go: () => this.setVf({ avail: a[0] }) })), vDateOn: vf.avail === 'date',
-      nomCpt: this.nomCompte() || 'Le nom de votre compte', nomCptS: this.nomCompte() ? 'C’est le nom de votre compte : il ne se change pas ici (Mon compte → Profil).' : 'Connectez-vous : l’annonce portera le nom de votre compte.',
-      vAgent: vf.mode === 'agent', vNameL: vf.mode === 'agent' ? 'Nom du producteur' : 'Votre nom', vErr: S.vErr, vCanBack: vf.step > 1, vPrevStep: () => this.setState(s => ({ vf: Object.assign({}, s.vf, { step: s.vf.step - 1 }) })), vNext, vNextL: vf.step < 3 ? 'Suivant' : 'Publier mon offre',
-      pickDemande: () => this.openPick('demande'), dInv: { slug: S.dErr.slug ? 'true' : 'false', qty: S.dErr.qty ? 'true' : 'false', qmin: S.dErr.qmin ? 'true' : 'false', region: S.dErr.region ? 'true' : 'false' }, dEb: { slug: eb(S.dErr, 'slug'), qty: eb(S.dErr, 'qty'), qmin: eb(S.dErr, 'qmin'), region: eb(S.dErr, 'region'), phone: eb(S.dErr, 'phone') }, dProdL: df.slug ? this.prod(df.slug).name : 'Choisir un produit',
-      dOffers: dOf.slice(0, 3).map(o => this.card(o)), dOffInfo: { on: !!df.slug && (dOf.length === 0 || dOf.length > 3), txt: dOf.length ? dOf.length + ' vendeurs proposent ce produit' + (df.region ? ', dont ' + dOf.filter(o => o.region === df.region).length + ' en ' + this.regName(df.region) : '') + '.' : 'Pas encore d\u2019offre pour ce produit. Votre demande sera la première.' },
-      dCity: this.cityUI(df, patchD), dVsEl: window.MDGVilleSeule ? window.MDGVilleSeule.interrupteur(df, 'demande', patchD) : null, df, dfh: { qty: setD('qty'), qmin: setD('qmin'), region: e => patchD(this.regionPatch(S.df, e.target.value)), budget: setD('budget'), name: setD('name'), phone: setD('phone') }, dErr: S.dErr,
-      dUnits: A.UNITS.map(u => Object.assign(chip(df.unit === u), { l: u, go: () => this.setState(s => ({ df: Object.assign({}, s.df, { unit: u }) })) })),
-      dExi: this.exiBloc('df', true), dTr: this.trBloc('df', 'demande'), dWhen: W_DEM.map(w => Object.assign(chip(df.deadline === w[0]), { l: w[1], go: () => this.setState(s => ({ df: Object.assign({}, s.df, { deadline: w[0] }) })) })), dPublish,
-      cPick: () => this.openPick('carte'), cLocate: () => { if (this.glOn && this.map && this.map.localiser) this.map.localiser(); else this.locate(); }, mapRef: this.mapRef, cLocOn: !this.glOn, cDist, cLeg, cSheet, cZones, cAdmin: isAdm, cZoneAdd: () => this.zoneForm(), cProdL: S.cprod ? this.prod(S.cprod).name : 'Tous les produits', cMe: S.cme, cMeOn: S.cme ? 'oui' : 'non', cMeK: S.cme ? 'Vous êtes à' : 'Votre zone', cMeL: S.cme ? ((M.regions.find(r => r.slug === S.cme) || {}).name || S.cme) : 'Où êtes-vous ?', onMe: e => { const v = e.target.value; this.setState({ cme: v, csel: '' }); if (v) { this.me.region = v; this.me.city = this.accord(v, this.me.city); ls('mdg-app:moi', this.me); } },
+      vf, estOff: identAdm(), offLogo: identAdm() && window.MDGMarque ? React.createElement('span', { style: { display: 'flex' }, dangerouslySetInnerHTML: { __html: window.MDGMarque.dg(40, { fond: 'vert', rond: true }) } }) : null, df, cPick: () => this.openPick('carte'), cLocate: () => { if (this.glOn && this.map && this.map.localiser) this.map.localiser(); else this.locate(); }, mapRef: this.mapRef, cLocOn: !this.glOn, cDist, cLeg, cSheet, cZones, cAdmin: isAdm, cZoneAdd: () => this.zoneForm(), cProdL: S.cprod ? this.prod(S.cprod).name : 'Tous les produits', cMe: S.cme, cMeOn: S.cme ? 'oui' : 'non', cMeK: S.cme ? 'Vous êtes à' : 'Votre zone', cMeL: S.cme ? ((M.regions.find(r => r.slug === S.cme) || {}).name || S.cme) : 'Où êtes-vous ?', onMe: e => { const v = e.target.value; this.setState({ cme: v, csel: '' }); if (v) { this.me.region = v; this.me.city = this.accord(v, this.me.city); ls('mdg-app:moi', this.me); } },
       // plusieurs annonces au même endroit : on voit le bord de la suivante, des points « 1 sur 2 » et des flèches
       cPickMulti: cPicked.length > 1, cPickW: cPicked.length > 1 ? 'calc(100% - 64px)' : 'calc(100% - 28px)',
       cPickDots: cPicked.map((_, i) => ({ on: String(i === (S.cPickI || 0)), lab: 'Annonce ' + (i + 1) + ' sur ' + cPicked.length, go: () => this.cPickAller(i) })),
@@ -2223,55 +1824,17 @@ class Component extends DCLogic {
       cPickOn: cPicked.length > 0, cPicked, cPickN: cPicked.length > 1 ? cPicked.length + ' annonces ici' : 'Annonce', cPickBas: (this.cIns ? this.cIns.b : 80) + 10 + 'px', cPickFermer: () => { this.setState({ cPick: null }); this.map && this.map.pick && this.map.pick([]); },
       cTop, cLiens, cLiensOn: !!cLiens.length && !S.csel && cK !== 'compat', cListOn: !!cList.length, cPanT: cLiens.length && !S.csel && cK !== 'compat' ? 'Ce qui se rapproche' : cListT, cPanN: cLiens.length && !S.csel && cK !== 'compat' ? lien.length + ' lien' + (lien.length > 1 ? 's' : '') : cSheet.l,
       cListT, cList, cEmpty: !cList.length && !cZones.length, cEmptyTxt: 'Le réseau se dessine à chaque publication. Aucune offre ni demande ' + (S.csel ? 'ici' : (S.cprod ? 'pour ce produit' : '')) + ' pour l\u2019instant.',
-      // catalogue : chiffres, tri (tout · en saison · avec annonces), recherche, familles en tuiles, famille ouverte en grille (css/categories-app.css)
-      ...(() => {
-        const oN = {}, dN = {}; O.forEach(o => { oN[o.slug] = (oN[o.slug] || 0) + 1; }); D.forEach(d => { dN[d.slug] = (dN[d.slug] || 0) + 1; });
-        const sea = p => !!inSeason(p.slug, cm), ann = p => (oN[p.slug] || 0) + (dN[p.slug] || 0) > 0, f = S.catF || 'tout';
-        const garde = p => f === 'saison' ? sea(p) : f === 'annonces' ? ann(p) : true;
-        const pl = n => n > 1 ? 's' : '';
-        const vign = p => { const P = this.prod(p.slug), o = oN[p.slug] || 0, d = dN[p.slug] || 0, m = this.market(p.slug, O), lo = O.filter(x => x.slug === p.slug && x.price).sort((a, b) => a.price - b.price)[0];
-          const prix = m.ok ? m.range.replace(' F CFA', ' F') : lo ? 'dès ' + A.fmt(lo.price) + ' F/' + lo.unit : (o + d ? 'Prix à discuter' : 'Pas d’annonce');
-          return { name: P.name, thumb: P.thumb, fit: P.fit, bg: P.sack ? 'oklch(0.93 0.035 ' + P.hue + ')' : 'transparent', sea: sea(p), prix, fam: P.catName, o, d, hasO: o > 0, hasD: d > 0,
-            aria: P.name + (o ? ', ' + o + ' offre' + pl(o) : '') + (d ? ', ' + d + ' demande' + pl(d) : '') + (sea(p) ? ', en saison' : ''), go: () => this.openFiche(p.slug) }; };
-        const fams = this.cats.map(c => { const ps = M.products.filter(p => p.categorySlug === c.slug), o = ps.reduce((t, p) => t + (oN[p.slug] || 0), 0), d = ps.reduce((t, p) => t + (dN[p.slug] || 0), 0), s2 = ps.filter(sea).length;
-          return { c, ps, o, d, s: s2, n: ps.filter(garde).length }; });
-        const visibles = fams.filter(x => x.n > 0), star = visibles.slice().sort((a, b) => (b.o + b.d) - (a.o + a.d) || b.s - a.s)[0];
-        const ordre = star ? [star].concat(visibles.filter(x => x !== star)) : [];
-        const q = A.norm(S.catQ || ''), open = !q && S.openFam ? fams.find(x => x.c.slug === S.openFam) : null;
-        const trouve = q ? M.products.filter(p => (A.norm(p.name).includes(q) || (p.aliases || []).some(a => A.norm(a).includes(q))) && garde(p)) : [];
-        const nO = O.length, nD = D.length, nS = M.products.filter(sea).length, nA = M.products.filter(ann).length;
-        return {
-          catTitle: this.cats.length + ' familles,',
-          ctNb: { prod: M.products.length, saison: nS, mois: A.MOIS[cm - 1].toLowerCase(), ann: nO + nD, o: nO, d: nD },
-          ctQ: S.catQ || '', ctHasQ: !!q, ctOnQ: e => this.setState({ catQ: e.target.value }), ctClearQ: () => this.setState({ catQ: '' }),
-          ctFiltres: [['tout', 'Tout', M.products.length], ['saison', 'En saison', nS], ['annonces', 'Avec annonces', nA]].map(([k, t, n]) => ({ t, n, hasN: k !== 'tout', on: f === k ? 'true' : 'false', go: () => this.setState({ catF: k }) })),
-          ctFamOn: !!open, ctFam: open ? { name: open.c.name, img: A.IMG + 'famille-' + open.c.slug + '.webp', sub: open.ps.length + ' produit' + pl(open.ps.length) + (open.s ? ' · ' + open.s + ' en saison' : '') + (open.o + open.d ? ' · ' + (open.o + open.d) + ' annonce' + pl(open.o + open.d) + ' en ligne' : ''),
-            produits: open.ps.filter(garde).sort((a, b) => (ann(b) - ann(a)) || (sea(b) - sea(a))).map(vign), vide: !open.ps.filter(garde).length, fermer: () => this.setState({ openFam: null }) } : { produits: [] },
-          ctRechOn: !!q, ctRech: trouve.slice(0, 40).map(vign), ctRechT: trouve.length ? trouve.length + ' produit' + pl(trouve.length) + ' trouvé' + pl(trouve.length) : 'Aucun produit trouvé. Essayez un autre nom (aloco, attiéké, gombo…).',
-          ctGrilleOn: !q && !open, ctAucune: !ordre.length,
-          cats: ordre.map((x, i) => ({ name: x.c.name, img: A.IMG + 'famille-' + x.c.slug + '.webp', cls: i === 0 ? 'grand' : '',
-            nb: (f === 'tout' ? x.ps.length : x.n + ' sur ' + x.ps.length) + ' produit' + pl(x.ps.length), o: x.o, d: x.d, s: x.s, hasO: x.o > 0, hasD: x.d > 0, hasS: x.s > 0,
-            aria: x.c.name + ', ' + x.ps.length + ' produits' + (x.o ? ', ' + x.o + ' offre' + pl(x.o) : '') + (x.d ? ', ' + x.d + ' demande' + pl(x.d) : '') + (x.s ? ', ' + x.s + ' en saison' : ''),
-            toggle: () => { this.setState({ openFam: x.c.slug }); const sc = document.querySelector('[data-pg="categories"] .ct'); if (sc) sc.scrollTop = 0; } }))
-        };
-      })(),
       px, goDemande: () => this.push('demande'),
-      yearEl: html(this.anDial(S.month, cm, !this._anVu), { className: 'an2-dial', onClick: e => { const t = e.target.closest && e.target.closest('[data-m]'); if (t) this.setState({ month: +t.dataset.m, anOpen: null }); },
-        onPointerDown: e => { this._anX = e.clientX; }, onPointerUp: e => { const dx = e.clientX - (this._anX == null ? e.clientX : this._anX); this._anX = null; if (Math.abs(dx) > 48) this.setState(s => ({ month: dx < 0 ? (s.month === 12 ? 1 : s.month + 1) : (s.month === 1 ? 12 : s.month - 1), anOpen: null })); } }),
-      mPrev: () => this.setState(s => ({ month: s.month === 1 ? 12 : s.month - 1, anOpen: null })), mNext: () => this.setState(s => ({ month: s.month === 12 ? 1 : s.month + 1, anOpen: null })),
-      mName: A.MOIS[S.month - 1], mKicker: S.month === cm ? 'Ce mois-ci' : S.month === (cm % 12) + 1 ? 'Le mois prochain' : String(S.month).padStart(2, '0') + ' / 12', mGroups, mEmpty: !mGroups.length,
-      anStrip, anResume: anN ? anN + ' culture' + (anN > 1 ? 's' : '') + ' en récolte en ' + A.MOIS[S.month - 1].toLowerCase() + '. Touchez un produit pour voir son année.' : 'Aucune récolte sourcée ce mois-ci : la plupart des produits viennent des stocks.',
       myPubs, pubsEmpty: !myPubs.length,
       mes: (() => { const ID = window.MDGIdentite, s = ID && ID.statutCache ? ID.statutCache() : null, r = ID && ID.gratuitesRestantes ? ID.gratuitesRestantes(s) : null;
         return { de: S.pubsDe || 'Compte', quotaOn: r != null, quota: r != null ? (s.annonces || 0) + ' annonce' + ((s.annonces || 0) > 1 ? 's' : '') + ' sur ' + s.gratuites + ' gratuites. Ensuite, l\u2019identité vérifiée est demandée.' : '',
-          publier: () => this.setState({ v2choix: true }) }; })(), stockOn: stockSum.length > 0, stockSum, pubsBqOn: !!(window.MDGBoutique && mine.some(x => x.kind === 'offre')), pubsBq: () => window.MDGBoutique && MDGBoutique.gerer(),
-      fAlerte: (() => { const AL = window.MDGAlertes, a = AL && AL.suit(S.slug); return { l: a ? 'Alertes activées pour ce produit' : 'M\u2019alerter pour ce produit', c: a ? '#F2C230' : 'inherit', f: a ? 'rgba(243,180,138,.35)' : 'none' }; })(),
+          publier: () => this.setState({ v2choix: true }) }; })(), fAlerte: (() => { const AL = window.MDGAlertes, a = AL && AL.suit(S.slug); return { l: a ? 'Alertes activées pour ce produit' : 'M\u2019alerter pour ce produit', c: a ? '#F2C230' : 'inherit', f: a ? 'rgba(243,180,138,.35)' : 'none' }; })(),
       ficheAlerte: () => window.MDGAlertes && window.MDGAlertes.panneau(S.slug, FP.name), vd, info,
       scrimOp: anyS ? Math.max(0, 1 - dy / 400) : 0, scrimBg: S.menu ? 'rgba(8,7,5,.74)' : 'rgba(10,9,7,.55)', scrimFlou: S.menu ? 'blur(3px)' : 'none',  // tiroir ouvert : l'accueil s'efface davantage (rien ne semble dépasser du tiroir)
        scrimPe: anyS ? 'auto' : 'none', closeAll: () => this.closeAll(),
       sheetTr: this.sd ? 'none' : 'transform .45s cubic-bezier(.22,1,.36,1)', sDown: e => this.sDown(e), sMove: e => this.sMove(e), sUp: () => this.sUp(),
       menuTf: S.menu ? 'translateX(' + Math.min(0, S.drDx || 0) + 'px)' : 'translateX(-105%)', drTr: this.dd ? 'none' : 'transform .42s cubic-bezier(.22,1,.36,1), visibility 0s linear ' + (S.menu ? '0s' : '.42s'), menuVis: S.menu ? 'visible' : 'hidden', menuHid: S.menu ? 'false' : 'true',
-      dDown: e => { this.dx0 = e.clientX; this.dy0 = e.clientY; this.dd = false; }, dMove: e => { if (this.dx0 == null) return; const dx = e.clientX - this.dx0, dyy = e.clientY - this.dy0; if (!this.dd && dx < -10 && Math.abs(dx) > Math.abs(dyy) * 1.3) this.dd = true; if (this.dd) this.setState({ drDx: Math.min(0, dx) }); }, dUp: () => { if (this.dd) { const fermer = (this.state.drDx || 0) < -70; this.dd = false; this.setState(fermer ? { menu: false, drDx: 0 } : { drDx: 0 }); } this.dx0 = null; }, famTf: S.sheet === 'fam' ? 'translateY(' + dy + 'px)' : 'translateY(105%)', toutTf: S.sheet === 'tout' ? 'translateY(' + dy + 'px)' : 'translateY(105%)', toutCache: String(S.sheet !== 'tout'), matchTf: sheetOn ? 'translateY(' + dy + 'px)' : 'translateY(105%)',
+      dDown: e => { this.dx0 = e.clientX; this.dy0 = e.clientY; this.dd = false; }, dMove: e => { if (this.dx0 == null) return; const dx = e.clientX - this.dx0, dyy = e.clientY - this.dy0; if (!this.dd && dx < -10 && Math.abs(dx) > Math.abs(dyy) * 1.3) this.dd = true; if (this.dd) this.setState({ drDx: Math.min(0, dx) }); }, dUp: () => { if (this.dd) { const fermer = (this.state.drDx || 0) < -70; this.dd = false; this.setState(fermer ? { menu: false, drDx: 0 } : { drDx: 0 }); } this.dx0 = null; }, matchTf: sheetOn ? 'translateY(' + dy + 'px)' : 'translateY(105%)',
       menu: (() => {
         // une ligne du tiroir : icône, nom, (sous-titre), (compteur) ; la page ouverte est surlignée comme dans Gmail
         const ln = (o) => Object.assign({ hasS: !!o.s, s: o.s || '', hasN: !!o.n, n: o.n || '', nBg: o.nBg || 'var(--dr-nbg, rgba(23,21,18,.07))', nFg: o.nFg || 'var(--dr-nfg, #171512)', cur: o.page && o.page === top ? 'page' : 'false', bg: o.page && o.page === top ? 'rgba(16,57,43,.08)' : 'transparent', fg: o.page && o.page === top ? '#10392B' : '#171512' }, o);
@@ -2294,11 +1857,6 @@ class Component extends DCLogic {
         ].filter(Boolean);
       })(),
       // familles : sur chaque photo, le nombre d'offres (rond vert) et de demandes (carré jaune), et « nouveau » depuis la dernière visite
-      famGrid: S.sheet !== 'fam' && !this._famVu ? [] : (this._famVu = true, this.FAMS).map((f, i) => { const sl = new Set(f.prods.map(p => p.slug)), fo = O.filter(x => sl.has(x.slug)), fd = D.filter(x => sl.has(x.slug)),
-        depuis = this._famDepuis || Date.now(), neuf = fo.concat(fd).filter(x => x.remote && Date.parse(x.at) > depuis).length;
-        return { name: f.name, sub: f.prods.length + ' produits', img: A.IMG + 'famille-' + f.slug + '.webp', bd: i === S.fam ? '#F2C230' : 'transparent', go: () => this.setState({ fam: i, rot: 0, sheet: null }),
-          o: fo.length, d: fd.length, hasO: fo.length > 0, hasD: fd.length > 0, hasNeuf: neuf > 0, neufL: neuf > 1 ? neuf + ' nouvelles' : 'Nouveau',
-          lab: f.name + ' : ' + f.prods.length + ' produits, ' + fo.length + ' offre' + (fo.length > 1 ? 's' : '') + ', ' + fd.length + ' demande' + (fd.length > 1 ? 's' : '') + (neuf ? ', ' + neuf + ' nouvelle' + (neuf > 1 ? 's' : '') : '') }; }),
       toastOn: !!S.toast, toast: S.toast ? { t: S.toast.t, x: S.toast.x, ico: tuile(S.toast.k === 'offre' ? 'vendre' : 'demander', S.toast.k === 'offre' ? 'offre' : 'demande'),
         go: () => { const sl = S.toast.slug; clearTimeout(this._tt); this.setState({ toast: null, menu: false, sheet: null }); this.openFiche(sl); } } : { t: '', x: '', ico: null, go: null },
       toastTop: 'calc(' + (this.safeT ? this.safeT + 'px' : 'env(safe-area-inset-top, 0px)') + ' + 10px)',
@@ -2306,7 +1864,7 @@ class Component extends DCLogic {
       setJai: () => this.setState({ mode: 'jai', mErr: {}, mf: Object.assign({}, S.mf, { when: '' }) }), setCherche: () => this.setState({ mode: 'cherche', mErr: {}, mf: Object.assign({}, S.mf, { when: '' }) }),
       formOn: !S.done, doneOn: !!S.done, done: S.done ? { title: S.done.title, t1: S.done.title.replace(/(en ligne|lancée)$/, ''), t2: (S.done.title.match(/(en ligne|lancée)$/) || [''])[0], text: S.done.text, cta: S.done.n ? 'Voir les correspondances' : 'Mes publications', go: () => { const d = S.done; this.closeAll(); d.n ? this.openFiche(d.slug) : this.push('pubs'); } } : { title: '', text: '', cta: '', go: null },
       // annonce publiée : le sac se remplit et saute de joie (app/sac.js) ; sinon l'ancien dessin
-      sacVide: window.MDGSac ? html(window.MDGSac.svg('vide', { t: 96 })) : null, sacVidePetit: window.MDGSac ? html(window.MDGSac.svg('vide', { t: 64 })) : null,
+      sacVidePetit: window.MDGSac ? html(window.MDGSac.svg('vide', { t: 64 })) : null,
       doneEl: S.done ? html(window.MDGSac ? window.MDGSac.svg('plein', { t: 118 }) : this.doneSVG(S.done)) : null,
       pickMatch: () => this.openPick('match'), mfP: { thumb: MP.thumb, fit: MP.fit, rad: MP.rad, fam: MP.catName, name: MP.name },
       matchTitle: isJai ? 'Demandes qui vous cherchent' : 'Offres disponibles', matches: opp.slice(0, 3).map(x => this.card(x)), noMatch: !opp.length,

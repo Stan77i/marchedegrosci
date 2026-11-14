@@ -67,19 +67,8 @@
 .ui-tile.logo { background: none; box-shadow: none; }
 .ui-tile.photo { background: none; box-shadow: none; overflow: hidden; border-radius: 50%; }
 
-.ui-count { flex: none; min-width: 22px; height: 22px; padding: 0 7px; border-radius: var(--r-rond); display: inline-flex; align-items: center; justify-content: center; gap: 4px;
-  font: 600 var(--t-sm)/1 var(--f-texte); font-variant-numeric: tabular-nums; background: var(--accent); color: var(--foreground); }
-.ui-count.vif { background: var(--primary); color: var(--primary-foreground); }
 
 /* familles : le nombre d'offres et de demandes sur chaque photo, et « nouveau » quand une annonce vient d'arriver */
-.fam-tile { position: relative; }
-.fam-tile img { width: 100%; height: 92px; object-fit: cover; display: block; }
-.fam-pills { position: absolute; left: 8px; right: 8px; top: 8px; display: flex; gap: 4px; flex-wrap: wrap; pointer-events: none; }
-.fam-pill { display: inline-flex; align-items: center; gap: 5px; height: 24px; padding: 0 8px 0 6px; border-radius: var(--r-rond); background: rgba(18, 16, 13, .78);
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); color: var(--ivoire); font: 600 12px/1 var(--f-texte); font-variant-numeric: tabular-nums; }
-.fam-pill i{display:inline-grid;place-items:center;flex:none;width:18px;height:18px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 11px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.fam-pill i::before{content:"🧺"}
-.fam-pill.d i{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.fam-pill.d i::before{content:"🛒"}
-.fam-pill.neuf { background: var(--primary); color: var(--primary-foreground); padding: 0 8px; }
 
 .ui-toast { position: absolute; left: 12px; right: 12px; z-index: var(--z-toast); display: flex; align-items: center; gap: 12px; padding: 10px 12px 10px 10px; border-radius: 18px;
   background: rgba(36, 32, 26, .96); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); color: var(--ivoire); box-shadow: 0 12px 34px rgba(0, 0, 0, .45), inset 0 0 0 1px var(--border);
@@ -95,20 +84,6 @@
    Leur couleur ne change plus avec le produit : elle dit toujours la même chose. Texte encre : 8,9:1 sur le vert, 11,4:1 sur le jaune. */
 /* Règle du propriétaire (25/10/2026) : « J'ai » et « Je cherche » restent en noir (#171512) dans les DEUX modes, jamais
    var(--encre), qui devient crème en mode sombre et rendait le titre illisible sur le vert et le jaune. */
-.duo2 { flex: 1; display: flex; gap: 10px; }
-.duo2 button { flex: 1; min-width: 0; height: 62px; border: 0; border-radius: 20px; display: flex; align-items: center; gap: 10px; padding: 0 12px 0 9px; text-align: left; color: #171512;
-  font-family: var(--f-texte); cursor: pointer; box-shadow: 0 10px 26px -12px var(--halo), inset 0 -3px 0 rgba(23, 21, 18, .13); transition: transform var(--d-court) var(--courbe), filter var(--d-court); }
-.duo2 button:active { transform: scale(.97); filter: brightness(.96); }
-.duo2 button:focus-visible { outline: 2px solid var(--ivoire); outline-offset: 3px; }
-.duo2 .jai { --halo: rgba(108, 197, 140, .7); background: linear-gradient(180deg, #7DD39C, var(--offre)); }
-.duo2 .ch { --halo: rgba(242, 201, 76, .65); background: linear-gradient(180deg, #F6D66E, var(--demande)); }
-.duo2 .emo { flex: none; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-size: 25px; line-height: 1; background: rgba(255, 255, 255, .42); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .5); }
-.duo2 .tx { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-.duo2 b { font-size: var(--t-lg); font-weight: 700; line-height: 1.1; color: #171512; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.duo2 small { font-size: var(--t-sm); font-weight: 500; line-height: 1.15; color: rgba(23, 21, 18, .72); white-space: nowrap; }
-@media (max-width: 350px) { .duo2 { gap: 8px; } .duo2 button { gap: 7px; padding: 0 8px 0 7px; } .duo2 .emo { width: 36px; height: 36px; font-size: 20px; } .duo2 b { font-size: var(--t-base); } }
-@media (max-height: 700px) { .duo2 button { height: 56px; border-radius: 18px; } .duo2 .emo { width: 38px; height: 38px; font-size: 21px; } }
-@media (prefers-reduced-motion: reduce) { .duo2 button { transition: none; } }
 
 /* carte : pendant qu'elle se prépare, le « dG » du logo qui respire (comme l'écran d'ouverture) et une phrase, sur le fond de la carte (la carte apparaît en fondu par-dessus) */
 .carte-hote>*{z-index:1}.carte-hote::before,.carte-hote::after{z-index:0}
@@ -148,8 +123,6 @@ html[data-theme=sombre] .acc-sc .qd[data-u] { --qd-lis: #171512; }
 .lab { display: inline-block; font: 600 13px/1.25 var(--f-texte, Jost), system-ui, sans-serif; color: var(--texte-3); letter-spacing: 0; text-transform: none; }
 .lab-d { color: var(--sable); }
 /* étiquette de champ (Vendre, Demander) : la même partout */
-.f-lab { font: 600 14px/1.3 var(--f-texte, Jost), system-ui, sans-serif; color: var(--texte-2); }
-.f-lab small, .f-lab i { font-weight: 400; color: var(--mute); font-style: normal; }
 
 /* écran d'ouverture : le sac v2 (app/sac.js, humeur « plein ») fait son entrée, puis « marché » monte et « de Gros » s'écrit.
    Une seule scène orchestrée : le sac arrive de dessous (0,25 s), les produits tombent, il encaisse et saute, le nom se pose. */
@@ -240,15 +213,10 @@ html[data-theme=sombre] .acc-sc .qd[data-u] { --qd-lis: #171512; }
 input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #2E8B62 !important; outline-offset: 2px; }
 [data-pg="home"] input:focus-visible, [data-pg="carte"] select:focus-visible { outline-color: #F2C230 !important; }
 /* noms de produits autour de l'arc (accueil) : la zone de toucher dépasse le texte de 10 px, sans le déplacer (WCAG 2.5.8) */
-.arc-l::after { content: ''; position: absolute; inset: -10px -6px; }
 
 /* ═══ Accueil clair (21 oct. 2026) : en-tête flottant, onglets, carte orbitale sombre, cartes de chiffres, listes ═══
    Couleurs du Marché de Gros : vert #10392B, maïs #F2C230, crème #F3EFE4, blanc #FFFDF8. Police unique : Jost. Icônes : Lucide (app/icones.js). */
 .acc-sc{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;box-sizing:border-box}
-.acc-tete{position:relative;z-index:5;margin:6px 12px 0;padding:10px;border-radius:30px;background:#FFFDF8;box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 10px 30px rgba(16,57,43,.10),0 0 0 1px rgba(23,21,18,.05)}
-.acc-l1{display:flex;align-items:center;gap:6px}
-.acc-mq{position:relative;flex:none;width:44px;height:44px;padding:0;border:0;border-radius:50%;background:#10392B;display:grid;place-items:center;cursor:pointer;box-shadow:0 6px 14px rgba(16,57,43,.25)}
-.acc-nom{position:relative;flex:1;min-width:0;height:44px;display:flex;padding-left:4px;overflow:hidden}
 .acc-r{position:relative;flex:none;width:44px;height:44px;padding:0;border:1px solid rgba(23,21,18,.09);border-radius:50%;background:#F6F3EC;color:#171512;display:grid;place-items:center;cursor:pointer}
 .acc-r.plein{border:0;background:#10392B;color:#FFFDF8;box-shadow:0 8px 18px rgba(16,57,43,.3)}
 .acc-r.av{background:#F3E3C0;color:#10392B;overflow:visible}.acc-r.av img{width:38px;height:38px}
@@ -262,89 +230,43 @@ input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px
 @keyframes accOnde{0%,62%{box-shadow:0 0 0 0 rgba(242,194,48,.55)}85%,100%{box-shadow:0 0 0 12px rgba(242,194,48,0)}}
 @keyframes accPop{0%{transform:scale(0)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.acc-cl .acc-cl-i,.acc-cl::after,.acc-cl-n{animation:none!important}}
-.acc-pt{position:absolute;top:1px;right:1px;width:11px;height:11px;border-radius:50%;background:#E2735B;box-shadow:0 0 0 2.5px #FFFDF8}
-.acc-ong{position:relative;display:flex;gap:0;margin-top:10px;padding:4px;border-radius:26px;box-shadow:0 0 0 1px rgba(23,21,18,.1) inset;background:#FFFDF8}
-.acc-ong button{position:relative;z-index:1;flex:1;min-width:0;min-height:44px;border:0;border-radius:22px;background:none;color:#4D473D;font:500 15px Jost,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:background .25s,color .25s}
-.acc-ong button.on{color:#FFFDF8}
-.acc-n{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#F2C230;color:#10392B;font:700 12px/1 Jost,sans-serif}
 /* dans les onglets de l'accueil : le compte est une bulle posée au coin, comme une notification (pas un chiffre collé au mot) */
-.acc-ong button .acc-n{position:absolute;top:4px;right:7px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#C0442B;color:#fff;font:700 11.5px/18px Jost,sans-serif;box-shadow:0 0 0 2px #FFFDF8;line-height:18px}
-.acc-ong button:has(.acc-n){padding-right:14px}   /* le mot se décale un peu pour laisser la bulle au coin */
-.acc-ong button .acc-n.doux{background:#F2C230;color:#10392B}   /* en cours, rien d'urgent : maïs ; quelque chose à faire : terre cuite */
-.acc-ong button.on .acc-n{box-shadow:0 0 0 2px #10392B}
-html[data-theme=sombre] .acc-ong button .acc-n{box-shadow:0 0 0 2px #16140F}html[data-theme=sombre] .acc-ong button.on .acc-n{box-shadow:0 0 0 2px #F3EFE4}
-html[data-theme=sombre] .acc-ong button .acc-n.doux{background:#F2C230;color:#10392B}
-.acc-salut{padding:18px 16px 6px}
-.acc-h1{margin:4px 0 6px;font:600 30px/1.1 Jost,system-ui,sans-serif;letter-spacing:-.02em;color:#171512}
-.acc-h1 em{font:900 italic 1em Jost,sans-serif;color:#10392B;letter-spacing:-.025em;padding:0 .06em 0 .02em;background:linear-gradient(transparent 62%,rgba(242,194,48,.65) 62%,rgba(242,194,48,.65) 94%,transparent 94%)}
-.acc-salut p{margin:0;font:400 15px/1.45 Jost,system-ui,sans-serif;color:#4D473D}.acc-salut b{font-weight:600;color:#171512}
+/* le mot se décale un peu pour laisser la bulle au coin */
+/* en cours, rien d'urgent : maïs ; quelque chose à faire : terre cuite */
 /* le sélecteur orbital, inchangé, dans une carte sombre : la scène et la roue gardent leurs couleurs */
-.acc-orb{position:relative;margin:12px 12px 0;padding:8px 0 4px;border-radius:30px;background:var(--encre,#171512);color:var(--ivoire,#F5F0E6);overflow:hidden;isolation:isolate;box-shadow:0 18px 40px rgba(16,57,43,.18)}
-.acc-orb mdg-marche{border-radius:30px}
-.acc-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 12px 0}
-.acc-k{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:132px;padding:14px 14px 13px;border:0;border-radius:24px;background:#FFFDF8;color:#171512;text-align:left;cursor:pointer;box-shadow:0 1px 2px rgba(16,57,43,.05),0 10px 26px rgba(16,57,43,.07);font-family:Jost,system-ui,sans-serif;overflow:hidden}
-.acc-k.large{grid-column:1/-1;min-height:112px}
-.acc-k-t{max-width:calc(100% - 48px);font:500 14px/1.25 Jost,system-ui,sans-serif;color:#4D473D}
-.acc-k .acc-i{position:absolute;top:12px;right:12px}
-.acc-k b{margin-top:auto;font:700 28px/1.05 Jost,sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.acc-k small{font:400 13px/1.3 Jost,system-ui,sans-serif;color:#655C4D}
 .acc-i{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:13px}
 .acc-i.v{background:rgba(16,57,43,.10);color:#10392B}.acc-i.j{background:rgba(242,194,48,.26);color:#6B4E00}
 .acc-i.t{background:rgba(193,106,58,.14);color:#8A4A22}.acc-i.r{background:rgba(226,115,91,.16);color:#8E2A1C}.acc-i.n{background:rgba(23,21,18,.07);color:#3E382C}
 .acc-carte{margin:14px 12px 0;padding:16px 14px 10px;border-radius:26px;background:#FFFDF8;box-shadow:0 1px 2px rgba(16,57,43,.05),0 10px 26px rgba(16,57,43,.07)}
 .acc-carte h2{margin:0;font:600 19px/1.2 Jost,system-ui,sans-serif;letter-spacing:-.01em;color:#171512}
-.acc-carte h2.acc-seul{margin-bottom:10px}
 .acc-sub{margin:2px 0 10px;font:400 13.5px/1.35 Jost,system-ui,sans-serif;color:#655C4D}
 .acc-ligne,.acc-al{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;margin:0 0 8px;padding:10px 12px;border:0;border-radius:18px;background:#F5F2EA;color:#171512;text-align:left;cursor:pointer;font-family:Jost,system-ui,sans-serif}
 .acc-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
 .acc-tx b{font:600 15px/1.25 Jost,system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .acc-tx small{font:400 13px/1.3 Jost,system-ui,sans-serif;color:#655C4D;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.acc-h{flex:none;font:500 12.5px Jost,system-ui,sans-serif;color:#655C4D}
 .acc-al.r{background:rgba(226,115,91,.10)}.acc-al.j{background:rgba(242,194,48,.16)}.acc-al.v{background:rgba(16,57,43,.07)}
 .acc-al>span:last-child,.acc-al>svg{flex:none;color:#655C4D}
 .acc-vide{margin:6px 0 10px;font:400 14px Jost,system-ui,sans-serif;color:#655C4D}
-.acc-bas{position:absolute;left:0;right:0;bottom:0;z-index:6;display:flex;gap:10px;pointer-events:none}.acc-bas>*{pointer-events:auto}
 .acc :is(button):focus-visible{outline:3px solid #10392B;outline-offset:2px}
-@media (max-width:340px){.acc-h1{font-size:26px}.acc-k b{font-size:24px}}
 
 /* ——— effets de l'accueil (21 oct. 2026) : indicateur d'onglet qui glisse, appui, décor de cercles ——— */
-.acc-ong-ind{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 4);border-radius:22px;background:#10392B;box-shadow:0 6px 14px rgba(16,57,43,.22);transform:translateX(calc(var(--i,0) * 100%));transition:transform .45s cubic-bezier(.22,1.2,.36,1)}
 /* plus d'arrivée en cascade (24/10/2026, règle de stabilité) : le contenu de l'accueil est là tout de suite */
-.acc-k,.acc-ligne,.acc-al,.acc-r,.acc-mq{transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .2s}
-.acc-k:active,.acc-ligne:active,.acc-al:active{transform:scale(.975)}
-.acc-r:active,.acc-mq:active{transform:scale(.92)}
-@media (hover:hover){.acc-k:hover{box-shadow:0 1px 2px rgba(16,57,43,.05),0 16px 34px rgba(16,57,43,.12)}}
+.acc-ligne, .acc-al, .acc-r{transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .2s}
+.acc-ligne:active, .acc-al:active{transform:scale(.975)}
+.acc-r:active{transform:scale(.92)}
 /* décor : fins cercles concentriques dans le coin des cartes de chiffres */
-.acc-k>*{position:relative}
-.acc-k .acc-i{position:absolute}
 /* icônes : léger dégradé et reflet */
 .acc-i{box-shadow:inset 0 1px 0 rgba(255,255,255,.55)}
 .acc-i.v{background:linear-gradient(145deg,rgba(16,57,43,.14),rgba(16,57,43,.07))}.acc-i.j{background:linear-gradient(145deg,rgba(242,194,48,.36),rgba(242,194,48,.18))}
 .acc-i.t{background:linear-gradient(145deg,rgba(193,106,58,.2),rgba(193,106,58,.09))}.acc-i.r{background:linear-gradient(145deg,rgba(226,115,91,.22),rgba(226,115,91,.1))}
-.acc-k b mdg-nb{font-variant-numeric:tabular-nums}
-@media (prefers-reduced-motion:reduce){.acc-salut,.acc-orb,.acc-k,.acc-carte,.acc-ligne,.acc-al{animation:none}.acc-ong-ind{transition:none}.acc-k:active,.acc-ligne:active,.acc-al:active,.acc-r:active,.acc-mq:active{transform:none}}
+@media (prefers-reduced-motion:reduce){.acc-carte, .acc-ligne, .acc-al{animation:none}.acc-ligne:active, .acc-al:active, .acc-r:active{transform:none}}
 .acc-sac{display:block;line-height:0}.acc-sac svg{display:block}
 /* ——— accueil vivant (22 oct. 2026) — décision du propriétaire du 24/10/2026 : « calmer ». Chaque effet se joue 1 ou 2 fois,
    puis s'arrête ; il rejoue quand on change de produit sur la roue (rejouerAccueil, application.dc.html) ———
    orbite : une lueur maïs parcourt l'arc ; le point du produit actif respire ; le sac flotte (son ombre suit) ; le halo pulse.
    cartes de chiffres : un reflet passe de temps en temps, les icônes bougent à tour de rôle.
    (la cascade d'arrivée des cartes et des annonces est rejouée à chaque retour à l'écran : app/effets.js) */
-.acc-comete{stroke-dasharray:7 93;stroke-dashoffset:100;filter:drop-shadow(0 0 4px rgba(242,194,48,.85));animation:accComete 7s linear 1}
-@keyframes accComete{0%{stroke-dashoffset:100;opacity:0}6%{opacity:1}88%{opacity:1}100%{stroke-dashoffset:0;opacity:0}}
-.acc-pouls{transform-box:fill-box;transform-origin:center;animation:accPouls 2.6s ease-in-out 2}
-@keyframes accPouls{50%{transform:scale(1.7);fill-opacity:.06}}
-.acc-flotte{animation:accFlotte 4.8s ease-in-out 1}
-.acc-flotte .acc-ombre{animation:accOmbre 4.8s ease-in-out 1}
-@keyframes accFlotte{50%{transform:translateY(-5px)}}
-@keyframes accOmbre{50%{transform:translateY(5px) scaleX(.86);opacity:.7}}
-.acc-halo{animation:accHalo 6s ease-in-out 1}
-@keyframes accHalo{50%{opacity:.72;transform:scale(1.06)}}
-.acc-k{overflow:hidden}
 /* (retiré le 23/10/2026 : reflet qui balayait les cartes de chiffres en boucle, et cercles décoratifs : des tics de « design généré ») */
-.acc-k .acc-i{animation:accBouge 6s ease-in-out infinite}
-.acc-k:nth-child(2) .acc-i{animation-delay:2s}.acc-k:nth-child(3) .acc-i{animation-delay:4s}
-@keyframes accBouge{0%,82%,100%{transform:none}87%{transform:translateY(-4px) rotate(-6deg)}93%{transform:translateY(0) rotate(4deg)}}
-@media (prefers-reduced-motion:reduce){.acc-comete,.acc-pouls,.acc-flotte,.acc-flotte .acc-ombre,.acc-halo,.acc-k::after,.acc-k .acc-i{animation:none}.acc-comete{opacity:0}}
 
 /* ═══ Menu clair (21 oct. 2026) : icônes Lucide dans des tuiles en léger dégradé, teinte par rubrique (couleurs lisibles sur le blanc) ═══ */
 .dr-clair{--t-offre:#1F7A45;--t-demande:#8A6400;--t-vous:#10392B;--t-lien:#3B342A;--t-marche:#A4472C;--t-aide:#5E5546}
@@ -361,22 +283,13 @@ html[data-theme=sombre] .acc-ong button .acc-n.doux{background:#F2C230;color:#10
 /* ═══ Mode sombre (Réglages → Apparence, app/theme.js) : accueil, menu, notifications ═══
    Fond brun nuit #12110E, cartes #1E1B16, texte crème #F3EFE4, accent maïs #F2C230. */
 html[data-theme=sombre] .acc{background:var(--papier)!important;color:#F3EFE4!important}
-html[data-theme=sombre] .acc-tete{background:#1E1B16;box-shadow:0 10px 30px rgba(0,0,0,.35),0 0 0 1px rgba(243,239,228,.07)}
 html[data-theme=sombre] .acc-r{background:#2A2620;border-color:rgba(243,239,228,.08);color:#F3EFE4}
 html[data-theme=sombre] .acc-r.plein{background:#F2C230;color:#10392B;box-shadow:0 8px 18px rgba(242,194,48,.25)}
 html[data-theme=sombre] .acc-r.av{background:#3A3428;color:#F2C230}
-html[data-theme=sombre] .acc-pt,html[data-theme=sombre] .acc-cl-n{box-shadow:0 0 0 2.5px #1E1B16}
+html[data-theme=sombre] .acc-cl-n{box-shadow:0 0 0 2.5px #1E1B16}
 html[data-theme=sombre] .acc-cl.neuf{background:rgba(242,194,48,.16);border-color:rgba(242,194,48,.45)}
-html[data-theme=sombre] .acc-ong{background:#16140F;box-shadow:0 0 0 1px rgba(243,239,228,.08) inset}
-html[data-theme=sombre] .acc-ong button{color:#CFC4B1}html[data-theme=sombre] .acc-ong button.on{color:#171512}
-html[data-theme=sombre] .acc-ong-ind{background:#F3EFE4;box-shadow:0 6px 14px rgba(0,0,0,.35)}
-html[data-theme=sombre] .acc-nom .mq-m{fill:#F3EFE4}html[data-theme=sombre] .acc-nom .mq-g{fill:#F2C230}
-html[data-theme=sombre] .acc-nom .sf-ph{color:#CFC4B1}
-html[data-theme=sombre] .acc-h1{color:#F3EFE4}html[data-theme=sombre] .acc-h1 em{color:#F2C230;background:linear-gradient(transparent 62%,rgba(242,194,48,.22) 62%,rgba(242,194,48,.22) 94%,transparent 94%)}
-html[data-theme=sombre] .acc-salut p{color:#B9AD98}html[data-theme=sombre] .acc-salut b{color:#F3EFE4}
-html[data-theme=sombre] .acc-orb{box-shadow:0 18px 40px rgba(0,0,0,.4),0 0 0 1px rgba(243,239,228,.06)}
-html[data-theme=sombre] .acc-k,html[data-theme=sombre] .acc-carte{background:#1E1B16;color:#F3EFE4;box-shadow:0 0 0 1px rgba(243,239,228,.06),0 10px 26px rgba(0,0,0,.3)}
-html[data-theme=sombre] .acc-k-t,html[data-theme=sombre] .acc-k small,html[data-theme=sombre] .acc-sub,html[data-theme=sombre] .acc-tx small,html[data-theme=sombre] .acc-h,html[data-theme=sombre] .acc-vide{color:#A89D89}
+html[data-theme=sombre] .acc-carte{background:#1E1B16;color:#F3EFE4;box-shadow:0 0 0 1px rgba(243,239,228,.06),0 10px 26px rgba(0,0,0,.3)}
+html[data-theme=sombre] .acc-sub, html[data-theme=sombre] .acc-tx small, html[data-theme=sombre] .acc-vide{color:#A89D89}
 html[data-theme=sombre] .acc-carte h2{color:#F3EFE4}
 html[data-theme=sombre] .acc-ligne,html[data-theme=sombre] .acc-al{background:#26221C;color:#F3EFE4}
 html[data-theme=sombre] .acc-al.r{background:rgba(226,115,91,.14)}html[data-theme=sombre] .acc-al.j{background:rgba(242,194,48,.12)}html[data-theme=sombre] .acc-al.v{background:rgba(108,197,140,.1)}
@@ -426,56 +339,10 @@ html[data-theme=sombre] .dr-clair button[style*="A4472C"]{color:#EE9A62!importan
 
 /* ——— accueil : « Tout voir » (roue) → tous les produits en grille ———
    la pastille se fond dans la carte sombre de la roue (verre, maïs pour l'icône) ; la fenêtre reprend le panneau des familles */
-.tv-ouvrir{ position: absolute; z-index: 3; top: 0; right: 10px; display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px 0 10px; border-radius: 17px;
-  border: 1px solid rgba(245, 240, 230, .16); background: rgba(245, 240, 230, .07); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-  color: #F5F0E6; font: 600 13px/1 var(--f-texte, Jost), sans-serif; letter-spacing:0;  cursor: pointer; transition: background .2s, transform .15s; }
-.tv-ouvrir svg { color: #F2C230; flex: none; }
-.tv-ouvrir:active { transform: scale(.95); background: rgba(245, 240, 230, .14); }
-.tv-ouvrir:focus-visible { outline: 2px solid #F2C230; outline-offset: 2px; }
-.tv-ouvrir::after { content: ""; position: absolute; inset: -5px -2px; }   /* cible de 44 px */
+/* cible de 44 px */
 .tv { position: absolute; left: 0; right: 0; bottom: 0; height: 88%; display: flex; flex-direction: column; background: var(--nuit-2, #26221C); color: #F5F0E6;
   border-radius: 28px 28px 0 0; box-shadow: 0 -10px 40px rgba(0, 0, 0, .4); font-family: var(--f-texte, Jost), sans-serif; }
 .tv[aria-hidden="true"] { visibility: hidden; transition: transform .45s cubic-bezier(.22, 1, .36, 1), visibility 0s .45s !important; }
-.tv-poignee { height: 26px; flex: none; display: flex; align-items: center; justify-content: center; touch-action: none; cursor: grab; }
-.tv-poignee span { width: 38px; height: 5px; border-radius: 3px; background: rgba(245, 240, 230, .25); }
-.tv-tete { flex: none; display: flex; align-items: flex-start; gap: 12px; padding: 0 14px 10px 20px; }
-.tv-titre { flex: 1; font-size: 24px; display: flex; flex-direction: column; gap: 2px; }
-.tv-titre small { font: 400 var(--t-sm, 13px)/1.3 var(--f-texte, Jost), sans-serif; color: #B9AD98; letter-spacing: 0; }
-.tv-x { flex: none; width: 44px; height: 44px; border: 0; border-radius: 22px; background: rgba(245, 240, 230, .08); color: #F5F0E6; display: grid; place-items: center; cursor: pointer; }
-.tv-cherche { flex: none; margin: 0 14px 10px; display: flex; align-items: center; gap: 10px; height: 46px; padding: 0 6px 0 14px; border-radius: 23px; background: rgba(245, 240, 230, .07); border: 1px solid rgba(245, 240, 230, .12); color: #B9AD98; }
-.tv-cherche:focus-within { border-color: #F2C230; }
-.tv-cherche input { flex: 1; min-width: 0; border: 0; background: none; outline: none; color: #F5F0E6; font: 400 16px var(--f-texte, Jost), sans-serif; -webkit-appearance: none; appearance: none; }
-.tv-cherche input::placeholder { color: rgba(245, 240, 230, .4); }
-.tv-cherche input::-webkit-search-cancel-button { display: none; }
-.tv-eff { flex: none; width: 34px; height: 34px; border: 0; border-radius: 17px; background: rgba(245, 240, 230, .1); color: #F5F0E6; font-size: 20px; line-height: 1; cursor: pointer; }
-.tv-fams { flex: none; display: flex; gap: 6px; overflow-x: auto; padding: 0 14px 12px; scrollbar-width: none; }
-.tv-fams::-webkit-scrollbar { display: none; }
-.tv-fams button { flex: none; display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 0 12px; border-radius: 19px; border: 1px solid rgba(245, 240, 230, .16); background: none; color: #E2D9C8; font: 500 13.5px var(--f-texte, Jost), sans-serif; white-space: nowrap; cursor: pointer; }
-.tv-fams button b { font-weight: 600; font-size: 11.5px; color: #B9AD98; }
-.tv-fams button i{font:normal 13px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal;letter-spacing:-2px}.tv-fams button i::before{content:"🧺🛒"}
-.tv-fams button[aria-pressed="true"] { background: #F2C230; border-color: #F2C230; color: #171512; }
-.tv-fams button[aria-pressed="true"] b { color: rgba(23, 21, 18, .65); }
-.tv-fams .nbul { margin-left: 0; color: #F3EFE4; background: rgba(243, 239, 228, .14); }
-.tv-fams button[aria-pressed="true"] .nbul { color: #F2C230; background: #171512; }
-.tv-corps { flex: 1; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; padding: 0 14px; }
-.tv-sec + .tv-sec { margin-top: 18px; }
-.tv-sec h3{ display: flex; align-items: baseline; gap: 8px; margin: 2px 2px 10px; font: 600 13px/1 var(--f-texte, Jost), sans-serif; letter-spacing:0;  color: #B9AD98; }
-.tv-sec h3 span { letter-spacing: 0; font-weight: 500; color: rgba(185, 173, 152, .7); }
-.tv-grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; }
-.tv-p { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px 10px; border: 1.5px solid transparent; border-radius: 18px; background: rgba(245, 240, 230, .05); color: #F5F0E6; cursor: pointer; text-align: center; transition: background .2s, transform .15s; }
-.tv-p:active { transform: scale(.96); background: rgba(245, 240, 230, .1); }
-.tv-p[aria-current="true"] { border-color: #F2C230; background: rgba(242, 194, 48, .1); }
-.tv-p:focus-visible { outline: 2px solid #F2C230; outline-offset: 2px; }
-.tv-img { width: 64px; height: 64px; display: grid; place-items: center; }
-.tv-img img { width: 100%; height: 100%; display: block; }
-.tv-n { font: 500 13px/1.2 var(--f-texte, Jost), sans-serif; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.4em; overflow-wrap: anywhere; }
-.tv-c { display: flex; justify-content: center; gap: 4px; flex-wrap: wrap; margin-top: -2px; pointer-events: none; }
-.tv-c > span { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 7px 0 6px; border-radius: 10px; background: rgba(245, 240, 230, .08); font: 600 11px/1 var(--f-texte, Jost), sans-serif; color: #F5F0E6; }
-.tv-c span span { display: inline; height: auto; padding: 0; background: none; }
-.tv-c i{display:inline-grid;place-items:center;flex:none;width:16px;height:16px;border-radius:50%;background:rgba(108,197,140,.22);box-shadow:inset 0 0 0 1px rgba(108,197,140,.55);font:normal 10px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-style:normal}.tv-c i::before{content:"🧺"}
-.tv-c .d i{border-radius:30%;background:rgba(242,194,48,.24);box-shadow:inset 0 0 0 1px rgba(242,194,48,.6)}.tv-c .d i::before{content:"🛒"}
-.tv-vide { margin: 24px 6px; color: #B9AD98; font-size: 15px; line-height: 1.5; text-align: center; }
-@media (prefers-reduced-motion: reduce) { .tv-p, .tv-ouvrir { transition: none; } }
 
 /* ——— offre / demande : les mêmes images que les boutons du bas, partout ———
    🧺 offre (J'ai, à vendre) sur une pastille ronde verte · 🛒 demande (Je cherche, à acheter) sur une pastille carrée maïs.
@@ -493,84 +360,19 @@ html[data-theme=sombre] .dr-clair button[style*="A4472C"]{color:#EE9A62!importan
 @keyframes odPanier { 0%, 86%, 100% { transform: none; } 90% { transform: translateY(-2px) rotate(-8deg); } 94% { transform: rotate(6deg); } 97% { transform: rotate(-2deg); } }
 @keyframes odCaddie { 0%, 86%, 100% { transform: none; } 90% { transform: translateX(2px); } 93% { transform: translateX(-1px) rotate(-4deg); } 96% { transform: translateX(1px); } }
 @media (prefers-reduced-motion: reduce) { .od, .od-d { animation: none; } }
-.acc-emo { display: block; font: normal 21px/1 "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; animation: odPanier 7s 1.6s ease-in-out infinite; }
-.acc-emo.d { animation-name: odCaddie; animation-delay: 3.1s; }
-@media (prefers-reduced-motion: reduce) { .acc-emo { animation: none; } }
 
 /* ——— « Tout » : le « + » de chaque produit → J'ai / Je cherche, puis la publication déjà réglée sur ce produit ——— */
-.tv-case { position: relative; display: grid; }
-.tv-plus { position: absolute; top: 5px; right: 5px; width: 30px; height: 30px; border: 0; border-radius: 15px; display: grid; place-items: center; cursor: pointer;
-  background: #F2C230; color: #171512; box-shadow: 0 2px 8px rgba(0, 0, 0, .35); transition: transform .25s cubic-bezier(.3, 1.6, .5, 1), background .2s; }
-.tv-plus::after { content: ""; position: absolute; inset: -7px; }   /* cible de 44 px */
-.tv-plus[aria-expanded="true"] { transform: rotate(45deg); background: #F5F0E6; z-index: 3; }
-.tv-plus:focus-visible { outline: 2px solid #F5F0E6; outline-offset: 2px; }
-.tv-choix { position: absolute; inset: 0; z-index: 2; display: grid; grid-template-rows: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 18px; background: rgba(18, 16, 13, .9);
-  -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); animation: tvOuvre .22s cubic-bezier(.22, 1, .36, 1) both; }
-.tv-choix button { display: flex; align-items: center; gap: 7px; min-height: 44px; padding: 0 8px; border: 0; border-radius: 14px; cursor: pointer; text-align: left; font-family: var(--f-texte, Jost), sans-serif; }
-.tv-choix button span { display: flex; flex-direction: column; min-width: 0; line-height: 1.1; }
-.tv-choix b { font-size: 13.5px; font-weight: 700; white-space: nowrap; }
-.tv-choix small { font-size: 11.5px; opacity: .78; white-space: nowrap; }
-.tv-choix .o { background: linear-gradient(135deg, #6FD39A, #4CC488); color: #0E3B25; }
-.tv-choix .d { background: linear-gradient(135deg, #FFD95A, #F2C230); color: #3D2E00; }
-.tv-choix .od { background: rgba(255, 255, 255, .55); box-shadow: none; }
-.tv-choix button:active { transform: scale(.97); }
-.tv-choix button:focus-visible { outline: 2px solid #F5F0E6; outline-offset: 1px; }
-@keyframes tvOuvre { from { opacity: 0; transform: scale(.94); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .tv-choix { animation: none; } .tv-plus { transition: none; } }
-.tv-choix .o { padding-right: 38px; }
+/* cible de 44 px */
 
 /* accueil : J'ai / Je cherche seulement sur l'onglet Marché ; sur Activité et Alertes, ils glissent vers le bas et disparaissent */
-.acc-bas { transition: transform .35s cubic-bezier(.22, 1, .36, 1), opacity .25s; }
-.acc-bas.cache { transform: translateY(120%); opacity: 0; visibility: hidden; transition: transform .3s cubic-bezier(.4, 0, 1, 1), opacity .2s, visibility 0s .3s; }
-.acc-bas.cache > * { pointer-events: none; }
-@media (prefers-reduced-motion: reduce) { .acc-bas, .acc-bas.cache { transition: none; } }
 
 /* ——— Accueil → Activité : « En cours » (app/activite.js) ———
    « Reprendre là où vous en étiez » en tête (bord maïs), puis chaque démarche : 🤝 négociation, 🚚 commande en route, 📦 commande,
    💬 message, ✅ accord. À vous d'agir : l'icône appelle (anneau maïs) ; en route : le camion roule sur sa route ;
    en attente de l'autre : trois points ondulent. Pastille de l'onglet : maïs vivante s'il y a quelque chose à faire. */
-.acc-ec h2 em { font-style: italic; font-weight: 800; color: #10392B; background: linear-gradient(transparent 62%, rgba(242, 194, 48, .55) 62%, rgba(242, 194, 48, .55) 92%, transparent 92%); }
-.ec-rep { display: flex; flex-direction: column; gap: 8px; width: 100%; margin: 4px 0 10px; padding: 12px 12px 12px; border: 1.5px solid #F2C230; border-radius: 20px; text-align: left; cursor: pointer;
-  background: linear-gradient(135deg, rgba(242, 194, 48, .2), rgba(242, 194, 48, .06)); color: #171512; font-family: Jost, system-ui, sans-serif; animation: ecLueur 3.2s ease-in-out 3; }
-.ec-rep-h{ font: 700 13px/1 Jost, system-ui, sans-serif; letter-spacing:0;  color: #7A5A00; }
-.ec-l { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.ec-go { margin-left: auto; flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 18px; background: #F2C230; color: #171512; }
-.ec-i { position: relative; flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; color: #10392B; background: rgba(23, 21, 18, .06); overflow: hidden; }
-.ec-moi .ec-i { color: #6B4E00; } .ec-litige .ec-i { color: #9A3F2B; } .ec-route .ec-i, .ec-ok .ec-i { color: #1F6B40; }
-.ec-moi .ec-i, .ec-rep.ec-moi .ec-i { background: rgba(242, 194, 48, .3); }
-.ec-route .ec-i, .ec-rep.ec-route .ec-i { background: rgba(108, 197, 140, .22); }
-.ec-ok .ec-i { background: rgba(108, 197, 140, .18); }
-.ec-litige .ec-i { background: rgba(226, 115, 91, .2); }
-.ec-tag { font-weight: 600; color: #171512; }
-.ec-moi .ec-tag { color: #7A5A00; } .ec-litige .ec-tag { color: #9A3F2B; } .ec-route .ec-tag, .ec-ok .ec-tag { color: #1F6B40; }
-.ec-ligne small, .ec-rep small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* à vous d'agir : un anneau maïs qui s'élargit */
-.ec-appel { overflow: visible; animation: ecAppel 2s ease-out 3; }
 /* en route : le camion avance et revient sur une route en pointillés */
-.ec-roule { align-content: start; padding-top: 6px; font-size: 19px; }
-.ec-route { position: absolute; left: 4px; right: 4px; bottom: 9px; height: 2px; background: repeating-linear-gradient(90deg, rgba(31, 107, 64, .55) 0 5px, transparent 5px 9px); animation: ecRoute .6s linear 5; }
-.ec-roule > span:first-child { display: inline-block; animation: ecCamion 2.4s ease-in-out 2; }
 /* en attente de l'autre : trois points en vague */
-.ec-vague { margin-left: auto; flex: none; display: flex; gap: 4px; padding: 0 4px; }
-.ec-vague i { width: 6px; height: 6px; border-radius: 3px; background: #B9AD98; animation: ecVague 1.2s ease-in-out 3; }
-.ec-vague i:nth-child(2) { animation-delay: .15s; } .ec-vague i:nth-child(3) { animation-delay: .3s; }
-.acc-n.vif { animation: ecPastille 1.8s ease-in-out 3; }
-.acc-n.doux { background: rgba(23, 21, 18, .12); color: inherit; }
-@keyframes ecAppel { 0% { box-shadow: 0 0 0 0 rgba(242, 194, 48, .7); } 70%, 100% { box-shadow: 0 0 0 9px rgba(242, 194, 48, 0); } }
-@keyframes ecLueur { 0%, 100% { box-shadow: 0 0 0 0 rgba(242, 194, 48, 0); } 50% { box-shadow: 0 0 18px 0 rgba(242, 194, 48, .35); } }
-@keyframes ecCamion { 0%, 100% { transform: translateX(-5px); } 50% { transform: translateX(5px) translateY(-1px); } }
-@keyframes ecRoute { to { background-position: -9px 0; } }
-@keyframes ecVague { 0%, 60%, 100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-5px); opacity: 1; } }
-@keyframes ecPastille { 0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(242, 194, 48, .6); } 50% { transform: scale(1.12); box-shadow: 0 0 0 5px rgba(242, 194, 48, 0); } }
-html[data-theme=sombre] .ec-rep { color: #F5F0E6; background: linear-gradient(135deg, rgba(242, 194, 48, .16), rgba(242, 194, 48, .04)); }
-html[data-theme=sombre] .ec-rep-h, html[data-theme=sombre] .ec-moi .ec-tag { color: #F2C230; }
-html[data-theme=sombre] .ec-tag { color: #F5F0E6; }
-html[data-theme=sombre] .ec-route .ec-tag, html[data-theme=sombre] .ec-ok .ec-tag { color: #9FDCB2; }
-html[data-theme=sombre] .ec-litige .ec-tag { color: #F3A08C; }
-html[data-theme=sombre] .ec-i { background: rgba(245, 240, 230, .08); }
-html[data-theme=sombre] .acc-ec h2 em { color: #F2C230; background: linear-gradient(transparent 62%, rgba(242, 194, 48, .22) 62%, rgba(242, 194, 48, .22) 92%, transparent 92%); }
-html[data-theme=sombre] .acc-n.doux { background: rgba(245, 240, 230, .16); }
-@media (prefers-reduced-motion: reduce) { .ec-rep, .ec-appel, .ec-route, .ec-vague i, .acc-n.vif, .ec-roule > span:first-child { animation: none; } }
 
 /* ——— « Vos exigences » dans une demande (fenêtre Je cherche et page Je cherche, schéma 47) ———
    cases rapides (coche verte quand choisie), « Plus de précisions » (qualité, calibre, maturité, emballage) et un texte libre.
@@ -634,19 +436,6 @@ html[data-theme=sombre] .acc-n.doux { background: rgba(245, 240, 230, .16); }
 /* ——— Accueil → Activité : retirer un élément en le glissant vers la gauche, ou « Tout effacer » ———
    défilement natif du téléphone (fluide, ne gêne pas le défilement vertical) : la ligne, puis une zone rouge « Retirer ».
    Au-delà de la moitié, la ligne part ; « Annuler » dans le message en haut. Sur ce téléphone seulement. */
-.acc-ttl { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.acc-eff { flex: none; min-height: 36px; padding: 0 12px; border: 1px solid rgba(23, 21, 18, .16); border-radius: 18px; background: transparent; color: #8A2414; font: 600 13px Jost, system-ui, sans-serif; cursor: pointer; }
-.acc-eff:active { transform: scale(.96); }
-html[data-theme=sombre] .acc-eff { border-color: rgba(245, 240, 230, .18); color: #F3A08C; }
-.glis { display: flex; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; margin: 0 0 8px; border-radius: 18px; transition: opacity .2s, transform .2s; }
-.glis::-webkit-scrollbar { display: none; }
-.glis > .acc-ligne, .glis > .ec-rep { flex: 0 0 100%; scroll-snap-align: start; margin: 0; }
-.glis-rep { margin: 4px 0 10px; border-radius: 20px; }
-.glis-z { flex: 0 0 100%; scroll-snap-align: start; display: flex; align-items: center; gap: 8px; padding: 0 22px; border: 0; border-radius: 18px; margin-left: 6px; background: #C2452F; color: #fff; font: 600 15px Jost, system-ui, sans-serif; cursor: pointer; }
-.glis-z span { font: normal 18px/1 "Apple Color Emoji", "Segoe UI Emoji", sans-serif; }
-.glis-out { opacity: 0; transform: translateX(-12px); }
-@media (prefers-reduced-motion: reduce) { .glis { transition: none; } }
-.acc-astuce { color: var(--texte-3, #8A8170); font-style: italic; }
 /* Accueil → Alertes → « Mes codes » (schéma 28) */
 .acc-garde{margin:2px 0 12px;padding:9px 12px;border-radius:14px;background:#F2C230;color:#171512;font:600 14px/1.35 Jost,system-ui,sans-serif}
 .cd-ligne{background:#FFFDF8;box-shadow:inset 0 0 0 2px #10392B}
@@ -664,67 +453,29 @@ html[data-theme=sombre] .cd-ligne .acc-tx small{color:#5E5546}
 .cd-genre{display:block;font-weight:600;color:#10392B}
 html[data-theme=sombre] .cd-genre{color:#10392B}
 /* ——— roue de l'accueil : la bulle d'activité (« Très vendu », « Vendu il y a 3 min »…), qui sort de derrière le sac 5 s (22 oct. 2026) ——— */
-.acc-tend{position:absolute;left:50%;top:-30px;display:flex;align-items:center;gap:9px;width:max-content;max-width:250px;padding:8px 14px 8px 9px;border-radius:18px;
-  background:rgba(23,21,18,.82);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 10px 26px rgba(0,0,0,.4),inset 0 0 0 1px rgba(242,194,48,.35);
-  color:#F3EFE4;font-family:Jost,sans-serif;text-align:left;white-space:normal;transform:translateX(-50%);animation:accTend 5.2s cubic-bezier(.22,1,.36,1) both}
-.acc-tend-i{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:16px;line-height:1;background:rgba(242,194,48,.16)}
-.acc-tend-x{display:flex;flex-direction:column;gap:1px;min-width:0}.acc-tend-x b{font-size:14px;font-weight:700;line-height:1.15;color:#F2C230}.acc-tend-x small{font-size:11.5px;line-height:1.25;color:rgba(243,239,228,.78)}
-.acc-tend.demande .acc-tend-x b{color:#F2C230}.acc-tend.vente .acc-tend-x b{color:#9FD8AE}.acc-tend.vente{box-shadow:0 10px 26px rgba(0,0,0,.4),inset 0 0 0 1px rgba(159,216,174,.4)}.acc-tend.vente .acc-tend-i{background:rgba(159,216,174,.16)}
-@keyframes accTend{0%{opacity:0;transform:translate(-50%,56px) scale(.9)}12%{opacity:1;transform:translate(-50%,0) scale(1)}86%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,56px) scale(.92)}}
-@media (prefers-reduced-motion:reduce){.acc-tend{animation:accTendDoux 5.2s linear both}}
-@keyframes accTendDoux{0%,100%{opacity:0}8%,90%{opacity:1}}
 
 /* ——— défilement au doigt sans « flash » (22 oct. 2026) : les lignes que le doigt survole en faisant défiler ne clignotent plus.
    Sur écran tactile, l'effet d'appui n'arrive qu'après un vrai toucher (≈ 0,12 s) : un défilement l'annule avant ; plus de voile gris d'iOS. ——— */
-.acc-ligne,.acc-al,.acc-k,.glis,.glis-z,.ec-rep{-webkit-tap-highlight-color:transparent}
-@media (hover:none){.acc-k:active,.acc-ligne:active,.acc-al:active{transition-delay:.12s}}
+.acc-ligne, .acc-al{-webkit-tap-highlight-color:transparent}
+@media (hover:none){.acc-ligne:active, .acc-al:active{transition-delay:.12s}}
 /* nom d'une annonce : celui du compte, en lecture seule (22 oct. 2026) */
-.nom-cpt{display:grid;gap:3px;padding:12px 14px;border-radius:14px;background:var(--champ,#F7F4EC);border:1px solid var(--trait,rgba(23,21,18,.1))}
-.nom-cpt-l{font-size:var(--t-sm,13px);color:var(--texte-3,#8A8170)}.nom-cpt b{font-size:var(--t-lg,17px);font-weight:600;color:var(--encre,#171512)}.nom-cpt small{font-size:var(--t-sm,13px);color:var(--texte-2,#5E5546);line-height:1.4}
 
 /* ——— sous l'orbite : le prix du moment, à la place du nom déjà écrit sur l'arc (23/10/2026) ———
    « MEILLEUR PRIX · LE SAC » en petites capitales, puis le prix en grand (gras italique, comme le logo) qui défile d'un produit à l'autre (mdg-nb). */
-.acc-px{height:76px;width:100%;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;overflow:hidden}
-.acc-px-k{font:500 13px/1.25 Jost,sans-serif;letter-spacing:0;color:var(--sable);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
-.acc-px-v{display:inline-flex;align-items:baseline;gap:.14em;font:900 italic 46px/1 Jost,sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums lining-nums}
-.acc-px-v i{font-style:italic;font-size:.6em;color:#F2C230;letter-spacing:0}
-.acc-px-t{font-weight:900;font-style:italic;letter-spacing:-.02em;line-height:1.05;white-space:nowrap}
 /* le prix se touche : il ouvre « Ici, chacun place son prix » (app/prixmoment.js) ; les deux triangles disent que le prix bouge, et que chacun place le sien */
-.acc-px{border:0;background:none;color:inherit;font:inherit;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .15s}
-.acc-px:active{transform:scale(.97)}.acc-px:focus-visible{outline:2px solid #F2C230;outline-offset:4px;border-radius:16px}
-.acc-px-tri{display:inline-flex;flex-direction:column;gap:3px;margin-left:.3em;align-self:center}
-.acc-px-tri s{display:block;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;text-decoration:none}
 /* même langage que tout le reste : ▲ maïs = les acheteurs montent leur budget, ▼ vert = les vendeurs baissent leur prix */
-.acc-px-tri s:first-child{border-bottom:7px solid #F2C230;animation:accTriH 2.2s ease-in-out 2}
-.acc-px-tri s:last-child{border-top:7px solid #9FDCB2;animation:accTriB 2.2s ease-in-out 2}
-@keyframes accTriH{0%,60%,100%{transform:none}30%{transform:translateY(-3px)}}
-@keyframes accTriB{0%,40%,100%{transform:none}70%{transform:translateY(3px)}}
-.acc-px-t .acc-px-tri{vertical-align:middle}
-@media (prefers-reduced-motion:reduce){.acc-px-tri s{animation:none}}
 /* les bulles « qui a placé ce prix » (24/10/2026) : initiales dans le rond, vert pour un vendeur, maïs pour un acheteur — même file que la bulle d'activité */
-.acc-tend.px-v,.acc-tend.px-a{max-width:280px}
-.acc-tend.px-v .acc-tend-i,.acc-tend.px-a .acc-tend-i{font:600 12px/1 Jost,sans-serif;letter-spacing:.02em}
-.acc-tend.px-v{box-shadow:0 10px 26px rgba(0,0,0,.4),inset 0 0 0 1px rgba(159,216,174,.45)}.acc-tend.px-v .acc-tend-i{background:#2E5B47;color:#F3EFE4}.acc-tend.px-v .acc-tend-x b{color:#9FD8AE}
-.acc-tend.px-a{box-shadow:0 10px 26px rgba(0,0,0,.4),inset 0 0 0 1px rgba(242,194,48,.45)}.acc-tend.px-a .acc-tend-i{background:#5A4A12;color:#F2C230}.acc-tend.px-a .acc-tend-x b{color:#F2C230}
 
 /* ——— 🧺 / 🛒 deviennent des dessins (css/symboles.css) : panier = offre, caddie = demande (23/10/2026) ———
    Même forme et même couleur de pastille qu'avant (rond vert, carré maïs) ; l'entrée animée reste, mais plus de balancement en boucle. */
-.od, .acc-emo, .duo2 .emo { font-size: 0 !important; color: transparent; }
-.od::before, .acc-emo::before, .duo2 .emo::before { content: ""; display: block; width: 74%; height: 74%; background: var(--sym-o) center / contain no-repeat; }
-.od-d::before, .acc-emo.d::before, .duo2 .emo.d::before { background-image: var(--sym-d); }
-.acc-emo { width: 24px; height: 24px; display: grid; place-items: center; }
-.acc-emo::before { width: 100%; height: 100%; }
-.duo2 .emo::before { width: 66%; height: 66%; }
+.od { font-size: 0 !important; color: transparent; }
+.od::before { content: ""; display: block; width: 74%; height: 74%; background: var(--sym-o) center / contain no-repeat; }
+.od-d::before { background-image: var(--sym-d); }
 .od { animation: odPose .55s cubic-bezier(.3, 1.6, .5, 1) both; }
 .od-d { animation: odRoule .6s cubic-bezier(.22, 1, .36, 1) both; }
-.acc-emo, .acc-emo.d { animation: none; }
 .aseg-s { width: 28px; height: 28px; margin: -6px 6px -8px 0; vertical-align: middle; background: var(--sym-o) center / contain no-repeat; filter: drop-shadow(0 2px 3px rgba(23, 21, 18, .18)); }
 .aseg-s.d { background-image: var(--sym-d); }
 /* les dernières pastilles qui montraient encore 🧺 / 🛒 en emoji (Familles, Tous les produits) : les symboles dessinés (24/10/2026) */
-.fam-pill i::before, .tv-c i::before { content: "" !important; display: block; width: 82%; height: 82%; background: var(--sym-o) center / contain no-repeat; }
-.fam-pill.d i::before { background-image: var(--sym-d-nuit); }
-.tv-c .d i::before { background-image: var(--sym-d); }
-.tv-fams button i::before { content: "" !important; display: block; width: 30px; height: 16px; background: var(--sym-o) left center / 15px no-repeat, var(--sym-d) right center / 15px no-repeat; }
 /* surfaces du navigateur aux couleurs de la marque (audit anti-« design généré », 23/10/2026) */
 ::selection { background: rgba(242, 194, 48, .45); color: #171512; }
 input, textarea { caret-color: #10392B; }
@@ -733,23 +484,16 @@ html[data-theme=sombre] input, html[data-theme=sombre] textarea { caret-color: #
 html[data-theme=sombre] input[type=checkbox], html[data-theme=sombre] input[type=radio], html[data-theme=sombre] input[type=range] { accent-color: #F2C230; }
 :focus-visible { outline: 2px solid #F2C230; outline-offset: 2px; }
 
-.acc-k::before, .acc-k::after { content: none !important; }
-html[data-theme=sombre] .ec-i { color: #CFE9D8; }
-html[data-theme=sombre] .ec-moi .ec-i { color: #F2C230; } html[data-theme=sombre] .ec-litige .ec-i { color: #F3A08C; } html[data-theme=sombre] .ec-route .ec-i, html[data-theme=sombre] .ec-ok .ec-i { color: #9FE0B5; }
 
 /* le panier et le caddie un peu plus imposants à côté du nom (demandé le 23/10/2026) */
 .an-forme.od { width: 26px; height: 26px; }
 .an-forme.od::before { width: 80%; height: 80%; }
-.od::before, .acc-emo::before, .duo2 .emo::before { height: auto !important; aspect-ratio: 1; }
+.od::before { height: auto !important; aspect-ratio: 1; }
 .od { width: 26px; height: 26px; }
 .od::before { width: 82%; }
 .od-g { width: 36px; height: 36px; }
 .od-coin { width: 22px; height: 22px; }
 /* cartes de chiffres de l'accueil : le panier et le caddie bien en vue (demandé le 23/10/2026) */
-.acc-k .acc-i { width: 58px; height: 58px; border-radius: 18px; top: 10px; right: 10px; animation: none; }
-.acc-k .acc-emo { width: 42px; height: 42px; }
-.acc-k .acc-emo::before { width: 100%; }
-.acc-k .acc-i > span > svg, .acc-k .acc-i > svg { width: 30px; height: 30px; }
 
 /* ——— les nombres à côté d'un libellé : toujours dans une pastille, jamais en simple texte (demandé le 23/10/2026) ———
    neutre par défaut ; vert = offres, maïs = demandes ; elle « pop » une fois à l'apparition. */
@@ -765,7 +509,6 @@ html[data-theme=sombre] .nbul.d, html[data-theme=sombre] [aria-pressed="true"] >
 @keyframes nbulPop { 0% { transform: scale(.4); opacity: 0; } 70% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) { .nbul { animation: none; } }
 .px-filtres button > .nbul { font-size: 12.5px; opacity: 1; }
-.tv-sec h3 .nbul { color: #F3EFE4; background: rgba(243, 239, 228, .14); font-weight: 700; }
 /* onglets d'Acheter : chaque onglet prend la largeur de son contenu, le nombre reste dans le fond de l'onglet choisi */
 .aseg > button > .aseg-s { margin: 0; }
 .aseg > button > .nbul { margin-left: 0; }
@@ -777,7 +520,6 @@ html:not([data-theme=sombre]) .aseg > button[aria-pressed="true"] > .aseg-s.d { 
 .lg-s.d { background-image: var(--sym-d-nuit); }
 
 /* onglet Prix : le nombre de produits au tableau (information, pas une alerte) — 23/10/2026 */
-.acc-ong button .acc-n.info{background:#6CC58C;color:#0E3323}
 /* Activité / Alertes vides : un seul message avec le sac qui attend */
 .acc-rien .ms-etat{padding:26px 10px 22px}
 

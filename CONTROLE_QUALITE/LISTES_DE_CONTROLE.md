@@ -272,6 +272,9 @@ Règle de `CLAUDE.md` : à chaque changement du front, monter le `?v=` du fichie
 - [ ] **J3. Chaque image `v2/img/*.webp` utilisée par l'application est dans `IMAGES`** de `sw.js`.
   - Vérifier : résultat du script ; sinon comparer `ls v2/img/` à la liste `IMAGES` (ligne `const IMAGES = [` de `sw.js`).
 
+- [ ] **J4. Aucun fichier supprimé n'est encore référencé** : les 6 fichiers retirés le 14/11/2026 (liste dans la section « retrait de l'ancien code » de `docs/PASSATION.md`) ne sont cités ni dans `sw.js`, ni dans `application.dc.html`, ni dans les pages du site.
+  - Vérifier : chercher leurs noms avec `grep -rn` dans `sw.js`, `application.dc.html`, `index-v3.html` et `site/` : aucun résultat.
+
 ## K. Documents à jour
 
 - [ ] **K1. `FONCTIONNALITES.md`, `ROADMAP.md`, `ARCHITECTURE.md`, `CHANGELOG.md`** citent chaque fonction, table et écran ajoutés depuis le dernier rapport ; aucune idée n'est présentée comme faite.

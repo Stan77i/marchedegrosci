@@ -71,7 +71,7 @@ Dépendance : aucune pour les liens et les QR. Une publication dans les boutique
 Ce qui existe :
 - Proposer, accepter, refuser, contre-proposer, retirer. La proposition expire après 48 h. Le transport fait partie de la proposition.
 - Fichiers : `v3/negoce.js` ; fonctions SQL `nego_ouvrir`, `nego_agir` (schémas 3, 36, 37, 49).
-- Sur chaque carte d'annonce : « Proposer un prix » ou « Acheter au prix » (`MDGNegoce.proposer`). « Négocier avec le moins cher » dans `app/prixmoment.js`.
+- Sur chaque carte d'annonce : « Proposer un prix » ou « Acheter au prix » (`MDGNegoce.proposer`). « Négocier avec le moins cher » : l'ancien `app/prixmoment.js` est supprimé (14/11/2026).
 - Les annonces portent `negociable` et `qte_min` (minimum du vendeur, schéma 37).
 - Utilisée en vrai : 3 négociations, 2 accords en production.
 

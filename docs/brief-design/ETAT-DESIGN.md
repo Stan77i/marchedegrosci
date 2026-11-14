@@ -46,7 +46,9 @@ Décisions du propriétaire (« OK pour tout », 14/11/2026), gardés : second g
 
 Écarts gardés à cause des règles : mot secret dans le sens de l'application ; pas de « Être rappelé » ; « Calculée » ; « Awa K. » ; « Signaler » avec motif, phrase et preuve ; notifications du marché jamais entre 21 h et 7 h ; « Transport à la charge de l'acheteur » ; titre du panneau de la carte ; pas de photo pour une demande.
 
-Fais maintenant : rien sur l'application. Reste à Claude Code : retrait de l'ancien code, puis `suivi.html`.
+Retrait de l'ancien code : fait (14/11/2026). Les écrans ne changent pas ; le code des anciens écrans (roue, ancien accueil, anciens Vendre/Demander) n'existe plus.
+
+Fais maintenant : rien sur l'application. Reste à Claude Code : `suivi.html`.
 
 Les captures de chaque lot terminé sont dans `docs/brief-design/captures/` (`lot2-…` à `lot16-…`).
 

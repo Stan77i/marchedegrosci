@@ -1,6 +1,6 @@
 # Tableau de bord du propriétaire
 
-**Dernière mise à jour : 25/10/2026**
+**Dernière mise à jour : 14/11/2026**
 
 C'est **la seule page à lire**. Tout ce qui est important est ici, en français simple. Les détails sont dans les documents cités tout en bas.
 
@@ -61,6 +61,7 @@ Le 25/10/2026, le vrai serveur compte 3 profils, 4 offres, 3 demandes et 2 comma
 
 **Voir le marché**
 - Nouvel accueil (refonte du 13/11/2026, après votre fusion) : onglets en bas, « Que faites-vous aujourd’hui ? », prix du moment, annonces autour de vous ; Activité avec ses tampons. Carte du réseau : la même carte, avec Tout / Offres / Demandes en haut et « Ce qui se rapproche » dans le panneau. Activité, Messages, écran de la commande, Mes annonces et Compte au nouveau dessin (le mot secret reste écrit par le vendeur et tapé par l’acheteur). Espace équipe dans l’application (étape 14) : identités, litiges, signalements, comptes, commissions « calculées », diffusion et journal, réservé à l’équipe ; l’ancien tableau complet reste disponible. Porte refaite (étape 15) : inscription en étapes, connexion « Bon retour », code oublié en 3 étapes, compte banni avec « Contester », espace chauffeur « Mes missions ». Passe finale (étape 16) : écrans vérifiés en sombre, à 320 px et en mouvement réduit, discussion de négociation refaite comme la maquette. Vérification écran par écran faite (14/11/2026) : environ 115 écarts corrigés, barre d’onglets en bas sur presque tous les écrans, profil public, alertes, guide et aide refaits comme la maquette. Prochain : retrait de l’ancien code (3 PR), puis refaire la page du chauffeur sans compte. Pas encore : la case « J'accepte » (attend le juriste) et la page du chauffeur sans compte.
+- Ménage fait le 14/11/2026 : l'ancien code des écrans disparus est retiré (roue, ancien accueil, anciens formulaires). L'application est plus légère de 9 % au démarrage et ne change pas à l'écran. À fusionner par vous.
 - Liste des annonces, tableau des prix (rapide, mis à jour toutes les 5 minutes), carte du réseau, recherche.
 - Alertes produits : on est prévenu quand un produit arrive.
 

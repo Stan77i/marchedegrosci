@@ -187,7 +187,7 @@ html[data-theme=sombre] .v2-zones button[aria-pressed=true] { color: #171512; }
 .v2-of-px > div { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .v2-of-px .best { font-size: 12.5px; font-weight: 700; color: var(--vert-texte); }
 .v2-of-px .px { display: flex; align-items: baseline; gap: 5px; }
-.v2-of-px .px b { font-size: 28px; font-weight: 800; color: var(--vert); letter-spacing: -.02em; font-variant-numeric: tabular-nums lining-nums; line-height: 1; }
+.v2-of-px .px b { white-space: nowrap; font-size: 28px; font-weight: 800; color: var(--vert); letter-spacing: -.02em; font-variant-numeric: tabular-nums lining-nums; line-height: 1; }
 .v2-of-px .px small { font-size: 14px; color: var(--texte-3); }
 .v2-of-px .ec { font-size: 12.5px; font-weight: 600; padding-top: 2px; text-align: right; }
 .v2-of-px .ec.n { color: var(--mute); } .v2-of-px .ec.r { color: var(--hausse); } .v2-of-px .ec.v { color: var(--vert-texte); }
@@ -242,13 +242,13 @@ html[data-theme=sombre] .v2-of-cta.plein { color: #171512; }
 .nx-bg .nx-tk.me .nx-tag, .nx-bg .nx-tag { background: rgba(23, 21, 18, .06); color: #484236; }
 .nx-bg .nx-tk .nx-tag.acc, .nx-bg .nx-tk.me .nx-tag.acc { background: #F6E2B0; color: #3D2E05; }
 .nx-bg .nx-tk .nx-tag.ok, .nx-bg .nx-tk.me .nx-tag.ok { background: #DCEFE3; color: #10392B; }
-.nx-bg .nx-tk .nx-tag.bad, .nx-bg .nx-tk.me .nx-tag.bad { background: #F6D2C8; color: #B23C24; }
+.nx-bg .nx-tk .nx-tag.bad, .nx-bg .nx-tk.me .nx-tag.bad { background: #F6D2C8; color: #9E3420; }
 .nx-bg .nx-tk.me .nx-tr { background: rgba(31, 138, 85, .13); color: #17633D; }
 .nx-bg .nx-tk.is-accord { border-color: #1F8A55; background: #FFFDF8; }
 .nx-bg .nx-tk-act { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
 .nx-bg .nx-tk-act .nx-go { grid-column: 1 / -1; min-height: 46px; font-size: 15px; }
 .nx-bg .nx-tk-act .nx-alt { min-height: 44px; padding: 0 10px; font-size: 14px; background: #E7DCC8; }
-.nx-bg .nx-tk-act .nx-non { color: #B23C24; }
+.nx-bg .nx-tk-act .nx-non { color: #9E3420; }
 /* l'accord : bord vert « accord », reçu */
 .nx-bg .nx-deal { border: 1.5px solid #1F8A55; box-shadow: 0 1px 2px rgba(23, 21, 18, .06), 0 4px 14px rgba(23, 21, 18, .06); }
 /* boutons et barre de saisie */
@@ -288,7 +288,7 @@ html[data-theme=sombre] .v2-of-cta.plein { color: #171512; }
 .nx-bg .nx-recu > div > b { font-weight: 500; color: #171512; text-align: right; font-variant-numeric: tabular-nums; }
 .nx-bg .nx-recu .tot { border-top: 1px solid rgba(23, 21, 18, .1); margin-top: 4px; padding: 14px 0 12px; align-items: center; }
 .nx-bg .nx-recu .tot span { color: #171512; font-weight: 700; font-size: 15px; }
-.nx-bg .nx-recu .tot b { font: 800 26px/1 Jost, sans-serif; color: #10392B; letter-spacing: -.01em; }
+.nx-bg .nx-recu .tot b { white-space: nowrap; font: 800 26px/1 Jost, sans-serif; color: #10392B; letter-spacing: -.01em; }
 .nx-bg .nx-trch { margin-left: 6px; border: 0; background: none; padding: 0; color: #10392B; font: 600 13.5px Jost, sans-serif; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 .nx-bg .nx-recu .nx-trp { border: 0; padding: 0 0 8px; }
 .nx-bg .nx-recu .nx-trc { display: block; margin: 0 0 8px; padding: 0; }
@@ -491,7 +491,7 @@ html[data-theme=sombre] .v2-pub-go:not([aria-disabled=true]) { color: #171512; }
 .v2-mes-h .ph img { width: 40px; height: 40px; }
 .v2-mes-h .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 .v2-mes-h .l1 { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.v2-mes-h .l1 > b { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v2-mes-h .l1 > b { font-size: 15px; font-weight: 700; line-height: 1.25; min-width: 0; overflow: hidden; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .v2-mes-h .l1 > i { flex: none; font-style: normal; font-size: 11.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: #DCEFE3; color: #10392B; }
 .v2-mes-h .l1 > i.r { background: #F6D2C8; color: #6E2414; }
 .v2-mes-h .l1 > i.n { background: var(--lin); color: var(--texte-2); }
@@ -504,3 +504,64 @@ html[data-theme=sombre] .v2-pub-go:not([aria-disabled=true]) { color: #171512; }
 .v2-mes-b button { flex: 1; height: 44px; border-radius: 999px; border: 1px solid var(--t22); background: none; color: var(--encre); font: 600 14px/1 Jost, sans-serif; }
 .v2-mes-b button.pr { border: 1.5px solid var(--vert); color: var(--vert); font-weight: 700; }
 .v2-mes-n { font-size: 12.5px; color: var(--mute); }
+
+/* ——— lot 16 : passe finale (sombre, 320 px, contrastes, cibles) ——— */
+/* la barre d'onglets n'est pas dans une page data-v2 : en mode nuit, son gris discret suit le jeton nuit (6,3:1 au lieu de 3:1) */
+html[data-theme=sombre] .v2-tabs { --mute: #A89C88; }
+/* le prix d'une proposition refusée reste barré, mais lisible (4,5:1) */
+.nx-bg .nx-tk.is-refusee .amt { opacity: .85; }
+/* cibles du doigt agrandies sans changer le dessin */
+.v2-rech-x, .nx-bg .nx-trch, .v2-vs button[role=switch] { position: relative; }
+.v2-rech-x::after { content: ""; position: absolute; inset: -4px; }
+.nx-bg .nx-trch::after { content: ""; position: absolute; inset: -13px -6px; }
+.v2-vs button[role=switch]::after { content: ""; position: absolute; inset: -8px -4px; }
+/* petits téléphones (320 px) */
+.v2-of-px .px { flex-wrap: wrap; }
+@media (max-width: 359px) {
+  .v2-ct-f { gap: 6px; padding: 0 10px 10px; }
+  .v2-ct-f button { flex: 1 1 auto; gap: 5px; padding: 0 7px; font-size: 13px; }
+  .v2-ct-f .n { min-width: 20px; padding: 0 5px; }
+  .v2-al { gap: 10px; }
+  .v2-al .ic { width: 40px; height: 40px; border-radius: 12px; }
+  .v2-tampon { padding: 2px 5px; letter-spacing: .04em; }
+}
+/* la feuille « Publier » est posée hors des pages data-v2 : en mode nuit, elle prend les mêmes jetons nuit (elle restait crème) */
+html[data-theme=sombre] .v2-feuille {
+  --papier: #14120F; --carte: #1F1B16; --champ: #25211B; --lin: #2C2720; --lin-2: #3A342A;
+  --encre: #F3EFE4; --texte-2: #DDD3C2; --texte-3: #BFB39E; --mute: #A89C88; color-scheme: dark;
+}
+/* carte du réseau en « jour » (par défaut quand l'application est en clair ; bouton soleil) : le haut et le panneau du bas passent en clair.
+   L'interface de la carte est écrite en styles en ligne pour la nuit (le navigateur les réécrit « rgba(23, 21, 18, 0.7) ») :
+   on retourne ici ses jetons et ses fonds sombres, seulement en jour. */
+[data-pg=carte]:has(.cgl.jour) { --encre: #FAF4E9; --ivoire: #171512; --sable: #655C4D; --terre-clair: #765802; --vous: #5B3FA8; background: #F7F2E8 !important; }
+[data-pg=carte]:has(.cgl.jour) .carte-hote { background: #F7F2E8 !important; }
+[data-pg=carte]:has(.cgl.jour) [style*="rgba(18, 20, 23, 0.96)"] { background: linear-gradient(rgba(250, 244, 233, .96) 0%, rgba(250, 244, 233, .88) 70%, rgba(250, 244, 233, 0) 100%) !important; }
+[data-pg=carte]:has(.cgl.jour) [style*="background: var(--encre)"] { box-shadow: 0 -6px 24px rgba(80, 60, 30, .16); }
+[data-pg=carte]:has(.cgl.jour) :is([style*="background: rgba(23, 21, 18, 0.7)"], [style*="background: rgba(23, 21, 18, 0.85)"]) { background: rgba(255, 253, 248, .94) !important; }
+[data-pg=carte]:has(.cgl.jour) :is([style*="border: 1px solid rgba(245, 240, 230"], [style*="border: 1px dashed rgba(245, 240, 230"]) { border-color: rgba(23, 21, 18, .16) !important; }
+[data-pg=carte]:has(.cgl.jour) [style*="background: rgba(245, 240, 230, 0.25)"] { background: rgba(23, 21, 18, .2) !important; }
+[data-pg=carte]:has(.cgl.jour) :is([style*="background: rgba(245, 240, 230, 0.05)"], [style*="background: rgba(245, 240, 230, 0.06)"]) { background: #FFFDF8 !important; box-shadow: inset 0 0 0 1px rgba(23, 21, 18, .08) !important; }
+[data-pg=carte]:has(.cgl.jour) [style*="background: rgb(106, 174, 240)"] { color: #171512 !important; }
+[data-pg=carte]:has(.cgl.jour) :is([style*="color: rgb(243, 160, 140)"], [style*="color: rgb(233, 194, 182)"]) { color: #9E3420 !important; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-liens button { color: #171512; border-bottom-color: rgba(23, 21, 18, .08); }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-liens .im { background: #EFE7D9; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-liens .im i { box-shadow: 0 0 0 2px #FAF4E9; }
+[data-pg=carte]:has(.cgl.jour) :is(.v2-ct-liens .tx small, .v2-ct-st) { color: #655C4D; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-liens .km { color: #765802; }
+[data-pg=carte]:has(.cgl.jour) .cz-moi { background: linear-gradient(120deg, rgba(176, 149, 240, .2), rgba(255, 253, 248, .94) 65%); border-color: rgba(91, 63, 168, .4); }
+[data-pg=carte]:has(.cgl.jour) .cz-moi[data-on="oui"] { background: linear-gradient(120deg, rgba(176, 149, 240, .34), rgba(255, 253, 248, .94) 75%); border-color: rgba(91, 63, 168, .7); }
+[data-pg=carte]:has(.cgl.jour) :is(.cz-moi-t small, .cz-moi-ch) { color: #5B3FA8; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-t { color: #171512; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-f button { background: rgba(255, 253, 248, .94); border-color: rgba(23, 21, 18, .12); color: #171512; box-shadow: 0 2px 8px rgba(80, 60, 30, .15); }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-f button[aria-pressed=true] { background: #171512; border-color: #171512; color: #F5F0E6; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-f .n { background: rgba(23, 21, 18, .08); }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-f button[aria-pressed=true] .n { background: #F5F0E6; color: #171512; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-f i.tt { background: #F5F0E6; box-shadow: inset 0 0 0 1.5px #171512; }
+[data-pg=carte]:has(.cgl.jour) .v2-ct-f button[aria-pressed=true] i.tt { background: #F5F0E6; box-shadow: none; }
+/* les cartes d'annonce posées sur la carte gardent leurs jetons d'origine */
+[data-pg=carte]:has(.cgl.jour) .an-carte { --encre: #171512; --ivoire: #F5F0E6; --sable: #B9AD98; --terre-clair: var(--logo-mais); --vous: #B095F0; }
+/* une proposition remplacée, retirée ou expirée : seul le prix pâlit, le reste de la carte reste lisible */
+.nx-bg .nx-tk:is(.is-remplacee, .is-retiree, .is-expiree) { opacity: 1; }
+.nx-bg .nx-tk:is(.is-remplacee, .is-retiree, .is-expiree) .amt { opacity: .85; }
+/* 320 px : le tampon « Disponible maintenant » de la liste de la carte tient mot par mot, sans couper « DISPONIBL-E » */
+@media (max-width: 359px) { [data-pg=carte] .qd.nuit[data-u] { font-size: 10.5px; letter-spacing: 0; gap: 4px; padding: 4px 7px 4px 5px; } }

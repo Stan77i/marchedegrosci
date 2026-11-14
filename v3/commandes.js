@@ -203,7 +203,8 @@ html[data-theme=sombre] .cm[data-v2]{color-scheme:dark}
 .cv-recu{background:var(--recu);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--ombre)}
 .cv-l{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:14px;line-height:1.35}
 .cv-l>span:first-child{color:var(--texte-3);flex:none}.cv-l>:last-child{text-align:right;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere}
-.cv-dep{border:0;background:none;padding:0;min-height:24px;font:inherit;color:var(--encre);text-decoration:underline;text-decoration-color:var(--t30);text-underline-offset:3px;cursor:pointer;text-align:right}
+.cv-dep::after{content:"";position:absolute;inset:-10px -4px}
+.cv-dep{position:relative;border:0;background:none;padding:0;min-height:24px;font:inherit;color:var(--encre);text-decoration:underline;text-decoration-color:var(--t30);text-underline-offset:3px;cursor:pointer;text-align:right}
 .cv-ph{margin:0}
 .cv-trait{height:1px;background:var(--t10)}
 .cv-tot{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.cv-tot span{font-size:14px;font-weight:600}
@@ -270,7 +271,7 @@ html[data-theme=sombre] .cv-retard>svg{color:#F2C94C}
 .cv-case:focus-within{outline:2px solid var(--vert);outline-offset:2px}
 .cv-champ{display:flex;align-items:center;gap:8px;height:56px;border-radius:16px;border:1.5px solid var(--t22);background:var(--champ);padding:0 16px}
 .cv-champ:focus-within{border-color:var(--vert)}
-.cv-champ input{flex:1;min-width:0;border:0;background:none;outline:none;font:600 18px Jost,sans-serif;color:var(--encre);font-variant-numeric:tabular-nums}
+.cv-champ input{flex:1;min-width:0;align-self:stretch;border:0;background:none;outline:none;font:600 18px Jost,sans-serif;color:var(--encre);font-variant-numeric:tabular-nums}
 .cv-champ input::placeholder{color:var(--mute);font-weight:400;opacity:1}.cv-champ span{font-size:16px;font-weight:600;color:var(--texte-3)}
 .cv-papier{min-height:60px;border-radius:16px;border:1.5px dashed var(--t30);background:var(--carte);color:var(--encre);font:600 15px Jost,sans-serif;display:flex;align-items:center;gap:12px;padding:10px 16px;text-align:left;cursor:pointer}
 .cv-papier>span{display:flex;flex-direction:column;gap:2px}.cv-papier small{font-size:12.5px;font-weight:500;color:var(--texte-3)}

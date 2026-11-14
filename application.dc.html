@@ -22,7 +22,7 @@ var adm=false;try{adm=localStorage.getItem("mdg-site:admin")==="1"}catch(e){}
 if(!adm){try{sessionStorage.removeItem("mdg-app")}catch(e){}location.replace("maintenance.html"+(location.hash||""));return}
 if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.getItem("mdg-app")!=="1")location.replace("index-v3.html"+h)}catch(e){}})();</script>
 <script>/* service worker : vérifie les mises à jour à chaque retour sur l'application ; quand une nouvelle version prend la main, la page se recharge (tout de suite si elle vient de s'ouvrir, sinon au prochain retour, jamais pendant une saisie) */if('serviceWorker' in navigator){(function(){var sw=navigator.serviceWorker,avant=!!sw.controller,t0=Date.now(),attente=false;sw.register('sw.js',{updateViaCache:'none'}).then(function(r){document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){if(attente)location.reload();else r.update().catch(function(){})}})}).catch(function(){});sw.addEventListener('controllerchange',function(){if(!avant||attente)return;if(Date.now()-t0<6000)location.reload();else attente=true})})()}</script>
-<script src="v3/nuage.js?v=20261114p1"></script>
+<script src="v3/nuage.js?v=20261114f2"></script>
 <script src="app/admin-pc.js?v=20261102a" data-ici="mobile"></script>
 <script src="v3/personnages.js?v=20261124h"></script>
 <script src="v3/avatar.js?v=20261124c"></script>
@@ -36,7 +36,7 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261207jf','v3/astuces.js?v=20261207jf','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261131lq2','v3/negoce.js?v=20261114n3','v3/compte.js?v=20261114e1','v3/souffle.js?v=20261128cf','v3/pousse.js?v=20261124nt','v3/reputation.js?v=20261207je','v3/statuts.js?v=20261124n1','v3/messages.js?v=20261113t1','v3/aide.js?v=20261113t1','v3/alertes.js?v=20261131lq2','v3/releve.js?v=20261124h','v3/commandes.js?v=20261113t1','v3/tableau.js?v=20261203cq','v3/chauffeur.js?v=20261114c1','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261131lq2','v3/racheter.js?v=20261131lq2','v3/appro.js?v=20261131lq2','v3/groupes.js?v=20261113t1','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261207je','v3/identite.js?v=20261114p1','v3/boutique.js?v=20261113t1','v3/equipe.js?v=20261114e1'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261207jf','v3/astuces.js?v=20261207jf','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261131lq2','v3/negoce.js?v=20261114f3','v3/compte.js?v=20261114e1','v3/souffle.js?v=20261128cf','v3/pousse.js?v=20261124nt','v3/reputation.js?v=20261207je','v3/statuts.js?v=20261124n1','v3/messages.js?v=20261114f2','v3/aide.js?v=20261113t1','v3/alertes.js?v=20261131lq2','v3/releve.js?v=20261124h','v3/commandes.js?v=20261114f1','v3/tableau.js?v=20261203cq','v3/chauffeur.js?v=20261114c1','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261131lq2','v3/racheter.js?v=20261131lq2','v3/appro.js?v=20261131lq2','v3/groupes.js?v=20261114f2','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261114f2','v3/identite.js?v=20261114p1','v3/boutique.js?v=20261113t1','v3/equipe.js?v=20261114e1'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief (1,5 Mo) se télécharge en avance quand tout est calme : l'ouvrir devient presque immédiat.
    Jamais à la toute première ouverture (FIA-58 : le forfait de qui découvre l'application), ni en économie de données, en 2G ou en 3G. */
@@ -67,7 +67,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/sombre.css?v=20261113r1">
 <link rel="stylesheet" href="css/annee-app.css?v=20261124h">
 <link rel="stylesheet" href="css/categories-app.css?v=20261124f">
-<link rel="stylesheet" href="css/v2.css?v=20261114n2">
+<link rel="stylesheet" href="css/v2.css?v=20261114f2">
 <link rel="stylesheet" href="css/v2-compte.css?v=20261113t1">
 <link rel="stylesheet" href="css/v2-equipe.css?v=20261114e1">
 <link rel="stylesheet" href="v3/ux.css?v=20261124i">

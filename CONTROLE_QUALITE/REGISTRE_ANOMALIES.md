@@ -68,6 +68,7 @@
 | ANO-055 | En panne : « Commandes indisponibles » et « Aucune commande en cours » ensemble | P3 | U10 | ouverte | FIA-63 |
 | ANO-056 | Protection « mots de passe compromis » désactivée | P3 | U02 | ouverte (en attente : option peut-être payante) | SEC-11 (`get_advisors`) |
 | ANO-057 | Le site caché appelle 5 modules avec une ancienne version (`?v=`) | P3 | U10 | ouverte | STA-02 |
+| ANO-059 | Liens « Montrer dans l'app » vers les anciens onglets du haut (`.acc-ong`) ; le guide parle encore de la roue | P3 | U12 | ouverte | à écrire |
 
 Comptes : **0 P0 · 4 P1 · 28 P2 · 25 P3** (57 fiches, dont 46 nouvelles le 25/10/2026). Statuts : 2 vérifiées (ANO-001, 002), 4 corrigées non vérifiées (ANO-007, 012, 028, 030), 51 ouvertes.
 
@@ -789,6 +790,18 @@ Batteries citées : `tests/sql/U02-securite.sql` (SEC), `U03-argent.sql` (ARG), 
 | Risque métier | Un refus rejeté pourrait afficher un montant refusé égal au total au lieu de zéro. |
 | Correctif | proposition à valider par le propriétaire : `montant_refuse` = 0 quand `p_quantite` = 0 |
 | Test de non-régression | à écrire (bloc SQL sur le projet de test) |
+| Statut | ouverte |
+
+### ANO-059 · Liens « Montrer dans l'app » vers les anciens onglets du haut
+| Champ | Valeur |
+|---|---|
+| Date | 14/11/2026 |
+| Unité | U12 |
+| Gravité | P3 |
+| Preuve | trouvée pendant la passe finale de la refonte (lot 16) : les liens « Montrer dans l'app » du guide, de l'aide, des astuces et de `app/garanties.js` visent encore les anciens onglets du haut (`.acc-ong`), qui n'existent plus depuis la refonte ; le guide parle encore de faire tourner la roue, qui a quitté l'accueil. |
+| Risque métier | Un lien « Montrer » ne montre rien ou mène au mauvais endroit ; le guide décrit un geste qui n'existe plus. |
+| Correctif | validé par le propriétaire (14/11/2026), à faire : faire viser les nouveaux onglets du bas et réécrire le passage sur la roue |
+| Test de non-régression | à écrire |
 | Statut | ouverte |
 
 ## 6. Points à confirmer (ni anomalie prouvée, ni réussite)

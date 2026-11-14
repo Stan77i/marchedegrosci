@@ -1,5 +1,5 @@
-<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-14-06h23-apres-modif.md). Ne pas modifier à la main. -->
-# Rapport du contrôle qualité · 14/11/2026 à 06 h 23 (UTC = heure d’Abidjan)
+<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-14-06h27-apres-modif.md). Ne pas modifier à la main. -->
+# Rapport du contrôle qualité · 14/11/2026 à 06 h 27 (UTC = heure d’Abidjan)
 
 > Gabarit : `CONTROLE_QUALITE/modeles/RAPPORT.md`. Fait par `tools/controle/lancer.sh apres-modif`. Les tests SQL ne sont jamais exécutés par ce script : ils sont « non exécuté » tant que Claude ne les a pas joués via MCP sur le projet de test.
 
@@ -7,8 +7,8 @@
 
 | Champ | Valeur |
 |---|---|
-| Date | 14/11/2026 à 06 h 23 |
-| Commit | `7466b78` (branche `claude/refonte-lot14-equipe`, avec des changements non enregistrés) |
+| Date | 14/11/2026 à 06 h 27 |
+| Commit | `82e131d` (branche `claude/refonte-lot14-equipe`, avec des changements non enregistrés) |
 | Mode | `apres-modif` |
 | Base de comparaison | `origin/main` |
 | Durée | 3 s |
@@ -38,7 +38,7 @@
 | STA-12 | U09 | normal | Contrôle « sql » | aucun constat | rien à signaler (166 fichiers supabase/schema-*.sql ; voir « Pour information ») | réussi | — | tools/controle/controle.js |
 | STA-13 | U13 | normal | Contrôle « liens » | aucun constat | rien à signaler (CLAUDE.md, CONTROLE_QUALITE/CALENDRIER.md, CONTROLE_QUALITE/HISTORIQUE.md, CONTROLE_QUALITE/INVENTAIRE_OUTILS.md, CONTROLE_QUALITE/LISTES_DE_CONTROLE.md, CONTROLE_QUALITE/MATRICE_TESTS.md, CONTROLE_QUALITE/README.md, CONTROLE_QUALITE/REGISTRE_ANOMALIES.md, CONTROLE_QUALITE/REGISTRE_DES_TESTS.md, CONTROLE_QUALITE/modeles/RAPPORT.md, CONTROLE_QUALITE/procedures/APRES_INCIDENT.md, CONTROLE_QUALITE/procedures/APRES_MODIFICATION.md, CONTROLE_QUALITE/procedures/AVANT_PRODUCTION.md, CONTROLE_QUALITE/procedures/CONTROLE_GENERAL.md, CONTROLE_QUALITE/tests/navigateur/README.md, CONTROLE_QUALITE/tests/sql/README.md) | réussi | — | tools/controle/controle.js |
 | STA-14 | U10 | normal | Contrôle « navigateur » | contrôle fait | désactivé (--sans-navigateur) | non exécuté | — | tools/controle/controle.js |
-| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (7466b78) | liste | 6 fichier(s) | réussi | — | git diff --name-only 7466b78 |
+| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (7466b78) | liste | 32 fichier(s) | réussi | — | git diff --name-only 7466b78 |
 | APM-02 | U10 | régression | node --check sur les 3 fichier(s) JS changé(s) | aucune erreur | aucune erreur | réussi | — | sw.js, v3/compte.js, v3/equipe.js |
 | APM-05 | U10 | régression | 5 fichier(s) du front changé(s) : CACHE de sw.js monté | CACHE différent de la base | mgci-v312 → mgci-v313 | réussi | — | sw.js ; fichiers : application.dc.html, css/v2-equipe.css, index-v3.html, v3/compte.js, v3/equipe.js |
 | APM-06 | U10 | régression | ?v= monté pour chaque JS/CSS changé appelé avec ?v= | nouvelle version | monté partout | réussi | — | application.dc.html, index-v3.html, index.html, admin.html, suivi.html, sw.js |

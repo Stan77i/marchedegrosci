@@ -779,6 +779,18 @@ Batteries citées : `tests/sql/U02-securite.sql` (SEC), `U03-argent.sql` (ARG), 
 | Test de non-régression | `get_advisors` |
 | Statut | ouverte (en attente : option peut-être payante) |
 
+### ANO-058 · Litige : rejeter un refus compte tout le montant si la commande n'a pas de quantité
+| Champ | Valeur |
+|---|---|
+| Date | 14/11/2026 |
+| Unité | U05 |
+| Gravité | P3 |
+| Preuve | lecture de `admin_refus_trancher` (schéma 92c) : sans quantité sur la commande, `montant_refuse` vaut tout le montant, même quand l'équipe rejette le refus (`p_quantite` = 0). Trouvée en construisant l'Espace équipe (lot 14). |
+| Risque métier | Un refus rejeté pourrait afficher un montant refusé égal au total au lieu de zéro. |
+| Correctif | proposition à valider par le propriétaire : `montant_refuse` = 0 quand `p_quantite` = 0 |
+| Test de non-régression | à écrire (bloc SQL sur le projet de test) |
+| Statut | ouverte |
+
 ## 6. Points à confirmer (ni anomalie prouvée, ni réussite)
 
 | Point | Unité | Ce qu'il faut pour trancher | Source |

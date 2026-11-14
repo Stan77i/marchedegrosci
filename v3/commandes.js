@@ -1209,7 +1209,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
   }
 
   // la ligne « Transport » du détail (schéma 83) : la règle, les villes, le prix accepté ; pas de total quand le livreur est hors Marché de Gros
-  const REGLE = { inclus: 'Compris dans le prix', a_part: 'Le vendeur livre · transport à part', livreur_vendeur: 'Le vendeur organise son livreur', retrait: 'L’acheteur vient chercher', acheteur: 'Transport à la charge de l’acheteur', mgci: 'Transporteur du réseau Marché de Gros' };
+  const REGLE = { inclus: 'Compris dans le prix', a_part: 'Le vendeur livre · transport à part', livreur_vendeur: 'Le vendeur organise son livreur', retrait: 'Retrait par l’acheteur', acheteur: 'Transport à la charge de l’acheteur', mgci: 'Transporteur du réseau Marché de Gros' };
   // qui paie le transport, en une phrase, selon le mode (règle « Transport à la charge de l’acheteur », 24/10/2026)
   const QUIPAIE = { inclus: 'Qui paie : rien en plus, le transport est dans le prix.', a_part: 'Qui paie : l’acheteur paie au vendeur le transport convenu, avec la marchandise.',
     livreur_vendeur: 'Qui paie : l’acheteur paie directement le livreur du vendeur, hors Marché de Gros.', acheteur: 'Qui paie : l’acheteur organise et paie son transport.' };

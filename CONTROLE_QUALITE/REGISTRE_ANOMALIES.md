@@ -68,7 +68,8 @@
 | ANO-055 | En panne : « Commandes indisponibles » et « Aucune commande en cours » ensemble | P3 | U10 | ouverte | FIA-63 |
 | ANO-056 | Protection « mots de passe compromis » désactivée | P3 | U02 | ouverte (en attente : option peut-être payante) | SEC-11 (`get_advisors`) |
 | ANO-057 | Le site caché appelle 5 modules avec une ancienne version (`?v=`) | P3 | U10 | ouverte | STA-02 |
-| ANO-059 | Liens « Montrer dans l'app » vers les anciens onglets du haut (`.acc-ong`) ; le guide parle encore de la roue | P3 | U12 | ouverte | à écrire |
+| ANO-059 | Liens « Montrer dans l'app » vers les anciens onglets du haut (`.acc-ong`) ; le guide parle encore de la roue | P3 | U12 | **corrigée** (14/11/2026) | à écrire |
+| ANO-060 | Libellé « L'acheteur vient chercher » du choix retrait (`v3/commandes.js`, `REGLE.retrait`) | P3 | U13, U06 | ouverte (à confirmer par le propriétaire) | STA-03 |
 
 Comptes : **0 P0 · 4 P1 · 28 P2 · 25 P3** (57 fiches, dont 46 nouvelles le 25/10/2026). Statuts : 2 vérifiées (ANO-001, 002), 4 corrigées non vérifiées (ANO-007, 012, 028, 030), 51 ouvertes.
 
@@ -800,8 +801,20 @@ Batteries citées : `tests/sql/U02-securite.sql` (SEC), `U03-argent.sql` (ARG), 
 | Gravité | P3 |
 | Preuve | trouvée pendant la passe finale de la refonte (lot 16) : les liens « Montrer dans l'app » du guide, de l'aide, des astuces et de `app/garanties.js` visent encore les anciens onglets du haut (`.acc-ong`), qui n'existent plus depuis la refonte ; le guide parle encore de faire tourner la roue, qui a quitté l'accueil. |
 | Risque métier | Un lien « Montrer » ne montre rien ou mène au mauvais endroit ; le guide décrit un geste qui n'existe plus. |
-| Correctif | validé par le propriétaire (14/11/2026), à faire : faire viser les nouveaux onglets du bas et réécrire le passage sur la roue |
+| Correctif | fait le 14/11/2026 (PR fidélité) : les liens visent les onglets du bas (`window.MDGOnglets`), le guide est réécrit en 6 étapes sans la roue |
 | Test de non-régression | à écrire |
+| Statut | **corrigée** (14/11/2026, à revérifier au prochain contrôle) |
+
+### ANO-060 · « L'acheteur vient chercher » (choix retrait)
+| Champ | Valeur |
+|---|---|
+| Date | 14/11/2026 |
+| Unité | U13, U06 |
+| Gravité | P3 |
+| Preuve | `bash tools/controle/lancer.sh apres-modif` : texte « L'acheteur vient chercher » dans `v3/commandes.js` (ligne `REGLE`, clé `retrait`) |
+| Risque métier | La règle du transport interdit cette phrase pour « à la charge de l'acheteur ». Ici elle désigne le retrait par l'acheteur, accepté par le vendeur, ce qui est permis (voir ANO-001). À confirmer. |
+| Correctif | proposition : garder le libellé et l'ajouter aux exceptions motivées de `tools/controle/exceptions.json`, ou le renommer « Retrait par l'acheteur » — à valider par le propriétaire |
+| Test de non-régression | STA-03 |
 | Statut | ouverte |
 
 ## 6. Points à confirmer (ni anomalie prouvée, ni réussite)

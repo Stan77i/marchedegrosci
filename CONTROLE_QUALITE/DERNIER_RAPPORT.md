@@ -1,5 +1,5 @@
-<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-14-20h57-apres-modif.md). Ne pas modifier à la main. -->
-# Rapport du contrôle qualité · 14/11/2026 à 20 h 57 (UTC = heure d’Abidjan)
+<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-14-21h03-apres-modif.md). Ne pas modifier à la main. -->
+# Rapport du contrôle qualité · 14/11/2026 à 21 h 03 (UTC = heure d’Abidjan)
 
 > Gabarit : `CONTROLE_QUALITE/modeles/RAPPORT.md`. Fait par `tools/controle/lancer.sh apres-modif`. Les tests SQL ne sont jamais exécutés par ce script : ils sont « non exécuté » tant que Claude ne les a pas joués via MCP sur le projet de test.
 
@@ -7,8 +7,8 @@
 
 | Champ | Valeur |
 |---|---|
-| Date | 14/11/2026 à 20 h 57 |
-| Commit | `b17f002` (branche `claude/refonte-fidelite`, avec des changements non enregistrés) |
+| Date | 14/11/2026 à 21 h 03 |
+| Commit | `3c2686f` (branche `claude/refonte-fidelite`, avec des changements non enregistrés) |
 | Mode | `apres-modif` |
 | Base de comparaison | `origin/main` |
 | Durée | 5 s |
@@ -38,9 +38,9 @@
 | STA-12 | U09 | normal | Contrôle « sql » | aucun constat | rien à signaler (166 fichiers supabase/schema-*.sql ; voir « Pour information ») | réussi | — | tools/controle/controle.js |
 | STA-13 | U13 | normal | Contrôle « liens » | aucun constat | rien à signaler (CLAUDE.md, CONTROLE_QUALITE/CALENDRIER.md, CONTROLE_QUALITE/HISTORIQUE.md, CONTROLE_QUALITE/INVENTAIRE_OUTILS.md, CONTROLE_QUALITE/LISTES_DE_CONTROLE.md, CONTROLE_QUALITE/MATRICE_TESTS.md, CONTROLE_QUALITE/README.md, CONTROLE_QUALITE/REGISTRE_ANOMALIES.md, CONTROLE_QUALITE/REGISTRE_DES_TESTS.md, CONTROLE_QUALITE/modeles/RAPPORT.md, CONTROLE_QUALITE/procedures/APRES_INCIDENT.md, CONTROLE_QUALITE/procedures/APRES_MODIFICATION.md, CONTROLE_QUALITE/procedures/AVANT_PRODUCTION.md, CONTROLE_QUALITE/procedures/CONTROLE_GENERAL.md, CONTROLE_QUALITE/tests/navigateur/README.md, CONTROLE_QUALITE/tests/sql/README.md) | réussi | — | tools/controle/controle.js |
 | STA-14 | U10 | normal | Contrôle « navigateur » | contrôle fait | désactivé (--sans-navigateur) | non exécuté | — | tools/controle/controle.js |
-| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (79c02df) | liste | 40 fichier(s) | réussi | — | git diff --name-only 79c02df |
+| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (79c02df) | liste | 55 fichier(s) | réussi | — | git diff --name-only 79c02df |
 | APM-02 | U10 | régression | node --check sur les 26 fichier(s) JS changé(s) | aucune erreur | aucune erreur | réussi | — | app/garanties.js, app/marche-app.js, app/sac.js, app/toast.js, sw.js, v3/aide.js, v3/alertes-v2.js, v3/alertes.js, v3/appro.js, v3/astuces.js, v3/chauffeur.js, v3/cherche.js, v3/commandes.js, v3/compte.js, v3/equipe.js, v3/groupes.js, v3/guide.js, v3/identite.js, v3/marche.js, v3/match.js, v3/messages.js, v3/negoce.js, v3/prixzone.js, v3/racheter.js, v3/releve.js, v3/reputation.js |
-| APM-05 | U10 | régression | 33 fichier(s) du front changé(s) : CACHE de sw.js monté | CACHE différent de la base | mgci-v318 → mgci-v319 | réussi | — | sw.js ; fichiers : admin.html, app/garanties.js, app/marche-app.js, app/sac.js, app/toast.js, application.dc.html… |
+| APM-05 | U10 | régression | 33 fichier(s) du front changé(s) : CACHE de sw.js monté | CACHE différent de la base | mgci-v318 → mgci-v320 | réussi | — | sw.js ; fichiers : admin.html, app/garanties.js, app/marche-app.js, app/sac.js, app/toast.js, application.dc.html… |
 | APM-06 | U10 | régression | ?v= monté pour chaque JS/CSS changé appelé avec ?v= | nouvelle version | monté partout | réussi | — | application.dc.html, index-v3.html, index.html, admin.html, suivi.html, sw.js |
 
 ## 4. Anomalies (P0 à P3)

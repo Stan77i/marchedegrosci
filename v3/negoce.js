@@ -426,6 +426,8 @@
       const { p, q, pt } = vals(), qFrac = q && q % 1 && entier, trop = p && q && p * q > MONTANT_MAX;   // schéma 99d : le serveur refuse aussi
       go.disabled = !p || p < 1 || qFrac || trop || (ctx.qmax && q > ctx.qmax) || (qmin && !(q >= qmin)) || (tr === 'apart' && !pt);
       $('.nx-pu').textContent = q ? uQ(q, u) : u;
+      // le nombre prend la largeur de ce qu'il contient : quantité et prix restent bien centrés entre − et +
+      [ip, iq].forEach(i => { i.style.width = Math.max(1, String(i.value || i.placeholder || '').length) + 0.1 + 'ch'; });
       // l'écart avec le prix demandé (ou son budget, ou sa dernière proposition)
       const base = ctx.dernier && ctx.dernier !== ref ? ctx.dernier : ref, ec = $('.nx-ecart');
       if (p && base) { const pc = Math.round(Math.abs(p - base) / base * 100); ec.textContent = Math.abs(p - base) < 1 ? 'Au prix ' + (ctx.dernier && ctx.dernier !== ref ? 'de sa proposition' : ctx.cible === 'offre' ? 'demandé' : 'de son budget')

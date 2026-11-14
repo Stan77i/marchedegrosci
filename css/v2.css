@@ -195,7 +195,7 @@ html[data-theme=sombre] .v2-zones button[aria-pressed=true] { color: #171512; }
 .v2-veut > span { flex: 1; }
 .v2-veut .pp { display: flex; align-items: center; gap: 2px; background: var(--carte); border-radius: 999px; border: 1px solid var(--t10); }
 .v2-veut .pp button { width: 44px; height: 44px; border: 0; background: none; display: grid; place-items: center; color: var(--encre); padding: 0; }
-.v2-veut .pp b { min-width: 96px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--encre); }
+.v2-veut .pp b { min-width: 96px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--texte-2); }
 .v2-offres { display: flex; flex-direction: column; gap: 12px; }
 .v2-of { background: var(--carte); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; gap: 12px; box-shadow: var(--ombre); border: 1.5px solid transparent; }
 .v2-of.best { border-color: #F2C230; }
@@ -314,6 +314,9 @@ html[data-theme=sombre] .v2-of-cta.plein { color: #171512; }
 .nx-bg .nx-condl { align-self: flex-start; margin: 12px 0 0; border: 0; background: none; padding: 10px 0; min-height: 44px; color: #10392B; font: 600 14px Jost, sans-serif; cursor: pointer; }
 .nx-bg .nx-cond2[hidden] { display: none; }
 .nx-bg .nx-ed2 .nx-pied { margin-top: 8px; }
+/* la feuille « Proposer un prix » prend la hauteur de son contenu (maquette : environ 633 px, l'en-tête de la fiche reste visible) */
+.nx-bg.nx-pbg .nx { height: auto !important; max-height: min(calc(var(--vvh, 100dvh) * .92), 820px) !important; }
+.nx-bg.nx-pbg .nx-b { flex: 0 1 auto; }
 .nx-bg .nx-paie { margin: 10px 0 0; text-align: center; font-size: 12.5px; color: #6F6553; }
 .nx-bg .nx-note { margin-top: 10px; }
 
@@ -339,7 +342,7 @@ html[data-theme=sombre] .v2-of-cta.plein { color: #171512; }
 .v2-px-l .jauge s { position: absolute; top: -3px; width: 3px; height: 12px; margin-left: -1.5px; border-radius: 2px; background: var(--vert); }
 .v2-px-l .m { flex: none; font-size: 17px; font-weight: 800; color: var(--vert); font-variant-numeric: tabular-nums; text-align: right; }
 .v2-px-l .m.pas { max-width: 120px; font-size: 13.5px; font-weight: 700; color: var(--texte-3); }
-.v2-px-note { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--texte-3); }
+.v2-px-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--mute); }
 .nx-bg .nx-pv input { font-size: 20px !important; font-weight: 800 !important; }
 .v2-px-l .m.pas { max-width: none; white-space: nowrap; font-size: 15px; }
 .v2-px-l .l0 { flex-wrap: wrap; row-gap: 0; }
@@ -474,7 +477,7 @@ html[data-theme=sombre] .v2-pub-go:not([aria-disabled=true]) { color: #171512; }
 .v2-an-leg span { display: flex; align-items: center; gap: 6px; }
 .v2-an-leg i { width: 14px; height: 14px; border-radius: 4px; }
 .v2-an-leg i.debut { background: #9DC2A7; } .v2-an-leg i.plein { background: #6CC58C; } .v2-an-leg i.fin { background: #D6A83E; }
-.v2-an-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--texte-3); }
+.v2-an-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--mute); }
 
 /* ——— lot 9 : carte du réseau — la carte actuelle est gardée (décision du propriétaire), la logique de la maquette ——— */
 .v2-ct-t { flex: 1; font-size: 21px; font-weight: 700; letter-spacing: -.01em; color: #F5F0E6; }

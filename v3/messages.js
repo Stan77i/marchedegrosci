@@ -119,8 +119,8 @@ html[data-theme=sombre] .dm{--papier:#14120F;--carte:#1F1B16;--champ:#25211B;--l
 .dm-tete p{margin:6px 0 0;color:var(--texte-3);font-size:13.5px}
 .dm-b{flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:8px 16px 24px;-webkit-overflow-scrolling:touch}
 .dm-conv .dm-b{display:flex;flex-direction:column;padding:10px 16px 18px}
-/* la liste laisse la place à la barre d'onglets du bas (« Activité » allumé) */
-.dm:not(.dm-conv) .dm-b{padding-bottom:calc(max(96px, var(--barre-h, 0px) + 10px) + env(safe-area-inset-bottom))}
+/* la liste finit au-dessus de la barre d'onglets du bas (« Activité » allumé) ; la conversation la couvre (maquette) */
+.dm-bg.liste{bottom:var(--barre-h, 0px)}
 .dm-info{align-self:center;max-width:310px;margin:0 auto 10px;padding:8px 12px;border-radius:12px;background:var(--lin);color:var(--texte-2);font-size:12.5px;line-height:1.4;text-align:center}
 .dm-garde{align-self:center;max-width:340px;margin:0 auto 10px;padding:9px 12px;border-radius:12px;background:var(--garde);color:var(--garde-t);font-size:12.5px;line-height:1.45;text-align:center}
 .dm-jour{margin:14px 0 6px;text-align:center;color:var(--mute);font-size:12px;font-weight:600;text-transform:capitalize}
@@ -195,7 +195,7 @@ html[data-theme=sombre] .dm{--papier:#14120F;--carte:#1F1B16;--champ:#25211B;--l
     if (!document.getElementById('dmCss')) { const st = document.createElement('style'); st.id = 'dmCss'; st.textContent = CSS; document.head.appendChild(st); }
     const deja = !!bg; fermer(true);
     // d'un écran des messages à l'autre : la page change sur place, sans rejouer l'entrée (pas de clignotement)
-    bg = document.createElement('div'); bg.className = 'dm-bg' + (deja ? ' dm-sans' : '');
+    bg = document.createElement('div'); bg.className = 'dm-bg' + (deja ? ' dm-sans' : '') + (cls ? '' : ' liste');
     bg.innerHTML = `<div class="dm${cls ? ' ' + cls : ''}" role="dialog" aria-modal="true" aria-label="${esc(label)}">${html}</div>`;
     document.body.appendChild(bg);
     if (!rendre) rendre = N() && N().piege ? N().piege(bg) : null;
@@ -214,7 +214,8 @@ html[data-theme=sombre] .dm{--papier:#14120F;--carte:#1F1B16;--champ:#25211B;--l
   // iPhone : la page ne rétrécit pas quand le clavier s'ouvre ; la feuille suit la zone visible pour garder le champ au-dessus du clavier
   function ajuster() {
     const vv = window.visualViewport; if (!bg || !vv || matchMedia('(min-width:720px)').matches) return;
-    bg.style.top = vv.offsetTop + 'px'; bg.style.height = vv.height + 'px'; bg.style.bottom = 'auto';
+    const bh = bg.classList.contains('liste') ? parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--barre-h')) || 0 : 0;
+    bg.style.top = vv.offsetTop + 'px'; bg.style.height = Math.max(0, vv.height - bh) + 'px'; bg.style.bottom = 'auto';
   }
   if (window.visualViewport) { visualViewport.addEventListener('resize', ajuster); visualViewport.addEventListener('scroll', ajuster); }
 

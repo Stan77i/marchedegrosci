@@ -227,6 +227,8 @@
 .idv{--bg:#F4EEE3;--card:#FFFDF8;--card2:#EFE7D9;--ink:#171512;--mute:#655C4D;--faint:#6F6553;--line2:rgba(23,21,18,.14);--acc:#10392B;--acc-t:#10392B;--ok:#2E7D4F;--bad:#C0442B;--blue:#10392B;
   position:relative;display:flex;flex-direction:column;width:100%;max-width:560px;height:min(94dvh,860px);background:var(--bg);color:var(--ink);border-radius:28px 28px 0 0;font:400 15px/1.45 Jost,system-ui,sans-serif;overflow:hidden;animation:idvUp .32s cubic-bezier(.22,1,.36,1) both}
 @media (min-width:760px){.idv{border-radius:28px;height:min(90dvh,820px);box-shadow:0 30px 90px rgba(0,0,0,.5)}}
+/* la première feuille (maquette) : hauteur selon le contenu */
+.idv.court{height:auto;max-height:min(94dvh,860px)}.idv.court .idv-act{margin-top:4px}
 .idv-top{flex:none;display:grid;grid-template-columns:52px minmax(0,1fr) 52px;align-items:center;min-height:60px;padding:10px 8px 4px}
 .idv-top b{text-align:center;font:600 16px/1.2 Jost,sans-serif}
 .idv-ib{width:44px;height:44px;display:grid;place-items:center;border:0;border-radius:50%;background:rgba(23,21,18,.07);color:var(--ink);cursor:pointer;font-size:22px;line-height:1}
@@ -469,7 +471,7 @@
     ret.onclick = () => aller(i - 1);
     const pas = () => { const L = liste(); bg.querySelector('.idv-pas').innerHTML = L.slice(1, -1).map((_, k) => `<i class="${k < i ? 'on' : ''}"></i>`).join(''); ret.hidden = i === 0 || L[i] === 'envoi';
       // maquette : sur la première feuille, seulement la croix (le titre est dans la feuille)
-      bg.querySelector('.idv-top b').style.visibility = i === 0 ? 'hidden' : ''; bg.querySelector('.idv-pas').style.visibility = i === 0 ? 'hidden' : ''; };
+      bg.querySelector('.idv-top b').style.visibility = i === 0 ? 'hidden' : ''; bg.querySelector('.idv-pas').style.display = i === 0 ? 'none' : ''; bg.querySelector('.idv').classList.toggle('court', i === 0); };
     const actions = (go, label, alt) => `<div class="idv-act"><button type="button" class="idv-go" data-go ${go ? '' : 'disabled'}>${label}</button>${alt || ''}</div>`;
     const prendre = (cle, titre, aide, face) => {
       const b = st[cle];

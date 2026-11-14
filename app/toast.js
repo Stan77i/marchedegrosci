@@ -36,6 +36,7 @@
 .il-in{pointer-events:auto;cursor:pointer;display:flex;align-items:center;gap:14px;max-width:min(100%,460px);box-sizing:border-box;padding:12px 18px;border-radius:14px;
   background:#171512;color:#F5F0E6;box-shadow:0 10px 30px rgba(23,21,18,.25);text-align:center}
 .il-g{display:none}
+html[data-theme=sombre] .il-in{box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 0 1px rgba(243,239,228,.12)}
 .il-x{min-width:0;display:flex;flex-direction:column;gap:2px}
 .il-x b{font:600 14px/1.35 Jost,sans-serif;overflow-wrap:anywhere}
 .il-x b em{font-style:normal;font-weight:inherit}
@@ -249,12 +250,12 @@
 .fl-ch .l{flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.3}
 .fl-ch .l small{display:block;font-size:12.5px;font-weight:400;color:var(--texte-3);margin-top:1px}
 .fl-ch .s{flex:none;font-size:12.5px;color:var(--texte-3)}
-.fl-ch.h .l{font-size:16px;font-weight:700}.fl-ch.h .s{font-size:13.5px}
+.fl-ch.h .l{flex:none;white-space:nowrap;font-size:16px;font-weight:700}.fl-ch.h .s{flex:1;min-width:0;text-align:right;font-size:13.5px}
 .fl-ch:has(input:checked){border-color:var(--vert)}
 .fl-ch:has(input:checked) .rb{border-color:var(--vert)}.fl-ch:has(input:checked) .rb i{background:var(--vert)}
 .fl-ch:has(input:focus-visible){outline:2px solid var(--vert);outline-offset:2px}
 .fl-ch:has(input:disabled){opacity:.55;cursor:default}
-.fl-c input[type=text],.fl-c input[type=number],.fl-c input[type=datetime-local],.fl-c input:not([type]),.fl-c textarea{display:block;width:100%;box-sizing:border-box;min-height:50px;
+.fl-c input[type=text],.fl-c input[type=password],.fl-c input[type=tel],.fl-c input[type=number],.fl-c input[type=datetime-local],.fl-c input:not([type]),.fl-c textarea{display:block;width:100%;box-sizing:border-box;min-height:50px;
   border-radius:16px;border:1px solid var(--t14);background:var(--champ);padding:12px 14px;font:400 16px/1.4 Jost,sans-serif;color:var(--encre);outline:none}
 .fl-c textarea{min-height:96px;resize:none}
 .fl-c input:focus-visible,.fl-c textarea:focus-visible{border-color:var(--vert);box-shadow:0 0 0 1px var(--vert)}

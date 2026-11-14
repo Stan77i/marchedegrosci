@@ -1511,7 +1511,7 @@ class Component extends DCLogic {
         prixT: prix > 0 ? fmt(prix) + ' F' : (off ? 'Prix à discuter' : 'Budget à discuter'), unite: prix > 0 ? '/ ' + x.unit : '', ecart, ecC,
         mien: c.mine, ctaOn: !c.mine && c.canNeg, cta: () => c.neg({ km: dist(x), voulu: x.unit === wu ? want : 0 }) }; })
       .sort((a, b) => b.score - a.score || (ach ? (a.prix || 9e15) - (b.prix || 9e15) : (b.prix || 0) - (a.prix || 0)))
-      .map((o, i) => ({ ...o, prix: o.prixT, bestOn: i === 0 && o.score >= 2.5, cls: i === 0 && o.score >= 2.5 ? 'best' : '', ctaC: i === 0 ? 'plein' : 'contour', ctaT: ach ? 'Proposer un prix' : 'Proposer de vendre' }));
+      .map((o, i) => ({ ...o, prix: o.prixT, bestOn: i === 0 && o.score >= 3, cls: i === 0 && o.score >= 3 ? 'best' : '', ctaC: i === 0 ? 'plein' : 'contour', ctaT: ach ? 'Proposer un prix' : 'Proposer de vendre' }));
     const plusLarge = zones.slice(zi + 1).find(z => src.some(z.f));
     return {
       // le bouton retour : « Prix du moment » comme la maquette (la fiche est sous l'onglet Prix), ou l'écran d'où l'on vient quand c'en est un autre

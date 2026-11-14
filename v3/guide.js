@@ -23,11 +23,11 @@
     ['Réceptionner', 'Vérifiez, puis tapez le mot secret du vendeur. Vous avez encore 1 h pour signaler un problème.', FEN('MDGCommandes', 'ouvrir')]
   ];
 
-  const CSS = `.gd{position:fixed;inset:0;z-index:9000;background:var(--papier);color:var(--encre);font:400 15px/1.45 Jost,system-ui,sans-serif;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
-.gd-in{max-width:560px;margin:0 auto;box-sizing:border-box;padding:calc(8px + env(safe-area-inset-top)) 16px calc(max(120px, var(--barre-h, 0px) + 34px) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px}
+  const CSS = `.gd{position:fixed;top:0;left:0;right:0;bottom:var(--barre-h, 0px);z-index:9000;background:var(--papier);color:var(--encre);font:400 15px/1.45 Jost,system-ui,sans-serif;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
+.gd-in{max-width:560px;margin:0 auto;box-sizing:border-box;padding:calc(8px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px}
 .gd-ret{display:flex;align-items:center;margin-left:-11px;align-self:flex-start;min-height:44px;border:0;background:none;padding:0 10px 0 0;color:var(--texte-3);font:400 14px Jost,sans-serif;cursor:pointer}
 .gd-ret svg{width:44px;height:44px;padding:11px;box-sizing:border-box;color:var(--encre)}
-.gd h1{margin:0;font:600 32px/1.05 Jost,sans-serif;letter-spacing:-.015em}
+.gd h1{margin:0;font:600 32px/1.05 Jost,sans-serif;letter-spacing:-.015em;outline:none}
 .gd-et{display:flex;gap:14px;background:var(--carte);border-radius:18px;padding:16px}
 .gd-n{width:34px;height:34px;flex:none;border-radius:999px;background:var(--vert);color:var(--action-t);font:800 15px/34px Jost,sans-serif;text-align:center}
 .gd-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}

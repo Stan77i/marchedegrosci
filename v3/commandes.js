@@ -151,7 +151,9 @@
 .cm[data-v2]{background:var(--papier);color:var(--encre)}
 html[data-theme=sombre] .cm[data-v2]{color-scheme:dark}
 .cm-bg.plein{animation:none;background:var(--papier, #F2EBDD)}
-.cm[data-v2].plein{max-width:560px;height:100dvh;max-height:100dvh;border-radius:0;padding:calc(6px + env(safe-area-inset-top)) 16px calc(max(96px, var(--barre-h, 0px) + 10px) + env(safe-area-inset-bottom));animation:none}
+/* la barre d'onglets reste visible (maquette) : l'écran finit à --barre-h du bas (hauteur réelle de la barre, posée par l'application) */
+.cm-bg.plein{bottom:var(--barre-h, 0px)}
+.cm[data-v2].plein{max-width:560px;height:100%;max-height:100%;border-radius:0;padding:calc(6px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));animation:none}
 /* le mot secret à taper, dans le panneau sombre de la maquette (feuille du bas) */
 .cv-motp{background:var(--panneau);color:#F5F0E6;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px}
 .cv-motp-t{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700}.cv-motp-t label{flex:1}

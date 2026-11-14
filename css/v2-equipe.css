@@ -1,11 +1,11 @@
 /* Marché de Gros CI : Espace équipe dans l'application (refonte 2026-11, lot 14), d'après la maquette « MGCI App v2 » de Claude Design.
    Utilisé par v3/equipe.js. Couleurs : jetons des écrans refaits (data-v2 sur .eq-bg et .eq-fbg ; mode nuit dans css/sombre.css). */
 
-.eq-bg { position: fixed; inset: 0; z-index: 9200; background: var(--papier); color: var(--encre); font: 400 15px/1.45 Jost, system-ui, sans-serif; }
+.eq-bg { position: fixed; top: 0; left: 0; right: 0; bottom: var(--barre-h, 0px); z-index: 9200; background: var(--papier); color: var(--encre); font: 400 15px/1.45 Jost, system-ui, sans-serif; }
 .eq { display: flex; flex-direction: column; height: 100%; max-width: 560px; margin: 0 auto; }
 .eq-top { display: flex; align-items: center; padding: calc(env(safe-area-inset-top) + 10px) 16px 0 5px; font-size: 14px; color: var(--texte-3); }
 .eq-back { width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 999px; background: none; color: var(--encre); cursor: pointer; }
-.eq-main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 8px 16px calc(max(96px, var(--barre-h, 0px) + 10px) + env(safe-area-inset-bottom)); }
+.eq-main { flex: 1; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; padding: 8px 16px calc(40px + env(safe-area-inset-bottom)); }
 .eq-h1 { margin: 0; font: 600 32px/1.05 Jost, sans-serif; letter-spacing: -.015em; outline: none; }
 .eq-sous { margin: 6px 0 18px; font-size: 13.5px; line-height: 1.45; color: var(--texte-3); }
 .eq-txt { margin: 0; font-size: 14px; line-height: 1.45; color: var(--texte-2); }

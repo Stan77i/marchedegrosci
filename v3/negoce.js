@@ -306,6 +306,7 @@
 .nx-bg.nx-full{align-items:stretch;background:#F2EBDD;-webkit-backdrop-filter:none;backdrop-filter:none;animation:none}
 .nx-bg.nx-full .nx{height:100%;max-width:560px;border-radius:0;background:#F2EBDD;box-shadow:none}
 .nx-bg.nx-full .nx::before{content:none;display:none}
+@media (max-width:719px){.nx-bg.nx-full .nx{height:100%!important;max-height:none}}
 @media (min-width:720px){.nx-bg.nx-full{align-items:center;background:rgba(10,9,7,.62)}.nx-bg.nx-full .nx{height:min(820px,92dvh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.5)}}
 .nx-bg.nx-full .nx-hd{flex:none;gap:4px;padding:calc(6px + env(safe-area-inset-top)) 6px 8px 5px;border-bottom:1px solid rgba(23,21,18,.08);background:#F2EBDD}
 .nx-bg.nx-full .nx-hd .nx-ib{flex:none;width:44px;height:44px;margin:0;border-radius:50%;background:none;color:#171512}
@@ -334,7 +335,7 @@
 .nx-pc .c{font-size:13.5px;line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
 .nx-pc .tot{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.nx-pc .tot>span{font-size:13.5px;color:#655C4D}
 .nx-pc .tot b{font:800 22px/1.1 Jost,sans-serif;color:#10392B;letter-spacing:-.01em;font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
-.nx-pc .st{font-size:12.5px;font-weight:700}.nx-pc .st.wait{color:#765802}.nx-pc .st.mute{color:#6F6553}.nx-pc .st.ok{color:#4A6A53}.nx-pc .st.bad{color:#B23C24}
+.nx-pc .st{font-size:12.5px;font-weight:700}.nx-pc .st .nw{white-space:nowrap}.nx-pc .st.wait{color:#765802}.nx-pc .st.mute{color:#6F6553}.nx-pc .st.ok{color:#4A6A53}.nx-pc .st.bad{color:#B23C24}
 .nx-pc-act{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
 .nx-pc-act button{flex:1 1 auto;min-height:44px;padding:0 12px;border-radius:999px;font:700 14px Jost,sans-serif;white-space:nowrap;cursor:pointer}
 .nx-pc-act .ok{border:0;background:#10392B;color:#F3EFE4}
@@ -616,16 +617,16 @@ html[data-theme=sombre] .nx-tampon{border-color:#9FDCB2;color:#9FDCB2}
       const actuelle = m.id === n.dernier_msg && n.statut === 'ouverte';
       // l'état en texte coloré, comme la maquette ; « répondu » quand l'autre a fait une contre-proposition
       const suite = (msgs || []).slice(i + 1).find(x => x.genre === 'prix'), contre = suite && suite.auteur_id !== m.auteur_id;
-      const ST = iss === 'en_attente' ? [(mine ? 'En attente de sa réponse' : actuelle ? 'À vous de répondre' : 'En attente') + ' · ' + reste(m.expire_le), 'wait']
+      const ST = iss === 'en_attente' ? [(mine ? 'En attente de sa réponse' : actuelle ? 'À vous de répondre' : 'En attente') + ' · ', 'wait', reste(m.expire_le)]
         : iss === 'remplacee' ? [contre ? (mine ? 'Il a répondu' : 'Vous avez répondu') : 'Remplacée', 'mute']
         : ({ acceptee: ['Acceptée', 'ok'], refusee: ['Refusée', 'bad'], retiree: ['Retirée', 'mute'], expiree: ['Expirée sans réponse', 'mute'] }[iss] || ['', 'mute']);
       const aRep = !mine && iss === 'en_attente' && actuelle && aMoi(n) && mode === '';
       const aRetirer = mine && iss === 'en_attente' && actuelle && enCours(n) && mode === '';
       const pt = m.transport_inclus === false && +m.prix_transport > 0 ? +m.prix_transport : 0, tr = trLigne(m.transport_inclus, m.prix_transport);
-      const titre = mine ? 'Votre proposition' : nomDe() ? 'Proposition de ' + esc(nomDe()) : 'Proposition ' + (R[m.auteur_id] === 'vendeur' ? 'du vendeur' : 'de l’acheteur');
+      const titre = mine ? 'Votre proposition' : nomDe() ? 'Proposition ' + (/^[aeiouyhâàéèêîïôûü]/i.test(nomDe()) ? 'd’' : 'de ') + esc(nomDe()) : 'Proposition ' + (R[m.auteur_id] === 'vendeur' ? 'du vendeur' : 'de l’acheteur');
       return `<div class="nx-pc${cls} is-${iss || 'x'}"><span class="t">${titre}</span>
         <span class="l">${m.quantite ? fq(m.quantite) + ' ' + esc(uQ(m.quantite, u)) + ' × ' + fmt(m.prix) + ' F' : fmt(m.prix) + ' F / ' + esc(u)}</span>${tr ? `<span class="x">${tr}</span>` : ''}${m.texte ? `<span class="c">${esc(m.texte)}</span>` : ''}
-        ${m.quantite ? `<span class="tot"><span>Total</span><b>${fmt(m.prix * m.quantite + pt)} F</b></span>` : ''}${ST[0] ? `<span class="st ${ST[1]}">${esc(ST[0])}</span>` : ''}
+        ${m.quantite ? `<span class="tot"><span>Total</span><b>${fmt(m.prix * m.quantite + pt)} F</b></span>` : ''}${ST[0] ? `<span class="st ${ST[1]}">${esc(ST[0])}${ST[2] ? `<span class="nw">${esc(ST[2])}</span>` : ''}</span>` : ''}
         ${aRep ? `<div class="nx-pc-act"><button type="button" class="ok" data-g="accord">Accepter</button><button type="button" class="ct" data-g="edit">Contre-proposer</button><button type="button" class="no" data-g="refus">Refuser</button></div>` : ''}${aRetirer ? `<div class="nx-pc-act"><button type="button" class="no" data-g="retrait">Retirer ma proposition</button></div>` : ''}</div>`;
     };
     // la carte « Accord conclu » : données figées par le serveur (prix, quantité, transport, conditions)
@@ -735,7 +736,7 @@ html[data-theme=sombre] .nx-tampon{border-color:#9FDCB2;color:#9FDCB2}
       try {
         await N().rpc('nego_agir', args);
         if (g === 'texte' && !rapide) f.querySelector('textarea').value = '';
-        mode = ''; await load(true);
+        mode = ''; await load(true); if (bg) pied();   // boutons rendus même si rien n'a changé dans le fil
         if (g === 'accord-ok') { N().toast('Accord conclu. Convenez de la livraison et du paiement.'); window.MDGSons && MDGSons.signal('accord'); }
         if (g === 'retrait') N().toast('Proposition retirée.');
       } catch (x) { if (e) e.textContent = err(x); f.querySelectorAll('button').forEach(b => { b.disabled = false; }); if (/changé entre-temps|expiré/.test(x.message)) { mode = ''; load(true); } }

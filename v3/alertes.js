@@ -3,7 +3,7 @@
    demandes, ou les deux. Une nouvelle annonce de ce produit lui vaut une notification (fonction Edge « pousser ») au rythme réel du
    serveur (schéma 91) : annonces regroupées, 90 min au moins entre deux, 8 par jour au plus, rien entre 21 h et 7 h.
    Serveur : supabase/schema-12-stock-alertes-profil.sql (table alertes_produits, déclencheur push_annonce).
-   API : MDGAlertes.suit(slug) · panneau(slug, nom) · gerer() · refresh() ; événement « mdg:alertes » quand la liste change. */
+   API : MDGAlertes.suit(slug) · panneau(slug, nom) · gerer() · refresh() · retirer(slug) (écran Alertes, v3/alertes-v2.js) ; événement « mdg:alertes » quand la liste change. */
 (function () {
   'use strict';
   const KL = 'mdg-alertes:liste';
@@ -91,7 +91,7 @@
     dessiner(); refresh().then(() => { if (bg.isConnected) dessiner(); });
   }
 
-  window.MDGAlertes = { suit, panneau, gerer, refresh, liste: () => liste };
+  window.MDGAlertes = { suit, panneau, gerer, refresh, liste: () => liste, retirer: slug => enregistrer(slug, false, false) };
   addEventListener('mdg:connecte', () => setTimeout(refresh, 1500));
   addEventListener('mdg:nuage', e => { if (e.detail && e.detail.kind === 'compte' && !(N() && N().session())) { liste = []; W(KL, []); dire(); } });
   setTimeout(refresh, 3000);

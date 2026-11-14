@@ -101,7 +101,10 @@ label.v2c-l { cursor: pointer; }
 .cp.v2c .cp-l { display: block; margin: 0 0 6px; font: 600 14px/1.3 Jost, sans-serif; color: var(--texte-2); }
 .cp.v2c .cp-l i { font-style: normal; font-weight: 500; color: var(--texte-3); }
 .cp.v2c .cp-in, .cp.v2c .cp-sel { height: 52px; border: 1px solid var(--t22); border-radius: 14px; background: var(--champ); color: var(--encre); font: 400 16px Jost, sans-serif; }
-.cp.v2c .cp-sel { padding-right: 34px; }
+.cp.v2c .cp-sel { padding-right: 44px; -webkit-appearance: none; appearance: none; border-color: var(--t14); border-radius: 16px; cursor: pointer;
+  background: var(--champ) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%236F6553' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center; }
+html[data-theme=sombre] .cp.v2c .cp-sel { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23A89C88' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); }
+.cp.v2c .cp-in { border-color: var(--t14); border-radius: 16px; }
 .cp.v2c .cp-in::placeholder { color: var(--mute); opacity: 1; }
 .cp.v2c .cp-in:focus, .cp.v2c .cp-sel:focus { border-color: var(--vert); box-shadow: 0 0 0 3px var(--t10); outline: none; }
 .cp.v2c .cp-in[aria-invalid=true] { border-color: var(--hausse); }

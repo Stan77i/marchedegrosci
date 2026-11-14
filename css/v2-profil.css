@@ -1,0 +1,89 @@
+/* Marché de Gros CI — refonte 2026-11 (maquette « MGCI App v2 ») : profil public (écran plein) et Alertes (la cloche).
+   Jetons : css/mgci-tokens.css ([data-v2]) et css/sombre.css (mode sombre). */
+
+/* ——— profil public ——— */
+.pp2 { position: fixed; left: 0; right: 0; top: 0; bottom: var(--barre-h, 0px); z-index: 9200; background: var(--papier); color: var(--encre); font: 400 15px/1.4 Jost, system-ui, sans-serif; }
+.pp2-sc { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.pp2-in { max-width: 520px; margin: 0 auto; padding: calc(8px + env(safe-area-inset-top, 0px)) 16px 120px; display: flex; flex-direction: column; gap: 18px; }
+.pp2-ret { display: flex; align-items: center; margin-left: -11px; }
+.pp2-ret button, .al2-ret button { width: 44px; height: 44px; border: 0; background: none; display: grid; place-items: center; color: inherit; cursor: pointer; padding: 0; }
+.pp2-ret span, .al2-ret span { font-size: 14px; color: var(--texte-3); }
+.pp2-tete { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; margin-top: -6px; }
+.pp2-av { width: 84px; height: 84px; border-radius: 999px; background: var(--lin); display: grid; place-items: center; font-size: 26px; font-weight: 700; color: var(--texte-2); }
+.pp2-nom { margin: 4px 0 0; font-size: 24px; font-weight: 700; line-height: 1.15; letter-spacing: 0; overflow-wrap: anywhere; }
+.pp2-bd { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; min-height: 25px; }
+.pp2-pa { font-size: 12.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; line-height: 1.5; white-space: nowrap; }
+.pp2-ver { background: var(--vert); color: var(--action-t); }
+.pp2-nonid { background: var(--lin); color: var(--texte-2); }
+.pp2-meta { font-size: 14px; color: var(--texte-3); }
+.pp2-tot { font-size: 14px; font-weight: 600; color: var(--texte-2); font-variant-numeric: tabular-nums; }
+.pp2-plein, .pp2-contour { width: 100%; min-height: 46px; border-radius: 999px; font: 700 15px Jost, sans-serif; cursor: pointer; }
+.pp2-plein { border: 0; background: var(--vert); color: var(--action-t); }
+.pp2-contour { border: 1.5px solid var(--vert); background: none; color: var(--vert); }
+[data-part]:empty, [data-ann]:empty, [data-act]:empty, [data-plus]:empty { display: none; }
+[data-act] { display: flex; flex-direction: column; gap: 4px; }
+.pp2-sec { display: flex; flex-direction: column; }
+.pp2-h2 { display: flex; align-items: center; justify-content: space-between; margin: 0 0 4px; }
+.pp2-h2 h2 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: 0; }
+.pp2-voir { min-height: 44px; min-width: 44px; border: 0; background: none; color: var(--vert); font: 600 14px Jost, sans-serif; cursor: pointer; padding: 0 2px; }
+.pp2-l { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; border-bottom: 1px solid var(--t08); background: none; padding: 10px 0; min-height: 72px; color: var(--encre); text-align: left; font: inherit; cursor: pointer; }
+.pp2-vi { width: 52px; height: 52px; flex: none; border-radius: 14px; background: var(--sable-clair); display: grid; place-items: center; overflow: hidden; }
+.pp2-vi img { width: 40px; height: 40px; }
+.pp2-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pp2-tx b { font-size: 15px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pp2-tx small { font-size: 13.5px; color: var(--texte-3); }
+.pp2-px { flex: none; font-size: 14px; font-weight: 800; color: var(--vert); font-variant-numeric: tabular-nums; }
+.pp2-vide { margin: 4px 0 0; font-size: 14px; color: var(--texte-3); }
+.pp2-liens { display: flex; gap: 24px; justify-content: center; }
+.pp2-liens button { min-height: 44px; min-width: 44px; border: 0; background: none; color: var(--texte-3); font: 600 14px Jost, sans-serif; cursor: pointer; }
+.pp2-plus { border-top: 1px solid var(--t08); padding-top: 4px; }
+.pp2-plus summary { min-height: 44px; display: flex; align-items: center; font-size: 14px; font-weight: 600; color: var(--texte-2); cursor: pointer; list-style: none; }
+.pp2-plus summary::-webkit-details-marker { display: none; }
+.pp2-plus summary::after { content: ""; width: 8px; height: 8px; margin-left: 10px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-3px); }
+.pp2-plus[open] summary::after { transform: rotate(-135deg) translateY(-2px); }
+/* le détail d'avant garde ses couleurs claires (comme les feuilles de l'application) */
+.pp2-plus-in.rp { max-height: none; overflow: visible; border-radius: 20px; padding: 16px; box-shadow: none; margin-top: 4px; }
+.pp2-plus-in .rp-sec:first-child, .pp2-plus-in > :first-child { margin-top: 0; }
+.pp2 :focus-visible, .al2 :focus-visible { outline: 2px solid var(--vert); outline-offset: 2px; }
+
+/* ——— Alertes (cloche) ——— */
+.al2-hote > :not(.al2) { display: none !important; }
+.al2 { display: flex; flex-direction: column; gap: 18px; padding: 0 16px 120px; color: var(--encre); }
+.al2-ret { display: flex; align-items: center; margin-left: -11px; }
+.al2 h1 { margin: 0; font-weight: 600; font-size: 32px; line-height: 1.05; letter-spacing: -.015em; }
+.al2-carte { display: flex; align-items: center; gap: 12px; background: var(--carte); border-radius: 16px; padding: 14px 16px; }
+.al2-carte > span { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.al2-carte b { font-size: 15px; font-weight: 700; }
+.al2-carte small { font-size: 13.5px; color: var(--texte-3); line-height: 1.3; }
+.al2-sw { flex: none; position: relative; width: 48px; height: 28px; border-radius: 999px; border: 0; background: var(--lin-2); cursor: pointer; padding: 0; transition: background 160ms; }
+.al2-sw::before { content: ""; position: absolute; inset: -8px -2px; }
+.al2-sw i { position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: 999px; background: #FFFDF8; box-shadow: 0 1px 3px rgba(23, 21, 18, .3); transition: left 160ms cubic-bezier(.22, 1, .36, 1); }
+.al2-sw[aria-checked="true"] { background: var(--vert); }
+.al2-sw[aria-checked="true"] i { left: 22px; }
+.al2-sw[aria-disabled="true"] { opacity: .5; cursor: default; }
+.al2-vide { padding: 36px 12px; text-align: center; display: flex; flex-direction: column; gap: 6px; }
+.al2-vide b { font-size: 19px; font-weight: 700; }
+.al2-vide span { font-size: 14px; color: var(--texte-3); }
+.al2-liste { display: flex; flex-direction: column; margin-top: -6px; }
+.al2-liste:empty { display: none; }
+.al2-r { display: flex; gap: 10px; align-items: center; border-bottom: 1px solid var(--t08); }
+.al2-o { flex: 1; min-width: 0; display: flex; gap: 12px; align-items: center; border: 0; background: none; padding: 12px 0; text-align: left; color: var(--encre); font: inherit; cursor: pointer; min-height: 68px; }
+.al2-ic { width: 44px; height: 44px; flex: none; border-radius: 13px; display: grid; place-items: center; }
+.al2-ic.v { background: #DCEFE3; } .al2-ic.j { background: #F6E2B0; } .al2-ic.r { background: #F6D2C8; }
+.al2-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.al2-tx b { font-size: 15px; font-weight: 600; }
+.al2-r.neuf .al2-tx b { font-weight: 800; }
+.al2-tx small { font-size: 13.5px; color: var(--texte-3); line-height: 1.3; }
+.al2-tx small:empty { display: none; }
+.al2-tx em { font-style: normal; font-size: 13.5px; color: var(--vert-texte); font-weight: 600; }
+.al2-tx em:empty { display: none; }
+.al2-code { flex: none; font: 800 17px/1 Jost, sans-serif; letter-spacing: .06em; font-variant-numeric: tabular-nums; color: var(--vert); }
+.al2-prol { flex: none; position: relative; height: 38px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--vert); background: none; color: var(--vert); font: 700 13.5px Jost, sans-serif; cursor: pointer; }
+.al2-prol::before, .al2-ch button::before { content: ""; position: absolute; inset: -3px 0; }
+.al2-prol:disabled { opacity: .5; }
+.al2-suivis { display: flex; flex-direction: column; gap: 10px; }
+.al2-suivis h2 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: 0; }
+.al2-ch { display: flex; flex-wrap: wrap; gap: 8px; }
+.al2-ch button { position: relative; height: 40px; padding: 0 12px 0 14px; border-radius: 999px; border: 0; background: #DCEFE3; color: #10392B; font: 600 14px Jost, sans-serif; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.al2-ch button.plus { padding: 0 14px; border: 1.5px dashed var(--t30); background: none; color: var(--encre); }
+html[data-theme=sombre] .al2-ch button.plus { border-color: rgba(243, 239, 228, .3); }

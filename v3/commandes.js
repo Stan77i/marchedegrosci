@@ -25,7 +25,7 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const IC = (n, t) => window.MDGIco ? MDGIco.svg(n, t || 18, 1.9) : '';
   const TI = n => `<span class="ic-t" aria-hidden="true">${IC(n, 17)}</span>`;   // petite icône dessinée devant un texte (plus d'emoji)
-  const nf = (v, d) => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: d == null ? 0 : d }).format(v || 0);
+  const nf = (v, d) => new Intl.NumberFormat('fr-FR', { maximumFractionDigits: d == null ? 0 : d }).format(v || 0).replace(/[\u202F\u00A0]/g, '\u00A0');
   const F = v => nf(v) + ' F';
   const heure = t => new Date(t).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
   const signal = () => { try { dispatchEvent(new CustomEvent('mdg:activite')); } catch (_) {} };
@@ -151,7 +151,18 @@
 .cm[data-v2]{background:var(--papier);color:var(--encre)}
 html[data-theme=sombre] .cm[data-v2]{color-scheme:dark}
 .cm-bg.plein{animation:none;background:var(--papier, #F2EBDD)}
-.cm[data-v2].plein{max-width:560px;height:100dvh;max-height:100dvh;border-radius:0;padding:calc(6px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));animation:none}
+.cm[data-v2].plein{max-width:560px;height:100dvh;max-height:100dvh;border-radius:0;padding:calc(6px + env(safe-area-inset-top)) 16px calc(max(96px, var(--barre-h, 0px) + 10px) + env(safe-area-inset-bottom));animation:none}
+/* le mot secret à taper, dans le panneau sombre de la maquette (feuille du bas) */
+.cv-motp{background:var(--panneau);color:#F5F0E6;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.cv-motp-t{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700}.cv-motp-t label{flex:1}
+.cv-motp-t .nbul{flex:none;min-width:0;height:24px;padding:0 10px;border-radius:999px;background:rgba(242,194,48,.18);color:#F2C230;font:700 12.5px/24px Jost,sans-serif}
+.fl-c .cv-motp input[type=text]{min-height:58px;background:rgba(245,240,230,.07);border:1px solid rgba(245,240,230,.22);color:#F2C230;font:italic 900 32px/1.1 Jost,sans-serif;letter-spacing:.04em;text-transform:uppercase;padding:8px 14px}
+.fl-c .cv-motp input::placeholder{color:rgba(242,194,48,.35);opacity:1}.fl-c .cv-motp input:focus-visible{border-color:#F2C230;box-shadow:0 0 0 1px #F2C230}.fl-c .cv-motp input:disabled{opacity:.5}
+.cv-motp p{margin:0;font-size:13.5px;line-height:1.45;color:#C9BEA9}
+.cv-motp-b{min-height:52px;border:0;border-radius:999px;background:#F2C230;color:#171512;font:700 16px Jost,sans-serif;cursor:pointer}.cv-motp-b:disabled{opacity:.6}.cv-motp-b:focus-visible{outline:2px solid #F5F0E6;outline-offset:2px}
+.cv-pickf{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;border-radius:16px;border:1.5px dashed var(--t30);color:var(--encre);font-size:15px;font-weight:600;cursor:pointer}
+.cv-pickf:has(input:focus-visible){outline:2px solid var(--vert);outline-offset:2px}.cv-pickf[hidden]{display:none}
+.fl-c .cm-ph{display:flex;gap:8px;flex-wrap:wrap;margin:0}.fl-c .cm-ph:empty{display:none}.fl-c .cm-ph span{display:block;width:72px;height:72px;border-radius:12px;overflow:hidden;background:var(--lin)}.fl-c .cm-ph img{width:100%;height:100%;object-fit:cover;display:block}
 .cm[data-v2] h2 em{color:var(--vert);background:linear-gradient(transparent 60%,var(--hl) 60%,var(--hl) 94%,transparent 94%)}
 .cm[data-v2] .cm-sous,.cm[data-v2] .cm-note,.cm[data-v2] .cm-r small,.cm[data-v2] .cm-opt small,.cm[data-v2] .cm-disc>p,.cm[data-v2] .cm-sq p{color:var(--texte-3)}
 .cm[data-v2] .cm-x{background:var(--t08);color:var(--encre)}
@@ -238,6 +249,7 @@ html[data-theme=sombre] .cm[data-v2]{color-scheme:dark}
 .cv-b.gris,.cv-b:disabled{background:var(--lin-2);color:var(--texte-2);cursor:default}
 .cv-lien{align-self:center;min-height:44px;padding:0 8px;border:0;background:none;color:var(--texte-3);font:600 14px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:center}
 .cv-lien.v{color:var(--vert)}.cv-lien.g{align-self:flex-start;padding:0;margin-top:-8px}
+.cv-lien.nu{text-decoration:none;color:var(--texte-2)}
 .cv-acts>.cv-p{margin-bottom:-2px}
 /* cartes */
 .cv-jaune{background:#F6E2B0;color:#3D2E05;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px}
@@ -283,7 +295,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
 /* arrangement à trois */
 .cv-part{display:flex;flex-direction:column;gap:12px}
 .cv-avs{display:flex}.cv-avs i{width:28px;height:28px;border-radius:999px;font:700 11.5px/1 Jost,sans-serif;font-style:normal;display:grid;place-items:center;border:2px solid var(--papier)}
-.cv-avs .a{background:var(--lin);color:var(--texte-2)}.cv-avs .m{background:#F6E2B0;color:#3D2E05;margin-left:-8px}
+.cv-avs .v{background:var(--vert);color:var(--action-t)}.cv-avs .a{background:var(--lin);color:var(--texte-2)}.cv-avs i+i{margin-left:-8px}.cv-avs .m{background:#F6E2B0;color:#3D2E05;margin-left:-8px}
 .cv-opt{display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 16px;border-radius:16px;border:1.5px solid var(--t10);background:var(--carte);color:var(--encre);text-align:left;font:inherit;cursor:pointer;width:100%;box-sizing:border-box}
 .cv-opt .rb{width:22px;height:22px;flex:none;border-radius:999px;border:2px solid var(--t30);display:grid;place-items:center;box-sizing:border-box}.cv-opt .rb span{width:10px;height:10px;border-radius:999px}
 .cv-opt.on{border-color:var(--vert)}.cv-opt.on .rb{border-color:var(--vert)}.cv-opt.on .rb span{background:var(--vert)}
@@ -320,7 +332,8 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
   const enRoute = c => c.etat === 'en_cours' && ['chargement', 'transport', 'transbordement', 'arrivee'].includes(c.etape);
   function oublierCarte() { if (carte && carte.api) carte.api.detruire(); carte = null; }
   let retourFocus = null;
-  function fermer() { oublierCarte(); if (!bg) return; bg.remove(); bg = null; if (retourFocus && retourFocus.focus) try { retourFocus.focus({ preventScroll: true }); } catch (_) {} retourFocus = null; clearInterval(minuteur); minuteur = null; clearInterval(prepaChrono); document.removeEventListener('keydown', clavier); }
+  function fermer(parOnglet) { finGeste(); oublierCarte(); if (!bg) return;
+    if (parOnglet !== true && window.MDGOnglets && MDGOnglets.cacher) try { MDGOnglets.cacher(); } catch (_) {} bg.remove(); bg = null; if (retourFocus && retourFocus.focus) try { retourFocus.focus({ preventScroll: true }); } catch (_) {} retourFocus = null; clearInterval(minuteur); minuteur = null; clearInterval(prepaChrono); document.removeEventListener('keydown', clavier); }
   const clavier = e => { if (e.key === 'Escape') fermer(); };
   const horsLigne = e => navigator.onLine === false || /Failed to fetch|NetworkError|Load failed|network|ERR_INTERNET/i.test(String((e && e.message) || e || ''));
   const erreurTxt = e => { if (horsLigne(e)) return 'Pas de connexion : rien n’a été enregistré. Réessayez quand le réseau revient.'; const m = String((e && e.message) || e || ''); return /schema cache|Could not find the function/i.test(m) ? 'Le serveur n’est pas encore à jour.' : (window.MDGErreur ? MDGErreur(e) : (m.replace(/^[A-Z_]{4,} : /, '') || 'Réessayez dans un instant.')); };
@@ -482,6 +495,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
   // ——— l'écran d'une commande (lots 11 et 12, maquette « MGCI App v2 » de Claude Design, 13/11/2026) ———
   // Plein écran, jetons data-v2 (clair et sombre). Tout vient de la commande, de son journal, de son suivi et de ses délais (serveur).
   const SVGR = {
+    doc: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 3.5h7l4 4v13h-11z"/><path d="M13.5 3.5v4h4M9 12h6M9 15.5h6"/></svg>',
     retour: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
     horloge: s => `<svg width="${s || 20}" height="${s || 20}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>`,
     cadenas: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F2C230" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="9.5" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 017 0v2.5"/></svg>',
@@ -497,8 +511,12 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
   const jh = t => jour(t).replace('.', '') + ' · ' + heure(t);
   // une durée restante, dite simplement : « 59 min », « 6 h 59 min », « 71 h 40 min »
   const reste = t => { const m = Math.max(0, Math.round((Date.parse(t) - Date.now()) / 60000)); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : ''); };
+  // le genre du produit pour « arrivé / arrivée » : un nom qui finit par « e » est féminin, sauf quelques-uns
+  const feminin = s => { const m = String(s || '').trim().toLowerCase().split(/\s+/)[0] || ''; return /[^é]e$/.test(m) && !['poivre', 'sucre', 'beurre', 'gingembre', 'concombre', 'fromage', 'légume', 'légumes'].includes(m); };
   const minus = s => { s = String(s || ''); return /^[A-ZÉÈ][a-zéèêàâîïôûç]/.test(s) ? s.charAt(0).toLowerCase() + s.slice(1) : s; };
   const ini = s => String(s || '?').split(/[\s.]+/).filter(Boolean).slice(0, 2).map(x => x.charAt(0).toUpperCase()).join('') || '?';
+  // mes initiales (pile « Vous · lui · équipe » du litige)
+  const moiNom = () => { const P = window.MDGCompte && MDGCompte.profil && MDGCompte.profil(); return (P && (P.prenom ? P.prenom + ' ' + (P.nom || '') : P.pseudo)) || 'Vous'; };
   const prix = c => c.prix_unitaire != null ? F(c.prix_unitaire) : null;
 
   // la phase de la commande, vue par l'écran
@@ -546,7 +564,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
       case 'arrive': {
         const a = ev('arrivee'), q = a ? (D.livre_le ? 'Livrée ' : 'Arrivée ') + quand(a.at) : '';
         return V ? [D.livre_le ? 'Marchandise <em>livrée</em>' : 'Marchandise <em>arrivée</em>', (q ? q + ' · ' : '') + (MOT(c) ? 'l’acheteur vérifie, puis tape votre mot' : 'l’acheteur vérifie')]
-          : ['Votre marchandise est <em>arrivée</em>', (q ? q + ' · ' : '') + 'vérifiez avant de confirmer'];
+          : [`Votre ${p} est <em>${feminin(c.produit) ? 'arrivée' : 'arrivé'}</em>`, (q ? q + ' · ' : '') + 'vérifiez avant de confirmer'];
       }
       case 'verif': { const r = ev('reception');
         return V ? ['Réception <em>confirmée</em>', `${c.partenaire_nom || 'L’acheteur'} vérifie la marchandise.`]
@@ -583,7 +601,8 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
     lignes.push(L('Transport', esc(tr)));
     if (D) lignes.push(`<div class="cv-l"><span>Au départ</span><button type="button" class="cv-dep" data-dep aria-expanded="${!!depOuvert[c.id]}">${(D.photos || []).length} photo${(D.photos || []).length > 1 ? 's' : ''} · ${nf(D.poids_kg, 1)} kg pesés</button></div>`
       + (depOuvert[c.id] ? `<div class="cm-ph cv-ph">${(D.photos || []).map(x => `<span data-ph="${esc(x)}" role="img" aria-label="Photo du colis au départ"></span>`).join('')}${D.mot_photo ? `<span data-ph="${esc(D.mot_photo)}" role="img" aria-label="Photo du papier du mot secret (équipe)"></span>` : ''}</div>` : ''));
-    lignes.push(L('Paiement', S && S.actif ? 'Séquestre ' + esc(OPE[S.operateur] || '') : 'À la livraison, hors application'));
+    // le reçu du vendeur de la maquette n'a pas de ligne « Paiement » (seulement celui de l'acheteur)
+    if (!V || (S && S.actif)) lignes.push(L('Paiement', S && S.actif ? 'Séquestre ' + esc(OPE[S.operateur] || '') : 'À la livraison, hors application'));
     if (V && c.commission_montant != null) {
       const clos = c.etat === 'terminee' && !aVerifier(c), k = S && S.repartition ? S.repartition.vendeur_commission : c.commission_montant;
       lignes.push(c.etat === 'annulee' ? L('Commission', '0 F · commande annulée') : c.etat === 'litige' ? L('Commission prévue', '3,5 % · suspendue')
@@ -607,7 +626,8 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
         <p>${ph === 'prep' ? 'Écrivez-le sur un papier glissé dans le colis. L’acheteur le tape à l’arrivée. Ne le donnez à personne, ni par message.' : 'Il est dans la marchandise. Ne le donnez à personne. L’acheteur a 5 essais pour le taper.'}</p>
         ${ph === 'prep' ? '' : `<button type="button" data-motvu>${SVGR.oeil}${motVu[c.id] ? 'Cacher' : 'Montrer le mot'}</button>`}</section>`;
     }
-    if (ph === 'prep' || ph === 'litige' && !(D.litige_auto)) return '';
+    // à l'arrivée, la maquette ne montre pas le panneau : le mot se tape dans la feuille « Tout est bon »
+    if (ph === 'prep' || ph === 'arrive' || ph === 'litige' && !(D.litige_auto)) return '';
     const n = D.mot_essais_restants;
     return `<section class="cv-mot" aria-label="Le mot secret du vendeur"><div class="cv-mot-t">${SVGR.cadenas}<span>Le mot secret du vendeur</span></div>
       <span class="cv-mot-v">${n === 0 ? 'Bloqué' : (n != null ? n : 5) + ' essai' + ((n != null ? n : 5) > 1 ? 's' : '')}</span>
@@ -656,7 +676,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
     const pbAvant = D && (D.mettre_en_avant_probleme || D.date_depassee || D.nouvelles_sans_reponse);
     const signaler = () => b(A ? 'probleme' : 'litige', 'Signaler un problème', pbAvant ? 'cv-b r' : 'cv-lien');
     if (ph === 'attente') {
-      if (!c.cree_par_moi) { if (V) B.push(`<p class="cv-p">En confirmant, vous avez ${(D && D.chargement_heures) || 72} h pour charger. Rappel 12 h avant.</p>`); b('oui', 'Confirmer la commande', 'cv-b'); b('non', 'Refuser', 'cv-lien'); }
+      if (!c.cree_par_moi) { if (V) B.push(`<p class="cv-p">En confirmant, vous avez ${(D && D.chargement_heures) || 72} h pour charger. Rappel 12 h avant.</p>`); b('oui', 'Confirmer la commande', 'cv-b'); b('non', 'Refuser', 'cv-lien nu'); }
       else b('annuler', 'Retirer la commande', 'cv-lien');
       return B.join('');
     }
@@ -742,7 +762,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
   function carteRetard(c) {
     const ph = phase(c), R = dernierRetard(c); if (!R || !['charge', 'route'].includes(ph)) return '';
     const qui = R.role === c.role ? 'vous' : c.partenaire_nom || (R.role === 'vendeur' ? 'le vendeur' : 'l’acheteur');
-    return `<section class="cv-carte cv-retard" role="status">${SVGR.horloge(22)}<span><b>Retard signalé par ${esc(qui)}</b><span>${esc(CAUSE_R[R.motif] || 'Autre')}${R.texte ? ' · « ' + esc(R.texte) + ' »' : ''}. ${R.date_estimee ? 'Nouvelle arrivée vers ' + esc(quand(R.date_estimee)) + '. ' : ''}Le prix et la quantité ne changent pas.</span></span></section>`;
+    return `<section class="cv-carte cv-retard" role="status">${SVGR.horloge(22)}<span><b>Retard signalé par ${esc(qui)}</b><span>${R.texte ? esc(String(R.texte).replace(/[.\s]+$/, '')) : esc(CAUSE_R[R.motif] || 'Autre')}. ${R.date_estimee ? 'Nouvelle arrivée vers ' + esc(quand(R.date_estimee)) + '. ' : ''}Rien ne change : prix et quantité restent les mêmes.</span></span></section>`;
   }
 
   // ——— préparation du chargement (vendeur) : photos, poids, papier du mot secret, sur l'écran même ———
@@ -758,10 +778,10 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
       : `<label class="cv-case" aria-label="Ajouter une photo">${SVGR.photo}<input type="file" accept="image/*" ${i === nb ? 'multiple' : 'tabindex="-1"'} data-prf></label>`).join('');
     const papier = !besoinMot ? '' : P.papier || (S.depart && S.depart.mot_ok) ? `<div class="cv-papier ok">${SVGR.coche(20, 2.4)}<span>Papier du mot secret envoyé à l’équipe</span></div>`
       : P.defi && P.fin > Date.now() ? `<div class="cv-papier"><div class="cm-defi" aria-label="Code ${esc(P.defi)}">${String(P.defi).split('').map(x => `<i>${esc(x)}</i>`).join('')}</div>
-          <small data-reste aria-live="off">Écrivez ce code à côté du mot · ${resteSec(P.fin)} restantes</small>
+          <small data-reste aria-live="off">Écrivez-le sur un papier posé sur le colis · ${resteSec(P.fin)} restantes</small>
           <label class="cv-b o">${SVGR.photo}Photographier le papier<input type="file" accept="image/*" capture="environment" data-prm class="cm-sr"></label></div>`
-      : `<button type="button" class="cv-papier" data-prd>${SVGR.photo}<span><span>${P.defi ? 'Nouveau code (temps écoulé)' : 'Photo du papier avec le code'}</span><small>Écrivez le code sur le papier posé sur le colis · 3 min</small></span></button>`;
-    const chk = [[fait || okPh, 'Photos du colis emballé'], [fait || okPd, 'Poids pesé']].concat(besoinMot ? [[okMot, 'Photo du papier (seule l’équipe la voit)']] : []);
+      : `<button type="button" class="cv-papier" data-prd>${SVGR.doc}<span><span>${P.defi ? 'Nouveau code (temps écoulé)' : 'Photo du papier avec le code'}</span><small>Écrivez-le sur un papier posé sur le colis · 3 min</small></span></button>`;
+    const chk = [[fait || okPh, 'Photos du colis emballé'], [fait || okPd, 'Poids pesé']].concat(besoinMot ? [[okMot, 'Photo du code (seule l’équipe la voit)']] : []);
     const pret = (fait || (okPh && okPd)) && okMot;
     return `<section class="cv-prepa" aria-label="Préparer le chargement">
       ${fait ? '' : `<div class="cv-tt"><h3 class="cv-h2">Photos du colis emballé</h3><span class="${okPh ? 'ok' : ''}">${nb} sur 4 · au moins 2</span></div>
@@ -799,7 +819,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
     if (P.defi && P.fin > Date.now()) prepaChrono = setInterval(() => {
       const r = bg && bg.querySelector('.cv-prepa [data-reste]'); if (!r) { clearInterval(prepaChrono); return; }
       if (P.fin <= Date.now()) { clearInterval(prepaChrono); peindre(); return; }
-      r.textContent = 'Écrivez ce code à côté du mot · ' + resteSec(P.fin) + ' restantes';
+      r.textContent = 'Écrivez-le sur un papier posé sur le colis · ' + resteSec(P.fin) + ' restantes';
     }, 1000);
     const pm = z.querySelector('[data-prm]');
     if (pm) pm.onchange = async e => {
@@ -847,7 +867,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
     const pu = Number(P.prix_unitaire || c.prix_unitaire || 0), qmax = Number(P.quantite || c.quantite || 0);
     const val = f.mode === 'transport' ? Number(P.prix_transport || 0) : f.mode === 'partie' ? f.q * pu : Number(f.m || 0);
     const conclu = L.find(x => x.statut === 'acceptee');
-    const form = P.peut_proposer && !conclu ? `<p class="cv-p">${moi === 'acheteur' && !P.contre ? 'Facultatif. Si vous gardez une partie, vous pouvez proposer de participer. Le vendeur et l’équipe en discutent avec vous.' : 'Acceptez la proposition, ou faites la vôtre.'}</p>
+    const form = P.peut_proposer && !conclu ? `<p class="cv-p">${moi === 'acheteur' && !P.contre ? 'Facultatif. Si vous gardez une partie, vous pouvez proposer de participer. Vous, le vendeur et l’équipe en discutez.' : 'Acceptez la proposition, ou faites la vôtre.'}</p>
       ${modes.map(([k, l]) => `<button type="button" class="cv-opt${f.mode === k ? ' on' : ''}" role="radio" aria-checked="${f.mode === k}" data-pm="${k}"><span class="rb" aria-hidden="true"><span></span></span><span class="l">${l}</span><span class="s">${k === 'transport' ? F(P.prix_transport) : k === 'partie' ? 'au prix à l’unité' : 'à proposer'}</span></button>`).join('')}
       ${f.mode === 'partie' ? `<div class="cv-pas"><button type="button" data-pq="-1" aria-label="Moins">${SVGR.moins}</button><span aria-live="polite">${qte(f.q, c.unite)}</span><button type="button" data-pq="1" aria-label="Plus">${SVGR.plus}</button></div>` : ''}
       ${f.mode === 'montant' ? `<div class="cv-champ"><label class="cm-sr" for="cvPm">Montant proposé, en francs</label><input id="cvPm" type="text" inputmode="numeric" autocomplete="off" placeholder="Par exemple 40 000" value="${esc(f.m)}" data-pmv><span>F</span></div>` : ''}
@@ -859,7 +879,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
         ${ST[x.statut] ? `<small>${ST[x.statut]}</small>` : ouv ? `<small>Réponse avant ${esc(quand(x.echeance))}</small>` : ''}
         ${ouv && P.peut_repondre ? `<button type="button" class="cv-b" data-prep="1">J’accepte</button><button type="button" class="cv-lien" data-prep="0">Refuser</button>` : ''}
         ${ouv && P.peut_retirer ? `<button type="button" class="cv-lien" data-pret>Retirer ma proposition</button>` : ''}</div>`; }).join('');
-    return `<section class="cv-part" aria-label="Trouver un arrangement"><div class="cv-tt"><h3 class="cv-h2">Trouver un arrangement</h3><span class="cv-avs" aria-hidden="true"><i class="a">${esc(ini(c.partenaire_nom))}</i><i class="m">MG</i></span></div>
+    return `<section class="cv-part" aria-label="Trouver un arrangement"><div class="cv-tt"><h3 class="cv-h2">Trouver un arrangement</h3><span class="cv-avs" aria-hidden="true"><i class="v">${esc(ini(moiNom()))}</i><i class="a">${esc(ini(c.partenaire_nom))}</i><i class="m">MG</i></span></div>
       ${form}${fil_ ? `<div class="cv-fil3">${fil_}</div>` : ''}
       ${conclu ? `<div class="cv-vertc">${SVGR.coche(20, 2.4)}<span>Accord trouvé : ${F(conclu.montant)}. Aucun argent ne bouge : le montant est seulement noté.</span></div>` : '<p class="cv-p petit">Aucun argent ne bouge : le montant est seulement noté. Sans accord, l’équipe tranche.</p>'}</section>`;
   }
@@ -887,26 +907,24 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
   }
 
   // ——— « Signaler un problème » (acheteur) : 5 choix, photo obligatoire pour cassé et mauvaise qualité (schéma 103b) ———
-  const PROBLEMES = [['casse', 'Cassé ou abîmé', true], ['qualite', 'Mauvaise qualité', true], ['manquant', 'Marchandise manquante', false], ['quantite', 'Pas la bonne quantité', false], ['autre', 'Autre problème', false]];
+  const PROBLEMES = [['casse', 'Cassé ou abîmé', true], ['qualite', 'Mauvaise qualité', true], ['manquant', 'Quantité manquante', false], ['quantite', 'Pas la bonne quantité', false], ['autre', 'Autre problème', false]];
   function probleme(c) {
-    const box = bg.querySelector('.cm'); box.scrollTop = 0; dernierEcran = 'geste';
-    const fichiers = [];
-    box.innerHTML = `${haut(c)}
-      <h2 class="cv-h1">Signaler un <em>problème</em></h2><p class="cv-sous">L’équipe du Marché de Gros examine la commande.</p>
-      <form class="cm-f cv-form" novalidate>
-        <fieldset class="cm-motif"><legend class="cm-sr">Le problème</legend>${PROBLEMES.map(([k, l, ph]) => `<label class="cv-opt"><input type="radio" name="cvPb" value="${k}" class="cm-sr"><span class="rb" aria-hidden="true"><span></span></span><span class="l">${l}</span><span class="s">${ph ? 'photo obligatoire' : ''}</span></label>`).join('')}</fieldset>
+    const Fe = feuilleGeste('Signaler un problème'); if (!Fe) return;
+    const box = Fe.corps, fichiers = [];
+    box.innerHTML = `<h2 class="fl-h">Signaler un problème</h2><p class="fl-s">L’équipe répond en 72 h au plus.</p>
+      <form novalidate>
+        <fieldset class="fl-g"><legend class="fl-sr">Le problème</legend>${PROBLEMES.map(([k, l, ph]) => ligneChoix('cvPb', k, l, ph ? 'Photo obligatoire' : '')).join('')}</fieldset>
         <div class="cm-ph" data-apercu></div>
-        <label class="cv-b o cv-pick">${SVGR.photo}<span data-phl>Ajouter des photos</span><input type="file" accept="image/*" multiple data-fic class="cm-sr"></label>
-        <label class="t" for="cvPbT">Un mot <small style="font-weight:400">(obligatoire pour « Autre »)</small></label>
-        <textarea id="cvPbT" maxlength="240" placeholder="Ex. : 4 régimes pourris, sacs mouillés…"></textarea>
-        <p class="cm-err" role="alert"></p>
-        <button type="submit" class="cv-b">Envoyer à l’équipe</button>
-        <button type="button" class="cv-lien" data-ann>Retour</button>
+        <label class="cv-pickf" data-phz hidden>${SVGR.photo}<span data-phl>Ajouter des photos</span><input type="file" accept="image/*" multiple data-fic class="fl-sr"></label>
+        <div data-tz hidden><label class="fl-t" for="cvPbT">Quelques mots</label><textarea id="cvPbT" maxlength="240" placeholder="Ex. : 4 régimes pourris, sacs mouillés…" style="margin-top:8px"></textarea></div>
+        <p class="fl-err" role="alert"></p>
+        <button type="submit" class="fl-b" aria-disabled="true">Envoyer à l’équipe</button>
       </form>`;
-    lierHaut(c, box, () => peindre());
-    box.querySelector('[data-ann]').onclick = () => peindre();
-    const f = box.querySelector('form'), err = f.querySelector('.cm-err'), ap = f.querySelector('[data-apercu]');
-    f.querySelectorAll('[name=cvPb]').forEach(r => r.onchange = () => f.querySelectorAll('.cv-opt').forEach(l => l.classList.toggle('on', l.querySelector('input').checked)));
+    const f = box.querySelector('form'), err = f.querySelector('.fl-err'), ap = f.querySelector('[data-apercu]');
+    f.querySelectorAll('[name=cvPb]').forEach(r => r.onchange = () => {
+      const d = PROBLEMES.find(x => x[0] === r.value) || [];
+      f.querySelector('[data-phz]').hidden = !d[2] && !fichiers.length; f.querySelector('[data-tz]').hidden = r.value !== 'autre';
+      f.querySelector('[type=submit]').setAttribute('aria-disabled', 'false'); });
     const apercu = () => { ap.innerHTML = fichiers.map((b, i) => `<span><img src="${URL.createObjectURL(b)}" alt="Photo ${i + 1}"></span>`).join(''); f.querySelector('[data-phl]').textContent = fichiers.length ? fichiers.length + ' photo' + (fichiers.length > 1 ? 's' : '') + ' · en ajouter' : 'Ajouter des photos'; };
     f.querySelector('[data-fic]').onchange = async e => {
       err.textContent = ''; f._chemins = null;
@@ -928,7 +946,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
         await N().rpc('commande_probleme', { p_id: c.id, p_type: k, p_texte: t || null, p_photos: f._chemins || null })
           .catch(x => ancien(x) ? N().rpc('commande_litige', { p_id: c.id, p_motif: lib + (t ? ' · ' + t : '') }) : Promise.reject(x));
         await lireListe(); await lireJournal(c.id);
-        toast('Problème envoyé à l’équipe', { type: 'ok' });
+        finGeste(); toast('Problème envoyé à l’équipe', { type: 'ok' });
         peindre();
       } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }
     };
@@ -936,8 +954,6 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
 
   // le haut de l'écran : « < Activité » (ou « < Mes commandes » depuis la liste)
   let retourTxt = 'Activité';
-  // le haut d'un geste (confirmer, refuser…) : « < Commande » revient à l'écran de la commande
-  const hautGeste = () => `<div class="cv-haut"><button type="button" class="cv-ret" data-x>${SVGR.retour}<span>Commande</span></button></div>`;
   const haut = () => `<div class="cv-haut"><button type="button" class="cv-ret" data-retour>${SVGR.retour}<span>${esc(retourTxt)}</span></button></div>`;
   function lierHaut(c, box, fn) { const r = box.querySelector('[data-retour]'); if (r) r.onclick = fn; }
   function retour() { oublierCarte(); if (retourTxt === 'Mes commandes') { sel = null; vue = 'liste'; peindre(); } else fermer(); }
@@ -967,7 +983,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
       ${blocCode(c)}${blocTransport(c)}
       ${enHaut ? `<div class="cv-acts">${boutons(c)}</div>` : ''}
       ${(V && lienOuvert[c.id]) || (!V && lien[c.id] && (lien[c.id].vu_le || lien[c.id].ouvert_le)) ? blocLien(c) : ''}
-      ${c.etat !== 'a_confirmer' ? suiviEtapes(c, Jr) : ''}
+      ${c.etat !== 'a_confirmer' && !(V && ph === 'prep') ? suiviEtapes(c, Jr) : ''}
       ${fil(c, Jr)}
       ${enBas ? `<div class="cv-acts">${boutons(c)}</div>` : ''}
       <p class="cv-num">Commande n° ${esc(c.numero || '—')} · ${V ? 'vente à' : 'achat chez'} ${esc(c.partenaire_nom || '')}</p>
@@ -1071,29 +1087,26 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
   }
   // l'acheteur refuse la marchandise : quantité, explication, 1 à 4 photos
   function refuser(c) {
-    const box = bg.querySelector('.cm'); box.scrollTop = 0; dernierEcran = 'geste';
-    const fichiers = [];
-    box.innerHTML = `${hautGeste()}
-      <h2 class="cv-h1">Refuser la <em>marchandise</em></h2><p class="cm-sous">${esc(c.produit || '')} · ${esc(c.partenaire_nom)} · n° ${esc(c.numero)}</p>
-      <form class="cm-f" novalidate>
-        <label class="t" for="cmRq">Quantité refusée</label>
+    const Fe = feuilleGeste('Refuser la marchandise'); if (!Fe) return;
+    const box = Fe.corps, fichiers = [];
+    box.innerHTML = `<h2 class="fl-h">Refuser la marchandise</h2><p class="fl-s">${esc(c.produit || '')} · ${esc(c.partenaire_nom)} · n° ${esc(c.numero)}</p>
+      <form novalidate>
+        <label class="fl-t" for="cmRq">Quantité refusée</label>
         <input type="number" id="cmRq" inputmode="decimal" min="0" step="any" ${c.quantite != null ? `max="${c.quantite}" value="${c.quantite}"` : ''}>
-        <small style="display:block;margin-top:4px;color:#5E5546;font-size:12.5px">Sur ${c.quantite != null ? qte(c.quantite, c.unite) : 'la commande'}. Laissez tout si toute la marchandise est mauvaise.</small>
-        <label class="t" for="cmRm">Qu’est-ce qui ne va pas ?</label>
+        <p class="fl-s" style="margin:-4px 0 0">Sur ${c.quantite != null ? qte(c.quantite, c.unite) : 'la commande'}. Laissez tout si toute la marchandise est mauvaise.</p>
+        <label class="fl-t" for="cmRm">Qu’est-ce qui ne va pas ?</label>
         <textarea id="cmRm" maxlength="300" placeholder="Ex. : 4 régimes pourris, sacs mouillés, quantité manquante…"></textarea>
-        ${seq[c.id] && seq[c.id].avec_mot ? `<label class="t" for="cmRw">Le mot écrit sur le papier du vendeur</label>
+        ${seq[c.id] && seq[c.id].avec_mot ? `<label class="fl-t" for="cmRw">Le mot écrit sur le papier du vendeur</label>
         <input type="text" id="cmRw" autocomplete="off" autocapitalize="characters" placeholder="Ex. : MANGUE 47">
-        <small style="display:block;margin-top:4px;color:#5E5546;font-size:12.5px">Obligatoire : c’est la preuve que vous avez bien reçu le colis du vendeur. Pas de papier ? Revenez en arrière et touchez « Signaler un problème » : l’équipe jugera.</small>` : ''}
-        <span class="t" style="display:block;margin:14px 0 6px;font-weight:600">Photos (1 à 4) : la marchandise, et le papier du vendeur</span>
+        <p class="fl-s" style="margin:-4px 0 0">Obligatoire : c’est la preuve que vous avez bien reçu le colis du vendeur. Pas de papier ? Fermez et touchez « Signaler un problème » : l’équipe jugera.</p>` : ''}
+        <span class="fl-t">Photos (1 à 4) : la marchandise, et le papier du vendeur</span>
         <div class="cm-ph" data-apercu></div>
-        <label class="cm-pick">${TI('photo')}Ajouter des photos<input type="file" accept="image/*" multiple data-fic></label>
-        <p class="cm-note" style="font-size:13.5px">Preuves : le mot du vendeur et vos photos, comparées à celles du départ. Refus accepté : vous ne payez ni la partie refusée, ni le transport. Refus rejeté : vous payez tout.</p>
-        <p class="cm-err" role="alert"></p>
-        <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">Envoyer le refus</button><button type="button" data-ann>Retour</button></div>
+        <label class="cv-pickf">${SVGR.photo}<span>Ajouter des photos</span><input type="file" accept="image/*" multiple data-fic class="fl-sr"></label>
+        <p class="fl-s">Refus accepté : vous ne payez ni la partie refusée, ni le transport. Refus rejeté : vous payez tout.</p>
+        <p class="fl-err" role="alert"></p>
+        <button type="submit" class="fl-b">Envoyer le refus</button>
       </form>`;
-    box.querySelector('[data-x]').onclick = () => peindre();
-    box.querySelector('[data-ann]').onclick = () => peindre();
-    const f = box.querySelector('form'), err = f.querySelector('.cm-err'), ap = f.querySelector('[data-apercu]');
+    const f = box.querySelector('form'), err = f.querySelector('.fl-err'), ap = f.querySelector('[data-apercu]');
     const apercu = () => { ap.innerHTML = fichiers.map((b, i) => `<span><img src="${URL.createObjectURL(b)}" alt="Photo ${i + 1}"></span>`).join(''); };
     f.querySelector('[data-fic]').onchange = async e => {
       err.textContent = ''; f._chemins = null;
@@ -1119,10 +1132,10 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
         if (!f._chemins) { for (let i = 0; i < fichiers.length; i++) { const ch = u + '/refus-' + c.id.slice(0, 8) + '-' + Date.now() + '-' + i + '.jpg'; await N().deposerPrive('preuves', ch, fichiers[i]); chemins.push(ch); } f._chemins = chemins; }
         err.textContent = '';
         const r = await N().rpc('commande_refuser2', { p_id: c.id, p_quantite: q, p_motif: m, p_photos: f._chemins, p_mot: mot || null, p_sans_mot: sansMot });
-        if (r === 'mot_bloque') { err.textContent = 'Trop d’essais faux. Revenez en arrière et touchez « Signaler un problème » : l’équipe du Marché de Gros jugera.'; btn.disabled = false; return; }
+        if (r === 'mot_bloque') { err.textContent = 'Trop d’essais faux. Fermez et touchez « Signaler un problème » : l’équipe du Marché de Gros jugera.'; btn.disabled = false; return; }
         if (String(r).startsWith('mot_incorrect')) { const n = String(r).split(':')[1]; err.textContent = `Ce n’est pas le mot du vendeur. Vérifiez le papier (il reste ${n} essai${n > 1 ? 's' : ''}).`; btn.disabled = false; return; }
         await lireListe(); await lireJournal(c.id);
-        toast('Refus envoyé', { type: 'ok', sous: 'Le vendeur est prévenu. La discussion à trois est ouverte.' });
+        finGeste(); toast('Refus envoyé', { type: 'ok', sous: 'Le vendeur est prévenu. La discussion à trois est ouverte.' });
         peindre();
       } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }
     };
@@ -1295,53 +1308,80 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
     if (!oui || !navigator.geolocation) return null;
     return new Promise(ok => navigator.geolocation.getCurrentPosition(p => ok([p.coords.latitude, p.coords.longitude]), () => ok(null), { timeout: 8000, maximumAge: 60000, enableHighAccuracy: false }));
   }
+  // les gestes s'ouvrent dans la feuille du bas de la maquette (MDGFeuille), au-dessus de l'écran de la commande
+  let feuilleG = null;
+  function feuilleGeste(label) {
+    if (feuilleG) feuilleG.fermer();
+    if (!window.MDGFeuille) return null;
+    feuilleG = MDGFeuille.ouvrir({ label, onFerme: () => { feuilleG = null; } });
+    return feuilleG;
+  }
+  const finGeste = () => { if (feuilleG) feuilleG.fermer(); };
+  // une ligne à choisir, comme la maquette (rond de 22 px, bord de 1,5 px)
+  const ligneChoix = (name, v, l, s, cls) => `<label class="fl-ch${cls ? ' ' + cls : ''}"><input type="radio" name="${name}" value="${v}" class="fl-sr"><span class="rb" aria-hidden="true"><i></i></span><span class="l">${l}</span>${s ? `<span class="s">${s}</span>` : ''}</label>`;
+  const ligneCase = (id, l) => `<label class="fl-ch carre"><input type="checkbox" id="${id}" class="fl-sr"><span class="rb" aria-hidden="true"><i></i></span><span class="l">${l}</span></label>`;
+  // « Jusqu'à 17 h 52 » : l'échéance actuelle repoussée de n heures
+  function jusqua(c, n) {
+    const d = dl[c.id] || {}, base = d.reception_echeance ? new Date(d.reception_echeance).getTime() : Date.now() + 36e5;
+    if (n === 24) return 'Jusqu’à demain même heure';
+    const t = new Date(base + n * 36e5), j = new Date(), demain = t.toDateString() !== j.toDateString();
+    return 'Jusqu’à ' + (demain ? 'demain ' : '') + t.getHours() + ' h ' + String(t.getMinutes()).padStart(2, '0');
+  }
   function confirmer(c, o) {
-    const box = bg.querySelector('.cm'); box.scrollTop = 0; dernierEcran = 'geste';
-    box.innerHTML = `${hautGeste()}
-      <h2 class="cv-h1">${o.titre}</h2><p class="cm-sous">${esc(c.produit || '')} · ${esc(c.partenaire_nom)}</p>
-      <form class="cm-f" novalidate>
-        ${o.mot ? `<label class="t" for="cmM">Mot secret du vendeur</label>
-        <p class="cm-note" style="margin:-2px 0 8px;font-size:13.5px">Il est écrit sur le papier que le vendeur a glissé dans la marchandise (par exemple « MANGUE 47 »).</p>
-        <input type="text" id="cmM" maxlength="40" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="MANGUE 47" style="font:700 22px Jost,sans-serif;letter-spacing:.08em;text-transform:uppercase"${o.essais === 0 ? ' disabled' : ''}>
-        ${o.essais != null ? `<p class="cm-note" style="margin:6px 0 0;font-size:13px">${o.essais === 0 ? 'Mot secret bloqué après trop d’essais faux. L’équipe est prévenue.' : `Essais restants <span class="nbul">${o.essais}</span>`}</p>` : ''}
-        <label class="cm-ck"><input type="checkbox" id="cmS"> Je ne trouve pas le papier du vendeur</label>
-        <p class="cm-info" data-sans hidden>Sans le mot, la réception est notée « sans le mot secret du vendeur », visible du vendeur et de l’équipe. Si la marchandise ne va pas, ne confirmez pas : <b>refusez-la avec des photos</b>.</p>` : ''}
-        ${o.heures ? `<fieldset class="cm-motif"><legend class="t">Combien de temps ?</legend><div class="cm-pil">${o.heures.map(h => `<label><input type="radio" name="cmH" value="${h}">${h} h</label>`).join('')}</div></fieldset>` : ''}
-        ${o.motifs ? `<fieldset class="cm-motif"><legend class="t">${o.motifsTitre || 'Motif'}</legend>${(o.motifs === true ? MOTIFS : o.motifs).map(([k, t]) => `<label class="cm-ck"><input type="radio" name="cmMot" value="${k}"> ${t}</label>`).join('')}</fieldset>` : ''}
-        ${o.motifs === true ? `<div data-preuve hidden><label class="t" for="cmP">Source publique (facultatif)</label>
-        <input type="text" id="cmP" maxlength="120" autocomplete="off" placeholder="Ex. : radio, presse, autorités, avec la date">
-        <p class="cm-note" style="margin:6px 0 0;font-size:13.5px">L’équipe examine ce motif.</p></div>` : ''}
-        ${o.accord ? `<p class="cm-info" data-motif>Motif donné : …</p><fieldset class="cm-motif"><legend class="t">Êtes-vous d’accord avec ce motif ?</legend>
-          <label class="cm-ck"><input type="radio" name="cmAcc" value="1"> Oui, d’un commun accord</label>
-          <label class="cm-ck"><input type="radio" name="cmAcc" value="0"> J’accepte, mais je ne suis pas d’accord</label></fieldset>
-          <p class="cm-note" style="font-size:13.5px">D’un commun accord, l’annulation ne compte contre personne. Sinon, elle compte dans la fiabilité de l’autre partie, qui peut la contester.</p>` : ''}
-        ${o.lieu ? `<label class="t" for="cmL">${o.lieu}</label><input type="text" id="cmL" maxlength="120" autocomplete="off">` : ''}
-        ${o.note ? `<label class="t" for="cmN">${o.note}</label><textarea id="cmN" maxlength="${o.noteMax || 300}"></textarea>` : ''}
-        ${o.date ? `<label class="t" for="cmD">${o.date}</label><input type="datetime-local" id="cmD" min="${dtLocal(Date.now())}" max="${dtLocal(Date.now() + 60 * 864e5)}">` : ''}
-        ${o.gps ? `<label class="cm-ck"><input type="checkbox" id="cmG"> Joindre ma position actuelle (une seule fois)</label>` : ''}
-        ${o.texte ? `<p class="cm-note" style="font-size:13.5px">${o.texte}</p>` : ''}
-        <p class="cm-err" role="alert"></p>
-        <div class="cm-act" style="margin-top:14px"><button type="submit" class="p">${o.ok}</button><button type="button" data-ann>Retour</button></div>
+    const F = feuilleGeste(o.label || String(o.titre).replace(/<[^>]+>/g, ''));
+    if (!F) return;
+    const box = F.corps, essais = o.essais;
+    const motifs = o.motifs === true ? (o.motifsCourts ? MOTIFS_V : MOTIFS) : o.motifs;
+    box.innerHTML = `<h2 class="fl-h">${o.titre}</h2><p class="fl-s">${o.sous || esc(c.produit || '') + ' · ' + esc(c.partenaire_nom)}</p>
+      <form novalidate>
+        ${o.mot ? `<div class="cv-motp">
+          <div class="cv-motp-t">${SVGR.cadenas || ''}<label for="cmM">Le mot secret du vendeur</label>${essais != null && essais > 0 ? `<span class="nbul">${essais} essai${essais > 1 ? 's' : ''}</span>` : ''}</div>
+          <input type="text" id="cmM" maxlength="40" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="MANGUE 47"${essais === 0 ? ' disabled' : ''}>
+          <p>${essais === 0 ? 'Mot secret bloqué après trop d’essais faux. L’équipe est prévenue.' : 'Il est écrit sur le papier que le vendeur a glissé dans la marchandise.'}</p>
+          <button type="submit" class="cv-motp-b">${o.ok}</button>
+        </div>
+        ${ligneCase('cmS', 'Je ne trouve pas le papier du vendeur')}
+        <p class="fl-p" data-sans hidden>Sans le mot, la réception est notée « sans le mot secret du vendeur », visible du vendeur et de l’équipe. Si la marchandise ne va pas, ne confirmez pas : <b>refusez-la avec des photos</b>.</p>` : ''}
+        ${o.heures ? `<fieldset class="fl-g"><legend class="fl-sr">Combien de temps ?</legend>${o.heures.map(h => ligneChoix('cmH', h, h + ' h de plus', jusqua(c, h), 'h')).join('')}</fieldset>` : ''}
+        ${motifs ? `<fieldset class="fl-g"><legend class="${o.motifsTitre ? 'fl-t' : 'fl-sr'}">${o.motifsTitre || 'Motif'}</legend>${motifs.map(([k, t]) => ligneChoix('cmMot', k, t)).join('')}</fieldset>` : ''}
+        ${o.motifs === true ? `<div data-preuve hidden><label class="fl-t" for="cmP">Source publique (facultatif)</label>
+        <input type="text" id="cmP" maxlength="120" autocomplete="off" placeholder="Ex. : radio, presse, autorités, avec la date"></div>` : ''}
+        ${o.accord ? `<p class="fl-p" data-motif>Motif donné : …</p><fieldset class="fl-g"><legend class="fl-t">Êtes-vous d’accord avec ce motif ?</legend>
+          ${ligneChoix('cmAcc', '1', 'Oui, d’un commun accord', '')}${ligneChoix('cmAcc', '0', 'J’accepte, mais je ne suis pas d’accord', '')}</fieldset>
+          <p class="fl-s">D’un commun accord, l’annulation ne compte contre personne. Sinon, elle compte dans la fiabilité de l’autre partie, qui peut la contester.</p>` : ''}
+        ${o.lieu ? `<label class="fl-t" for="cmL">${o.lieu}</label><input type="text" id="cmL" maxlength="120" autocomplete="off">` : ''}
+        ${o.note ? `<div data-note${o.noteSiAutre ? ' hidden' : ''}><label class="fl-t" for="cmN">${o.note}</label><textarea id="cmN" maxlength="${o.noteMax || 300}" style="margin-top:8px"></textarea></div>` : ''}
+        ${o.date ? `<label class="fl-t" for="cmD">${o.date}</label><input type="datetime-local" id="cmD" min="${dtLocal(Date.now())}" max="${dtLocal(Date.now() + 60 * 864e5)}">` : ''}
+        ${o.gps ? ligneCase('cmG', 'Joindre ma position actuelle (une seule fois)') : ''}
+        ${o.texte ? `<p class="fl-s">${o.texte}</p>` : ''}
+        <p class="fl-err" role="alert"></p>
+        ${o.mot ? '' : `<button type="submit" class="fl-b${o.danger ? ' danger' : ''}">${o.ok}</button>`}
       </form>`;
-    box.querySelector('[data-x]').onclick = () => peindre();
-    box.querySelector('[data-ann]').onclick = () => peindre();
-    const f = box.querySelector('form'), err = f.querySelector('.cm-err');
-    // n° 12 (25/10/2026) : « Panne ou météo » propose d'écrire la source publique ; la photo attend une place sur le serveur
-    const Zp = f.querySelector('[data-preuve]'); if (Zp) f.querySelectorAll('[name=cmMot]').forEach(r => r.onchange = () => { Zp.hidden = r.value !== 'panne_meteo' || !r.checked; });
-    const Sm = f.querySelector('#cmS'); if (Sm) Sm.onchange = () => { f.querySelector('[data-sans]').hidden = !Sm.checked; f.querySelector('#cmM').disabled = Sm.checked; };
+    const f = box.querySelector('form'), err = f.querySelector('.fl-err');
+    // le bouton reste gris tant que le choix obligatoire n'est pas fait (comme la maquette)
+    const btnP = f.querySelector('.fl-b');
+    const pret = () => { if (!btnP) return; const manque = (o.heures && !f.querySelector('[name=cmH]:checked')) || (motifs && !f.querySelector('[name=cmMot]:checked')) || (o.accord && !f.querySelector('[name=cmAcc]:checked'));
+      btnP.setAttribute('aria-disabled', manque ? 'true' : 'false'); };
+    f.addEventListener('change', pret); pret();
+    // « Autre » : quelques mots ; « Panne ou météo » propose d'écrire la source publique
+    const Zn = f.querySelector('[data-note]'), Zp = f.querySelector('[data-preuve]');
+    if (motifs) f.querySelectorAll('[name=cmMot]').forEach(r => r.addEventListener('change', () => {
+      if (Zn && o.noteSiAutre) Zn.hidden = r.value !== 'autre' || !r.checked;
+      if (Zp) Zp.hidden = r.value !== 'panne_meteo' || !r.checked; }));
+    const Sm = f.querySelector('#cmS'); if (Sm) Sm.onchange = () => { f.querySelector('[data-sans]').hidden = !Sm.checked; f.querySelector('#cmM').disabled = Sm.checked || essais === 0; };
     f.onsubmit = async e => {
       e.preventDefault();
       const L = f.querySelector('#cmL'), Nt = f.querySelector('#cmN'), G = f.querySelector('#cmG'), M = f.querySelector('#cmM');
       const P = f.querySelector('#cmP'), src = P && !P.closest('[hidden]') ? P.value.trim() : '';
-      let note = Nt ? Nt.value.trim() : null;
+      let note = Nt && !Nt.closest('[hidden]') ? Nt.value.trim() : null;
       const lieu = L ? L.value.trim() : null, mot = M ? M.value.trim() : null, sansMot = !!(Sm && Sm.checked);
       const mo = f.querySelector('[name=cmMot]:checked'), motif = mo ? mo.value : null, ac = f.querySelector('[name=cmAcc]:checked'), accord = ac ? ac.value === '1' : null;
       const hh = f.querySelector('[name=cmH]:checked'), heures = hh ? +hh.value : null, Dd = f.querySelector('#cmD'), date = Dd && Dd.value ? new Date(Dd.value) : null;
       if (o.heures && !heures) { err.textContent = 'Choisissez 2 h, 6 h ou 24 h.'; f.querySelector('[name=cmH]').focus(); return; }
-      if (o.motifs && !motif && o.motifsErr) { err.textContent = o.motifsErr; f.querySelector('[name=cmMot]').focus(); return; }
+      if (motifs && !motif && o.motifsErr) { err.textContent = o.motifsErr; f.querySelector('[name=cmMot]').focus(); return; }
       if (date && (isNaN(date) || date < Date.now() - 6e4 || date > Date.now() + 60 * 864e5)) { err.textContent = 'Choisissez une date à venir, dans les 60 jours.'; Dd.focus(); return; }
-      if (o.motifs && !motif) { err.textContent = 'Choisissez un motif.'; f.querySelector('[name=cmMot]').focus(); return; }
-      if (o.motifs && motif === 'autre' && !(note && note.length >= 3)) { err.textContent = 'Motif « Autre » : écrivez quelques mots.'; Nt.focus(); return; }
+      if (motifs && !motif) { err.textContent = 'Choisissez un motif.'; f.querySelector('[name=cmMot]').focus(); return; }
+      if (motifs && motif === 'autre' && !(note && note.length >= 3)) { err.textContent = 'Motif « Autre » : écrivez quelques mots.'; if (Nt) Nt.focus(); return; }
       if (motif === 'panne_meteo' && src) note = ((note ? note + ' · ' : '') + 'Source : ' + src).slice(0, 300);
       if (o.accord && accord == null) { err.textContent = 'Dites si vous êtes d’accord avec le motif.'; f.querySelector('[name=cmAcc]').focus(); return; }
       if (o.mot && !sansMot && !mot) { err.textContent = 'Tapez le mot secret écrit sur le papier du vendeur.'; M.focus(); return; }
@@ -1353,12 +1393,13 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
         const pos = await position(G && G.checked);
         await o.fn({ lieu, note, pos, mot, sansMot, motif, accord, heures, date });
         await lireListe(); await lireJournal(c.id);
+        finGeste();
         if (o.fait) toast(o.fait, { type: 'ok' });
         if (window.MDGSons && MDGSons.signal) try { MDGSons.signal('accord'); } catch (_) {}
         peindre(o.etape);
       } catch (x) { err.textContent = erreurTxt(x); btn.disabled = false; }
     };
-    const premier = f.querySelector('input[type=text],textarea'); if (premier && matchMedia('(hover:hover)').matches) premier.focus();
+    const premier = f.querySelector('input[type=text]:not([disabled]),textarea'); if (premier && !premier.closest('[hidden]') && matchMedia('(hover:hover)').matches) premier.focus();
     // le motif donné par celui qui demande l'annulation (schéma 84), lu sur le serveur
     const zm = f.querySelector('[data-motif]');
     if (zm) N().rpc('commande_annulation_motif', { p_id: c.id }).then(m => { if (!zm.isConnected) return; const t = m && m.motif ? (MOTIF_NOM[m.motif] || m.motif) + (m.texte ? ' : « ' + m.texte + ' »' : '') : 'non précisé';
@@ -1367,7 +1408,9 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
   // une date pour <input type="datetime-local"> (heure du téléphone)
   const dtLocal = t => { const d = new Date(t), z = n => String(n).padStart(2, '0'); return d.getFullYear() + '-' + z(d.getMonth() + 1) + '-' + z(d.getDate()) + 'T' + z(d.getHours()) + ':' + z(d.getMinutes()); };
   // motifs d'annulation (décision 11, schéma 84) ; « Autre » demande quelques mots
-  const MOTIFS = [['stock_epuise', 'Stock épuisé'], ['prix_change', 'Prix changé'], ['sans_reponse', 'L’autre partie ne répond pas'], ['erreur_saisie', 'Erreur de saisie'], ['panne_meteo', 'Panne ou météo'], ['autre', 'Autre']];
+  const MOTIFS = [['stock_epuise', 'Marchandise plus disponible'], ['prix_change', 'Prix changé'], ['sans_reponse', 'L’autre partie ne répond pas'], ['erreur_saisie', 'Erreur de quantité'], ['panne_meteo', 'Panne ou météo'], ['autre', 'Autre raison']];
+  // le vendeur qui demande l'annulation : les 4 motifs de la maquette (mêmes catégories du serveur)
+  const MOTIFS_V = MOTIFS.filter(m => ['stock_epuise', 'panne_meteo', 'erreur_saisie', 'autre'].includes(m[0]));
   const MOTIF_NOM = Object.fromEntries(MOTIFS);
   // appel des portes du schéma 84 ; serveur pas encore à jour : l'ancienne fonction, sans motif
   const ancien = e => /schema cache|Could not find the function|PGRST202/i.test(String(e && e.message));
@@ -1394,7 +1437,7 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
       case 'oui': return confirmer(c, { titre: 'Confirmer la <em>commande</em>', ok: 'Confirmer', note: 'Un mot (facultatif)', fait: 'Commande confirmée', etape: 'confirmee',
         texte: `Transport : ${esc(MODES[c.mode_transport] || '')}. Livraison : ${esc(c.lieu_livraison || 'à convenir')}.`,
         fn: v => R('commande_repondre', { p_id: c.id, p_oui: true, p_note: v.note || null }) });
-      case 'non': return confirmer(c, { titre: 'Refuser la commande', ok: 'Refuser', motifs: true, note: 'Un mot (obligatoire pour « Autre »)', fait: 'Commande refusée',
+      case 'non': return confirmer(c, { titre: 'Refuser la commande', ok: 'Refuser', motifs: true, note: 'Quelques mots', noteSiAutre: true, fait: 'Commande refusée',
         texte: 'Avant confirmation, un refus ne compte pas dans votre fiabilité.', fn: v => repondreMotif(c, false, v) });
       case 'preparation': return av('preparation', 'Marchandise en préparation', { gps: false });
       case 'probleme': return probleme(c);
@@ -1409,18 +1452,18 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
           : `Le vendeur n’a pas chargé dans les ${(dl[c.id] && dl[c.id].chargement_heures) || 72} h après la confirmation. L’annulation compte dans sa fiabilité, pas dans la vôtre. Le stock revient sur son annonce.`,
         fn: v => R('commande_annuler_retard', { p_id: c.id, p_note: v.note || null }) });
       case 'reception': return c.validation === 'declaration' && c.mode_transport !== 'reseau'
-        ? confirmer(c, { titre: 'Confirmer la <em>réception</em>', ok: 'Confirmer la réception', etape: 'reception', mot: true, gps: true, note: 'Un mot (facultatif)', fait: 'Réception confirmée : 1 h pour signaler un problème',
-            texte: 'Confirmez seulement après avoir vérifié la quantité et la qualité. <b>Vous aurez 1 h pour signaler un problème.</b> Après, sans réclamation, la commande se clôt toute seule. ',
+        ? confirmer(c, { titre: 'Confirmer la <em>réception</em>', ok: 'Valider', etape: 'reception', mot: true, gps: true, fait: 'Réception confirmée : 1 h pour signaler un problème',
+            sous: 'Vérifiez d’abord la quantité et la qualité. Ensuite, vous avez 1 h pour signaler un problème.',
             essais: dl[c.id] ? dl[c.id].mot_essais_restants : null,
             // schéma 92 : un mot faux ne lève plus d'erreur ; la réponse dit combien d'essais restent (5 au plus)
             fn: v => R('commande_reception_mot', { p_id: c.id, p_mot: v.sansMot ? null : v.mot, p_sans_mot: v.sansMot, p_lat: v.pos ? v.pos[0] : null, p_lon: v.pos ? v.pos[1] : null, p_note: v.note || null })
               .then(r => { const s = String(r || '');
-                if (s === 'mot_bloque') { if (dl[c.id]) dl[c.id].mot_essais_restants = 0; throw new Error('Trop d’essais faux : le mot secret est bloqué et l’équipe du Marché de Gros est prévenue. Revenez en arrière et touchez « Signaler un problème ».'); }
+                if (s === 'mot_bloque') { if (dl[c.id]) dl[c.id].mot_essais_restants = 0; throw new Error('Trop d’essais faux : le mot secret est bloqué et l’équipe du Marché de Gros est prévenue. Fermez et touchez « Signaler un problème ».'); }
                 if (s.startsWith('mot_incorrect')) { const n = +s.split(':')[1]; if (dl[c.id]) dl[c.id].mot_essais_restants = n; throw new Error(`Ce n’est pas le mot du vendeur. Vérifiez le papier : il reste ${n} essai${n > 1 ? 's' : ''}.`); }
                 return r; }) })
         : av('reception', 'Réception confirmée', { texte: 'Confirmez seulement après avoir vérifié la quantité et la qualité. <b>Vous aurez 1 h pour signaler un problème.</b> Après, sans réclamation, la commande se clôt toute seule. ', fait: 'Réception confirmée : 1 h pour signaler un problème' });
-      case 'annuler': return confirmer(c, { titre: c.etat === 'a_confirmer' ? 'Retirer la commande' : 'Demander l’annulation', ok: c.etat === 'a_confirmer' ? 'Retirer' : 'Demander', motifs: true, note: 'Un mot (obligatoire pour « Autre »)',
-        texte: c.etat === 'a_confirmer' ? 'Avant confirmation, un retrait ne compte pas dans votre fiabilité.' : 'L’acheteur doit accepter l’annulation. Le stock reviendra sur l’annonce. S’il n’est pas d’accord avec votre motif, l’annulation comptera dans votre fiabilité.',
+      case 'annuler': return confirmer(c, { titre: c.etat === 'a_confirmer' ? 'Retirer la commande' : 'Demander l’annulation', ok: c.etat === 'a_confirmer' ? 'Retirer' : 'Envoyer la demande', motifs: true, motifsCourts: c.role === 'vendeur', note: 'Quelques mots', noteSiAutre: true,
+        sous: c.etat === 'a_confirmer' ? 'Avant confirmation, un retrait ne compte pas dans votre fiabilité.' : 'Le motif est obligatoire. Il compte sur 90 jours.',
         fait: c.etat === 'a_confirmer' ? 'Commande retirée' : 'Demande d’annulation envoyée', fn: v => annulerMotif(c, true, v) });
       case 'annul-oui': return confirmer(c, { titre: 'Accepter l’annulation', ok: 'Accepter', accord: true, note: 'Un mot (facultatif)', fait: 'Commande annulée', texte: 'Le stock reviendra sur l’annonce.',
         fn: v => annulerMotif(c, true, v) });
@@ -1444,8 +1487,8 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
         note: 'Un mot (obligatoire pour « Autre »)', noteMax: 200, date: 'Nouvelle arrivée estimée (facultatif)', fait: 'Retard signalé',
         fn: v => R('commande_retard_signaler', { p_id: c.id, p_motif: v.motif, p_date: v.date ? v.date.toISOString() : null, p_texte: v.note || null }) });
       // après « arrivé » : un seul délai de 2, 6 ou 24 h, avec sa cause ; l'échéance d'1 h est repoussée d'autant
-      case 'delai': return confirmer(c, { titre: 'Demander un <em>délai</em>', ok: 'Demander le délai', heures: [2, 6, 24], motifs: Object.entries(CAUSE_D), motifsTitre: 'Pourquoi ?', motifsErr: 'Dites pourquoi vous demandez un délai.',
-        note: 'Un mot (obligatoire pour « Autre »)', noteMax: 200, fait: 'Délai accordé', texte: 'Un seul délai par commande. Le vendeur le voit.',
+      case 'delai': return confirmer(c, { titre: 'Plus de temps pour vérifier', ok: 'Demander le délai', heures: [2, 6, 24], motifs: Object.entries(CAUSE_D), motifsTitre: 'Pourquoi ?', motifsErr: 'Dites pourquoi vous demandez un délai.',
+        sous: 'Possible une seule fois. ' + esc(c.partenaire_nom || 'Le vendeur') + ' est prévenu.', note: 'Quelques mots', noteSiAutre: true, noteMax: 200, fait: 'Délai accordé',
         fn: v => R('commande_delai_demander', { p_id: c.id, p_heures: v.heures, p_motif: v.motif, p_texte: v.note || null }).then(r => { if (dl[c.id] && r && r.reception_echeance) Object.assign(dl[c.id], { reception_echeance: r.reception_echeance, delai_heures: r.delai_heures, peut_demander_delai: false }); return r; })
           .catch(e => { if (/DELAI_DEJA/.test(String(e && e.message))) { if (dl[c.id]) dl[c.id].peut_demander_delai = false; } throw e; }) });
       case 'litige': return confirmer(c, { titre: 'Signaler un <em>problème</em>', ok: 'Ouvrir un litige', note: 'Que s’est-il passé ?', noteRequise: true, fait: 'Litige ouvert : l’équipe va examiner',
@@ -1610,6 +1653,8 @@ div.cv-papier{flex-direction:column;align-items:stretch;cursor:default}div.cv-pa
     bg.setAttribute('data-v2', ''); bg.innerHTML = '<div class="cm" data-v2></div>'; document.body.appendChild(bg);
     bg.addEventListener('click', e => { if (e.target === bg) fermer(); });
     document.addEventListener('keydown', clavier);
+    // la barre d'onglets reste visible au-dessus de l'écran, « Activité » allumé (API de la coquille, sans effet si elle manque)
+    if (window.MDGOnglets && MDGOnglets.montrer) try { MDGOnglets.montrer('activite', () => fermer(true)); } catch (_) {}
     // le serveur fait foi : on relit toutes les 20 s quand l'écran est visible (pas de suivi inventé entre deux lectures)
     minuteur = setInterval(rafraichir, 20000);
   }

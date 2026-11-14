@@ -1,8 +1,8 @@
 /* ═════════ Marché de Gros CI — astuces et petits tutoriels, pour les nouveaux ═════════
    Demandé par le propriétaire le 22/10/2026 : l'application est riche (codes, transport, négociation…) ;
    il faut de petits signes qui montrent quoi toucher, et un court tutoriel avant une opération un peu compliquée.
-   • Signes animés sur l'accueil (un seul par ouverture) : le panier en haut à gauche glisse de gauche à droite
-     → « touchez ici : le menu » ; puis la roue des produits ; puis les onglets. Chacun s'arrête dès qu'on a compris
+   • Signes animés sur l'accueil (un seul par ouverture) : une main glisse de gauche à droite
+     → « touchez ici : le menu » (le logo) ; puis les onglets du bas. Chacun s'arrête dès qu'on a compris
      (menu ouvert) ou après 3 fois.
    • Tutoriels (quelques cartes, « Passer » toujours visible) : la première fois qu'on ouvre une négociation,
      la création d'une commande, le choix du chauffeur, un code, l'Espace chauffeur. Une seule fois chacun.
@@ -33,12 +33,6 @@
 
   /* ——— les tutoriels : des phrases courtes, un geste par carte (ce que l'application fait vraiment, rien d'autre) ——— */
   const TOURS = {
-    placer: { t: 'La roue et les prix', cartes: [
-      ['🧺', 'La roue des produits', 'Glissez le doigt sur le *sac*, ou touchez les flèches : chaque produit a son sac et son *meilleur prix*.'],
-      ['💰', 'Le meilleur prix, en direct', 'Sous la roue : le prix le *moins cher* publié. Il change dès que quelqu’un place un meilleur prix. *Touchez-le.*'],
-      ['📊', 'L’échelle des prix', 'Du moins cher au plus cher : qui a publié, d’où, combien il en a. En *vert* les vendeurs, en *jaune* les acheteurs.'],
-      ['⬆️', 'Votre place', 'Proposez *moins* que le meilleur prix : vous passez en tête. Vous achetez ? Proposez un budget *plus haut*.'],
-      ['✍️', 'Placez votre prix', 'Touchez *« Placer mon prix »*, ou négociez avec le vendeur. Le bouton *Démo*, au-dessus de la roue, rejoue la démonstration.']] },
     negoce: { t: 'Proposer un prix', cartes: [
       ['🤝', 'Proposez votre prix', 'Écrivez votre *prix* et la *quantité*. L’autre personne reçoit votre proposition dans l’application.'],
       ['⏳', 'Elle a 48 heures pour répondre', 'Elle *accepte*, elle *refuse*, ou elle propose un autre prix. Vous pouvez retirer votre proposition tant qu’elle n’a pas répondu.'],
@@ -332,10 +326,10 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
 
   // un seul signe par ouverture de l'application, le premier pas encore compris
   const SIGNES = [
-    { k: 'menu', max: 3, sel: '.acc-mq', html: 'Touchez le <b>panier</b> : c’est le menu.<br>Le réseau, vos messages, vos commandes… tout est là.', glisse: true },
-    { k: 'roue', max: 2, sel: '.acc-flotte', html: 'Glissez le doigt sur le <b>sac</b> pour changer de produit.', main: true, dessus: true },
-    { k: 'onglets', max: 2, sel: '.acc-ong', html: '<b>Activité</b> : vos négociations et commandes.<br><b>Alertes</b> : ce qui vous attend, et vos codes.' },
-    { k: 'prix', max: 3, sel: '.acc-ong', html: 'Nouveau : l’onglet <b>Prix</b>.<br>Qui vend le moins cher, qui achète le plus cher, en direct.' }
+    // la refonte (13/11/2026) : la roue a quitté l'accueil, les onglets sont en bas (.v2-tabs), le menu s'ouvre par le logo
+    { k: 'menu', max: 3, sel: '.v2-logo', html: 'Touchez le <b>logo</b> : c’est le menu.<br>Le réseau, vos messages, vos commandes… tout est là.', glisse: true },
+    { k: 'onglets', max: 2, sel: '.v2-tabs', html: '<b>Activité</b> : vos négociations et commandes.<br>La <b>cloche</b>, en haut : ce qui vous attend.' },
+    { k: 'prix', max: 3, sel: '.v2-tabs', html: 'L’onglet <b>Prix</b> : qui vend le moins cher, qui achète le plus cher, en direct.' }
   ];
   let signeFait = false;
   // une fenêtre réellement à l'écran (le menu fermé et les feuilles cachées restent dans la page : on ne les compte pas)
@@ -350,7 +344,7 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
     signeFait = true; noter(s.k); pointer(el, s.html, s);
   }
   // le menu ouvert une fois : c'est compris, plus besoin du signe
-  document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.acc-mq')) noter('menu', 99); }, true);
+  document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.v2-logo')) noter('menu', 99); }, true);
 
   // fréquence (Réglages → Aide pour débuter) : « une » = chaque astuce, tutoriel et démo une seule fois ; « semaine » = tout revient
   // une fois par semaine ; « toujours » = tout revient à chaque ouverture de l'application. Appliquée une fois, au chargement.

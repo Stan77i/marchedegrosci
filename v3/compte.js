@@ -929,19 +929,17 @@ label.cp-r{cursor:pointer}
       main.querySelector('[data-del]').onclick = () => supprimer(main);
     },
     aide(main) {
-      // Aide (maquette) : le guide, cinq questions qui reviennent, puis parler à l'équipe. Les réponses viennent de v3/aide.js.
-      const AI = window.MDGAide, QR = (AI && AI.QR) || [], G = window.MDGGuide, M = window.MDGMessages;
-      const Q = [['Qui paie si c’est cassé en route ?', 'La marchandise est cassée en route'], ['Qui paie le transport si je refuse ?', 'Je refuse la marchandise'], ['Panne ou météo : la commande est en retard', 'Panne ou météo'], ['C’est quoi, le mot secret ?', 'À quoi sert le mot secret ?'], ['Comment se passe le paiement ?', 'Comment je paie ?']]
-        .map(([q, t]) => [QR.find(e => e.q === q), t]).filter(x => x[0]);
+      // Aide (maquette) : le guide (6 étapes), cinq questions qui s'ouvrent en feuille (v3/aide.js), puis parler à l'équipe
+      const AI = window.MDGAide, G = window.MDGGuide, M = window.MDGMessages, Q = (AI && AI.FEUILLES) || [];
       main.innerHTML = `<div class="v2c-pg"><h1 class="v2c-h1">Aide</h1>
-        ${G ? `<button type="button" class="v2c-guide" data-guide><span><b>Comment ça marche</b><small>Le guide de l’application, pas à pas</small></span>${CHEV_V2}</button>` : ''}
-        ${AI ? `<div class="v2c-liste">${Q.map(([e, t]) => ligneV2({ t, attrs: `data-q="${esc(e.id)}"` })).join('')}${ligneV2({ t: 'Toutes les questions', attrs: 'data-q=""' })}</div>` : ''}
-        ${AI || M ? `<div class="v2c-carte"><b>Parler à l’équipe</b><p>Votre message part dans la conversation avec le Marché de Gros. Votre numéro reste caché aux autres membres.</p>
+        ${G ? `<button type="button" class="v2c-guide" data-guide><span><b>Comment ça marche</b><small>6 étapes, de la publication à la réception</small></span>${CHEV_V2}</button>` : ''}
+        ${Q.length ? `<div class="v2c-liste">${Q.map(([id, t]) => ligneV2({ t: esc(t), attrs: `data-q="${esc(id)}"` })).join('')}</div>` : ''}
+        ${M ? `<div class="v2c-carte"><b>Parler à l’équipe</b><p>L’équipe vous répond dans vos messages. Votre numéro reste caché aux autres membres.</p>
           <button type="button" class="v2c-go m" data-ecrire>Écrire au Marché de Gros</button></div>` : ''}
       </div>`;
-      const g = main.querySelector('[data-guide]'); if (g) g.onclick = () => G.ouvrir();
-      main.querySelectorAll('[data-q]').forEach(b => b.onclick = () => AI.ouvrir(b.dataset.q ? { id: b.dataset.q } : {}));
-      const w = main.querySelector('[data-ecrire]'); if (w) w.onclick = () => AI ? AI.ouvrir({ personne: true }) : M.ecrireMarche();
+      const g = main.querySelector('[data-guide]'); if (g) g.onclick = () => G.ouvrir({ de: 'Aide' });
+      main.querySelectorAll('[data-q]').forEach(b => b.onclick = () => AI.feuille(b.dataset.q));
+      const w = main.querySelector('[data-ecrire]'); if (w) w.onclick = () => M.ecrireMarche({ direct: true });
     },
     appro(main) {
       // Approvisionnement (maquette) : racheter, rappels d'achat, achats groupés ; plus les besoins réguliers des professionnels (v3/appro.js).
@@ -998,23 +996,25 @@ label.cp-r{cursor:pointer}
     btn.disabled = true;
     let bloque = null; try { bloque = await N().rpc('compte_suppression_verifier'); } catch (_) {}
     btn.disabled = false;
+    // la feuille du bas de la maquette (MDGFeuille) ; sans elle, rien ne s'ouvre
+    if (!window.MDGFeuille) return;
+    const F = MDGFeuille.ouvrir({ label: 'Supprimer mon compte' }), box = F.corps;
     if (typeof bloque === 'string' && bloque) {
-      const box = document.createElement('div'); box.className = 'v2c-boite'; box.setAttribute('data-garde', '');
-      box.innerHTML = `<p role="alert"><b>Suppression impossible pour l’instant.</b> ${esc(bloque.replace(/^[A-Z_]{3,} : /, ''))}</p><button type="button" class="v2c-disc" data-no>Compris</button>`;
-      btn.replaceWith(box);
-      box.querySelector('[data-no]').onclick = () => bg.rafraichir();
+      box.innerHTML = `<h2 class="fl-h">Supprimer mon compte</h2><p class="fl-p" role="alert">${esc(bloque.replace(/^[A-Z_]{3,} : /, ''))}</p>`;
       return;
     }
-    const box = document.createElement('div'); box.className = 'v2c-boite'; box.setAttribute('data-garde', '');
-    box.innerHTML = `<form class="cp-f" novalidate><p>Vos annonces sont retirées et les négociations en cours fermées. Votre profil et votre code de secours sont effacés, et la connexion est bloquée. Les accords déjà conclus et les messages restent visibles des deux parties ; l’autre partie y voit « Compte supprimé ».</p><p>Pour confirmer, tapez votre code secret.</p>${champ('cp-dc', 'Code secret', '', { attrs: 'type="password" inputmode="numeric" maxlength="6" autocomplete="current-password"' })}<div class="v2c-duo"><button type="submit" class="cp-go v2c-rouge">Supprimer définitivement</button><button type="button" class="v2c-disc" data-no>Annuler</button></div></form>`;
-    main.querySelector('[data-del]').replaceWith(box);
-    box.querySelector('[data-no]').onclick = () => bg.rafraichir();
-    box.querySelector('form').onsubmit = async e => {
-      e.preventDefault(); const c = box.querySelector('#cp-dc').value, er = box.querySelector('#cp-dc-e'); er.textContent = '';
-      if (!/^\d{6}$/.test(c)) { er.textContent = 'Votre code fait 6 chiffres.'; return; }
-      const b = box.querySelector('.cp-go'); b.disabled = true; b.setAttribute('aria-busy', 'true'); b.textContent = 'Suppression';
-      try { await N().signIn(me().tel, c); await N().rpc('supprimer_compte'); localStorage.removeItem(KP); fermer(); N().signOut(); N().toast('Votre compte est supprimé. Vos annonces ont été retirées.'); }
-      catch (x) { er.textContent = /incorrect/i.test(x.message) ? 'Code incorrect.' : /supprimer_compte|schema cache|Could not find/i.test(x.message) ? 'La suppression n’est pas encore activée sur le serveur. Contactez le Marché de Gros.' : ERR(x); b.disabled = false; b.textContent = 'Supprimer définitivement'; }
+    box.innerHTML = `<h2 class="fl-h">Supprimer mon compte</h2><form novalidate>
+      <p class="fl-p">Vos annonces seront retirées et les négociations en cours fermées. Les commandes passées restent gardées 5 ans ; l’autre partie y voit « Compte supprimé ».</p>
+      <label class="fl-t" for="cp-dc">Votre code secret</label><input id="cp-dc" type="password" inputmode="numeric" maxlength="6" autocomplete="current-password">
+      <p class="fl-err" role="alert"></p>
+      <button type="submit" class="fl-b danger">Supprimer avec mon code secret</button></form>`;
+    const f = box.querySelector('form'), er = box.querySelector('.fl-err');
+    f.onsubmit = async e => {
+      e.preventDefault(); const c = box.querySelector('#cp-dc').value; er.textContent = '';
+      if (!/^\d{6}$/.test(c)) { er.textContent = 'Votre code fait 6 chiffres.'; box.querySelector('#cp-dc').focus(); return; }
+      const b = box.querySelector('.fl-b'); b.disabled = true; b.setAttribute('aria-busy', 'true'); b.textContent = 'Suppression…';
+      try { await N().signIn(me().tel, c); await N().rpc('supprimer_compte'); localStorage.removeItem(KP); F.fermer(); fermer(); N().signOut(); N().toast('Votre compte est supprimé. Vos annonces ont été retirées.'); }
+      catch (x) { er.textContent = /incorrect/i.test(x.message) ? 'Code incorrect.' : /supprimer_compte|schema cache|Could not find/i.test(x.message) ? 'La suppression n’est pas encore activée sur le serveur. Contactez le Marché de Gros.' : ERR(x); b.disabled = false; b.removeAttribute('aria-busy'); b.textContent = 'Supprimer avec mon code secret'; }
     };
   }
 

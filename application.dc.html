@@ -29,14 +29,14 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script src="app/icones.js?v=20261025a"></script>
 <script src="app/effets.js?v=20261124d"></script>
 <script src="app/marque.js?v=20261023v"></script>
-<script src="app/sac.js?v=20261203cq"></script>
-<script src="app/garanties.js?v=20261206bl"></script>
-<script src="app/toast.js?v=20261210sl"></script>
+<script src="app/sac.js?v=20261114g3"></script>
+<script src="app/garanties.js?v=20261114g3"></script>
+<script src="app/toast.js?v=20261114g3"></script>
 <script>/* l'adresse d'arrivée (liens d'intention du site : #/publier?…, #/groupes…), gardée avant que l'application ne la remette à #/ */window.MDGAdresse0=location.hash;</script>
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261207jf','v3/astuces.js?v=20261207jf','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261131lq2','v3/negoce.js?v=20261114f3','v3/compte.js?v=20261114e1','v3/souffle.js?v=20261128cf','v3/pousse.js?v=20261124nt','v3/reputation.js?v=20261207je','v3/statuts.js?v=20261124n1','v3/messages.js?v=20261114f2','v3/aide.js?v=20261113t1','v3/alertes.js?v=20261131lq2','v3/releve.js?v=20261124h','v3/commandes.js?v=20261114f1','v3/tableau.js?v=20261203cq','v3/chauffeur.js?v=20261114c1','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261131lq2','v3/racheter.js?v=20261131lq2','v3/appro.js?v=20261131lq2','v3/groupes.js?v=20261114f2','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261114f2','v3/identite.js?v=20261114p1','v3/boutique.js?v=20261113t1','v3/equipe.js?v=20261114e1'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261114g3','v3/astuces.js?v=20261114g3','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261131lq2','v3/negoce.js?v=20261114g1','v3/compte.js?v=20261114g3','v3/souffle.js?v=20261128cf','v3/pousse.js?v=20261124nt','v3/reputation.js?v=20261114g2','v3/statuts.js?v=20261124n1','v3/messages.js?v=20261114g3','v3/aide.js?v=20261114g3','v3/alertes.js?v=20261114g2','v3/alertes-v2.js?v=20261114g2','v3/releve.js?v=20261124h','v3/commandes.js?v=20261114g3','v3/tableau.js?v=20261203cq','v3/chauffeur.js?v=20261114c1','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261131lq2','v3/racheter.js?v=20261131lq2','v3/appro.js?v=20261131lq2','v3/groupes.js?v=20261114f2','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261114f2','v3/identite.js?v=20261114g3','v3/boutique.js?v=20261113t1','v3/equipe.js?v=20261114g3'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief (1,5 Mo) se télécharge en avance quand tout est calme : l'ouvrir devient presque immédiat.
    Jamais à la toute première ouverture (FIA-58 : le forfait de qui découvre l'application), ni en économie de données, en 2G ou en 3G. */
@@ -63,16 +63,16 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/symboles.css?v=20261102d">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261113r1">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261206bl">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261114g1">
 <link rel="stylesheet" href="css/sombre.css?v=20261113r1">
 <link rel="stylesheet" href="css/annee-app.css?v=20261124h">
 <link rel="stylesheet" href="css/categories-app.css?v=20261124f">
-<link rel="stylesheet" href="css/v2.css?v=20261114f2">
-<link rel="stylesheet" href="css/v2-compte.css?v=20261113t1">
-<link rel="stylesheet" href="css/v2-equipe.css?v=20261114e1">
+<link rel="stylesheet" href="css/v2.css?v=20261114g1">
+<link rel="stylesheet" href="css/v2-compte.css?v=20261114g3">
+<link rel="stylesheet" href="css/v2-equipe.css?v=20261114g3">
 <link rel="stylesheet" href="v3/ux.css?v=20261124i">
 <script src="v2/data.js?v=20261031a"></script>
-<script src="app/marche-app.js?v=20261124h"></script>
+<script src="app/marche-app.js?v=20261114g1"></script>
 <script src="app/ville-seule.js?v=20261124cm"></script>
 <script src="app/villes.js?v=20261124cm"></script>
 <style>html,body{margin:0;height:100%;position:fixed;inset:0;width:100%;overflow:hidden;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;}input,select,textarea{font-size:16px!important;min-width:0;max-width:100%}label{min-width:0}[data-pg],[data-screen-label="Application"]{overflow:clip!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"]{overflow-x:hidden!important}[style*="overflow-y:auto"],[style*="overflow-y: auto"],[style*="overflow-x:auto"]{overscroll-behavior:none;-webkit-overflow-scrolling:touch}[style*="overflow-x:auto"]{overflow-y:hidden!important;touch-action:pan-x}*{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none}input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}img,svg,a{-webkit-user-drag:none}textarea{resize:none}button{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}html,body{background:#0d0c0a;font-variant-numeric:lining-nums;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}*{box-sizing:border-box;scrollbar-width:none}a{color:var(--terre)}a:hover{color:var(--terre);opacity:.85}input,select,button,textarea{font:inherit}button{cursor:pointer}::-webkit-scrollbar{display:none}:where(a,button,input,select,textarea):focus-visible{outline:2px solid var(--terre);outline-offset:2px}button:active{transform:scale(.97);transition:transform 120ms cubic-bezier(.2,.8,.2,1)}.ux-pip::before{content:'';position:absolute;inset:-8px 0}@media (prefers-reduced-motion:reduce){button:active{transform:none}}
@@ -159,7 +159,7 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
     <sc-if value="{{ v2.resOn }}" hint-placeholder-val="{{ false }}"><div class="v2-rech-sec" style="gap:0"><span class="v2-rech-t" style="margin-bottom:4px">{{ v2.resT }}</span>
       <sc-for list="{{ v2.res }}" as="r" hint-placeholder-count="0"><button class="v2-res" onClick="{{ r.go }}"><span class="im"><img sc-camel-src="{{ r.img }}" alt="" loading="lazy"></span><span class="tx"><b>{{ r.nom }}</b><small>{{ r.sub }}</small></span><sc-if value="{{ r.mOn }}" hint-placeholder-val="{{ false }}"><span class="m"><b>{{ r.m }}</b><small>{{ r.u }}</small></span></sc-if></button></sc-for>
     </div></sc-if>
-    <sc-if value="{{ v2.rienOn }}" hint-placeholder-val="{{ false }}"><div class="v2-rien"><b>Personne n’a encore publié « {{ v2.qJoli }} »</b><span>Créez une demande : les vendeurs qui l’ont la verront et pourront vous proposer leur prix.</span><button onClick="{{ v2.creerDemande }}">Créer une demande</button></div></sc-if>
+    <sc-if value="{{ v2.rienOn }}" hint-placeholder-val="{{ false }}"><div class="v2-rien"><b>Personne n’a encore publié « {{ v2.qJoli }} »</b><span>Créez une demande : les vendeurs qui l’ont la verront et pourront vous proposer leur prix.</span><button onClick="{{ v2.creerDemande }}">Créer une demande</button></div></sc-if>
   </div>
   </div>
   <div style="display:{{ accA }}">
@@ -189,21 +189,6 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
   </div>
   </div>
   </div>
-  <!-- barre d'onglets du bas (lot 2) -->
-  <nav class="v2-tabs" aria-label="Onglets" style="padding-bottom:{{ botPad }};height:calc(60px + {{ botPad }})">
-    <sc-for list="{{ v2.tabs }}" as="b" hint-placeholder-count="5"><button class="v2-tab {{ b.cls }}" aria-current="{{ b.cur }}" onClick="{{ b.go }}"><span class="{{ b.icC }}">{{ b.ico }}</span><span class="lb">{{ b.t }}</span><sc-if value="{{ b.nOn }}" hint-placeholder-val="{{ false }}"><span class="v2-nb">{{ b.n }}</span></sc-if></button></sc-for>
-  </nav>
-  <sc-if value="{{ v2.choix }}" hint-placeholder-val="{{ false }}">
-    <div class="v2-voile" onClick="{{ v2.fermerChoix }}"></div>
-    <div class="v2-feuille" role="dialog" aria-modal="true" aria-label="Publier" style="padding-bottom:calc(20px + {{ botPad }})">
-      <div class="v2-poignee" aria-hidden="true"></div>
-      <div class="v2-feuille-t"><h2>Publier</h2><button class="v2-fermer" onClick="{{ v2.fermerChoix }}" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
-      <div class="v2-duo" style="margin:0">
-        <button class="o" style="order:{{ v2.ordO }}" onClick="{{ v2.choixO }}"><span class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5h17l-2 9h-13z"></path><path d="M8 10.5L11 4.5M16 10.5L13 4.5"></path><path d="M9 13.5v3.5M12 13.5v3.5M15 13.5v3.5"></path></svg></span><span><b>J’ai</b><small>à vendre</small></span></button>
-        <button class="d" style="order:{{ v2.ordD }}" onClick="{{ v2.choixD }}"><span class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5h3l2.3 10.5h10.2l2-7.5H6.5"></path><circle cx="9" cy="19" r="1.6"></circle><circle cx="17" cy="19" r="1.6"></circle></svg></span><span><b>Je cherche</b><small>à acheter</small></span></button>
-      </div>
-    </div>
-  </sc-if>
 </div>
 
 <!-- ═══ FICHE PRODUIT ═══ -->
@@ -332,7 +317,7 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
         <div class="v2-pas2 prix"><button onClick="{{ pvo.pMoins }}" aria-label="Moins"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button><label><span class="v"><input value="{{ pvo.prix }}" onChange="{{ pvo.pIn }}" inputmode="numeric" placeholder="0" aria-label="{{ pvo.pL }}"><b>F</b></span><small>par {{ pvo.u }}</small></label><button onClick="{{ pvo.pPlus }}" aria-label="Plus"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button></div>
         <sc-if value="{{ pvo.jOn }}" hint-placeholder-val="{{ false }}"><div class="v2-jauge"><div class="r"><i style="left:{{ pvo.jl }};width:{{ pvo.jw }}"></i><b style="left:{{ pvo.jm }}"></b></div><div class="l"><span>{{ pvo.jMin }}</span><span>Le marché</span><span>{{ pvo.jMax }}</span></div></div></sc-if>
         <span class="v2-jmsg {{ pvo.jC }}">{{ pvo.jMsg }}</span>
-        <div class="v2-vs"><span><b>{{ pvo.negT }}</b></span><button role="switch" aria-checked="{{ pvo.neg }}" onClick="{{ pvo.negGo }}" aria-label="Prix négociable"><i></i></button></div>
+        <div class="v2-vs neg"><span><b>{{ pvo.negT }}</b></span><button role="switch" aria-checked="{{ pvo.neg }}" onClick="{{ pvo.negGo }}" aria-label="Prix négociable"><i></i></button></div>
         <div class="v2-total"><span>{{ pvo.totL }}</span><b>{{ pvo.tot }}</b></div>
       </sc-if>
 
@@ -387,7 +372,7 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
         <div class="v2-pas2 prix"><button onClick="{{ pvd.pMoins }}" aria-label="Moins"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button><label><span class="v"><input value="{{ pvd.prix }}" onChange="{{ pvd.pIn }}" inputmode="numeric" placeholder="0" aria-label="{{ pvd.pL }}"><b>F</b></span><small>par {{ pvd.u }}</small></label><button onClick="{{ pvd.pPlus }}" aria-label="Plus"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button></div>
         <sc-if value="{{ pvd.jOn }}" hint-placeholder-val="{{ false }}"><div class="v2-jauge"><div class="r"><i style="left:{{ pvd.jl }};width:{{ pvd.jw }}"></i><b style="left:{{ pvd.jm }}"></b></div><div class="l"><span>{{ pvd.jMin }}</span><span>Le marché</span><span>{{ pvd.jMax }}</span></div></div></sc-if>
         <span class="v2-jmsg {{ pvd.jC }}">{{ pvd.jMsg }}</span>
-        <div class="v2-vs"><span><b>{{ pvd.negT }}</b></span><button role="switch" aria-checked="{{ pvd.neg }}" onClick="{{ pvd.negGo }}" aria-label="Prix négociable"><i></i></button></div>
+        <div class="v2-vs neg"><span><b>{{ pvd.negT }}</b></span><button role="switch" aria-checked="{{ pvd.neg }}" onClick="{{ pvd.negGo }}" aria-label="Prix négociable"><i></i></button></div>
         <div class="v2-total"><span>{{ pvd.totL }}</span><b>{{ pvd.tot }}</b></div>
       </sc-if>
 
@@ -574,6 +559,22 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
 </div>
 
 </div>
+<!-- barre d'onglets du bas (lot 2) : posée au-dessus de toutes les pages ; cachée sur Publier (maquette, showTabs) ; onglet actif comme tcol de la maquette ; les modules s'en servent par window.MDGOnglets -->
+  <nav class="v2-tabs {{ v2.tabsC }}" aria-label="Onglets" style="padding-bottom:{{ botPad }};height:calc(60px + {{ botPad }})">
+    <sc-for list="{{ v2.tabs }}" as="b" hint-placeholder-count="5"><button class="v2-tab {{ b.cls }}" aria-current="{{ b.cur }}" onClick="{{ b.go }}"><span class="{{ b.icC }}">{{ b.ico }}</span><span class="lb">{{ b.t }}</span><sc-if value="{{ b.nOn }}" hint-placeholder-val="{{ false }}"><span class="v2-nb">{{ b.n }}</span></sc-if></button></sc-for>
+  </nav>
+  <sc-if value="{{ v2.choix }}" hint-placeholder-val="{{ false }}">
+    <div class="v2-voile" onClick="{{ v2.fermerChoix }}"></div>
+    <div class="v2-feuille" role="dialog" aria-modal="true" aria-label="Publier" style="padding-bottom:calc(20px + {{ botPad }})">
+      <div class="v2-poignee" aria-hidden="true"></div>
+      <div class="v2-feuille-t"><h2>Publier</h2><button class="v2-fermer" onClick="{{ v2.fermerChoix }}" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></div>
+      <div class="v2-duo v2-duo-ch" style="margin:0">
+        <button class="o" style="order:{{ v2.ordO }}" onClick="{{ v2.choixO }}"><span class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5h17l-2 9h-13z"></path><path d="M8 10.5L11 4.5M16 10.5L13 4.5"></path><path d="M9 13.5v3.5M12 13.5v3.5M15 13.5v3.5"></path></svg></span><span><b>J’ai</b><small>une offre à vendre</small></span></button>
+        <button class="d" style="order:{{ v2.ordD }}" onClick="{{ v2.choixD }}"><span class="ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5h3l2.3 10.5h10.2l2-7.5H6.5"></path><circle cx="9" cy="19" r="1.6"></circle><circle cx="17" cy="19" r="1.6"></circle></svg></span><span><b>Je cherche</b><small>une demande d’achat</small></span></button>
+      </div>
+      <p class="v2-ch-note">Gratuit. Votre numéro n’est jamais affiché.</p>
+    </div>
+  </sc-if>
 <!-- ═══ voile ═══ -->
 <div onClick="{{ closeAll }}" style="position:absolute;inset:0;background:{{ scrimBg }};-webkit-backdrop-filter:{{ scrimFlou }};backdrop-filter:{{ scrimFlou }};opacity:{{ scrimOp }};pointer-events:{{ scrimPe }};transition:opacity .35s"></div>
 
@@ -780,8 +781,12 @@ class Component extends DCLogic {
     const m = /\(près de ([^)]+)\)\s*$/.exec(city), ref = m ? m[1] : city, r = V.region(ref); return r && r !== region ? '' : city; }
   blankM(slug) { const m = this.me || {}; return { slug, qty: '', unit: 'kg', region: m.region || '', city: this.accord(m.region, m.city), price: '', when: '', name: m.name || '' }; }
   componentDidMount() {
+    // la barre d'onglets pour les modules (commande, messages, Mes annonces, aide, guide, équipe) : ils la gardent visible en finissant à var(--barre-h) du bas
+    window.MDGOnglets = { montrer: (actif, fermer) => { this._ongFermer = typeof fermer === 'function' ? fermer : null; this.setState({ ongMod: actif || 'marche', v2choix: false }); },
+      cacher: () => { this._ongFermer = null; if (this.state.ongMod) this.setState({ ongMod: null }); }, actif: () => this.state.ongMod || null };
+    this.barreH();
     // Compte → « Mes annonces » (maquette 5.13) : la page de l'application, retour « Compte »
-    window.MDGV2 = Object.assign(window.MDGV2 || {}, { annonces: () => { this.setState({ pubsDe: 'Compte' }); this.push('pubs'); } });
+    window.MDGV2 = Object.assign(window.MDGV2 || {}, { annonces: () => { this.setState({ pubsDe: 'Compte' }); this.push('pubs'); }, fiche: slug => this.openFiche(slug), prod: slug => this.prod(slug), marche: () => this.setState({ accTab: 'marche' }), recherche: () => this.setState({ accTab: 'recherche' }, () => { const i = document.querySelector('[data-pg="home"] .v2-rech-in'); if (i) i.focus(); }) });
     try { document.documentElement.classList.add('monte'); } catch (_) {}
     // Échap ferme le menu ou la feuille ouverte ; une autre fenêtre ouverte par-dessus (le focus y est) garde son Échap
     this.onEsc = e => { if (e.key !== 'Escape' || !(this.state.menu || this.state.sheet)) return; const a = document.activeElement;
@@ -858,7 +863,7 @@ class Component extends DCLogic {
     if (st.includes(prev)) { go(top, T_OFF, T_IN); go(prev, T_IN, T_UNDER); } else { go(prev, T_IN, T_OFF); go(top, T_UNDER, T_IN); }
     this.animT = setTimeout(() => { (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; }, 650);
   }
-  componentDidUpdate(pp, ps) { this.focusFeuille(); this.rejouerAccueil(); this.tendVeille(); this.ventesCharger(); if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
+  componentDidUpdate(pp, ps) { this.barreH(); this.focusFeuille(); this.rejouerAccueil(); this.tendVeille(); this.ventesCharger(); if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
   /* carte en profondeur (app/carte-gl.js) : chargée après l'affichage de la carte Canvas, elle la remplace en fondu.
      Sans WebGL, sur un appareil faible ou si un fichier manque, la carte Canvas reste. */
   /* la carte : une seule, sans changement visible. Téléphone capable → la carte en relief directement (fond de la même couleur pendant
@@ -873,7 +878,7 @@ class Component extends DCLogic {
     if (!G || !G.capable()) return simple();
     this._carteEnCours = true;
     // toucher un district : la carte zoome, le panneau reste replié ; toucher une bulle : la carte d'annonce s'ouvre en bas
-    G.mount(el, { onSelect: s => this.setState({ csel: s, cOpen: false, cPick: null }), onPick: ids => { this.setState({ cPick: ids && ids.length ? ids : null, cOpen: false, cPickI: 0, cPickVu: false }); if (ids && ids.length > 1) this.cPickInvite(); },
+    G.mount(el, { onSelect: s => this.setState({ csel: s, cOpen: !!s, cPick: null }), onPick: ids => { this.setState({ cPick: ids && ids.length ? ids : null, cOpen: false, cPickI: 0, cPickVu: false }); if (ids && ids.length > 1) this.cPickInvite(); },
       onLocate: (la, lo) => { const A = window.MDGApp; let best = '', bd = 1e9; Object.keys(A.REG).forEach(k => { const d = A.km([la, lo], A.REG[k]); if (d < bd) { bd = d; best = k; } }); if (best && bd < 400) { this.me.region = best; this.me.city = this.accord(best, this.me.city); ls('mdg-app:moi', this.me); this.setState({ cme: best }); } },
       insets: () => this.carteIns() }).then(api => {
       this._carteEnCours = false;
@@ -1213,6 +1218,17 @@ class Component extends DCLogic {
   leave() { const st = this.state.stack; if (st.length < 2) return; clearTimeout(this.lvT); this.setState({ leaving: st[st.length - 1] }); this.lvT = setTimeout(() => this.setState({ leaving: null }), 480); }
   back() { const now = Date.now(); if (now - (this._bk || 0) < 500) return; this._bk = now; if (this.hist > 0) { history.back(); return; } this.leave(); this.setState(s => ({ stack: s.stack.length > 1 ? s.stack.slice(0, -1) : s.stack }), () => { try { history.replaceState(null, '', this.hashOf(this.state.stack[this.state.stack.length - 1])); } catch (_) {} }); }
   openFiche(slug) { this.push('fiche', { slug }); }
+  // --barre-h (hauteur réelle de la barre, 0 quand elle est cachée) et data-onglet sur <html> (l'onglet allumé), lus par les pages et les modules
+  barreH() { const t = document.querySelector('.v2-tabs'), de = document.documentElement; if (!t) return;
+    const h = t.classList.contains('cache') ? 0 : t.offsetHeight, v = h + 'px'; if (de.style.getPropertyValue('--barre-h') !== v) de.style.setProperty('--barre-h', v);
+    const c = t.querySelector('[aria-current=page]'), k = h && c ? ['marche', 'prix', 'publier', 'activite', 'compte'][[...t.children].indexOf(c)] || '' : '';
+    if ((de.getAttribute('data-onglet') || '') !== k) { if (k) de.setAttribute('data-onglet', k); else de.removeAttribute('data-onglet'); }
+    if (!this._barreRO && window.ResizeObserver) { this._barreRO = new ResizeObserver(() => this.barreH()); this._barreRO.observe(t); } }
+  // un onglet touché depuis une page poussée : retour à l'accueil sur cet onglet, l'historique du téléphone revient au départ
+  versAccueil(k) { const n = this.hist; this.hist = 0; this.leave(); this.setState({ stack: ['home'], accTab: k, menu: false, sheet: null, pick: null, v2choix: false }, () => { const sc = document.querySelector('[data-pg="home"] .acc-sc'); if (sc) sc.scrollTop = 0; });
+    if (n > 0) { this._bk = Date.now(); try { history.go(-n); } catch (_) {} } }
+  // un onglet touché pendant qu'un module est ouvert (commande, messages, aide…) : il est prévenu et se ferme (MDGOnglets)
+  ongletQuitte() { if (!this.state.ongMod) return; const f = this._ongFermer; this._ongFermer = null; this.setState({ ongMod: null }); try { dispatchEvent(new CustomEvent('mdg:onglet')); } catch (_) {} if (f) try { f(); } catch (_) {} }
   // les lignes du calendrier regroupées par produit (Sud / Nord, précoce / tardive…) : pour chaque mois, le niveau le plus fort
   anParProduit() {
     const A = window.MDGApp, RK = A.RANK, M = new Map();
@@ -1295,7 +1311,7 @@ class Component extends DCLogic {
     const nO = mine.filter(x => x.kind === 'offre').length, nD = mine.length - nO;
     const stats = [
       { cls: 'acc-k', t: 'Offres en ligne', tint: 'v', ico: emo(''), v: String(off.length), s: 'sur ' + pl(nP(off), 'produit'), go: () => this.push('acheter') },
-      { cls: 'acc-k', t: 'Demandes', tint: 'j', ico: emo('', 1), v: String(dem.length), s: 'sur ' + pl(nP(dem), 'produit'), go: () => this.push('carte', { cprod: '', csel: '' }) },
+      { cls: 'acc-k', t: 'Demandes', tint: 'j', ico: emo('', 1), v: String(dem.length), s: 'sur ' + pl(nP(dem), 'produit'), go: () => this.push('carte', { cprod: '', csel: '', cOpen: true }) },
       mine.length ? { cls: 'acc-k large', t: 'Mes annonces', tint: 't', ico: ico('vendre'), v: String(mine.length), s: pl(nO, 'offre') + ' · ' + pl(nD, 'demande'), go: () => this.push('pubs') }
         : { cls: 'acc-k large', t: 'Prix du marché', tint: 't', ico: ico('tendance'), v: 'Par zone', s: 'Les prix relevés, produit par produit', go: () => this.push('prix') } ];
     const ventes = (this.ventesR || ls('mdg-app:ventes') || []).filter(v => v && v.conclu_le && !MQ['v:' + v.cle]).map(v => ({ kind: 'vente', id: v.cle, slug: v.product_slug, at: v.conclu_le, qty: +v.quantite || 0, unit: v.unite || '', ville: v.ville, nom: v.produit }));
@@ -1362,37 +1378,52 @@ class Component extends DCLogic {
       const nb = [x.o ? pl(x.o, 'offre') : '', x.d ? pl(x.d, 'demande') : ''].filter(Boolean).join(' · ');
       return { nom: P.name, img: P.thumb, pxOn, px: pxOn ? A.fmt(med(x.px)) + ' F' : '', u: u ? '/ ' + u : '', nb, lab: P.name + (pxOn ? ', prix médian ' + A.fmt(med(x.px)) + ' F' : '') + (nb ? ', ' + nb : ''), go: () => this.openFiche(slug) }; });
     // « Disponible / Recherché autour de vous » : dans sa région d'abord ; sinon dans tout le pays
-    const base = vend ? dem : off, ici = region ? base.filter(x => x.region === region) : [], liste = (ici.length ? ici : base).slice().sort((a, b) => (Date.parse(b.at) || 0) - (Date.parse(a.at) || 0)).slice(0, 5);
-    const pres = liste.map(x => { const P = this.prod(x.slug), o = x.kind === 'offre', prix = o ? x.price : x.budget;
-      return { k: o ? 'o' : 'd', o, d: !o, t: P.name + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + A.unites(x.qty, x.unit) : ''),
-        s: this.place(x) + (prix > 0 ? ' · ' + A.fmt(prix) + ' F / ' + x.unit : ''), h: A.ago(x.at), go: () => this.openFiche(x.slug) }; });
+    const base = vend ? dem : off, ici = region ? base.filter(x => x.region === region) : [], liste = (ici.length ? ici : base).slice().sort((a, b) => (Date.parse(b.at) || 0) - (Date.parse(a.at) || 0)).slice(0, 3);
+    // comme la maquette : « 200 sacs d’igname » puis « Nom · Ville » (nom public, déjà réduit à l'initiale ; la distance n'est pas connue)
+    const deP = n => (/^[aeiouyàâéèêëîïôöûüœh]/i.test(n) ? 'd’' : 'de ') + n.toLowerCase();
+    const pres = liste.map(x => { const P = this.prod(x.slug), o = x.kind === 'offre';
+      return { k: o ? 'o' : 'd', o, d: !o, t: x.qty ? A.fmt(x.qty) + ' ' + A.unites(x.qty, x.unit) + ' ' + deP(P.name) : P.name,
+        s: [x.name, this.place(x)].filter(Boolean).join(' · '), h: A.ago(x.at), go: () => this.openFiche(x.slug) }; });
     const presT = (vend ? 'Recherché' : 'Disponible') + (ici.length ? ' autour de vous' : ' en ce moment');
     const nAct = ac.accActN || 0, nCl = (ac.accCl && ac.accCl.on ? (parseInt(ac.accCl.n, 10) || 0) : 0) + (ac.accAlN || 0);
+    // l'onglet allumé suit la page du dessus, comme tcol de la maquette : Marché pour la carte, la recherche et les alertes ; Prix pour la fiche, le profil, les produits et l'année ;
+    // Compte pour Mes publications ; un module (commande, messages, aide…) l'impose par MDGOnglets.montrer(actif). Pas de barre sur Publier (vendre, demande).
+    const st = S.stack || ['home'], haut = st[st.length - 1] || 'home', mod = S.ongMod || '';
+    const PG = { fiche: 'prix', categories: 'prix', annee: 'prix', prix: 'prix', vendeur: 'prix', carte: 'marche', acheter: 'marche', info: 'marche', pubs: 'compte' };
+    const actif = mod || (haut === 'home' ? ({ recherche: 'marche', alertes: 'marche' }[tab] || tab) : PG[haut] || '');
+    const tabsCache = !mod && (haut === 'vendre' || haut === 'demande');
+    const versOnglet = k => { this.ongletQuitte(); if (haut !== 'home') this.versAccueil(k); else aller(k); };
     const tabs = [['marche', 'Marché', 'marche'], ['prix', 'Prix', 'tendance'], ['publier', 'Publier', 'plus'], ['activite', 'Activité', 'activite'], ['compte', 'Compte', 'compte']].map(([k, t, n]) => {
-      const pub = k === 'publier', cur = !pub && k !== 'compte' && tab === k;
+      const pub = k === 'publier', cur = !pub && actif === k && (k !== 'compte' || !!mod || haut !== 'home');
       return { t, cls: pub ? 'pub' : '', cur: cur ? 'page' : 'false', icC: pub ? 'v2-pub' : '', ico: pub ? ico('plus', 2.4, 22) : ico(n),
         nOn: k === 'activite' && nAct > 0, n: String(nAct),
-        go: pub ? () => this.setState({ v2choix: true }) : k === 'compte' ? () => { const N = window.MDGNuage; if (!N) return; if (moiS && moiC) moiC.ouvrir(); else N.open(); } : () => aller(k) }; });
+        go: pub ? () => { this.ongletQuitte(); this.setState({ v2choix: true }); } : k === 'compte' ? () => { this.ongletQuitte(); const N = window.MDGNuage; if (!N) return; if (moiS && moiC) moiC.ouvrir(); else N.open(); } : () => versOnglet(k) }; });
     const fermer = () => this.setState({ v2choix: false });
     // Activité : mes commandes et propositions (app/activite.js), puis mes annonces ; les messages ont leur ligne en haut
     const AV = window.MDGActivite, ST = { litige: 'r', moi: 'j', attente: 'j', route: 'v', ok: 'v' };
     const demarches = (moiS && AV ? AV.tout() : []).filter(x => x.k !== 'dm').map(x => { const cmd = x.k === 'cmd', av = x.avec || '';
-      const s = cmd ? (x.role === 'vendeur' ? 'Commande de ' + (av || 'l’acheteur') : 'Commande' + (av ? ' · ' + av : ''))
+      const mt = cmd && +x.montant > 0 ? ' · ' + A.fmt(+x.montant) + ' F' : '';   // le montant de la commande, quand v3/commandes.js le donne (activite())
+      const s = cmd ? (x.role === 'vendeur' ? 'Commande de ' + (av || 'l’acheteur') : 'Commande' + (av ? ' · ' + av : '')) + mt
         : (x.etat === 'ok' ? 'Accord avec ' : x.etat === 'moi' ? 'Proposition de ' : 'Votre proposition à ') + (av || 'l’autre partie') + (x.prix ? ' · ' + x.prix : '');
       const vente = cmd && x.role === 'vendeur';   // une vente : le panier, comme la maquette ; un achat : le camion
       return { cmd: cmd && !vente, prop: !cmd, off: vente, dem: false, tint: x.etat === 'moi' || !cmd ? '#F6E2B0' : '#DCEFE3', t: x.titre, s, stamp: x.tag || '', sc: 'st-' + (ST[x.etat] || 'j'), lab: x.titre + ' : ' + (x.tag || ''), go: () => x.ouvrir() }; });
-    const annonces = (ac.v2Mine || []).map(x => { const P = this.prod(x.slug), o = x.kind === 'offre', prix = o ? x.price : x.budget, fin = x.epuise || x.servie || x.expiree;
-      const stamp = x.epuise ? 'Épuisé' : x.servie ? 'Servie' : x.expiree ? 'Expirée' : 'En ligne';
+    // mes annonces : une annonce sans quantité (brouillon incomplet) n'est pas une ligne ; une offre en pause le dit ;
+    // sous une offre, le nombre de demandes du même produit (des autres membres), comme la maquette « 3 demandes correspondent » ; sans demande, le prix
+    const annonces = (ac.v2Mine || []).filter(x => x.qty > 0).map(x => { const P = this.prod(x.slug), o = x.kind === 'offre', prix = o ? x.price : x.budget, fin = x.epuise || x.servie || x.expiree;
+      const stamp = x.epuise ? 'Épuisé' : x.servie ? 'Servie' : x.expiree ? 'Expirée' : o && x.pause ? 'En pause' : 'En ligne';
+      const nCor = o && !fin ? dem.filter(d => d.slug === x.slug && !this.isMine(d)).length : 0;
       return { cmd: false, prop: false, off: o, dem: !o, tint: o ? '#DCEFE3' : '#F6E2B0', t: P.name + (x.qty ? ' · ' + A.fmt(x.qty) + ' ' + A.unites(x.qty, x.unit) : ''),
-        s: (o ? 'Votre offre' : 'Votre demande') + (prix > 0 ? ' · ' + (o ? '' : 'budget ') + A.fmt(prix) + ' F / ' + x.unit : ''), stamp, sc: fin ? 'st-n' : 'st-o', lab: P.name + ' : ' + stamp, go: () => { this.setState({ pubsDe: 'Activité' }); this.push('pubs'); } }; });
+        s: (o ? 'Votre offre' : 'Votre demande') + (nCor ? ' · ' + nCor + (nCor > 1 ? ' demandes correspondent' : ' demande correspond') : prix > 0 ? ' · ' + (o ? '' : 'budget ') + A.fmt(prix) + ' F / ' + x.unit : ''), stamp, sc: fin ? 'st-n' : o && x.pause ? 'st-j' : 'st-o', lab: P.name + ' : ' + stamp, go: () => { this.setState({ pubsDe: 'Activité' }); this.push('pubs'); } }; });
     const acts = demarches.concat(annonces), M = window.MDGMessages, nMsg = moiS && M && M.unread ? M.unread() : 0;
     // Recherche (lot 4) : la phrase est lue par v2/search.js (produit, quantité, unité, lieu) ; rien n'est deviné
     const SE = window.MDG && MDG.search, q = S.v2q || '', qt = q.trim(), ps = qt && SE ? SE.parse(qt) : null, pslug = ps && ps.product ? ps.product.slug : '';
     const loc = ps && ps.location ? ps.location : null, uC = ps && ps.unit ? (ps.unit.code || ps.unit.label || '') : '';
     const recentes = (ls('mdg-v2:recentes') || []).slice(0, 6), retenir = s => { s = String(s || '').trim(); if (!s) return; ls('mdg-v2:recentes', [s].concat(recentes.filter(x => x.toLowerCase() !== s.toLowerCase())).slice(0, 6)); };
     const slugs = !qt ? [] : pslug ? [pslug] : (ps && ps.candidates && ps.candidates.length ? ps.candidates.map(c => c.slug || (c.product && c.product.slug)) : (SE ? SE.suggest((ps && ps.productText) || qt, 8).map(x => x.slug) : [])).filter(Boolean);
-    const res = [...new Set(slugs)].map(slug => { const P = this.prod(slug), x = par[slug] || { o: 0, d: 0, px: [], u: {} }, u = Object.keys(x.u).sort((a, b) => x.u[b] - x.u[a])[0] || '', mOn = x.px.length >= 4;
-      return { nom: P.name, img: P.thumb, sub: x.o || x.d ? [x.o ? pl(x.o, 'offre') : '', x.d ? pl(x.d, 'demande') : ''].filter(Boolean).join(' · ') : 'Pas encore d’annonce', mOn, m: mOn ? A.fmt(med(x.px)) + ' F' : '', u: u ? '/ ' + u : '',
+    // sans mot tapé : « Les plus échangés » (les 6 produits qui ont le plus d'annonces), comme la maquette
+    const plusEch = Object.keys(par).sort((a, b) => (par[b].o + par[b].d) - (par[a].o + par[a].d)).slice(0, 6);
+    const res = [...new Set(qt ? slugs : plusEch)].map(slug => { const P = this.prod(slug), x = par[slug] || { o: 0, d: 0, px: [], u: {} }, u = Object.keys(x.u).sort((a, b) => x.u[b] - x.u[a])[0] || '', ok4 = x.px.length >= 4;
+      return { nom: P.name, img: P.thumb, sub: x.o || x.d ? [x.o ? pl(x.o, 'offre') : '', x.d ? pl(x.d, 'demande') : ''].filter(Boolean).join(' · ') : 'Pas encore d’annonce', mOn: true, m: ok4 ? A.fmt(med(x.px)) + ' F' : '', u: ok4 ? (u ? '/ ' + u : '') : 'Pas assez de relevés',
         go: () => { retenir(qt); this.openFiche(slug); } }; });
     const versDemande = () => { retenir(qt); const pu = uC && A.UNITS && A.UNITS.includes(uC) ? uC : '';
       this.setState(s => ({ df: Object.assign({}, s.df, pslug ? { slug: pslug } : {}, ps && ps.quantity ? { qty: String(ps.quantity) } : {}, pu ? { unit: pu } : {}, loc && loc.regionSlug ? { region: loc.regionSlug, city: loc.kind === 'ville' ? this.accord(loc.regionSlug, loc.name) : s.df.city } : {}) })); this.push('demande'); };
@@ -1405,14 +1436,14 @@ class Component extends DCLogic {
       presVideT: vend ? 'Pas encore de demande. Publiez votre offre : les acheteurs vous trouveront.' : 'Pas encore d’offre. Publiez votre demande : le réseau commence par vous.',
       clocheOn: nCl > 0, clocheN: nCl > 99 ? '99+' : String(nCl), clocheL: nCl ? 'Alertes : ' + nCl + ' à voir' : 'Alertes',
       notifS: ac.accCl && ac.accCl.on ? ac.accCl.n + ' nouvelle' + (ac.accCl.n === '1' ? '' : 's') : 'Vos notifications',
-      versAlertes: () => aller('alertes'), versMarche: () => aller('marche'), versPrix: () => aller('prix'), versCarte: () => this.push('carte', { cprod: '', csel: '' }),
-      tabs, choix: !!S.v2choix, fermerChoix: fermer,
+      versAlertes: () => aller('alertes'), versMarche: () => aller('marche'), versPrix: () => aller('prix'), versCarte: () => this.push('carte', { cprod: '', csel: '', cOpen: true }),   // panneau ouvert d'emblée, comme la maquette
+      tabs, tabsC: tabsCache ? 'cache' : '', choix: !!S.v2choix, fermerChoix: fermer,
       acts, actVide: !acts.length, msgOn: nMsg > 0, msgN: String(nMsg),
       actVideT: moiS ? 'Vos propositions, commandes et annonces apparaîtront ici.' : 'Connectez-vous : vos propositions, commandes et annonces apparaîtront ici.',
       actVideB: moiS ? 'Publier' : 'Se connecter', actVideGo: () => { const N = window.MDGNuage; if (moiS) this.setState({ v2choix: true }); else if (N) N.open(); },
       versMessages: () => { const N = window.MDGNuage; if (!moiS) { if (N) N.open(); return; } if (M && M.boite) M.boite({ de: 'Activité' }); },
       confiance: () => { if (window.MDGGaranties && MDGGaranties.ouvrir) MDGGaranties.ouvrir(); },
-      rechD: tab === 'recherche' ? 'block' : 'none', q, qOn: !!q, qJoli: qt,
+      rechD: tab === 'recherche' ? 'block' : 'none', q, qOn: !!q, qJoli: qt.charAt(0).toUpperCase() + qt.slice(1),
       ...(() => { // Prix du moment (lot 8) : par produit, les prix des offres dans l'unité la plus fréquente ; zones = les villes qui ont le plus d'offres
         const V = window.MDGVilles, refV = c => String((V && V.ref ? V.ref(c) : c) || ''), parVille = {};
         off.forEach(o => { const v = refV(o.city); if (v) parVille[v] = (parVille[v] || 0) + 1; });
@@ -1422,11 +1453,11 @@ class Component extends DCLogic {
         dsrc.forEach(d => { if (!G[d.slug]) G[d.slug] = { u: { [d.unit]: 0 }, l: [] }; });
         const rows = Object.keys(G).map(slug => { const g = G[slug], u = Object.keys(g.u).sort((a, b) => g.u[b] - g.u[a])[0] || '', px = g.l.filter(o => o.unit === u).map(o => o.price).sort((a, b) => a - b), n = px.length, ok = n >= 4, P = this.prod(slug);
           const mn = px[0], mx = px[n - 1], md = n ? med(px) : 0, lo = mn * .8, hi = mx * 1.15, r = hi - lo || 1, pc = v => Math.max(0, Math.min(100, v)) + '%';
-          return { n, ok, nom: P.name, img: P.thumb, u: u ? 'par ' + u : '', med: ok ? A.fmt(md) + ' F' : 'Pas assez de relevés', mC: ok ? '' : 'pas',
+          return { n, ok, act: (par[slug] ? par[slug].o + par[slug].d : 0), nom: P.name, img: P.thumb, u: u ? 'par ' + u : '', med: ok ? A.fmt(md) + ' F' : 'Pas assez de relevés', mC: ok ? '' : 'pas',
             sub: ok ? A.fmt(mn) + ' – ' + A.fmt(mx) + ' F · ' + n + ' relevés' : n + (n > 1 ? ' relevés' : ' relevé') + ' · il en faut 4',
             bl: ok ? pc((mn - lo) / r * 100) : '0%', bw: ok ? pc((mx - mn) / r * 100) : '0%', bm: ok ? pc((md - lo) / r * 100) : '0%',
             lab: P.name + (ok ? ', médiane ' + A.fmt(md) + ' F ' + (u ? 'par ' + u : '') + ', de ' + A.fmt(mn) + ' à ' + A.fmt(mx) + ' F, ' + n + ' relevés' : ', pas assez de relevés'), go: () => this.openFiche(slug) }; })
-          .sort((a, b) => (b.ok - a.ok) || (b.n - a.n) || a.nom.localeCompare(b.nom, 'fr'));
+          .sort((a, b) => (b.act - a.act) || (b.n - a.n) || a.nom.localeCompare(b.nom, 'fr'));   // par activité (offres et demandes), comme la maquette
         return { pxZones: [{ l: 'Tout le pays', on: String(!zone), go: () => this.setState({ v2pxZone: '' }) }].concat(villes.map(v => ({ l: v, on: String(zone === v), go: () => this.setState({ v2pxZone: v }) }))),
           pxRows: rows, pxVide: !rows.length, versTous: () => this.push('categories'), versAnnee: () => this.push('annee') }; })(),
       versRecherche: () => { aller('recherche'); setTimeout(() => { const i = document.querySelector('[data-pg="home"] .v2-rech-in'); if (i) i.focus(); }, 60); },
@@ -1434,7 +1465,7 @@ class Component extends DCLogic {
       qKey: e => { if (e.key !== 'Enter') return; e.target.blur(); if (res.length === 1 && !comprisOn) res[0].go(); },
       recOn: !qt && recentes.length > 0, recentes: recentes.map(l => ({ l, go: () => this.setState({ v2q: l }) })),
       comprisOn, comprisT, comprisVoir: () => { retenir(qt); this.setState({ aq: qt }); this.push('acheter'); }, comprisDemande: versDemande,
-      resOn: res.length > 0, res, resT: pslug ? 'Produit' : 'Produits', rienOn: !!qt && !res.length, creerDemande: versDemande,
+      resOn: res.length > 0, res, resT: !qt ? 'Les plus échangés' : res.length + (res.length > 1 ? ' produits' : ' produit'), rienOn: !!qt && !res.length, creerDemande: versDemande,
       choixO: () => { fermer(); this.push('vendre'); }, choixD: () => { fermer(); this.push('demande'); } };
   }
   // ——— refonte 2026-11, lot 5 : fiche produit comme la maquette, avec les vraies annonces (rien d'inventé) ———
@@ -1450,10 +1481,10 @@ class Component extends DCLogic {
     const side = S.v2side === 'vendre' ? 'vendre' : 'acheter', ach = side === 'acheter', src = ach ? O : D;
     const zones = [ville ? { id: 'ville', l: (V && V.propre ? V.propre(ville) : ville) || ville, f: x => !!x.city && refV(x.city) === refV(ville) } : null,
       region ? { id: 'region', l: 'Ma région', f: x => x.region === region } : null, { id: 'pays', l: 'Tout le pays', f: () => true }].filter(Boolean);
-    const zid = zones.some(z => z.id === S.v2zone) ? S.v2zone : (zones.find(z => src.some(z.f)) || zones[zones.length - 1]).id, zi = zones.findIndex(z => z.id === zid), Z = zones[zi];
+    const zid = zones.some(z => z.id === S.v2zone) ? S.v2zone : 'pays', zi = zones.findIndex(z => z.id === zid), Z = zones[zi];
     // la quantité voulue (acheter) ou disponible (vendre) : réglable, par pas selon l'unité
-    const wu = (src[0] && src[0].unit) || U || 'sac', pas = { kg: 50, tonne: 1, litre: 10 }[wu] || 5, cle = slug + ':' + side;
-    const w0 = src.length ? Math.max(pas, Math.min(...src.filter(x => x.unit === wu).map(x => x.qty || pas))) : pas * 2, want = (S.v2want && S.v2want[cle]) || w0;
+    const wu = (src[0] && src[0].unit) || U || 'sac', UF = { 'régime': 1, sac: .4, carton: .2, tonne: .05, kg: 5 }, pas = UF[wu] ? Math.max(1, Math.round(10 * UF[wu])) : ({ litre: 10 }[wu] || 5), cle = slug + ':' + side;
+    const w0 = Math.max(1, Math.round(150 * (UF[wu] || .4))), want = (S.v2want && S.v2want[cle]) || w0;
     const setW = v => this.setState(s => ({ v2want: Object.assign({}, s.v2want, { [cle]: Math.max(pas, v) }) }));
     const rang = w => w.ok ? 1 : w.part ? .5 : 0;
     // distance pour la feuille « Proposer un prix » : seulement entre deux régions connues, à vol d'oiseau (≈), comme v3/match.js
@@ -1463,8 +1494,9 @@ class Component extends DCLogic {
       else if (ach) { why.push(x.qty >= want ? { ok: true, t: 'Assez pour vos ' + un(want, wu) } : { part: true, t: un(x.qty, x.unit) + ' sur les ' + fmt(want) + ' voulus' });
         if (x.qmin && x.qmin > want) why.push({ part: true, t: 'Minimum ' + un(x.qmin, x.unit) }); }
       else why.push(x.qty <= want ? { ok: true, t: 'Vous avez assez pour lui' } : { part: true, t: 'Il en veut ' + fmt(x.qty) + ', vous en avez ' + fmt(want) });
-      why.push(off ? (Q.u === 'dispo' ? { ok: true, t: Q.t } : { part: true, t: Q.t }) : { ok: true, t: Q.t });
-      const tr = this.trTexte(x);
+      // les mots de la maquette : « Disponible aujourd’hui », « Pour cette semaine », « Transport compris », « Vous organisez la livraison »
+      why.push(off ? (Q.u === 'dispo' ? { ok: true, t: 'Disponible aujourd’hui' } : { part: true, t: Q.t }) : { ok: true, t: Q.u === 'vite' ? 'Dès que possible' : Q.t.replace(/^Il le faut /, 'Pour ') });
+      const tr = off ? this.trTexte(x).replace(/^Transport inclus$/, 'Transport compris') : x.tr === 'vendeur' ? 'Vous organisez la livraison' : this.trTexte(x);
       if (tr) why.push(off ? (x.tr === 'inclus' ? { ok: true, t: tr } : x.tr === 'hors_ville' && !x.vs && ville && refV(ville) !== refV(x.city) ? { ok: true, t: tr } : x.tr === 'non' || x.vs ? { no: true, t: tr } : { part: true, t: tr })
         : (x.tr === 'acheteur' ? { ok: true, t: tr } : { part: true, t: tr }));
       let ecart = '', ecC = 'n';
@@ -1477,12 +1509,14 @@ class Component extends DCLogic {
         l1: ach ? un(x.qty, x.unit) + ' disponible' + (x.qty > 1 ? 's' : '') + (x.qmin ? ' · min. ' + fmt(x.qmin) : '') : un(x.qty, x.unit) + ' recherché' + (x.qty > 1 ? 's' : ''),
         l2: this.place(x) + (x.at ? ' · ' + A.ago(x.at) : ''), why: why.map(w => ({ ok: !!w.ok, part: !!w.part, no: !!w.no, t: w.t, c: w.ok ? 'ok' : w.part ? 'pt' : 'no' })),
         prixT: prix > 0 ? fmt(prix) + ' F' : (off ? 'Prix à discuter' : 'Budget à discuter'), unite: prix > 0 ? '/ ' + x.unit : '', ecart, ecC,
-        mien: c.mine, ctaOn: !c.mine && c.canNeg, cta: () => c.neg({ km: dist(x) }) }; })
+        mien: c.mine, ctaOn: !c.mine && c.canNeg, cta: () => c.neg({ km: dist(x), voulu: x.unit === wu ? want : 0 }) }; })
       .sort((a, b) => b.score - a.score || (ach ? (a.prix || 9e15) - (b.prix || 9e15) : (b.prix || 0) - (a.prix || 0)))
       .map((o, i) => ({ ...o, prix: o.prixT, bestOn: i === 0 && o.score >= 2.5, cls: i === 0 && o.score >= 2.5 ? 'best' : '', ctaC: i === 0 ? 'plein' : 'contour', ctaT: ach ? 'Proposer un prix' : 'Proposer de vendre' }));
     const plusLarge = zones.slice(zi + 1).find(z => src.some(z.f));
     return {
-      retour: 'Marché', nom: P.name, img: P.thumb, alC: window.MDGAlertes && MDGAlertes.suit(slug) ? 'var(--vert)' : 'var(--encre)',
+      // le bouton retour : « Prix du moment » comme la maquette (la fiche est sous l'onglet Prix), ou l'écran d'où l'on vient quand c'en est un autre
+      retour: (() => { const st = S.stack || [], av = st[st.length - 2] || 'home';
+        return av === 'home' ? ({ recherche: 'Recherche', alertes: 'Alertes', activite: 'Activité' }[S.accTab] || 'Prix du moment') : ({ categories: 'Tous les produits', annee: 'L’année du marché', carte: 'Carte du réseau', pubs: 'Mes publications', acheter: 'Offres' }[av] || 'Retour'); })(), nom: P.name, img: P.thumb, alC: window.MDGAlertes && MDGAlertes.suit(slug) ? 'var(--vert)' : 'var(--encre)',
       range: ok ? fmt(px[0]) + ' – ' + fmt(px[n - 1]) + ' F / ' + U : 'Pas encore de prix du marché',
       obs: ok ? 'Médiane ' + fmt(med) + ' F · ' + n + ' prix publiés' : n ? n + ' prix publié' + (n > 1 ? 's' : '') + ' : il en faut 4 pour un prix du marché' : 'Aucun prix publié pour l’instant',
       aC: ach ? 'on' : '', aP: String(ach), aN: String(O.length), vC: ach ? '' : 'on j', vP: String(!ach), vN: String(D.length),
@@ -1520,10 +1554,10 @@ class Component extends DCLogic {
     const act = {}; O.concat(D).forEach(x => act[x.slug] = (act[x.slug] || 0) + 1);
     const BASE = ['banane-plantain', 'tomate', 'igname', 'riz-local', 'oignon', 'manioc', 'mais-grain', 'aubergine', 'piment-frais'];
     const avecPhoto = s => A.SACK && A.SACK[s] != null && window.MDG.products.some(p => p.slug === s);
-    const liste = [...new Set(Object.keys(act).sort((a, b) => act[b] - act[a]).concat(BASE))].filter(avecPhoto);
+    const liste = [...new Set(BASE.concat(Object.keys(act).sort((a, b) => act[b] - act[a])))].filter(avecPhoto);   // l'ordre de la maquette d'abord
     if (f.slug && !liste.slice(0, 9).includes(f.slug) && avecPhoto(f.slug)) liste.unshift(f.slug);
     const uniteDe = s => { const c = {}; O.concat(D).filter(x => x.slug === s).forEach(x => c[x.unit] = (c[x.unit] || 0) + 1); return Object.keys(c).sort((a, b) => c[b] - c[a])[0] || (s === 'tomate' ? 'carton' : s === 'banane-plantain' ? 'régime' : 'sac'); };
-    const prods = liste.slice(0, 9).map(s => { const p = this.prod(s), on = f.slug === s; return { nom: p.name, img: p.thumb, on: String(on), c: on ? 'on' : '', go: () => set(Object.assign({ slug: s }, f.slug === s ? {} : { unit: uniteDe(s) }, q ? {} : { qty: '100' })) }; });
+    const prods = liste.slice(0, 9).map(s => { const p = this.prod(s), on = f.slug === s; return { nom: p.name, img: p.thumb, on: String(on), c: on ? 'on' : '', go: () => set(Object.assign({ slug: s }, f.slug === s ? {} : { unit: uniteDe(s) }, q ? {} : { qty: '50' })) }; });
     // les villes : la sienne d'abord, puis celles de sa région, puis les grandes villes
     const me = this.me || {}, moiR = me.region || '', moiV = me.city || '';
     const vl = [...new Set([moiV].concat(moiR && V ? V.de(moiR).slice(0, 4) : []).concat(['Abidjan', 'Bouaké', 'Daloa', 'Yamoussoukro', 'San-Pédro', 'Korhogo']).filter(Boolean))];
@@ -1543,7 +1577,7 @@ class Component extends DCLogic {
     // fin : les annonces d'en face pour ce produit (vraies), avec « Proposer »
     const enFace = P ? (isO ? D : O).filter(x => x.slug === f.slug && !this.isMine(x)).slice(0, isO ? 2 : 3) : [];
     const corres = enFace.map(x => { const c = this.card(x), p2 = isO ? x.budget : x.price; return { ini: String(x.name || '?').trim().split(/\s+/).filter((m, i, l) => l.length < 2 || !/^(de|du|des|la|le|les)$/i.test(m)).slice(0, 2).map(m => m.charAt(0).toUpperCase()).join(''),
-      t: x.name + (p2 > 0 ? ' · ' + fmt(p2) + ' F' : ''), s: fmt(x.qty) + ' ' + A.unites(x.qty, x.unit) + (isO ? ' recherché' + (x.qty > 1 ? 's' : '') : ' disponible' + (x.qty > 1 ? 's' : '')) + ' · ' + this.place(x), ctaOn: c.canNeg, go: () => c.neg() }; });
+      t: x.name + (p2 > 0 ? ' · ' + fmt(p2) + ' F' : ''), s: fmt(x.qty) + ' ' + A.unites(x.qty, x.unit) + (isO ? ' recherché' + (x.qty > 1 ? 's' : '') : ' disponible' + (x.qty > 1 ? 's' : '')) + (x.qmin ? ' · min. ' + fmt(x.qmin) : '') + ' · ' + this.place(x), ctaOn: c.canNeg, go: () => c.neg() }; });
     const remise = () => { const vide = { slug: '', qty: '', qmin: '', price: '', budget: '', photo: '', date: '', v2q: '' }; if (isO) this.setVf(vide); else this.setState(s => ({ df: Object.assign({}, s.df, vide) })); this.setState(s => ({ v2ps: Object.assign({}, s.v2ps, { [mode]: 0 }) })); };
     const publier = () => {
       const e = {}; if (!P) e.slug = 1; if (!(q > 0)) e.qty = 1; if (!ville || !f.region) e.region = 1; if (!(prix >= 1)) e.prix = 1;
@@ -1584,7 +1618,7 @@ class Component extends DCLogic {
       neg: String(f.neg !== false), negGo: () => tog('neg', f.neg === false), negT: f.neg !== false ? 'Négociable' : 'Prix ferme',
       totL: isO ? 'Valeur de votre offre' : 'Budget total', tot: prix && q ? fmt(prix * q) + ' F' : '—',
       finT: isO ? 'Votre offre est en ligne' : 'Votre demande est en ligne',
-      finS: !P ? '' : corres.length ? (isO ? 'Ces acheteurs cherchent déjà ' + de(P.name) + '. Faites-leur une proposition.' : 'Ces vendeurs ont ' + de(P.name).replace(/^de /, 'du ').replace(/^d’/, 'de l’') + '. Faites-leur une proposition.') : (isO ? 'Personne ne cherche encore ' + de(P.name) + '. Les acheteurs verront votre offre.' : 'Personne ne vend encore ' + de(P.name) + '. Les vendeurs verront votre demande.'),
+      finS: !P ? '' : corres.length ? (isO ? 'Ces acheteurs cherchent déjà ' + de(P.name) + '. Faites-leur une proposition.' : 'Ces vendeurs ont ' + de(P.name).replace(/^de /, 'du ').replace(/^d’/, 'de l’') + '. On vous prévient aussi dès qu’une nouvelle offre arrive.') : (isO ? 'Personne ne cherche encore ' + de(P.name) + '. Les acheteurs verront votre offre.' : 'Personne ne vend encore ' + de(P.name) + '. Les vendeurs verront votre demande.'),
       corres,
       bloque: String(step < 5 && !ok[step]), suiteT: step === 5 ? 'Retour au marché' : step === 4 ? (isO ? 'Publier mon offre' : 'Publier ma demande') : 'Continuer', suite };
   }
@@ -1979,7 +2013,7 @@ class Component extends DCLogic {
     const cZones = cZ.map(z => ({ t: 'Forte demande' + (z.product_label ? ' : ' + z.product_label : ''), x: (z.city || (A.REG[z.region_slug] || [])[2] || '') + (z.note ? ' · ' + z.note : '') + ' · jusqu\u2019au ' + new Date(z.expire_le).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }), canDel: isAdm, del: () => { if (confirm('Retirer cette zone de la carte ?')) NZ.zoneRetirer(z.id).then(() => this.say('Zone retirée')).catch(e => this.say('Impossible : ' + e.message)); } }));
     const cTopPx = (framed ? 50 : Math.max(12, this.safeT || 0)) + 52 + 54, cBotPx = 62 + 52 + 54 + (framed ? 34 : Math.max(18, this.safeB || 0)); this.cIns = { t: cTopPx, b: cBotPx };
     const cOpen = !!S.cOpen, nTot = cItems.length + (S.csel ? 0 : cZ.length);
-    const cSheet = { open: cOpen, h: cOpen ? Math.round((framed ? 844 : (S.vh || 800)) * .6) + 'px' : cBotPx + 'px', chev: cOpen ? 'rotate(180deg)' : 'none', l: cOpen ? 'Voir la carte' : nTot + ' à voir', toggle: () => this.setState(s => ({ cOpen: !s.cOpen })) };
+    const cSheet = { open: cOpen, h: cOpen ? Math.round((framed ? 844 : (S.vh || 800)) * .45) + 'px' : cBotPx + 'px', chev: cOpen ? 'rotate(180deg)' : 'none', l: cOpen ? 'Voir la carte' : nTot + ' à voir', toggle: () => this.setState(s => ({ cOpen: !s.cOpen })) };
 
     /* année */
     // chaque culture du calendrier est rangée pour le mois choisi : pleine récolte, ça commence, ça se termine, bientôt, hors saison
@@ -2143,7 +2177,7 @@ class Component extends DCLogic {
       duoH: { jaiL: 'J\u2019ai ' + act.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + act.name.toLowerCase() + ' à acheter : publier une demande' }, duoF: { jaiL: 'J\u2019ai ' + FP.name.toLowerCase() + ' à vendre : publier une offre', chL: 'Je cherche ' + FP.name.toLowerCase() + ' à acheter : publier une demande' },
       openJai: () => this.openSheet('jai', top === 'fiche' ? S.slug : act.slug), openCherche: () => this.openSheet('cherche', top === 'fiche' ? S.slug : act.slug),
       fp, fv: S.stack.includes('fiche') ? this.v2Fiche() : null, pvo: S.stack.includes('vendre') ? this.v2Pub('offre') : null, pvd: S.stack.includes('demande') ? this.v2Pub('demande') : null, tp: S.stack.includes('categories') ? this.v2Tous() : null, ya: S.stack.includes('annee') ? this.v2Annee() : null, share: () => { const u = location.href, t = FP.name + ' · Marché de Gros de Côte d\u2019Ivoire'; if (navigator.share) navigator.share({ title: t, url: u }).catch(() => {}); else { try { navigator.clipboard.writeText(u); this.say('Lien copié'); } catch (_) {} } },
-      ficheCarte: () => this.push('carte', { cprod: S.slug, csel: '' }),
+      ficheCarte: () => this.push('carte', { cprod: S.slug, csel: '', cOpen: true }),
       aRef: this.aRef, aq: S.aq, onAq: e => this.setState({ aq: e.target.value }), aqHas: !!S.aq, clearAq: () => this.setState({ aq: '' }),
       toggleFilters: () => this.setState(s => ({ fOpen: !s.fOpen })), fOpen: S.fOpen, fBtn: Object.assign(chip(nF > 0 || S.fOpen), { l: nF ? 'Filtres · ' + nF : 'Filtrer' }),
       famChips: [{ slug: '', name: 'Tout' }, ...this.cats].map(c => Object.assign(chip(S.af.cat === c.slug), { l: c.name.split(/[ ,]/)[0], go: () => this.setState(s => ({ af: Object.assign({}, s.af, { cat: c.slug }) })) })),

@@ -1,12 +1,11 @@
 /* ═════════ Marché de Gros CI — l'îlot : une seule pastille vivante pour tout ce que l'application a à dire ═════════
-   Au lieu d'empiler des bannières, une pastille en haut de l'écran qui change de forme :
+   Au lieu d'empiler des bannières, une pilule sombre en bas de l'écran (dessin de la maquette, 14/11/2026) :
    • elle se TRANSFORME : un nouveau message prend la place du précédent, la pastille s'élargit ou se resserre en douceur ;
    • elle REGROUPE : trois annonces qui arrivent → « 3 nouvelles annonces », pas trois bannières ;
    • elle SUIT une action : « Envoi… » (le sac qui se remplit) devient « Envoyé » ou l'erreur, dans la même pastille ;
    • elle PROPOSE le bon geste : « Répondre », « Voir », « Annuler » ;
-   • elle MONTRE qui ou quoi : la photo du produit, l'avatar de la personne, sinon le sac et son humeur (app/sac.js) ;
-   • sobre : pas de carré de couleur ni de barre qui se vide ; un point discret dit le sens (vert réussi, maïs attention, rouge échec).
-   Toucher : le geste proposé (ou fermer). Glisser vers le haut : fermer. Doigt posé ou souris dessus : le temps s'arrête.
+   • sobre : du texte seul, sans vignette ni point (le sens est porté par la phrase, le son et la vibration).
+   Toucher : le geste proposé (ou fermer). Glisser vers le bas : fermer. Doigt posé ou souris dessus : le temps s'arrête.
    API (compatible avec l'ancienne) :
      MDGToast.dire(texte, { type: 'ok'|'info'|'alerte'|'erreur', sous, duree, img, action: { t, fn }, groupe, pluriel: n => texte })
      MDGToast.suivre(promesse, { attente, ok, erreur, sous }) → la promesse, affichée du début à la fin
@@ -29,51 +28,32 @@
     return r ? html.replace(r, (_, a, m) => a + '<em>' + m + '</em>') : html;
   }
   const VIBRE = { ok: 12, erreur: [30, 60, 30], alerte: [18, 40, 18] };
-  const CSS = `.il{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:9600;transform:translate(-50%,-18px) scale(.72);opacity:0;
-  max-width:min(calc(100vw - 20px),460px);min-width:0;border-radius:26px;background:rgba(255,253,248,.96);color:#171512;
-  -webkit-backdrop-filter:blur(22px) saturate(1.6);backdrop-filter:blur(22px) saturate(1.6);
-  box-shadow:0 14px 36px rgba(16,57,43,.18),0 2px 6px rgba(16,57,43,.08),0 0 0 1px rgba(23,21,18,.06) inset;
-  font:500 15px/1.35 Jost,system-ui,sans-serif;overflow:hidden;cursor:pointer;touch-action:pan-x;
-  transition:transform .5s cubic-bezier(.2,1.25,.35,1),opacity .25s,width .42s cubic-bezier(.22,1,.36,1)}
-.il.on{transform:translate(-50%,0) scale(1);opacity:1}
-.il.part{transform:translate(-50%,-26px) scale(.8);opacity:0;transition:transform .35s cubic-bezier(.55,0,.75,.2),opacity .3s}
-.il-in{display:flex;align-items:center;gap:12px;padding:9px 9px 9px 9px;min-height:54px}
-.il-in.sans-a{padding-right:18px}
-.il-in.chg{animation:ilChg .38s cubic-bezier(.22,1,.36,1)}
-@keyframes ilChg{from{opacity:0;transform:translateY(8px);filter:blur(3px)}to{opacity:1;transform:none;filter:none}}
-.il-g{position:relative;flex:none;width:40px;height:40px;border-radius:14px;display:grid;place-items:end center;overflow:visible}
-.il-g.img{place-items:center;overflow:hidden;background:#F3EFE4}.il-g.img img{width:100%;height:100%;object-fit:contain;padding:3px;box-sizing:border-box;display:block}
-.il-g.rond img{object-fit:cover;padding:0}
-.il-g.rond{border-radius:50%}
-.il-g svg{display:block}
-.il-g.seul{width:12px;height:12px;margin-left:8px}.il-g.seul .il-pt{position:static;display:block;box-shadow:none}
-.il-pt{position:absolute;right:-2px;top:-2px;width:11px;height:11px;border-radius:50%;background:#6CC58C;box-shadow:0 0 0 2.5px #FFFDF8}
-.il[data-t="alerte"] .il-pt{background:#F2C230}.il[data-t="erreur"] .il-pt{background:#EF6F5A}.il[data-t="info"] .il-pt{background:#857A67}
-.il[data-t="attente"] .il-pt{background:#F2C230;animation:ilPouls 1.1s ease-in-out infinite}
-@keyframes ilPouls{50%{transform:scale(.6);opacity:.5}}
-.il-x{min-width:0;flex:1;display:flex;flex-direction:column;gap:1px}
-.il-x b,.il-x small{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;white-space:normal;width:max-content;max-width:min(310px,calc(100vw - 110px));overflow-wrap:anywhere}
-.il-x b{font:500 15.5px/1.3 Jost,sans-serif;letter-spacing:-.005em;-webkit-line-clamp:3}
-.il-x b em{font-weight:900;font-style:italic;letter-spacing:-.015em;color:#10392B;padding:0 .06em 0 .02em;background:linear-gradient(transparent 62%,rgba(242,194,48,.65) 62%,rgba(242,194,48,.65) 94%,transparent 94%)}
-.il-x small{font-size:13.5px;line-height:1.35;color:#5E5546;-webkit-line-clamp:4;margin-top:2px}
-.il-in:not(.sans-a) .il-x b,.il-in:not(.sans-a) .il-x small{max-width:min(240px,calc(100vw - 196px))}
-.il-n{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-right:6px;border-radius:10px;background:#F2C230;color:#10392B;font:700 12px/1 Jost,sans-serif;vertical-align:1px}
-.il-a{position:relative;flex:none;height:36px;padding:0 15px;border:0;border-radius:18px;background:#F2C230;color:#10392B;font:600 14px/1 Jost,system-ui,sans-serif;cursor:pointer}.il-a::after{content:"";position:absolute;inset:-4px -2px}
-.il-a:active{transform:scale(.96)}
-.il-a:focus-visible,.il:focus-visible{outline:2px solid #10392B;outline-offset:2px}
-html[data-theme=sombre] .il{background:rgba(30,27,22,.95);color:rgba(243,239,228,.9);box-shadow:0 14px 36px rgba(0,0,0,.45),0 0 0 1px rgba(243,239,228,.08) inset}
-html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme=sombre] .il-x small{color:#B9AD98}html[data-theme=sombre] .il-pt{box-shadow:0 0 0 2.5px #1E1B16}
-@media (prefers-reduced-motion:reduce){.il,.il.part{transition:opacity .2s;transform:translate(-50%,0)}.il-in.chg{animation:none}.il-pt{animation:none!important}}`;
+  // dessin de la maquette (14/11/2026) : une pilule sombre posée en bas, à 104 px, au-dessus de la barre d'onglets ; texte seul, sans vignette
+  const CSS = `.il{position:fixed;left:16px;right:16px;bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:9600;display:flex;justify-content:center;pointer-events:none;
+  opacity:0;transform:translateY(12px);transition:opacity 280ms cubic-bezier(.22,1,.36,1),transform 280ms cubic-bezier(.22,1,.36,1);font-family:Jost,system-ui,sans-serif}
+.il.on{opacity:1;transform:none}
+.il.part{opacity:0;transform:translateY(12px)}
+.il-in{pointer-events:auto;cursor:pointer;display:flex;align-items:center;gap:14px;max-width:min(100%,460px);box-sizing:border-box;padding:12px 18px;border-radius:14px;
+  background:#171512;color:#F5F0E6;box-shadow:0 10px 30px rgba(23,21,18,.25);text-align:center}
+.il-g{display:none}
+.il-x{min-width:0;display:flex;flex-direction:column;gap:2px}
+.il-x b{font:600 14px/1.35 Jost,sans-serif;overflow-wrap:anywhere}
+.il-x b em{font-style:normal;font-weight:inherit}
+.il-x small{font:500 13px/1.35 Jost,sans-serif;color:#D8CFBF;overflow-wrap:anywhere}
+.il-n{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;margin-right:6px;border-radius:10px;background:#F2C230;color:#171512;font:700 12px/1 Jost,sans-serif;vertical-align:1px}
+.il-a{position:relative;flex:none;min-height:36px;padding:0 2px;border:0;background:none;color:#F2C230;font:700 14px/1 Jost,system-ui,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}.il-a::after{content:"";position:absolute;inset:-6px -8px}
+.il-a:focus-visible,.il-in:focus-visible{outline:2px solid #F2C230;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.il,.il.part{transition:opacity .2s;transform:none}}`;
   let il = null, cur = null, minuterie = 0, reste = 0, depuis = 0, file = [], affiche = 0, enPause = false;
   function preparer() {
     if (il && il.isConnected) return il;
     if (!document.getElementById('ilCss')) { const s = document.createElement('style'); s.id = 'ilCss'; s.textContent = CSS; document.head.appendChild(s); }
     il = document.createElement('div'); il.className = 'il'; il.setAttribute('role', 'status'); il.setAttribute('aria-live', 'polite'); il.tabIndex = -1;
     document.body.appendChild(il);
-    il.addEventListener('click', e => { if (e.target.closest('.il-a')) return; if (cur && cur.action && cur.toucher !== false) lancer(cur.action); else fermer(); });
+    il.addEventListener('click', e => { if (!e.target.closest('.il-in')) return; if (e.target.closest('.il-a')) return; if (cur && cur.action && cur.toucher !== false) lancer(cur.action); else fermer(); });
     let y0 = null;
     il.addEventListener('pointerdown', e => { y0 = e.clientY; pause(true); });
-    il.addEventListener('pointermove', e => { if (y0 != null && e.clientY - y0 < -14) { y0 = null; fermer(); } });
+    il.addEventListener('pointermove', e => { if (y0 != null && e.clientY - y0 > 14) { y0 = null; fermer(); } });
     const rep = () => { y0 = null; pause(false); };
     il.addEventListener('pointerup', rep); il.addEventListener('pointercancel', rep); il.addEventListener('pointerleave', rep);
     il.addEventListener('mouseenter', () => pause(true)); il.addEventListener('mouseleave', () => pause(false));
@@ -94,8 +74,7 @@ html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme
     el.innerHTML = `<div class="il-in${m.action ? '' : ' sans-a'}${change ? ' chg' : ''}">${glyphe(m)}<span class="il-x"><b>${m.n > 1 ? `<span class="il-n">${m.n}</span>` : ''}${accent(esc(m.texte))}</b>${m.sous ? `<small>${esc(m.sous)}</small>` : ''}</span>${m.action ? `<button type="button" class="il-a">${esc(m.action.t)}</button>` : ''}</div>`;
     const a = el.querySelector('.il-a'); if (a) a.onclick = e => { e.stopPropagation(); lancer(m.action); };
     // la pastille change de largeur en douceur (de l'ancienne à la nouvelle)
-    if (w0) { el.style.width = 'auto'; const w1 = el.getBoundingClientRect().width; el.style.width = w0 + 'px'; void el.offsetWidth; el.style.width = w1 + 'px'; clearTimeout(el._w); el._w = setTimeout(() => { el.style.width = ''; }, 460); }
-    else requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('on')));
+    if (!w0) requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('on')));
     el.classList.remove('part');
   }
   function armer(ms) { clearTimeout(minuterie); reste = ms; depuis = Date.now(); if (ms > 0 && !enPause) minuterie = setTimeout(suivant, ms); }
@@ -109,7 +88,8 @@ html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme
     if (!il) return; il.classList.remove('on'); il.classList.add('part');
     const el = il; setTimeout(() => { if (!cur && el.isConnected) el.remove(); if (il === el && !cur) il = null; }, 380);
   }
-  const duree = m => m.duree || (m.type === 'erreur' ? 7000 : Math.min(6500, 2800 + (m.texte.length + (m.sous || '').length) * 30)) + (m.action ? 1500 : 0);
+  // 2,4 s comme la maquette ; un texte long ou une erreur restent un peu plus pour être lus
+  const duree = m => m.duree || (m.type === 'erreur' ? 5000 : Math.max(2400, Math.min(6000, 1000 + (m.texte.length + (m.sous || '').length) * 35))) + (m.action ? 1500 : 0);
   function montrer(m, change) {
     cur = m; affiche = Date.now(); dessiner(m, change);
     if (m.type !== 'attente') {
@@ -233,4 +213,83 @@ html[data-theme=sombre] .il-x b em{color:#F2C230;background:none}html[data-theme
     });
   }
   window.MDGDemande = { oui: (t, o) => ouvrir(t, o, false), saisie: (t, o) => ouvrir(t, o, true) };
+})();
+
+/* MDGFeuille : la feuille du bas de la maquette (14/11/2026) : fond papier, coins de 26 px en haut, poignée, croix ronde,
+   voile sombre. Les gestes (délai, problème, annulation, mot secret, suppression du compte…) s'y ouvrent au lieu d'une page pleine.
+   MDGFeuille.ouvrir({ label, onFerme }) → { corps, feuille, fermer } ; « corps » reçoit le contenu (classes .fl-h, .fl-s, .fl-ch, .fl-b…).
+   Échap, la croix ou le voile ferment ; le focus revient là d'où on venait. */
+(function () {
+  'use strict';
+  if (window.MDGFeuille) return;
+  const CSS = `.fl-bg{position:fixed;inset:0;z-index:2147483100;background:rgba(23,21,18,.45);animation:flVoile .28s cubic-bezier(.22,1,.36,1)}
+.fl{position:fixed;left:0;right:0;bottom:0;z-index:2147483101;max-width:520px;margin:0 auto;box-sizing:border-box;max-height:88%;overflow-y:auto;overscroll-behavior:contain;
+  background:var(--papier);color:var(--encre);border-radius:26px 26px 0 0;padding:10px 16px calc(34px + env(safe-area-inset-bottom,0px));box-shadow:0 -12px 32px rgba(0,0,0,.18);
+  font-family:Jost,system-ui,sans-serif;animation:flMonte .42s cubic-bezier(.22,1,.36,1)}
+@keyframes flVoile{from{opacity:0}}@keyframes flMonte{from{transform:translateY(105%)}}
+.fl-po{width:40px;height:5px;border-radius:999px;background:var(--t18);margin:0 auto 6px}
+.fl-xr{display:flex;justify-content:flex-end;margin:-4px -6px 0 0;position:sticky;top:0;z-index:1}
+.fl-x{width:40px;height:40px;border-radius:999px;border:0;background:var(--lin);display:grid;place-items:center;color:var(--encre);cursor:pointer;position:relative}
+.fl-x::after{content:"";position:absolute;inset:-2px}
+.fl-c{display:flex;flex-direction:column;gap:10px;margin-top:-28px}
+.fl-c form{display:flex;flex-direction:column;gap:10px;margin:0}
+.fl-h{margin:0;font:600 24px/1.15 Jost,sans-serif;letter-spacing:-.01em;padding-right:44px;color:var(--encre)}
+.fl-h em{font-style:normal;font-weight:inherit;font-family:inherit;letter-spacing:inherit}
+.fl-s{margin:0 0 4px;font-size:13.5px;line-height:1.45;color:var(--texte-3)}
+.fl-p{margin:0;font-size:15px;line-height:1.45;color:var(--texte-2)}
+.fl-p b{color:var(--encre)}
+.fl-t{display:block;margin:6px 0 -2px;font-size:14px;font-weight:600;color:var(--texte-2)}
+.fl-g{border:0;margin:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:10px}
+.fl-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:-1px;padding:0;border:0}
+.fl-ch{position:relative;display:flex;align-items:center;gap:12px;min-height:54px;padding:8px 16px;box-sizing:border-box;border-radius:16px;border:1.5px solid var(--t10);
+  background:var(--carte);color:var(--encre);text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fl-ch .rb{width:22px;height:22px;flex:none;box-sizing:border-box;border-radius:999px;border:2px solid var(--t30);display:grid;place-items:center}
+.fl-ch.carre .rb{border-radius:7px}
+.fl-ch .rb i{width:10px;height:10px;border-radius:999px;background:transparent}
+.fl-ch .l{flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.3}
+.fl-ch .l small{display:block;font-size:12.5px;font-weight:400;color:var(--texte-3);margin-top:1px}
+.fl-ch .s{flex:none;font-size:12.5px;color:var(--texte-3)}
+.fl-ch.h .l{font-size:16px;font-weight:700}.fl-ch.h .s{font-size:13.5px}
+.fl-ch:has(input:checked){border-color:var(--vert)}
+.fl-ch:has(input:checked) .rb{border-color:var(--vert)}.fl-ch:has(input:checked) .rb i{background:var(--vert)}
+.fl-ch:has(input:focus-visible){outline:2px solid var(--vert);outline-offset:2px}
+.fl-ch:has(input:disabled){opacity:.55;cursor:default}
+.fl-c input[type=text],.fl-c input[type=number],.fl-c input[type=datetime-local],.fl-c input:not([type]),.fl-c textarea{display:block;width:100%;box-sizing:border-box;min-height:50px;
+  border-radius:16px;border:1px solid var(--t14);background:var(--champ);padding:12px 14px;font:400 16px/1.4 Jost,sans-serif;color:var(--encre);outline:none}
+.fl-c textarea{min-height:96px;resize:none}
+.fl-c input:focus-visible,.fl-c textarea:focus-visible{border-color:var(--vert);box-shadow:0 0 0 1px var(--vert)}
+.fl-b{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:54px;margin-top:4px;padding:0 18px;border:0;border-radius:999px;background:var(--vert);color:var(--action-t);
+  font:700 16px Jost,sans-serif;cursor:pointer;text-decoration:none;box-sizing:border-box}
+.fl-b[aria-disabled=true],.fl-b:disabled{background:var(--lin-2);color:var(--mute)}
+.fl-b.danger{background:#C0442B;color:#FFFDF8}
+.fl-b.o{background:none;border:1.5px solid var(--vert);color:var(--vert);min-height:48px;font-size:15px}
+.fl-b:focus-visible,.fl-l:focus-visible,.fl-x:focus-visible{outline:2px solid var(--vert);outline-offset:2px}
+.fl-l{align-self:center;min-height:44px;padding:0 10px;border:0;background:none;color:var(--texte-2);font:600 14px Jost,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.fl-pied{margin:0;font-size:12.5px;line-height:1.4;color:var(--mute);text-align:center}
+.fl-err{margin:0;font-size:14px;line-height:1.4;color:var(--hausse)}.fl-err:empty{display:none}
+@media (prefers-reduced-motion:reduce){.fl,.fl-bg{animation:none}}`;
+  function ouvrir(o) {
+    o = o || {};
+    if (!document.getElementById('flCss')) { const st = document.createElement('style'); st.id = 'flCss'; st.textContent = CSS; document.head.appendChild(st); }
+    const retour = document.activeElement;
+    const voile = document.createElement('div'); voile.className = 'fl-bg';
+    const fl = document.createElement('div'); fl.className = 'fl'; fl.setAttribute('data-v2', ''); fl.setAttribute('role', 'dialog'); fl.setAttribute('aria-modal', 'true');
+    if (o.label) fl.setAttribute('aria-label', o.label);
+    fl.innerHTML = '<div class="fl-po" aria-hidden="true"></div><div class="fl-xr"><button type="button" class="fl-x" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="fl-c"></div>';
+    let fini = false;
+    const fermer = () => { if (fini) return; fini = true; document.removeEventListener('keydown', cle, true); voile.remove(); fl.remove();
+      if (retour && retour.isConnected && retour.focus) try { retour.focus({ preventScroll: true }); } catch (_) {}
+      if (o.onFerme) try { o.onFerme(); } catch (_) {} };
+    const cle = e => {
+      if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); fermer(); }
+      else if (e.key === 'Tab') { const f = [...fl.querySelectorAll('button:not([disabled]),input:not([disabled]):not([type=hidden]),textarea,select,a[href],[tabindex="0"]')].filter(x => x.offsetParent !== null || x.classList.contains('fl-sr'));
+        if (!f.length) return; const i = f.indexOf(document.activeElement); if (e.shiftKey ? i <= 0 : i === f.length - 1) { e.preventDefault(); f[e.shiftKey ? f.length - 1 : 0].focus(); } }
+    };
+    voile.onclick = fermer; fl.querySelector('.fl-x').onclick = fermer;
+    document.addEventListener('keydown', cle, true);
+    document.body.appendChild(voile); document.body.appendChild(fl);
+    setTimeout(() => { if (!fini && !fl.contains(document.activeElement)) { const h = fl.querySelector('.fl-h'); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); } else fl.querySelector('.fl-x').focus({ preventScroll: true }); } }, 30);
+    return { corps: fl.querySelector('.fl-c'), feuille: fl, fermer, ouvert: () => !fini };
+  }
+  window.MDGFeuille = { ouvrir };
 })();

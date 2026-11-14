@@ -70,6 +70,8 @@
     document.body.appendChild(bg);
     bg.querySelector('[data-retour]').onclick = () => fermer();
     document.addEventListener('keydown', cle);
+    // la barre d'onglets reste visible, « Compte » allumé ; un onglet touché ferme l'espace équipe
+    if (window.MDGOnglets && MDGOnglets.montrer) try { MDGOnglets.montrer('compte', () => fermer(true)); } catch (_) {}
     bg.querySelector('h1').focus({ preventScroll: true });
     const moi = S;
     rpc('est_admin').then(async a => {
@@ -83,7 +85,7 @@
   }
   function fermer(calme) {
     document.removeEventListener('keydown', cle);
-    if (bg) { bg.remove(); bg = null; }
+    if (bg) { bg.remove(); bg = null; if (!calme && window.MDGOnglets && MDGOnglets.cacher) try { MDGOnglets.cacher(); } catch (_) {} }
     if (!calme && S && S.depuis !== 'compte' && window.MDGCompte && MDGCompte.ouvrir && !document.querySelector('.cp-bg')) MDGCompte.ouvrir('accueil');
     if (!calme) S = null;
   }

@@ -2259,6 +2259,14 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur.
 
+## 14/11/2026 · Refonte, lot 14 : Espace équipe dans l'application
+
+- Nouvel écran plein `v3/equipe.js` (`MDGEquipe.ouvrir`) et `css/v2-equipe.css`, ouvert depuis Compte → Espace équipe et depuis le menu (avant : `admin.html`). Accès : `est_admin` vérifié par le serveur avant tout affichage, sinon « Accès réservé à l'équipe. ». Lien « Ouvrir le tableau complet » vers `admin.html`, qui reste inchangé.
+- 7 onglets de la maquette : Identités (`admin_identite_dossiers`, `admin_identite_file`, `admin_identite_ouvrir`, `admin_identite_decider`), Litiges (`admin_commandes` en vue `a_traiter`, `admin_refus_trancher`, `admin_litige_clore`, `admin_litige_partager`), Signalements (table `signalements`, `admin_masquages`, `admin_annonce_maintenir`, `admin_annonce_retablir`), Comptes (`admin_comptes`, `admin_fiabilite`, `admin_suspendre`, `admin_bannir`, `admin_suspension_lever`, `admin_lever_bannissement`, `admin_reinitialiser_journal`), Commissions (`admin_commissions`, total « Calculée », jamais « Encaissé »), Diffusion (`admin_diffuser`, 2000 caractères, confirmation par `MDGDemande`), Journal (table `admin_journal`, 100 lignes, gestes écrits en phrases). Chaque geste demande un motif.
+- Écarts avec la maquette : « Calculée » au lieu de « Encaissé 0 F » ; Identités sans ville (pièce et numéro), « Vérifier » demande la date d'expiration ; Litiges sans photos ni poids du départ (`admin_commandes` ne les renvoie pas), case « Compter un litige perdu pour … » ajoutée ; Signalements : annonce encore en ligne = seulement « Masquer », personnes signalées restent dans `admin.html` ; Comptes : numéro au lieu du nom.
+- **Anomalie serveur trouvée, non corrigée** (ANO-058) : `admin_refus_trancher` (schéma 92c) donne à `montant_refuse` tout le montant quand la commande n'a pas de quantité, même si l'équipe rejette le refus. Correction à valider par le propriétaire.
+- Vérifié (iPhone 13 émulé, clair et sombre, 320 px) avec de fausses données injectées dans le navigateur seulement : aucune erreur console. Aucune base touchée. Contrôle `apres-modif` : aucun échec nouveau. Cache `mgci-v313`.
+
 ## 14/11/2026 · Refonte, lots 10 à 13 : Activité, Messages, Commande, Compte
 
 - Remarque du propriétaire : une ligne d'Activité menait à un écran de l'ancien dessin. **Nouvelle règle** (`CLAUDE.md`) : suivre la logique de la maquette (où mène chaque bouton), demander si elle n'est pas comprise.

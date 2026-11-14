@@ -73,7 +73,7 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Fonction | Modèle dans l'application | Priorité |
 |---|---|---|
 | Refonte de l’application (maquette de Claude Design, 13/11/2026) : accueil « Duo », onglets du bas, Activité à tampons ; le site doit prendre le même habillage (instruction : `docs/brief-design/ETAT-DESIGN.md`, partie 4) | `application.dc.html` (`v2Vals`), `css/v2.css` | haute |
-| Formulaire incomplet : le premier champ à corriger est amené au milieu de l’écran, avec le focus (CMP-01, 25/10/2026) | `application.dc.html` (`montrerChamp`) | moyenne |
+| Espace équipe de l’application (lot 14, 14/11/2026) : propre à l’application ; le site garde `admin.html` (entrée cachée de l’administrateur), rien à porter | `v3/equipe.js`, `css/v2-equipe.css` | aucune || Formulaire incomplet : le premier champ à corriger est amené au milieu de l’écran, avec le focus (CMP-01, 25/10/2026) | `application.dc.html` (`montrerChamp`) | moyenne |
 | Commandes : fiche, plan de livraison, étapes (« À confirmer », « Le camion est parti »…), code de prise en charge et de réception, refus avec preuves, litige à trois, libération sous 1 h | `v3/commandes.js` (schémas 57 à 65) | haute |
 | Colis au départ : 2 à 4 photos + poids pesé avant le chargement, photo du papier du mot secret avec code au hasard (3 min, équipe seulement) | `v3/commandes.js` (`depart`, `blocDepart`), schémas 90 et 90b | haute (avec les commandes) |
 | Litige en 1 h après « livré », clôture en faveur du vendeur sans réponse : textes « Répondez avant … », boutons pendant le litige | `v3/commandes.js` (`prochaine0`, `actions`), schéma 97b | haute (avec les commandes) |

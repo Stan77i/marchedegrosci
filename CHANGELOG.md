@@ -6,6 +6,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 14/11/2026
 
+- Refonte, lot 14 : Espace équipe dans l’application (`v3/equipe.js`, `css/v2-equipe.css`) avec 7 onglets (Identités, Litiges, Signalements, Comptes, Commissions « Calculée », Diffusion, Journal), accès vérifié par le serveur, motif demandé à chaque geste ; `admin.html` reste disponible. Cache `mgci-v313`.
 - Refonte, lots 10 à 13 : chaque ligne d’Activité mène à l’écran de la maquette ; Messages, écran de la commande (acheteur et vendeur, mot secret dans le sens de l’application), Mes annonces et Compte refaits comme la maquette. Correction du libellé « Publier » caché. Cache `mgci-v312`.
 
 ## 13/11/2026

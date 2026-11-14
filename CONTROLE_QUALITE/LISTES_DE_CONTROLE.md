@@ -251,6 +251,8 @@ Jamais sur la production. Jamais de `drop`, `delete`, `truncate`. Le MCP Supabas
 - [ ] **I4. Entrée cachée de l'administrateur** : le petit point, puis la vérification `est_admin` par le serveur ; aucune page d'administration ne s'affiche sans elle.
   - Vérifier : `rg -n "est_admin" admin.html index-v3.html app v3 site/garde.js` ; Playwright sans compte sur `admin.html`.
 - [ ] **I5. Points ouverts connus** (à rappeler, pas à corriger) : comptes créés sans preuve du numéro ; anti-robot Turnstile non installé.
+- [ ] **I6. Espace équipe de l'application** : accès refusé sans `est_admin` (« Accès réservé à l'équipe. »), aucun onglet affiché avant la réponse du serveur ; chaque geste demande un motif ; la Diffusion écrit « envoyé » seulement sur réponse du serveur ; jamais « Encaissé » ni « due » pour une commission.
+  - Vérifier : `rg -n "est_admin" v3/equipe.js` ; `rg -n -i "encaiss|\bdue\b|à percevoir" v3/equipe.js` (aucun résultat) ; Playwright, iPhone émulé, sans compte puis avec fausses données (voir `CMP-27`).
 
 ## J. Cache
 

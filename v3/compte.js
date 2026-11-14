@@ -728,7 +728,7 @@ label.cp-r{cursor:pointer}
         ligneV2({ t: 'Réglages', attrs: 'data-go="prefs"' }),
         ligneV2({ t: 'Sécurité', attrs: 'data-go="securite"' }),
         ligneV2({ t: 'Aide', v: 'Questions, guide, contact', attrs: 'data-go="aide"' }),
-        adm && ligneV2({ t: 'Espace équipe', v: nI ? nI + (nI > 1 ? ' dossiers' : ' dossier') + ' à examiner' : 'Réservé à l’équipe', href: nI ? 'admin.html#identites' : 'admin.html' })
+        adm && ligneV2({ t: 'Espace équipe', v: nI ? nI + (nI > 1 ? ' dossiers' : ' dossier') + ' à examiner' : 'Réservé à l’équipe', attrs: 'data-equipe' })
       ].filter(Boolean);
       // ce que l'application fait en plus de la maquette : rangé dans une seconde carte, sous la liste
       const f = R && R.fiabResume ? R.fiabResume() : null, sc = f && f.score, mq = R && R.masqResume ? R.masqResume() || [] : [], ch = window.MDGChauffeur ? MDGChauffeur.etat() : null;
@@ -758,6 +758,8 @@ label.cp-r{cursor:pointer}
       on('[data-pubs]', () => { fermer(); setTimeout(() => { if (window.MDGV2 && MDGV2.annonces) MDGV2.annonces(); else location.hash = '#/mes-publications'; }, 60); });
       on('[data-alertes]', () => window.MDGAlertes.gerer());
       on('[data-releve]', () => window.MDGReleve.ouvrir());
+      // l'Espace équipe dans l'application (lot 14, v3/equipe.js) ; admin.html en secours si le module n'est pas encore là
+      on('[data-equipe]', () => { if (window.MDGEquipe) MDGEquipe.ouvrir({ onglet: nI ? 'id' : null, depuis: 'compte' }); else location.href = 'admin.html'; });
       on('[data-fiab]', () => R.fiabilite());
       on('[data-masq]', () => R.masquees());
       on('[data-niv]', () => R.niveaux());

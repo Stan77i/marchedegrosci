@@ -4,6 +4,10 @@ Cet historique vient de `git log origin/main` du dépôt (607 commits) et des se
 
 Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22, 23 et 24 octobre 2026), 607 commits. Aucun commit les 20/10 et entre le 5 et le 9, le 13 et le 16 octobre.
 
+## 14/11/2026
+
+- Refonte, lots 10 à 13 : chaque ligne d’Activité mène à l’écran de la maquette ; Messages, écran de la commande (acheteur et vendeur, mot secret dans le sens de l’application), Mes annonces et Compte refaits comme la maquette. Correction du libellé « Publier » caché. Cache `mgci-v312`.
+
 ## 13/11/2026
 
 - Refonte de l'application, lot 1 (maquette « MGCI App v2 » de Claude Design, validée par le propriétaire) : nouveaux jetons `--vert`, `--recu`, `--hausse`, `--panneau`, `--barre`, `--t08` à `--t30`, `--hl`, `--ombre` (`css/mgci-tokens.css`, sombre dans `css/sombre.css`) et attribut `data-v2` qui donne le jeu complet clair ou sombre à un écran refait. Aucun changement visible (aucun écran ne s'en sert encore). Cache `mgci-v303`.

@@ -60,7 +60,7 @@ Le 25/10/2026, le vrai serveur compte 3 profils, 4 offres, 3 demandes et 2 comma
 - Boutique du vendeur : une adresse à partager, un QR code, mise en pause possible.
 
 **Voir le marché**
-- Nouvel accueil (refonte du 13/11/2026, après votre fusion) : onglets en bas, « Que faites-vous aujourd’hui ? », prix du moment, annonces autour de vous ; Activité avec ses tampons. Carte du réseau : la même carte, avec Tout / Offres / Demandes en haut et « Ce qui se rapproche » dans le panneau.
+- Nouvel accueil (refonte du 13/11/2026, après votre fusion) : onglets en bas, « Que faites-vous aujourd’hui ? », prix du moment, annonces autour de vous ; Activité avec ses tampons. Carte du réseau : la même carte, avec Tout / Offres / Demandes en haut et « Ce qui se rapproche » dans le panneau. Activité, Messages, écran de la commande, Mes annonces et Compte au nouveau dessin (le mot secret reste écrit par le vendeur et tapé par l’acheteur).
 - Liste des annonces, tableau des prix (rapide, mis à jour toutes les 5 minutes), carte du réseau, recherche.
 - Alertes produits : on est prévenu quand un produit arrive.
 

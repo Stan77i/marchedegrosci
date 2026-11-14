@@ -525,3 +525,8 @@ html[data-theme=sombre] .v2-tabs { --mute: #A89C88; }
   .v2-al .ic { width: 40px; height: 40px; border-radius: 12px; }
   .v2-tampon { padding: 2px 5px; letter-spacing: .04em; }
 }
+/* la feuille « Publier » est posée hors des pages data-v2 : en mode nuit, elle prend les mêmes jetons nuit (elle restait crème) */
+html[data-theme=sombre] .v2-feuille {
+  --papier: #14120F; --carte: #1F1B16; --champ: #25211B; --lin: #2C2720; --lin-2: #3A342A;
+  --encre: #F3EFE4; --texte-2: #DDD3C2; --texte-3: #BFB39E; --mute: #A89C88; color-scheme: dark;
+}

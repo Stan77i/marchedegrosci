@@ -44,6 +44,7 @@
 .chv-logo{flex:none;width:34px;height:34px;border-radius:10px}
 .chv-top b{font-size:16px;font-weight:700}
 .chv-main{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:14px 16px calc(96px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px}
+.chv-bg.gps .chv-main{padding-bottom:calc(130px + env(safe-area-inset-bottom))}
 .chv-h1{margin:0;font:600 30px/1.08 Jost,sans-serif;letter-spacing:-.015em;outline:none;overflow-wrap:anywhere}
 .chv-sous{margin:-10px 0 0;font-size:15px;line-height:1.45;color:var(--texte-2);overflow-wrap:anywhere}
 .chv-h2{margin:6px 0 -6px;font:700 19px/1.2 Jost,sans-serif}
@@ -231,7 +232,7 @@ html[data-theme=sombre] .chv-refus{background:rgba(243,160,140,.1);box-shadow:in
         <div class="chv-l"><span>De</span><span>${esc(m.ville_depart || 'Départ à préciser')}${m.vendeur ? ' · ' + esc(m.vendeur) : ''}</span></div>
         <div class="chv-l"><span>À</span><span>${esc(m.lieu_livraison || 'Livraison à préciser')}${m.acheteur ? ' · ' + esc(m.acheteur) : ''}</span></div>
         ${m.mission === 'acceptee' && m.prix != null ? `<div class="chv-l"><span>Votre prix</span><span style="font-variant-numeric:tabular-nums;font-weight:700">${nf(m.prix)} F</span></div>` : ''}
-        <div class="chv-tags"><span class="chv-tag ${st[1]}">${esc(st[0])}</span>${qui ? `<span>${qui}</span>` : ''}</div>
+        ${fini && !qui ? '' : `<div class="chv-tags">${fini ? '' : `<span class="chv-tag ${st[1]}">${esc(st[0])}</span>`}${qui ? `<span>${qui}</span>` : ''}</div>`}
       </div>
       ${m.mission === 'acceptee' && m.prix != null ? `<p class="chv-info">${Number(m.commission) > 0 ? `Commission du service transport Marché de Gros (6,9 %) : ${nf(m.commission)} F · vous gardez <b>${nf(m.net)} F</b>.` : 'Aucune commission : vous gardez tout.'}</p>` : ''}
       ${!R3 && m.mission === 'acceptee' && m.prix == null && avantChargement ? '<p class="chv-garde"><b>Prix du transport à indiquer</b> : l’acheteur le verra dans sa commande.</p>' : ''}${etat3}
@@ -369,16 +370,18 @@ html[data-theme=sombre] .chv-refus{background:rgba(243,160,140,.1);box-shadow:in
   document.addEventListener('visibilitychange', () => { if (!document.hidden) { eveil(); pastille(); } });
   function pastille() {
     let el = document.getElementById('chPast');
+    if (bg) bg.classList.toggle('gps', !!partage);
     if (!partage) { if (el) el.remove(); return; }
     if (!el) {
       el = document.createElement('div'); el.id = 'chPast'; el.setAttribute('role', 'status');
-      el.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:2147482000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);padding:8px 8px 8px 14px;border-radius:24px;background:#10392B;color:#F3EFE4;font:500 13.5px Jost,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3)';
+      el.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom));z-index:2147482000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);white-space:nowrap;padding:4px 4px 4px 14px;border-radius:26px;background:#10392B;color:#F3EFE4;font:500 13.5px Jost,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3)';
       document.body.appendChild(el);
     }
     const age = partage.envoye ? Math.round((Date.now() - partage.envoye) / 1000) : null;
     el.innerHTML = `<span aria-hidden="true" style="width:10px;height:10px;border-radius:50%;background:${partage.erreur ? '#E5604F' : '#6CC58C'};flex:none"></span>
-      <span>${partage.erreur ? esc(partage.erreur) : age == null ? 'Partage de position : recherche du GPS…' : 'Position partagée · envoyée il y a ' + (age < 60 ? age + ' s' : Math.round(age / 60) + ' min')}</span>
-      <button type="button" style="min-height:44px;padding:0 12px;border:0;border-radius:22px;background:#F3EFE4;color:#10392B;font:600 13px Jost,sans-serif;cursor:pointer">Arrêter</button>`;
+      <span style="min-width:0;overflow:hidden;text-overflow:ellipsis">${partage.erreur ? esc(partage.erreur) : age == null ? 'Recherche du GPS…' : 'Position partagée · ' + (age < 60 ? age + ' s' : Math.round(age / 60) + ' min')}</span>
+      <button type="button" style="flex:none;min-height:44px;padding:0 14px;border:0;border-radius:22px;background:#F2C230;color:#171512;font:700 13.5px Jost,sans-serif;cursor:pointer">Arrêter</button>`;
+    // bouton maïs : une couleur vive que le mode nuit des fenêtres (app/nuit.js) ne retourne pas, lisible en clair comme en sombre
     el.querySelector('button').onclick = () => { arreterPartage('Partage arrêté.'); if (bg) peindre(); };
   }
   function arreterPartage(msg) {
@@ -519,7 +522,7 @@ html[data-theme=sombre] .chv-refus{background:rgba(243,160,140,.1);box-shadow:in
     bg = document.createElement('div'); bg.className = 'chv-bg'; bg.setAttribute('data-v2', ''); bg.setAttribute('role', 'dialog'); bg.setAttribute('aria-modal', 'true'); bg.setAttribute('aria-label', 'Espace chauffeur');
     bg.innerHTML = `<div class="chv"><div class="chv-top"><button type="button" class="chv-x" data-x aria-label="Fermer">${IC('fermer', 22)}</button><img class="chv-logo" src="logo/marque.svg" alt=""><b>Espace chauffeur</b></div>
       <div class="chv-main"><p class="chv-info">Un instant…</p></div></div>`;
-    document.body.appendChild(bg);
+    document.body.appendChild(bg); if (partage) bg.classList.add('gps');
     bg.querySelector('[data-x]').onclick = fermer;
     document.addEventListener('keydown', clavier);
     vue = 'accueil';

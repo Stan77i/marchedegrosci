@@ -602,7 +602,7 @@
 .bn textarea{box-sizing:border-box;width:100%;min-height:120px;padding:12px 14px;border:1px solid var(--bn-trait);border-radius:16px;background:var(--bn-champ);color:var(--bn-encre);font:400 16px/1.4 Jost,sans-serif;resize:none}
 .bn textarea::placeholder{color:var(--bn-mute)}
 .bn-feuille .bn-err{font-size:14px;font-weight:600;color:var(--bn-alerte)}.bn-err:empty{display:none}
-.bn button:focus-visible,.bn textarea:focus-visible{outline:2px solid var(--bn-vert);outline-offset:2px}
+.bn button:focus-visible,.bn textarea:focus-visible{outline:2px solid var(--bn-vert)!important;outline-offset:2px}
 @keyframes bnUp{from{transform:translateY(100%)}}
 @media (prefers-reduced-motion:reduce){.bn-feuille{animation:none}}
 html[data-theme=sombre] .bn{--bn-papier:#14120F;--bn-carte:#1F1B16;--bn-champ:#25211B;--bn-encre:#F3EFE4;--bn-t2:#DDD3C2;--bn-t3:#BFB39E;--bn-vert:#F2C230;--bn-action:#171512;--bn-lin:#3A342A;--bn-mute:#A89C88;--bn-trait:rgba(243,239,228,.18);--bn-alerte:#F3A08C}
@@ -614,7 +614,7 @@ html[data-theme=sombre] .bn-voile{background:rgba(0,0,0,.6)}`;
     if (!bnCss) { const st = document.createElement('style'); st.textContent = CSS_BN; document.head.appendChild(st); bnCss = true; }
     if (!bn) { bn = document.createElement('div'); bn.className = 'bn'; bn.setAttribute('role', 'alertdialog'); bn.setAttribute('aria-modal', 'true'); bn.setAttribute('aria-labelledby', 'bnT'); document.body.appendChild(bn); bnRendre = N() && N().piege ? N().piege(bn) : null; }
     const c = e && e !== 'hors' && e.contestation, avant = e && e.contester_avant, peut = e && !c && avant && Date.parse(avant) > Date.now();
-    const motif = e && e !== 'hors' && e.motif ? MOTIF_BAN[e.motif] || '' : '';
+    const motif = e && e !== 'hors' && e.motif && e.motif !== 'autre' ? MOTIF_BAN[e.motif] || '' : '';
     const dec = e && e !== 'hors' && e.le ? `<p class="bn-dec">Décision de l’équipe le ${dateFr(e.le)}${motif ? ' : ' + esc(motif.charAt(0).toLowerCase() + motif.slice(1)) : ''}. Vous ne pouvez plus publier, négocier, commander ni écrire.</p>` : '';
     let corps;
     if (e === 'hors') { e = null; corps = '<p class="bn-dec">Pas de connexion : réessayez quand le réseau revient.</p>'; }

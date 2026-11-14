@@ -2,7 +2,7 @@
 
 Page pour Claude Design. À lire avant chaque nouvelle proposition, pour ne jamais refaire ce qui existe. Mise à jour par Claude Code à chaque nouvel écran ou nouvelle fonctionnalité.
 
-**Dernière mise à jour : 14/11/2026 (lot 14 : Espace équipe)**
+**Dernière mise à jour : 14/11/2026 (lot 15 : Porte et cas limites)**
 
 ## 1. Ce que Claude Design a déjà livré
 
@@ -35,10 +35,10 @@ Toutes les nouveautés de la maquette sont acceptées : onglets en bas et alerte
 | 12 | Côté vendeur | **fait** (14/11/2026). Le vendeur voit « Votre mot secret » ; pas de champ pour taper le mot (c’est l’acheteur) ; « Commission prévue · 3,5 % · rien n’est prélevé » |
 | 13 | Compte | **fait** (14/11/2026) : Compte, Mon profil, Ma boutique, Mes annonces, Approvisionnement, Réglages, Sécurité, Aide. Écarts : nom « Awa K. » (vie privée), pas d’interrupteur par catégorie de notifications, pas de « Être rappelé » |
 | 14 | Espace équipe | **fait** (14/11/2026) : écran plein `v3/equipe.js`, ouvert depuis Compte → Espace équipe et le menu ; 7 onglets (Identités, Litiges, Signalements, Comptes, Commissions, Diffusion, Journal), accès vérifié par le serveur (`est_admin`), motif demandé à chaque geste. Écarts : « Calculée » au lieu de « Encaissé 0 F » (règle) ; Identités sans ville, « Vérifier » demande la date d’expiration de la pièce ; Litiges sans photos ni poids du départ (le serveur ne les renvoie pas), case « Compter un litige perdu » ajoutée ; Signalements : une annonce encore en ligne se « Masque » seulement, les personnes signalées restent dans `admin.html` ; Comptes : numéro au lieu du nom. Lien « Ouvrir le tableau complet » vers `admin.html`, qui reste |
-| 15 | Porte et cas limites | à faire |
+| 15 | Porte et cas limites | **fait** (14/11/2026) : porte (`v3/nuage.js`) en étapes avec barre maïs (numéro, code retapé, nom et ville facultative, aperçu, code de secours), connexion « Bon retour », code oublié en 3 étapes ; compte banni (`v3/identite.js`) avec date, délai de contestation et « Contester » ; espace chauffeur (`v3/chauffeur.js`) « Mes missions ». Écarts : pas de case « J'accepte » (attend le juriste) ; nom en 3 champs (prénom, nom, pseudonyme facultatif) ; ville facultative (6 grandes villes + « Autre ville », communes d'Abidjan jamais proposées) ; code oublié en 3 étapes ; le chauffeur sans compte de la maquette (code K7P-492) est la page `suivi.html`, pas refaite dans ce lot ; le chauffeur ne tape pas le mot secret (c'est l'acheteur, décision du 14/11) ; pas de « Je suis parti ». |
 | 16 | Passe finale (sombre, 320 px, contrastes) | à faire |
 
-Les captures de chaque lot terminé sont dans `docs/brief-design/captures/` (`lot2-…` à `lot14-…`).
+Les captures de chaque lot terminé sont dans `docs/brief-design/captures/` (`lot2-…` à `lot15-…`).
 
 ## 4. Le site pour ordinateur : ce qui existe, ce qui manque
 

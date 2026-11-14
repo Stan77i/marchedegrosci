@@ -254,6 +254,9 @@ Jamais sur la production. Jamais de `drop`, `delete`, `truncate`. Le MCP Supabas
 - [ ] **I6. Espace équipe de l'application** : accès refusé sans `est_admin` (« Accès réservé à l'équipe. »), aucun onglet affiché avant la réponse du serveur ; chaque geste demande un motif ; la Diffusion écrit « envoyé » seulement sur réponse du serveur ; jamais « Encaissé » ni « due » pour une commission.
   - Vérifier : `rg -n "est_admin" v3/equipe.js` ; `rg -n -i "encaiss|\bdue\b|à percevoir" v3/equipe.js` (aucun résultat) ; Playwright, iPhone émulé, sans compte puis avec fausses données (voir `CMP-27`).
 
+- [ ] **I7. Porte, compte banni et espace chauffeur (lot 15)** : codes faciles refusés à l'inscription ; code de secours affiché seulement après la réponse du serveur ; communes d'Abidjan jamais proposées comme ville ; titre qui alterne « de Gros » / « du pays » ; « Contestation envoyée » seulement après relecture du serveur ; la relecture du chauffeur (30 s) ne vide pas un formulaire ouvert ; le chauffeur ne tape jamais le mot secret (c'est l'acheteur).
+  - Vérifier : `rg -n "secours" v3/nuage.js` ; `rg -n "bannissement_contester|bannissement_etat" v3/identite.js` ; `rg -n -i "mot secret" v3/chauffeur.js` (aucune saisie) ; Playwright, iPhone émulé, fausses données (voir `CMP-28`).
+
 ## J. Cache
 
 Règle de `CLAUDE.md` : à chaque changement du front, monter le `?v=` du fichier modifié dans les pages HTML, monter `CACHE` dans `sw.js` (`mgci-vNNN`), ajouter les nouvelles images à `IMAGES` de `sw.js`.

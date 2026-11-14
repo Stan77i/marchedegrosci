@@ -30,3 +30,4 @@
 | 14/11/2026 à 16 h 09 | `apres-modif` | `79c02df` | 10 | 7 | 0 | 1 | 0 | oui (2) | [rapport](rapports/2026-11-14-16h09-apres-modif.md) |
 | 14/11/2026 à 16 h 15 | `apres-modif` | `7a0c9c7` | 12 | 5 | 0 | 1 | 0 | oui (1) | [rapport](rapports/2026-11-14-16h15-apres-modif.md) |
 | 14/11/2026 à 16 h 22 | `apres-modif` | `7a0c9c7` | 12 | 5 | 0 | 1 | 0 | oui (1) | [rapport](rapports/2026-11-14-16h22-apres-modif.md) |
+| 14/11/2026 à 20 h 52 | `apres-modif` | `c8dff51` | 12 | 5 | 0 | 1 | 0 | oui (1) | [rapport](rapports/2026-11-14-20h52-apres-modif.md) |

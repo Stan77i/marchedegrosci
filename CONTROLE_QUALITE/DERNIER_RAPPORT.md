@@ -1,5 +1,5 @@
-<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-14-16h22-apres-modif.md). Ne pas modifier à la main. -->
-# Rapport du contrôle qualité · 14/11/2026 à 16 h 22 (UTC = heure d’Abidjan)
+<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-14-20h52-apres-modif.md). Ne pas modifier à la main. -->
+# Rapport du contrôle qualité · 14/11/2026 à 20 h 52 (UTC = heure d’Abidjan)
 
 > Gabarit : `CONTROLE_QUALITE/modeles/RAPPORT.md`. Fait par `tools/controle/lancer.sh apres-modif`. Les tests SQL ne sont jamais exécutés par ce script : ils sont « non exécuté » tant que Claude ne les a pas joués via MCP sur le projet de test.
 
@@ -7,11 +7,11 @@
 
 | Champ | Valeur |
 |---|---|
-| Date | 14/11/2026 à 16 h 22 |
-| Commit | `7a0c9c7` (branche `claude/refonte-fidelite`, avec des changements non enregistrés) |
+| Date | 14/11/2026 à 20 h 52 |
+| Commit | `c8dff51` (branche `claude/refonte-fidelite`) |
 | Mode | `apres-modif` |
 | Base de comparaison | `origin/main` |
-| Durée | 4 s |
+| Durée | 6 s |
 | Lancé par | à la main ou par Claude |
 
 ## 2. En bref
@@ -27,30 +27,30 @@
 |---|---|---|---|---|---|---|---|---|
 | STA-01 | U10 | normal | Contrôle « syntaxe » | aucun constat | rien à signaler (87 fichiers et scripts lus sans erreur) | réussi | — | tools/controle/controle.js |
 | STA-02 | U10 | normal | Contrôle « cache » | aucun constat | rien à signaler (115 appels avec ?v=, liste CORE et images de sw.js ; voir « Pour information ») | réussi | — | tools/controle/controle.js |
-| STA-03 | U13, U03 | normal | Contrôle « mots-interdits » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 1 orange(s) | échoué | P2 | v3/commandes.js:1210 |
+| STA-03 | U13, U03 | normal | Contrôle « mots-interdits » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 1 orange(s) | échoué | P2 | v3/commandes.js:1212 |
 | STA-04 | U01 | normal | Contrôle « communes » | aucun constat | rien à signaler (textes, champs ville et liste des villes (app/villes.js)) | réussi | — | tools/controle/controle.js |
 | STA-05 | U12 | normal | Contrôle « doublon-texte » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 30 orange(s) | échoué | P2 | app/theme.js:130 ; v3/chauffeur.js:24 ; app/theme.js:130 ; … |
 | STA-06 | U10 | normal | Contrôle « doublon-fonction » | aucun constat | rien à signaler (79 fichiers JS et les scripts des pages) | réussi | — | tools/controle/controle.js |
 | STA-07 | U10 | normal | Contrôle « doublon-id » | aucun constat | rien à signaler (identifiants du HTML de application.dc.html et index-v3.html) | réussi | — | tools/controle/controle.js |
-| STA-08 | U12 | normal | Contrôle « long-texte » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 36 orange(s) | échoué | P2 | v3/identite.js:439 ; v3/commandes.js:1026 ; v3/vendre.js:156 ; … |
+| STA-08 | U12 | normal | Contrôle « long-texte » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 36 orange(s) | échoué | P2 | v3/identite.js:439 ; v3/commandes.js:1028 ; v3/vendre.js:156 ; … |
 | STA-09 | U12, U13 | normal | Contrôle « slogan » | aucun constat | rien à signaler (tournures publicitaires toutes faites) | réussi | — | tools/controle/controle.js |
 | STA-10 | U12 | normal | Contrôle « police » | aucun constat | rien à signaler (98 fichiers de style et de code) | réussi | — | tools/controle/controle.js |
 | STA-11 | U12 | normal | Contrôle « bleu » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 5 orange(s) | échoué | P2 | index-v3.html:2047 ; v3/avatar.js:13 ; v3/avatar.js:14 ; … |
 | STA-12 | U09 | normal | Contrôle « sql » | aucun constat | rien à signaler (166 fichiers supabase/schema-*.sql ; voir « Pour information ») | réussi | — | tools/controle/controle.js |
 | STA-13 | U13 | normal | Contrôle « liens » | aucun constat | rien à signaler (CLAUDE.md, CONTROLE_QUALITE/CALENDRIER.md, CONTROLE_QUALITE/HISTORIQUE.md, CONTROLE_QUALITE/INVENTAIRE_OUTILS.md, CONTROLE_QUALITE/LISTES_DE_CONTROLE.md, CONTROLE_QUALITE/MATRICE_TESTS.md, CONTROLE_QUALITE/README.md, CONTROLE_QUALITE/REGISTRE_ANOMALIES.md, CONTROLE_QUALITE/REGISTRE_DES_TESTS.md, CONTROLE_QUALITE/modeles/RAPPORT.md, CONTROLE_QUALITE/procedures/APRES_INCIDENT.md, CONTROLE_QUALITE/procedures/APRES_MODIFICATION.md, CONTROLE_QUALITE/procedures/AVANT_PRODUCTION.md, CONTROLE_QUALITE/procedures/CONTROLE_GENERAL.md, CONTROLE_QUALITE/tests/navigateur/README.md, CONTROLE_QUALITE/tests/sql/README.md) | réussi | — | tools/controle/controle.js |
 | STA-14 | U10 | normal | Contrôle « navigateur » | contrôle fait | désactivé (--sans-navigateur) | non exécuté | — | tools/controle/controle.js |
-| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (79c02df) | liste | 28 fichier(s) | réussi | — | git diff --name-only 79c02df |
-| APM-02 | U10 | régression | node --check sur les 16 fichier(s) JS changé(s) | aucune erreur | aucune erreur | réussi | — | app/garanties.js, app/marche-app.js, app/sac.js, app/toast.js, v3/aide.js, v3/alertes-v2.js, v3/alertes.js, v3/astuces.js, v3/commandes.js, v3/compte.js, v3/equipe.js, v3/guide.js, v3/identite.js, v3/messages.js, v3/negoce.js, v3/reputation.js |
-| APM-05 | U10 | régression | 24 fichier(s) du front changé(s) : CACHE de sw.js monté | CACHE différent de la base | mgci-v318 → mgci-v318 | échoué | P1 | sw.js ; fichiers : admin.html, app/garanties.js, app/marche-app.js, app/sac.js, app/toast.js, application.dc.html… |
+| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (79c02df) | liste | 38 fichier(s) | réussi | — | git diff --name-only 79c02df |
+| APM-02 | U10 | régression | node --check sur les 25 fichier(s) JS changé(s) | aucune erreur | aucune erreur | réussi | — | app/garanties.js, app/marche-app.js, app/sac.js, app/toast.js, v3/aide.js, v3/alertes-v2.js, v3/alertes.js, v3/appro.js, v3/astuces.js, v3/chauffeur.js, v3/cherche.js, v3/commandes.js, v3/compte.js, v3/equipe.js, v3/groupes.js, v3/guide.js, v3/identite.js, v3/marche.js, v3/match.js, v3/messages.js, v3/negoce.js, v3/prixzone.js, v3/racheter.js, v3/releve.js, v3/reputation.js |
+| APM-05 | U10 | régression | 33 fichier(s) du front changé(s) : CACHE de sw.js monté | CACHE différent de la base | mgci-v318 → mgci-v318 | échoué | P1 | sw.js ; fichiers : admin.html, app/garanties.js, app/marche-app.js, app/sac.js, app/toast.js, application.dc.html… |
 | APM-06 | U10 | régression | ?v= monté pour chaque JS/CSS changé appelé avec ?v= | nouvelle version | monté partout | réussi | — | application.dc.html, index-v3.html, index.html, admin.html, suivi.html, sw.js |
 
 ## 4. Anomalies (P0 à P3)
 
 Gravité donnée par le script, à confirmer par Claude dans `CONTROLE_QUALITE/REGISTRE_ANOMALIES.md` (rouge du contrôle statique = P1, erreur de syntaxe ou du navigateur = P0, orange = P2).
 
-- **STA-03** (P2, U13, U03) : 0 rouge(s) dont 0 nouveau(x), 1 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/commandes.js:1210.
+- **STA-03** (P2, U13, U03) : 0 rouge(s) dont 0 nouveau(x), 1 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/commandes.js:1212.
 - **STA-05** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 30 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; app/theme.js:130 ; v3/chauffeur.js:24 ; app/theme.js:130 ; ….
-- **STA-08** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 36 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/identite.js:439 ; v3/commandes.js:1026 ; v3/vendre.js:156 ; ….
+- **STA-08** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 36 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; v3/identite.js:439 ; v3/commandes.js:1028 ; v3/vendre.js:156 ; ….
 - **STA-11** (P2, U12) : 0 rouge(s) dont 0 nouveau(x), 5 orange(s). Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; index-v3.html:2047 ; v3/avatar.js:13 ; v3/avatar.js:14 ; ….
 - **APM-05** (P1, U10) : mgci-v318 → mgci-v318. Preuve reproductible : `bash tools/controle/lancer.sh apres-modif` ; sw.js ; fichiers : admin.html, app/garanties.js, app/marche-app.js, app/sac.js, app/toast.js, application.dc.html….
 

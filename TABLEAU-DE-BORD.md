@@ -15,6 +15,8 @@ C'est **la seule page à lire**. Tout ce qui est important est ici, en français
 
 > **13/11/2026 : refonte de l'application.** Vous avez dit « ok pour tout » à la maquette de Claude Design. Claude l'applique en 16 étapes, une PR par étape, avec captures avant chaque PR. Avancement : `docs/brief-design/ETAT-DESIGN.md`.
 
+> **15/11/2026 : page du chauffeur.** La page que reçoit un chauffeur sans compte (`suivi.html`) est refaite comme la maquette de Claude Design, en clair et en sombre. Elle n'a pas de bouton « Je suis parti / arrivé » : le serveur n'a pas de fonction pour cela.
+
 > **15/11/2026 : Prix, Année du marché, Tous les produits.** Le prix du marché est maintenant dans l'onglet Prix (le menu du logo est supprimé : le logo n'ouvre plus rien). L'année du marché et Tous les produits ont une recherche. Un seul seuil pour afficher un prix partout : 5 prix de 3 vendeurs sur 30 jours. Le choix du logo vert ou noir est dans Compte → Réglages. Rien à faire de votre côté, sauf fusionner la PR quand vous l'aurez vue.
 
 ## 1. Ce que vous devez faire maintenant

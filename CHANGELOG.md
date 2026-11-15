@@ -6,6 +6,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 
 ## 15/11/2026
 
+- Refonte, `suivi.html` (chauffeur sans compte) au dessin de la maquette : saisie du code, carte de mission, interrupteur « Partager ma position », étape en gros titre, « Livraison terminée », lien expiré ; clair et sombre. Étape relue chaque minute. Sans « Je suis parti / arrivé » ni mot secret (pas de fonction serveur pour le lien sans compte ; c'est l'acheteur qui tape le mot). Cache `mgci-v324`.
 - Prix du marché dans l'onglet Prix (pastille avec le nombre de vendeurs, ou « encore N prix / vendeur » avec jauge ; « Accord possible » ; bouton « Par zone », `v3/prixzone.js`). Menu du logo et ancienne page « Prix du marché » supprimés : le logo n'ouvre plus rien, `#/prix` mène à l'onglet Prix. Choix du logo vert ou noir déplacé dans Compte → Réglages.
 - L'année du marché : recherche et 4 blocs (« Le plus demandé », « Où ça se demande », « Le plus cher au kilo », « Quand ça se demande ») ; Tous les produits : recherche (sans accents, noms locaux, familles), rangée des familles retirée ; lien « Toutes les offres » sur l'accueil.
 - Un seul seuil de prix partout : 5 prix de 3 vendeurs sur 30 jours (avant : « à partir de 4 prix » à plusieurs endroits). Cache `mgci-v323`.

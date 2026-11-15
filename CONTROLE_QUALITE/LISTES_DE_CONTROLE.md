@@ -256,6 +256,8 @@ Jamais sur la production. Jamais de `drop`, `delete`, `truncate`. Le MCP Supabas
 
 - [ ] **I7. Porte, compte banni et espace chauffeur (lot 15)** : codes faciles refusés à l'inscription ; code de secours affiché seulement après la réponse du serveur ; communes d'Abidjan jamais proposées comme ville ; titre qui alterne « de Gros » / « du pays » ; « Contestation envoyée » seulement après relecture du serveur ; la relecture du chauffeur (30 s) ne vide pas un formulaire ouvert ; le chauffeur ne tape jamais le mot secret (c'est l'acheteur).
   - Vérifier : `rg -n "secours" v3/nuage.js` ; `rg -n "bannissement_contester|bannissement_etat" v3/identite.js` ; `rg -n -i "mot secret" v3/chauffeur.js` (aucune saisie) ; Playwright, iPhone émulé, fausses données (voir `CMP-28`).
+- [ ] **I10. Page du chauffeur sans compte (`suivi.html`, 15/11/2026)** : n'appelle que `suivi_code_jeton`, `suivi_lien_infos`, `suivi_lien_ouvert` et `suivi_lien_position` ; n'affiche ni nom ni numéro ; aucune saisie du mot secret ; position envoyée au plus toutes les 15 s et arrêtée sur `arreter`.
+  - Vérifier : `rg -n "\.rpc\(|rpc/" suivi.html` (4 fonctions seulement) ; `rg -n -i "mot secret|secret" suivi.html` (aucun champ de saisie) ; Playwright, iPhone émulé, clair et sombre, fausses données.
 
 ## J. Cache
 

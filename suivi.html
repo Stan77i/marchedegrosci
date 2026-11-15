@@ -3,71 +3,99 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#10392B">
+<meta name="theme-color" content="#F2EBDD">
 <meta name="robots" content="noindex">
-<title>Suivi de livraison · Marché de Gros</title>
+<title>Suivi chauffeur · Marché de Gros</title>
 <link rel="icon" href="icons/v2/favicon-32.png">
-<!-- Page du chauffeur qui a reçu un lien de suivi (schéma 48). Sans compte : le lien suffit.
+<!-- Page du chauffeur qui a reçu un lien de suivi (schémas 48, 64, 65, 71). Sans compte : le lien ou le code court suffit.
      Il partage sa position pendant le trajet ; le vendeur et l'acheteur la voient dans le suivi de la commande.
-     La page ne montre que le produit, la quantité et les villes : ni nom, ni numéro. Rien n'est envoyé tant qu'il n'a pas touché « Partager ». -->
+     Le départ est détecté par le serveur dès 500 m parcourus (schéma 65) : pas de bouton « Je suis parti ».
+     Le mot secret est tapé par l'acheteur dans l'application, jamais par le chauffeur.
+     La page ne montre que le produit, la quantité et les villes : ni nom, ni numéro. Dessin : maquette « MGCI App v2 », écran chauffeur. -->
+<script>
+// thème avant l'affichage (même choix que l'application : mdg-app:theme, sinon le téléphone)
+(function () {
+  var mq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
+  function poser() {
+    var m = 'auto'; try { m = localStorage.getItem('mdg-app:theme') || 'auto'; } catch (_) {}
+    var s = m === 'sombre' || (m !== 'clair' && mq && mq.matches);
+    document.documentElement.setAttribute('data-theme', s ? 'sombre' : 'clair');
+    var t = document.querySelector('meta[name="theme-color"]'); if (t) t.setAttribute('content', s ? '#14120F' : '#F2EBDD');
+  }
+  poser(); if (mq) (mq.addEventListener ? mq.addEventListener('change', poser) : mq.addListener(poser));
+})();
+</script>
+<link rel="stylesheet" href="css/fonts.css?v=20261023f">
+<link rel="stylesheet" href="css/mgci-tokens.css?v=20261113r1">
+<link rel="stylesheet" href="css/sombre.css?v=20261115p1">
 <style>
-@font-face { font-family: Jost; font-weight: 400; font-display: swap; src: url(fonts/jost-latin-400-normal.woff2) format('woff2'); }
-@font-face { font-family: Jost; font-weight: 600; font-display: swap; src: url(fonts/jost-latin-600-normal.woff2) format('woff2'); }
-@font-face { font-family: Jost; font-weight: 800; font-style: italic; font-display: swap; src: url(fonts/jost-latin-800-italic.woff2) format('woff2'); }
-:root { --vert: #10392B; --mais: #F2C230; --creme: #F4EEE3; --encre: #171512; --mute: #5E5546; color-scheme: light; }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-body { margin: 0; min-height: 100dvh; background: var(--creme); color: var(--encre); font: 400 16px/1.45 Jost, system-ui, sans-serif; display: flex; flex-direction: column; }
-header { background: var(--vert); color: #F5F0E6; padding: calc(18px + env(safe-area-inset-top)) 20px 22px; border-radius: 0 0 28px 28px; }
-.logo { font: 600 18px/1 Jost, sans-serif; letter-spacing: -.01em; }
-.logo em { font: 800 italic 20px/1 Jost, sans-serif; color: var(--mais); }
-h1 { margin: 14px 0 4px; font: 600 26px/1.15 Jost, sans-serif; }
-.sous { margin: 0; color: rgba(245, 240, 230, .8); }
-main { flex: 1; width: 100%; max-width: 520px; margin: 0 auto; padding: 18px 16px calc(24px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 14px; }
-.carte { background: #FFFDF8; border-radius: 22px; padding: 16px; box-shadow: 0 1px 2px rgba(16, 57, 43, .06), 0 10px 26px rgba(16, 57, 43, .08); }
-.ligne { display: flex; gap: 12px; align-items: center; }
-.ligne + .ligne { margin-top: 10px; }
-.ico { flex: none; width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; background: rgba(106, 174, 240, .16); font: normal 22px/1 "Apple Color Emoji", "Segoe UI Emoji", sans-serif; }
-.ligne b { display: block; font-weight: 600; }
-.ligne small { color: var(--mute); }
-button { width: 100%; min-height: 56px; border: 0; border-radius: 28px; font: 600 17px Jost, sans-serif; cursor: pointer; }
-.go { background: var(--vert); color: #F5F0E6; }
-.stop { background: transparent; color: var(--vert); border: 1.5px solid var(--vert); }
-button:disabled { opacity: .5; }
-button:focus-visible { outline: 3px solid var(--mais); outline-offset: 2px; }
-.etat { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 18px; background: rgba(23, 21, 18, .05); }
-.etat.on { background: rgba(108, 197, 140, .18); }
-.etat.ko { background: rgba(226, 115, 91, .14); }
-.point { flex: none; width: 14px; height: 14px; border-radius: 50%; background: #B9AD98; }
-.etat.on .point { background: #2F8C55; animation: pouls 1.6s ease-out infinite; }
-.etat.ko .point { background: #C2452F; }
-@keyframes pouls { 0% { box-shadow: 0 0 0 0 rgba(47, 140, 85, .55); } 70%, 100% { box-shadow: 0 0 0 12px rgba(47, 140, 85, 0); } }
-.code label { display: block; } .code label b { display: block; font-weight: 600; font-size: 18px; } .code label small { display: block; color: var(--mute); margin: 4px 0 12px; }
-.code input { width: 100%; min-height: 60px; border: 1.5px solid rgba(23, 21, 18, .2); border-radius: 18px; background: #fff; padding: 0 16px; font: 600 28px/1 Jost, sans-serif; letter-spacing: .14em; text-align: center; text-transform: uppercase; color: var(--encre); }
-.code input:focus { outline: 3px solid var(--mais); outline-offset: 1px; border-color: var(--vert); }
-.code .err { min-height: 20px; margin: 8px 0; color: #A33A26; font-size: 14px; }
-.note { margin: 0; font-size: 14px; color: var(--mute); }
-@media (prefers-reduced-motion: reduce) { .etat.on .point { animation: none; } }
+html body[data-v2] { margin: 0; min-height: 100dvh; background: var(--papier); color: var(--encre); font: 400 16px/1.45 Jost, system-ui, sans-serif; -webkit-text-size-adjust: 100%; }
+main { width: 100%; max-width: 520px; margin: 0 auto; padding: calc(20px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 18px; }
+.tete { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+.tete img { width: 34px; height: 34px; border-radius: 10px; }
+.tete span { font-size: 16px; font-weight: 700; }
+h1 { margin: 8px 0 0; font-weight: 600; font-size: 30px; line-height: 1.08; letter-spacing: -.015em; }
+.aide { font-size: 15px; color: var(--texte-2); line-height: 1.45; margin: -8px 0 0; }
+.champ { width: 100%; height: 64px; border-radius: 18px; border: 1.5px solid var(--t22); background: var(--champ); padding: 0 18px; font: 800 26px/1 Jost, sans-serif; letter-spacing: .1em; color: var(--encre); text-align: center; text-transform: uppercase; }
+.champ:focus { outline: 3px solid var(--vert); outline-offset: 1px; }
+.err { margin: 0; font-size: 14px; font-weight: 600; color: var(--hausse); }
+.err:empty { display: none; }
+.btn { width: 100%; height: 56px; border: 0; border-radius: 999px; background: var(--vert); color: var(--action-t); font: 700 17px Jost, sans-serif; cursor: pointer; }
+.btn:disabled { opacity: .6; cursor: default; }
+:is(.btn, .bascule, .champ):focus-visible { outline: 3px solid var(--vert); outline-offset: 2px; }
+#code { display: flex; flex-direction: column; gap: 18px; margin: 0; }
+.mission { background: var(--recu); border-radius: 20px; padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--ombre); }
+.mission .lab { font-size: 13px; font-weight: 700; color: var(--texte-3); }
+.mission .quoi { font-size: 18px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+.mission .ln { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
+.mission .ln span:first-child { color: var(--texte-3); flex: none; }
+.mission .ln span:last-child { text-align: right; overflow-wrap: anywhere; min-width: 0; }
+.pos { display: flex; align-items: center; gap: 12px; background: var(--carte); border-radius: 16px; padding: 8px 12px 8px 16px; min-height: 64px; }
+.pos .txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pos b { font-size: 15px; font-weight: 700; }
+.pos small { font-size: 13px; color: var(--texte-3); }
+.pos small.ko { color: var(--hausse); font-weight: 600; }
+.bascule { flex: none; width: 56px; height: 44px; border: 0; padding: 0; background: none; display: grid; place-items: center; cursor: pointer; border-radius: 12px; }
+.bascule i { position: relative; width: 48px; height: 28px; border-radius: 999px; background: var(--lin-2); transition: background 160ms; }
+.bascule i::after { content: ''; position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: 999px; background: #FFFDF8; box-shadow: 0 1px 3px rgba(23, 21, 18, .3); transition: left 160ms cubic-bezier(.22, 1, .36, 1); }
+.bascule[aria-checked=true] i { background: var(--vert); }
+.bascule[aria-checked=true] i::after { left: 22px; }
+.bascule:disabled { cursor: default; }
+.etat { margin: 0; font-size: 17px; font-weight: 700; }
+.note { margin: -10px 0 0; font-size: 14px; color: var(--texte-3); line-height: 1.45; }
+.fin { border-radius: 16px; padding: 14px 16px; font-size: 15px; font-weight: 700; background: #DCEFE3; color: #10392B; }
+.fin.neutre { background: var(--carte); color: var(--texte-2); }
+.fin.ko { background: var(--carte); color: var(--hausse); }
+@media (prefers-reduced-motion: reduce) { .bascule i, .bascule i::after { transition: none; } }
 </style>
 </head>
-<body>
-<header>
-  <div class="logo">marché <em>de Gros</em></div>
-  <h1>Suivi de livraison</h1>
-  <p class="sous" id="sous">Un instant…</p>
-</header>
+<body data-v2>
 <main>
-  <form class="carte code" id="code" hidden autocomplete="off">
-    <label for="codeT"><b>Tapez le code de suivi</b><small>Le vendeur ou l’acheteur vous l’a donné : 6 lettres et chiffres, par exemple K7P-492.</small></label>
-    <input id="codeT" inputmode="text" autocapitalize="characters" spellcheck="false" maxlength="9" placeholder="K7P-492" aria-describedby="codeE">
+  <div class="tete"><img src="logo/marque.svg" alt="" width="34" height="34"><span>Suivi chauffeur</span></div>
+
+  <form id="code" hidden autocomplete="off" novalidate>
+    <h1 id="codeH">Entrez le code reçu</h1>
+    <p class="aide" id="codeA">Pas besoin de compte. Le vendeur ou l’acheteur vous a envoyé un code comme K7P-492.</p>
+    <input class="champ" id="codeT" inputmode="text" autocapitalize="characters" spellcheck="false" maxlength="7" placeholder="K7P-492" aria-labelledby="codeH" aria-describedby="codeA codeE">
     <p class="err" id="codeE" role="alert"></p>
-    <button class="go" type="submit">Continuer</button>
+    <button class="btn" type="submit">Ouvrir la mission</button>
   </form>
-  <div class="carte" id="infos" hidden></div>
-  <div class="etat" id="etat" role="status" aria-live="polite"><span class="point" aria-hidden="true"></span><span id="etatT">Chargement du lien…</span></div>
-  <button class="go" id="go" hidden>Partager ma position pendant le trajet</button>
-  <button class="stop" id="stop" hidden>Arrêter le partage</button>
-  <p class="note" id="note" hidden>Gardez cette page ouverte pendant le trajet : un téléphone ne partage pas sa position quand la page est fermée. Votre position n'est vue que par le vendeur et l'acheteur de cette commande, et seulement jusqu'à la livraison.</p>
+
+  <section id="mission" hidden>
+    <div class="mission" id="infos"></div>
+  </section>
+
+  <div class="pos" id="pos" hidden>
+    <span class="txt"><b id="posL">Partager ma position</b><small id="posT" role="status" aria-live="polite">Position non partagée</small></span>
+    <button class="bascule" id="bascule" type="button" role="switch" aria-checked="false" aria-labelledby="posL"><i aria-hidden="true"></i></button>
+  </div>
+  <p class="etat" id="etape" hidden></p>
+  <p class="note" id="etapeA" hidden>Le départ se note tout seul dès que vous roulez.</p>
+  <p class="note" id="note" hidden>Gardez cette page ouverte pendant le trajet. Seuls le vendeur et l’acheteur voient votre position, jusqu’à la livraison.</p>
+
+  <div class="fin neutre" id="fin" role="status" aria-live="polite">Chargement de la mission…</div>
 </main>
 <script>
 (function () {
@@ -80,25 +108,52 @@ button:focus-visible { outline: 3px solid var(--mais); outline-offset: 2px; }
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const pl = (u, q) => q > 1 && u && !/(s|x|kg|g|l|L|t)$/.test(u) ? u + 's' : u;   // 12 sacs, 3 tonnes ; kg et L ne changent pas
   const nf = n => Number(n).toLocaleString('fr-FR', { maximumFractionDigits: 2 });
-  const etat = (t, cls) => { $('etatT').textContent = t; $('etat').className = 'etat' + (cls ? ' ' + cls : ''); };
-  let suivi = null, verrou = null, envoye = 0, dernier = 0, minuteur = null;
+  const de = p => (/^[aeiouyhâàéèêîïôû]/i.test(p) ? 'd’' : 'de ') + (/^[A-ZÀ-Ý][a-zà-ÿ]/.test(p) ? p[0].toLowerCase() + p.slice(1) : p);
+  const heure = () => new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  // une phrase par étape de la commande (etape renvoyée par suivi_lien_infos) ; rien d'autre n'est affiché
+  const ROUTE = ['transport', 'transfert', 'transbordement', 'prise_en_charge'], FINI = ['reception', 'terminee'];
+  const phraseEtape = i => ROUTE.includes(i.etape) ? 'En route' + (i.arrivee ? ' vers ' + i.arrivee : '')
+    : i.etape === 'arrivee' ? 'Arrivé · l’acheteur tape le mot secret' : 'Prêt à partir';
+  const poserEtape = i => { $('etape').textContent = phraseEtape(i); $('etapeA').hidden = ROUTE.includes(i.etape) || i.etape === 'arrivee'; };
+  let suivi = null, verrou = null, envoye = 0, dernier = 0, minuteur = null, relire = null, infos = null, codeTape = '';
+
+  const fin = (t, cls) => { $('fin').textContent = t; $('fin').className = 'fin' + (cls ? ' ' + cls : ''); $('fin').hidden = false; };
+  const posTxt = (t, ko) => { $('posT').textContent = t; $('posT').className = ko ? 'ko' : ''; };
+  const bascule = on => $('bascule').setAttribute('aria-checked', on ? 'true' : 'false');
+  function finir(t, cls) {   // la livraison est terminée ou le lien ne marche plus : on cache le partage
+    arreter(); clearInterval(relire);
+    $('pos').hidden = true; $('etape').hidden = true; $('etapeA').hidden = true; $('note').hidden = true; fin(t, cls);
+  }
 
   async function charger() {
     if (!jeton) { demanderCode(); return; }
-    let i = null; try { i = await rpc('suivi_lien_infos', { p_jeton: jeton }); } catch (_) { etat('Pas de connexion au serveur. Vérifiez internet puis rechargez la page.', 'ko'); return; }
-    if (!i) { $('sous').textContent = 'Lien expiré'; etat('Ce lien n’est plus valable : la livraison est terminée ou le lien a expiré.', 'ko'); return; }
-    $('sous').textContent = 'Commande ' + i.numero;
-    $('infos').innerHTML = `<div class="ligne"><span class="ico" aria-hidden="true">📦</span><span><b>${esc(nf(i.quantite))} ${esc(pl(i.unite || '', i.quantite))} · ${esc(i.produit || 'Marchandise')}</b><small>À transporter</small></span></div>
-      <div class="ligne"><span class="ico" aria-hidden="true">🚚</span><span><b>${esc(i.depart || 'Départ à préciser')} → ${esc(i.arrivee || 'Livraison à préciser')}</b><small>Trajet</small></span></div>`;
-    $('infos').hidden = false;
-    if (i.etat !== 'en_cours' && i.etat !== 'a_confirmer') { etat('Cette commande n’est plus en cours.', 'ko'); return; }
+    let i = null; try { i = await rpc('suivi_lien_infos', { p_jeton: jeton }); } catch (_) { fin('Pas de connexion au serveur. Vérifiez internet puis rechargez la page.', 'ko'); return; }
+    if (!i) { fin('Ce lien n’est plus valable : la livraison est terminée ou le lien a expiré.', 'neutre'); return; }
+    infos = i;
+    const q = Number(i.quantite) || 0, u = pl(i.unite || '', q), p = i.produit || 'marchandise';
+    $('infos').innerHTML = `<span class="lab">${codeTape ? 'Mission ' + esc(codeTape) : 'Mission · commande n° ' + esc(i.numero)}</span>
+      <span class="quoi">${esc(q ? nf(q) + (u ? ' ' + u : '') + ' ' + de(p) : p)}</span>
+      <div class="ln"><span>De</span><span>${esc(i.depart || 'Départ à préciser')}</span></div>
+      <div class="ln"><span>À</span><span>${esc(i.arrivee || 'Livraison à préciser')}</span></div>`;
+    $('mission').hidden = false;
+    if (i.etat !== 'en_cours' && i.etat !== 'a_confirmer') { fin('Cette commande n’est plus en cours.', 'neutre'); return; }
+    if (FINI.includes(i.etape)) { fin('Livraison terminée. Le lien ne marche plus.'); return; }
     rpc('suivi_lien_ouvert', { p_jeton: jeton }).catch(() => {});   // l'application affiche « Le chauffeur a ouvert le lien »
-    $('note').hidden = false; $('go').hidden = false;
+    $('fin').hidden = true; $('pos').hidden = false; $('note').hidden = false;
+    poserEtape(i); $('etape').hidden = false;
+    // l'étape change côté serveur (départ détecté, arrivée déclarée) : relue chaque minute, la phrase ne change que si l'étape change
+    relire = setInterval(async () => {
+      if (document.hidden) return;
+      let n = null; try { n = await rpc('suivi_lien_infos', { p_jeton: jeton }); } catch (_) { return; }
+      if (!n) { finir('Ce lien n’est plus valable : la livraison est terminée ou le lien a expiré.', 'neutre'); return; }
+      if (FINI.includes(n.etape) || (n.etat !== 'en_cours' && n.etat !== 'a_confirmer')) { finir('Livraison terminée. Le lien ne marche plus.'); return; }
+      if (n.etape !== infos.etape) { infos = n; poserEtape(n); }
+    }, 60000);
     partager();   // le suivi démarre tout de suite : le téléphone demande seulement l'autorisation de la position
   }
-  // sans lien : le chauffeur tape le code court dicté par le vendeur ou l'acheteur
+  // sans lien : le chauffeur tape le code court dicté par celui qui s'occupe du transport
   function demanderCode() {
-    $('sous').textContent = 'Avec un code'; $('etat').hidden = true; $('code').hidden = false;
+    $('fin').hidden = true; $('code').hidden = false;
     const t = $('codeT'), err = $('codeE');
     t.oninput = () => { const v = t.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6); t.value = v.length > 3 ? v.slice(0, 3) + '-' + v.slice(3) : v; err.textContent = ''; };
     $('code').onsubmit = async ev => {
@@ -107,9 +162,9 @@ button:focus-visible { outline: 3px solid var(--mais); outline-offset: 2px; }
       const b = $('code').querySelector('button'); b.disabled = true;
       let j = null; try { j = await rpc('suivi_code_jeton', { p_code: v }); } catch (e) { err.textContent = /^TROP_ESSAIS : /.test(e.message) ? e.message.replace(/^TROP_ESSAIS : /, '') : 'Pas de connexion. Vérifiez internet puis réessayez.'; b.disabled = false; return; }
       b.disabled = false;
-      if (!j) { err.textContent = 'Ce code ne marche pas : vérifiez-le, ou la livraison est peut-être terminée.'; return; }
-      jeton = String(j); try { history.replaceState(null, '', '?j=' + jeton); } catch (_) {}
-      $('code').hidden = true; $('etat').hidden = false; etat('Chargement…'); charger();
+      if (!j) { err.textContent = 'Code inconnu. Vérifiez-le, ou la livraison est peut-être terminée.'; return; }
+      jeton = String(j); codeTape = v.slice(0, 3) + '-' + v.slice(3); try { history.replaceState(null, '', '?j=' + jeton); } catch (_) {}
+      $('code').hidden = true; fin('Chargement de la mission…', 'neutre'); charger();
     };
     setTimeout(() => t.focus(), 300);
   }
@@ -117,27 +172,26 @@ button:focus-visible { outline: 3px solid var(--mais); outline-offset: 2px; }
     const t = Date.now(); if (t - dernier < 15000) return; dernier = t;
     try {
       const r = await rpc('suivi_lien_position', { p_jeton: jeton, p_lat: p.coords.latitude, p_lon: p.coords.longitude, p_precision: Math.round(p.coords.accuracy || 0) });
-      if (r && r.ok) { envoye++; etat('Position partagée · ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + (envoye > 1 ? ' · ' + envoye + ' envois' : ''), 'on'); }
-      else if (r && r.arreter) { arreter(); etat(r.message || 'Le partage s’arrête.', ''); $('go').hidden = true; }
-    } catch (_) { etat('Connexion perdue : la position sera renvoyée dès que le réseau revient.', 'ko'); dernier = 0; }
+      if (r && r.ok) { envoye++; posTxt('Position partagée · ' + heure() + (envoye > 1 ? ' · ' + envoye + ' envois' : '')); }
+      else if (r && r.arreter) finir(r.message || 'Le partage s’arrête.', /terminée/.test(r.message || '') ? '' : 'neutre');
+    } catch (_) { posTxt('Connexion perdue : la position repart dès que le réseau revient.', true); dernier = 0; }
   }
   async function partager() {
-    if (!navigator.geolocation) { etat('Ce téléphone ne donne pas sa position à cette page.', 'ko'); return; }
-    $('go').disabled = true; etat('Le suivi démarre : autorisez la position quand le téléphone le demande.');
-    suivi = navigator.geolocation.watchPosition(p => { $('go').hidden = true; $('stop').hidden = false; envoyer(p); },
-      e => { $('go').disabled = false; etat(e.code === 1 ? 'Position refusée. Réglages du téléphone → Confidentialité → Service de localisation → autorisez le navigateur, puis réessayez.' : 'Position introuvable pour l’instant. Restez à découvert et réessayez.', 'ko'); },
+    if (!navigator.geolocation) { posTxt('Ce téléphone ne donne pas sa position à cette page.', true); $('bascule').disabled = true; return; }
+    bascule(true); posTxt('Autorisez la position quand le téléphone le demande.');
+    suivi = navigator.geolocation.watchPosition(envoyer,
+      e => { arreter(); posTxt(e.code === 1 ? 'Position refusée. Réglages du téléphone → Confidentialité → Service de localisation → autorisez le navigateur, puis réessayez.' : 'Position introuvable pour l’instant. Restez à découvert et réessayez.', true); },
       { enableHighAccuracy: true, maximumAge: 10000, timeout: 30000 });
     try { if ('wakeLock' in navigator) verrou = await navigator.wakeLock.request('screen'); } catch (_) {}
     minuteur = setInterval(() => { if (Date.now() - dernier > 60000) navigator.geolocation.getCurrentPosition(envoyer, () => {}, { enableHighAccuracy: true, maximumAge: 20000, timeout: 20000 }); }, 30000);
   }
   function arreter() {
-    if (suivi != null) navigator.geolocation.clearWatch(suivi); suivi = null; clearInterval(minuteur);
+    if (suivi != null && navigator.geolocation) navigator.geolocation.clearWatch(suivi); suivi = null; clearInterval(minuteur);
     try { verrou && verrou.release(); } catch (_) {} verrou = null;
-    $('stop').hidden = true; $('go').hidden = false; $('go').disabled = false;
+    bascule(false);
   }
-  $('go').onclick = () => { if (suivi != null) arreter(); partager(); };
+  $('bascule').onclick = () => { if (suivi != null) { arreter(); posTxt('Partage arrêté. Touchez pour reprendre.'); } else partager(); };
   document.addEventListener('pointerdown', async () => { if (suivi != null && !verrou && 'wakeLock' in navigator) { try { verrou = await navigator.wakeLock.request('screen'); } catch (_) {} } });
-  $('stop').onclick = () => { arreter(); etat('Partage arrêté. Touchez le bouton pour reprendre.'); };
   document.addEventListener('visibilitychange', async () => { if (!document.hidden && suivi != null && !verrou && 'wakeLock' in navigator) { try { verrou = await navigator.wakeLock.request('screen'); } catch (_) {} } });
   charger();
 })();

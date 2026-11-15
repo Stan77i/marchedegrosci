@@ -585,3 +585,54 @@ html[data-theme=sombre] .v2-feuille {
 .nx-bg .nx-tk:is(.is-remplacee, .is-retiree, .is-expiree) .amt { opacity: .85; }
 /* 320 px : le tampon « Disponible maintenant » de la liste de la carte tient mot par mot, sans couper « DISPONIBL-E » */
 @media (max-width: 359px) { [data-pg=carte] .qd.nuit[data-u] { font-size: 10.5px; letter-spacing: 0; gap: 4px; padding: 4px 7px 4px 5px; } }
+
+/* Année et produits (14/11) */
+.ay-rech { flex: none; height: 52px; border-width: 1px; border-color: var(--t14); }
+.ay-rech:focus-within { border-color: var(--vert); }
+.ay-vide { margin: 0; display: flex; flex-direction: column; gap: 4px; padding: 18px 16px; border-radius: 18px; background: var(--carte); font-size: 14px; line-height: 1.45; color: var(--texte-3); }
+.ay-vide b { font-size: 15px; font-weight: 700; color: var(--encre); overflow-wrap: anywhere; }
+.ay-c { display: flex; flex-direction: column; padding: 14px 14px 6px; border-radius: 18px; background: var(--carte); }
+.ay-c h2 { margin: 0 0 4px; font-size: 14px; font-weight: 600; color: var(--texte-2); }
+.ay-l { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 8px 0; border: 0; border-top: 1px solid var(--t08); background: none; color: var(--encre); font: inherit; text-align: left; }
+.ay-c h2 + * .ay-l:first-child, .ay-c h2 + .ay-l { border-top: 0; }
+.ay-l .im, .ay-pin { width: 40px; height: 40px; flex: none; border-radius: 12px; background: var(--sable-clair); display: grid; place-items: center; overflow: hidden; }
+.ay-l .im img { width: 34px; height: 34px; object-fit: contain; }
+.ay-pin { color: var(--vert); }
+.ay-l > b, .ay-l .tx { flex: 1; min-width: 0; }
+.ay-l > b { font-size: 15px; font-weight: 700; line-height: 1.2; }
+.ay-l .tx { display: flex; flex-direction: column; gap: 1px; }
+.ay-l .tx b { font-size: 15px; font-weight: 700; line-height: 1.2; }
+.ay-l .tx small, .ay-px small { font-size: 12.5px; color: var(--texte-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ay-l .nbul { flex: none; margin-left: 0; animation: none; height: 24px; padding: 0 9px; font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.ay-px { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+.ay-px b { font-size: 15px; font-weight: 700; white-space: nowrap; }
+.ay-rien { margin: 0; padding: 4px 0 10px; display: flex; flex-direction: column; gap: 2px; font-size: 14px; color: var(--texte-3); }
+.ay-rien small { font-size: 12.5px; color: var(--texte-3); }
+.ay-m { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 3px; margin-top: 6px; }
+.ay-m.tete { margin-top: 2px; }
+.ay-m.tete b { font-size: 11.5px; font-weight: 600; color: var(--texte-3); text-align: center; }
+.ay-m.tete b.auj { color: var(--vert); font-weight: 800; }
+.ay-m > i { display: block; height: 18px; border-radius: 4px; background: var(--lin); }
+.ay-m > i.soud { background: #F2C230; }
+.ay-m > i.auj, .ay-m.barres > span.auj i { box-shadow: inset 0 0 0 2px var(--encre); }
+.ay-m.barres > span { height: 44px; display: flex; align-items: flex-end; border-radius: 4px; background: var(--lin); overflow: hidden; }
+.ay-m.barres > span i { display: block; width: 100%; min-height: 2px; background: #F2C230; border-radius: 4px 4px 0 0; }
+.ay-soud { margin: 10px 0 0; padding-bottom: 8px; display: flex; flex-direction: column; gap: 2px; font-size: 14px; line-height: 1.4; color: var(--texte-2); }
+.ay-soud b { font-size: 15px; font-weight: 700; color: var(--encre); }
+.ay-soud small { font-size: 12.5px; color: var(--texte-3); }
+.ay-rech .v2-rech-in:focus, .ay-rech .v2-rech-in:focus-visible { outline: none !important; }
+
+/* Prix : prix du marché (14/11) — sous chaque produit de « Prix du moment » : prix du marché atteint ou ce qui manque, accord possible, feuille « Par zone » */
+.v2-px-r { border-bottom: 1px solid var(--t08); padding-bottom: 10px; }
+.v2-px-r .v2-px-l { border-bottom: 0; padding-bottom: 6px; }
+.v2-px-pied { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding-left: 68px; }
+.v2-px-mq { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; min-width: 0; font-size: 12.5px; line-height: 1.3; color: var(--texte-3); font-variant-numeric: tabular-nums; }
+.v2-px-mq b { font-weight: 700; color: var(--texte-2); }
+.v2-px-mq b.ok { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 9px 0 7px; border-radius: 999px; background: #DCEFE3; color: #10392B; }
+.v2-px-mq .jg { position: relative; display: block; width: 44px; height: 5px; border-radius: 999px; background: var(--lin); overflow: hidden; }
+.v2-px-mq .jg i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: #6CC58C; }
+.v2-px-acc { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; background: #F6E2B0; color: #5C4300; font-size: 12.5px; font-weight: 700; }
+.v2-px-zb { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; height: 44px; padding: 0 4px 0 8px; border: 0; background: none; color: var(--vert); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.v2-px-zb:focus-visible { outline: 3px solid var(--vert); outline-offset: 2px; border-radius: 10px; }
+html[data-theme=sombre] .v2-px-mq b.ok { background: rgba(108, 197, 140, .16); color: #A9E2BE; }
+html[data-theme=sombre] .v2-px-acc { background: rgba(242, 194, 48, .16); color: #F2C230; }

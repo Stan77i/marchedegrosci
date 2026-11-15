@@ -63,7 +63,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261113r1">
 <link rel="stylesheet" href="css/mgci-app.css?v=20261115r1">
 <link rel="stylesheet" href="css/sombre.css?v=20261115r1">
-<link rel="stylesheet" href="css/v2.css?v=20261114g1">
+<link rel="stylesheet" href="css/v2.css?v=20261115a1">
 <link rel="stylesheet" href="css/v2-compte.css?v=20261114g3">
 <link rel="stylesheet" href="css/v2-equipe.css?v=20261114g3">
 <link rel="stylesheet" href="v3/ux.css?v=20261124i">
@@ -127,12 +127,16 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
     <div class="v2-px-liens"><button onClick="{{ v2.versTous }}">Tous les produits</button><button onClick="{{ v2.versAnnee }}">L’année du marché</button></div>
     <div class="v2-px-zones" role="group" aria-label="Zone"><sc-for list="{{ v2.pxZones }}" as="z" hint-placeholder-count="2"><button aria-pressed="{{ z.on }}" onClick="{{ z.go }}">{{ z.l }}</button></sc-for></div>
     <div>
-      <sc-for list="{{ v2.pxRows }}" as="r" hint-placeholder-count="4"><button class="v2-px-l" onClick="{{ r.go }}" aria-label="{{ r.lab }}"><span class="im"><img sc-camel-src="{{ r.img }}" alt="" loading="lazy"></span>
+      <sc-for list="{{ v2.pxRows }}" as="r" hint-placeholder-count="4"><div class="v2-px-r"><button class="v2-px-l" onClick="{{ r.go }}" aria-label="{{ r.lab }}"><span class="im"><img sc-camel-src="{{ r.img }}" alt="" loading="lazy"></span>
         <span class="tx"><span class="l0"><b>{{ r.nom }}</b><small>{{ r.u }}</small></span><sc-if value="{{ r.ok }}" hint-placeholder-val="{{ true }}"><span class="jauge" aria-hidden="true"><i style="left:{{ r.bl }};width:{{ r.bw }}"></i><s style="left:{{ r.bm }}"></s></span></sc-if><small>{{ r.sub }}</small></span>
-        <span class="m {{ r.mC }}">{{ r.med }}</span></button></sc-for>
+        <span class="m {{ r.mC }}">{{ r.med }}</span></button>
+        <!-- Prix : prix du marché (14/11), venu de l'ancienne page du menu : atteint ou ce qui manque, accord possible, feuille « Par zone et tendance » (v3/prixzone.js) -->
+        <div class="v2-px-pied"><span class="v2-px-mq" role="img" aria-label="{{ r.mLab }}"><sc-if value="{{ r.mOk }}" hint-placeholder-val="{{ true }}"><b class="ok"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Prix du marché</b></sc-if><sc-if value="{{ r.mNon }}" hint-placeholder-val="{{ false }}"><b>Prix du marché</b></sc-if><span>{{ r.mT }}</span><sc-if value="{{ r.mNon }}" hint-placeholder-val="{{ false }}"><i class="jg" aria-hidden="true"><i style="width:{{ r.mPct }}"></i></i></sc-if></span>
+          <sc-if value="{{ r.acc }}" hint-placeholder-val="{{ false }}"><span class="v2-px-acc" role="img" aria-label="{{ r.accLab }}">Accord possible</span></sc-if>
+          <button class="v2-px-zb" onClick="{{ r.zones }}" aria-label="{{ r.zAria }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11Z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>Par zone</button></div></div></sc-for>
       <sc-if value="{{ v2.pxVide }}" hint-placeholder-val="{{ false }}"><p class="v2-vide" style="margin:12px 0 0">Pas encore d’annonce avec un prix dans cette zone.</p></sc-if>
     </div>
-    <p class="v2-px-note">La barre verte montre la fourchette observée, le trait la médiane. Sous 4 relevés, on n’affiche pas de prix.</p>
+    <p class="v2-px-note">La barre verte montre la fourchette observée, le trait la médiane. Sous 4 relevés, on n’affiche pas de prix. Le prix du marché demande {{ v2.pxSeuil }}.</p>
   </div>
   </div>
   <!-- Recherche (lot 4) : écran dédié, recherche en phrase (« 10 tonnes de manioc à Korhogo ») branchée sur v2/search.js -->
@@ -419,11 +423,12 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
 <!-- ═══ CATÉGORIES ═══ -->
 <div data-pg="categories" data-v2 data-screen-label="Catégories" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:var(--papier);color:var(--encre);display:flex;flex-direction:column;transform:{{ tf.categories }};visibility:{{ vis.categories }};z-index:{{ zi.categories }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.3)">
 <sc-if value="{{ on.categories }}" hint-placeholder-val="{{ false }}">
-  <!-- Tous les produits (lot 8, maquette « MGCI App v2 ») : familles en pastilles, grille de 2 colonnes, offres et demandes en direct -->
+  <!-- Tous les produits (lot 8, maquette « MGCI App v2 ») : recherche en direct (14/11 : la rangée des familles est retirée), grille de 2 colonnes, offres et demandes en direct -->
   <div class="v2-page" style="padding-top:{{ topPad }}"><div class="v2-page-sc">
     <div class="v2-nav"><button class="v2-retour" onClick="{{ back }}" aria-label="Retour"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><span>Prix</span></div>
     <h1 class="v2-h1">Tous les produits</h1>
-    <div class="v2-pills" role="group" aria-label="Familles"><sc-for list="{{ tp.fams }}" as="f" hint-placeholder-count="4"><button aria-pressed="{{ f.on }}" onClick="{{ f.go }}">{{ f.l }}</button></sc-for></div>
+    <label class="v2-rech-c ay-rech"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="flex:none"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input class="v2-rech-in" type="search" enterkeyhint="search" value="{{ tp.q }}" onChange="{{ tp.qInput }}" placeholder="Igname, tomate, tubercules…" aria-label="Chercher un produit"><sc-if value="{{ tp.qOn }}" hint-placeholder-val="{{ false }}"><button class="v2-rech-x" onClick="{{ tp.qEffacer }}" aria-label="Effacer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></sc-if></label>
+    <sc-if value="{{ tp.vide }}" hint-placeholder-val="{{ false }}"><p class="ay-vide"><b>{{ tp.videT }}</b>Essayez un nom local ou une famille, comme tubercules.</p></sc-if>
     <div class="v2-tous"><sc-for list="{{ tp.prods }}" as="p" hint-placeholder-count="6"><button onClick="{{ p.go }}" aria-label="{{ p.lab }}"><span class="im"><img sc-camel-src="{{ p.img }}" alt="" loading="lazy"></span><b>{{ p.nom }}</b><span class="nb"><sc-if value="{{ p.oOn }}" hint-placeholder-val="{{ true }}"><i class="o">{{ p.o }}</i></sc-if><sc-if value="{{ p.dOn }}" hint-placeholder-val="{{ true }}"><i class="d">{{ p.d }}</i></sc-if><sc-if value="{{ p.rien }}" hint-placeholder-val="{{ false }}"><small>Pas encore d’annonce</small></sc-if></span></button></sc-for></div>
   </div></div>
 </sc-if>
@@ -486,11 +491,27 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
   <div class="v2-page" style="padding-top:{{ topPad }}"><div class="v2-page-sc">
     <div class="v2-nav"><button class="v2-retour" onClick="{{ back }}" aria-label="Retour"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><span>Prix</span></div>
     <h1 class="v2-h1">L’année du marché</h1>
-    <div class="v2-an-maint"><span>{{ ya.titre }}</span><div class="v2-pills"><sc-for list="{{ ya.pleins }}" as="p" hint-placeholder-count="2"><button class="vert" onClick="{{ p.go }}">{{ p.l }}</button></sc-for></div></div>
-    <div class="v2-an">
+    <label class="v2-rech-c ay-rech"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="flex:none"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input class="v2-rech-in" type="search" enterkeyhint="search" value="{{ ya.q }}" onChange="{{ ya.qInput }}" placeholder="Igname, maïs, tomate…" aria-label="Chercher dans le calendrier"><sc-if value="{{ ya.qOn }}" hint-placeholder-val="{{ false }}"><button class="v2-rech-x" onClick="{{ ya.qEffacer }}" aria-label="Effacer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></sc-if></label>
+    <sc-if value="{{ ya.pleinsOn }}" hint-placeholder-val="{{ true }}"><div class="v2-an-maint"><span>{{ ya.titre }}</span><div class="v2-pills"><sc-for list="{{ ya.pleins }}" as="p" hint-placeholder-count="2"><button class="vert" onClick="{{ p.go }}">{{ p.l }}</button></sc-for></div></div></sc-if>
+    <!-- (14/11) ce que le marché vit maintenant, calculé sur les annonces en cours ; rien d'estimé -->
+    <section class="ay-c"><h2>Le plus demandé</h2>
+      <sc-if value="{{ ya.demOn }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ ya.dem }}" as="x" hint-placeholder-count="3"><button class="ay-l" onClick="{{ x.go }}" aria-label="{{ x.lab }}"><span class="im"><img sc-camel-src="{{ x.img }}" alt="" loading="lazy"></span><b>{{ x.nom }}</b><span class="nbul d">{{ x.n }}</span></button></sc-for></sc-if>
+      <sc-if value="{{ ya.demVide }}" hint-placeholder-val="{{ false }}"><p class="ay-rien">{{ ya.demVideT }}</p></sc-if></section>
+    <sc-if value="{{ ya.ouOn }}" hint-placeholder-val="{{ true }}"><section class="ay-c"><h2>Où ça se demande</h2>
+      <sc-for list="{{ ya.ou }}" as="x" hint-placeholder-count="3"><button class="ay-l" onClick="{{ x.go }}" aria-label="{{ x.lab }}"><span class="ay-pin" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11Z"></path><circle cx="12" cy="10" r="2.2"></circle></svg></span><span class="tx"><b>{{ x.v }}</b><small>{{ x.s }}</small></span><span class="nbul d">{{ x.n }}</span></button></sc-for></section></sc-if>
+    <section class="ay-c"><h2>Le plus cher au kilo</h2>
+      <sc-if value="{{ ya.cherOn }}" hint-placeholder-val="{{ false }}"><sc-for list="{{ ya.cher }}" as="x" hint-placeholder-count="3"><button class="ay-l" onClick="{{ x.go }}" aria-label="{{ x.lab }}"><span class="im"><img sc-camel-src="{{ x.img }}" alt="" loading="lazy"></span><b>{{ x.nom }}</b><span class="ay-px"><b>{{ x.px }}</b><small>{{ x.n }}</small></span></button></sc-for></sc-if>
+      <sc-if value="{{ ya.cherVide }}" hint-placeholder-val="{{ true }}"><p class="ay-rien">{{ ya.cherVideT }}<small>{{ ya.cherSeuil }}</small></p></sc-if></section>
+    <section class="ay-c"><h2>Quand ça se demande</h2>
+      <div class="ay-m tete" aria-hidden="true"><sc-for list="{{ ya.mL }}" as="m" hint-placeholder-count="12"><b class="{{ m.c }}">{{ m.l }}</b></sc-for></div>
+      <sc-if value="{{ ya.histo }}" hint-placeholder-val="{{ false }}"><div class="ay-m barres"><sc-for list="{{ ya.barres }}" as="b" hint-placeholder-count="12"><span class="{{ b.c }}" role="img" aria-label="{{ b.lab }}"><i style="height:{{ b.h }}"></i></span></sc-for></div><p class="ay-rien"><small>Demandes publiées, 12 derniers mois</small></p></sc-if>
+      <sc-if value="{{ ya.sansHisto }}" hint-placeholder-val="{{ true }}"><div class="ay-m" role="img" aria-label="{{ ya.soudLab }}"><sc-for list="{{ ya.soud }}" as="c" hint-placeholder-count="12"><i class="{{ c }}"></i></sc-for></div>
+        <p class="ay-soud"><b>Soudure, Nord et Centre</b>Les stocks baissent, on dépend davantage du marché.<small>FEWS NET, perspectives juin 2026 · Pas encore un an d’historique des demandes</small></p></sc-if></section>
+    <sc-if value="{{ ya.calOn }}" hint-placeholder-val="{{ true }}"><div class="v2-an">
       <div class="v2-an-l tete" aria-hidden="true"><span></span><span class="mois"><sc-for list="{{ ya.mois }}" as="m" hint-placeholder-count="12"><b class="{{ m.c }}">{{ m.l }}</b></sc-for></span></div>
       <sc-for list="{{ ya.lignes }}" as="r" hint-placeholder-count="8"><button class="v2-an-l" onClick="{{ r.go }}" aria-label="{{ r.lab }}"><span class="tx"><b>{{ r.l }}</b><small>{{ r.src }}</small></span><span class="mois"><sc-for list="{{ r.cases }}" as="c" hint-placeholder-count="12"><i class="{{ c }}"></i></sc-for></span></button></sc-for>
-    </div>
+    </div></sc-if>
+    <sc-if value="{{ ya.calVide }}" hint-placeholder-val="{{ false }}"><p class="ay-vide"><b>{{ ya.calVideT }}</b>Le calendrier couvre les produits sourcés : igname, maïs, tomate, cacao…</p></sc-if>
     <div class="v2-an-leg"><span><i class="debut"></i>Ça commence</span><span><i class="plein"></i>Pleine récolte</span><span><i class="fin"></i>Ça se termine</span></div>
     <p class="v2-an-note">Périodes tirées des sources citées sur chaque ligne. Rien n’est estimé.</p>
   </div></div>
@@ -1325,15 +1346,25 @@ class Component extends DCLogic {
         const src = zone ? off.filter(o => refV(o.city) === zone) : off, dsrc = zone ? dem.filter(d => refV(d.city) === zone) : dem, G = {};
         src.forEach(o => { const g = G[o.slug] || (G[o.slug] = { u: {}, l: [] }); if (o.price > 0) { g.u[o.unit] = (g.u[o.unit] || 0) + 1; g.l.push(o); } });
         dsrc.forEach(d => { if (!G[d.slug]) G[d.slug] = { u: { [d.unit]: 0 }, l: [] }; });
+        // le prix du marché (venu de l'ancienne page du menu, 14/11) : 5 prix de 3 vendeurs sur 30 jours (MDGMarche.SEUIL), sinon ce qui manque ; « Accord possible » quand un budget atteint le prix le plus bas
+        const SE = (window.MDGMarche && MDGMarche.SEUIL) || { obs: 5, vendeurs: 3, jours: 30 }, t30 = Date.now() - SE.jours * 864e5;
+        const zonesDe = (slug, nom) => () => { const o = () => window.MDGPrixZone && MDGPrixZone.ouvrir(slug, nom); if (window.MDGPrixZone) o(); else if (window.MDGPlus) { MDGPlus.quand(o); MDGPlus.charger(); } };
         const rows = Object.keys(G).map(slug => { const g = G[slug], u = Object.keys(g.u).sort((a, b) => g.u[b] - g.u[a])[0] || '', px = g.l.filter(o => o.unit === u).map(o => o.price).sort((a, b) => a - b), n = px.length, ok = n >= 4, P = this.prod(slug);
+          const r30 = g.l.filter(o => o.unit === u && (!o.at || Date.parse(o.at) >= t30)), nv = new Set(r30.map(o => o.uid || o.name)).size, mOk = r30.length >= SE.obs && nv >= SE.vendeurs;
+          const mP = Math.max(0, SE.obs - r30.length), mV = Math.max(0, SE.vendeurs - nv), manque = [mP ? mP + ' prix' : '', mV ? mV + ' vendeur' + (mV > 1 ? 's' : '') : ''].filter(Boolean).join(' et ');
+          const bud = dsrc.filter(d => d.slug === slug && d.unit === u && d.budget > 0).map(d => d.budget), maxB = bud.length ? Math.max(...bud) : 0, acc = n > 0 && maxB >= px[0];
           const mn = px[0], mx = px[n - 1], md = n ? med(px) : 0, lo = mn * .8, hi = mx * 1.15, r = hi - lo || 1, pc = v => Math.max(0, Math.min(100, v)) + '%';
           return { n, ok, act: (par[slug] ? par[slug].o + par[slug].d : 0), nom: P.name, img: P.thumb, u: u ? 'par ' + u : '', med: ok ? A.fmt(md) + ' F' : 'Pas assez de relevés', mC: ok ? '' : 'pas',
             sub: ok ? A.fmt(mn) + ' – ' + A.fmt(mx) + ' F · ' + n + ' relevés' : n + (n > 1 ? ' relevés' : ' relevé') + ' · il en faut 4',
             bl: ok ? pc((mn - lo) / r * 100) : '0%', bw: ok ? pc((mx - mn) / r * 100) : '0%', bm: ok ? pc((md - lo) / r * 100) : '0%',
-            lab: P.name + (ok ? ', médiane ' + A.fmt(md) + ' F ' + (u ? 'par ' + u : '') + ', de ' + A.fmt(mn) + ' à ' + A.fmt(mx) + ' F, ' + n + ' relevés' : ', pas assez de relevés'), go: () => this.openFiche(slug) }; })
+            lab: P.name + (ok ? ', médiane ' + A.fmt(md) + ' F ' + (u ? 'par ' + u : '') + ', de ' + A.fmt(mn) + ' à ' + A.fmt(mx) + ' F, ' + n + ' relevés' : ', pas assez de relevés'), go: () => this.openFiche(slug),
+            mOk, mNon: !mOk, mT: mOk ? nv + ' vendeurs · ' + SE.jours + ' jours' : 'encore ' + manque, mPct: Math.round(Math.min(1, r30.length / SE.obs) * 50 + Math.min(1, nv / SE.vendeurs) * 50) + '%',
+            mLab: mOk ? 'Prix du marché atteint : ' + r30.length + ' prix de ' + nv + ' vendeurs sur ' + SE.jours + ' jours' : 'Pas encore de prix du marché : il faut encore ' + manque + ' (' + SE.obs + ' prix de ' + SE.vendeurs + ' vendeurs sur ' + SE.jours + ' jours)',
+            acc, accLab: acc ? 'Accord possible : un acheteur propose ' + A.fmt(maxB) + ' F, un vendeur demande ' + A.fmt(px[0]) + ' F' : '',
+            zones: zonesDe(slug, P.name), zAria: P.name + ' : prix par zone et tendance' }; })
           .sort((a, b) => (b.act - a.act) || (b.n - a.n) || a.nom.localeCompare(b.nom, 'fr'));   // par activité (offres et demandes), comme la maquette
         return { pxZones: [{ l: 'Tout le pays', on: String(!zone), go: () => this.setState({ v2pxZone: '' }) }].concat(villes.map(v => ({ l: v, on: String(zone === v), go: () => this.setState({ v2pxZone: v }) }))),
-          pxRows: rows, pxVide: !rows.length, versTous: () => this.push('categories'), versAnnee: () => this.push('annee') }; })(),
+          pxRows: rows, pxVide: !rows.length, pxSeuil: SE.obs + ' prix de ' + SE.vendeurs + ' vendeurs sur ' + SE.jours + ' jours', versTous: () => this.push('categories'), versAnnee: () => this.push('annee') }; })(),
       versRecherche: () => { aller('recherche'); setTimeout(() => { const i = document.querySelector('[data-pg="home"] .v2-rech-in'); if (i) i.focus(); }, 60); },
       qInput: e => this.setState({ v2q: e.target.value }), qEffacer: () => { this.setState({ v2q: '' }); const i = document.querySelector('[data-pg="home"] .v2-rech-in'); if (i) i.focus(); },
       qKey: e => { if (e.key !== 'Enter') return; e.target.blur(); if (res.length === 1 && !comprisOn) res[0].go(); },
@@ -1497,24 +1528,55 @@ class Component extends DCLogic {
       bloque: String(step < 5 && !ok[step]), suiteT: step === 5 ? 'Retour au marché' : step === 4 ? (isO ? 'Publier mon offre' : 'Publier ma demande') : 'Continuer', suite };
   }
   // ——— refonte 2026-11, lot 8 : Tous les produits et L'année du marché (maquette « MGCI App v2 ») ———
+  // (14/11) recherche en direct, sans accents ; la rangée des familles est retirée (demande du propriétaire) : le nom de la famille reste cherchable
+  v2Cherche(cle) { const S = this.state, A = window.MDGApp, q = S[cle] || '', n = A.norm(q.trim()), sel = '[data-pg="' + (cle === 'v2tq' ? 'categories' : 'annee') + '"] .v2-rech-in';
+    return { q, n, qOn: !!q, qInput: e => this.setState({ [cle]: e.target.value }), qEffacer: () => { this.setState({ [cle]: '' }); const i = document.querySelector(sel); if (i) i.focus(); },
+      vaPour: (...t) => !n || t.some(x => A.norm(x).includes(n)) }; }
   v2Tous() {
-    const S = this.state, A = window.MDGApp, O = this.offers(), D = this.demands(), nO = {}, nD = {};
+    const A = window.MDGApp, O = this.offers(), D = this.demands(), nO = {}, nD = {}, R = this.v2Cherche('v2tq');
     O.forEach(o => nO[o.slug] = (nO[o.slug] || 0) + 1); D.forEach(d => nD[d.slug] = (nD[d.slug] || 0) + 1);
-    const fams = (this.FAMS || []).filter(f => f.prods.length), sel = fams.some(f => f.slug === S.v2fam) ? S.v2fam : '';
-    const prods = (sel ? fams.filter(f => f.slug === sel) : fams).reduce((l, f) => l.concat(f.prods), [])
-      .sort((a, b) => ((nO[b.slug] || 0) + (nD[b.slug] || 0)) - ((nO[a.slug] || 0) + (nD[a.slug] || 0)) || (A.SACK[b.slug] != null) - (A.SACK[a.slug] != null) || a.name.localeCompare(b.name, 'fr'));
-    return { fams: [{ l: 'Tous', on: String(!sel), go: () => this.setState({ v2fam: '' }) }].concat(fams.map(f => ({ l: f.name, on: String(f.slug === sel), go: () => this.setState({ v2fam: f.slug }) }))),
-      prods: prods.map(p => { const P = this.prod(p.slug), o = nO[p.slug] || 0, d = nD[p.slug] || 0;
+    const prods = (this.FAMS || []).reduce((l, f) => l.concat(f.prods.map(p => ({ p, fam: f.name }))), [])
+      .filter(({ p, fam }) => R.vaPour(p.name, fam, ...(p.aliases || [])))
+      .sort((a, b) => ((nO[b.p.slug] || 0) + (nD[b.p.slug] || 0)) - ((nO[a.p.slug] || 0) + (nD[a.p.slug] || 0)) || (A.SACK[b.p.slug] != null) - (A.SACK[a.p.slug] != null) || a.p.name.localeCompare(b.p.name, 'fr'));
+    return { q: R.q, qOn: R.qOn, qInput: R.qInput, qEffacer: R.qEffacer, vide: !prods.length, videT: 'Aucun produit pour «\u00a0' + R.q.trim() + '\u00a0».',
+      prods: prods.map(({ p }) => { const P = this.prod(p.slug), o = nO[p.slug] || 0, d = nD[p.slug] || 0;
         return { nom: P.name, img: P.thumb, oOn: o > 0, o: o + ' offre' + (o > 1 ? 's' : ''), dOn: d > 0, d: d + ' dem.', rien: !o && !d,
           lab: P.name + ', ' + o + ' offre' + (o > 1 ? 's' : '') + ', ' + d + ' demande' + (d > 1 ? 's' : ''), go: () => this.openFiche(p.slug) }; }) };
   }
   v2Annee() {
-    const A = window.MDGApp, mo = new Date().getMonth() + 1, L = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'], ok = s => window.MDG.products.some(p => p.slug === s);
-    const pleins = [], vus = new Set();
-    A.CAL.forEach(e => { if (e[2][mo] === 'plein' && !vus.has(e[1])) { vus.add(e[1]); pleins.push({ l: e[1], go: () => ok(e[0]) && this.openFiche(e[0]) }); } });
-    return { titre: pleins.length ? 'En pleine récolte en ' + A.MOIS[mo - 1].toLowerCase() : 'Rien en pleine récolte en ' + A.MOIS[mo - 1].toLowerCase(), pleins,
-      mois: L.map((l, i) => ({ l, c: i + 1 === mo ? 'auj' : '' })),
-      lignes: A.CAL.map(e => ({ l: e[1], src: e[3] || '', cases: L.map((_, i) => (e[2][i + 1] || 'vide') + (i + 1 === mo ? ' auj' : '')),
+    const A = window.MDGApp, M = window.MDG, now = new Date(), mo = now.getMonth() + 1, L = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'], ok = s => M.products.some(p => p.slug === s);
+    const R = this.v2Cherche('v2aq'), P0 = s => M.products.find(p => p.slug === s) || { name: s, aliases: [] }, pOk = s => { const p = P0(s); return R.vaPour(p.name, ...(p.aliases || [])); };
+    const cal = A.CAL.filter(e => R.vaPour(e[1]) || pOk(e[0])), pleins = [], vus = new Set();
+    cal.forEach(e => { if (e[2][mo] === 'plein' && !vus.has(e[1])) { vus.add(e[1]); pleins.push({ l: e[1], go: () => ok(e[0]) && this.openFiche(e[0]) }); } });
+    const pl = (n, m) => n + ' ' + m + (n > 1 ? 's' : ''), V = window.MDGVilles, ville = d => String((V && V.ref ? V.ref(d.city) : d.city) || '').trim() || ((M.regions || []).find(r => r.slug === d.region) || {}).name || '';
+    // demandes en cours (this.demands : ni servies ni expirées), comptées par produit et par ville
+    const D = this.demands().filter(d => pOk(d.slug)), parP = {}, parV = {};
+    D.forEach(d => { parP[d.slug] = (parP[d.slug] || 0) + 1; const v = ville(d); if (v) { const x = parV[v] || (parV[v] = { n: 0, p: {} }); x.n++; x.p[d.slug] = (x.p[d.slug] || 0) + 1; } });
+    const dem = Object.keys(parP).sort((a, b) => parP[b] - parP[a] || P0(a).name.localeCompare(P0(b).name, 'fr')).slice(0, 3)
+      .map(s => { const P = this.prod(s); return { nom: P.name, img: P.thumb, n: pl(parP[s], 'demande'), lab: P.name + ', ' + pl(parP[s], 'demande') + ' en cours', go: () => this.openFiche(s) }; });
+    const ou = Object.keys(parV).sort((a, b) => parV[b].n - parV[a].n || a.localeCompare(b, 'fr')).slice(0, 3).map(v => { const x = parV[v], s = Object.keys(x.p).sort((a, b) => x.p[b] - x.p[a])[0], nom = this.prod(s).name;
+      return { v, s: Object.keys(x.p).length > 1 ? 'Surtout ' + nom.toLowerCase() : nom, n: pl(x.n, 'demande'), lab: v + ', ' + pl(x.n, 'demande') + ', surtout ' + nom, go: () => this.openFiche(s) }; });
+    // le plus cher au kilo : prix vendeurs en kg ou en tonne (ramenés au kg), même seuil que le prix observé (MDGMarche.SEUIL : 5 prix, 3 vendeurs, 30 jours) ;
+    // les sacs, cartons, régimes… n'ont pas de poids fixe : ils ne se comparent pas
+    const SE = (window.MDGMarche && MDGMarche.SEUIL) || { obs: 5, vendeurs: 3, jours: 30 }, G = {};
+    this.offers().forEach(o => { const u = String(o.unit || '').toLowerCase(), k = u === 'kg' ? 1 : /^(t|tonne)s?$/.test(u) ? 1000 : 0, t = Date.parse(o.at);
+      if (!k || !(o.price > 0) || !pOk(o.slug) || (t && now - t > SE.jours * 864e5)) return; const g = G[o.slug] || (G[o.slug] = { px: [], v: new Set() }); g.px.push(o.price / k); g.v.add(o.uid || o.phone || o.name); });
+    const med = l => { const s = l.slice().sort((a, b) => a - b), k = s.length >> 1; return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2; };
+    const cher = Object.keys(G).filter(s => G[s].px.length >= SE.obs && G[s].v.size >= SE.vendeurs).map(s => ({ s, m: med(G[s].px) })).sort((a, b) => b.m - a.m).slice(0, 3)
+      .map(({ s, m }) => { const P = this.prod(s), f = A.fmt(m) + ' F'; return { nom: P.name, img: P.thumb, px: f, n: pl(G[s].px.length, 'prix'), lab: P.name + ', médiane ' + f + ' le kilo, ' + pl(G[s].px.length, 'prix'), go: () => this.openFiche(s) }; });
+    // quand ça se demande : seulement avec au moins un an d'historique des demandes ; sinon la soudure, d'après FEWS NET (même texte que v3/annee.js)
+    const tous = this.demandsAll().map(d => Date.parse(d.at)).filter(t => t > 0), plusVieux = tous.length ? Math.min(...tous) : 0, histo = plusVieux && now - plusVieux >= 365 * 864e5, parM = Array(12).fill(0);
+    if (histo) tous.forEach(t => { if (now - t < 365 * 864e5) parM[new Date(t).getMonth()]++; });
+    const mx = Math.max(1, ...parM), SOUD = [5, 6, 7, 8];
+    return { q: R.q, qOn: R.qOn, qInput: R.qInput, qEffacer: R.qEffacer,
+      titre: pleins.length ? 'En pleine récolte en ' + A.MOIS[mo - 1].toLowerCase() : 'Rien en pleine récolte en ' + A.MOIS[mo - 1].toLowerCase(), pleins, pleinsOn: !R.n || pleins.length > 0,
+      demOn: dem.length > 0, dem, ouOn: ou.length > 0, ou, demVide: !dem.length, demVideT: R.n ? 'Aucune demande en cours pour «\u00a0' + R.q.trim() + '\u00a0».' : 'Pas encore de demande en cours.',
+      cherOn: cher.length > 0, cher, cherVide: !cher.length, cherVideT: 'Pas encore assez de prix au kilo', cherSeuil: SE.obs + ' prix de ' + SE.vendeurs + ' vendeurs, sur ' + SE.jours + ' jours',
+      histo: !!histo, sansHisto: !histo, mL: L.map((l, i) => ({ l, c: i + 1 === mo ? 'auj' : '' })),
+      barres: parM.map((n, i) => ({ h: Math.round(n / mx * 100) + '%', c: i + 1 === mo ? 'auj' : '', lab: A.MOIS[i] + ' : ' + pl(n, 'demande') })),
+      soud: L.map((_, i) => (SOUD.includes(i + 1) ? 'soud' : '') + (i + 1 === mo ? ' auj' : '')), soudLab: 'Soudure de mai à août dans le Nord et le Centre',
+      mois: L.map((l, i) => ({ l, c: i + 1 === mo ? 'auj' : '' })), calOn: cal.length > 0, calVide: !cal.length, calVideT: 'Rien au calendrier pour «\u00a0' + R.q.trim() + '\u00a0».',
+      lignes: cal.map(e => ({ l: e[1], src: e[3] || '', cases: L.map((_, i) => (e[2][i + 1] || 'vide') + (i + 1 === mo ? ' auj' : '')),
         lab: e[1] + ' : ' + Object.keys(e[2]).map(m => A.MOIS[m - 1] + ' ' + ({ plein: 'pleine récolte', debut: 'début', fin: 'fin' })[e[2][m]]).join(', ') + (e[3] ? '. Source : ' + e[3] : ''), go: () => ok(e[0]) && this.openFiche(e[0]) })) };
   }
   isDark() { return this.state.logoDark != null ? this.state.logoDark : ls('mdg-app:logo-noir') === true; }

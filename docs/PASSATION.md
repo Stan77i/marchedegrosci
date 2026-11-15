@@ -2259,6 +2259,17 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur.
 
+## 15/11/2026 · Refonte : `suivi.html` (chauffeur sans compte) au dessin de la maquette
+
+- Demande du propriétaire (refonte du 13/11/2026, « ok pour tout »). Branche `claude/suivi-chauffeur`, aucune base touchée, aucun schéma. Cache `mgci-v324`.
+- **Dessin refait** (`suivi.html`) : saisie du code (« Entrez le code reçu », « Ouvrir la mission »), carte de mission (quantité, produit, De, À), interrupteur « Partager ma position » avec son état, étape en gros titre (« Prêt à partir », « En route vers … », « Arrivé · l'acheteur tape le mot secret »), bandeau « Livraison terminée. Le lien ne marche plus. », écran de lien expiré. Jetons clair et sombre (`css/fonts.css`, `css/mgci-tokens.css`, `css/sombre.css` chargés) ; le thème suit celui de l'application, sinon celui du téléphone.
+- **Logique gardée** : `suivi_code_jeton`, `suivi_lien_infos`, `suivi_lien_ouvert`, `suivi_lien_position` ; position envoyée toutes les 15 s au plus ; écran gardé allumé (`wakeLock`) ; arrêt du partage sur `arreter`.
+- **Ajout** : `suivi_lien_infos` est relu chaque minute pour suivre l'étape (prêt, en route, arrivé, terminé, expiré).
+- **Écarts avec la maquette** : pas de « Je suis parti » ni « Je suis arrivé » (aucune fonction serveur pour le lien sans compte ; le départ est détecté à 500 m, schéma 65) ; pas de mot secret tapé par le chauffeur (décision du 14/11 : c'est l'acheteur) ; ni noms, ni poids, ni photos (le serveur ne les renvoie pas) ; pas de croix pour fermer.
+- Vérifié dans un navigateur (iPhone émulé, clair, sombre, 390 et 320 px) avec de fausses données seulement. Captures : `docs/brief-design/captures/suivi-chauffeur-*.jpg`.
+- Documents mis à jour : `docs/REPRISE.md`, `CHANGELOG.md`, `FONCTIONNALITES.md`, `TABLEAU-DE-BORD.md`, `docs/brief-design/ETAT-DESIGN.md`, listes de contrôle (case I10).
+- Reste : la partie 3 de `docs/REPRISE.md`.
+
 ## 15/11/2026 · Prix du marché dans l'onglet Prix, L'année du marché, Tous les produits, un seul seuil
 
 - Demandes du propriétaire (15/11/2026) et décisions « Ok ». Branche `claude/prix-annee-produits`, plusieurs commits, aucune base touchée, aucun schéma. Cache `mgci-v323`.

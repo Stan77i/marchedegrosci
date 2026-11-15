@@ -625,14 +625,15 @@ html[data-theme=sombre] .v2-feuille {
 /* Prix : prix du marché (14/11) — sous chaque produit de « Prix du moment » : prix du marché atteint ou ce qui manque, accord possible, feuille « Par zone » */
 .v2-px-r { border-bottom: 1px solid var(--t08); padding-bottom: 10px; }
 .v2-px-r .v2-px-l { border-bottom: 0; padding-bottom: 6px; }
-.v2-px-pied { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding-left: 68px; }
+.v2-px-pied { display: flex; align-items: center; gap: 8px; padding-left: 68px; }
+.v2-px-pied > .g { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
 .v2-px-mq { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; min-width: 0; font-size: 12.5px; line-height: 1.3; color: var(--texte-3); font-variant-numeric: tabular-nums; }
 .v2-px-mq b { font-weight: 700; color: var(--texte-2); }
 .v2-px-mq b.ok { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 9px 0 7px; border-radius: 999px; background: #DCEFE3; color: #10392B; }
 .v2-px-mq .jg { position: relative; display: block; width: 44px; height: 5px; border-radius: 999px; background: var(--lin); overflow: hidden; }
 .v2-px-mq .jg i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 999px; background: #6CC58C; }
 .v2-px-acc { display: inline-flex; align-items: center; height: 24px; padding: 0 9px; border-radius: 999px; background: #F6E2B0; color: #5C4300; font-size: 12.5px; font-weight: 700; }
-.v2-px-zb { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; height: 44px; padding: 0 4px 0 8px; border: 0; background: none; color: var(--vert); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
+.v2-px-zb { flex: none; display: inline-flex; align-items: center; gap: 5px; height: 44px; padding: 0 2px 0 6px; margin-right: -2px; border: 0; background: none; color: var(--vert); font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 .v2-px-zb:focus-visible { outline: 3px solid var(--vert); outline-offset: 2px; border-radius: 10px; }
 html[data-theme=sombre] .v2-px-mq b.ok { background: rgba(108, 197, 140, .16); color: #A9E2BE; }
 html[data-theme=sombre] .v2-px-acc { background: rgba(242, 194, 48, .16); color: #F2C230; }

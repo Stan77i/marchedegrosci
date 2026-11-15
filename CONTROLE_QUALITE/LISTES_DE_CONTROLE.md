@@ -272,6 +272,12 @@ Règle de `CLAUDE.md` : à chaque changement du front, monter le `?v=` du fichie
 - [ ] **J3. Chaque image `v2/img/*.webp` utilisée par l'application est dans `IMAGES`** de `sw.js`.
   - Vérifier : résultat du script ; sinon comparer `ls v2/img/` à la liste `IMAGES` (ligne `const IMAGES = [` de `sw.js`).
 
+- [ ] **D-prix. Un seul seuil de prix partout** (15/11/2026) : accueil, recherche, onglet Prix, fiche produit, jauge de Publier et L'année affichent un prix à partir de 5 prix de 3 vendeurs sur 30 jours, jamais « 4 prix ».
+  - Vérifier : `grep -n "seuil()\|pxMarche\|MDGMarche.SEUIL" application.dc.html` ; aucun « 4 prix » ni `>= 4` de prix en dur ; avec 4 prix de 3 vendeurs, aucun prix du marché n'est affiché ; avec 5 prix de 3 vendeurs, il l'est.
+- [ ] **E-logo. Le logo n'a aucune action et aucun lien ne mène à l'ancienne page « Prix du marché »** (15/11/2026) : toucher le logo n'ouvre aucun menu ; `#/prix`, `mdg:aller` « prix » et les liens de `v3/aide.js` et `v3/astuces.js` mènent à l'onglet Prix.
+  - Vérifier : Playwright, iPhone émulé, toucher le logo (rien ne s'ouvre) ; ouvrir `#/prix` (onglet Prix actif) ; `grep -rn "openMenu\|fl-menu\|mq-menu" application.dc.html css v3` : aucun résultat.
+- [ ] **E-recherche. Recherches de L'année du marché et de Tous les produits** (15/11/2026) : insensibles aux accents, trouvent les noms locaux et les familles ; texte guidant si rien n'est trouvé ; rangée des familles absente de Tous les produits.
+  - Vérifier : Playwright, taper « mais », « manioc », un nom local, une famille ; vérifier une saisie sans résultat.
 - [ ] **J4. Aucun fichier supprimé n'est encore référencé** : les 6 fichiers retirés le 14/11/2026 (liste dans la section « retrait de l'ancien code » de `docs/PASSATION.md`) ne sont cités ni dans `sw.js`, ni dans `application.dc.html`, ni dans les pages du site.
   - Vérifier : chercher leurs noms avec `grep -rn` dans `sw.js`, `application.dc.html`, `index-v3.html` et `site/` : aucun résultat.
 

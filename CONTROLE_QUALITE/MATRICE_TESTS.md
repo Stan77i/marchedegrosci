@@ -51,8 +51,8 @@ Scénarios de commande (`SCN-01` à `SCN-48`, unités U01, U05, U06) : partie 5.
 | A. Doublons | U12, U10 (A7, A8), U02 (A9), U08 (A10), U13 (A11) |
 | B. Sur-explications | U12 |
 | C. Bugs | U10 (C8 : U09) |
-| D. Logique et cohérence | U01, U03, U06, U13 |
-| E. À sa place | U12 |
+| D. Logique et cohérence (D-prix : seuil unique 5/3/30) | U01, U03, U06, U13 |
+| E. À sa place (E-logo : logo sans action, aucun lien vers l'ancienne page Prix du marché ; E-recherche : recherches de L'année et de Tous les produits) | U12 |
 | F. Design | U12 |
 | G. Serveur (projet de test) | U09, U02 |
 | H. Production (lecture seule) | U09, U02 |

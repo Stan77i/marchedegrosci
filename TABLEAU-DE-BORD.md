@@ -1,6 +1,6 @@
 # Tableau de bord du propriétaire
 
-**Dernière mise à jour : 14/11/2026**
+**Dernière mise à jour : 15/11/2026**
 
 C'est **la seule page à lire**. Tout ce qui est important est ici, en français simple. Les détails sont dans les documents cités tout en bas.
 
@@ -14,6 +14,8 @@ C'est **la seule page à lire**. Tout ce qui est important est ici, en français
 > **Pause du 25/10/2026 (plus de crédit)** : l'état exact et ce qu'il faut reprendre sont dans [`docs/RAPPORT-PAUSE-2026-10-25.md`](docs/RAPPORT-PAUSE-2026-10-25.md). Au retour : écrire « On reprend ».
 
 > **13/11/2026 : refonte de l'application.** Vous avez dit « ok pour tout » à la maquette de Claude Design. Claude l'applique en 16 étapes, une PR par étape, avec captures avant chaque PR. Avancement : `docs/brief-design/ETAT-DESIGN.md`.
+
+> **15/11/2026 : Prix, Année du marché, Tous les produits.** Le prix du marché est maintenant dans l'onglet Prix (le menu du logo est supprimé : le logo n'ouvre plus rien). L'année du marché et Tous les produits ont une recherche. Un seul seuil pour afficher un prix partout : 5 prix de 3 vendeurs sur 30 jours. Le choix du logo vert ou noir est dans Compte → Réglages. Rien à faire de votre côté, sauf fusionner la PR quand vous l'aurez vue.
 
 ## 1. Ce que vous devez faire maintenant
 

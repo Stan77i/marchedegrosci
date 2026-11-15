@@ -10,7 +10,7 @@
 <link rel="apple-touch-icon" href="icons/v2/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <style>/* avant tout script : le fond de l'écran d'ouverture, sans rien dessus (le sac et le nom arrivent ensemble avec l'écran d'ouverture : plus de petit logo qui s'affiche puis disparaît) ; jamais une page blanche (retiré quand l'application est montée) */html{background:#10392B;color-scheme:dark}html.spl-noir{background:#141414}html.monte{background:#171512}</style>
-<script>/* même couleur que l'écran d'ouverture (logo noir choisi autrefois dans le menu du logo, retiré le 14/11) : pas de changement de couleur au démarrage */try{if(localStorage.getItem("mdg-app:logo-noir")==="true")document.documentElement.classList.add("spl-noir")}catch(e){}</script>
+<script>/* même couleur que l'écran d'ouverture (logo noir choisi dans Compte → Réglages) : pas de changement de couleur au démarrage */try{if(localStorage.getItem("mdg-app:logo-noir")==="true")document.documentElement.classList.add("spl-noir")}catch(e){}</script>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Marché de Gros">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -36,7 +36,7 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261114g4','v3/astuces.js?v=20261115p1','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261131lq2','v3/negoce.js?v=20261114g1','v3/compte.js?v=20261114g4','v3/pousse.js?v=20261124nt','v3/reputation.js?v=20261114g2','v3/statuts.js?v=20261124n1','v3/messages.js?v=20261114g3','v3/aide.js?v=20261115p1','v3/alertes.js?v=20261114g2','v3/alertes-v2.js?v=20261114g2','v3/releve.js?v=20261114g3','v3/commandes.js?v=20261115r1','v3/chauffeur.js?v=20261114g3','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261114g3','v3/racheter.js?v=20261114g3','v3/appro.js?v=20261114g3','v3/groupes.js?v=20261114g3','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261114f2','v3/identite.js?v=20261114g3','v3/boutique.js?v=20261113t1','v3/equipe.js?v=20261114g3'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261114g4','v3/astuces.js?v=20261115d1','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261131lq2','v3/negoce.js?v=20261114g1','v3/compte.js?v=20261115d1','v3/pousse.js?v=20261124nt','v3/reputation.js?v=20261114g2','v3/statuts.js?v=20261124n1','v3/messages.js?v=20261114g3','v3/aide.js?v=20261115d1','v3/alertes.js?v=20261114g2','v3/alertes-v2.js?v=20261114g2','v3/releve.js?v=20261114g3','v3/commandes.js?v=20261115r1','v3/chauffeur.js?v=20261114g3','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261114g3','v3/racheter.js?v=20261114g3','v3/appro.js?v=20261114g3','v3/groupes.js?v=20261114g3','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261114f2','v3/identite.js?v=20261114g3','v3/boutique.js?v=20261113t1','v3/equipe.js?v=20261114g3'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief (1,5 Mo) se télécharge en avance quand tout est calme : l'ouvrir devient presque immédiat.
    Jamais à la toute première ouverture (FIA-58 : le forfait de qui découvre l'application), ni en économie de données, en 2G ou en 3G. */
@@ -109,7 +109,8 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
       </div>
     </section></sc-if>
     <section class="v2-sec" style="gap:4px">
-      <h2 style="margin:0 0 6px;font-size:19px;font-weight:700;letter-spacing:-.01em">{{ v2.presT }}</h2>
+      <!-- « Toutes les offres » (15/11) : la page Acheter (toutes les offres, avec filtres), quand cette section montre des offres -->
+      <div class="v2-sec-t" style="margin-bottom:6px"><h2>{{ v2.presT }}</h2><sc-if value="{{ v2.toutesOn }}" hint-placeholder-val="{{ true }}"><button class="v2-lien" style="flex:none;white-space:nowrap" onClick="{{ v2.versToutes }}">Toutes les offres</button></sc-if></div>
       <sc-for list="{{ v2.pres }}" as="r" hint-placeholder-count="3"><button class="v2-ligne" onClick="{{ r.go }}"><span class="ic {{ r.k }}"><sc-if value="{{ r.d }}" hint-placeholder-val="{{ false }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 4.5h3l2.3 10.5h10.2l2-7.5H6.5"></path><circle cx="9" cy="19" r="1.6"></circle><circle cx="17" cy="19" r="1.6"></circle></svg></sc-if><sc-if value="{{ r.o }}" hint-placeholder-val="{{ true }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#171512" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 10.5h17l-2 9h-13z"></path><path d="M8 10.5L11 4.5M16 10.5L13 4.5"></path><path d="M9 13.5v3.5M12 13.5v3.5M15 13.5v3.5"></path></svg></sc-if></span><span class="tx"><b>{{ r.t }}</b><small>{{ r.s }}</small></span><span class="qd">{{ r.h }}</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none;color:var(--mute)"><path d="M9 6l6 6-6 6"></path></svg></button></sc-for>
       <sc-if value="{{ v2.presVide }}" hint-placeholder-val="{{ false }}"><p class="v2-vide" style="margin:0">{{ v2.presVideT }}</p></sc-if>
     </section>
@@ -120,7 +121,7 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
 
   <!-- Prix : le tableau du marché (refait au lot 8) -->
   <div style="display:{{ accP }}">
-  <!-- Prix du moment (lot 8, maquette « MGCI App v2 ») : fourchette et médiane des prix publiés, par produit, jamais sous 4 prix -->
+  <!-- Prix du moment (lot 8, maquette « MGCI App v2 ») : fourchette et médiane des prix publiés, par produit, seulement au seuil du prix du marché (MDGMarche.SEUIL) -->
   <div class="v2-px">
     <h1 class="v2-h1">Prix du <em>moment</em></h1>
     <p class="v2-px-sous">Ce que le marché observe sur les offres publiées. Jamais le prix d’un seul vendeur.</p>
@@ -136,7 +137,7 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
           <button class="v2-px-zb" onClick="{{ r.zones }}" aria-label="{{ r.zAria }}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11Z"></path><circle cx="12" cy="10" r="2.2"></circle></svg>Par zone</button></div></div></sc-for>
       <sc-if value="{{ v2.pxVide }}" hint-placeholder-val="{{ false }}"><p class="v2-vide" style="margin:12px 0 0">Pas encore d’annonce avec un prix dans cette zone.</p></sc-if>
     </div>
-    <p class="v2-px-note">La barre verte montre la fourchette observée, le trait la médiane. Sous 4 relevés, on n’affiche pas de prix. Le prix du marché demande {{ v2.pxSeuil }}.</p>
+    <p class="v2-px-note">La barre verte montre la fourchette observée, le trait la médiane. Ils s’affichent à partir de {{ v2.pxSeuil }}.</p>
   </div>
   </div>
   <!-- Recherche (lot 4) : écran dédié, recherche en phrase (« 10 tonnes de manioc à Korhogo ») branchée sur v2/search.js -->
@@ -737,6 +738,7 @@ class Component extends DCLogic {
     addEventListener('focusin', this.onFocus); addEventListener('focusout', this.onBlur); addEventListener('scroll', this.onVV);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { this._w = {}; this.forceUpdate(); });
     this.setIcons(this.isDark());
+    window.MDGLogo = { noir: () => this.isDark(), choisir: d => this.setLogo(d) };   // pour Compte → Réglages (v3/compte.js)
     this.onAller = e => { const p = e.detail && e.detail.page; if (p && HASH[p]) this.push(p); }; addEventListener('mdg:aller', this.onAller);
     // un lien d'intention ouvert alors que l'application est déjà ouverte (site → application)
     this.onHashIntention = () => { if (/^#\/(publier|groupes|appro|boutique)\b|^#\/[^?]*\?/.test(location.hash)) this.intention(); }; addEventListener('hashchange', this.onHashIntention);   // « Montrer dans l'app » du guide (v3/guide.js)
@@ -1179,15 +1181,14 @@ class Component extends DCLogic {
     const region = (moiP && moiP.region) || me.region || '', ville = (moiP && (moiP.ville || moiP.city)) || me.city || '';
     const prenom = moiS && moiP ? (moiP.pseudo || moiP.prenom || '') : '';
     const aller = k => { this.setState({ accTab: k }); const sc = document.querySelector('[data-pg="home"] .acc-sc'); if (sc) sc.scrollTop = 0; };
-    // « Prix du moment » : les produits qui ont des annonces ; la médiane seulement à partir de 4 prix (sinon on montre seulement les nombres)
+    // « Prix du moment » : les produits qui ont des annonces ; la médiane seulement au seuil du prix du marché (pxMarche), sinon seulement les nombres
     const off = this.offers().filter(o => o.qty > 0), dem = this.demands(), par = {};
     off.forEach(o => { const x = par[o.slug] || (par[o.slug] = { o: 0, d: 0, px: [], u: {} }); x.o++; if (o.price > 0) { x.px.push(o.price); x.u[o.unit] = (x.u[o.unit] || 0) + 1; } });
     dem.forEach(d => { const x = par[d.slug] || (par[d.slug] = { o: 0, d: 0, px: [], u: {} }); x.d++; });
-    const med = l => { const s = l.slice().sort((a, b) => a - b), k = s.length >> 1; return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2; };
     const rail = Object.keys(par).map(slug => ({ slug, x: par[slug] })).sort((a, b) => (b.x.o + b.x.d) - (a.x.o + a.x.d)).slice(0, 10).map(({ slug, x }) => {
-      const P = this.prod(slug), u = Object.keys(x.u).sort((a, b) => x.u[b] - x.u[a])[0] || '', pxOn = x.px.length >= 4;
+      const P = this.prod(slug), m = this.pxMarche(off.filter(o => o.slug === slug)), pxOn = m.ok, u = m.u;
       const nb = [x.o ? pl(x.o, 'offre') : '', x.d ? pl(x.d, 'demande') : ''].filter(Boolean).join(' · ');
-      return { nom: P.name, img: P.thumb, pxOn, px: pxOn ? A.fmt(med(x.px)) + ' F' : '', u: u ? '/ ' + u : '', nb, lab: P.name + (pxOn ? ', prix médian ' + A.fmt(med(x.px)) + ' F' : '') + (nb ? ', ' + nb : ''), go: () => this.openFiche(slug) }; });
+      return { nom: P.name, img: P.thumb, pxOn, px: pxOn ? A.fmt(m.md) + ' F' : '', u: u ? '/ ' + u : '', nb, lab: P.name + (pxOn ? ', prix médian ' + A.fmt(m.md) + ' F' : '') + (nb ? ', ' + nb : ''), go: () => this.openFiche(slug) }; });
     // « Disponible / Recherché autour de vous » : dans sa région d'abord ; sinon dans tout le pays
     const base = vend ? dem : off, ici = region ? base.filter(x => x.region === region) : [], liste = (ici.length ? ici : base).slice().sort((a, b) => (Date.parse(b.at) || 0) - (Date.parse(a.at) || 0)).slice(0, 3);
     // comme la maquette : « 200 sacs d’igname » puis « Nom · Ville » (nom public, déjà réduit à l'initiale ; la distance n'est pas connue)
@@ -1233,8 +1234,8 @@ class Component extends DCLogic {
     const slugs = !qt ? [] : pslug ? [pslug] : (ps && ps.candidates && ps.candidates.length ? ps.candidates.map(c => c.slug || (c.product && c.product.slug)) : (SE ? SE.suggest((ps && ps.productText) || qt, 8).map(x => x.slug) : [])).filter(Boolean);
     // sans mot tapé : « Les plus échangés » (les 6 produits qui ont le plus d'annonces), comme la maquette
     const plusEch = Object.keys(par).sort((a, b) => (par[b].o + par[b].d) - (par[a].o + par[a].d)).slice(0, 6);
-    const res = [...new Set(qt ? slugs : plusEch)].map(slug => { const P = this.prod(slug), x = par[slug] || { o: 0, d: 0, px: [], u: {} }, u = Object.keys(x.u).sort((a, b) => x.u[b] - x.u[a])[0] || '', ok4 = x.px.length >= 4;
-      return { nom: P.name, img: P.thumb, sub: x.o || x.d ? [x.o ? pl(x.o, 'offre') : '', x.d ? pl(x.d, 'demande') : ''].filter(Boolean).join(' · ') : 'Pas encore d’annonce', mOn: true, m: ok4 ? A.fmt(med(x.px)) + ' F' : '', u: ok4 ? (u ? '/ ' + u : '') : 'Pas assez de relevés',
+    const res = [...new Set(qt ? slugs : plusEch)].map(slug => { const P = this.prod(slug), x = par[slug] || { o: 0, d: 0, px: [], u: {} }, mk = this.pxMarche(off.filter(o => o.slug === slug)), u = mk.u, ok4 = mk.ok;
+      return { nom: P.name, img: P.thumb, sub: x.o || x.d ? [x.o ? pl(x.o, 'offre') : '', x.d ? pl(x.d, 'demande') : ''].filter(Boolean).join(' · ') : 'Pas encore d’annonce', mOn: true, m: ok4 ? A.fmt(mk.md) + ' F' : '', u: ok4 ? (u ? '/ ' + u : '') : 'Pas assez de relevés',
         go: () => { retenir(qt); this.openFiche(slug); } }; });
     const versDemande = () => { retenir(qt); const pu = uC && A.UNITS && A.UNITS.includes(uC) ? uC : '';
       this.setState(s => ({ df: Object.assign({}, s.df, pslug ? { slug: pslug } : {}, ps && ps.quantity ? { qty: String(ps.quantity) } : {}, pu ? { unit: pu } : {}, loc && loc.regionSlug ? { region: loc.regionSlug, city: loc.kind === 'ville' ? this.accord(loc.regionSlug, loc.name) : s.df.city } : {}) })); this.push('demande'); };
@@ -1243,7 +1244,7 @@ class Component extends DCLogic {
     return {
       salut: prenom ? 'Bonjour ' + prenom : 'Bienvenue au marché', lieuOn: !!(ville || region), lieu: [ville, region ? this.regName(region) : ''].filter((v, i, l) => v && l.indexOf(v) === i).join(' · '),
       ordO: vend || !role ? '0' : '1', ordD: vend || !role ? '1' : '0',
-      railOn: rail.length > 0, rail, pres, presT, presVide: !pres.length,
+      railOn: rail.length > 0, rail, pres, presT, presVide: !pres.length, toutesOn: !vend, versToutes: () => { this.setState({ aq: '' }); this.push('acheter'); },
       presVideT: vend ? 'Pas encore de demande. Publiez votre offre : les acheteurs vous trouveront.' : 'Pas encore d’offre. Publiez votre demande : le réseau commence par vous.',
       clocheOn: nCl > 0, clocheN: nCl > 99 ? '99+' : String(nCl), clocheL: nCl ? 'Alertes : ' + nCl + ' à voir' : 'Alertes',
       notifS: ac.accCl && ac.accCl.on ? ac.accCl.n + ' nouvelle' + (ac.accCl.n === '1' ? '' : 's') : 'Vos notifications',
@@ -1263,20 +1264,20 @@ class Component extends DCLogic {
         src.forEach(o => { const g = G[o.slug] || (G[o.slug] = { u: {}, l: [] }); if (o.price > 0) { g.u[o.unit] = (g.u[o.unit] || 0) + 1; g.l.push(o); } });
         dsrc.forEach(d => { if (!G[d.slug]) G[d.slug] = { u: { [d.unit]: 0 }, l: [] }; });
         // le prix du marché (venu de l'ancienne page du menu, 14/11) : 5 prix de 3 vendeurs sur 30 jours (MDGMarche.SEUIL), sinon ce qui manque ; « Accord possible » quand un budget atteint le prix le plus bas
-        const SE = (window.MDGMarche && MDGMarche.SEUIL) || { obs: 5, vendeurs: 3, jours: 30 }, t30 = Date.now() - SE.jours * 864e5;
+        const SE = this.seuil();
         const zonesDe = (slug, nom) => () => { const o = () => window.MDGPrixZone && MDGPrixZone.ouvrir(slug, nom); if (window.MDGPrixZone) o(); else if (window.MDGPlus) { MDGPlus.quand(o); MDGPlus.charger(); } };
-        const rows = Object.keys(G).map(slug => { const g = G[slug], u = Object.keys(g.u).sort((a, b) => g.u[b] - g.u[a])[0] || '', px = g.l.filter(o => o.unit === u).map(o => o.price).sort((a, b) => a - b), n = px.length, ok = n >= 4, P = this.prod(slug);
-          const r30 = g.l.filter(o => o.unit === u && (!o.at || Date.parse(o.at) >= t30)), nv = new Set(r30.map(o => o.uid || o.name)).size, mOk = r30.length >= SE.obs && nv >= SE.vendeurs;
-          const mP = Math.max(0, SE.obs - r30.length), mV = Math.max(0, SE.vendeurs - nv), manque = [mP ? mP + ' prix' : '', mV ? mV + ' vendeur' + (mV > 1 ? 's' : '') : ''].filter(Boolean).join(' et ');
-          const bud = dsrc.filter(d => d.slug === slug && d.unit === u && d.budget > 0).map(d => d.budget), maxB = bud.length ? Math.max(...bud) : 0, acc = n > 0 && maxB >= px[0];
-          const mn = px[0], mx = px[n - 1], md = n ? med(px) : 0, lo = mn * .8, hi = mx * 1.15, r = hi - lo || 1, pc = v => Math.max(0, Math.min(100, v)) + '%';
+        const rows = Object.keys(G).map(slug => { const g = G[slug], u = Object.keys(g.u).sort((a, b) => g.u[b] - g.u[a])[0] || '', P = this.prod(slug);
+          // médiane et fourchette seulement au seuil du prix du marché (5 prix de 3 vendeurs sur 30 jours) ; en dessous, la pastille dit ce qui manque
+          const k = this.pxMarche(g.l, u), { n, nv, manque, mn, mx, md } = k, ok = k.ok, mOk = ok, pxA = g.l.filter(o => o.unit === u).map(o => o.price);
+          const bud = dsrc.filter(d => d.slug === slug && d.unit === u && d.budget > 0).map(d => d.budget), maxB = bud.length ? Math.max(...bud) : 0, acc = pxA.length > 0 && maxB >= Math.min(...pxA);
+          const lo = mn * .8, hi = mx * 1.15, r = hi - lo || 1, pc = v => Math.max(0, Math.min(100, v)) + '%';
           return { n, ok, act: (par[slug] ? par[slug].o + par[slug].d : 0), nom: P.name, img: P.thumb, u: u ? 'par ' + u : '', med: ok ? A.fmt(md) + ' F' : 'Pas assez de relevés', mC: ok ? '' : 'pas',
-            sub: ok ? A.fmt(mn) + ' – ' + A.fmt(mx) + ' F · ' + n + ' relevés' : n + (n > 1 ? ' relevés' : ' relevé') + ' · il en faut 4',
+            sub: ok ? A.fmt(mn) + ' – ' + A.fmt(mx) + ' F · ' + n + ' relevés' : n ? n + (n > 1 ? ' relevés' : ' relevé') + ' · ' + nv + (nv > 1 ? ' vendeurs' : ' vendeur') : 'Aucun relevé sur ' + SE.jours + ' jours',
             bl: ok ? pc((mn - lo) / r * 100) : '0%', bw: ok ? pc((mx - mn) / r * 100) : '0%', bm: ok ? pc((md - lo) / r * 100) : '0%',
             lab: P.name + (ok ? ', médiane ' + A.fmt(md) + ' F ' + (u ? 'par ' + u : '') + ', de ' + A.fmt(mn) + ' à ' + A.fmt(mx) + ' F, ' + n + ' relevés' : ', pas assez de relevés'), go: () => this.openFiche(slug),
-            mOk, mNon: !mOk, mT: mOk ? nv + ' vendeurs' : 'encore ' + manque, mPct: Math.round(Math.min(1, r30.length / SE.obs) * 50 + Math.min(1, nv / SE.vendeurs) * 50) + '%',
-            mLab: mOk ? 'Prix du marché atteint : ' + r30.length + ' prix de ' + nv + ' vendeurs sur ' + SE.jours + ' jours' : 'Pas encore de prix du marché : il faut encore ' + manque + ' (' + SE.obs + ' prix de ' + SE.vendeurs + ' vendeurs sur ' + SE.jours + ' jours)',
-            acc, accLab: acc ? 'Accord possible : un acheteur propose ' + A.fmt(maxB) + ' F, un vendeur demande ' + A.fmt(px[0]) + ' F' : '',
+            mOk, mNon: !mOk, mT: mOk ? nv + ' vendeurs' : 'encore ' + manque, mPct: Math.round(Math.min(1, n / SE.obs) * 50 + Math.min(1, nv / SE.vendeurs) * 50) + '%',
+            mLab: mOk ? 'Prix du marché atteint : ' + n + ' prix de ' + nv + ' vendeurs sur ' + SE.jours + ' jours' : 'Pas encore de prix du marché : il faut encore ' + manque + ' (' + SE.obs + ' prix de ' + SE.vendeurs + ' vendeurs sur ' + SE.jours + ' jours)',
+            acc, accLab: acc ? 'Accord possible : un acheteur propose ' + A.fmt(maxB) + ' F, un vendeur demande ' + A.fmt(Math.min(...pxA)) + ' F' : '',
             zones: zonesDe(slug, P.name), zAria: P.name + ' : prix par zone et tendance' }; })
           .sort((a, b) => (b.act - a.act) || (b.n - a.n) || a.nom.localeCompare(b.nom, 'fr'));   // par activité (offres et demandes), comme la maquette
         return { pxZones: [{ l: 'Tout le pays', on: String(!zone), go: () => this.setState({ v2pxZone: '' }) }].concat(villes.map(v => ({ l: v, on: String(zone === v), go: () => this.setState({ v2pxZone: v }) }))),
@@ -1295,10 +1296,8 @@ class Component extends DCLogic {
     const moiP = ss && C && C.profil ? C.profil() : null, region = (moiP && moiP.region) || me.region || '', ville = (moiP && (moiP.ville || moiP.city)) || me.city || '';
     const V = window.MDGVilles, refV = c => String((V && V.ref ? V.ref(c) : c) || '').toLowerCase(), fmt = A.fmt, un = (q, u) => fmt(q) + ' ' + A.unites(q, u);
     const O = this.offers().filter(o => o.slug === slug && o.qty > 0), D = this.demands().filter(d => d.slug === slug);
-    // prix observés : les offres avec un prix, dans l'unité la plus fréquente ; une fourchette seulement à partir de 4 prix
-    const uc = {}; O.forEach(o => { if (o.price > 0) uc[o.unit] = (uc[o.unit] || 0) + 1; });
-    const U = Object.keys(uc).sort((a, b) => uc[b] - uc[a])[0] || '', px = O.filter(o => o.price > 0 && o.unit === U).map(o => o.price).sort((a, b) => a - b), n = px.length, ok = n >= 4;
-    const med = n ? (n % 2 ? px[n >> 1] : (px[(n >> 1) - 1] + px[n >> 1]) / 2) : 0;
+    // prix observés : les offres avec un prix, dans l'unité la plus fréquente ; fourchette et médiane seulement au seuil du prix du marché (pxMarche)
+    const PM = this.pxMarche(O), U = PM.u, px = PM.px, n = PM.n, ok = PM.ok, med = PM.md;
     const side = S.v2side === 'vendre' ? 'vendre' : 'acheter', ach = side === 'acheter', src = ach ? O : D;
     const zones = [ville ? { id: 'ville', l: (V && V.propre ? V.propre(ville) : ville) || ville, f: x => !!x.city && refV(x.city) === refV(ville) } : null,
       region ? { id: 'region', l: 'Ma région', f: x => x.region === region } : null, { id: 'pays', l: 'Tout le pays', f: () => true }].filter(Boolean);
@@ -1339,7 +1338,7 @@ class Component extends DCLogic {
       retour: (() => { const st = S.stack || [], av = st[st.length - 2] || 'home';
         return av === 'home' ? ({ recherche: 'Recherche', alertes: 'Alertes', activite: 'Activité' }[S.accTab] || 'Prix du moment') : ({ categories: 'Tous les produits', annee: 'L’année du marché', carte: 'Carte du réseau', pubs: 'Mes publications', acheter: 'Offres' }[av] || 'Retour'); })(), nom: P.name, img: P.thumb, alC: window.MDGAlertes && MDGAlertes.suit(slug) ? 'var(--vert)' : 'var(--encre)',
       range: ok ? fmt(px[0]) + ' – ' + fmt(px[n - 1]) + ' F / ' + U : 'Pas encore de prix du marché',
-      obs: ok ? 'Médiane ' + fmt(med) + ' F · ' + n + ' prix publiés' : n ? n + ' prix publié' + (n > 1 ? 's' : '') + ' : il en faut 4 pour un prix du marché' : 'Aucun prix publié pour l’instant',
+      obs: ok ? 'Médiane ' + fmt(med) + ' F · ' + n + ' prix de ' + PM.nv + ' vendeurs' : n ? 'Encore ' + PM.manque + ' · ' + n + ' prix publié' + (n > 1 ? 's' : '') : 'Aucun prix publié sur ' + PM.SE.jours + ' jours',
       aC: ach ? 'on' : '', aP: String(ach), aN: String(O.length), vC: ach ? '' : 'on j', vP: String(!ach), vN: String(D.length),
       versA: () => this.setState({ v2side: 'acheter', v2zone: null }), versV: () => this.setState({ v2side: 'vendre', v2zone: null }),
       zones: zones.map(z => ({ l: z.l, n: String(src.filter(z.f).length), on: String(z.id === zid), go: () => this.setState({ v2zone: z.id }) })),
@@ -1362,9 +1361,8 @@ class Component extends DCLogic {
     const QU = isO ? [['maintenant', 'Maintenant', 'Tout est prêt à partir', 'maintenant'], ['s1', 'Dans 1 semaine', 'Vous pouvez déjà négocier', jour(7)], ['s2', 'Dans 2 semaines', 'Récolte en cours', jour(14)], ['mois', 'Ce mois-ci', 'Disponible avant la fin du mois', 'mois']]
       : [['vite', 'Aujourd’hui', 'Livraison le jour même si possible', 'vite'], ['semaine', 'Cette semaine', 'D’ici 7 jours', 'semaine'], ['mois', 'Ce mois-ci', 'Avant la fin du mois', 'mois']];
     const quand = isO ? f.v2q || (f.avail === 'date' ? '' : '') : f.v2q || '', Q = QU.find(x => x[0] === quand);
-    // le marché du produit, dans cette unité : fourchette seulement à partir de 4 prix
-    const px = P ? O.filter(o => o.slug === f.slug && o.unit === u && o.price > 0).map(o => o.price).sort((a, b) => a - b) : [], nP = px.length, mOk = nP >= 4;
-    const med = nP ? (nP % 2 ? px[nP >> 1] : (px[(nP >> 1) - 1] + px[nP >> 1]) / 2) : 0;
+    // le marché du produit, dans cette unité : fourchette seulement au seuil du prix du marché (pxMarche)
+    const PM = P ? this.pxMarche(O.filter(o => o.slug === f.slug), u) : { px: [], n: 0, ok: false, md: 0 }, px = PM.px, nP = PM.n, mOk = PM.ok, med = PM.md;
     const NICE = [1, 2, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000], pas = v => { const c = Math.max(1, v * .025); return NICE.reduce((b, x) => Math.abs(Math.log(x / c)) < Math.abs(Math.log(b / c)) ? x : b, 1); };
     const pst = pas(prix || med || px[0] || 1000), qst = { kg: 50, tonne: 1, litre: 10 }[u] || 10;
     const LBL = ['Produit', 'Quantité', 'Lieu', 'Quand', isO ? 'Prix' : 'Budget'];
@@ -1387,7 +1385,7 @@ class Component extends DCLogic {
     const vq = S.v2vq || '', vSug = vq.trim().length >= 2 && V ? V.toutes().filter(c => A.norm(c.nom).startsWith(A.norm(vq.trim()))).slice(0, 6).map(c => ({ l: c.nom, go: () => choisirVille(c.nom) })) : [];
     const rapides = (u === 'kg' ? [100, 500, 1000, 5000] : u === 'tonne' ? [1, 5, 10, 25] : [25, 125, 250, 500]).map(n => ({ l: fmt(n), go: () => set({ qty: String(n) }) }));
     const UN = ['sac', 'régime', 'carton', 'tonne', 'kg']; if (u && !UN.includes(u)) UN.push(u);
-    // la jauge du prix : où se place ce prix dans la fourchette du marché (rien d'inventé : seulement avec 4 prix)
+    // la jauge du prix : où se place ce prix dans la fourchette du marché (rien d'inventé : seulement au seuil du prix du marché)
     let jOn = false, jl = '0%', jw = '0%', jm = '0%', jMsg = '', jC = '';
     if (P && prix) { if (mOk) { const mn = px[0], mx = px[nP - 1], lo = mn * .8, hi = mx * 1.15, r = hi - lo || 1, pc = v => Math.max(0, Math.min(100, v)) + '%';
         jOn = true; jl = pc((mn - lo) / r * 100); jw = pc((mx - mn) / r * 100); jm = pc((prix - lo) / r * 100);
@@ -1474,7 +1472,7 @@ class Component extends DCLogic {
       return { v, s: Object.keys(x.p).length > 1 ? 'Surtout ' + nom.toLowerCase() : nom, n: pl(x.n, 'demande'), lab: v + ', ' + pl(x.n, 'demande') + ', surtout ' + nom, go: () => this.openFiche(s) }; });
     // le plus cher au kilo : prix vendeurs en kg ou en tonne (ramenés au kg), même seuil que le prix observé (MDGMarche.SEUIL : 5 prix, 3 vendeurs, 30 jours) ;
     // les sacs, cartons, régimes… n'ont pas de poids fixe : ils ne se comparent pas
-    const SE = (window.MDGMarche && MDGMarche.SEUIL) || { obs: 5, vendeurs: 3, jours: 30 }, G = {};
+    const SE = this.seuil(), G = {};
     this.offers().forEach(o => { const u = String(o.unit || '').toLowerCase(), k = u === 'kg' ? 1 : /^(t|tonne)s?$/.test(u) ? 1000 : 0, t = Date.parse(o.at);
       if (!k || !(o.price > 0) || !pOk(o.slug) || (t && now - t > SE.jours * 864e5)) return; const g = G[o.slug] || (G[o.slug] = { px: [], v: new Set() }); g.px.push(o.price / k); g.v.add(o.uid || o.phone || o.name); });
     const med = l => { const s = l.slice().sort((a, b) => a - b), k = s.length >> 1; return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2; };
@@ -1496,6 +1494,17 @@ class Component extends DCLogic {
         lab: e[1] + ' : ' + Object.keys(e[2]).map(m => A.MOIS[m - 1] + ' ' + ({ plein: 'pleine récolte', debut: 'début', fin: 'fin' })[e[2][m]]).join(', ') + (e[3] ? '. Source : ' + e[3] : ''), go: () => ok(e[0]) && this.openFiche(e[0]) })) };
   }
   isDark() { return this.state.logoDark != null ? this.state.logoDark : ls('mdg-app:logo-noir') === true; }
+  // Logo vert / Logo noir : choisi dans Compte → Réglages (v3/compte.js, par window.MDGLogo), gardé sur le téléphone comme avant
+  setLogo(d) { d = !!d; ls('mdg-app:logo-noir', d); this.setIcons(d); this.setState({ logoDark: d }); }
+  // un seul seuil pour tout prix du marché (onglet Prix, accueil, recherche, fiche, jauge de Publier, « Le plus cher ») : MDGMarche.SEUIL, 5 prix de 3 vendeurs sur 30 jours ;
+  // l = des offres (prix, unité, vendeur, date) ; u = l'unité (sinon la plus fréquente) ; médiane et fourchette seulement quand ok
+  seuil() { return (window.MDGMarche && MDGMarche.SEUIL) || { obs: 5, vendeurs: 3, jours: 30 }; }
+  pxMarche(l, u) { const SE = this.seuil(), t = Date.now() - SE.jours * 864e5, pr = l.filter(o => o.price > 0);
+    if (!u) { const c = {}; pr.forEach(o => c[o.unit] = (c[o.unit] || 0) + 1); u = Object.keys(c).sort((a, b) => c[b] - c[a])[0] || ''; }
+    const r = pr.filter(o => o.unit === u && (!o.at || Date.parse(o.at) >= t)), px = r.map(o => o.price).sort((a, b) => a - b), n = px.length, k = n >> 1;
+    const nv = new Set(r.map(o => o.uid || o.phone || o.name)).size, mP = Math.max(0, SE.obs - n), mV = Math.max(0, SE.vendeurs - nv);
+    return { SE, u, px, n, nv, ok: !mP && !mV, manque: [mP ? mP + ' prix' : '', mV ? mV + ' vendeur' + (mV > 1 ? 's' : '') : ''].filter(Boolean).join(' et '),
+      mn: px[0], mx: px[n - 1], md: n ? (n % 2 ? px[k] : (px[k - 1] + px[k]) / 2) : 0 }; }
   setIcons(d) { const n = d ? '-noir' : ''; document.querySelectorAll('link[rel="apple-touch-icon"]').forEach(l => l.href = 'icons/v2/apple-touch-icon' + n + '.png'); document.querySelectorAll('link[rel="icon"]').forEach(l => l.href = l.type === 'image/svg+xml' ? 'icons/v2/favicon' + n + '.svg' : 'icons/v2/favicon' + n + '-32.png'); }
   closeAll() { this.setState({ sheet: null, sheetDy: 0, done: null }); }
   // FIA-59 : avant l'arrivée de v3/compte.js (module différé), le profil gardé sur le téléphone (même clé que MDGCompte) : le prénom

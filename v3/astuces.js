@@ -108,7 +108,7 @@
       ['🗂️', 'Tous les produits vivriers', 'Rangés en *12 familles* : céréales, tubercules, légumes et fruits, poissons…'],
       ['👆', 'Touchez une famille, puis un produit', 'Vous ouvrez sa *fiche* : ses offres, ses demandes et sa saison.']] },
     p_prix: { t: 'Prix du moment', insiste: 2, cartes: [
-      ['📈', 'Le prix de chaque produit', 'La barre verte : la *fourchette* des prix publiés ; le trait : la *médiane*. Sous 4 prix, rien n’est affiché.'],
+      ['📈', 'Le prix de chaque produit', 'La barre verte : la *fourchette* des prix publiés ; le trait : la *médiane*. Affichés seulement quand le *prix du marché* est atteint.'],
       ['✅', 'Le prix du marché', 'Atteint avec *5 prix de 3 vendeurs* sur 30 jours. Sinon, on vous dit ce qui manque.'],
       ['🤝', '« Accord possible »', 'Un acheteur paie au moins le prix d’un vendeur. Touchez « *Par zone* » pour les prix par district et la tendance.']] },
     p_annee: { t: 'L’année du marché', insiste: 2, cartes: [

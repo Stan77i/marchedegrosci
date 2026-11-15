@@ -847,14 +847,15 @@ label.cp-r{cursor:pointer}
       });
     },
     prefs(main) {
-      // Réglages (maquette) : apparence, puis les interrupteurs. Pas d'interrupteur par catégorie de notifications (schéma 91) :
+      // Réglages (maquette) : apparence, logo, puis les interrupteurs. Pas d'interrupteur par catégorie de notifications (schéma 91) :
       // seulement Activer/Désactiver sur ce téléphone, et l'essai qui montre la vraie réponse du serveur.
-      const pf = prefs(), S = window.MDGSons, sn = S ? S.reglages() : null, T = window.MDGTheme, V = window.MDGVibre, As = window.MDGAstuces, P = window.MDGPousse;
+      const pf = prefs(), S = window.MDGSons, sn = S ? S.reglages() : null, T = window.MDGTheme, Lg = window.MDGLogo, V = window.MDGVibre, As = window.MDGAstuces, P = window.MDGPousse;
       const m = T ? T.mode() : 'auto', st = pousseEtat || (P ? null : 'impossible');
       const sw = (k, t, s, on, dis) => `<label class="v2c-l haut"><span class="t"><b>${t}</b>${s ? `<small>${s}</small>` : ''}</span><input type="checkbox" class="v2c-sw" role="switch" data-sw="${k}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}></label>`;
       const PS = { actif: 'Activées · les nouvelles du marché jamais entre 21 h et 7 h', inactif: 'Désactivées sur ce téléphone', refuse: 'Bloquées : autorisez-les dans les réglages du téléphone', installer: 'Sur iPhone : ajoutez d’abord l’application à l’écran d’accueil', impossible: 'Indisponibles dans ce navigateur' };
       main.innerHTML = `<div class="v2c-pg"><h1 class="v2c-h1">Réglages</h1>
         ${T ? `<div class="v2c-bloc"><span class="v2c-lab" id="v2c-app">Apparence</span><div class="v2c-seg" role="radiogroup" aria-labelledby="v2c-app">${[['auto', 'Automatique'], ['clair', 'Clair'], ['sombre', 'Sombre']].map(([k, t]) => `<button type="button" role="radio" aria-checked="${m === k}" data-m="${k}">${t}</button>`).join('')}</div></div>` : ''}
+        ${Lg ? `<div class="v2c-bloc"><span class="v2c-lab" id="v2c-logo">Logo de l’application</span><div class="v2c-seg" role="radiogroup" aria-labelledby="v2c-logo">${[['vert', 'Vert'], ['noir', 'Noir']].map(([k, t]) => `<button type="button" role="radio" aria-checked="${(k === 'noir') === Lg.noir()}" data-logo="${k}">${t}</button>`).join('')}</div></div>` : ''}
         <div class="v2c-liste">
           ${sw('pousse', 'Notifications', st ? PS[st] : 'Un instant…', st === 'actif', !(st === 'actif' || st === 'inactif'))}
           ${S ? sw('sons', 'Sons', 'Notes de balafon à chaque réponse', sn && sn.on) : ''}
@@ -868,6 +869,8 @@ label.cp-r{cursor:pointer}
       </div>`;
       const dire = t => { try { window.MDGToast ? MDGToast.dire(t, { type: 'ok' }) : N().toast(t.replace(/\*/g, '')); } catch (_) {} };
       main.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { T.choisir(b.dataset.m); main.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-checked', String(x === b))); });
+      // Logo vert / noir (icône de l'écran d'accueil et écran d'ouverture), seulement dans l'application (window.MDGLogo)
+      main.querySelectorAll('[data-logo]').forEach(b => b.onclick = () => { Lg.choisir(b.dataset.logo === 'noir'); main.querySelectorAll('[data-logo]').forEach(x => x.setAttribute('aria-checked', String(x === b))); });
       const so = main.querySelector('[data-sons]'); if (so) so.onclick = () => S.panneau();
       const es = main.querySelector('[data-essai]'); if (es) es.onclick = async () => { es.disabled = true; es.textContent = 'Envoi…';
         const r = await P.essai().catch(() => null); essaiTxt = texteEssai(r); const o = main.querySelector('[data-res]'); if (o) o.textContent = essaiTxt; es.disabled = false; es.textContent = 'Envoyer un essai'; };

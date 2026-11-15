@@ -1,9 +1,8 @@
 /* ═════════ Marché de Gros CI — astuces et petits tutoriels, pour les nouveaux ═════════
    Demandé par le propriétaire le 22/10/2026 : l'application est riche (codes, transport, négociation…) ;
    il faut de petits signes qui montrent quoi toucher, et un court tutoriel avant une opération un peu compliquée.
-   • Signes animés sur l'accueil (un seul par ouverture) : une main glisse de gauche à droite
-     → « touchez ici : le menu » (le logo) ; puis les onglets du bas. Chacun s'arrête dès qu'on a compris
-     (menu ouvert) ou après 3 fois.
+   • Signes sur l'accueil (un seul par ouverture) : les onglets du bas. Chacun s'arrête après 2 ou 3 fois.
+     (Le signe « touchez le logo : c'est le menu » est retiré avec le menu du logo, 14/11.)
    • Tutoriels (quelques cartes, « Passer » toujours visible) : la première fois qu'on ouvre une négociation,
      la création d'une commande, le choix du chauffeur, un code, l'Espace chauffeur. Une seule fois chacun.
    • Réglages → « Aide pour débuter » : tout couper ou tout remettre ; L'aide → « Revoir un tutoriel » : en revoir un. Rien ne part au serveur : tout reste sur ce téléphone.
@@ -108,10 +107,10 @@
     p_categories: { t: 'Catégories', insiste: 2, cartes: [
       ['🗂️', 'Tous les produits vivriers', 'Rangés en *12 familles* : céréales, tubercules, légumes et fruits, poissons…'],
       ['👆', 'Touchez une famille, puis un produit', 'Vous ouvrez sa *fiche* : ses offres, ses demandes et sa saison.']] },
-    p_prix: { t: 'Prix du marché', insiste: 2, cartes: [
-      ['📈', 'Ce que demandent les vendeurs', 'Pour chaque produit : les *ronds verts* sont les prix des vendeurs, les *carrés jaunes* les budgets des acheteurs.'],
-      ['🤝', '« Accord possible »', 'Un acheteur paie au moins le prix d’un vendeur : il y a une affaire à faire.'],
-      ['📊', 'Le classement est dans « Prix »', 'Pour voir qui est le moins cher, en direct, ouvrez l’onglet *Prix* de l’accueil. Tous les prix viennent de vraies annonces.']] },
+    p_prix: { t: 'Prix du moment', insiste: 2, cartes: [
+      ['📈', 'Le prix de chaque produit', 'La barre verte : la *fourchette* des prix publiés ; le trait : la *médiane*. Affichés seulement quand le *prix du marché* est atteint.'],
+      ['✅', 'Le prix du marché', 'Atteint avec *5 prix de 3 vendeurs* sur 30 jours. Sinon, on vous dit ce qui manque.'],
+      ['🤝', '« Accord possible »', 'Un acheteur paie au moins le prix d’un vendeur. Touchez « *Par zone* » pour les prix par district et la tendance.']] },
     p_annee: { t: 'L’année du marché', insiste: 2, cartes: [
       ['🌾', 'La saison de chaque produit', 'Touchez un *mois*, ou glissez le doigt sur le *cercle*.'],
       ['🌱', 'Touchez un produit', 'Vous voyez ses mois de *récolte* : début, pleine récolte, fin.'],
@@ -125,7 +124,7 @@
     m_compte: { t: 'Mon compte', insiste: 2, cartes: [
       ['👤', 'Votre espace', 'Votre profil, vos annonces, vos négociations et vos statuts.'],
       ['✅', 'Faites vérifier votre identité', 'Le *sceau vert* rassure vos acheteurs et vos vendeurs.'],
-      ['⚙️', 'Vos réglages', 'Notifications, sons, thème clair ou sombre : dans le menu, « *Réglages* ». Ces tutoriels se revoient dans *L’aide*.']] },
+      ['⚙️', 'Vos réglages', 'Notifications, sons, thème clair ou sombre : *Compte* → « *Réglages* ». Ces tutoriels se revoient dans *L’aide*.']] },
     m_negos: { t: 'Mes négociations', insiste: 2, cartes: [
       ['🤝', 'Toutes vos propositions', 'Chaque ligne est une négociation : la *dernière proposition* et qui doit répondre.'],
       ['⏳', 'Répondez dans les 48 h', 'Touchez une ligne pour *accepter*, *refuser* ou *proposer un autre prix*.'],
@@ -199,7 +198,7 @@
     ['p_demande', 'hash:^#/demande'],
     ['p_carte', 'hash:^#/carte'],
     ['p_categories', 'hash:^#/categories'],
-    ['p_prix', 'hash:^#/prix'],
+    ['p_prix', 'html[data-onglet=prix]:not(:has([data-pg]:not([data-pg=home])[style*="visibility: visible"])) .v2-px-pied'],   // l'onglet Prix, sans page posée dessus (14/11)
     ['p_annee', 'hash:^#/annee'],
     ['p_pubs', 'hash:^#/mes-publications'],
     ['p_fiche', 'hash:^#/produits/'],
@@ -326,10 +325,9 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
 
   // un seul signe par ouverture de l'application, le premier pas encore compris
   const SIGNES = [
-    // la refonte (13/11/2026) : la roue a quitté l'accueil, les onglets sont en bas (.v2-tabs), le menu s'ouvre par le logo
-    { k: 'menu', max: 3, sel: '.v2-logo', html: 'Touchez le <b>logo</b> : c’est le menu.<br>Le réseau, vos messages, vos commandes… tout est là.', glisse: true },
+    // la refonte (13/11/2026) : la roue a quitté l'accueil, les onglets sont en bas (.v2-tabs) ; le logo n'ouvre plus de menu (14/11)
     { k: 'onglets', max: 2, sel: '.v2-tabs', html: '<b>Activité</b> : vos négociations et commandes.<br>La <b>cloche</b>, en haut : ce qui vous attend.' },
-    { k: 'prix', max: 3, sel: '.v2-tabs', html: 'L’onglet <b>Prix</b> : qui vend le moins cher, qui achète le plus cher, en direct.' }
+    { k: 'prix', max: 3, sel: '.v2-tabs', html: 'L’onglet <b>Prix</b> : le prix de chaque produit, et le prix du marché quand il est atteint.' }
   ];
   let signeFait = false;
   // une fenêtre réellement à l'écran (le menu fermé et les feuilles cachées restent dans la page : on ne les compte pas)
@@ -343,8 +341,6 @@ html[data-theme=sombre] .as-suiv{background:#F2C230;color:#171512}
     if (!visible || !libre() || document.hidden) { if ((essai || 0) < 15) setTimeout(() => signe((essai || 0) + 1), 1500); return; }
     signeFait = true; noter(s.k); pointer(el, s.html, s);
   }
-  // le menu ouvert une fois : c'est compris, plus besoin du signe
-  document.addEventListener('click', e => { if (e.target.closest && e.target.closest('.v2-logo')) noter('menu', 99); }, true);
 
   // fréquence (Réglages → Aide pour débuter) : « une » = chaque astuce, tutoriel et démo une seule fois ; « semaine » = tout revient
   // une fois par semaine ; « toujours » = tout revient à chaque ouverture de l'application. Appliquée une fois, au chargement.

@@ -2259,6 +2259,18 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur.
 
+## 15/11/2026 · Prix du marché dans l'onglet Prix, L'année du marché, Tous les produits, un seul seuil
+
+- Demandes du propriétaire (15/11/2026) et décisions « Ok ». Branche `claude/prix-annee-produits`, plusieurs commits, aucune base touchée, aucun schéma. Cache `mgci-v323`.
+- **Prix du marché dans l'onglet Prix** (`application.dc.html`, `v3/prixzone.js`) : l'ancienne page du menu du logo est intégrée à l'onglet. Pastille « Prix du marché » avec le nombre de vendeurs, ou « encore N prix / vendeur » avec une jauge quand le seuil n'est pas atteint ; « Accord possible » quand un budget est au moins égal au prix le plus bas ; bouton « Par zone » (feuille `v3/prixzone.js`).
+- **Menu du logo supprimé** : le logo n'ouvre plus rien (comme la maquette). L'ancienne page « Prix du marché » est supprimée ; `#/prix`, `mdg:aller` et les liens mènent à l'onglet Prix. Styles du menu retirés de `css/mgci-app.css`, `css/sombre.css`, `css/v2.css`, `v3/ux.css`. Textes de `v3/aide.js` et `v3/astuces.js` mis à jour.
+- **L'année du marché** : recherche ; blocs « Le plus demandé », « Où ça se demande », « Le plus cher au kilo », « Quand ça se demande » (barres par mois avec un an d'historique, sinon la soudure mai–août, source FEWS NET). **Pas fait faute de données** : probabilité chiffrée de demande, « le plus cher » au sac, au carton ou au régime.
+- **Tous les produits** : recherche (insensible aux accents, avec les noms locaux et les familles) ; la rangée des familles est retirée.
+- **Un seul seuil de prix partout** (décision « Ok ») : 5 prix de 3 vendeurs sur 30 jours (fonctions `seuil()` et `pxMarche()` de `application.dc.html`, qui lisent `MDGMarche.SEUIL`, sinon 5 / 3 / 30) pour l'accueil, la recherche, l'onglet Prix, la fiche produit, la jauge de Publier et L'année. Avant : « à partir de 4 prix » à plusieurs endroits.
+- Autres décisions « Ok » : choix du logo vert ou noir dans Compte → Réglages (`v3/compte.js`, `setLogo` dans `application.dc.html`) ; lien « Toutes les offres » sur l'accueil (caché pour un vendeur, dont l'accueil montre des demandes) ; Mieux notés, Confiance et Aide producteur restent par L'aide.
+- Vérifié : contrôle `apres-modif` (rapports `CONTROLE_QUALITE/rapports/2026-11-15-01h58`, `02h00`, `02h15`). Captures : `docs/brief-design/captures/prix-annee-*.jpg`.
+- Documents mis à jour : `CLAUDE.md`, `FONCTIONNALITES.md`, `CHANGELOG.md`, `TABLEAU-DE-BORD.md`, `docs/REPRISE.md`, `docs/brief-design/ETAT-DESIGN.md`, `PORTAGE-SITE.md`, listes et matrice du contrôle qualité.
+
 ## 14/11/2026 · Refonte : retrait de l'ancien code
 
 - Les propositions n° 1 à 10 du rapport de retrait sont validées par le propriétaire (« ok pour tout », 14/11/2026) ; la n° 11 (libellé « Retrait par l'acheteur ») est faite dans la PR #347 (ANO-059). Branche `claude/retrait-ancien-code`, 3 commits, aucune base touchée.

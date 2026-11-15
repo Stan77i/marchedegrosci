@@ -126,6 +126,7 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Aide : questions et réponses, puis une personne | `v3/aide.js` | moyenne |
 | Thème jour / nuit, et nuit des fenêtres | `app/theme.js`, `app/nuit.js`, `css/sombre.css` | haute |
 | Carte du réseau MapLibre : filtres dans le panneau du bas, boutons en colonne | `app/carte-gl.js`, `app/carte-app.js`, `vendor/maplibre/` | moyenne |
+| Onglet Prix (prix du marché, « Accord possible », « Par zone »), L'année du marché avec recherche et Tous les produits avec recherche (15/11/2026) ; un seul seuil de prix (5 prix de 3 vendeurs sur 30 jours) | `application.dc.html` (`seuil()`, `pxMarche()`), `v3/prixzone.js` : pas dans un module commun | moyenne |
 | Catalogue (12 familles, produits en saison) et L'année du marché | pages `categories` et `annee` de l'application (`css/v2.css` ; les anciens `css/categories-app.css` et `css/annee-app.css` sont supprimés le 14/11/2026) | moyenne |
 | Régions et villes reliées | `app/villes.js` | moyenne |
 | Retour au toucher (vibrations), écrans stables | `app/vibre.js`, `app/stable.js` (commun) | basse |

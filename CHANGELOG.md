@@ -4,6 +4,12 @@ Cet historique vient de `git log origin/main` du dépôt (607 commits) et des se
 
 Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22, 23 et 24 octobre 2026), 607 commits. Aucun commit les 20/10 et entre le 5 et le 9, le 13 et le 16 octobre.
 
+## 15/11/2026
+
+- Prix du marché dans l'onglet Prix (pastille avec le nombre de vendeurs, ou « encore N prix / vendeur » avec jauge ; « Accord possible » ; bouton « Par zone », `v3/prixzone.js`). Menu du logo et ancienne page « Prix du marché » supprimés : le logo n'ouvre plus rien, `#/prix` mène à l'onglet Prix. Choix du logo vert ou noir déplacé dans Compte → Réglages.
+- L'année du marché : recherche et 4 blocs (« Le plus demandé », « Où ça se demande », « Le plus cher au kilo », « Quand ça se demande ») ; Tous les produits : recherche (sans accents, noms locaux, familles), rangée des familles retirée ; lien « Toutes les offres » sur l'accueil.
+- Un seul seuil de prix partout : 5 prix de 3 vendeurs sur 30 jours (avant : « à partir de 4 prix » à plusieurs endroits). Cache `mgci-v323`.
+
 ## 14/11/2026
 
 - Refonte, retrait de l'ancien code : roue, ancien accueil, anciens Vendre/Demander, ancienne Année, ancien catalogue et fenêtres « Familles » et « Tout voir » retirés de l'application (379 288 → 309 201 octets) ; 6 fichiers supprimés (`v3/tableau.js`, `app/prixmoment.js`, `app/demo-orbite.js`, `v3/souffle.js`, `css/categories-app.css`, `css/annee-app.css`) ; styles morts retirés ; démarrage −8,7 % (3 002 550 → 2 740 077 octets, 78 → 72 fichiers). « Retrait par l'acheteur » remplace « L'acheteur vient chercher » (ANO-060). Cache `mgci-v321`.

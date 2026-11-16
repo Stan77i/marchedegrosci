@@ -36,7 +36,7 @@ if(/[?&]app=1/.test(q))sessionStorage.setItem("mdg-app","1");if(sessionStorage.g
 <script>/* démarrage léger : ces modules (porte de connexion, compte, négociations, messages, réputation, alertes, sons, notifications, carte) ne servent pas au premier écran.
    Ils sont ajoutés dans l'ordre dès que l'accueil est affiché (ou au chargement de la page), puis l'application est prévenue (« mdg:change »).
    Chaque usage dans l'application vérifie déjà leur présence (window.MDGCompte && …). */
-window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261114g4','v3/astuces.js?v=20261115d1','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261131lq2','v3/negoce.js?v=20261114g1','v3/compte.js?v=20261115d1','v3/pousse.js?v=20261124nt','v3/reputation.js?v=20261114g2','v3/statuts.js?v=20261124n1','v3/messages.js?v=20261114g3','v3/aide.js?v=20261115d1','v3/alertes.js?v=20261114g2','v3/alertes-v2.js?v=20261114g2','v3/releve.js?v=20261114g3','v3/commandes.js?v=20261115r1','v3/chauffeur.js?v=20261114g3','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261114g3','v3/racheter.js?v=20261114g3','v3/appro.js?v=20261114g3','v3/groupes.js?v=20261114g3','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261114f2','v3/identite.js?v=20261114g3','v3/boutique.js?v=20261113t1','v3/equipe.js?v=20261114g3'],fait=false,prets=[];
+window.MDGPlus=(function(){var L=['app/icone.js','v3/guide.js?v=20261114g4','v3/astuces.js?v=20261115d1','app/scene.js?v=20261124h','v3/porte.js?v=20261124i','v3/sons.js?v=20261131lq2','v3/negoce.js?v=20261114g1','v3/compte.js?v=20261115d1','v3/pousse.js?v=20261124nt','v3/reputation.js?v=20261114g2','v3/statuts.js?v=20261124n1','v3/messages.js?v=20261114g3','v3/aide.js?v=20261116y1','v3/alertes.js?v=20261114g2','v3/alertes-v2.js?v=20261114g2','v3/releve.js?v=20261114g3','v3/commandes.js?v=20261115r1','v3/chauffeur.js?v=20261114g3','v3/suivi.js?v=20261124h','v3/prixzone.js?v=20261114g3','v3/racheter.js?v=20261114g3','v3/appro.js?v=20261114g3','v3/groupes.js?v=20261114g3','app/carte-app.js?v=20261023f','app/carte-gl.js?v=20261116y1','v3/identite.js?v=20261114g3','v3/boutique.js?v=20261113t1','v3/equipe.js?v=20261114g3'],fait=false,prets=[];
 function charger(){if(fait)return;fait=true;var n=0;L.forEach(function(s){var e=document.createElement('script');e.src=s;e.async=false;e.onload=e.onerror=function(){if(++n===L.length){var q=prets;prets=null;q.forEach(function(f){try{f()}catch(_){}});prechargerCarte();dispatchEvent(new CustomEvent('mdg:change',{detail:{from:'modules'}}));}};document.head.appendChild(e);});}
 /* la carte en relief (1,5 Mo) se télécharge en avance quand tout est calme : l'ouvrir devient presque immédiat.
    Jamais à la toute première ouverture (FIA-58 : le forfait de qui découvre l'application), ni en économie de données, en 2G ou en 3G. */
@@ -61,9 +61,9 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/fonts.css?v=20261023f">
 <link rel="stylesheet" href="css/symboles.css?v=20261102d">
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261113r1">
-<link rel="stylesheet" href="css/mgci-app.css?v=20261115p1">
+<link rel="stylesheet" href="css/mgci-app.css?v=20261116y1">
 <link rel="stylesheet" href="css/sombre.css?v=20261115p1">
-<link rel="stylesheet" href="css/v2.css?v=20261115b1">
+<link rel="stylesheet" href="css/v2.css?v=20261116y1">
 <link rel="stylesheet" href="css/v2-compte.css?v=20261114g3">
 <link rel="stylesheet" href="css/v2-equipe.css?v=20261114g3">
 <link rel="stylesheet" href="v3/ux.css?v=20261115p1">
@@ -384,40 +384,55 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
 </div>
 
 <!-- ═══ CARTE ═══ -->
+<!-- carte du réseau, logique Yango (16/11/2026) : la carte plein écran, une feuille en bas qui pose « Quel produit ? » ; J'achète (offres) / Je vends (demandes) ;
+     puis les annonces de ce produit, de la plus proche à la plus loin (feuille à trois hauteurs) ; une annonce touchée : un seul gros bouton -->
 <div data-pg="carte" data-screen-label="Carte" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;background:#121417;color:var(--ivoire);overflow:hidden;overflow:clip;transform:{{ tf.carte }};visibility:{{ vis.carte }};z-index:{{ zi.carte }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
 <sc-if value="{{ on.carte }}" hint-placeholder-val="{{ false }}">
-  <!-- la carte occupe tout l'écran ; l'interface se pose dessus -->
   <div ref="{{ mapRef }}" class="carte-hote" style="position:absolute;inset:0;background:#121417"></div>
-  <div style="position:absolute;left:0;right:0;top:0;z-index:3;padding-top:{{ topPad }};background:linear-gradient(to bottom,rgba(18,20,23,.96) 0%,rgba(18,20,23,.88) 70%,rgba(18,20,23,0) 100%);pointer-events:none">
-    <div style="display:flex;align-items:center;height:52px;padding:0 8px;pointer-events:auto"><button onClick="{{ back }}" aria-label="Retour" style="width:44px;height:44px;border:0;background:transparent;color:var(--ivoire);display:flex;align-items:center;justify-content:center"><svg width="22" height="22" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="retour"><path d="m15 18-6-6 6-6"></path></svg></button><span class="v2-ct-t">Carte du réseau</span></div>
-    <div class="v2-ct-f" role="group" aria-label="Filtres"><sc-for list="{{ cTop }}" as="g" hint-placeholder-count="3"><button aria-pressed="{{ g.on }}" onClick="{{ g.go }}"><i class="{{ g.c }}" aria-hidden="true"></i>{{ g.l }}<span class="n">{{ g.n }}</span></button></sc-for></div>
+  <div class="cy-haut" style="padding-top:{{ topPad }}">
+    <h1 class="cy-sr">Carte du réseau</h1>
+    <button class="cy-rond" onClick="{{ back }}" aria-label="Retour"><svg width="22" height="22" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <sc-if value="{{ cy.iciOn }}" hint-placeholder-val="{{ false }}"><button class="cy-ici" onClick="{{ cy.ici }}"><svg width="16" height="16" stroke="currentColor" stroke-width="2.2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span>Chercher ici</span><span class="cy-ici-v">· {{ cy.iciV }}</span></button></sc-if>
   </div>
+  <section class="cy-f" data-mode="{{ cy.mode }}" data-h="{{ cy.h }}" style="height:{{ cy.hauteur }}" aria-label="{{ cy.aria }}">
+    <button class="cy-poi" onPointerDown="{{ cy.down }}" onPointerMove="{{ cy.move }}" onPointerUp="{{ cy.up }}" onPointerCancel="{{ cy.up }}" onClick="{{ cy.poi }}" aria-label="{{ cy.poiL }}"><i aria-hidden="true"></i></button>
 
-  <!-- annonces touchées sur la carte en relief : la carte d’annonce commune, en bas, au-dessus du panneau -->
-  <sc-if value="{{ cPickOn }}" hint-placeholder-val="{{ false }}"><div role="region" aria-label="{{ cPickN }}" style="position:absolute;left:0;right:0;bottom:{{ cPickBas }};z-index:5;display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:8px;padding:0 14px 0 18px"><span style="padding:4px 10px;border-radius:999px;background:rgba(23,21,18,.85);color:var(--ivoire);font-size:var(--t-xs);font-weight:600;letter-spacing:.06em">{{ cPickN }}</span><button onClick="{{ cPickFermer }}" aria-label="Fermer" style="width:40px;height:40px;border:0;border-radius:20px;background:rgba(23,21,18,.85);color:var(--ivoire);display:flex;align-items:center;justify-content:center"><svg width="16" height="16" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="fermer"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></div><div data-cpick onScroll="{{ cPickScroll }}" style="display:flex;gap:10px;overflow-x:auto;padding:0 14px 4px;scroll-snap-type:x mandatory;scroll-padding:0 14px;scrollbar-width:none"><sc-for list="{{ cPicked }}" as="o" hint-placeholder-count="0"><div class="an-carte" style="flex:0 0 {{ cPickW }};min-width:0;max-width:420px;scroll-snap-align:start;box-shadow:0 14px 34px rgba(0,0,0,.45);border-radius:var(--r-lg)"><article class="an" aria-label="{{ o.aria }}"><button class="an-tete" onClick="{{ o.go }}" aria-label="{{ o.goL }}"><img class="an-img" sc-camel-src="{{ o.img }}" alt="" style="object-fit:{{ o.fit }};background:{{ o.imgBg }}"><span class="an-id"><span class="an-l1"><span class="an-nom">{{ o.product }}</span><span class="an-quand">{{ o.ago }}</span></span><span class="an-qui"><i class="an-forme od {{ o.mkC }}" aria-hidden="true">{{ o.emo }}</i><sc-if value="{{ o.hasAv }}" hint-placeholder-val="{{ false }}"><img sc-camel-src="{{ o.av }}" alt=""></sc-if><b>{{ o.who }}</b><sc-if value="{{ o.idOk }}" hint-placeholder-val="{{ false }}"><span class="idv-badge" role="img" aria-label="Identité vérifiée" title="Identité vérifiée"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.6l2.6 1.9 3.2-.2 1 3 2.6 1.9-1 3.1 1 3.1-2.6 1.9-1 3-3.2-.2L12 22.4l-2.6-1.9-3.2.2-1-3-2.6-1.9 1-3.1-1-3.1 2.6-1.9 1-3 3.2.2z"></path><path d="m8 12.2 2.7 2.7L16.2 9.4" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></sc-if>{{ o.st }}<sc-if value="{{ o.hasNote }}" hint-placeholder-val="{{ false }}"><span>· ★ {{ o.note }}</span></sc-if><span>· {{ o.ou }}</span></span>{{ o.stru }}</span></button><div class="an-chiffres"><div><small>{{ o.qLab }}</small><b>{{ o.qTxt }} <em>{{ o.unitQ }}</em></b></div><div><small>{{ o.pLab }}</small><sc-if value="{{ o.hasP }}" hint-placeholder-val="{{ true }}"><b>{{ o.pTxt }} <em>F / {{ o.unit }}</em></b></sc-if><sc-if value="{{ o.noP }}" hint-placeholder-val="{{ false }}"><b class="doux">À discuter</b></sc-if></div></div><div class="an-infos"><span class="qd" data-u="{{ o.qU }}">{{ o.qT }}</span><sc-if value="{{ o.hasTr }}" hint-placeholder-val="{{ false }}"><span class="qd" data-u="{{ o.trU }}">{{ o.trT }}</span></sc-if>{{ o.vsEl }}<sc-for list="{{ o.infos }}" as="c" hint-placeholder-count="2"><span style="background:{{ c.bg }};color:{{ c.fg }}">{{ c.t }}</span></sc-for></div><sc-if value="{{ o.hasSig }}" hint-placeholder-val="{{ false }}"><div class="an-alerte"><svg width="16" height="16" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="signaler"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" x2="4" y1="22" y2="15"></line></svg>{{ o.sigTxt }}</div></sc-if><sc-if value="{{ o.mine }}" hint-placeholder-val="{{ false }}"><div class="an-moi"><i></i>C’est votre annonce : les autres membres vous écrivent ici.</div></sc-if><sc-if value="{{ o.hasActs }}" hint-placeholder-val="{{ true }}"><div class="an-actions"><sc-if value="{{ o.canDm }}" hint-placeholder-val="{{ false }}"><button class="an-act plein" onClick="{{ o.dm }}"><svg width="17" height="17" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="messages"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path><path d="M8 12h.01"></path><path d="M12 12h.01"></path><path d="M16 12h.01"></path></svg>Écrire</button></sc-if><sc-if value="{{ o.canNeg }}" hint-placeholder-val="{{ false }}"><button class="an-act trait" onClick="{{ o.neg }}"><svg width="17" height="17" aria-hidden="true" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="negoce"><path d="m11 17 2 2a1 1 0 1 0 3-3"></path><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"></path><path d="m21 3 1 11h-2"></path><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"></path><path d="M3 4h8"></path></svg>{{ o.negL }}</button></sc-if><sc-if value="{{ o.canRep }}" hint-placeholder-val="{{ false }}"><button class="an-sig" onClick="{{ o.rep }}" aria-label="Signaler cette annonce" title="Signaler"><svg width="16" height="16" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="signaler"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" x2="4" y1="22" y2="15"></line></svg></button></sc-if></div></sc-if></article></div></sc-for></div><sc-if value="{{ cPickMulti }}" hint-placeholder-val="{{ false }}"><div class="cpk-nav" role="group" aria-label="Changer d’annonce"><button type="button" class="cpk-f" onClick="{{ cPickPrev }}" aria-label="Annonce précédente" disabled="{{ cPickDebut }}"><svg width="16" height="16" stroke="currentColor" stroke-width="2.2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button><span class="cpk-pts"><sc-for list="{{ cPickDots }}" as="d" hint-placeholder-count="2"><button type="button" class="cpk-d" aria-current="{{ d.on }}" aria-label="{{ d.lab }}" onClick="{{ d.go }}"><i></i></button></sc-for></span><span class="cpk-t" aria-live="polite">{{ cPickTxt }}</span><button type="button" class="cpk-f {{ cPickAppel }}" onClick="{{ cPickNext }}" aria-label="Annonce suivante" disabled="{{ cPickFin }}"><svg width="16" height="16" stroke="currentColor" stroke-width="2.2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg></button></div></sc-if></div></sc-if>
-  <!-- en bas : la liste, dans un panneau qu'on remonte -->
-  <div style="position:absolute;left:0;right:0;bottom:0;z-index:4;height:{{ cSheet.h }};transition:height .38s cubic-bezier(.22,1,.36,1);background:var(--encre);border-radius:24px 24px 0 0;display:flex;flex-direction:column;overflow:hidden">
-    <button onClick="{{ cSheet.toggle }}" aria-expanded="{{ cSheet.open }}" style="flex:none;border:0;background:transparent;color:var(--ivoire);padding:8px 18px 12px;display:flex;flex-direction:column;align-items:stretch;gap:8px;text-align:left"><span style="align-self:center;width:40px;height:4px;border-radius:2px;background:rgba(245,240,230,.25)"></span><span style="display:flex;align-items:center;gap:10px"><span style="flex:1;font-size:var(--t-base);color:var(--ivoire);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ cPanT }}</span><span style="font-size:var(--t-md);color:var(--terre-clair);font-weight:600;white-space:nowrap">{{ cPanN }}</span><svg width="14" height="14" stroke="#F2C230" stroke-width="2.2" style="transform:{{ cSheet.chev }};transition:transform .3s" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="haut"><path d="m18 15-6-6-6 6"></path></svg></span></button>
-    <div style="display:flex;gap:8px;padding:0 16px 10px;pointer-events:auto">
-      <sc-if value="{{ cLocOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cLocate }}" aria-label="Me localiser" style="flex:none;width:44px;height:44px;border-radius:19px;border:1px solid rgba(176,149,240,.45);background:rgba(23,21,18,.7);color:var(--vous);display:flex;align-items:center;justify-content:center;padding:0"><svg width="18" height="18" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="localiser"><line x1="2" x2="5" y1="12" y2="12"></line><line x1="19" x2="22" y1="12" y2="12"></line><line x1="12" x2="12" y1="2" y2="5"></line><line x1="12" x2="12" y1="19" y2="22"></line><circle cx="12" cy="12" r="7"></circle><circle cx="12" cy="12" r="3"></circle></svg></button></sc-if>
-      <button onClick="{{ cPick }}" style="flex:1 1 0;min-width:0;height:44px;padding:0 14px;border-radius:19px;border:1px solid rgba(245,240,230,.25);background:rgba(23,21,18,.7);color:var(--ivoire);font-size:var(--t-md);font-weight:500;display:flex;align-items:center;justify-content:space-between;gap:6px"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ cProdL }}</span><svg width="10" height="10" stroke="currentColor" stroke-width="2.4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="bas"><path d="m6 9 6 6 6-6"></path></svg></button>
-      <label class="cz-moi" data-on="{{ cMeOn }}"><span class="cz-moi-pt" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12"><path d="M6 1l5 9H1z" fill="#B095F0"></path></svg></span><span class="cz-moi-t" aria-hidden="true"><small>{{ cMeK }}</small><b>{{ cMeL }}</b></span><svg class="cz-moi-ch" width="12" height="12" stroke="currentColor" stroke-width="2.4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg><select aria-label="Où êtes-vous ?" value="{{ cMe }}" onChange="{{ onMe }}"><option value="">Où êtes-vous ?</option><sc-for list="{{ regions }}" as="r" hint-placeholder-count="14"><option value="{{ r.slug }}">{{ r.name }}</option></sc-for></select></label>
-    </div>
-    <div role="group" aria-label="Légende et filtres" style="display:flex;gap:6px;overflow-x:auto;flex:none;padding:0 16px 12px;scrollbar-width:none">
-      <sc-for list="{{ cLeg }}" as="g" hint-placeholder-count="5"><button onClick="{{ g.go }}" aria-pressed="{{ g.on }}" style="flex:none;height:40px;padding:0 10px 0 12px;border-radius:20px;border:1px solid {{ g.bd }};background:{{ g.bg }};color:var(--ivoire);font-size:var(--t-sm);font-weight:600;display:flex;align-items:center;gap:6px;opacity:{{ g.op }}"><i aria-hidden="true" class="{{ g.symC }}" style="{{ g.dot }}"></i>{{ g.l }}<sc-if value="{{ g.hasN }}" hint-placeholder-val="{{ true }}"><span style="min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:{{ g.nbg }};color:var(--encre);font-size:var(--t-xs);font-weight:700;display:flex;align-items:center;justify-content:center">{{ g.n }}</span></sc-if></button></sc-for>
-    </div>
-    <sc-if value="{{ cSheet.open }}" hint-placeholder-val="{{ false }}">
-    <div style="flex:1;overflow-y:auto;padding:0 16px {{ botPad }};display:flex;flex-direction:column;gap:8px">
-      <sc-if value="{{ cLiensOn }}" hint-placeholder-val="{{ false }}"><div class="v2-ct-liens"><sc-for list="{{ cLiens }}" as="l" hint-placeholder-count="0"><button onClick="{{ l.go }}"><span class="im"><img sc-camel-src="{{ l.img }}" alt=""><i aria-hidden="true"></i></span><span class="tx"><b>{{ l.t }}</b><small>{{ l.s }}</small></span><span class="km">{{ l.km }}</span></button></sc-for></div><sc-if value="{{ cListOn }}" hint-placeholder-val="{{ true }}"><span class="v2-ct-st">{{ cListT }}</span></sc-if></sc-if>
-      <sc-if value="{{ cDist.on }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:12px;background:rgba(176,149,240,.08);border:1px solid rgba(176,149,240,.28);border-radius:16px;padding:12px 14px"><svg width="22" height="22" stroke="#B095F0" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="distance"><circle cx="6" cy="19" r="3"></circle><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"></path><circle cx="18" cy="5" r="3"></circle></svg><span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:var(--t-base);font-weight:600;color:var(--ivoire)">{{ cDist.t }}</span><span style="font-size:var(--t-sm);color:var(--sable)">{{ cDist.x }}</span></span></div></sc-if>
-      <div style="display:flex;align-items:flex-start;gap:8px;padding:2px 2px 6px;font-size:var(--t-sm);color:var(--sable);line-height:1.45"><svg width="15" height="15" stroke="currentColor" stroke-width="1.8" aria-hidden="true" style="flex:none;margin-top:2px" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="info"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg><span>Chaque point est placé au chef-lieu du district : la position exacte des membres n’est pas publiée. Distances à vol d’oiseau.</span></div>
-      <sc-if value="{{ cAdmin }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cZoneAdd }}" style="min-height:48px;border-radius:16px;border:1.5px dashed rgba(226,115,91,.6);background:rgba(226,115,91,.08);color:#F3A08C;font-size:var(--t-base);font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px"><span class="ic-t" aria-hidden="true"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span>Marquer une forte demande sur la carte</button></sc-if>
-      <sc-for list="{{ cZones }}" as="z" hint-placeholder-count="0"><div style="display:flex;align-items:center;gap:12px;background:rgba(226,115,91,.1);border:1px solid rgba(226,115,91,.3);border-radius:14px;padding:10px 14px"><span class="ic-t" aria-hidden="true"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span><span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:var(--t-base);font-weight:600">{{ z.t }}</span><span style="font-size:var(--t-sm);color:#E9C2B6">{{ z.x }}</span></span><sc-if value="{{ z.canDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ z.del }}" style="height:36px;padding:0 12px;border-radius:18px;border:1px solid rgba(245,240,230,.2);background:transparent;color:var(--ivoire);font-size:var(--t-sm);font-weight:600">Retirer</button></sc-if></div></sc-for>
-      <sc-for list="{{ cList }}" as="o" hint-placeholder-count="0"><div style="display:flex;align-items:center;gap:6px"><button onClick="{{ o.go }}" style="flex:1;min-width:0;border:0;background:rgba(245,240,230,.05);box-shadow:inset 0 0 0 1px rgba(245,240,230,.08);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;text-align:left;color:var(--ivoire)"><i class="od od-g {{ o.mkC }}" aria-hidden="true">{{ o.emo }}</i><span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:var(--t-base);font-weight:500">{{ o.title }}</span><span style="font-size:var(--t-sm);color:var(--sable)">{{ o.line }}</span><span class="qd nuit" data-u="{{ o.qU }}">{{ o.qT }}</span></span><span style="font-size:var(--t-sm);color:var(--vous);white-space:nowrap">{{ o.km }}</span></button><button onClick="{{ o.pin }}" aria-label="{{ o.pinL }}" title="Sur la carte" style="flex:none;width:44px;height:44px;margin-left:-4px;border:0;border-radius:22px;background:rgba(245,240,230,.06);color:var(--terre-clair);display:flex;align-items:center;justify-content:center"><svg width="18" height="18" stroke="currentColor" stroke-width="1.8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" data-ico="lieu"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg></button></div></sc-for>
-      <sc-if value="{{ cEmpty }}" hint-placeholder-val="{{ true }}"><div style="border:1px dashed rgba(245,240,230,.2);border-radius:16px;padding:16px;font-size:var(--t-base);color:var(--sable);line-height:1.5">{{ cEmptyTxt }}</div></sc-if>
-    </div>
+    <sc-if value="{{ cy.choix }}" hint-placeholder-val="{{ true }}">
+      <div class="cy-in">
+        <div class="cy-seg" role="group" aria-label="Je veux"><sc-for list="{{ cy.seg }}" as="g" hint-placeholder-count="2"><button aria-pressed="{{ g.on }}" onClick="{{ g.go }}"><i class="{{ g.c }}" aria-hidden="true"></i>{{ g.l }}</button></sc-for></div>
+        <button class="cy-champ" onClick="{{ cy.chercher }}"><svg width="20" height="20" stroke="currentColor" stroke-width="2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg><span>Quel produit ?</span></button>
+        <sc-if value="{{ cy.recOn }}" hint-placeholder-val="{{ false }}"><div class="cy-rec" role="group" aria-label="Cherchés récemment"><sc-for list="{{ cy.rec }}" as="r" hint-placeholder-count="0"><button onClick="{{ r.go }}"><img sc-camel-src="{{ r.thumb }}" alt="" style="object-fit:{{ r.fit }}">{{ r.name }}</button></sc-for></div></sc-if>
+      </div>
     </sc-if>
-  </div>
+
+    <sc-if value="{{ cy.liste }}" hint-placeholder-val="{{ false }}">
+      <div class="cy-tete">
+        <div class="cy-l1"><button class="cy-prod" onClick="{{ cy.chercher }}" aria-label="{{ cy.prodL }}"><img sc-camel-src="{{ cy.prodImg }}" alt="" style="object-fit:{{ cy.prodFit }}"><span>{{ cy.prodN }}</span><svg width="12" height="12" stroke="currentColor" stroke-width="2.4" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg></button>
+          <div class="cy-seg petit" role="group" aria-label="Je veux"><sc-for list="{{ cy.seg }}" as="g" hint-placeholder-count="2"><button aria-pressed="{{ g.on }}" onClick="{{ g.go }}"><i class="{{ g.c }}" aria-hidden="true"></i>{{ g.l }}</button></sc-for></div></div>
+        <p class="cy-sous"><sc-if value="{{ cy.grpOn }}" hint-placeholder-val="{{ false }}"><button class="cy-mini" onClick="{{ cy.grpFin }}" aria-label="Retour à toute la liste"><svg width="16" height="16" stroke="currentColor" stroke-width="2.2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button></sc-if><span>{{ cy.sous }}</span><sc-if value="{{ cy.nOn }}" hint-placeholder-val="{{ false }}"><span class="nbul {{ cy.nC }}">{{ cy.n }}</span></sc-if></p>
+      </div>
+      <div class="cy-corps">
+        <sc-for list="{{ cy.lignes }}" as="o" hint-placeholder-count="0"><button class="cy-ligne" onClick="{{ o.go }}" aria-label="{{ o.aria }}"><i class="od od-g {{ o.mkC }}" aria-hidden="true"></i><span class="cy-lt"><b>{{ o.prix }}<small>{{ o.parU }}</small></b><small>{{ o.sous }}</small>{{ o.vsEl }}</span><span class="cy-km">{{ o.km }}</span></button></sc-for>
+        <sc-if value="{{ cy.vide }}" hint-placeholder-val="{{ false }}"><div class="cy-vide"><p><b>{{ cy.videT }}</b>{{ cy.videX }}</p><div class="cy-vide-b"><sc-if value="{{ cy.plusOn }}" hint-placeholder-val="{{ false }}"><button class="cy-b2" onClick="{{ cy.plus }}">Voir plus loin<span class="nbul">{{ cy.loinN }}</span></button></sc-if><button class="cy-b1" onClick="{{ cy.publier }}">{{ cy.publierL }}</button></div></div></sc-if>
+        <sc-if value="{{ cy.plusBas }}" hint-placeholder-val="{{ false }}"><button class="cy-b2 cy-loin" onClick="{{ cy.plus }}">Voir plus loin<span class="nbul">{{ cy.loinN }}</span></button></sc-if>
+        <p class="cy-note">Chaque annonce est placée dans sa ville, jamais à une adresse. Distances à vol d’oiseau.</p>
+        <sc-if value="{{ cAdmin }}" hint-placeholder-val="{{ false }}"><button class="cy-zone" onClick="{{ cZoneAdd }}">Marquer une forte demande sur la carte</button><sc-for list="{{ cZones }}" as="z" hint-placeholder-count="0"><div class="cy-zone-l"><span><b>{{ z.t }}</b><small>{{ z.x }}</small></span><sc-if value="{{ z.canDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ z.del }}">Retirer</button></sc-if></div></sc-for></sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ cy.un }}" hint-placeholder-val="{{ false }}">
+      <div class="cy-in cy-un">
+        <div class="cy-un-h"><button class="cy-mini" onClick="{{ cy.retour }}" aria-label="Retour à la liste"><svg width="18" height="18" stroke="currentColor" stroke-width="2.2" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button><i class="od {{ cy.a.mkC }}" aria-hidden="true"></i><span>{{ cy.a.titre }}</span></div>
+        <p class="cy-un-p"><b>{{ cy.a.prix }}</b>{{ cy.a.parU }}</p>
+        <p class="cy-un-i">{{ cy.a.info }}</p>
+        <p class="cy-un-q"><b>{{ cy.a.who }}</b><sc-if value="{{ cy.a.idOk }}" hint-placeholder-val="{{ false }}"><span class="idv-badge" role="img" aria-label="Identité vérifiée" title="Identité vérifiée"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 1.6l2.6 1.9 3.2-.2 1 3 2.6 1.9-1 3.1 1 3.1-2.6 1.9-1 3-3.2-.2L12 22.4l-2.6-1.9-3.2.2-1-3-2.6-1.9 1-3.1-1-3.1 2.6-1.9 1-3 3.2.2z"></path><path d="m8 12.2 2.7 2.7L16.2 9.4" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></sc-if><sc-if value="{{ cy.a.hasNote }}" hint-placeholder-val="{{ false }}"><span>★ {{ cy.a.note }}</span></sc-if></p>
+        {{ cy.a.vs }}
+        <sc-if value="{{ cy.a.mine }}" hint-placeholder-val="{{ false }}"><p class="cy-moi">C’est votre annonce : les autres membres vous écrivent ici.</p></sc-if>
+        <sc-if value="{{ cy.a.canNeg }}" hint-placeholder-val="{{ false }}"><button class="cy-b1 cy-go" onClick="{{ cy.a.neg }}">{{ cy.a.negL }}</button></sc-if>
+        <div class="cy-petits"><sc-if value="{{ cy.a.canDm }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cy.a.dm }}">Écrire</button></sc-if><button onClick="{{ cy.a.fiche }}">Voir la fiche</button><sc-if value="{{ cy.a.canRep }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cy.a.rep }}">Signaler</button></sc-if></div>
+      </div>
+    </sc-if>
+  </section>
 </sc-if>
 </div>
 
@@ -680,7 +695,7 @@ class Component extends DCLogic {
       aq: '', af: { cat: '', reg: '', qmin: '', pmax: '', vf: false }, fOpen: false,
       vf: Object.assign({ step: 1, mode: 'moi', slug: '', photo: '', qty: '', qmin: '', unit: 'kg', price: '', neg: true, region: me.region || '', city: me.city || '', avail: 'maintenant', date: '', agent: '', name: me.name || '' }, draft, { step: 1 }), vErr: {},
       df: { slug: '', qty: '', qmin: '', unit: 'kg', region: me.region || '', city: me.city || '', deadline: 'semaine', budget: '', name: me.name || '' }, dErr: {},
-      cprod: '', cme: me.region || '', csel: '', month: new Date().getMonth() + 1,
+      cprod: '', cSens: 'achete', cH: 'p', month: new Date().getMonth() + 1,
       toast: '', toastOn: false, splash: this.props.splash === false ? 'off' : 'on', vw: window.innerWidth, vh: window.innerHeight, clock: '', tick: 0, accTab: 'marche' };
     this.aRef = React.createRef(); this.pRef = React.createRef(); this.mapRef = React.createRef(); this.hist = 0;
   }
@@ -772,7 +787,15 @@ class Component extends DCLogic {
     if (st.includes(prev)) { go(top, T_OFF, T_IN); go(prev, T_IN, T_UNDER); } else { go(prev, T_IN, T_OFF); go(top, T_UNDER, T_IN); }
     this.animT = setTimeout(() => { (this.anims || []).forEach(x => { try { x.cancel(); } catch (_) {} }); this.anims = []; }, 650);
   }
-  componentDidUpdate(pp, ps) { this.barreH(); this.focusFeuille(); if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this.setState({ cPick: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } }
+  componentDidUpdate(pp, ps) { this.barreH(); this.focusFeuille(); if (ps && ps.stack !== this.state.stack) this.slide(ps.stack); const el = this.mapRef.current; if (el && !this.map) this.monterCarte(el); if (!el && this.map) { this.map.destroy(); this.map = null; this.glOn = false; this._cyCadreFait = this._cyPlFait = null; this.setState({ cPick: null, cBouge: null }); } if (this.map && this.mapData) { const k = JSON.stringify(this.mapData); if (k !== this._mk) { this._mk = k; this.map.set(this.mapData); } } this.carteSuite(el); }
+  // carte : les localités (distances de la liste), le cadrage autour du point de départ et des plus proches, les boutons au-dessus de la feuille
+  carteSuite(el) {
+    const G = window.MDGCarteGL;
+    if (el && !this._lieuxP && G && G.lieux) this._lieuxP = G.lieux().then(L => { this._lieux = L; this.forceUpdate(); }).catch(() => {});
+    if (!this.map) return; const c = this._cyCadre;
+    if (c && this.map.cadrer && c.k !== this._cyCadreFait) { this._cyCadreFait = c.k; this.map.cadrer(c.o, c.pts); }
+    if (this.map.placer && this._cyPlK !== this._cyPlFait) { this._cyPlFait = this._cyPlK; clearTimeout(this._cyPlT); this._cyPlT = setTimeout(() => this.map && this.map.placer && this.map.placer(), 420); }
+  }
   /* carte en profondeur (app/carte-gl.js) : chargée après l'affichage de la carte Canvas, elle la remplace en fondu.
      Sans WebGL, sur un appareil faible ou si un fichier manque, la carte Canvas reste. */
   /* la carte : une seule, sans changement visible. Téléphone capable → la carte en relief directement (fond de la même couleur pendant
@@ -783,12 +806,14 @@ class Component extends DCLogic {
     if (window.MDGSac && this._voileEl !== el) { this._voileEl = el; this._voile = window.MDGSac.attente(el, 'La carte du réseau se prépare…'); }
     const finVoile = () => { if (this._voile) { this._voile(); this._voile = null; } };
     if (this._carteEnCours || (window.MDGPlus && !window.MDGPlus.pret())) return;
-    const G = window.MDGCarteGL, simple = () => { if (this.mapRef.current === el && !this.map && window.MDGCarte) { this.map = window.MDGCarte.mount(el, { onSelect: s => this.setState({ csel: s, cOpen: !!s }), insets: () => this.carteIns() }); this._mk = ''; this.forceUpdate(); } finVoile(); };
+    const G = window.MDGCarteGL, simple = () => { if (this.mapRef.current === el && !this.map && window.MDGCarte) { this.map = window.MDGCarte.mount(el, { onSelect: () => {}, insets: () => this.carteIns() }); this._mk = ''; this.forceUpdate(); } finVoile(); };
     if (!G || !G.capable()) return simple();
     this._carteEnCours = true;
-    // toucher un district : la carte zoome, le panneau reste replié ; toucher une bulle : la carte d'annonce s'ouvre en bas
-    G.mount(el, { onSelect: s => this.setState({ csel: s, cOpen: !!s, cPick: null }), onPick: ids => { this.setState({ cPick: ids && ids.length ? ids : null, cOpen: false, cPickI: 0, cPickVu: false }); if (ids && ids.length > 1) this.cPickInvite(); },
-      onLocate: (la, lo) => { const A = window.MDGApp; let best = '', bd = 1e9; Object.keys(A.REG).forEach(k => { const d = A.km([la, lo], A.REG[k]); if (d < bd) { bd = d; best = k; } }); if (best && bd < 400) { this.me.region = best; this.me.city = this.accord(best, this.me.city); ls('mdg-app:moi', this.me); this.setState({ cme: best }); } },
+    // toucher une bulle : la feuille montre cette annonce (plusieurs au même endroit : leur liste) ; toucher le fond : retour à la liste.
+    // La position GPS est cherchée à l'ouverture, sans message ; elle reste sur le téléphone (jamais envoyée).
+    G.mount(el, { simple: true, gps: true, onPick: ids => this.setState({ cPick: ids && ids.length ? ids : null }),
+      onLocate: (la, lo, silence) => this.setState(silence ? { cGps: [lo, la] } : { cGps: [lo, la], cIci: null, cBouge: null }),
+      onRecentre: () => this.setState({ cIci: null, cBouge: null }), onMove: m => this.setState({ cBouge: { xy: [m.lng, m.lat], ville: m.ville } }),
       insets: () => this.carteIns() }).then(api => {
       this._carteEnCours = false;
       if (!api) return simple();
@@ -800,8 +825,8 @@ class Component extends DCLogic {
   /* une annonce vient d'arriver (v3/nuage.js « mdg:nouvelles ») : notification en haut, avec sa famille, son produit, sa quantité, son lieu.
      Toucher ouvre la fiche du produit. Les annonces de ce compte ne sont pas signalées. */
   // ce que l'interface couvre en haut et en bas de la carte : mesuré sur l'écran (encoches, polices, rangées de filtres)
-  carteIns() { const el = this.mapRef.current, hd = el && el.nextElementSibling, b = this.cIns ? this.cIns.b : 0;
-    return hd && hd.offsetHeight ? { t: hd.offsetHeight - 8, b } : (this.cIns || { t: 0, b: 0 }); }
+  carteIns() { const el = this.mapRef.current, pg = el && el.parentElement, h = pg && pg.querySelector('.cy-haut'), f = pg && pg.querySelector('.cy-f'); if (!el) return { t: 0, b: 0 };
+    return { t: h ? h.offsetHeight : 0, b: f ? Math.max(0, Math.round((el.getBoundingClientRect().bottom - f.getBoundingClientRect().top) / (this.sc || 1))) : 0 }; }
   onNeuves(e) {
     const d = (e && e.detail) || {}, N = window.MDGNuage, ss = N && N.session(), moi = ss && ss.user && ss.user.id;
     const toutes = (d.offres || []).map(x => ['offre', x]).concat((d.demandes || []).map(x => ['demande', x])).filter(v => v[1] && v[1].productSlug && (!moi || v[1]._uid !== moi));
@@ -975,7 +1000,7 @@ class Component extends DCLogic {
     const f = bg.querySelector('form'), close = () => bg.remove(); let jours = 14;
     bg.addEventListener('click', ev => { if (ev.target === bg) close(); }); bg.querySelector('[data-x]').onclick = close;
     f.r.onchange = () => { f.v.innerHTML = '<option value="">Chef-lieu</option>' + (V ? V.de(f.r.value) : []).map(n => '<option>' + e(n) + '</option>').join(''); };
-    if (this.state.csel) { f.r.value = this.state.csel; f.r.onchange(); } if (this.state.cprod) f.p.value = this.state.cprod;
+    if (this.state.cprod) f.p.value = this.state.cprod;
     bg.querySelectorAll('[data-d]').forEach(b => b.onclick = () => { jours = +b.dataset.d; bg.querySelectorAll('[data-d]').forEach(x => { const on = x === b; x.style.background = on ? '#F5F0E6' : 'transparent'; x.style.color = on ? '#171512' : '#F5F0E6'; }); });
     f.onsubmit = async ev => { ev.preventDefault(); if (!f.r.value) { f.r.focus(); return; } const btn = f.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Envoi…';
       const pr = f.p.value ? M.products.find(p => p.slug === f.p.value) : null;
@@ -1248,7 +1273,7 @@ class Component extends DCLogic {
       presVideT: vend ? 'Pas encore de demande. Publiez votre offre : les acheteurs vous trouveront.' : 'Pas encore d’offre. Publiez votre demande : le réseau commence par vous.',
       clocheOn: nCl > 0, clocheN: nCl > 99 ? '99+' : String(nCl), clocheL: nCl ? 'Alertes : ' + nCl + ' à voir' : 'Alertes',
       notifS: ac.accCl && ac.accCl.on ? ac.accCl.n + ' nouvelle' + (ac.accCl.n === '1' ? '' : 's') : 'Vos notifications',
-      versAlertes: () => aller('alertes'), versMarche: () => aller('marche'), versPrix: () => aller('prix'), versCarte: () => this.push('carte', { cprod: '', csel: '', cOpen: true }),   // panneau ouvert d'emblée, comme la maquette
+      versAlertes: () => aller('alertes'), versMarche: () => aller('marche'), versPrix: () => aller('prix'), versCarte: () => this.push('carte', { cprod: '', cPick: null, cIci: null, cBouge: null, cLarge: false, cH: 'p' }),   // logique Yango : « Quel produit ? »
       tabs, tabsC: tabsCache ? 'cache' : '', choix: !!S.v2choix, fermerChoix: fermer,
       acts, actVide: !acts.length, msgOn: nMsg > 0, msgN: String(nMsg),
       actVideT: moiS ? 'Vos propositions, commandes et annonces apparaîtront ici.' : 'Connectez-vous : vos propositions, commandes et annonces apparaîtront ici.',
@@ -1348,6 +1373,86 @@ class Component extends DCLogic {
       publierOn: !plusLarge, publierT: ach ? 'Publier une demande' : 'Publier une offre', publier: () => this.openSheet(ach ? 'cherche' : 'jai', slug) };
   }
   // ——— refonte 2026-11, lot 7 : Publier en 5 étapes (maquette « MGCI App v2 ») ; mêmes enregistrements qu'avant (pubOffer / pubDemand) ———
+  /* ——— carte du réseau, logique Yango (16/11/2026, accord du propriétaire) ———
+     La carte part de moi : la position GPS (jamais envoyée), sinon ma ville, sinon le chef-lieu de mon district. Une seule question, « Quel produit ? » ;
+     J'achète = les offres, Je vends = les demandes. Le produit choisi : la carte ne montre que lui, la liste va de la plus proche à la plus loin
+     (à CY_RAYON km au plus ; « Voir plus loin » : tout le pays), distances à vol d'oiseau entre villes. Une annonce touchée : un seul gros bouton.
+     « Chercher ici » (après un déplacement de la carte) : la liste part du centre de la carte au lieu de moi. */
+  v2Carte(O, D, cZ, top, framed) {
+    const S = this.state, A = window.MDGApp, LX = this._lieux, me = this.me || {}, CY_RAYON = 150, CY_P = 124;
+    const xyR = r => A.REG[r] ? [A.REG[r][1], A.REG[r][0]] : null, xyOf = x => { const o = LX ? LX.ou(x) : null; return o ? o.xy : xyR(x.region); };
+    const kmXY = (a, b) => A.km([a[1], a[0]], [b[1], b[0]]), kmT = d => d == null ? '' : d < 5 ? 'sur place' : '≈ ' + d + ' km';
+    const meR = me.region || '', meV = me.city && LX ? LX.ou({ city: me.city, region: meR }) : null;
+    const moi = S.cGps || (meV && meV.xy) || xyR(meR), moiNom = (meV && meV.ville) || (A.REG[meR] || [])[2] || '';
+    const orig = S.cIci ? S.cIci.xy : moi, autour = S.cIci ? 'autour de ' + (S.cIci.ville || 'ce point') : S.cGps || moiNom ? 'près de vous' : 'dans le pays';
+    const vend = S.cSens === 'vend', P = S.cprod ? this.prod(S.cprod) : null, nom = P ? P.name.toLowerCase() : '';
+    const tous = (vend ? D : O).filter(x => !S.cprod || x.slug === S.cprod);
+    const loin = d => d == null ? 1e9 : d;
+    const rows = tous.map(x => { const xy = xyOf(x); return { x, xy, d: orig && xy ? kmXY(orig, xy) : null }; }).sort((a, b) => loin(a.d) - loin(b.d));
+    const large = !!S.cLarge || !orig, pres = large ? rows : rows.filter(r => r.d != null && r.d <= CY_RAYON), loinN = rows.length - pres.length;
+    const ids = S.cPick || [], seul = ids.length === 1 ? [...O, ...D].find(x => x.id === ids[0]) : null, grp = ids.length > 1 ? rows.filter(r => ids.includes(r.x.id)) : null;
+    const mode = seul ? 'un' : P || (grp && grp.length) ? 'liste' : 'choix', h = mode === 'liste' ? (S.cH === 'p' || S.cH === 'g' ? S.cH : 'm') : 'p';
+    const topR = framed ? '50px' : 'max(12px, env(safe-area-inset-top))';
+    this._cyHt = { p: CY_P + 'px', m: '52%', g: 'calc(100% - ' + topR + ' - 60px)', auto: 'auto' };
+    // la carte : le produit choisi seulement (sans produit : tout le côté choisi) ; cadrage sur le point de départ et les 3 plus proches
+    const zones = cZ.map(z => ({ region: z.region_slug, city: z.city || '', label: z.product_label || '' })), pts = {};
+    tous.forEach(x => { if (A.REG[x.region]) { const q = pts[x.region] || (pts[x.region] = { o: 0, d: 0 }); q[x.kind === 'offre' ? 'o' : 'd']++; } });
+    if (top === 'carte' || S.leaving === 'carte') {
+      this.mapData = { pts, pairs: [], me: meR, sel: '', moi: S.cGps || (meV && meV.xy) || null, zones, lier: [],
+        items: tous.map(x => ({ id: x.id, kind: x.kind, slug: x.slug, product: this.prod(x.slug).name, qty: x.qty, unit: x.unit, price: x.price, budget: x.budget, region: x.region, city: x.city, uid: x.uid, vs: !!x.vs })) };
+      if (mode !== 'un') this._cyCadre = { k: [mode === 'liste' && P ? P.slug : '', vend ? 'v' : 'a', orig ? orig.join() : '', large ? 1 : 0, grp ? 'g' : ''].join('|'), o: orig, pts: grp ? [] : P ? pres.slice(0, 3).map(r => r.xy) : [] };
+      this._cyPlK = mode + h;
+    }
+    const seg = [['achete', 'J’achète', 'o'], ['vend', 'Je vends', 'd']].map(([k, l, c]) => ({ l, c: 'cy-s ' + c, on: String((vend ? 'vend' : 'achete') === k), go: () => this.setState({ cSens: k, cPick: null, cLarge: false }) }));
+    const rec = this.cyRecents().map(sl => { const p = this.prod(sl); return { name: p.name, thumb: p.thumb, fit: p.fit, go: () => { this.setState({ cprod: sl, cPick: null, cBouge: null, cLarge: false, cH: 'm' }); this.cyRetenir(sl); } }; });
+    const prixT = (x, px) => px ? A.fmt(px) + ' F' : x.kind === 'offre' ? 'Prix à discuter' : 'Budget à discuter';
+    const lignes = (grp || pres).map(r => { const x = r.x, off = x.kind === 'offre', px = off ? x.price : x.budget, PP = this.prod(x.slug), q = A.fmt(x.qty) + ' ' + A.unites(x.qty, x.unit), km = kmT(r.d);
+      return { mkC: off ? 'od-o' : 'od-d', prix: prixT(x, px), parU: px ? ' / ' + x.unit : '', km, vsEl: this.vsEl(x),
+        sous: [P ? '' : PP.name, this.place(x), (off ? '' : 'cherche ') + q, x.name].filter(Boolean).join(' · '),
+        aria: (off ? 'Offre, ' : 'Demande, ') + PP.name + ', ' + (px ? A.fmt(px) + ' francs par ' + x.unit : 'prix à discuter') + ', ' + this.place(x) + (r.d == null ? '' : r.d < 5 ? ', sur place' : ', environ ' + r.d + ' kilomètres'),
+        go: () => { this.setState({ cPick: [x.id] }); if (this.map && this.map.choisir) this.map.choisir(x.id); } }; });
+    let a = {};
+    if (seul) { const c = this.card(seul), off = seul.kind === 'offre', px = off ? seul.price : seul.budget, xy = xyOf(seul), d = moi && xy ? kmXY(moi, xy) : null, V = window.MDGVilleSeule, n = seul.qty;
+      a = { mkC: c.mkC, titre: (off ? 'Offre · ' : 'Demande · ') + c.product, prix: prixT(seul, px), parU: px ? ' / ' + seul.unit : '',
+        info: [A.fmt(n) + ' ' + A.unites(n, seul.unit) + (off ? ' disponible' : ' recherché') + (n > 1 ? 's' : ''), this.place(seul), d == null ? '' : d < 5 ? 'près de vous' : '≈ ' + d + ' km de vous'].filter(Boolean).join(' · '),
+        who: c.who, idOk: c.idOk, hasNote: c.hasNote, note: c.note, mine: c.mine,
+        vs: seul.vs && V ? React.createElement('span', { className: 'vseule long', title: V.phrase(seul.kind, seul.city), dangerouslySetInnerHTML: { __html: V.corps(seul.kind, seul.city) } }) : null,
+        canNeg: c.canNeg, neg: () => c.neg(), negL: c.negL, canDm: c.canDm, dm: () => c.dm(), canRep: c.canRep, rep: () => c.rep(), fiche: () => c.go() }; }
+    const retour = () => { this.setState({ cPick: null }); if (this.map && this.map.pick) this.map.pick([]); };
+    const publier = () => { const sl = S.cprod; if (vend) { if (sl) this.setVf({ slug: sl }); this.push('vendre'); } else { this.setState(s => ({ df: Object.assign({}, s.df, sl ? { slug: sl } : {}) })); this.push('demande'); } };
+    const ordre = ['p', 'm', 'g'];
+    return { mode, choix: mode === 'choix', liste: mode === 'liste', un: mode === 'un', h, hauteur: this._cyHt[mode === 'liste' ? h : 'auto'],
+      aria: mode === 'un' ? 'Annonce choisie' : mode === 'liste' ? 'Annonces' : 'Quel produit ?',
+      poiL: mode === 'un' ? 'Retour à la liste' : h === 'g' ? 'Réduire la liste' : 'Agrandir la liste',
+      poi: () => { if (Date.now() - (this._cyDrag || 0) < 350) return; if (mode === 'un') return retour(); if (mode === 'liste') this.setState({ cH: ordre[(ordre.indexOf(h) + 1) % 3] }); },
+      down: e => this.cyDown(e), move: e => this.cyMove(e), up: e => this.cyUp(e, retour),
+      seg, rec, recOn: rec.length > 0, chercher: () => this.openPick('carte'),
+      prodN: P ? P.name : 'Quel produit ?', prodImg: P ? P.thumb : '', prodFit: P ? P.fit : 'contain', prodL: P ? 'Produit : ' + P.name + ', changer' : 'Choisir un produit',
+      grpOn: !!grp, grpFin: retour, sous: grp ? 'Annonces à cet endroit' : (vend ? 'Demandes ' : 'Offres ') + (large && orig ? 'dans tout le pays' : autour),
+      nOn: true, n: String(grp ? grp.length : pres.length), nC: vend ? 'd' : 'o', lignes,
+      vide: mode === 'liste' && !grp && !pres.length, videT: (vend ? 'Pas encore de demande pour ' : 'Pas encore d’offre pour ') + nom + (large ? ' dans le pays.' : ' ' + autour + '.'),
+      videX: loinN ? ' Il y en a plus loin.' : vend ? ' Publiez une offre : les acheteurs la verront.' : ' Publiez une demande : les vendeurs la verront.',
+      plusOn: loinN > 0 && !large, plusBas: loinN > 0 && !large && pres.length > 0 && !grp, loinN: String(loinN), plus: () => this.setState({ cLarge: true, cH: 'm' }),
+      publier, publierL: vend ? 'Publier une offre' : 'Publier une demande',
+      iciOn: !!S.cBouge && mode === 'liste' && !grp, iciV: S.cBouge ? S.cBouge.ville || 'ce point' : '', ici: () => this.setState(s => ({ cIci: s.cBouge, cBouge: null, cPick: null, cLarge: false })),
+      retour, a };
+  }
+  // produits cherchés récemment sur la carte (ce téléphone seulement)
+  cyRecents() { const M = window.MDG; let L = []; try { L = JSON.parse(localStorage.getItem('mdg-carte:recents') || '[]'); } catch (_) {} return (Array.isArray(L) ? L : []).filter(sl => M.products.some(p => p.slug === sl)).slice(0, 6); }
+  cyRetenir(sl) { try { localStorage.setItem('mdg-carte:recents', JSON.stringify([sl].concat(this.cyRecents().filter(x => x !== sl)).slice(0, 6))); } catch (_) {} }
+  // la feuille de la carte : on la tire par sa poignée ; lâchée, elle va à la hauteur la plus proche (petite, moyenne, pleine), ou à la suivante si le geste est rapide
+  cyDown(e) { const f = e.currentTarget.closest('.cy-f'); if (!f) return; this._cyD = { y: e.clientY, h: f.offsetHeight, f, t: Date.now(), moved: false }; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {} }
+  cyMove(e) { const d = this._cyD; if (!d) return; const dy = (e.clientY - d.y) / (this.sc || 1); if (!d.moved && Math.abs(dy) < 6) return;
+    d.moved = true; const pg = d.f.parentElement; d.f.style.transition = 'none'; d.f.style.height = Math.max(72, Math.min(pg.clientHeight - 60, d.h - dy)) + 'px'; }
+  cyUp(e, retour) { const d = this._cyD; this._cyD = null; if (!d || !d.moved) return; this._cyDrag = Date.now();
+    const f = d.f, pg = f.parentElement, mode = f.getAttribute('data-mode'), cur = f.offsetHeight, v = (cur - d.h) / Math.max(1, Date.now() - d.t), HT = this._cyHt || {};
+    f.style.transition = '';
+    if (mode !== 'liste') { f.style.height = HT.auto || 'auto'; if (mode === 'un' && cur < d.h - 50) retour(); return; }
+    const H = pg.clientHeight, haut = pg.querySelector('.cy-haut');   // la page finit déjà au-dessus de la barre d'onglets (css/v2.css)
+    const tp = haut ? parseFloat(getComputedStyle(haut).paddingTop) || 0 : 0, K = [['p', 124], ['m', H * .52], ['g', H - tp - 60]];
+    let i = 0; K.forEach((k, j) => { if (Math.abs(k[1] - cur) < Math.abs(K[i][1] - cur)) i = j; });
+    if (Math.abs(v) > .6) { const i0 = K.findIndex(k => k[0] === (f.getAttribute('data-h') || 'm')); i = Math.max(0, Math.min(2, i0 + (v > 0 ? 1 : -1))); }
+    f.style.height = HT[K[i][0]] || ''; this.setState({ cH: K[i][0] }); }
   v2Pub(mode) {
     const S = this.state, A = window.MDGApp, V = window.MDGVilles, isO = mode === 'offre', f = (isO ? S.vf : S.df) || {}, step = (S.v2ps || {})[mode] || 0;
     const set = patch => isO ? this.setVf(patch) : this.setState(s => ({ df: Object.assign({}, s.df, patch), dErr: {} }));
@@ -1533,21 +1638,13 @@ class Component extends DCLogic {
   say(t, o) { if (window.MDGToast) return window.MDGToast.dire(t, o); clearTimeout(this.tt); this.setState({ toast: t, toastOn: true }); this.tt = setTimeout(() => this.setState({ toastOn: false }), 2400); }
   // Accueil → Activité : les éléments retirés avant sur ce téléphone restent cachés
   masques() { try { return JSON.parse(localStorage.getItem('mdg-activite:masques')) || {}; } catch (_) { return {}; } }
-  // carte : aller à l'annonce i du groupe ; inviter à glisser (la bande avance un peu puis revient)
-  cPickAller(i) { const el = document.querySelector('[data-cpick]'), c = el && el.firstElementChild; if (!c) return; const n = el.children.length; i = Math.max(0, Math.min(n - 1, i));
-    el.scrollTo({ left: i * (c.offsetWidth + 10), behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); this.setState({ cPickI: i, cPickVu: true }); }
-  cPickInvite() { if (matchMedia('(prefers-reduced-motion: reduce)').matches) return; clearTimeout(this.cpT);
-    this.cpT = setTimeout(() => { const el = document.querySelector('[data-cpick]'); if (!el || el.scrollLeft || el.children.length < 2) return;
-      el.style.scrollSnapType = 'none'; el.scrollTo({ left: 56, behavior: 'smooth' });
-      this.cpT = setTimeout(() => { el.scrollTo({ left: 0, behavior: 'smooth' }); setTimeout(() => { el.style.scrollSnapType = ''; }, 450); }, 520); }, 650); }
   sDown(e) { this.sd = { y: e.clientY }; try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) {} }
   sMove(e) { if (this.sd) this.setState({ sheetDy: Math.max(0, (e.clientY - this.sd.y) / this.sc) }); }
   sUp() { if (!this.sd) return; this.sd = null; if (this.state.sheetDy > 110) this.closeAll(); else this.setState({ sheetDy: 0 }); }
   edgeDown(e) { const r = e.currentTarget.getBoundingClientRect(), S = this.state; this.ed = !S.sheet && !S.pick && (e.clientX - r.left) / this.sc < 26 ? { x: e.clientX, y: e.clientY } : null; }
   edgeUp(e) { const d = this.ed; this.ed = null; if (d && (e.clientX - d.x) / this.sc > 70 && Math.abs(e.clientY - d.y) < Math.abs(e.clientX - d.x)) this.back(); }
   openPick(kind) { this.setState({ pick: kind, pq: '' }); }
-  locate() { const A = window.MDGApp; if (!navigator.geolocation) { this.say('Localisation indisponible : choisissez votre région'); return; } this.say('Recherche de votre position…'); navigator.geolocation.getCurrentPosition(p => { let best = '', bd = 1e9; Object.keys(A.REG).forEach(s => { const d = A.km([p.coords.latitude, p.coords.longitude], A.REG[s]); if (d < bd) { bd = d; best = s; } }); if (bd > 400) { this.say('Vous semblez hors de Côte d\u2019Ivoire'); return; } this.me.region = best; this.me.city = this.accord(best, this.me.city); ls('mdg-app:moi', this.me); this.setState({ cme: best, csel: '' }); this.say('Repéré près de ' + A.REG[best][2]); }, () => this.say('Position refusée : choisissez votre région'), { timeout: 8000, maximumAge: 600000 }); }
-  doPick(slug) { const k = this.state.pick; this.setState(s => k === 'match' ? { mf: Object.assign({}, s.mf, { slug }), pick: null } : k === 'vendre' ? { vf: Object.assign({}, s.vf, { slug }), vErr: {}, pick: null } : k === 'demande' ? { df: Object.assign({}, s.df, { slug }), dErr: {}, pick: null } : { cprod: slug, csel: '', pick: null, cPick: null }); }
+  doPick(slug) { const k = this.state.pick; this.setState(s => k === 'match' ? { mf: Object.assign({}, s.mf, { slug }), pick: null } : k === 'vendre' ? { vf: Object.assign({}, s.vf, { slug }), vErr: {}, pick: null } : k === 'demande' ? { df: Object.assign({}, s.df, { slug }), dErr: {}, pick: null } : { cprod: slug, pick: null, cPick: null, cBouge: null, cLarge: false, cH: 'm' }); if (k === 'carte' && slug) this.cyRetenir(slug); }
   setVf(patch) { this.setState(s => { const vf = Object.assign({}, s.vf, patch); ls('mdg-app:brouillon-offre', Object.assign({}, vf, { photo: '' })); return { vf, vErr: {} }; }); }
 
   doneSVG(done) {
@@ -1626,52 +1723,11 @@ class Component extends DCLogic {
       if (!ok) { this.say('Mémoire pleine : retirez une ancienne publication'); return; } this.celebrate(isJai ? 'offre' : 'demande', mf.slug); };
     const wl = isJai ? W_OFF : W_DEM, wcur = mf.when || wl[isJai ? 0 : 1][0];
 
-    /* carte : plein écran ; légende = filtres (offres, demandes) avec leurs nombres ; zones de forte demande (administration) */
-    const cO = O.filter(o => !S.cprod || o.slug === S.cprod), cD = D.filter(d => !S.cprod || d.slug === S.cprod), cK = S.cK || 'tout';
+    /* carte du réseau (logique Yango, v2Carte) ; zones de forte demande (administration) : sur la carte, et gérées en bas de la liste */
     const NZ = window.MDGNuage, isAdm = !!(NZ && NZ.session() && ls('mdg-nuage:admin') === true);
     const cZ = (NZ && NZ.zones ? NZ.zones() : []).filter(z => A.REG[z.region_slug] && (!S.cprod || !z.product_slug || z.product_slug === S.cprod));
-    // compatibles : les annonces des AUTRES qui répondent aux miennes (même produit, sens inverse : mon offre ↔ leur demande, ma demande ↔ leur offre)
-    const mesA = [...cO, ...cD].filter(x => this.isMine(x)), vaAvec = (a, b) => a.slug === b.slug && a.kind !== b.kind;
-    const cCompat = [...cO, ...cD].filter(x => !this.isMine(x) && mesA.some(m => vaAvec(m, x))), mesLies = mesA.filter(m => cCompat.some(x => vaAvec(m, x)));
-    const cCx = cK === 'compat' ? [...cCompat, ...mesLies] : null;
-    const cOf = cCx ? cCx.filter(x => x.kind === 'offre') : cK === 'demande' ? [] : cO, cDf = cCx ? cCx.filter(x => x.kind !== 'offre') : cK === 'offre' ? [] : cD;
-    let cItems = (cCx ? cCompat : [...cOf, ...cDf]).sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0)), cListT = cK === 'offre' ? 'Les offres' : cK === 'demande' ? 'Les demandes' : cCx ? 'Compatibles avec vos annonces' : 'Toutes les publications';
-    if (S.csel) { cItems = cItems.filter(x => x.region === S.csel); cListT = 'À ' + ((A.REG[S.csel] || [])[2] || '').toUpperCase(); }
-    else if (S.cme) { const tr = x => { const d = A.km(A.REG[S.cme], A.REG[x.region] || A.REG[S.cme]); return d < 60 ? 0 : d < 180 ? 1 : d < 350 ? 2 : 3; };
-      cItems = cItems.slice().sort((a, b) => tr(a) - tr(b) || (b.qty || 0) - (a.qty || 0)); cListT = 'PRÈS DE VOUS D\u2019ABORD'; }
-    { const by = L => { const m = {}; L.forEach(x => { if (A.REG[x.region]) m[x.region] = (m[x.region] || 0) + 1; }); return m; }, oc = by(cOf), dc = by(cDf), pts = {}, pr = {};
-      Object.keys(A.REG).forEach(s => { if (oc[s] || dc[s]) pts[s] = { o: oc[s] || 0, d: dc[s] || 0 }; });
-      const meme = (o, d) => (o.uid && o.uid === d.uid) || (!o.remote && !d.remote);  // la même personne : pas de lien entre ses propres annonces
-      cOf.forEach(o => cDf.forEach(d => { if (o.slug === d.slug && A.REG[o.region] && A.REG[d.region] && o.region !== d.region && !meme(o, d)) pr[o.region + '>' + d.region] = 1; }));
-      const zones = cZ.map(z => ({ region: z.region_slug, city: z.city || '', label: z.product_label || '' }));
-      const items = [...cOf, ...cDf].map(x => ({ id: x.id, kind: x.kind, slug: x.slug, product: this.prod(x.slug).name, qty: x.qty, unit: x.unit, price: x.price, budget: x.budget, region: x.region, city: x.city, uid: x.uid, vs: !!x.vs }));
-      this.mapData = top === 'carte' || S.leaving === 'carte' ? { pts, pairs: Object.keys(pr).map(k => k.split('>')), me: S.cme || '', sel: S.csel || '', zones, items, lier: cCx ? mesLies.map(x => x.id) : [] } : this.mapData; }
-    // annonces touchées sur la carte en relief : la même carte d'annonce que dans Acheter, posée en bas
-    const cPicked = S.cPick ? [...O, ...D].filter(x => S.cPick.includes(x.id)).map(x => this.card(x)) : [];
-    const dKm = S.cme && S.csel && S.cme !== S.csel ? A.km(A.REG[S.cme], A.REG[S.csel]) : 0;
-    const cDist = dKm ? { on: true, t: A.REG[S.cme][2] + ' → ' + A.REG[S.csel][2] + ' : ≈ ' + dKm + ' km', x: 'À vol d\u2019oiseau, entre chefs-lieux. Par la route, comptez souvent davantage.' } : { on: false, t: '', x: '' };
-    const cList = cItems.slice(0, 40).map(x => { const c = this.card(x), d = S.cme && A.REG[x.region] ? A.km(A.REG[S.cme], A.REG[x.region]) : null, off = x.kind === 'offre';
-      return Object.assign(c, { pin: () => this.setState({ csel: x.region, cOpen: false }), pinL: 'Voir ' + c.product + ' sur la carte', title: c.product + ' · ' + c.who, km: d == null ? '' : (d < 15 ? 'sur place' : '≈ ' + d + ' km'), emo: '', mkC: off ? 'od-o' : 'od-d', shapeRad: off ? '50%' : '9px', shapeBg: off ? 'rgba(108,197,140,.9)' : 'rgba(242,201,76,.92)' }); });
-    // offres et demandes : le panier et le caddie dessinés (css/symboles.css), comme partout ; « Pour vous » et « Forte demande » gardent leur point
-    const DOT = (col, r, ring) => 'flex:none;width:10px;height:10px;border-radius:' + r + ';' + (ring ? 'box-shadow:inset 0 0 0 2px ' + col : 'background:' + col);
-    const legB = (k, e, l, n, col) => { const onK = cK === k || cK === 'tout'; const sym = k === 'offre' || k === 'demande'; return { e, l, n, symC: sym ? 'lg-s' + (k === 'demande' ? ' d' : '') : '', dot: sym ? '' : DOT(col, '50%', k === 'compat'), hasN: n != null, nbg: col, on: cK === k ? 'true' : 'false', op: onK ? 1 : .45, bd: cK === k ? col : 'rgba(245,240,230,.18)', bg: cK === k ? 'rgba(23,21,18,.92)' : 'rgba(23,21,18,.7)', go: () => this.setState(s => ({ cK: (s.cK || 'tout') === k ? 'tout' : k, csel: '', cPick: null })) }; };
-    // « Compatibles » : un vrai filtre (vos annonces + celles qui leur répondent, reliées par une ligne bleue) ;
-    // « Forte demande » : ouvre la liste des zones. (L'ancien « Vous » ne faisait rien : votre position, c'est le bouton ⌖ et le point violet.)
-    const cmp = legB('compat', '〰', 'Pour vous', cCompat.length, '#6AAEF0');
-    if (!cCompat.length) cmp.go = () => this.say(mesA.length ? 'Aucune annonce ne répond encore aux vôtres pour l\u2019instant.' : 'Publiez une offre ou une demande : les annonces qui lui répondent s\u2019afficheront ici.');
-    const feu = { e: '🔥', symC: '', dot: DOT('#E2735B', '50%'), l: 'Forte demande', n: cZ.length, hasN: true, nbg: '#E2735B', on: 'false', op: 1, bd: 'rgba(245,240,230,.18)', bg: 'rgba(23,21,18,.7)', go: () => this.setState({ cOpen: true, csel: '', cPick: null }) };
-    const cLeg = [cmp].concat(cZ.length ? [feu] : []);   // Offres et Demandes sont en haut, comme la maquette (cTop)
-    const cTop = [['tout', 'Tout', cO.length + cD.length, 'tt'], ['offre', 'Offres', cO.length, 'o'], ['demande', 'Demandes', cD.length, 'd']].map(([k, l, n, c]) => ({ l, n: String(n), c, on: String(cK === k || (k === 'tout' && cK === 'compat')), go: () => this.setState({ cK: k, csel: '', cPick: null }) }));
-    // « Ce qui se rapproche » (maquette) : une offre et une demande du même produit, dans deux villes différentes, de deux personnes différentes
-    const lien = []; { const vu = new Set(), meme2 = (o, d) => (o.uid && o.uid === d.uid) || (!o.remote && !d.remote);
-      cOf.forEach(o => cDf.forEach(d => { if (o.slug !== d.slug || !A.REG[o.region] || !A.REG[d.region] || meme2(o, d)) return; const vo = this.place(o), vd = this.place(d); if (vo === vd) return;
-        const k = o.id + '>' + d.id; if (vu.has(k)) return; vu.add(k); lien.push({ o, d, vo, vd, km: A.km(A.REG[o.region], A.REG[d.region]) }); })); }
-    lien.sort((a, b) => a.km - b.km);
-    const cLiens = lien.slice(0, 10).map(x => { const P = this.prod(x.o.slug); return { img: P.thumb, t: P.name + ' · ' + x.vo + ' → ' + x.vd, s: x.o.name + ' → ' + x.d.name, km: x.km < 15 ? 'sur place' : x.km + ' km', go: () => this.openFiche(x.o.slug) }; });
     const cZones = cZ.map(z => ({ t: 'Forte demande' + (z.product_label ? ' : ' + z.product_label : ''), x: (z.city || (A.REG[z.region_slug] || [])[2] || '') + (z.note ? ' · ' + z.note : '') + ' · jusqu\u2019au ' + new Date(z.expire_le).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }), canDel: isAdm, del: () => { if (confirm('Retirer cette zone de la carte ?')) NZ.zoneRetirer(z.id).then(() => this.say('Zone retirée')).catch(e => this.say('Impossible : ' + e.message)); } }));
-    const cTopPx = (framed ? 50 : Math.max(12, this.safeT || 0)) + 52 + 54, cBotPx = 62 + 52 + 54 + (framed ? 34 : Math.max(18, this.safeB || 0)); this.cIns = { t: cTopPx, b: cBotPx };
-    const cOpen = !!S.cOpen, nTot = cItems.length + (S.csel ? 0 : cZ.length);
-    const cSheet = { open: cOpen, h: cOpen ? Math.round((framed ? 844 : (S.vh || 800)) * .45) + 'px' : cBotPx + 'px', chev: cOpen ? 'rotate(180deg)' : 'none', l: cOpen ? 'Voir la carte' : nTot + ' à voir', toggle: () => this.setState(s => ({ cOpen: !s.cOpen })) };
+    const cy = this.v2Carte(O, D, cZ, top, framed);
 
     /* publications */
     const mine = [...this.offersAll(), ...this.demandsAll()].filter(x => !x.remote).sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0));
@@ -1718,7 +1774,6 @@ class Component extends DCLogic {
     /* sélecteur de produit */
     const pq = A.norm(S.pq), pl = M.products.filter(p => !pq || A.norm(p.name).includes(pq) || (p.aliases || []).some(a => A.norm(a).includes(pq)));
     const pickGroups = this.cats.map(c => ({ t: c.name, items: pl.filter(p => p.categorySlug === c.slug).map(p => Object.assign(mini(p), { sub: (p.aliases || []).slice(0, 2).join(' · '), pick: () => this.doPick(p.slug) })) })).filter(g => g.items.length);
-    if (S.pick === 'carte' && !pq) pickGroups.unshift({ t: 'RÉSEAU', items: [{ name: 'Tous les produits', sub: '', thumb: A.IMG + 'famille-autres-produits-vivriers.webp', fit: 'cover', rad: '10px', pick: () => this.doPick('') }] });
 
     const light = ['acheter', 'vendre', 'demande', 'categories', 'pubs'].includes(top) || !!S.pick;
     const sheetOn = S.sheet === 'match', dy = S.sheetDy, anyS = sheetOn;
@@ -1738,22 +1793,13 @@ class Component extends DCLogic {
       bqSugg: (L => ({ on: L.length > 0, list: L.map(b => ({ nom: 'Boutique ' + MDGBoutique.de(b.nom), sub: MDGBoutique.court(b.adresse), go: () => MDGBoutique.ouvrir(b.adresse) })) }))(window.MDGBoutique && S.aq && S.aq.trim().length > 1 ? MDGBoutique.chercher(S.aq) : []),
       sugg: { on: sug.length > 0, list: sug.map(s => Object.assign(mini(s), { sub: s.matchedAlias ? 'aussi appelé « ' + s.matchedAlias + ' »' : this.prod(s.slug).catName, go: () => this.setState({ aq: parsed && parsed.productText && S.aq.includes(parsed.productText) ? S.aq.replace(parsed.productText, s.name) : s.name }) })) },
       aCount: (n => aK === 'offre' ? (n ? n + ' offre' + (n > 1 ? 's' : '') : 'Offres') : aK === 'demande' ? (n ? n + ' demande' + (n > 1 ? 's' : '') : 'Demandes') : (n ? n + ' publication' + (n > 1 ? 's' : '') : 'Publications'))(aL.length),
-      aSeg: [['offre', 'Offres', O.length], ['demande', 'Demandes', D.length], ['tout', 'Tout', O.length + D.length]].map(k => ({ l: k[1], nC: k[0] === 'offre' ? 'o' : k[0] === 'demande' ? 'd' : '', sym: k[0] === 'tout' ? 'none' : 'inline-block', symC: k[0] === 'demande' ? 'aseg-s d' : 'aseg-s', n: k[2], bg: aK === k[0] ? 'var(--encre)' : 'transparent', color: aK === k[0] ? 'var(--ivoire)' : 'var(--texte-2)', on: aK === k[0] ? 'true' : 'false', go: () => this.setState({ aK: k[0] }) })), aCarte: () => this.push('carte', { cprod: pslug, csel: lreg }),
+      aSeg: [['offre', 'Offres', O.length], ['demande', 'Demandes', D.length], ['tout', 'Tout', O.length + D.length]].map(k => ({ l: k[1], nC: k[0] === 'offre' ? 'o' : k[0] === 'demande' ? 'd' : '', sym: k[0] === 'tout' ? 'none' : 'inline-block', symC: k[0] === 'demande' ? 'aseg-s d' : 'aseg-s', n: k[2], bg: aK === k[0] ? 'var(--encre)' : 'transparent', color: aK === k[0] ? 'var(--ivoire)' : 'var(--texte-2)', on: aK === k[0] ? 'true' : 'false', go: () => this.setState({ aK: k[0] }) })), aCarte: () => this.push('carte', { cprod: pslug, cSens: aK === 'demande' ? 'vend' : 'achete', cPick: null, cBouge: null, cLarge: false, cH: 'm', cIci: lreg && A.REG[lreg] ? { xy: [A.REG[lreg][1], A.REG[lreg][0]], ville: A.REG[lreg][2] } : null }),
       aList: aL.map(x => this.card(x)), aEmpty: !aL.length,
       aEmptyT: aK === 'demande' ? 'Pas encore de demande' + (pslug ? ' pour ' + this.prod(pslug).name.toLowerCase() : ' qui correspond') : O.length ? 'Pas encore d\u2019offre' + (pslug ? ' pour ' + this.prod(pslug).name.toLowerCase() : ' qui correspond') : 'Le marché attend sa première offre',
       aEmptyX: O.length ? 'Publiez une demande : les vendeurs de ce produit la verront et vous contacteront.' : 'Rien n\u2019a encore été publié sur cet appareil. Une demande suffit pour lancer le réseau.',
       aDemande: aDem, aDemandeL: pslug ? 'Demander ' + this.prod(pslug).name.toLowerCase() : 'Publier une demande',
       onPhoto: e => { const f = e.target.files && e.target.files[0]; if (f) A.photo(f).then(d => this.setState(s => ({ vf: Object.assign({}, s.vf, { photo: d }) }))).catch(() => this.say('Photo illisible')); },
-      vf, estOff: identAdm(), offLogo: identAdm() && window.MDGMarque ? React.createElement('span', { style: { display: 'flex' }, dangerouslySetInnerHTML: { __html: window.MDGMarque.dg(40, { fond: 'vert', rond: true }) } }) : null, df, cPick: () => this.openPick('carte'), cLocate: () => { if (this.glOn && this.map && this.map.localiser) this.map.localiser(); else this.locate(); }, mapRef: this.mapRef, cLocOn: !this.glOn, cDist, cLeg, cSheet, cZones, cAdmin: isAdm, cZoneAdd: () => this.zoneForm(), cProdL: S.cprod ? this.prod(S.cprod).name : 'Tous les produits', cMe: S.cme, cMeOn: S.cme ? 'oui' : 'non', cMeK: S.cme ? 'Vous êtes à' : 'Votre zone', cMeL: S.cme ? ((M.regions.find(r => r.slug === S.cme) || {}).name || S.cme) : 'Où êtes-vous ?', onMe: e => { const v = e.target.value; this.setState({ cme: v, csel: '' }); if (v) { this.me.region = v; this.me.city = this.accord(v, this.me.city); ls('mdg-app:moi', this.me); } },
-      // plusieurs annonces au même endroit : on voit le bord de la suivante, des points « 1 sur 2 » et des flèches
-      cPickMulti: cPicked.length > 1, cPickW: cPicked.length > 1 ? 'calc(100% - 64px)' : 'calc(100% - 28px)',
-      cPickDots: cPicked.map((_, i) => ({ on: String(i === (S.cPickI || 0)), lab: 'Annonce ' + (i + 1) + ' sur ' + cPicked.length, go: () => this.cPickAller(i) })),
-      cPickTxt: ((S.cPickI || 0) + 1) + ' sur ' + cPicked.length + (S.cPickVu ? '' : ' · glissez'), cPickDebut: !(S.cPickI > 0), cPickFin: (S.cPickI || 0) >= cPicked.length - 1,
-      cPickAppel: S.cPickVu ? '' : 'appel', cPickPrev: () => this.cPickAller((S.cPickI || 0) - 1), cPickNext: () => this.cPickAller((S.cPickI || 0) + 1),
-      cPickScroll: e => { const el = e.currentTarget, c = el.firstElementChild; if (!c) return; const i = Math.round(el.scrollLeft / (c.offsetWidth + 10)); if (i !== (this.state.cPickI || 0)) this.setState({ cPickI: i, cPickVu: true }); },
-      cPickOn: cPicked.length > 0, cPicked, cPickN: cPicked.length > 1 ? cPicked.length + ' annonces ici' : 'Annonce', cPickBas: (this.cIns ? this.cIns.b : 80) + 10 + 'px', cPickFermer: () => { this.setState({ cPick: null }); this.map && this.map.pick && this.map.pick([]); },
-      cTop, cLiens, cLiensOn: !!cLiens.length && !S.csel && cK !== 'compat', cListOn: !!cList.length, cPanT: cLiens.length && !S.csel && cK !== 'compat' ? 'Ce qui se rapproche' : cListT, cPanN: cLiens.length && !S.csel && cK !== 'compat' ? lien.length + ' lien' + (lien.length > 1 ? 's' : '') : cSheet.l,
-      cListT, cList, cEmpty: !cList.length && !cZones.length, cEmptyTxt: 'Le réseau se dessine à chaque publication. Aucune offre ni demande ' + (S.csel ? 'ici' : (S.cprod ? 'pour ce produit' : '')) + ' pour l\u2019instant.',
+      vf, estOff: identAdm(), offLogo: identAdm() && window.MDGMarque ? React.createElement('span', { style: { display: 'flex' }, dangerouslySetInnerHTML: { __html: window.MDGMarque.dg(40, { fond: 'vert', rond: true }) } }) : null, df, mapRef: this.mapRef, cy, cZones, cAdmin: isAdm, cZoneAdd: () => this.zoneForm(),
       goDemande: () => this.push('demande'),
       myPubs, pubsEmpty: !myPubs.length,
       mes: (() => { const ID = window.MDGIdentite, s = ID && ID.statutCache ? ID.statutCache() : null, r = ID && ID.gratuitesRestantes ? ID.gratuitesRestantes(s) : null;

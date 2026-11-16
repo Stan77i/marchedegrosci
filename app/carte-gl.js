@@ -6,8 +6,10 @@
    de loin, elles se regroupent par district. Un calque « chaleur » montre où la demande se concentre.
    Repli : sans WebGL, sur un appareil faible, ou si un fichier manque, l'application garde la carte Canvas (app/carte-app.js).
    Carte figée : vue du dessus, nord en haut, ni rotation ni inclinaison ; on ne dézoome pas au-delà du pays entier.
-   API : MDGCarteGL.capable() · mount(host, opt) → Promise<api|null> ; api.set(data) · relayout() · destroy() · home() · localiser().
-   opt : onSelect(region) · onPick(ids) · onLocate(lat, lon) · insets() → { t, b } (place prise par l'interface en haut et en bas). */
+   API : MDGCarteGL.capable() · lieux() → Promise<{ ou(x), proche(lng, lat) }> · mount(host, opt) → Promise<api|null> ;
+         api.set(data) · relayout() · placer() · destroy() · home() · localiser() · cadrer(origine, points) · choisir(id) · pick(ids).
+   opt : onSelect(region) · onPick(ids) · onLocate(lat, lon, silence) · onRecentre() · onMove({ lng, lat, ville }) · insets() → { t, b } (place prise par l'interface en haut et en bas)
+         simple : true (application, 16/11/2026) → deux boutons seulement (me recentrer, jour/nuit), pas d'étiquette de zone ; la position GPS est cherchée à l'ouverture, sans message. */
 (function () {
   'use strict';
   const D2R = Math.PI / 180;
@@ -29,6 +31,19 @@
     }));
   }
   const geo = () => geoP || (geoP = fetch('app/geo/ci.json').then(r => { if (!r.ok) throw new Error(r.status); return r.json(); }).catch(e => { geoP = null; throw e; }));
+  // les localités par nom : la ville d'une annonce devient un point réel ; sert aussi sans carte (distances de la liste, « Chercher ici »)
+  let lieuxP = null;
+  const lieux = () => lieuxP || (lieuxP = geo().then(base => {
+    const villes = {}, grandes = [];
+    base.features.forEach(f => { if (f.properties.k === 'lieu') { const k = cle(f.properties.n); if (!villes[k] || f.properties.r < villes[k].r) villes[k] = { xy: f.geometry.coordinates, r: f.properties.r, n: f.properties.n }; } });
+    Object.keys(villes).forEach(k => { if (villes[k].r <= 3) grandes.push(villes[k]); });
+    const regXY = s => { const r = window.MDGApp && MDGApp.REG[s]; return r ? [r[1], r[0]] : null; };
+    // « Napié (près de Ferkessédougou) » : placée à la ville proche, signalée comme approximative
+    const ou = x => { const pr = /\(près de ([^)]+)\)/.exec(x.city || ''), vp = pr && villes[cle(pr[1])]; if (vp) return { xy: vp.xy, approx: true, ville: vp.n }; const v = x.city && villes[cle(x.city)]; if (v) return { xy: v.xy, approx: false, ville: v.n }; const r = regXY(x.region); return r ? { xy: r, approx: true, ville: (MDGApp.REG[x.region] || [])[2] } : null; };
+    // la ville (ou le gros bourg) la plus proche d'un point
+    const proche = (lng, lat) => { let b = null, bd = 1e9; grandes.forEach(v => { const d = km([lng, lat], v.xy); if (d < bd) { bd = d; b = v; } }); return b ? b.n : ''; };
+    return { base, villes, regXY, ou, proche };
+  }).catch(e => { lieuxP = null; throw e; }));
   function capable() {
     try {
       if (navigator.deviceMemory && navigator.deviceMemory < 2) return false;            // appareil très modeste : la carte Canvas suffit
@@ -133,24 +148,19 @@
   function mount(host, opt) {
     opt = opt || {};
     if (!capable()) return Promise.resolve(null);
-    return Promise.all([lib(), geo()]).then(([ml, base]) => new Promise(resolve => {
+    return Promise.all([lib(), lieux()]).then(([ml, LX]) => new Promise(resolve => {
       if (!document.getElementById('cglCss')) { const st = document.createElement('style'); st.id = 'cglCss'; st.textContent = CSS; document.head.appendChild(st); }
       const A = window.MDGApp, LS = k => { try { return localStorage.getItem(k); } catch (_) { return null; } }, SS = (k, v) => { try { localStorage.setItem(k, v); } catch (_) {} };
       // sans choix enregistré (bouton soleil), la carte suit le thème de l'application : jour en clair, nuit en sombre
-      const choix = LS('mdg-carte:theme'); let theme = choix === 'jour' || choix === 'nuit' ? choix : (document.documentElement.getAttribute('data-theme') === 'clair' ? 'jour' : 'nuit'), P = PAL[theme], chaleur = LS('mdg-carte:chaleur') === 'oui';
+      const choix = LS('mdg-carte:theme'); let theme = choix === 'jour' || choix === 'nuit' ? choix : (document.documentElement.getAttribute('data-theme') === 'clair' ? 'jour' : 'nuit'), P = PAL[theme], chaleur = !opt.simple && LS('mdg-carte:chaleur') === 'oui';
       const box = document.createElement('div'); box.className = 'cgl' + (theme === 'jour' ? ' jour' : ''); host.appendChild(box);
       // toucher un repère ne doit jamais faire défiler la page qui contient la carte (le navigateur « montre » l'élément touché)
       const bloque = [], fige = e => { const t = e.currentTarget; if (t.scrollTop || t.scrollLeft) { t.scrollTop = 0; t.scrollLeft = 0; } };
       for (let n = host; n && n !== document.body; n = n.parentElement) { n.addEventListener('scroll', fige); bloque.push(n); if (n.hasAttribute && n.hasAttribute('data-pg')) break; }
       const ins = () => { const i = opt.insets ? opt.insets() : null; return { t: (i && i.t) || 0, b: (i && i.b) || 0 }; };
 
-      // les localités par nom : la ville d'une annonce devient un point réel
-      const villes = {}; base.features.forEach(f => { if (f.properties.k === 'lieu') { const k = cle(f.properties.n); if (!villes[k] || f.properties.r < villes[k].r) villes[k] = { xy: f.geometry.coordinates, r: f.properties.r, n: f.properties.n }; } });
-      const civ = base.features.find(f => f.properties.k === 'civ');
+      const { base, villes, regXY, ou } = LX, civ = base.features.find(f => f.properties.k === 'civ');
       let bb = [180, 90, -180, -90]; civ.geometry.coordinates.forEach(p => p[0].forEach(q => { bb = [Math.min(bb[0], q[0]), Math.min(bb[1], q[1]), Math.max(bb[2], q[0]), Math.max(bb[3], q[1])]; }));
-      const regXY = s => { const r = A.REG[s]; return r ? [r[1], r[0]] : null; };
-      // « Napié (près de Ferkessédougou) » : placée à la ville proche, signalée comme approximative
-      const ou = x => { const pr = /\(près de ([^)]+)\)/.exec(x.city || ''), vp = pr && villes[cle(pr[1])]; if (vp) return { xy: vp.xy, approx: true, ville: vp.n }; const v = x.city && villes[cle(x.city)]; if (v) return { xy: v.xy, approx: false, ville: v.n }; const r = regXY(x.region); return r ? { xy: r, approx: true, ville: (A.REG[x.region] || [])[2] } : null; };
 
       const enLigne = () => navigator.onLine !== false;
       // une tuile en ligne qui échoue ne casse rien (la carte embarquée reste) ; on garde la trace pour le contrôle (MDGCarteGL.erreurs)
@@ -160,23 +170,29 @@
       // carte figée : vue du dessus, nord en haut ; on glisse et on zoome, on ne la tourne pas
       map.touchZoomRotate.disableRotation(); map.keyboard.disableRotation();
 
-      // contrôles : me localiser, tout le pays, jour/nuit, chaleur, zoomer
-      const ui = document.createElement('div'); ui.className = 'cgl-ui'; box.appendChild(ui);
+      // contrôles : me localiser, tout le pays, jour/nuit, chaleur, zoomer (application : me recentrer et jour/nuit seulement)
+      const simple = !!opt.simple, ui = document.createElement('div'); ui.className = 'cgl-ui'; box.appendChild(ui);
       const ic = d => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg>';
       const I = n => window.MDGIco ? window.MDGIco.svg(n, 20, 2) : ic('');   // même jeu d'icônes que l'application (app/icones.js)
       const btn = (html, lab, fn, press) => { const b = document.createElement('button'); b.type = 'button'; b.innerHTML = html; b.setAttribute('aria-label', lab); b.title = lab; if (press != null) b.setAttribute('aria-pressed', String(press));
         b.addEventListener('click', e => { e.stopPropagation(); fn(b); }); ui.appendChild(b); return b; };
       // une seule colonne à droite, au-dessus du panneau : se situer et l'affichage en haut, le zoom en bas (sous le pouce)
-      btn(I('localiser'), 'Me localiser', () => localiser());
-      btn(I('pays'), 'Tout le pays', () => { opt.onSelect && opt.onSelect(''); home(); });
-      const bJour = btn(I('jour'), 'Carte de jour', b => { theme = theme === 'jour' ? 'nuit' : 'jour'; SS('mdg-carte:theme', theme); b.setAttribute('aria-pressed', String(theme === 'jour')); ambiance(); }, theme === 'jour');
-      const bChal = btn(I('chaleur'), 'Chaleur de la demande', b => { chaleur = !chaleur; SS('mdg-carte:chaleur', chaleur ? 'oui' : 'non'); b.setAttribute('aria-pressed', String(chaleur)); map.setLayoutProperty('chaleur', 'visibility', chaleur ? 'visible' : 'none'); }, chaleur);
-      const zp = btn(I('plus'), 'Zoomer', () => map.zoomIn()); zp.className = 'cgl-z1';
-      const zm = btn(I('moins'), 'Dézoomer', () => map.zoomOut()); zm.className = 'cgl-z2';
+      btn(I('localiser'), simple ? 'Me recentrer' : 'Me localiser', () => localiser());
+      if (!simple) btn(I('pays'), 'Tout le pays', () => { opt.onSelect && opt.onSelect(''); home(); });
+      btn(I('jour'), 'Carte de jour', b => { theme = theme === 'jour' ? 'nuit' : 'jour'; SS('mdg-carte:theme', theme); b.setAttribute('aria-pressed', String(theme === 'jour')); ambiance(); }, theme === 'jour');
+      if (!simple) {
+        btn(I('chaleur'), 'Chaleur de la demande', b => { chaleur = !chaleur; SS('mdg-carte:chaleur', chaleur ? 'oui' : 'non'); b.setAttribute('aria-pressed', String(chaleur)); map.setLayoutProperty('chaleur', 'visibility', chaleur ? 'visible' : 'none'); }, chaleur);
+        btn(I('plus'), 'Zoomer', () => map.zoomIn()).className = 'cgl-z1';
+        btn(I('moins'), 'Dézoomer', () => map.zoomOut()).className = 'cgl-z2';
+      }
       const etat = document.createElement('div'); etat.className = 'cgl-etat'; box.appendChild(etat);
-      const ech = document.createElement('div'); ech.className = 'cgl-echelle'; box.appendChild(ech);
+      const ech = document.createElement('div'); ech.className = 'cgl-echelle'; if (!simple) box.appendChild(ech);
       // en haut à gauche : où l'on regarde, et l'état du réseau ; en bas à droite, sur la mer : les boutons (ils ne cachent pas le pays)
-      const placer = () => { const i = ins(); etat.style.top = (i.t + 34) + 'px'; ech.style.top = (i.t + 4) + 'px'; ui.style.bottom = (i.b + 12) + 'px'; map.setPadding({ top: i.t + 30, bottom: i.b + 20, left: 0, right: 52 }); };
+      // la marge de la caméra n'est posée qu'au départ : quand la feuille de l'application change de hauteur, seuls les boutons suivent (la carte ne saute pas)
+      const placer = cam => { const i = ins(); etat.style.top = (i.t + (simple ? 4 : 34)) + 'px'; ech.style.top = (i.t + 4) + 'px'; ui.style.bottom = (i.b + 12) + 'px'; if (cam && !simple) map.setPadding({ top: i.t + 30, bottom: i.b + 20, left: 0, right: 52 }); };
+      // application : la caméra n'a pas de marge permanente (MapLibre l'ajouterait à celle de chaque cadrage) ; on cadre avec « marge » et on centre avec « decal »
+      const marge = () => { const i = ins(); return { top: i.t + 40, bottom: i.b + 40, left: 40, right: 64 }; };
+      const decal = () => { const i = ins(); return simple ? [0, Math.round((i.t - i.b) / 2)] : [0, 0]; };
       const dire = (en, txt) => { etat.className = 'cgl-etat' + (en ? '' : ' hors'); etat.innerHTML = '<i></i>' + esc(txt); };
 
       // en ligne : relief (Terrarium) et rues, quartiers, bâtiments (OpenFreeMap) ; hors ligne : la carte embarquée seule
@@ -317,19 +333,24 @@
           const m = new ml.Marker({ element: enveloppe(el), anchor: 'bottom', offset: [0, -3] }).setLngLat(xy).addTo(map); m.getElement().style.zIndex = 0; markers.push(m); });
         map.getSource('zones').setData({ type: 'FeatureCollection', features: zf });
       }
-      function choisir(ids, xy) {
-        picked = ids; dessinerAnnonces(); calques(); opt.onPick && opt.onPick(ids);
-        const z = Math.max(map.getZoom(), 9.5);
-        map.easeTo({ center: xy, zoom: z, duration: MOTION() ? 700 : 0, essential: true });
+      function choisir(ids, xy, silence) {
+        picked = ids; dessinerAnnonces(); calques(); if (!silence && opt.onPick) opt.onPick(ids);
+        voirAvecMoi(xy);
         tracer(xy);
+      }
+      // l'annonce choisie et moi dans le même cadre (le trait entre les deux reste visible) ; sans position connue : l'annonce seule
+      function voirAvecMoi(xy) {
+        const a = moiXY(), d = MOTION() ? 700 : 0;
+        if (a && km(a, xy) > 3) map.fitBounds([[Math.min(a[0], xy[0]), Math.min(a[1], xy[1])], [Math.max(a[0], xy[0]), Math.max(a[1], xy[1])]], { padding: marge(), maxZoom: 11, duration: d, essential: true });
+        else map.easeTo({ center: xy, zoom: Math.max(map.getZoom(), 9.5), offset: decal(), duration: d, essential: true });
       }
 
       // moi : ma position (GPS précis, ou mon district) ; distance et trajet vers l'annonce choisie
-      const moiXY = () => gps || regXY(data.me);
+      const moiXY = () => gps || data.moi || regXY(data.me);
       function dessinerMoi() {
         if (moiM) { moiM.remove(); moiM = null; }
         const xy = moiXY(); if (!xy) { map.getSource('moi').setData(vide()); return; }
-        const el = document.createElement('div'); el.className = 'cgl-moi'; el.setAttribute('role', 'img'); el.setAttribute('aria-label', gps ? 'Votre position' : 'Votre district');
+        const el = document.createElement('div'); el.className = 'cgl-moi'; el.setAttribute('role', 'img'); el.setAttribute('aria-label', gps ? 'Votre position' : data.moi ? 'Votre ville' : 'Votre district');
         moiM = new ml.Marker({ element: el }).setLngLat(xy).addTo(map);
         map.getSource('moi').setData({ type: 'FeatureCollection', features: gps ? [] : [{ type: 'Feature', properties: { rayon: 40 }, geometry: { type: 'Point', coordinates: xy } }] });
       }
@@ -355,11 +376,15 @@
             distM.setLngLat(L[Math.floor(L.length / 2)]); })
           .catch(() => clearTimeout(t));
       }
-      function localiser() {
-        const dire = t => { try { window.MDGToast && MDGToast.dire(t, { type: 'info' }); } catch (_) {} };   // même message que la carte simple
-        if (!navigator.geolocation) { dire('Localisation indisponible : choisissez votre région'); return; }
-        navigator.geolocation.getCurrentPosition(p => { gps = [p.coords.longitude, p.coords.latitude]; dessinerMoi(); map.flyTo({ center: gps, zoom: Math.max(map.getZoom(), 10), duration: MOTION() ? 1200 : 0 });
-          opt.onLocate && opt.onLocate(p.coords.latitude, p.coords.longitude); }, () => dire('Position refusée : choisissez votre région'), { enableHighAccuracy: false, timeout: 9000, maximumAge: 600000 });
+      // silence : à l'ouverture (application), sans message ni mouvement : l'application cadre elle-même autour de la position reçue
+      function localiser(silence) {
+        const dire = t => { if (silence) return; try { window.MDGToast && MDGToast.dire(t, { type: 'info' }); } catch (_) {} };   // même message que la carte simple
+        // sans GPS, « me recentrer » revient quand même sur ma ville (ou mon district)
+        if (!silence && opt.onRecentre) opt.onRecentre();
+        const repli = () => { const a = moiXY(); if (!silence && a) map.flyTo({ center: a, zoom: Math.max(map.getZoom(), 9), offset: decal(), duration: MOTION() ? 900 : 0 }); };
+        if (!navigator.geolocation) { dire(simple ? 'Localisation indisponible' : 'Localisation indisponible : choisissez votre région'); repli(); return; }
+        navigator.geolocation.getCurrentPosition(p => { gps = [p.coords.longitude, p.coords.latitude]; dessinerMoi(); if (!silence) map.flyTo({ center: gps, zoom: Math.max(map.getZoom(), 10), offset: decal(), duration: MOTION() ? 1200 : 0 });
+          opt.onLocate && opt.onLocate(p.coords.latitude, p.coords.longitude, !!silence); }, () => { dire(simple ? 'Position refusée : la carte part de votre ville' : 'Position refusée : choisissez votre région'); repli(); }, { enableHighAccuracy: false, timeout: 9000, maximumAge: 600000 });
       }
 
       // calques de données : chaleur de la demande, liens offre ↔ demande
@@ -398,11 +423,15 @@
       let zPrec = null;
       map.on('zoomend', () => { zPrec = map.getZoom(); dessinerAnnonces(); });
       const surStatuts = () => { if (alive && pret) dessinerAnnonces(); }; addEventListener('mdg:rep', surStatuts);   // les sceaux arrivent après les annonces   // les bulles se regroupent ou se séparent selon le zoom
-      map.on('moveend', echelle);
+      // l'utilisateur a déplacé ou zoomé la carte (pas un mouvement de l'application) : l'application propose « Chercher ici »
+      let parDoigt = false;
+      ['dragstart', 'zoomstart'].forEach(t => map.on(t, e => { if (e && e.originalEvent) parDoigt = true; }));
+      map.on('moveend', () => { if (!simple) echelle(); if (!parDoigt) return; parDoigt = false; if (opt.onMove) { const c = map.getCenter(); opt.onMove({ lng: c.lng, lat: c.lat, ville: LX.proche(c.lng, c.lat) }); } });
       map.on('click', () => { if (picked.length) { picked = []; dessinerAnnonces(); calques(); opt.onPick && opt.onPick([]); tracer(null); } });
       map.on('error', e => erreur(e && e.error));   // une tuile en ligne qui échoue ne casse rien : la carte embarquée reste
       map.once('load', () => {
-        placer(); cadrer(); pret = true; majEtat(); dessinerMoi(); calques(); dessinerAnnonces(); echelle();
+        placer(true); cadrer(); pret = true; majEtat(); dessinerMoi(); calques(); dessinerAnnonces(); if (!simple) echelle();
+        if (opt.gps && navigator.geolocation) localiser(true);
         if (chaleur) map.setLayoutProperty('chaleur', 'visibility', 'visible');
         if (enLigne()) { ajouterRelief(); ajouterRues(); }
         appliquerRelief(false);
@@ -415,19 +444,28 @@
         set(d) {
           const prev = data; data = Object.assign({ items: [], me: '', sel: '', zones: [] }, d || {});
           if (!pret) return;   // avant le chargement, on garde les données ; « load » les dessinera
-          if (data.me !== prev.me) { dessinerMoi(); }
+          if (data.me !== prev.me || String(data.moi) !== String(prev.moi)) { dessinerMoi(); }
           calques(); dessinerAnnonces();
           if (data.sel && data.sel !== prev.sel) { const xy = regXY(data.sel); if (xy) map.flyTo({ center: xy, zoom: 8.6, duration: MOTION() ? 1100 : 0, essential: true }); }
           else if (!data.sel && prev.sel) home();
         },
-        relayout() { placer(); map.resize(); cadrer(); },
-        home, localiser,
+        relayout() { placer(true); map.resize(); cadrer(); },
+        placer() { placer(false); },
+        home, localiser: () => localiser(),
         voir(lng, lat, z) { map.jumpTo({ center: [lng, lat], zoom: z == null ? 15 : z }); },
         pick(ids) { picked = ids || []; dessinerAnnonces(); calques(); if (!picked.length) tracer(null); },
+        // cadrer autour d'un point de départ et des annonces les plus proches ; sans annonce : la carte se pose sur le point de départ
+        cadrer(o, pts) {
+          if (!pret) return; const d = MOTION() ? 800 : 0, L = (pts || []).filter(Boolean).concat(o ? [o] : []);
+          if (L.length > 1) { const xs = L.map(p => p[0]), ys = L.map(p => p[1]); map.fitBounds([[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.max(...ys)]], { padding: marge(), maxZoom: 11, duration: d, essential: true }); }
+          else if (L.length) map.easeTo({ center: L[0], zoom: 9, offset: decal(), duration: d, essential: true });
+        },
+        // une annonce choisie dans la liste de l'application : la même chose qu'un toucher sur sa bulle, sans rappeler l'application
+        choisir(id) { const x = (data.items || []).find(y => y.id === id), o = x && ou(x); if (!o) return; choisir([id], o.xy, true); },
         destroy() { bloque.forEach(n => n.removeEventListener('scroll', fige)); alive = false; removeEventListener('mdg:rep', surStatuts); removeEventListener('online', surReseau); removeEventListener('offline', majEtat); markers.forEach(m => m.remove()); if (moiM) moiM.remove(); if (distM) distM.remove(); try { map.remove(); } catch (_) {} box.remove(); }
       };
     })).catch(() => null);
   }
 
-  window.MDGCarteGL = { capable, mount };
+  window.MDGCarteGL = { capable, mount, lieux };
 })();

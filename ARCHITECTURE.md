@@ -280,6 +280,7 @@ Le fichier `supabase/functions/pousser/index.ts` du dépôt est en **v26** (sch�
 
 Toutes gratuites :
 
+- **Carte du réseau de l'application** (16/11/2026, logique de Yango) : `app/carte-gl.js` est appelé en mode `simple` (`MDGCarteGL.mount(host, { simple: true, … })`) ; `lieux()` (localités par nom, ville la plus proche d'un point) sert aussi sans carte, pour les distances de la liste et « Chercher ici » ; la feuille du bas, ses 3 hauteurs et la liste sont dans `application.dc.html` et `css/v2.css`. Le téléphone garde seulement `mdg-carte:recents` (6 produits récents), `mdg-carte:theme` (jour ou nuit). Aucune table ni fonction SQL nouvelle : distances à vol d'oiseau, calculées sur le téléphone. Le site (`site/carte.js`) appelle le même fichier sans `simple` et garde l'ancienne carte.
 - **Cartes** : MapLibre GL (embarqué), fond OpenFreeMap (`tiles.openfreemap.org`), relief Terrarium (`s3.amazonaws.com`), trajets de la carte par notre fonction `itineraire` (mode `points`, plus d'OSRM public depuis le 25/10/2026), openrouteservice dans la fonction `itineraire`.
 - **Polices** : Jost, hébergée dans le dépôt.
 - **Notifications** : Web Push des navigateurs, par la fonction `pousser`. Clés VAPID dans le coffre Supabase.

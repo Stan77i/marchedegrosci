@@ -89,7 +89,7 @@ Ce qui existe :
 - Chaque annonce dit qui transporte (offre : `hors_ville`, `inclus`, `non` ; demande : `vendeur`, `acheteur`). Colonne `transport`, schéma 48.
 - Règle « hors de ma ville, le vendeur livre » et choix du transport dans la négociation (schémas 48, 49, 63).
 - **Lien de suivi sans compte** : `suivi.html`, schémas 64, 65, 71.
-- Carte : distance à vol d'oiseau et trajet par la route (OSRM public, approximatif ; fonction Edge `itineraire`).
+- Carte : distance à vol d'oiseau et trajet par la route (fonction Edge `itineraire`, approximatif). Depuis le 16/11/2026, la carte de l'application suit la logique de Yango (centrée sur moi, une question à la fois, un seul gros bouton) ; le site garde l'ancienne carte, à porter (`PORTAGE-SITE.md`, partie 4).
 - Écrans transporteur et administration du transport : `v3/chauffeur.js`, `v3/admin-transport.js`, schémas 27, 28, 29.
 
 Ce qui manque :

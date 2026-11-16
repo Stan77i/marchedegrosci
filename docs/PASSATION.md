@@ -2259,6 +2259,18 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur.
 
+## 16/11/2026 · Carte du réseau : la logique de Yango
+
+- Décision du propriétaire (« ok », 16/11/2026) : la carte de l'application suit la logique de Yango et non plus celle du panneau de la maquette (lot 9 du 13/11/2026). Commit `d93e036` sur la branche `claude/carte-yango`, aucune base touchée, aucun schéma. Cache `mgci-v325`. Recherche préalable (sources publiques : aide officielle Yango CI, système de design Uber) : rapport dans le scratchpad de la session, `yango-logique.md`.
+- **Ouverture** centrée sur moi : position du téléphone, sinon ma ville, sinon le chef-lieu de mon district. **Feuille du bas** à 3 hauteurs aimantées (124 px, 52 %, pleine) avec une seule question, « Quel produit ? », J'achète / Je vends (remplace Tout / Offres / Demandes), produits récents (`localStorage` `mdg-carte:recents`, 6 au plus).
+- **Produit choisi** : carte filtrée, cadrage sur moi et les 3 plus proches, liste de la plus proche à la plus loin (prix à l'unité, ≈ N km, ville, quantité, nom, pastille « … uniquement »). « Près de vous » = 150 km au plus (décision du propriétaire), « Voir plus loin » au-delà. Aucun résultat : message, puis « Voir plus loin » ou « Publier une demande / offre » déjà rempli.
+- **Annonce touchée** : un seul gros bouton « Proposer un prix » (ou « Acheter au prix »), petits Écrire, Voir la fiche, Signaler ; retour par la flèche, en glissant ou en touchant la carte. « Chercher ici · <ville> » après un déplacement de la carte.
+- **Boutons ronds** réduits à Me recentrer et Jour/Nuit (`app/carte-gl.js`, option `simple: true`). Retirés de l'application : Forte demande (calque), Ce qui se rapproche, Pour vous, « Vous êtes à », « Tout le pays », chaleur, zoom, liste de 40 annonces, carrousel. « Marquer une forte demande » reste pour l'administrateur seul, en bas de la liste pleine (décision du propriétaire).
+- **Limites** : distances à vol d'oiseau entre villes ; rien d'animé inventé ; le site garde l'ancienne carte (mode non simple de `app/carte-gl.js`, ligne ajoutée à `PORTAGE-SITE.md`, partie 4) ; la carte de secours sans WebGL n'a ni GPS ni « Chercher ici ».
+- Captures (iPhone émulé, clair et sombre) : `docs/brief-design/captures/carte-yango-*.jpg` (ouverture, produit-liste, annonce, chercher-ici).
+- Documents mis à jour : `CHANGELOG.md`, `FONCTIONNALITES.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `TABLEAU-DE-BORD.md`, `docs/REPRISE.md`, `PORTAGE-SITE.md`, `docs/brief-design/ETAT-DESIGN.md`, `CONTROLE_QUALITE/` (case I11, CMP-31), `tools/controle/unites.json`.
+- Reste : porter cette carte sur le site (`PORTAGE-SITE.md`, partie 4) ; le propriétaire fusionne la PR.
+
 ## 15/11/2026 · Refonte : `suivi.html` (chauffeur sans compte) au dessin de la maquette
 
 - Demande du propriétaire (refonte du 13/11/2026, « ok pour tout »). Branche `claude/suivi-chauffeur`, aucune base touchée, aucun schéma. Cache `mgci-v324`.

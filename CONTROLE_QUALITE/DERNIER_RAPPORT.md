@@ -1,5 +1,5 @@
-<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-15-02h37-apres-modif.md). Ne pas modifier à la main. -->
-# Rapport du contrôle qualité · 15/11/2026 à 02 h 37 (UTC = heure d’Abidjan)
+<!-- Copie du dernier rapport écrit par tools/controle/lancer.sh (fichier daté : rapports/2026-11-16-23h19-apres-modif.md). Ne pas modifier à la main. -->
+# Rapport du contrôle qualité · 16/11/2026 à 23 h 19 (UTC = heure d’Abidjan)
 
 > Gabarit : `CONTROLE_QUALITE/modeles/RAPPORT.md`. Fait par `tools/controle/lancer.sh apres-modif`. Les tests SQL ne sont jamais exécutés par ce script : ils sont « non exécuté » tant que Claude ne les a pas joués via MCP sur le projet de test.
 
@@ -7,16 +7,16 @@
 
 | Champ | Valeur |
 |---|---|
-| Date | 15/11/2026 à 02 h 37 |
-| Commit | `00d0151` (branche `claude/suivi-chauffeur`, avec des changements non enregistrés) |
+| Date | 16/11/2026 à 23 h 19 |
+| Commit | `1066835` (branche `claude/carte-yango`, avec des changements non enregistrés) |
 | Mode | `apres-modif` |
 | Base de comparaison | `origin/main` |
-| Durée | 2 s |
+| Durée | 3 s |
 | Lancé par | à la main ou par Claude |
 
 ## 2. En bref
 
-- **Aucun échec bloquant** ; réussis 14, échoués 3, bloqués 0, non exécutés 1, en attente 0.
+- **Aucun échec bloquant** ; réussis 15, échoués 3, bloqués 0, non exécutés 1, en attente 0.
 - Unités avec au moins un contrôle exécuté : U01, U03, U09, U10, U12, U13.
 - Unités non exécutées dans ce passage : U02, U04, U05, U06, U07, U08, U11, U14.
 
@@ -26,7 +26,7 @@
 |---|---|---|---|---|---|---|---|---|
 | STA-01 | U10 | normal | Contrôle « syntaxe » | aucun constat | rien à signaler (83 fichiers et scripts lus sans erreur) | réussi | — | tools/controle/controle.js |
 | STA-02 | U10 | normal | Contrôle « cache » | aucun constat | rien à signaler (109 appels avec ?v=, liste CORE et images de sw.js ; voir « Pour information ») | réussi | — | tools/controle/controle.js |
-| STA-03 | U13, U03 | normal | Contrôle « mots-interdits » | aucun constat | rien à signaler (5790 textes relus) | réussi | — | tools/controle/controle.js |
+| STA-03 | U13, U03 | normal | Contrôle « mots-interdits » | aucun constat | rien à signaler (5799 textes relus) | réussi | — | tools/controle/controle.js |
 | STA-04 | U01 | normal | Contrôle « communes » | aucun constat | rien à signaler (textes, champs ville et liste des villes (app/villes.js)) | réussi | — | tools/controle/controle.js |
 | STA-05 | U12 | normal | Contrôle « doublon-texte » | aucun constat | 0 rouge(s) dont 0 nouveau(x), 30 orange(s) | échoué | P2 | app/theme.js:130 ; v3/chauffeur.js:24 ; app/theme.js:130 ; … |
 | STA-06 | U10 | normal | Contrôle « doublon-fonction » | aucun constat | rien à signaler (75 fichiers JS et les scripts des pages) | réussi | — | tools/controle/controle.js |
@@ -38,9 +38,10 @@
 | STA-12 | U09 | normal | Contrôle « sql » | aucun constat | rien à signaler (166 fichiers supabase/schema-*.sql ; voir « Pour information ») | réussi | — | tools/controle/controle.js |
 | STA-13 | U13 | normal | Contrôle « liens » | aucun constat | rien à signaler (CLAUDE.md, CONTROLE_QUALITE/CALENDRIER.md, CONTROLE_QUALITE/HISTORIQUE.md, CONTROLE_QUALITE/INVENTAIRE_OUTILS.md, CONTROLE_QUALITE/LISTES_DE_CONTROLE.md, CONTROLE_QUALITE/MATRICE_TESTS.md, CONTROLE_QUALITE/README.md, CONTROLE_QUALITE/REGISTRE_ANOMALIES.md, CONTROLE_QUALITE/REGISTRE_DES_TESTS.md, CONTROLE_QUALITE/modeles/RAPPORT.md, CONTROLE_QUALITE/procedures/APRES_INCIDENT.md, CONTROLE_QUALITE/procedures/APRES_MODIFICATION.md, CONTROLE_QUALITE/procedures/AVANT_PRODUCTION.md, CONTROLE_QUALITE/procedures/CONTROLE_GENERAL.md, CONTROLE_QUALITE/tests/navigateur/README.md, CONTROLE_QUALITE/tests/sql/README.md) | réussi | — | tools/controle/controle.js |
 | STA-14 | U10 | normal | Contrôle « navigateur » | contrôle fait | désactivé (--sans-navigateur) | non exécuté | — | tools/controle/controle.js |
-| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (8472923) | liste | 14 fichier(s) | réussi | — | git diff --name-only 8472923 |
-| APM-02 | U10 | régression | node --check sur les 1 fichier(s) JS changé(s) | aucune erreur | aucune erreur | réussi | — | sw.js |
-| APM-05 | U10 | régression | 1 fichier(s) du front changé(s) : CACHE de sw.js monté | CACHE différent de la base | mgci-v323 → mgci-v324 | réussi | — | sw.js ; fichiers : suivi.html |
+| APM-01 | U10 | normal | Lister les fichiers changés depuis origin/main (9c4fdb6) | liste | 32 fichier(s) | réussi | — | git diff --name-only 9c4fdb6 |
+| APM-02 | U10 | régression | node --check sur les 4 fichier(s) JS changé(s) | aucune erreur | aucune erreur | réussi | — | app/carte-gl.js, sw.js, tools/site-public.js, v3/aide.js |
+| APM-03 | U10 | normal | JSON changés lisibles | lisibles | lisibles | réussi | — | tools/controle/unites.json |
+| APM-05 | U10 | régression | 5 fichier(s) du front changé(s) : CACHE de sw.js monté | CACHE différent de la base | mgci-v324 → mgci-v325 | réussi | — | sw.js ; fichiers : app/carte-gl.js, application.dc.html, css/mgci-app.css, css/v2.css, v3/aide.js |
 | APM-06 | U10 | régression | ?v= monté pour chaque JS/CSS changé appelé avec ?v= | nouvelle version | monté partout | réussi | — | application.dc.html, index-v3.html, index.html, admin.html, suivi.html, sw.js |
 
 ## 4. Anomalies (P0 à P3)

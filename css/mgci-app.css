@@ -147,7 +147,7 @@ html[data-theme=sombre] .acc-sc .qd[data-u] { --qd-lis: #171512; }
 /* ——— audit XIAS (19 oct. 2026) ———
    Focus visible au clavier sur tous les champs, même ceux qui ont « outline:none » écrit en ligne (WCAG 2.4.7 / 2.4.11). */
 input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid #2E8B62 !important; outline-offset: 2px; }
-[data-pg="home"] input:focus-visible, [data-pg="carte"] select:focus-visible { outline-color: #F2C230 !important; }
+[data-pg="home"] input:focus-visible { outline-color: #F2C230 !important; }
 /* noms de produits autour de l'arc (accueil) : la zone de toucher dépasse le texte de 10 px, sans le déplacer (WCAG 2.5.8) */
 
 /* ═══ Accueil clair (21 oct. 2026) : en-tête flottant, onglets, carte orbitale sombre, cartes de chiffres, listes ═══
@@ -231,25 +231,6 @@ html[data-theme=sombre] .acc :is(button):focus-visible{outline-color:#F2C230}
 .an-qui .an-st { flex-shrink: 0; max-width: 100%; min-width: 0; }
 .an-qui .st-p { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 
-/* ——— carte : annonces d'un même endroit, en bande qui glisse ———
-   carte plus compacte (seul le tampon reste sous les chiffres), le bord de la suivante dépasse,
-   et une pastille « ‹ ● ○ 1 sur 2 › » dit qu'il y en a d'autres ; la flèche suivante appelle tant qu'on n'a pas glissé */
-.an-carte .an { gap: 10px; padding: 12px; }
-.an-carte .an-infos > span:not(.qd) { display: none; }   /* « C'est votre annonce » reste : sur ses propres annonces, il n'y a pas de bouton */
-.an-carte .an-moi { padding: 8px 12px; }
-.an-carte .an-act { padding: 0 10px; font-size: var(--t-md); }
-.cpk-nav { align-self: center; display: flex; align-items: center; gap: 4px; padding: 3px; border-radius: 999px; background: #171512; color: #F5F0E6; box-shadow: 0 0 0 1px rgba(245, 240, 230, .1), 0 6px 18px rgba(0, 0, 0, .35); font: 600 13px/1 var(--f-texte, Jost), sans-serif; }
-.cpk-f { width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(245, 240, 230, .1); color: inherit; display: grid; place-items: center; cursor: pointer; }
-.cpk-f:disabled { opacity: .3; cursor: default; }
-.cpk-f.appel { background: #F2C230; color: #171512; animation: cpkAppel 1.5s ease-in-out infinite; }
-@keyframes cpkAppel { 0%, 100% { box-shadow: 0 0 0 0 rgba(242, 194, 48, .55); transform: translateX(0); } 50% { box-shadow: 0 0 0 7px rgba(242, 194, 48, 0); transform: translateX(2px); } }
-.cpk-pts { display: flex; align-items: center; }
-.cpk-d { width: 22px; height: 40px; border: 0; padding: 0; background: none; display: grid; place-items: center; cursor: pointer; }
-.cpk-d i { display: block; width: 7px; height: 7px; border-radius: 4px; background: rgba(245, 240, 230, .4); transition: width .25s, background .25s; }
-.cpk-d[aria-current="true"] i { width: 18px; background: #F2C230; }
-.cpk-t { padding: 0 6px; white-space: nowrap; letter-spacing: .02em; }
-.cpk-f:focus-visible, .cpk-d:focus-visible { outline: 2px solid #F2C230; outline-offset: 1px; }
-@media (prefers-reduced-motion: reduce) { .cpk-f.appel { animation: none; } }
 
 /* ——— accueil : « Tout voir » (roue) → tous les produits en grille ———
    la pastille se fond dans la carte sombre de la roue (verre, maïs pour l'icône) ; la fenêtre reprend le panneau des familles */
@@ -428,34 +409,10 @@ html[data-theme=sombre] .nbul.d, html[data-theme=sombre] [aria-pressed="true"] >
 .aseg > button > .aseg-s { flex: none; }
 @media (max-width: 359px) { .aseg > button { padding: 2px 8px !important; } .aseg > button > .aseg-s { display: none !important; } }
 html:not([data-theme=sombre]) .aseg > button[aria-pressed="true"] > .aseg-s.d { background-image: var(--sym-d-nuit); }
-/* carte du réseau, filtres du panneau : panier (offres) et caddie crème (demandes) au lieu du rond et du carré */
-.lg-s { flex: none; width: 24px; height: 24px; margin: -4px 0 -4px -2px; background: var(--sym-o) center / contain no-repeat; }
-.lg-s.d { background-image: var(--sym-d-nuit); }
 
 /* onglet Prix : le nombre de produits au tableau (information, pas une alerte) — 23/10/2026 */
 /* Activité / Alertes vides : un seul message avec le sac qui attend */
 .acc-rien .ms-etat{padding:26px 10px 22px}
 
-/* Réseau : « Où êtes-vous ? » (24/10/2026). La liste native reste (invisible, posée sur toute la pastille) : plus de grand cadre jaune au toucher.
-   Le point violet (vous, sur la carte) respire tant qu'aucune zone n'est choisie ; une fois choisie, la pastille s'allume en violet. */
-.cz-moi { position: relative; flex: 1 1 0; min-width: 0; height: 44px; padding: 0 12px 0 6px; border-radius: 19px; border: 1px solid rgba(176,149,240,.42);
-  background: linear-gradient(120deg, rgba(176,149,240,.16), rgba(23,21,18,.74) 65%); color: var(--ivoire); display: flex; align-items: center; gap: 8px;
-  -webkit-tap-highlight-color: transparent; transition: border-color .25s, box-shadow .25s, background .25s; }
-.cz-moi[data-on="oui"] { border-color: rgba(176,149,240,.85); background: linear-gradient(120deg, rgba(176,149,240,.32), rgba(23,21,18,.74) 75%); box-shadow: 0 6px 18px rgba(120,90,210,.22); }
-.cz-moi:focus-within { border-color: #B095F0; box-shadow: 0 0 0 3px rgba(176,149,240,.28); }
-.cz-moi:active { transform: scale(.98); }
-.cz-moi-pt { position: relative; flex: none; width: 30px; height: 30px; border-radius: 50%; background: rgba(176,149,240,.2); display: grid; place-items: center; }
-.cz-moi-pt::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid rgba(176,149,240,.6); animation: czOnde 2.6s cubic-bezier(.22,1,.36,1) infinite; }
-.cz-moi[data-on="oui"] .cz-moi-pt { background: #B095F0; }
-.cz-moi[data-on="oui"] .cz-moi-pt path { fill: #171512; }
-.cz-moi[data-on="oui"] .cz-moi-pt::after { animation: none; opacity: 0; }
-.cz-moi-t { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.1; }
-.cz-moi-t small { font-size: 11.5px; font-weight: 500; color: #C9B8F5; letter-spacing: .01em; }
-.cz-moi-t b { font-size: var(--t-md); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cz-moi-ch { flex: none; color: #C9B8F5; }
-.cz-moi select { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; border: 0; margin: 0; cursor: pointer; font-size: 16px; color: #171512; }
-.cz-moi select:focus, .cz-moi select:focus-visible { outline: none !important; }
-@keyframes czOnde { 0% { transform: scale(.8); opacity: .9; } 80%, 100% { transform: scale(1.35); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .cz-moi-pt::after { animation: none; } .cz-moi:active { transform: none; } }
 /* relancer une animation de l'accueil quand on change de produit (rejouerAccueil, application.dc.html) */
 .rejoue, .rejoue::before, .rejoue::after { animation: none !important; }

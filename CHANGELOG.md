@@ -4,6 +4,10 @@ Cet historique vient de `git log origin/main` du dépôt (607 commits) et des se
 
 Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22, 23 et 24 octobre 2026), 607 commits. Aucun commit les 20/10 et entre le 5 et le 9, le 13 et le 16 octobre.
 
+## 16/11/2026
+
+- Refonte, lot 9 repris : la carte du réseau suit la logique de Yango (décision du propriétaire, « ok »). Elle s'ouvre centrée sur moi (position du téléphone, sinon ma ville, sinon le chef-lieu de mon district). Une petite feuille en bas pose une seule question : « Quel produit ? » avec J'achète / Je vends et les produits récents (6 au plus, gardés sur le téléphone). Le produit choisi filtre la carte, cadre sur moi et les 3 plus proches, et classe la liste de la plus proche à la plus loin (prix à l'unité, ≈ km, ville, quantité, nom, pastille « … uniquement »). « Près de vous » = 150 km au plus, puis « Voir plus loin ». La feuille a 3 hauteurs aimantées (basse, moitié, pleine). Une annonce touchée n'a qu'un gros bouton (« Proposer un prix » ou « Acheter au prix »), avec Écrire, Voir la fiche et Signaler en petit. « Chercher ici » apparaît après un déplacement de la carte. Seulement 2 boutons ronds : me recentrer et jour/nuit. Retirés de l'application : pastilles Tout / Offres / Demandes, « Ce qui se rapproche », « Pour vous », « Vous êtes à », « Tout le pays », chaleur de la demande, zoom, liste de 40 annonces, carrousel. « Marquer une forte demande » reste, pour l'administrateur seul, en bas de la liste pleine. Aucun résultat : message, puis « Voir plus loin » ou « Publier une demande / offre » déjà rempli. Le site garde l'ancienne carte. Cache `mgci-v325`. Fichiers : `application.dc.html`, `app/carte-gl.js`, `css/v2.css`, `css/mgci-app.css`.
+
 ## 15/11/2026
 
 - Refonte, `suivi.html` (chauffeur sans compte) au dessin de la maquette : saisie du code, carte de mission, interrupteur « Partager ma position », étape en gros titre, « Livraison terminée », lien expiré ; clair et sombre. Étape relue chaque minute. Sans « Je suis parti / arrivé » ni mot secret (pas de fonction serveur pour le lien sans compte ; c'est l'acheteur qui tape le mot). Cache `mgci-v324`.

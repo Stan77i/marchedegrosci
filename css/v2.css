@@ -479,25 +479,6 @@ html[data-theme=sombre] .v2-pub-go:not([aria-disabled=true]) { color: #171512; }
 .v2-an-leg i.debut { background: #9DC2A7; } .v2-an-leg i.plein { background: #6CC58C; } .v2-an-leg i.fin { background: #D6A83E; }
 .v2-an-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--mute); }
 
-/* ——— lot 9 : carte du réseau — la carte actuelle est gardée (décision du propriétaire), la logique de la maquette ——— */
-.v2-ct-t { flex: 1; font-size: 21px; font-weight: 700; letter-spacing: -.01em; color: #F5F0E6; }
-.v2-ct-f { display: flex; gap: 8px; padding: 0 12px 10px; pointer-events: auto; }
-.v2-ct-f button { flex: 1; min-width: 0; height: 42px; border-radius: 999px; border: 1px solid rgba(245, 240, 230, .18); background: rgba(23, 21, 18, .82); color: #F5F0E6; font: inherit; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 0 8px; }
-.v2-ct-f button[aria-pressed=true] { background: #F5F0E6; border-color: #F5F0E6; color: #171512; }
-.v2-ct-f i { width: 10px; height: 10px; flex: none; }
-.v2-ct-f i.tt { border-radius: 3px; background: #171512; box-shadow: inset 0 0 0 1.5px #F5F0E6; } .v2-ct-f button[aria-pressed=true] i.tt { background: #171512; box-shadow: none; }
-.v2-ct-f i.o { border-radius: 999px; background: #6CC58C; } .v2-ct-f i.d { border-radius: 3px; background: #F2C94C; }
-.v2-ct-f .n { min-width: 22px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px; background: rgba(245, 240, 230, .14); font-size: 12.5px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
-.v2-ct-f button[aria-pressed=true] .n { background: #171512; color: #F2C230; }
-.v2-ct-liens { display: flex; flex-direction: column; }
-.v2-ct-liens button { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; border-bottom: 1px solid rgba(245, 240, 230, .08); background: none; padding: 10px 0; color: #F5F0E6; text-align: left; font: inherit; }
-.v2-ct-liens .im { position: relative; width: 44px; height: 44px; flex: none; border-radius: 12px; background: #2A251E; display: grid; place-items: center; }
-.v2-ct-liens .im img { width: 38px; height: 38px; object-fit: contain; }
-.v2-ct-liens .im i { position: absolute; right: -3px; bottom: -3px; width: 12px; height: 12px; border-radius: 999px; background: #6AAEF0; box-shadow: 0 0 0 2px #171512; }
-.v2-ct-liens .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.v2-ct-liens .tx b { font-size: 15px; font-weight: 700; } .v2-ct-liens .tx small { font-size: 13px; color: #B9AD98; }
-.v2-ct-liens .km { flex: none; font-size: 14px; font-weight: 800; color: #F2C230; font-variant-numeric: tabular-nums; }
-.v2-ct-st { display: block; margin: 14px 0 4px; font-size: 14px; font-weight: 600; color: #B9AD98; }
 
 /* Mes annonces (maquette 5.13) */
 .v2-mes { gap: 18px; }
@@ -538,9 +519,6 @@ html[data-theme=sombre] .v2-tabs { --mute: #A89C88; }
 /* petits téléphones (320 px) */
 .v2-of-px .px { flex-wrap: wrap; }
 @media (max-width: 359px) {
-  .v2-ct-f { gap: 6px; padding: 0 10px 10px; }
-  .v2-ct-f button { flex: 1 1 auto; gap: 5px; padding: 0 7px; font-size: 13px; }
-  .v2-ct-f .n { min-width: 20px; padding: 0 5px; }
   .v2-al { gap: 10px; }
   .v2-al .ic { width: 40px; height: 40px; border-radius: 12px; }
   .v2-tampon { padding: 2px 5px; letter-spacing: .04em; }
@@ -550,41 +528,9 @@ html[data-theme=sombre] .v2-feuille {
   --papier: #14120F; --carte: #1F1B16; --champ: #25211B; --lin: #2C2720; --lin-2: #3A342A;
   --encre: #F3EFE4; --texte-2: #DDD3C2; --texte-3: #BFB39E; --mute: #A89C88; color-scheme: dark;
 }
-/* carte du réseau en « jour » (par défaut quand l'application est en clair ; bouton soleil) : le haut et le panneau du bas passent en clair.
-   L'interface de la carte est écrite en styles en ligne pour la nuit (le navigateur les réécrit « rgba(23, 21, 18, 0.7) ») :
-   on retourne ici ses jetons et ses fonds sombres, seulement en jour. */
-[data-pg=carte]:has(.cgl.jour) { --encre: #FAF4E9; --ivoire: #171512; --sable: #655C4D; --terre-clair: #765802; --vous: #5B3FA8; background: #F7F2E8 !important; }
-[data-pg=carte]:has(.cgl.jour) .carte-hote { background: #F7F2E8 !important; }
-[data-pg=carte]:has(.cgl.jour) [style*="rgba(18, 20, 23, 0.96)"] { background: linear-gradient(rgba(250, 244, 233, .96) 0%, rgba(250, 244, 233, .88) 70%, rgba(250, 244, 233, 0) 100%) !important; }
-[data-pg=carte]:has(.cgl.jour) [style*="background: var(--encre)"] { box-shadow: 0 -6px 24px rgba(80, 60, 30, .16); }
-[data-pg=carte]:has(.cgl.jour) :is([style*="background: rgba(23, 21, 18, 0.7)"], [style*="background: rgba(23, 21, 18, 0.85)"]) { background: rgba(255, 253, 248, .94) !important; }
-[data-pg=carte]:has(.cgl.jour) :is([style*="border: 1px solid rgba(245, 240, 230"], [style*="border: 1px dashed rgba(245, 240, 230"]) { border-color: rgba(23, 21, 18, .16) !important; }
-[data-pg=carte]:has(.cgl.jour) [style*="background: rgba(245, 240, 230, 0.25)"] { background: rgba(23, 21, 18, .2) !important; }
-[data-pg=carte]:has(.cgl.jour) :is([style*="background: rgba(245, 240, 230, 0.05)"], [style*="background: rgba(245, 240, 230, 0.06)"]) { background: #FFFDF8 !important; box-shadow: inset 0 0 0 1px rgba(23, 21, 18, .08) !important; }
-[data-pg=carte]:has(.cgl.jour) [style*="background: rgb(106, 174, 240)"] { color: #171512 !important; }
-[data-pg=carte]:has(.cgl.jour) :is([style*="color: rgb(243, 160, 140)"], [style*="color: rgb(233, 194, 182)"]) { color: #9E3420 !important; }
-[data-pg=carte]:has(.cgl.jour) .v2-ct-liens button { color: #171512; border-bottom-color: rgba(23, 21, 18, .08); }
-[data-pg=carte]:has(.cgl.jour) .v2-ct-liens .im { background: #EFE7D9; }
-[data-pg=carte]:has(.cgl.jour) .v2-ct-liens .im i { box-shadow: 0 0 0 2px #FAF4E9; }
-[data-pg=carte]:has(.cgl.jour) :is(.v2-ct-liens .tx small, .v2-ct-st) { color: #655C4D; }
-[data-pg=carte]:has(.cgl.jour) .v2-ct-liens .km { color: #765802; }
-[data-pg=carte]:has(.cgl.jour) .cz-moi { background: linear-gradient(120deg, rgba(176, 149, 240, .2), rgba(255, 253, 248, .94) 65%); border-color: rgba(91, 63, 168, .4); }
-[data-pg=carte]:has(.cgl.jour) .cz-moi[data-on="oui"] { background: linear-gradient(120deg, rgba(176, 149, 240, .34), rgba(255, 253, 248, .94) 75%); border-color: rgba(91, 63, 168, .7); }
-[data-pg=carte]:has(.cgl.jour) :is(.cz-moi-t small, .cz-moi-ch) { color: #5B3FA8; }
-[data-pg=carte]:has(.cgl.jour) .v2-ct-t { color: #171512; }
-[data-pg=carte]:has(.cgl.jour) .v2-ct-f button { background: rgba(255, 253, 248, .94); border-color: rgba(23, 21, 18, .12); color: #171512; box-shadow: 0 2px 8px rgba(80, 60, 30, .15); }
-[data-pg=carte]:has(.cgl.jour) .v2-ct-f button[aria-pressed=true] { background: #171512; border-color: #171512; color: #F5F0E6; }
-[data-pg=carte]:has(.cgl.jour) .v2-ct-f .n { background: rgba(23, 21, 18, .08); }
-[data-pg=carte]:has(.cgl.jour) .v2-ct-f button[aria-pressed=true] .n { background: #F5F0E6; color: #171512; }
-[data-pg=carte]:has(.cgl.jour) .v2-ct-f i.tt { background: #F5F0E6; box-shadow: inset 0 0 0 1.5px #171512; }
-[data-pg=carte]:has(.cgl.jour) .v2-ct-f button[aria-pressed=true] i.tt { background: #F5F0E6; box-shadow: none; }
-/* les cartes d'annonce posées sur la carte gardent leurs jetons d'origine */
-[data-pg=carte]:has(.cgl.jour) .an-carte { --encre: #171512; --ivoire: #F5F0E6; --sable: #B9AD98; --terre-clair: var(--logo-mais); --vous: #B095F0; }
 /* une proposition remplacée, retirée ou expirée : seul le prix pâlit, le reste de la carte reste lisible */
 .nx-bg .nx-tk:is(.is-remplacee, .is-retiree, .is-expiree) { opacity: 1; }
 .nx-bg .nx-tk:is(.is-remplacee, .is-retiree, .is-expiree) .amt { opacity: .85; }
-/* 320 px : le tampon « Disponible maintenant » de la liste de la carte tient mot par mot, sans couper « DISPONIBL-E » */
-@media (max-width: 359px) { [data-pg=carte] .qd.nuit[data-u] { font-size: 10.5px; letter-spacing: 0; gap: 4px; padding: 4px 7px 4px 5px; } }
 
 /* Année et produits (14/11) */
 .ay-rech { flex: none; height: 52px; border-width: 1px; border-color: var(--t14); }
@@ -637,3 +583,84 @@ html[data-theme=sombre] .v2-feuille {
 .v2-px-zb:focus-visible { outline: 3px solid var(--vert); outline-offset: 2px; border-radius: 10px; }
 html[data-theme=sombre] .v2-px-mq b.ok { background: rgba(108, 197, 140, .16); color: #A9E2BE; }
 html[data-theme=sombre] .v2-px-acc { background: rgba(242, 194, 48, .16); color: #F2C230; }
+
+/* ——— carte du réseau, logique Yango (16/11/2026) : la carte plein écran, une feuille en bas (petite, moyenne, pleine), un seul gros bouton ———
+   La page finit déjà au-dessus de la barre d’onglets (règle [data-pg] plus haut) : la feuille se pose en bas de la page.
+   La feuille suit le thème de l'application ; la carte garde son jour/nuit (bouton soleil). */
+[data-pg=carte] { --cy-bg: #FAF4E9; --cy-tx: #171512; --cy-t2: #4F473B; --cy-l: rgba(23, 21, 18, .1); --cy-ch: #FFFDF8; --cy-go: #10392B; --cy-go-t: #F5F0E6; --cy-ombre: 0 -8px 28px rgba(80, 60, 30, .18); }
+html[data-theme=sombre] [data-pg=carte] { --cy-bg: #171512; --cy-tx: #F3EFE4; --cy-t2: #C9BFAE; --cy-l: rgba(243, 239, 228, .13); --cy-ch: #24201A; --cy-go: #F2C230; --cy-go-t: #171512; --cy-ombre: 0 -8px 28px rgba(0, 0, 0, .45); }
+.cy-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.cy-haut { position: absolute; left: 0; right: 0; top: 0; z-index: 3; display: flex; align-items: flex-start; gap: 10px; padding: 0 12px 0; pointer-events: none; }
+.cy-haut > * { pointer-events: auto; margin-top: 6px; }
+.cy-rond, .cy-ici { border: 0; background: var(--cy-bg); color: var(--cy-tx); box-shadow: 0 2px 10px rgba(0, 0, 0, .22); font: inherit; }
+.cy-rond { flex: none; width: 44px; height: 44px; border-radius: 22px; display: grid; place-items: center; padding: 0; }
+.cy-ici { min-width: 0; max-width: calc(100% - 120px); height: 44px; margin-left: auto; margin-right: auto; transform: translateX(-27px); padding: 0 16px; border-radius: 22px; display: flex; align-items: center; gap: 7px; font-size: 15px; font-weight: 600; white-space: nowrap; }
+.cy-ici-v { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
+.cy-f { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; flex-direction: column; max-height: calc(100% - 60px); background: var(--cy-bg); color: var(--cy-tx); border-radius: 22px 22px 0 0; box-shadow: var(--cy-ombre); overflow: hidden; transition: height .32s cubic-bezier(.23, 1, .32, 1); }
+.cy-poi { flex: none; width: 100%; height: 26px; border: 0; padding: 0; background: none; display: grid; place-items: center; touch-action: none; cursor: grab; }
+.cy-poi i { width: 40px; height: 5px; border-radius: 3px; background: var(--cy-t2); opacity: .45; }
+.cy-f[data-mode=choix] .cy-poi { display: none; }
+.cy-f[data-mode=choix] .cy-in { padding-top: 16px; }
+.cy-in { display: flex; flex-direction: column; gap: 12px; padding: 0 16px 16px; }
+.cy-seg { display: flex; gap: 4px; padding: 4px; border-radius: 16px; background: var(--cy-l); }
+.cy-seg button { flex: 1 1 0; min-width: 0; height: 44px; border: 0; border-radius: 12px; background: transparent; color: var(--cy-tx); font: inherit; font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 7px; white-space: nowrap; }
+.cy-seg button[aria-pressed=true] { background: var(--cy-tx); color: var(--cy-bg); }
+.cy-s { flex: none; width: 20px; height: 20px; background: var(--sym-o) center / contain no-repeat; }
+.cy-s.d { background-image: var(--sym-d); }
+.cy-seg button[aria-pressed=true] .cy-s.d, html[data-theme=sombre] .cy-seg button:not([aria-pressed=true]) .cy-s.d { background-image: var(--sym-d-nuit); }
+.cy-seg.petit { flex: 0 1 auto; padding: 3px; border-radius: 14px; }
+.cy-seg.petit button { flex: 0 1 auto; height: 40px; padding: 0 10px; font-size: 14px; }
+.cy-champ { height: 54px; border: 1px solid var(--cy-l); border-radius: 27px; background: var(--cy-ch); color: var(--cy-t2); font: inherit; font-size: 17px; font-weight: 500; display: flex; align-items: center; gap: 12px; padding: 0 18px; text-align: left; }
+.cy-champ span { color: var(--cy-tx); }
+.cy-rec { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 0 16px; }
+.cy-rec::-webkit-scrollbar { display: none; }
+.cy-rec button { flex: none; height: 44px; padding: 0 14px 0 6px; border: 1px solid var(--cy-l); border-radius: 22px; background: var(--cy-ch); color: var(--cy-tx); font: inherit; font-size: 14.5px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.cy-rec img { width: 32px; height: 32px; border-radius: 16px; }
+.cy-tete { flex: none; height: 98px; box-sizing: border-box; padding: 0 16px; display: flex; flex-direction: column; gap: 6px; }
+.cy-l1 { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.cy-prod { flex: 1 1 auto; min-width: 0; height: 46px; padding: 0 12px 0 4px; border: 1px solid var(--cy-l); border-radius: 23px; background: var(--cy-ch); color: var(--cy-tx); font: inherit; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.cy-prod img { flex: none; width: 36px; height: 36px; border-radius: 18px; }
+.cy-prod span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+.cy-sous { margin: 0; height: 40px; display: flex; align-items: center; gap: 0; font-size: 15px; font-weight: 600; color: var(--cy-t2); }
+.cy-sous > span:first-of-type { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cy-mini { flex: none; width: 44px; height: 44px; margin-left: -10px; border: 0; border-radius: 22px; background: none; color: var(--cy-tx); display: grid; place-items: center; padding: 0; }
+.cy-corps { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 16px 16px; display: flex; flex-direction: column; }
+.cy-ligne { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 10px 0; border: 0; border-bottom: 1px solid var(--cy-l); background: none; color: var(--cy-tx); font: inherit; text-align: left; }
+.cy-lt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.cy-lt b { font-size: 17px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.cy-lt b small, .cy-un-p small { font-size: 14px; font-weight: 500; color: var(--cy-t2); }
+.cy-lt > small { font-size: 13.5px; color: var(--cy-t2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cy-km { flex: none; font-size: 14px; font-weight: 600; color: var(--cy-tx); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cy-vide { padding: 8px 0 4px; }
+.cy-vide p { margin: 0 0 14px; font-size: 15px; line-height: 1.45; color: var(--cy-t2); }
+.cy-vide p b { display: block; margin-bottom: 2px; font-size: 16px; color: var(--cy-tx); }
+.cy-vide-b { display: flex; flex-direction: column; gap: 8px; }
+.cy-b1, .cy-b2 { min-height: 52px; border-radius: 26px; font: inherit; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 0 18px; }
+.cy-b1 { border: 0; background: var(--cy-go); color: var(--cy-go-t); }
+.cy-b2 { border: 1px solid var(--cy-l); background: var(--cy-ch); color: var(--cy-tx); font-weight: 600; }
+.cy-loin { margin-top: 12px; }
+.cy-note { margin: 14px 0 0; font-size: 13px; line-height: 1.4; color: var(--cy-t2); }
+.cy-zone { margin-top: 14px; min-height: 48px; border-radius: 16px; border: 1.5px dashed rgba(226, 115, 91, .7); background: none; color: var(--cy-tx); font: inherit; font-size: 15px; font-weight: 600; }
+.cy-zone-l { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--cy-l); }
+.cy-zone-l span { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 14px; }
+.cy-zone-l small { color: var(--cy-t2); }
+.cy-zone-l button { height: 44px; padding: 0 14px; border-radius: 22px; border: 1px solid var(--cy-l); background: none; color: var(--cy-tx); font: inherit; font-size: 14px; font-weight: 600; }
+.cy-un { gap: 8px; }
+.cy-un-h { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; color: var(--cy-t2); }
+.cy-un-h span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cy-un-p { margin: 0; font-size: 15px; }
+.cy-un-p b { font-size: 30px; font-weight: 700; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.cy-un-i, .cy-un-q { margin: 0; font-size: 15px; color: var(--cy-t2); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cy-un-q b { color: var(--cy-tx); font-weight: 600; }
+.cy-un .vseule { align-self: flex-start; }
+.cy-moi { margin: 4px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--cy-l); font-size: 14.5px; }
+.cy-go { margin-top: 6px; }
+.cy-petits { display: flex; justify-content: center; gap: 4px; }
+.cy-petits button { min-height: 44px; padding: 0 12px; border: 0; background: none; color: var(--cy-tx); font: inherit; font-size: 15px; font-weight: 600; text-decoration: underline; text-decoration-color: var(--cy-l); text-underline-offset: 4px; }
+.cy-rond:focus-visible, .cy-ici:focus-visible, .cy-f button:focus-visible { outline: 2px solid var(--cy-go); outline-offset: 2px; }
+@media (max-width: 359px) {
+  .cy-seg.petit button { padding: 0 7px; font-size: 13px; gap: 4px; }
+  .cy-seg.petit .cy-s { display: none; }
+  .cy-petits button { padding: 0 8px; font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .cy-f { transition: none; } }

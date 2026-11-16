@@ -125,7 +125,8 @@ Les modules communs (partie 7) sont déjà sur les deux : compte, messages, nég
 | Tutoriels à l'entrée de chaque écran, astuces, réglages de l'aide | `v3/astuces.js`, `v3/guide.js`, `app/theme.js` (Réglages) | moyenne |
 | Aide : questions et réponses, puis une personne | `v3/aide.js` | moyenne |
 | Thème jour / nuit, et nuit des fenêtres | `app/theme.js`, `app/nuit.js`, `css/sombre.css` | haute |
-| Carte du réseau MapLibre : filtres dans le panneau du bas, boutons en colonne | `app/carte-gl.js`, `app/carte-app.js`, `vendor/maplibre/` | moyenne |
+| Carte du réseau MapLibre : filtres dans le panneau du bas, boutons en colonne | `app/carte-gl.js`, `app/carte-app.js`, `vendor/maplibre/` | **remplacé le 16/11/2026** par la ligne ci-dessous |
+| **Carte façon Yango (16/11/2026)** : centrée sur moi, feuille du bas à 3 hauteurs avec une seule question « Quel produit ? », J'achète / Je vends, liste de la plus proche à la plus loin, un seul gros bouton « Proposer un prix », « Chercher ici ». À porter sur le site (le site garde l'ancienne carte `site/carte/`, filtres Tout / Offres / Demandes) | `application.dc.html` (`cO`, `cD`, `cTop`, `cSheet`, `cPick*`), `app/carte-gl.js` (mode `simple`, `lieux()`, `cadrer()`), `css/v2.css` : la feuille et la liste ne sont pas dans un module commun | haute |
 | Onglet Prix (prix du marché, « Accord possible », « Par zone »), L'année du marché avec recherche et Tous les produits avec recherche (15/11/2026) ; un seul seuil de prix (5 prix de 3 vendeurs sur 30 jours) | `application.dc.html` (`seuil()`, `pxMarche()`), `v3/prixzone.js` : pas dans un module commun | moyenne |
 | Catalogue (12 familles, produits en saison) et L'année du marché | pages `categories` et `annee` de l'application (`css/v2.css` ; les anciens `css/categories-app.css` et `css/annee-app.css` sont supprimés le 14/11/2026) | moyenne |
 | Régions et villes reliées | `app/villes.js` | moyenne |

@@ -50,7 +50,8 @@
     "supabase/tests/stockage-volume-scenarios.sql":   { "unites": ["U09", "U11"], "schemas": ["96e"] },
     "supabase/tests/tableau-prix-scenarios.sql":      { "unites": ["U04"], "schemas": ["96a"] },
     "supabase/tests/transport-83-scenarios.sql":      { "unites": ["U06", "U02"], "schemas": ["83", "90", "90b"] },
-    "supabase/tests/transport-95-scenarios.sql":      { "unites": ["U06", "U03"], "schemas": ["95"] }
+    "supabase/tests/transport-95-scenarios.sql":      { "unites": ["U06", "U03"], "schemas": ["95"] },
+    "supabase/tests/produits-104-scenarios.sql":      { "unites": ["U04", "U11", "U08", "U02"], "schemas": ["104"] }
   },
   "batteries": {
     "_lisez-moi": "Batteries du contrôle qualité (CONTROLE_QUALITE/tests/). L'unité principale est lue dans le nom (Uxx-…) ; « unites » ajoute les autres unités couvertes ; « ids » donne les ID des tests (MATRICE_TESTS.md). Les SQL se jouent par Claude (MCP) sur le projet de TEST, après _outils.sql pour U03 à U06, U08 et U14.",

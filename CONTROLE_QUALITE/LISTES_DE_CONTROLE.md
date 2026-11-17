@@ -228,6 +228,8 @@ Jamais sur la production. Jamais de `drop`, `delete`, `truncate`. Le MCP Supabas
   Attendu sur le test (relevé du 24/10/2026, 13 tâches) : `mdg-annonces-expirer`, `mdg-commandes-delais`, `mdg-fiabilite`, `mdg-groupes-echeances`, `mdg-notif`, `mdg-rappels-achat` (toutes les 15 min) ; `mdg-liberer-echus`, `mdg-prix`, `mdg-marketing` (toutes les 5 min) ; `mdg-effacer-messages`, `mdg-identites-matin` (7 h 45), `mdg-purger-positions` (3 h 23), `mdg-niveaux` (4 h 37). Une tâche inactive, en échec, ou sans exécution sur 3 jours = rouge. `mdg-niveaux` n'avait encore aucune exécution enregistrée le 24/10/2026 : à confirmer.
 - [ ] **G8. Les fonctions du dépôt sont celles du test** : pour les schémas récents, comparer l'empreinte du corps (md5 de `prosrc`, commentaires `--` retirés, blancs ramenés à un espace) entre la dernière définition dans `supabase/schema-*.sql` et le test. Méthode : `REGISTRE_DES_TESTS.md`, partie 2 (étape 1 du rapport de bout en bout).
 
+- [ ] **G-PRD. Demandes de produit (schéma 104)** : rejouer `supabase/tests/produits-104-scenarios.sql` : 4e demande refusée (PRODUIT_LIMITE), numéro refusé, membre refusé sur les fonctions `admin_produit_*` et les tables, « Moi aussi » sans doublon (nom normalisé), motif obligatoire, deux réponses refusées, 3 lignes au journal, avis en file (catégorie `produits`), `produits_ajoutes` lisible par tous et non écrivable.
+
 ## H. Production en LECTURE SEULE (`catmsypctymgkjkfzdkt`)
 
 **Rien n'est écrit. Aucun test. Aucune donnée de membre lue.** Seulement :

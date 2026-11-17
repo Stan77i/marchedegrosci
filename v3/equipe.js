@@ -1,6 +1,6 @@
 /* ═════════ Marché de Gros CI : Espace équipe dans l'application (refonte 2026-11, lot 14) ═════════
    D'après la maquette « MGCI App v2 » de Claude Design (section 5.14) : 7 onglets (Identités, Litiges, Signalements, Comptes,
-   Commissions, Diffusion, Journal). Branché sur les mêmes fonctions du serveur que admin.html (v3/admin.js, v3/admin-transport.js,
+   Commissions, Diffusion, Journal), plus « Produits » (demandes de produit et mots cherchés sans résultat, schéma 104). Branché sur les mêmes fonctions du serveur que admin.html (v3/admin.js, v3/admin-transport.js,
    v3/admin-fiabilite.js), avec les mêmes paramètres. admin.html garde les vues complètes (transport, niveaux, mesures…).
    • L'accès est vérifié par le serveur (est_admin) avant d'afficher quoi que ce soit ; chaque fonction le vérifie encore.
    • Chaque geste demande un motif : le serveur l'écrit dans admin_journal (schéma 100c).
@@ -21,7 +21,7 @@
   const absente = e => /schema cache|Could not find|PGRST202/i.test(String(e && e.message));
   const PIECE = { cni: 'Carte d’identité', passeport: 'Passeport', carte_consulaire: 'Carte consulaire', permis: 'Permis de conduire' };
   const RETOUR = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
-  const ONGLETS = [['id', 'Identités'], ['lit', 'Litiges'], ['sig', 'Signalements'], ['cpt', 'Comptes'], ['com', 'Commissions'], ['diff', 'Diffusion'], ['jour', 'Journal']];
+  const ONGLETS = [['id', 'Identités'], ['lit', 'Litiges'], ['sig', 'Signalements'], ['prod', 'Produits'], ['cpt', 'Comptes'], ['com', 'Commissions'], ['diff', 'Diffusion'], ['jour', 'Journal']];
 
   let bg = null, S = null;
   const neuf = () => ({ tab: 'id', pret: false, D: {}, err: {}, fait: {}, photos: {}, lit: {}, cptQ: '', cptN: 30, diff: '' });
@@ -45,7 +45,8 @@
       lire('sig', ann()),
       lire('cpt', rpc('admin_comptes')),
       lire('fiab', rpc('admin_fiabilite')),
-      lire('com', rpc('admin_commissions'))
+      lire('com', rpc('admin_commissions')),
+      lire('prod', rpc('admin_produits_demandes').catch(e => absente(e) ? { absente: true } : Promise.reject(e)))
     ]);
   }
   const lireJournal = () => lire('jour', N().api('/rest/v1/admin_journal?select=id,at,admin_id,action,cible_id,motif,detail&order=at.desc&limit=100', { auth: true })).then(() => { if (S.tab === 'jour') corps(); });
@@ -53,8 +54,9 @@
   /* ——— ce qui reste à traiter (les nombres des onglets) ——— */
   const idents = () => (S.D.ident || []).filter(v => v.statut === 'en_attente');
   const litiges = () => (S.D.cmd || []).filter(c => c.etat === 'litige');
+  const prods = () => ((S.D.prod && S.D.prod.demandes) || []).filter(d => d.statut === 'en_attente');
   const sigs = () => S.D.sig ? S.D.sig.masq.map(m => Object.assign({ k: 'm:' + m.cible_id }, m)).concat(S.D.sig.actives.map(g => Object.assign({ k: 'a:' + g.id }, g))) : [];
-  const nombre = id => id === 'id' ? idents().filter(v => !S.fait['id:' + v.id]).length : id === 'lit' ? litiges().filter(c => !S.fait['lit:' + c.id]).length : id === 'sig' ? sigs().filter(x => !S.fait['sig:' + x.k]).length : 0;
+  const nombre = id => id === 'id' ? idents().filter(v => !S.fait['id:' + v.id]).length : id === 'lit' ? litiges().filter(c => !S.fait['lit:' + c.id]).length : id === 'sig' ? sigs().filter(x => !S.fait['sig:' + x.k]).length : id === 'prod' ? prods().filter(d => !S.fait['prod:' + d.id]).length : 0;
 
   /* ——— le cadre ——— */
   function ouvrir(opts) {
@@ -255,6 +257,58 @@
         () => { S.fait['sig:a:' + x.id] = ['ko', 'Annonce masquée']; }); });
   };
 
+  /* ——— 3 bis. Produits : demandes de produit ou de nom local, et mots cherchés sans résultat (schéma 104) ——— */
+  const CAT = () => (window.MDG && MDG.products) || [];
+  const famNom = s => window.MDGProduits ? MDGProduits.famille(s) : s;
+  const nomProd = s => (CAT().find(p => p.slug === s) || {}).name || s;
+  const slugDe = t => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/œ/gi, 'oe').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+  const prochesDe = nom => { const SE = window.MDG && MDG.search; if (!SE) return []; const v = new Set(); return SE.suggest(nom, 4).concat((SE.parse(nom).candidates || [])).map(x => x.slug).filter(x => x && !v.has(x) && v.add(x)).slice(0, 3); };
+  const EPROD = { ajoute: ['ok', 'Ajouté'], existant: ['ok', 'Déjà un produit'], refuse: ['ko', 'Refusé'] };
+  VUES.prod = () => {
+    if (S.err.prod) return erreur('prod');
+    if (S.D.prod && S.D.prod.absente) return vide('Les demandes de produit arrivent avec la mise à jour du serveur (schéma 104).');
+    const D = S.D.prod || {}, L = prods(), h = D.reponse_heures || 72, rec = (D.demandes || []).filter(d => d.statut !== 'en_attente').slice(0, 10), V = D.vides || [];
+    const carte = d => { const f = S.fait['prod:' + d.id], al = d.type === 'alias', r = d.echeance ? (Date.parse(d.echeance) - Date.now()) / 36e5 : null, pr = al ? [] : prochesDe(d.nom);
+      return `<div class="eq-c"><div class="eq-tt"><b>${esc(d.nom)}${al ? ' · nom local de ' + esc(nomProd(d.produit_slug)) : ''}</b>
+          <small>${al ? '' : esc([famNom(d.famille), d.unite, d.nom_local ? 'nom local : ' + d.nom_local : ''].filter(Boolean).join(' · '))}</small>
+          <small>${esc(d.qui || '?')}.${d.ville ? ' · ' + esc(d.ville) : ''} · ${ago(d.cree_le)} · demandé par <span class="eq-nb" aria-label="${d.soutiens} membre${d.soutiens > 1 ? 's' : ''}">${d.soutiens}</span></small>
+          ${r == null ? '' : r > 0 ? `<small>${Math.max(1, Math.round(r))} h restantes pour répondre.</small>` : '<small class="eq-rouge">Délai dépassé : à traiter maintenant.</small>'}</div>
+        ${pr.length ? `<div class="eq-pdl" aria-label="Produits proches">${pr.map(x => `<span>${esc(nomProd(x))}</span>`).join('')}</div>` : ''}
+        ${f ? `<span class="eq-st ${f[0]}">${esc(f[1])}</span>` : `<div class="eq-acts">${al ? `<button type="button" class="eq-go m" data-pfu="${d.id}" data-s="${esc(d.produit_slug)}">Accepter</button>` : `<button type="button" class="eq-go m" data-pac="${d.id}">Accepter</button><button type="button" class="eq-disc p" data-pfu="${d.id}">C’est déjà un produit</button>`}<button type="button" class="eq-dang" data-pre="${d.id}">Refuser</button></div>`}</div>`; };
+    return `<p class="eq-sous">Réponse attendue sous ${h} h.</p>
+      ${L.length ? `<div class="eq-l">${L.map(carte).join('')}</div>` : vide('Aucune demande de produit à traiter.')}
+      <h2 class="eq-h2">Cherché sans résultat</h2>
+      ${V.length ? `<div class="eq-rangs">${V.map(v => `<div class="eq-rang"><div class="eq-tt"><b>${esc(v.mot)}</b><small>dernière fois ${ago(v.dernier_le)}</small></div><span class="nbul d" aria-label="${v.n} recherche${v.n > 1 ? 's' : ''}">${v.n}</span></div>`).join('')}</div>` : vide('Aucun mot pour l’instant.')}
+      ${rec.length ? `<h2 class="eq-h2">Réponses récentes</h2><div class="eq-rangs">${rec.map(d => `<div class="eq-rang"><div class="eq-tt"><b>${esc(d.nom)}</b><small>${esc(d.motif || '')}</small></div><span class="eq-dr">${esc((EPROD[d.statut] || ['', d.statut])[1])}</span></div>`).join('')}</div>` : ''}`;
+  };
+  const famOpts = sel => (window.MDG && MDG.categories || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0)).map(c => `<option value="${esc(c.slug)}"${c.slug === sel ? ' selected' : ''}>${esc(c.name)}</option>`).join('');
+  const prodOpts = () => (window.MDG && MDG.categories || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0)).map(c => `<optgroup label="${esc(c.name)}">${CAT().filter(p => p.categorySlug === c.slug).sort((a, b) => a.name.localeCompare(b.name, 'fr')).map(p => `<option value="${esc(p.slug)}">${esc(p.name)}</option>`).join('')}</optgroup>`).join('');
+  const apresProduit = () => { if (window.MDGProduits) MDGProduits.lire(); };
+  LIENS.prod = c => {
+    const P = id => prods().find(x => x.id === id), pris = s => CAT().some(p => p.slug === s) || ((S.D.prod && S.D.prod.ajoutes) || []).includes(s);
+    c.querySelectorAll('[data-pac]').forEach(b => b.onclick = async () => { const d = P(b.dataset.pac); if (!d) return;
+      const r = await feuille('Ajouter « ' + d.nom + ' » au marché. Le demandeur est prévenu.',
+        `<label class="eq-lab">Nom<input name="nom" maxlength="60" value="${esc(d.nom)}"></label>
+         <label class="eq-lab">Famille<select name="fam">${famOpts(d.famille)}</select></label>
+         <label class="eq-lab"><span>Unité <i>· facultatif</i></span><select name="un"><option value="">—</option>${((window.MDGApp && MDGApp.UNITS) || []).map(u => `<option${u === d.unite ? ' selected' : ''}>${esc(u)}</option>`).join('')}</select></label>
+         <label class="eq-lab"><span>Noms locaux <i>· séparés par des virgules</i></span><input name="al" maxlength="200" value="${esc(d.nom_local || '')}"></label>
+         <label class="eq-lab">Pourquoi l’accepter ?<textarea name="m" maxlength="300" rows="2" placeholder="Par exemple : produit de gros courant"></textarea></label>`,
+        { ok: 'Ajouter', valider: v => { const s = slugDe(v.nom); return v.nom.length < 2 ? 'Écrivez le nom.' : !s ? 'Nom invalide.' : pris(s) ? 'Ce produit existe déjà : choisissez « C’est déjà un produit ».' : v.m.length < 3 ? 'Écrivez la raison en quelques mots.' : ''; } });
+      if (!r) return;
+      geste(b, () => rpc('admin_produit_accepter', { p_id: d.id, p_slug: slugDe(r.nom), p_nom: r.nom, p_famille: r.fam, p_unite: r.un || null, p_alias: r.al ? r.al.split(',').map(x => x.trim()).filter(Boolean) : [], p_motif: r.m }),
+        x => { S.fait['prod:' + d.id] = ['ok', 'Ajouté : ' + r.nom + (x && x.prevenus ? ' · ' + x.prevenus + ' prévenu' + (x.prevenus > 1 ? 's' : '') : '')]; apresProduit(); }); });
+    c.querySelectorAll('[data-pfu]').forEach(b => b.onclick = async () => { const d = P(b.dataset.pfu); if (!d) return; const fixe = b.dataset.s;
+      const r = await feuille(fixe ? 'Ajouter « ' + d.nom + ' » comme nom local de ' + nomProd(fixe) + ' ?' : '« ' + d.nom + ' » est déjà un produit : lequel ? Le nom devient un nom local.',
+        `${fixe ? '' : `<label class="eq-lab">Produit<select name="s"><option value="">Choisir</option>${prodOpts()}</select></label>`}
+         <label class="eq-lab">Motif (le membre le lira)<textarea name="m" maxlength="300" rows="2" placeholder="Par exemple : c’est le soumbala"></textarea></label>`,
+        { ok: fixe ? 'Accepter' : 'Rattacher', valider: v => !fixe && !v.s ? 'Choisissez le produit.' : v.m.length < 3 ? 'Écrivez la raison en quelques mots.' : '' });
+      if (!r) return; const s = fixe || r.s;
+      geste(b, () => rpc('admin_produit_fusionner', { p_id: d.id, p_slug: s, p_motif: r.m }), () => { S.fait['prod:' + d.id] = ['ok', (fixe ? 'Nom local ajouté' : 'Rattaché à ' + nomProd(s))]; apresProduit(); }); });
+    c.querySelectorAll('[data-pre]').forEach(b => b.onclick = async () => { const d = P(b.dataset.pre); if (!d) return;
+      const m = await motif('Refuser « ' + d.nom + ' ». Le membre lira le motif.', { ok: 'Refuser', danger: true, ph: 'Par exemple : pas un produit de gros' }); if (!m) return;
+      geste(b, () => rpc('admin_produit_refuser', { p_id: d.id, p_motif: m }), () => { S.fait['prod:' + d.id] = ['ko', 'Refusé : ' + m]; }); });
+  };
+
   /* ——— 4. Comptes ——— */
   const susp = () => { const m = {}; ((S.D.fiab && S.D.fiab.suspensions) || []).forEach(s => { m[s.user_id] = s; }); return m; };
   const etat = (c, SU) => c.banni ? 'banni' : SU[c.id] ? 'suspendu' : 'actif';
@@ -340,6 +394,7 @@
     annonce_maintenue: 'a gardé une annonce cachée', annonce_retablie: 'a remis une annonce en ligne', code_change: 'a changé un code secret',
     numero_rendu: 'a rendu un numéro à son propriétaire', numero_libere: 'a libéré un numéro', admin_structure_decider: 'a décidé d’une structure',
     admin_transporteur_decider: 'a décidé d’un transporteur', admin_transporteur_creer: 'a inscrit un transporteur', admin_niveaux_decider: 'a décidé d’un niveau',
+    admin_produit_accepter: 'a ajouté un produit', admin_produit_fusionner: 'a rattaché un nom à un produit', admin_produit_refuser: 'a refusé une demande de produit',
     commande_participation_equipe: 'a proposé un arrangement', commande_participation_retirer: 'a retiré un arrangement'
   };
   const geste1 = j => { const a = j.action, p = (j.detail && j.detail.parametres) || {};

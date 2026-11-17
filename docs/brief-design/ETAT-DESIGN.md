@@ -62,6 +62,10 @@ Fais maintenant : rien sur l'application. `suivi.html` est fait (15/11/2026).
 
 Les captures de chaque lot terminé sont dans `docs/brief-design/captures/` (`lot2-…` à `lot16-…`).
 
+## 3 ter. Demander un nouveau produit : fait (17/11/2026)
+
+Déjà fait : 3e ligne « Demander un nouveau produit » dans la feuille Publier ; « Mon produit n'est pas dans la liste » en bas de la liste des produits ; recherche sans résultat « « X » n'est pas encore dans nos produits » ; formulaire en feuille du bas (Produit nouveau / Nom local, « Vous voulez dire… ? », « Moi aussi ») ; Activité ; onglet « Produits » de l'Espace équipe. Captures : `captures/produit-demande-formulaire.jpg`, `captures/produit-demande-equipe.jpg` (onglet Produits en clair, Activité en sombre). Fais maintenant : rien ; si tu reprends ces écrans, garde les règles (pas de photo à la demande, 3 en attente au plus, rien publié pendant l'attente).
+
 ## 4. Le site pour ordinateur : ce qui existe, ce qui manque
 
 **Instruction pour Claude Design : appliquer au site le même habillage que la maquette de l'application** (mêmes jetons, même typographie Jost, mêmes cartes, mêmes repères offre rond vert / demande carré jaune), adapté à un écran d'ordinateur. Le site ne refait pas l'application : il montre ce qui s'y passe et amène à l'installer sur le téléphone.

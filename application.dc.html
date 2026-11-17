@@ -63,7 +63,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261113r1">
 <link rel="stylesheet" href="css/mgci-app.css?v=20261116y1">
 <link rel="stylesheet" href="css/sombre.css?v=20261115p1">
-<link rel="stylesheet" href="css/v2.css?v=20261117p1">
+<link rel="stylesheet" href="css/v2.css?v=20261117a2">
 <link rel="stylesheet" href="css/v2-compte.css?v=20261114g3">
 <link rel="stylesheet" href="css/v2-equipe.css?v=20261114g3">
 <link rel="stylesheet" href="v3/ux.css?v=20261115p1">
@@ -453,32 +453,45 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
 <!-- ═══ L'ANNÉE ═══ -->
 <div data-pg="annee" data-v2 data-screen-label="L'année du marché" onPointerDown="{{ edgeDown }}" onPointerUp="{{ edgeUp }}" style="position:absolute;inset:0;display:flex;flex-direction:column;transform:{{ tf.annee }};visibility:{{ vis.annee }};z-index:{{ zi.annee }};backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:-24px 0 48px rgba(0,0,0,.4)">
 <sc-if value="{{ on.annee }}" hint-placeholder-val="{{ false }}">
-  <!-- L'année du marché (lot 8, maquette « MGCI App v2 ») : en pleine récolte ce mois, grille de 12 mois, source sur chaque ligne (A.CAL, rien d'estimé) -->
+  <!-- L'année du marché (lot 8, refait le 17/11) : mois au choix, produits du calendrier A.CAL en 3 groupes, source sur chaque ligne, rien d'estimé -->
   <div class="v2-page" style="padding-top:{{ topPad }}"><div class="v2-page-sc">
     <div class="v2-nav"><button class="v2-retour" onClick="{{ back }}" aria-label="Retour"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button><span>Prix</span></div>
     <h1 class="v2-h1">L’année du marché</h1>
     <label class="v2-rech-c ay-rech"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="flex:none"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg><input class="v2-rech-in" type="search" enterkeyhint="search" value="{{ ya.q }}" onChange="{{ ya.qInput }}" placeholder="Igname, maïs, tomate…" aria-label="Chercher dans le calendrier"><sc-if value="{{ ya.qOn }}" hint-placeholder-val="{{ false }}"><button class="v2-rech-x" onClick="{{ ya.qEffacer }}" aria-label="Effacer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg></button></sc-if></label>
-    <sc-if value="{{ ya.pleinsOn }}" hint-placeholder-val="{{ true }}"><div class="v2-an-maint"><span>{{ ya.titre }}</span><div class="v2-pills"><sc-for list="{{ ya.pleins }}" as="p" hint-placeholder-count="2"><button class="vert" onClick="{{ p.go }}">{{ p.l }}</button></sc-for></div></div></sc-if>
-    <!-- (14/11) ce que le marché vit maintenant, calculé sur les annonces en cours ; rien d'estimé. Une recherche qui ne trouve aucun produit : un seul message, en bas -->
-    <sc-if value="{{ ya.infos }}" hint-placeholder-val="{{ true }}"><section class="ay-c"><h2>Le plus demandé</h2>
-      <sc-if value="{{ ya.demOn }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ ya.dem }}" as="x" hint-placeholder-count="3"><button class="ay-l" onClick="{{ x.go }}" aria-label="{{ x.lab }}"><span class="im"><img sc-camel-src="{{ x.img }}" alt="" loading="lazy"></span><b>{{ x.nom }}</b><span class="nbul d">{{ x.n }}</span></button></sc-for></sc-if>
-      <sc-if value="{{ ya.demVide }}" hint-placeholder-val="{{ false }}"><p class="ay-rien">{{ ya.demVideT }}</p></sc-if></section>
-    <sc-if value="{{ ya.ouOn }}" hint-placeholder-val="{{ true }}"><section class="ay-c"><h2>Où ça se demande</h2>
-      <sc-for list="{{ ya.ou }}" as="x" hint-placeholder-count="3"><button class="ay-l" onClick="{{ x.go }}" aria-label="{{ x.lab }}"><span class="ay-pin" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11Z"></path><circle cx="12" cy="10" r="2.2"></circle></svg></span><span class="tx"><b>{{ x.v }}</b><small>{{ x.s }}</small></span><span class="nbul d">{{ x.n }}</span></button></sc-for></section></sc-if>
-    <section class="ay-c"><h2>Le plus cher au kilo</h2>
-      <sc-if value="{{ ya.cherOn }}" hint-placeholder-val="{{ false }}"><sc-for list="{{ ya.cher }}" as="x" hint-placeholder-count="3"><button class="ay-l" onClick="{{ x.go }}" aria-label="{{ x.lab }}"><span class="im"><img sc-camel-src="{{ x.img }}" alt="" loading="lazy"></span><b>{{ x.nom }}</b><span class="ay-px"><b>{{ x.px }}</b><small>{{ x.n }}</small></span></button></sc-for></sc-if>
-      <sc-if value="{{ ya.cherVide }}" hint-placeholder-val="{{ true }}"><p class="ay-rien">{{ ya.cherVideT }}<small>{{ ya.cherSeuil }}</small></p></sc-if></section>
-    <section class="ay-c"><h2>Quand ça se demande</h2>
-      <div class="ay-m tete" aria-hidden="true"><sc-for list="{{ ya.mL }}" as="m" hint-placeholder-count="12"><b class="{{ m.c }}">{{ m.l }}</b></sc-for></div>
-      <sc-if value="{{ ya.histo }}" hint-placeholder-val="{{ false }}"><div class="ay-m barres"><sc-for list="{{ ya.barres }}" as="b" hint-placeholder-count="12"><span class="{{ b.c }}" role="img" aria-label="{{ b.lab }}"><i style="height:{{ b.h }}"></i></span></sc-for></div><p class="ay-rien"><small>Demandes publiées, 12 derniers mois</small></p></sc-if>
-      <sc-if value="{{ ya.sansHisto }}" hint-placeholder-val="{{ true }}"><div class="ay-m" role="img" aria-label="{{ ya.soudLab }}"><sc-for list="{{ ya.soud }}" as="c" hint-placeholder-count="12"><i class="{{ c }}"></i></sc-for></div>
-        <p class="ay-soud"><b>Soudure, Nord et Centre</b>Les stocks baissent, on dépend davantage du marché.<small>FEWS NET, perspectives juin 2026 · Pas encore un an d’historique des demandes</small></p></sc-if></section></sc-if>
-    <sc-if value="{{ ya.calOn }}" hint-placeholder-val="{{ true }}"><div class="v2-an">
-      <div class="v2-an-l tete" aria-hidden="true"><span></span><span class="mois"><sc-for list="{{ ya.mois }}" as="m" hint-placeholder-count="12"><b class="{{ m.c }}">{{ m.l }}</b></sc-for></span></div>
-      <sc-for list="{{ ya.lignes }}" as="r" hint-placeholder-count="8"><button class="v2-an-l" onClick="{{ r.go }}" aria-label="{{ r.lab }}"><span class="tx"><b>{{ r.l }}</b><small>{{ r.src }}</small></span><span class="mois"><sc-for list="{{ r.cases }}" as="c" hint-placeholder-count="12"><i class="{{ c }}"></i></sc-for></span></button></sc-for>
-    </div></sc-if>
+    <!-- (17/11) le mois se choisit : flèches ‹ › autour du nom, bande des 12 mois (hauteur = récoltes du mois), soudure en trait fin ; produits en 3 groupes -->
+    <div class="ya-mois">
+      <div class="ya-mt"><button class="ya-fl" onClick="{{ ya.mPrev }}" aria-label="{{ ya.mPrevL }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg></button>
+        <span class="ya-mn" aria-live="polite"><b>{{ ya.mNom }}</b><sc-if value="{{ ya.mKOn }}" hint-placeholder-val="{{ true }}"><small>{{ ya.mK }}</small></sc-if></span>
+        <button class="ya-fl" onClick="{{ ya.mNext }}" aria-label="{{ ya.mNextL }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg></button></div>
+      <div class="ya-bande"><sc-for list="{{ ya.bande }}" as="m" hint-placeholder-count="12"><button class="{{ m.c }}" aria-pressed="{{ m.on }}" aria-label="{{ m.lab }}" onClick="{{ m.go }}"><span class="br"><i style="height:{{ m.h }}"></i></span><b>{{ m.l }}</b></button></sc-for></div>
+      <div class="ya-soud" aria-hidden="true"><sc-for list="{{ ya.soud }}" as="c" hint-placeholder-count="12"><i class="{{ c }}"></i></sc-for></div>
+      <p class="ya-soud-t">Soudure Nord et Centre, mai à août · FEWS NET</p>
+    </div>
+    <sc-if value="{{ ya.calOn }}" hint-placeholder-val="{{ true }}"><p class="ya-res">{{ ya.mNom }} : <sc-if value="{{ ya.nROn }}" hint-placeholder-val="{{ true }}"><span class="nbul">{{ ya.nR }}</span> {{ ya.nRL }}</sc-if><sc-if value="{{ ya.etOn }}" hint-placeholder-val="{{ true }}">, </sc-if><sc-if value="{{ ya.nBOn }}" hint-placeholder-val="{{ true }}"><span class="nbul">{{ ya.nB }}</span> {{ ya.nBL }}</sc-if><sc-if value="{{ ya.rienOn }}" hint-placeholder-val="{{ false }}">aucune récolte en cours ni proche</sc-if></p></sc-if>
+    <sc-for list="{{ ya.groupes }}" as="g" hint-placeholder-count="2"><section class="ya-g">
+      <sc-if value="{{ g.ouvert }}" hint-placeholder-val="{{ true }}"><h2>{{ g.t }}</h2></sc-if>
+      <sc-if value="{{ g.replie }}" hint-placeholder-val="{{ false }}"><button class="ya-plie" aria-expanded="{{ g.exp }}" onClick="{{ g.basculer }}"><span>{{ g.t }}</span><span class="nbul">{{ g.n }}</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:{{ g.rot }}"><path d="M6 9l6 6 6-6"></path></svg></button></sc-if>
+      <sc-if value="{{ g.voir }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ g.items }}" as="r" hint-placeholder-count="4"><div class="ya-r">
+        <div class="ya-rh"><button class="ya-go" onClick="{{ r.go }}" aria-label="{{ r.lab }}"><span class="im"><img sc-camel-src="{{ r.img }}" alt="" loading="lazy"></span><span class="tx"><b>{{ r.nom }}</b><small>{{ r.etape }}</small>
+          <sc-if value="{{ r.flOn }}" hint-placeholder-val="{{ true }}"><span class="{{ r.flC }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:{{ r.flR }}"><path d="M12 5v14M6 13l6 6 6-6"></path></svg>{{ r.flT }}</span></sc-if>
+          <sc-if value="{{ r.etatOn }}" hint-placeholder-val="{{ false }}"><span class="ya-fl-t n">{{ r.etatT }}</span></sc-if>
+          <sc-if value="{{ r.odOn }}" hint-placeholder-val="{{ true }}"><span class="ya-od"><sc-if value="{{ r.oOn }}" hint-placeholder-val="{{ true }}"><span class="nbul o">{{ r.o }}</span></sc-if><sc-if value="{{ r.dOn }}" hint-placeholder-val="{{ true }}"><span class="nbul d">{{ r.d }}</span></sc-if></span></sc-if></span></button>
+          <button class="ya-ch" aria-expanded="{{ r.exp }}" aria-label="{{ r.chL }}" onClick="{{ r.basculer }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform:{{ r.rot }}"><path d="M6 9l6 6 6-6"></path></svg></button></div>
+        <sc-if value="{{ r.open }}" hint-placeholder-val="{{ false }}"><div class="ya-v">
+          <div class="ya-vl tete" aria-hidden="true"><span></span><span class="mo"><sc-for list="{{ ya.lettres }}" as="m" hint-placeholder-count="12"><b class="{{ m.c }}">{{ m.l }}</b></sc-for></span></div>
+          <sc-for list="{{ r.zones }}" as="z" hint-placeholder-count="2"><div class="ya-vl" role="img" aria-label="{{ z.lab }}"><span class="tx"><b>{{ z.l }}</b><small>{{ z.note }}</small></span><span class="mo"><sc-for list="{{ z.cases }}" as="c" hint-placeholder-count="12"><i class="{{ c }}"></i></sc-for></span></div></sc-for>
+          <div class="ya-leg"><span><i class="debut"></i>Ça commence</span><span><i class="plein"></i>Pleine récolte</span><span><i class="fin"></i>Ça se termine</span></div>
+          <p class="ya-src">Source : {{ r.src }}</p>
+          <sc-if value="{{ r.alOn }}" hint-placeholder-val="{{ false }}"><button class="ya-al" onClick="{{ r.alerte }}">{{ r.alL }}</button></sc-if>
+        </div></sc-if>
+      </div></sc-for></sc-if>
+    </section></sc-for>
     <sc-if value="{{ ya.calVide }}" hint-placeholder-val="{{ false }}"><p class="ay-vide"><b>{{ ya.calVideT }}</b>Le calendrier couvre les produits sourcés : igname, maïs, tomate, cacao…</p></sc-if>
-    <sc-if value="{{ ya.calOn }}" hint-placeholder-val="{{ true }}"><div class="v2-an-leg"><span><i class="debut"></i>Ça commence</span><span><i class="plein"></i>Pleine récolte</span><span><i class="fin"></i>Ça se termine</span></div><p class="v2-an-note">Périodes tirées des sources citées sur chaque ligne. Rien n’est estimé.</p></sc-if>
+    <!-- un seul bloc : produit · ville principale · demandes en cours (this.demands : ni servies ni expirées) -->
+    <sc-if value="{{ ya.demBloc }}" hint-placeholder-val="{{ true }}"><section class="ay-c"><h2>Ce qui se demande maintenant</h2>
+      <sc-if value="{{ ya.demOn }}" hint-placeholder-val="{{ true }}"><sc-for list="{{ ya.dem }}" as="x" hint-placeholder-count="3"><button class="ay-l" onClick="{{ x.go }}" aria-label="{{ x.lab }}"><span class="im"><img sc-camel-src="{{ x.img }}" alt="" loading="lazy"></span><span class="tx"><b>{{ x.nom }}</b><sc-if value="{{ x.vOn }}" hint-placeholder-val="{{ true }}"><small>{{ x.v }}</small></sc-if></span><span class="nbul d">{{ x.n }}</span></button></sc-for></sc-if>
+      <sc-if value="{{ ya.demVide }}" hint-placeholder-val="{{ false }}"><p class="ay-rien">Pas encore de demande en cours.</p></sc-if></section></sc-if>
+    <sc-if value="{{ ya.calOn }}" hint-placeholder-val="{{ true }}"><p class="v2-an-note">Calendrier indicatif, selon les pluies et les régions. Flèches : tendance de saison, jamais une promesse. Sources : {{ ya.sources }}.</p></sc-if>
   </div></div>
 </sc-if>
 </div>
@@ -1307,7 +1320,7 @@ class Component extends DCLogic {
             zones: zonesDe(slug, P.name), zAria: P.name + ' : prix par zone et tendance' }; })
           .sort((a, b) => (b.act - a.act) || (b.n - a.n) || a.nom.localeCompare(b.nom, 'fr'));   // par activité (offres et demandes), comme la maquette
         return { pxZoneL: zone || 'Tout le pays', pxZoneLab: 'Zone : ' + (zone || 'tout le pays') + '. Changer de zone', pxZoneOuvrir: () => this.pxZones(parVille, maV, off.length, zone),
-          pxRows: rows, pxVide: !rows.length, pxSeuil: SE.obs + ' prix de ' + SE.vendeurs + ' vendeurs sur ' + SE.jours + ' jours', versTous: () => this.push('categories'), versAnnee: () => this.push('annee') }; })(),
+          pxRows: rows, pxVide: !rows.length, pxSeuil: SE.obs + ' prix de ' + SE.vendeurs + ' vendeurs sur ' + SE.jours + ' jours', versTous: () => this.push('categories'), versAnnee: () => { this.setState({ month: new Date().getMonth() + 1, anOpen: null }); this.push('annee'); } }; })(),
       versRecherche: () => { aller('recherche'); setTimeout(() => { const i = document.querySelector('[data-pg="home"] .v2-rech-in'); if (i) i.focus(); }, 60); },
       qInput: e => this.setState({ v2q: e.target.value }), qEffacer: () => { this.setState({ v2q: '' }); const i = document.querySelector('[data-pg="home"] .v2-rech-in'); if (i) i.focus(); },
       qKey: e => { if (e.key !== 'Enter') return; e.target.blur(); if (res.length === 1 && !comprisOn) res[0].go(); },
@@ -1563,41 +1576,67 @@ class Component extends DCLogic {
         return { nom: P.name, img: P.thumb, oOn: o > 0, o: o + ' offre' + (o > 1 ? 's' : ''), dOn: d > 0, d: d + ' dem.', rien: !o && !d,
           lab: P.name + ', ' + o + ' offre' + (o > 1 ? 's' : '') + ', ' + d + ' demande' + (d > 1 ? 's' : ''), go: () => this.openFiche(p.slug) }; }) };
   }
+  // L'année du marché (refaite le 17/11, validée par le propriétaire) : le mois se choisit (state.month), les lignes A.CAL d'un même produit
+  // sont regroupées, chaque produit est rangé pour le mois choisi : en récolte, arrive bientôt (1 ou 2 mois), hors récolte (replié)
   v2Annee() {
-    const A = window.MDGApp, M = window.MDG, now = new Date(), mo = now.getMonth() + 1, L = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'], ok = s => M.products.some(p => p.slug === s);
+    const S = this.state, A = window.MDGApp, M = window.MDG, cm = new Date().getMonth() + 1, mo = S.month || cm, mn = k => ((mo - 1 + k + 12) % 12) + 1;
+    const L = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'], RK = A.RANK, ok = s => M.products.some(p => p.slug === s), pl = (n, m) => n + ' ' + m + (n > 1 ? 's' : '');
     const R = this.v2Cherche('v2aq'), P0 = s => M.products.find(p => p.slug === s) || { name: s, aliases: [] }, pOk = s => { const p = P0(s); return R.vaPour(p.name, ...(p.aliases || [])); };
-    const cal = A.CAL.filter(e => R.vaPour(e[1]) || pOk(e[0])), pleins = [], vus = new Set();
-    cal.forEach(e => { if (e[2][mo] === 'plein' && !vus.has(e[1])) { vus.add(e[1]); pleins.push({ l: e[1], go: () => ok(e[0]) && this.openFiche(e[0]) }); } });
-    const pl = (n, m) => n + ' ' + m + (n > 1 ? 's' : ''), V = window.MDGVilles, ville = d => String((V && V.ref ? V.ref(d.city) : d.city) || '').trim() || ((M.regions || []).find(r => r.slug === d.region) || {}).name || '';
-    // demandes en cours (this.demands : ni servies ni expirées), comptées par produit et par ville
-    const D = this.demands().filter(d => pOk(d.slug)), parP = {}, parV = {};
-    D.forEach(d => { parP[d.slug] = (parP[d.slug] || 0) + 1; const v = ville(d); if (v) { const x = parV[v] || (parV[v] = { n: 0, p: {} }); x.n++; x.p[d.slug] = (x.p[d.slug] || 0) + 1; } });
-    const dem = Object.keys(parP).sort((a, b) => parP[b] - parP[a] || P0(a).name.localeCompare(P0(b).name, 'fr')).slice(0, 3)
-      .map(s => { const P = this.prod(s); return { nom: P.name, img: P.thumb, n: pl(parP[s], 'demande'), lab: P.name + ', ' + pl(parP[s], 'demande') + ' en cours', go: () => this.openFiche(s) }; });
-    const ou = Object.keys(parV).sort((a, b) => parV[b].n - parV[a].n || a.localeCompare(b, 'fr')).slice(0, 3).map(v => { const x = parV[v], s = Object.keys(x.p).sort((a, b) => x.p[b] - x.p[a])[0], nom = this.prod(s).name;
-      return { v, s: Object.keys(x.p).length > 1 ? 'Surtout ' + nom.toLowerCase() : nom, n: pl(x.n, 'demande'), lab: v + ', ' + pl(x.n, 'demande') + ', surtout ' + nom, go: () => this.openFiche(s) }; });
-    // le plus cher au kilo : prix vendeurs en kg ou en tonne (ramenés au kg), même seuil que le prix observé (MDGMarche.SEUIL : 5 prix, 3 vendeurs, 30 jours) ;
-    // les sacs, cartons, régimes… n'ont pas de poids fixe : ils ne se comparent pas
-    const SE = this.seuil(), G = {};
-    this.offers().forEach(o => { const u = String(o.unit || '').toLowerCase(), k = u === 'kg' ? 1 : /^(t|tonne)s?$/.test(u) ? 1000 : 0, t = Date.parse(o.at);
-      if (!k || !(o.price > 0) || !pOk(o.slug) || (t && now - t > SE.jours * 864e5)) return; const g = G[o.slug] || (G[o.slug] = { px: [], v: new Set() }); g.px.push(o.price / k); g.v.add(o.uid || o.phone || o.name); });
-    const med = l => { const s = l.slice().sort((a, b) => a - b), k = s.length >> 1; return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2; };
-    const cher = Object.keys(G).filter(s => G[s].px.length >= SE.obs && G[s].v.size >= SE.vendeurs).map(s => ({ s, m: med(G[s].px) })).sort((a, b) => b.m - a.m).slice(0, 3)
-      .map(({ s, m }) => { const P = this.prod(s), f = A.fmt(m) + ' F'; return { nom: P.name, img: P.thumb, px: f, n: pl(G[s].px.length, 'prix'), lab: P.name + ', médiane ' + f + ' le kilo, ' + pl(G[s].px.length, 'prix'), go: () => this.openFiche(s) }; });
-    // quand ça se demande : seulement avec au moins un an d'historique des demandes ; sinon la soudure, d'après FEWS NET (même texte que v3/annee.js)
-    const tous = this.demandsAll().map(d => Date.parse(d.at)).filter(t => t > 0), plusVieux = tous.length ? Math.min(...tous) : 0, histo = plusVieux && now - plusVieux >= 365 * 864e5, parM = Array(12).fill(0);
-    if (histo) tous.forEach(t => { if (now - t < 365 * 864e5) parM[new Date(t).getMonth()]++; });
-    const mx = Math.max(1, ...parM), SOUD = [5, 6, 7, 8];
+    // un produit = ses lignes A.CAL (Sud / Centre, Nord, précoce / tardive…) ; pour un mois, l'étape la plus forte de ses zones
+    const parP = new Map();
+    A.CAL.forEach(e => { if (!(R.vaPour(e[1]) || pOk(e[0]))) return; const x = parP.get(e[0]) || { slug: e[0], zones: [] }; x.zones.push(e); parP.set(e[0], x); });
+    const etapeDe = (x, m) => x.zones.reduce((b, e) => { const l = e[2][m]; return l && (!b || RK[l] > RK[b]) ? l : b; }, '');
+    const dansDe = x => { for (let k = 1; k <= 2; k++) if (etapeDe(x, mn(k))) return k; return 0; };
+    const prochain = x => { for (let k = 1; k <= 11; k++) if (etapeDe(x, mn(k))) return mn(k); return 0; };
+    const nomDe = x => x.zones.length > 1 ? (ok(x.slug) ? this.prod(x.slug).name : x.zones[0][1].replace(/ \(.*\)$/, '')) : x.zones[0][1];
+    const zoneDe = (e, nom) => (e[1].match(/\(([^)]*)\)/) || [])[1] || e[1].replace(new RegExp('^' + nom.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*', 'i'), '') || e[1];
+    const O = this.offers(), D = this.demands(), nO = {}, nD = {};
+    O.forEach(o => nO[o.slug] = (nO[o.slug] || 0) + 1); D.forEach(d => nD[d.slug] = (nD[d.slug] || 0) + 1);
+    // prix fixés par l'État pour la campagne : aucune flèche de saison
+    const FIXE = { 'cacao-en-feves': 'Prix bord champ fixé par l’État', 'cafe-en-grains': 'Prix bord champ fixé par l’État', 'noix-de-cajou': 'Prix plancher fixé par l’État' };
+    const NOM_ET = { plein: 'Pleine récolte', debut: 'Ça commence', fin: 'Ça se termine' };
+    // TODO(prix) : notre propre tendance remplacera la flèche de saison quand un calcul réel le permettra (deux périodes au seuil
+    // seuil() pour le même produit et la même unité, ou prix_zones du serveur par produit). this.offers() ne garde que 30 jours : pas de comparaison possible ici.
+    const ligne = x => { const nom = nomDe(x), lv = etapeDe(x, mo), dans = lv ? 0 : dansDe(x), src = [...new Set(x.zones.map(e => e[3]).filter(Boolean))].join(', '), fixe = FIXE[x.slug];
+      const zLv = x.zones.length > 1 && lv ? x.zones.filter(e => e[2][mo] === lv).map(e => zoneDe(e, nom)) : [], pm = prochain(x);
+      const etape = lv ? NOM_ET[lv] + (zLv.length && zLv.length < x.zones.length ? ' · ' + zLv.join(', ') : '') : dans ? 'Récolte dans ' + dans + ' mois' : pm ? 'Prochaine récolte : ' + A.MOIS[pm - 1].toLowerCase() : 'Hors récolte';
+      const fl = fixe ? null : lv === 'fin' ? ['m', '-135deg', 'Fin de récolte : se raréfie'] : lv ? ['v', '0deg', 'Récolte : souvent moins cher'] : ['r', '180deg', 'Hors récolte : souvent plus cher'];
+      const o = nO[x.slug] || 0, d = nD[x.slug] || 0, open = S.anOpen === x.slug, P = ok(x.slug) ? this.prod(x.slug) : { thumb: '' }, MA = window.MDGAlertes, suivi = MA && MA.suit && MA.suit(x.slug);
+      return { k: lv ? 'recolte' : dans ? 'bientot' : 'hors', ordre: lv ? 3 - RK[lv] : dans, nom, img: P.thumb, etape,
+        flOn: !!fl, flC: 'ya-fl-t ' + (fl ? fl[0] : ''), flR: fl ? 'rotate(' + fl[1] + ')' : 'none', flT: fl ? fl[2] + ' · ' + src : '', etatOn: !!fixe, etatT: fixe ? fixe + ' · ' + src : '',
+        odOn: o > 0 || d > 0, oOn: o > 0, o: pl(o, 'offre'), dOn: d > 0, d: pl(d, 'demande'),
+        lab: nom + ', ' + etape + (fl ? ', ' + fl[2] : fixe ? ', ' + fixe : '') + ', source ' + src + ', ' + pl(o, 'offre') + ', ' + pl(d, 'demande') + (ok(x.slug) ? '. Ouvrir la fiche' : ''),
+        go: () => ok(x.slug) && this.openFiche(x.slug), open, exp: String(open), rot: open ? 'rotate(180deg)' : 'none', chL: (open ? 'Fermer' : 'Voir') + ' l’année de ' + nom.toLowerCase(),
+        basculer: () => this.setState(s => ({ anOpen: s.anOpen === x.slug ? null : x.slug })), src,
+        zones: x.zones.map(e => ({ l: x.zones.length > 1 ? zoneDe(e, nom) : e[1], note: e[4] || '', cases: L.map((_, i) => (e[2][i + 1] || 'vide') + (i + 1 === mo ? ' choisi' : '')),
+          lab: e[1] + ' : ' + Object.keys(e[2]).map(m => A.MOIS[m - 1] + ' ' + ({ plein: 'pleine récolte', debut: 'début', fin: 'fin' })[e[2][m]]).join(', ') })),
+        alOn: !!(MA && MA.panneau && ok(x.slug)), alL: suivi ? 'Modifier mon alerte' : 'M’alerter des nouvelles annonces', alerte: () => MA.panneau(x.slug, nom) }; };
+    const tous = [...parP.values()].map(ligne), par = k => tous.filter(r => r.k === k).sort((a, b) => a.ordre - b.ordre || a.nom.localeCompare(b.nom, 'fr'));
+    const rec = par('recolte'), bien = par('bientot'), hors = par('hors'), horsOuvert = !!S.anHors || !!R.n;
+    const groupes = [['En récolte', rec, false], ['Arrive bientôt', bien, false], ['Hors récolte', hors, true]].filter(g => g[1].length)
+      .map(([t, items, plie]) => ({ t, items, n: items.length, ouvert: !plie, replie: plie, voir: !plie || horsOuvert, exp: String(horsOuvert), rot: horsOuvert ? 'rotate(180deg)' : 'none',
+        basculer: () => this.setState(s => ({ anHors: !s.anHors })) }));
+    // la bande : hauteur = produits en récolte ce mois-là (tous les produits du calendrier, pas seulement ceux de la recherche)
+    const tousP = new Map(); A.CAL.forEach(e => { const x = tousP.get(e[0]) || { slug: e[0], zones: [] }; x.zones.push(e); tousP.set(e[0], x); });
+    const nMois = L.map((_, i) => [...tousP.values()].filter(x => etapeDe(x, i + 1)).length), mx = Math.max(1, ...nMois), SOUD = [5, 6, 7, 8];
+    const aller = m => this.setState({ month: m });
+    // ce qui se demande maintenant : produit, ville où il se demande le plus, nombre de demandes en cours
+    const V = window.MDGVilles, ville = d => String((V && V.ref ? V.ref(d.city) : d.city) || '').trim() || ((M.regions || []).find(r => r.slug === d.region) || {}).name || '';
+    const Dp = {}; D.filter(d => pOk(d.slug)).forEach(d => { const x = Dp[d.slug] || (Dp[d.slug] = { n: 0, v: {} }); x.n++; const v = ville(d); if (v) x.v[v] = (x.v[v] || 0) + 1; });
+    const dem = Object.keys(Dp).sort((a, b) => Dp[b].n - Dp[a].n || P0(a).name.localeCompare(P0(b).name, 'fr')).slice(0, 3).map(s => { const P = this.prod(s), x = Dp[s],
+      v = Object.keys(x.v).sort((a, b) => x.v[b] - x.v[a] || a.localeCompare(b, 'fr'))[0] || '', vs = v && Object.keys(x.v).length > 1 ? 'Surtout à ' + v : v ? 'À ' + v : '';
+      return { nom: P.name, img: P.thumb, v: vs, vOn: !!vs, n: pl(x.n, 'demande'), lab: P.name + (vs ? ', ' + vs.toLowerCase() : '') + ', ' + pl(x.n, 'demande') + ' en cours', go: () => this.openFiche(s) }; });
+    const nR = rec.length, nB = bien.length, anyP = M.products.some(p => pOk(p.slug));
     return { q: R.q, qOn: R.qOn, qInput: R.qInput, qEffacer: R.qEffacer,
-      titre: pleins.length ? 'En pleine récolte en ' + A.MOIS[mo - 1].toLowerCase() : 'Rien en pleine récolte en ' + A.MOIS[mo - 1].toLowerCase(), pleins, pleinsOn: !R.n || pleins.length > 0,
-      demOn: dem.length > 0, dem, ouOn: ou.length > 0, ou, demVide: !dem.length, demVideT: R.n ? 'Aucune demande en cours pour «\u00a0' + R.q.trim() + '\u00a0».' : 'Pas encore de demande en cours.',
-      cherOn: cher.length > 0, cher, cherVide: !cher.length, cherVideT: 'Pas encore assez de prix au kilo', cherSeuil: SE.obs + ' prix de ' + SE.vendeurs + ' vendeurs, sur ' + SE.jours + ' jours',
-      histo: !!histo, sansHisto: !histo, mL: L.map((l, i) => ({ l, c: i + 1 === mo ? 'auj' : '' })),
-      barres: parM.map((n, i) => ({ h: Math.round(n / mx * 100) + '%', c: i + 1 === mo ? 'auj' : '', lab: A.MOIS[i] + ' : ' + pl(n, 'demande') })),
-      soud: L.map((_, i) => (SOUD.includes(i + 1) ? 'soud' : '') + (i + 1 === mo ? ' auj' : '')), soudLab: 'Soudure de mai à août dans le Nord et le Centre',
-      mois: L.map((l, i) => ({ l, c: i + 1 === mo ? 'auj' : '' })), calOn: cal.length > 0, calVide: !cal.length, infos: !R.n || cal.length > 0 || M.products.some(p => pOk(p.slug)), calVideT: (M.products.some(p => pOk(p.slug)) ? 'Rien au calendrier pour «\u00a0' : 'Aucun produit pour «\u00a0') + R.q.trim() + '\u00a0».',
-      lignes: cal.map(e => ({ l: e[1], src: e[3] || '', cases: L.map((_, i) => (e[2][i + 1] || 'vide') + (i + 1 === mo ? ' auj' : '')),
-        lab: e[1] + ' : ' + Object.keys(e[2]).map(m => A.MOIS[m - 1] + ' ' + ({ plein: 'pleine récolte', debut: 'début', fin: 'fin' })[e[2][m]]).join(', ') + (e[3] ? '. Source : ' + e[3] : ''), go: () => ok(e[0]) && this.openFiche(e[0]) })) };
+      mNom: A.MOIS[mo - 1], mK: mo === cm ? 'Ce mois-ci' : mo === (cm % 12) + 1 ? 'Le mois prochain' : '', mKOn: mo === cm || mo === (cm % 12) + 1,
+      mPrev: () => aller(mn(-1)), mNext: () => aller(mn(1)), mPrevL: 'Mois précédent : ' + A.MOIS[mn(-1) - 1].toLowerCase(), mNextL: 'Mois suivant : ' + A.MOIS[mn(1) - 1].toLowerCase(),
+      bande: L.map((l, i) => ({ l, on: String(i + 1 === mo), c: 'ya-m' + (i + 1 === mo ? ' choisi' : '') + (i + 1 === cm ? ' auj' : ''), h: Math.round(8 + 92 * nMois[i] / mx) + '%',
+        lab: A.MOIS[i] + (i + 1 === cm ? ', ce mois-ci' : '') + ', ' + (nMois[i] ? pl(nMois[i], 'produit') + ' en récolte' : 'aucun produit en récolte') + (SOUD.includes(i + 1) ? ', soudure' : ''), go: () => aller(i + 1) })),
+      soud: L.map((_, i) => SOUD.includes(i + 1) ? 'on' : ''), lettres: L.map((l, i) => ({ l, c: i + 1 === mo ? 'choisi' : '' })),
+      nR, nB, nROn: nR > 0, nBOn: nB > 0, etOn: nR > 0 && nB > 0, rienOn: !nR && !nB, nRL: (nR > 1 ? 'récoltes' : 'récolte') + ' en cours', nBL: nB > 1 ? 'arrivent bientôt' : 'arrive bientôt',
+      groupes, calOn: tous.length > 0, calVide: !tous.length, calVideT: (anyP ? 'Rien au calendrier pour « ' : 'Aucun produit pour « ') + R.q.trim() + ' ».',
+      sources: [...new Set(A.CAL.map(e => e[3]).filter(Boolean))].join(', '),
+      demBloc: !R.n || dem.length > 0, demOn: dem.length > 0, dem, demVide: !dem.length };
   }
   isDark() { return this.state.logoDark != null ? this.state.logoDark : ls('mdg-app:logo-noir') === true; }
   // Logo vert / Logo noir : choisi dans Compte → Réglages (v3/compte.js, par window.MDGLogo), gardé sur le téléphone comme avant

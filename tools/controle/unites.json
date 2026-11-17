@@ -71,7 +71,8 @@
     { "schemas": ["97b", "97c", "97d", "98a", "98b"], "sujet": "litige en 1 h, quantité minimale, garde 93 qui prévient (97b-97d, PR #306) ; suppression de compte et suspension (98a-98b, PR #305) : fusionnés le 25/10/2026, appliqués sur le projet de test, production à confirmer", "branche": "main (PR #305 et #306)", "consigne": "un test écrit avant ces schémas (délais de 24 h, ancienne quantité gardée, suppression de compte acceptée) est rejoué et mis à jour, pas déclaré « échoué » sans relecture" }
   ],
   "jugements": {
-    "CMP-31": { "unites": ["U12", "U10"], "sujet": "carte du réseau façon Yango (16/11/2026) : centrée sur moi, une seule question « Quel produit ? », liste de la plus proche à la plus loin (150 km puis « Voir plus loin »), un seul gros bouton par annonce, « Chercher ici », 2 boutons ronds ; plus de Tout / Offres / Demandes, « Ce qui se rapproche », « Pour vous », « Vous êtes à », « Tout le pays », chaleur ; liste de contrôle I11" }
+    "CMP-31": { "unites": ["U12", "U10"], "sujet": "carte du réseau façon Yango (16/11/2026) : centrée sur moi, une seule question « Quel produit ? », liste de la plus proche à la plus loin (150 km puis « Voir plus loin »), un seul gros bouton par annonce, « Chercher ici », 2 boutons ronds ; plus de Tout / Offres / Demandes, « Ce qui se rapproche », « Pour vous », « Vous êtes à », « Tout le pays », chaleur ; liste de contrôle I11" },
+    "CMP-32": { "unites": ["U12", "U10"], "sujet": "L'année du marché refaite (17/11/2026) : mois au choix (flèches et bande des 12 mois), phrase calculée, 3 groupes (Hors récolte replié), flèche de saison avec raison et source (aucune pour cacao, café, cajou), offres et demandes réelles, volet avec alerte produit, « Ce qui se demande maintenant »" }
   },
   "front": "^(application\\.dc\\.html|index-v3\\.html|index\\.html|admin\\.html|suivi\\.html|404\\.html|maintenance\\.html|manifest\\.webmanifest|app/|v3/|v2/|css/)"
 }

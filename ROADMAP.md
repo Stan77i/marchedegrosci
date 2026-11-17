@@ -211,6 +211,9 @@ Dépendance : aucune pour le Web Push (gratuit). Les SMS et WhatsApp demandent u
 
 ## Décidé avec le propriétaire, à développer
 
+### Catalogue : demander un nouveau produit (17/11/2026)
+- Fait sur le projet de test (schéma 104) et dans l'application (PR à fusionner) : demande de produit ou de nom local, « Moi aussi », onglet Produits de l'équipe, produits ajoutés sans code, mots cherchés sans résultat. À faire : production (accord du propriétaire), « pousser » v31, photo et copie dans `v2/data.js` pour chaque produit accepté, entrée « nom local » depuis la fiche produit, vue dans `admin.html`.
+
 Règles données le 24/10/2026. **La plupart ne sont pas encore codées telles quelles.** Les parties déjà présentes dans le code sont signalées (la discussion libre, par exemple, existe déjà).
 
 ### Transport

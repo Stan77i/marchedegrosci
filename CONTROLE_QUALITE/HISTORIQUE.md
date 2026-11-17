@@ -47,4 +47,8 @@
 | 17/11/2026 à 08 h 48 | `apres-modif` | `fb8d0ab` | 15 | 3 | 0 | 1 | 0 | non | [rapport](rapports/2026-11-17-08h48-apres-modif.md) |
 =======
 | 17/11/2026 à 08 h 59 | `apres-modif` | `8e91b9a` | 14 | 3 | 0 | 2 | 1 | non | [rapport](rapports/2026-11-17-08h59-apres-modif.md) |
+<<<<<<< HEAD
 >>>>>>> d22fff9 (Schéma 104 : batterie de scénarios SQL (jouée sur le projet de test), rapport du contrôle)
+=======
+| 17/11/2026 à 09 h 02 | `apres-modif` | `d22fff9` | 15 | 3 | 0 | 3 | 1 | non | [rapport](rapports/2026-11-17-09h02-apres-modif.md) |
+>>>>>>> d7e1ead (Demande de produit : documentation (CHANGELOG, fonctionnalités, architecture, feuille de route, tableau de bord, passation, reprise, design, portage, contrôle qualité))

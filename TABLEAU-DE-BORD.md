@@ -38,6 +38,8 @@ Une « PR », c'est une proposition de changement : vous la fusionnez sur GitHub
 8. **Coller le fichier « 101e » dans Supabase** (5 minutes) : la dernière pièce des durées de conservation. Mode d'emploi pas à pas : `docs/A-FAIRE-PROPRIETAIRE.md`, partie 4 ter (d'abord le serveur d'essai, puis le vrai).
 9. **Après la fusion de la PR #321 (écrans juridiques)** : dire « #321 fusionnée » à Claude. Il mettra alors sur le vrai serveur les deux morceaux qui l'attendent (cases « pièce vue » et « appel fait » du numéro contesté, et les trajets de la carte par notre serveur).
 
+10. **Demander un nouveau produit** (17/11/2026, vos réponses « ok pour tout ») : après la fusion de la PR, dire « mets les produits en production » à Claude. Il mettra le schéma 104 sur le vrai serveur (il est déjà sur le serveur d'essai), puis la fonction des notifications.
+
 Plus tard, quand vous aurez 10 minutes :
 - autoriser le serveur de l'application dans l'environnement Claude (mode d'emploi : `docs/A-FAIRE-PROPRIETAIRE.md`, partie 1) ;
 - une séance avec votre téléphone pour essayer les notifications et la carte en réseau lent.
@@ -210,6 +212,7 @@ Dans l'ordre conseillé.
 | 2 | Construire ce que demandent vos décisions juridiques, une PR par point avec captures : aide (casse en route), textes du transport en cas de refus, écran du compte banni, journal de tous les gestes de l'équipe, trajets de la carte par notre serveur, profil public sans compte limité aux totaux… L'effacement automatique après les durées seulement avec votre accord | Claude |
 | 3 | Corrections du contrôle qualité : le serveur est fait et en service (25/10/2026) ; restent les écrans (retard, nouvelles, délai, dépôts en double, commission « d'avant la règle ») | Claude |
 | 3 bis | Coller le fichier « 101e » (test, puis vrai serveur) | Vous |
+| 3 quater | Demander un nouveau produit : fusionner la PR, puis votre accord pour le vrai serveur (schéma 104) | Vous, puis Claude |
 | 3 ter | Après la fusion de #321 : mettre 101c, 101z et la fonction des trajets sur le vrai serveur | Claude |
 | 2 | Décisions juridiques : les écrans sont faits (aide « cassé en route », transport en cas de refus, « Panne ou météo » avec la source, écran « Compte banni » avec « Contester », carte sans service extérieur inconnu, profil sans compte, numéro contesté, conservation des données) : PR « écrans juridiques » à fusionner après #314, en même temps que la PR du serveur juridique. Restent : mettre en service le nouveau calcul de trajet de la carte et la contestation du bannissement sur le vrai serveur (avec votre accord), la photo pour « Panne ou météo » | Vous (fusionner), puis Claude |
 | 3 | Corrections du contrôle qualité (en cours, accord donné) ; les écrans du suivi de livraison sont faits (retard, nouvelles, délai, fil du suivi) (serveur 99a déjà en production) : PR à fusionner | Claude |
@@ -312,6 +315,7 @@ Attention : un défaut noté aujourd'hui « gênant » (un 2e paiement ignoré s
 
 ## 8. Historique
 
+- **17/11/2026** : « Mon produit n'est pas dans la liste » : un membre demande un produit (ou un nom local), l'équipe l'ajoute sans code ou répond avec un motif ; serveur d'essai seulement.
 - **03/10/2026** : premier dépôt du code.
 - **11 et 12/10/2026** : l'application branchée sur le serveur : comptes, annonces partagées, négociation, messages, marche sans connexion.
 - **17 au 19/10/2026** : carte, vérification d'identité, confiance, notifications, le sac devient le personnage de l'application.

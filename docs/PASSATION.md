@@ -2259,6 +2259,12 @@ Accord du propriétaire : « Allons directement dans la production » (25/10/202
 - Retirés de la fiche (choix de la maquette) : calendrier de récolte, bloc des prix, barre J'ai / Je cherche, « Écrire », « Acheter à plusieurs », « Signaler » sur la carte (toujours dans l'écran Acheter). Gardés : alerte du produit et partage.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur.
 
+## 17/11/2026 · Prix du moment : une seule zone, choisie dans une feuille
+
+- Décision du propriétaire : la rangée « Tout le pays » + 3 pastilles de villes devient un seul bouton « Tout le pays ▾ » (il affiche la ville choisie). Branche `claude/prix-ville`, aucune base touchée, aucun schéma. Cache `mgci-v326`, `css/v2.css?v=20261117p1`.
+- La feuille (`MDGFeuille`, méthode `pxZones()` de `application.dc.html`) : ma ville d'abord, **même sans offre** (choix logique : on la cherche toujours là ; sans offre, elle montre « Aucune offre », et la choisir montre ses demandes ou « Pas encore d'annonce avec un prix dans cette zone ») ; puis Tout le pays (total des offres) ; puis toutes les villes qui ont des offres, triées par nombre, chacune avec sa pastille `.nbul` ; champ « Chercher une ville » (sans accents) quand il y a plus de 8 villes. Choisir ferme la feuille et filtre comme avant (`v2pxZone`). Villes ramenées par `MDGVilles.ref` (Cocody, Yopougon → Abidjan).
+- Vérifié (Playwright, iPhone 13 et 320 px, clair et sombre, fausses offres seulement dans le navigateur) : aucune erreur console, bouton de 44 px, filtre et recherche justes ; pastille sombre sur `--lin-2` (contraste 8,9:1). Capture : `docs/brief-design/captures/prix-ville-feuille-clair.jpg`.
+
 ## 16/11/2026 · Carte du réseau : la logique de Yango
 
 - Décision du propriétaire (« ok », 16/11/2026) : la carte de l'application suit la logique de Yango et non plus celle du panneau de la maquette (lot 9 du 13/11/2026). Commit `d93e036` sur la branche `claude/carte-yango`, aucune base touchée, aucun schéma. Cache `mgci-v325`. Recherche préalable (sources publiques : aide officielle Yango CI, système de design Uber) : rapport dans le scratchpad de la session, `yango-logique.md`.

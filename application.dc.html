@@ -63,7 +63,7 @@ return{charger:charger,pret:function(){return !prets;},quand:function(f){if(pret
 <link rel="stylesheet" href="css/mgci-tokens.css?v=20261113r1">
 <link rel="stylesheet" href="css/mgci-app.css?v=20261116y1">
 <link rel="stylesheet" href="css/sombre.css?v=20261115p1">
-<link rel="stylesheet" href="css/v2.css?v=20261116y1">
+<link rel="stylesheet" href="css/v2.css?v=20261117p1">
 <link rel="stylesheet" href="css/v2-compte.css?v=20261114g3">
 <link rel="stylesheet" href="css/v2-equipe.css?v=20261114g3">
 <link rel="stylesheet" href="v3/ux.css?v=20261115p1">
@@ -126,7 +126,7 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
     <h1 class="v2-h1">Prix du <em>moment</em></h1>
     <p class="v2-px-sous">Ce que le marché observe sur les offres publiées. Jamais le prix d’un seul vendeur.</p>
     <div class="v2-px-liens"><button onClick="{{ v2.versTous }}">Tous les produits</button><button onClick="{{ v2.versAnnee }}">L’année du marché</button></div>
-    <div class="v2-px-zones" role="group" aria-label="Zone"><sc-for list="{{ v2.pxZones }}" as="z" hint-placeholder-count="2"><button aria-pressed="{{ z.on }}" onClick="{{ z.go }}">{{ z.l }}</button></sc-for></div>
+    <div class="v2-px-zones"><button class="v2-px-zone" aria-haspopup="dialog" aria-label="{{ v2.pxZoneLab }}" onClick="{{ v2.pxZoneOuvrir }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-6-5.6-6-11a6 6 0 0 1 12 0c0 5.4-6 11-6 11Z"></path><circle cx="12" cy="10" r="2.2"></circle></svg><span class="t">{{ v2.pxZoneL }}</span><svg class="ch" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></button></div>
     <div>
       <sc-for list="{{ v2.pxRows }}" as="r" hint-placeholder-count="4"><div class="v2-px-r"><button class="v2-px-l" onClick="{{ r.go }}" aria-label="{{ r.lab }}"><span class="im"><img sc-camel-src="{{ r.img }}" alt="" loading="lazy"></span>
         <span class="tx"><span class="l0"><b>{{ r.nom }}</b><small>{{ r.u }}</small></span><sc-if value="{{ r.ok }}" hint-placeholder-val="{{ true }}"><span class="jauge" aria-hidden="true"><i style="left:{{ r.bl }};width:{{ r.bw }}"></i><s style="left:{{ r.bm }}"></s></span></sc-if><small>{{ r.sub }}</small></span>
@@ -1284,7 +1284,8 @@ class Component extends DCLogic {
       ...(() => { // Prix du moment (lot 8) : par produit, les prix des offres dans l'unité la plus fréquente ; zones = les villes qui ont le plus d'offres
         const V = window.MDGVilles, refV = c => String((V && V.ref ? V.ref(c) : c) || ''), parVille = {};
         off.forEach(o => { const v = refV(o.city); if (v) parVille[v] = (parVille[v] || 0) + 1; });
-        const villes = Object.keys(parVille).sort((a, b) => parVille[b] - parVille[a]).slice(0, 3), zone = villes.includes(S.v2pxZone) ? S.v2pxZone : '';
+        // une seule zone choisie dans la feuille (17/11) : ma ville, Tout le pays, puis les villes qui ont des offres ; Abidjan reste une ville (MDGVilles.ref)
+        const maV = refV(this.me && this.me.city), zone = S.v2pxZone && (parVille[S.v2pxZone] || S.v2pxZone === maV) ? S.v2pxZone : '';
         const src = zone ? off.filter(o => refV(o.city) === zone) : off, dsrc = zone ? dem.filter(d => refV(d.city) === zone) : dem, G = {};
         src.forEach(o => { const g = G[o.slug] || (G[o.slug] = { u: {}, l: [] }); if (o.price > 0) { g.u[o.unit] = (g.u[o.unit] || 0) + 1; g.l.push(o); } });
         dsrc.forEach(d => { if (!G[d.slug]) G[d.slug] = { u: { [d.unit]: 0 }, l: [] }; });
@@ -1305,7 +1306,7 @@ class Component extends DCLogic {
             acc, accLab: acc ? 'Accord possible : un acheteur propose ' + A.fmt(maxB) + ' F, un vendeur demande ' + A.fmt(Math.min(...pxA)) + ' F' : '',
             zones: zonesDe(slug, P.name), zAria: P.name + ' : prix par zone et tendance' }; })
           .sort((a, b) => (b.act - a.act) || (b.n - a.n) || a.nom.localeCompare(b.nom, 'fr'));   // par activité (offres et demandes), comme la maquette
-        return { pxZones: [{ l: 'Tout le pays', on: String(!zone), go: () => this.setState({ v2pxZone: '' }) }].concat(villes.map(v => ({ l: v, on: String(zone === v), go: () => this.setState({ v2pxZone: v }) }))),
+        return { pxZoneL: zone || 'Tout le pays', pxZoneLab: 'Zone : ' + (zone || 'tout le pays') + '. Changer de zone', pxZoneOuvrir: () => this.pxZones(parVille, maV, off.length, zone),
           pxRows: rows, pxVide: !rows.length, pxSeuil: SE.obs + ' prix de ' + SE.vendeurs + ' vendeurs sur ' + SE.jours + ' jours', versTous: () => this.push('categories'), versAnnee: () => this.push('annee') }; })(),
       versRecherche: () => { aller('recherche'); setTimeout(() => { const i = document.querySelector('[data-pg="home"] .v2-rech-in'); if (i) i.focus(); }, 60); },
       qInput: e => this.setState({ v2q: e.target.value }), qEffacer: () => { this.setState({ v2q: '' }); const i = document.querySelector('[data-pg="home"] .v2-rech-in'); if (i) i.focus(); },
@@ -1603,6 +1604,24 @@ class Component extends DCLogic {
   setLogo(d) { d = !!d; ls('mdg-app:logo-noir', d); this.setIcons(d); this.setState({ logoDark: d }); }
   // un seul seuil pour tout prix du marché (onglet Prix, accueil, recherche, fiche, jauge de Publier, « Le plus cher ») : MDGMarche.SEUIL, 5 prix de 3 vendeurs sur 30 jours ;
   // l = des offres (prix, unité, vendeur, date) ; u = l'unité (sinon la plus fréquente) ; médiane et fourchette seulement quand ok
+  // la feuille « Zone » du Prix du moment : ma ville d'abord (même sans offre : on voit ses demandes ou que rien n'y est encore publié),
+  // puis Tout le pays, puis les villes qui ont des offres, de la plus fournie à la moins fournie ; recherche au-delà de 8 villes
+  pxZones(parVille, maV, total, zone) {
+    if (!window.MDGFeuille) return;
+    const F = MDGFeuille.ouvrir({ label: 'Choisir une zone' }), esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const sansAcc = t => String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const autres = Object.keys(parVille).filter(v => v !== maV).sort((a, b) => (parVille[b] - parVille[a]) || a.localeCompare(b, 'fr'));
+    const L = (maV ? [{ v: maV, l: maV, s: 'Ma ville', n: parVille[maV] || 0 }] : []).concat([{ v: '', l: 'Tout le pays', n: total }], autres.map(v => ({ v, l: v, n: parVille[v] })));
+    const nb = n => n + (n > 1 ? ' offres' : ' offre');
+    F.corps.innerHTML = '<h2 class="fl-h">Choisir une <em>zone</em></h2>' + (autres.length > 8 ? '<input type="search" class="pxz-q" placeholder="Chercher une ville" aria-label="Chercher une ville" autocomplete="off">' : '')
+      + '<div class="pxz-l">' + L.map((z, i) => `<button type="button" class="fl-ch pxz" data-i="${i}" aria-pressed="${z.v === zone}" aria-label="${esc(z.l + (z.s ? ', ma ville' : '') + ', ' + (z.n ? nb(z.n) : 'aucune offre'))}"><span class="rb" aria-hidden="true"><i></i></span><span class="l">${esc(z.l)}${z.s ? `<small>${z.s}</small>` : ''}</span>${z.n ? `<span class="nbul" aria-hidden="true">${z.n}</span>` : '<span class="s" aria-hidden="true">Aucune offre</span>'}</button>`).join('')
+      + '</div><p class="fl-pied pxz-vide" hidden>Aucune ville avec des offres à ce nom.</p>';
+    F.corps.querySelectorAll('.pxz').forEach(b => { b.onclick = () => { F.fermer(); this.setState({ v2pxZone: L[+b.dataset.i].v }); }; });
+    const q = F.corps.querySelector('.pxz-q');
+    if (q) q.oninput = () => { const t = sansAcc(q.value.trim()); let k = 0;
+      F.corps.querySelectorAll('.pxz').forEach(b => { const z = L[+b.dataset.i], on = !t || sansAcc(z.l).includes(t); b.hidden = !on; if (on) k++; });
+      F.corps.querySelector('.pxz-vide').hidden = k > 0; };
+  }
   seuil() { return (window.MDGMarche && MDGMarche.SEUIL) || { obs: 5, vendeurs: 3, jours: 30 }; }
   pxMarche(l, u) { const SE = this.seuil(), t = Date.now() - SE.jours * 864e5, pr = l.filter(o => o.price > 0);
     if (!u) { const c = {}; pr.forEach(o => c[o.unit] = (c[o.unit] || 0) + 1); u = Object.keys(c).sort((a, b) => c[b] - c[a])[0] || ''; }

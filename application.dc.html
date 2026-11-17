@@ -153,7 +153,7 @@ select[aria-label="Ville ou village"]:disabled{opacity:.55;cursor:not-allowed}
     <sc-if value="{{ v2.resOn }}" hint-placeholder-val="{{ false }}"><div class="v2-rech-sec" style="gap:0"><span class="v2-rech-t" style="margin-bottom:4px">{{ v2.resT }}</span>
       <sc-for list="{{ v2.res }}" as="r" hint-placeholder-count="0"><button class="v2-res" onClick="{{ r.go }}"><span class="im"><img sc-camel-src="{{ r.img }}" alt="" loading="lazy"></span><span class="tx"><b>{{ r.nom }}</b><small>{{ r.sub }}</small></span><sc-if value="{{ r.mOn }}" hint-placeholder-val="{{ false }}"><span class="m"><b>{{ r.m }}</b><small>{{ r.u }}</small></span></sc-if></button></sc-for>
     </div></sc-if>
-    <sc-if value="{{ v2.rienOn }}" hint-placeholder-val="{{ false }}"><div class="v2-rien"><b>« {{ v2.qJoli }} » n’est pas encore dans nos produits</b><span>Demandez son ajout : l’équipe vous prévient dès qu’il est ajouté.</span><button onClick="{{ v2.creerDemande }}">Demander l’ajout de « {{ v2.qJoli }} »</button></div></sc-if>
+    <sc-if value="{{ v2.rienOn }}" hint-placeholder-val="{{ false }}"><div class="v2-rien"><b>« {{ v2.qMot }} » n’est pas encore dans nos produits</b><span>Demandez son ajout : l’équipe vous prévient dès qu’il est ajouté.</span><button onClick="{{ v2.creerDemande }}"><span>Demander l’ajout de « {{ v2.qMot }} »</span></button></div></sc-if>
   </div>
   </div>
   <div style="display:{{ accA }}">
@@ -1290,7 +1290,8 @@ class Component extends DCLogic {
     // aucun produit reconnu : demander son ajout (schéma 104) ; le mot est compté par le serveur, sans donnée personnelle
     const PD = window.MDGProduits, rienQ = !!qt && !res.length;
     if (PD) { if (rienQ) PD.vide((ps && ps.rest) || qt); else PD.annulerVide(); }
-    const demanderAjout = () => { retenir(qt); const n = ((ps && ps.rest) || qt).trim(); if (PD) PD.ouvrir({ nom: n.charAt(0).toUpperCase() + n.slice(1), choisir: slug => this.openFiche(slug) }); };
+    const motQ = ((ps && ps.rest) || qt).trim(), qMot = motQ.charAt(0).toUpperCase() + motQ.slice(1);
+    const demanderAjout = () => { retenir(qt); if (PD) PD.ouvrir({ nom: qMot, choisir: slug => this.openFiche(slug) }); };
     const versDemande = () => { retenir(qt); const pu = uC && A.UNITS && A.UNITS.includes(uC) ? uC : '';
       this.setState(s => ({ df: Object.assign({}, s.df, pslug ? { slug: pslug } : {}, ps && ps.quantity ? { qty: String(ps.quantity) } : {}, pu ? { unit: pu } : {}, loc && loc.regionSlug ? { region: loc.regionSlug, city: loc.kind === 'ville' ? this.accord(loc.regionSlug, loc.name) : s.df.city } : {}) })); this.push('demande'); };
     const comprisOn = !!(pslug && (ps.quantity || loc));
@@ -1342,7 +1343,7 @@ class Component extends DCLogic {
       qKey: e => { if (e.key !== 'Enter') return; e.target.blur(); if (res.length === 1 && !comprisOn) res[0].go(); },
       recOn: !qt && recentes.length > 0, recentes: recentes.map(l => ({ l, go: () => this.setState({ v2q: l }) })),
       comprisOn, comprisT, comprisVoir: () => { retenir(qt); this.setState({ aq: qt }); this.push('acheter'); }, comprisDemande: versDemande,
-      resOn: res.length > 0, res, resT: !qt ? 'Les plus échangés' : res.length + (res.length > 1 ? ' produits' : ' produit'), rienOn: rienQ, creerDemande: demanderAjout,
+      resOn: res.length > 0, res, resT: !qt ? 'Les plus échangés' : res.length + (res.length > 1 ? ' produits' : ' produit'), rienOn: rienQ, qMot, creerDemande: demanderAjout,
       choixO: () => { fermer(); this.push('vendre'); }, choixD: () => { fermer(); this.push('demande'); },
       choixP: () => { fermer(); if (window.MDGProduits) MDGProduits.ouvrir({ choisir: slug => this.openFiche(slug) }); } };
   }

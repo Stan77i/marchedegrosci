@@ -278,7 +278,7 @@
     return `<p class="eq-sous">Réponse attendue sous ${h} h.</p>
       ${L.length ? `<div class="eq-l">${L.map(carte).join('')}</div>` : vide('Aucune demande de produit à traiter.')}
       <h2 class="eq-h2">Cherché sans résultat</h2>
-      ${V.length ? `<div class="eq-rangs">${V.map(v => `<div class="eq-rang"><div class="eq-tt"><b>${esc(v.mot)}</b><small>dernière fois ${ago(v.dernier_le)}</small></div><span class="nbul" aria-label="${v.n} recherche${v.n > 1 ? 's' : ''}">${v.n}</span></div>`).join('')}</div>` : vide('Aucun mot pour l’instant.')}
+      ${V.length ? `<div class="eq-rangs">${V.map(v => `<div class="eq-rang"><div class="eq-tt"><b>${esc(v.mot)}</b><small>dernière fois ${ago(v.dernier_le)}</small></div><span class="nbul d" aria-label="${v.n} recherche${v.n > 1 ? 's' : ''}">${v.n}</span></div>`).join('')}</div>` : vide('Aucun mot pour l’instant.')}
       ${rec.length ? `<h2 class="eq-h2">Réponses récentes</h2><div class="eq-rangs">${rec.map(d => `<div class="eq-rang"><div class="eq-tt"><b>${esc(d.nom)}</b><small>${esc(d.motif || '')}</small></div><span class="eq-dr">${esc((EPROD[d.statut] || ['', d.statut])[1])}</span></div>`).join('')}</div>` : ''}`;
   };
   const famOpts = sel => (window.MDG && MDG.categories || []).slice().sort((a, b) => (a.order || 0) - (b.order || 0)).map(c => `<option value="${esc(c.slug)}"${c.slug === sel ? ' selected' : ''}>${esc(c.name)}</option>`).join('');
@@ -290,8 +290,8 @@
       const r = await feuille('Ajouter « ' + d.nom + ' » au marché. Le demandeur est prévenu.',
         `<label class="eq-lab">Nom<input name="nom" maxlength="60" value="${esc(d.nom)}"></label>
          <label class="eq-lab">Famille<select name="fam">${famOpts(d.famille)}</select></label>
-         <label class="eq-lab">Unité <i>· facultatif</i><select name="un"><option value="">—</option>${((window.MDGApp && MDGApp.UNITS) || []).map(u => `<option${u === d.unite ? ' selected' : ''}>${esc(u)}</option>`).join('')}</select></label>
-         <label class="eq-lab">Noms locaux <i>· séparés par des virgules</i><input name="al" maxlength="200" value="${esc(d.nom_local || '')}"></label>
+         <label class="eq-lab"><span>Unité <i>· facultatif</i></span><select name="un"><option value="">—</option>${((window.MDGApp && MDGApp.UNITS) || []).map(u => `<option${u === d.unite ? ' selected' : ''}>${esc(u)}</option>`).join('')}</select></label>
+         <label class="eq-lab"><span>Noms locaux <i>· séparés par des virgules</i></span><input name="al" maxlength="200" value="${esc(d.nom_local || '')}"></label>
          <label class="eq-lab">Pourquoi l’accepter ?<textarea name="m" maxlength="300" rows="2" placeholder="Par exemple : produit de gros courant"></textarea></label>`,
         { ok: 'Ajouter', valider: v => { const s = slugDe(v.nom); return v.nom.length < 2 ? 'Écrivez le nom.' : !s ? 'Nom invalide.' : pris(s) ? 'Ce produit existe déjà : choisissez « C’est déjà un produit ».' : v.m.length < 3 ? 'Écrivez la raison en quelques mots.' : ''; } });
       if (!r) return;

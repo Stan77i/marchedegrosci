@@ -170,7 +170,7 @@ html[data-theme=sombre] :is(.v2-compris .pl, .v2-rien button) { color: #171512; 
 .v2-rien { background: var(--carte); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
 .v2-rien > b { font-size: 19px; font-weight: 700; line-height: 1.25; }
 .v2-rien > span { font-size: 14.5px; color: var(--texte-3); line-height: 1.45; }
-.v2-rien button { display: flex; align-items: center; justify-content: center; height: 52px; border-radius: 999px; font: inherit; font-weight: 700; font-size: 16px; }
+.v2-rien button { display: flex; align-items: center; justify-content: center; min-height: 52px; padding: 8px 20px; box-sizing: border-box; border-radius: 999px; font: inherit; font-weight: 700; font-size: 16px; line-height: 1.25; text-align: center; }
 
 /* ——— lot 5 : fiche produit ——— */
 .v2-fp { display: flex; flex-direction: column; gap: 16px; padding: 4px 16px 32px; }

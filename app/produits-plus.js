@@ -115,8 +115,8 @@
       <label class="eq-lab" data-z-fam>Famille<select name="fam" required><option value="">Choisir</option>${familles().map(c => `<option value="${esc(c.slug)}">${esc(c.name)}</option>`).join('')}</select></label>
       <label class="eq-lab" data-z-prod hidden>C’est un autre nom de<select name="slug"><option value="">Choisir le produit</option>${optsProduits(o.slug)}</select></label>
       <div class="pd-duo" data-z-plus>
-        <label class="eq-lab">Unité <i>· facultatif</i><select name="unite"><option value="">—</option>${UNITES().map(u => `<option>${esc(u)}</option>`).join('')}</select></label>
-        <label class="eq-lab">Nom local <i>· facultatif</i><input name="local" maxlength="60" autocomplete="off"></label>
+        <label class="eq-lab"><span>Unité <i>· facultatif</i></span><select name="unite"><option value="">—</option>${UNITES().map(u => `<option>${esc(u)}</option>`).join('')}</select></label>
+        <label class="eq-lab"><span>Nom local <i>· facultatif</i></span><input name="local" maxlength="60" autocomplete="off"></label>
       </div>
       <p class="pd-deja" data-deja hidden></p>
       <p class="eq-ferr" role="alert"></p>
@@ -135,11 +135,11 @@
       f.querySelectorAll('[data-ty]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.ty === st.type)));
       const al = st.type === 'alias';
       f.querySelector('[data-l-nom]').textContent = al ? 'Nom local' : 'Nom du produit';
-      f.querySelector('[data-z-fam]').hidden = al; f.querySelector('[data-z-prod]').hidden = !al; f.querySelector('[data-z-plus]').hidden = al;
       const t = st.trouve;
+      f.querySelector('[data-z-fam]').hidden = al || !!t; f.querySelector('[data-z-prod]').hidden = !al; f.querySelector('[data-z-plus]').hidden = al || !!t;
       deja.hidden = !t;
       if (t) deja.innerHTML = t.moi ? 'Vous l’avez déjà demandé. Nous vous prévenons dès la réponse.'
-        : `Déjà demandé <span class="nbul" aria-label="par ${t.soutiens} membre${t.soutiens > 1 ? 's' : ''}">${esc(String(t.soutiens))}</span>`;
+        : `Déjà demandé par <span class="nbul d">${esc(String(t.soutiens))}</span> membre${t.soutiens > 1 ? 's' : ''}`;
       ok.textContent = t ? (t.moi ? 'Déjà demandé' : 'Moi aussi') : al ? 'Proposer ce nom' : 'Envoyer la demande';
       ok.disabled = st.envoi || !!(t && t.moi);
     };

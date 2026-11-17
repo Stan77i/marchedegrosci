@@ -156,3 +156,4 @@
 .eq-pdl span { padding: 4px 10px; border-radius: 999px; background: var(--lin); font-size: 13px; color: var(--texte-2); }
 .eq-h2 { margin: 22px 0 8px; font: 700 16px/1.25 Jost, sans-serif; }
 .eq-rang .nbul { flex: none; }
+.pd-deja .nbul { margin: 0; animation: none; }

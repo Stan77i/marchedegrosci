@@ -7,6 +7,7 @@ Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22,
 ## 17/11/2026
 
 - Onglet Prix, « Prix du moment » : la rangée « Tout le pays » + 3 villes devient un seul bouton « Tout le pays ▾ » (il affiche la ville choisie). Il ouvre une feuille du bas : ma ville d'abord (même sans offre), Tout le pays, puis toutes les villes qui ont des offres, triées par nombre d'offres (pastille), recherche au-delà de 8 villes. Abidjan reste une seule ville. Cache `mgci-v326`.
+- L'année du marché refaite (« ok pour tout » du propriétaire) : le mois se choisit (flèches ‹ › et bande des 12 mois, mois courant marqué, soudure mai-août de FEWS NET en trait fin) ; phrase « Novembre : 12 récoltes en cours, 2 arrivent bientôt » (nombres calculés) ; produits regroupés (zones sur une ligne) en 3 groupes : En récolte, Arrive bientôt (1 ou 2 mois), Hors récolte (replié) ; sur chaque ligne une flèche avec sa raison et sa source (« Récolte : souvent moins cher · FAO », « Hors récolte : souvent plus cher · IDESSA », « Fin de récolte : se raréfie »), aucune flèche pour cacao, café et cajou (prix fixé par l'État) ; pastilles d'offres et de demandes en cours ; toucher la ligne ouvre la fiche, la flèche ⌄ ouvre le volet (année par zone, source, « M'alerter des nouvelles annonces » par les alertes produits existantes). Un seul bloc « Ce qui se demande maintenant » (produit, ville principale, nombre de demandes). Retirés : pastilles « En pleine récolte », « Le plus cher au kilo », « Quand ça se demande », grille des 40 lignes. Cache `mgci-v326`.
 
 ## 16/11/2026
 

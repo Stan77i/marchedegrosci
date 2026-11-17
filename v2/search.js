@@ -53,23 +53,27 @@
     ['prix', ['prix', 'combien', 'tarif', 'cout']],
   ].flatMap(([intent, ps]) => ps.map(p => ({ intent, words: p.split(' ') }))).sort((a, b) => b.words.length - a.words.length);
 
-  // Index
-  const terms = [];
-  products.forEach(p => {
-    const seen = new Set();
-    const add = (surface, via) => { const key = termKey(surface), k = key.join(' '); if (!k || seen.has(k)) return; seen.add(k); terms.push({ product: p, surface, via, key, words: tokenize(surface).map(t => t.norm).filter(w => !STOP.has(w)) }); };
-    add(p.name, 'nom');
-    const short = p.name.replace(/\s*\([^)]*\)\s*/g, ' ').trim(); if (short !== p.name) add(short, 'nom');
-    p.aliases.forEach(a => add(a, 'alias'));
-  });
-  const exact = new Map(); terms.forEach(t => { const k = t.key.join(' '); exact.set(k, [...(exact.get(k) || []), t]); });
+  // Index (refait par reconstruire() quand des produits ajoutés par l'équipe arrivent du serveur : app/produits-plus.js, schéma 104)
+  let terms = [], exact = new Map(), order = new Map();
+  function construire() {
+    terms = [];
+    products.forEach(p => {
+      const seen = new Set();
+      const add = (surface, via) => { const key = termKey(surface), k = key.join(' '); if (!k || seen.has(k)) return; seen.add(k); terms.push({ product: p, surface, via, key, words: tokenize(surface).map(t => t.norm).filter(w => !STOP.has(w)) }); };
+      add(p.name, 'nom');
+      const short = p.name.replace(/\s*\([^)]*\)\s*/g, ' ').trim(); if (short !== p.name) add(short, 'nom');
+      (p.aliases || []).forEach(a => add(a, 'alias'));
+    });
+    exact = new Map(); terms.forEach(t => { const k = t.key.join(' '); exact.set(k, [...(exact.get(k) || []), t]); });
+    order = new Map(products.map((p, i) => [p.slug, i]));
+  }
+  construire();
   const cities = new Map(); producers.forEach(p => { if (!cities.has(p.city)) cities.set(p.city, p.regionSlug); });
   // toutes les villes et villages des districts (app/villes.js), pas seulement celles des producteurs d'exemple
   if (window.MDGVilles) window.MDGVilles.toutes().forEach(c => { if (!cities.has(c.nom)) cities.set(c.nom, c.region); });
   const places = [...cities].map(([name, regionSlug]) => ({ name, kind: 'ville', regionSlug, key: termKey(name) }))
     .concat(regions.map(r => ({ name: r.name, kind: 'region', regionSlug: r.slug, key: termKey(r.name) })));
   const regionName = new Map(regions.map(r => [r.slug, r.name]));
-  const order = new Map(products.map((p, i) => [p.slug, i]));
   const rankTerm = t => (t.via === 'nom' ? 0 : 1000) + t.key.length * 10;
   const toHit = (t, match) => ({ slug: t.product.slug, name: t.product.name, categorySlug: t.product.categorySlug, matchedTerm: t.surface, via: t.via, match });
   function dedupe(ts, match) {
@@ -164,5 +168,5 @@
       .slice(0, limit).map(({ term }) => ({ slug: term.product.slug, name: term.product.name, categorySlug: term.product.categorySlug, matchedAlias: term.via === 'alias' ? term.surface : null }));
   }
   function km(a, b) { const R = 6371, r = x => x * Math.PI / 180, dl = r(b[0] - a[0]), dn = r(b[1] - a[1]); const h = Math.sin(dl / 2) ** 2 + Math.cos(r(a[0])) * Math.cos(r(b[0])) * Math.sin(dn / 2) ** 2; return Math.round(2 * R * Math.asin(Math.sqrt(h))); }
-  window.MDG.search = { parse, suggest, normalizeText, km };
+  window.MDG.search = { parse, suggest, normalizeText, km, reconstruire: construire };
 })();

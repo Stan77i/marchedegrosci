@@ -31,6 +31,8 @@
 // 18. par la base (pg_cron « mdg-notif », public.notif_tick, schéma 88) avec { lots: true } : les messages en file d'attente
 //     (nouvelles offres et demandes, groupe bientôt complet, veille de la date limite, produit à racheter), regroupés par
 //     personne et par sujet : « 3 nouvelles offres : Tomate ».
+// v31 (17/11/2026, schéma 104, NON DÉPLOYÉE) : réponse de l'équipe à une demande de produit (catégorie « produits ») :
+//     produit ajouté, déjà un produit, nom local ajouté, demande refusée (avec le motif). Le lien ouvre Publier avec le produit.
 // v30 (25/10/2026, schémas 102a à 102d et 103a à 103c réunis, NON DÉPLOYÉE) : réunit les textes de la v28 (commandes, 103)
 //     et de la v29 (participation négociée, 102d). Aucun texte retiré.
 // v29 (25/10/2026, schéma 102d, NON DÉPLOYÉE) : la participation devient une négociation à trois : « Le vendeur contre-propose
@@ -754,6 +756,20 @@ Deno.serve(async (req) => {
               M(T45(`Bientôt plus ${de(lib)} ?`, "Bientôt à racheter ?"), `Vous en prenez environ tous les ${nf(j)} jours. Voyez les offres du jour.`, "renouveler-" + l.slug),
               M(T45(`${lib} : bientôt à racheter ?`, "Bientôt à racheter ?"), `Vous en commandez environ tous les ${nf(j)} jours. Rien n'est commandé sans vous.`, "renouveler-" + l.slug),
             ][i(2)];
+          }
+          // schéma 104 : réponse de l'équipe à une demande de produit (au demandeur et à ceux qui ont dit « Moi aussi »)
+          case "produit_ajoute":
+            return M(T45(`${lib} est ajouté au marché`, `${lib} est ajouté`, "Votre produit est ajouté"),
+              "Vous pouvez publier votre annonce. Touchez pour commencer.", "produit-" + d.demande);
+          case "produit_existant":
+            return M(T45(`« ${lib} » est déjà un produit`, "Ce produit existe déjà"),
+              "La recherche le reconnaît maintenant. Touchez pour publier.", "produit-" + d.demande);
+          case "alias_ajoute":
+            return M(T45(`Nom local ajouté : ${lib}`, "Nom local ajouté"), "La recherche le reconnaît maintenant. Merci.", "produit-" + d.demande);
+          case "produit_refuse": {
+            const mo = String(d.motif || "").trim();
+            return M(T45(`${lib} : demande refusée`, "Demande de produit refusée"),
+              B80(mo ? `Motif : ${mo}` : "", mo ? `Motif : ${coupe(mo, 70)}` : "", "Voyez le motif dans Activité."), "produit-" + d.demande);
           }
         }
         return null;

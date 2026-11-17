@@ -44,6 +44,15 @@ html[data-theme=sombre] .v2-tab .v2-pub { color: #171512; box-shadow: 0 6px 16px
 .v2-duo.v2-duo-ch b { font-size: 24px; font-weight: 800; }
 .v2-duo.v2-duo-ch small { font-size: 14px; font-weight: 400; }
 .v2-ch-note { margin: 12px 0 0; font-size: 13.5px; color: var(--texte-3); }
+/* 3e ligne de la feuille Publier (schéma 104) : demander un produit absent du catalogue */
+.v2-ch-nv { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; margin: 10px 0 0; padding: 0 16px; box-sizing: border-box; border: 1px solid var(--t14); border-radius: 18px; background: var(--carte); color: var(--encre); font: 600 16px/1.2 Jost, sans-serif; text-align: left; cursor: pointer; }
+.v2-ch-nv span { flex: 1; min-width: 0; }
+/* fin de la liste des produits : « Mon produit n'est pas dans la liste » */
+.pk-rien { margin: 18px 20px 4px; font-size: 15px; line-height: 1.45; color: var(--texte-2); overflow-wrap: anywhere; }
+.pk-absent { display: flex; align-items: center; gap: 12px; width: calc(100% - 28px); min-height: 60px; margin: 14px 14px 0; padding: 8px 16px; box-sizing: border-box; border: 1.5px dashed var(--t30); border-radius: 18px; background: transparent; color: var(--encre); font-family: inherit; text-align: left; cursor: pointer; }
+.pk-absent span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pk-absent b { font-size: 15.5px; font-weight: 700; }
+.pk-absent small { font-size: 13.5px; color: var(--texte-3); }
 
 .v2-acc { display: flex; flex-direction: column; gap: 24px; padding: 14px 16px 0; }
 .v2-tete { display: flex; align-items: center; gap: 12px; }

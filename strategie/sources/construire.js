@@ -77,7 +77,10 @@ function remplir(html, V, marche) {
     // briques du cube : {{nb_a}}, {{nb_v}}… = nombre de codes A1, V1… écrits dans le modèle
     const nb = {}; for (const m of brut.matchAll(/class="pc f-([a-z])">[A-Z]\d+</g)) nb['nb_' + m[1]] = (nb['nb_' + m[1]] || 0) + 1;
     const corps = remplir(brut, Object.assign({}, V, nb), marche);
-    const h = crypto.createHash('sha256').update(style + corps).digest('hex').slice(0, 16);
+    // les images du modèle (src="strategie/…") comptent aussi : une capture changée refait le PDF
+    const hh = crypto.createHash('sha256').update(style + corps);
+    for (const m of corps.matchAll(/src="([^":]+)"/g)) hh.update(fs.readFileSync(path.join(RACINE, m[1])));
+    const h = hh.digest('hex').slice(0, 16);
     const pdf = path.join(SORTIE, d.pdf);
     if (emp[d.pdf] && emp[d.pdf].h === h && fs.existsSync(pdf)) { console.log('inchangé :', d.pdf); continue; }
     const date = dateFr(Date.now());

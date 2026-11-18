@@ -1,0 +1,251 @@
+<style>
+@page{size:297mm 167mm;margin:0}
+.vi{font-variant-numeric:lining-nums tabular-nums}
+.vi h2{font-size:24pt;margin-bottom:5mm}
+.vi h1 em,.vi h2 em{font-style:italic;font-weight:800;color:var(--vert);background:linear-gradient(transparent 64%,rgba(242,194,48,.8) 64%);padding:0 .6mm}
+.vi.fonce h1 em,.vi.fonce h2 em{color:var(--mais);background:none;padding:0}
+.vi .rang{display:flex;gap:9mm;flex:1;min-height:0}
+.vi .texte{flex:1;min-width:0;display:flex;flex-direction:column}
+.vi .lead{font-size:15.5pt;line-height:1.4;margin-bottom:5mm}
+.vi .centre{justify-content:center}
+.vi .cote{display:flex;flex-direction:column;justify-content:center}
+.vi p{font-size:11.4pt;line-height:1.5}
+.tel{background:#171512;border-radius:6.5mm;padding:1.5mm;box-shadow:0 1.6mm 4.5mm rgba(23,21,18,.16);flex:none}
+.tel img{display:block;width:100%;border-radius:5.2mm}
+.fonce .tel{background:#0B261D;box-shadow:0 0 0 .3mm rgba(243,239,228,.22)}
+.lg{font-size:8.6pt;color:var(--doux);line-height:1.35;margin-top:2.2mm}
+.fonce .lg{color:#C9C1AC}
+.lg b{display:block;color:var(--encre);font-size:10.6pt;margin-bottom:.4mm}
+.fonce .lg b{color:var(--creme)}
+.exemple{font-size:8.2pt;color:var(--doux);font-style:italic}
+.fonce .exemple{color:#C9C1AC}
+/* couverture */
+.couv2{display:flex;gap:10mm;height:100%}
+.couv2 .texte{justify-content:space-between}
+.couv2 h1{font-size:38pt;line-height:1.06;max-width:170mm}
+.couv2 .sous{font-size:13pt;color:#D9D2BF;margin-top:5mm}
+.sig{border-top:.3mm solid rgba(243,239,228,.25);padding-top:3.5mm;margin-bottom:5mm}
+.sig small{display:block;font-size:8.6pt;color:#C9C1AC;letter-spacing:.04em}
+.sig span{font-size:13pt;font-weight:600;color:var(--creme)}
+/* chaîne */
+.chaine{display:flex;flex-wrap:wrap;gap:2.2mm 0;margin:1mm 0 8mm;align-items:center}
+.chaine .br{flex-basis:100%;height:0;width:auto;background:none}
+.chaine span{font-size:11pt;font-weight:500;color:var(--vert);background:var(--carte);border:.3mm solid var(--trait);border-radius:10mm;padding:1mm 3.2mm;white-space:nowrap}
+.chaine i{width:3.2mm;height:.35mm;background:var(--vert2);opacity:.5;flex:none}
+.cite{font-size:13pt;line-height:1.5;color:var(--vert);font-weight:500;padding-top:5mm;border-top:.3mm solid var(--trait)}
+/* tableau */
+.besoins{width:100%;border-collapse:collapse;margin:0;font-size:12.2pt}
+.besoins th{font-size:9pt;color:var(--doux);font-weight:500;border-bottom:.4mm solid var(--vert);padding:0 3mm 2mm 0;letter-spacing:.02em}
+.besoins td{padding:3.35mm 3mm 3.35mm 0;border-bottom:.25mm solid var(--trait);vertical-align:middle}
+.besoins td:first-child{font-weight:600;color:var(--vert);width:47%}
+.besoins td:last-child{color:var(--encre)}
+.besoins tr:last-child td{border-bottom:none}
+/* moyens */
+.moyens{display:grid;grid-template-columns:1fr 1.25fr;gap:14mm;flex:1;align-items:start;align-content:center;padding-bottom:6mm}
+.moyens .bloc>small{display:block;font-size:11pt;color:#C9C1AC;margin-bottom:2mm}
+.montant{font-size:46pt;font-weight:700;line-height:1;color:var(--mais);white-space:nowrap}
+.montant small{display:block;margin:2mm 0 0;font-size:15pt;font-weight:500;color:var(--creme)}
+.moyens p{font-size:11.8pt;color:#D9D2BF;margin-top:4mm}
+.postes{columns:2;column-gap:8mm;margin:4mm 0 0;padding:0;list-style:none}
+.postes li{font-size:11.4pt;color:var(--creme);padding:1.4mm 0;border-bottom:.25mm solid rgba(243,239,228,.14);break-inside:avoid;margin:0}
+/* conditions */
+.cond{display:grid;grid-template-columns:repeat(3,1fr);flex:1;min-height:0}
+.cond>div{padding:0 7mm;border-left:.3mm solid var(--trait);display:flex;flex-direction:column}
+.cond>div:first-child{padding-left:0;border-left:none}
+.cond>div:last-child{padding-right:0}
+.cond .n{font-size:30pt;font-weight:700;color:var(--vert);line-height:1}
+.cond h3{font-size:15pt;color:var(--vert);margin:1.5mm 0 2.5mm;font-weight:700}
+.cond p{font-size:11.6pt;line-height:1.48;margin-bottom:2.4mm}
+.but{margin-top:auto;background:var(--vert);color:var(--creme);border-radius:3mm;padding:3mm 4mm;font-size:10.4pt;line-height:1.4}
+.but small{display:block;font-size:8.2pt;color:#C9C1AC;margin-bottom:.6mm}
+.but b{color:var(--mais);font-weight:700}
+.coches{list-style:none;padding:0;margin:0}
+.coches li{font-size:11pt;padding:.75mm 0 .75mm 5.5mm;position:relative;margin:0;line-height:1.35}
+.coches li::before{content:"";position:absolute;left:.6mm;top:2.25mm;width:2.4mm;height:1.2mm;border-left:.45mm solid currentColor;border-bottom:.45mm solid currentColor;transform:rotate(-45deg)}
+.coches li.bientot{color:var(--doux)}
+.coches li.bientot::before{width:1.8mm;height:1.8mm;border:.4mm solid currentColor;border-radius:50%;transform:none;top:1.9mm}
+/* confiance */
+.conf h3{font-size:10pt;color:var(--doux);font-weight:500;margin:0 0 1.5mm}
+.conf .coches li{font-size:12pt;padding:2mm 0 2mm 6mm;border-bottom:.25mm solid var(--trait)}
+.conf .coches li::before{top:3.7mm}
+.conf .coches li.bientot::before{top:3.3mm}
+.conf .coches li b{color:var(--vert)}
+.conf .coches li.bientot b{color:var(--encre)}
+/* donnée */
+.lectures{display:grid;grid-template-columns:repeat(3,1fr);gap:0 6mm;margin:2mm 0 9mm}
+.lectures span{font-size:13.5pt;font-weight:600;color:var(--vert);padding:3mm 0 4mm;border-top:.3mm solid var(--vert)}
+/* fin */
+.fin{display:flex;flex-direction:column;height:100%}
+.fin .intro{font-size:15pt;color:#D9D2BF;margin-top:auto;margin-bottom:6mm;max-width:210mm}
+.marches{display:grid;grid-template-columns:1fr 1fr 1fr 1.5fr;gap:0;margin-bottom:12mm}
+.marches div{padding:4mm 5mm 0 0;border-top:.5mm solid var(--mais);margin-right:5mm}
+.marches small{display:block;font-size:9pt;color:#C9C1AC;margin-bottom:1.5mm}
+.marches b{font-size:20pt;font-weight:600;line-height:1.18;color:var(--creme);display:block}
+.marches div:last-child b{color:var(--mais);font-style:italic;font-weight:800}
+</style>
+
+<div class="d fonce vi">
+  <div class="couv2">
+    <div class="texte">
+      <div class="logo" style="font-size:20pt">marché<span class="g">de Gros</span></div>
+      <div>
+        <h1>MGCI : vision, besoins et <em>conditions de réussite</em></h1>
+        <p class="sous">Le marché de gros des produits vivriers de Côte d'Ivoire, dans le téléphone.</p>
+      </div>
+      <div class="sig"><small>Concepteur</small><span>Zirihi Boga Levis Stanislas (Stan Levis)</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;justify-content:center;align-items:center;margin-right:6mm">
+      <div class="tel" style="width:58mm"><img src="strategie/sources/img-vision/accueil.jpg" alt="Accueil de l'application : Que faites-vous aujourd'hui ?"></div>
+      <p class="exemple" style="margin:2.5mm 0 0">Aperçu avec des données d'exemple</p>
+    </div>
+  </div>
+  <div class="pied"><span>MGCI · Vision, besoins et conditions de réussite</span><span>{{date}}</span></div>
+</div>
+
+<div class="d vi">
+  <div class="rang">
+    <div class="texte centre">
+      <h2>L'<em>ambition</em></h2>
+      <p class="lead">MGCI a pour ambition d'accompagner la numérisation rapide du marché des produits issus de la terre, en commençant par le vivrier.</p>
+      <p>L'objectif est de digitaliser progressivement les échanges entre les villes et à l'intérieur des villes :</p>
+      <div class="chaine"><span>disponibilité</span><i></i><span>recherche</span><i></i><span>mise en relation</span><i></i><span>négociation</span><i></i><span>achat</span><i class="br"></i><span>paiement</span><i></i><span>transport</span><i></i><span>livraison</span><i></i><span>suivi des transactions</span></div>
+      <p class="cite">À terme, une grande partie des transactions commerciales sera digitalisée. MGCI veut donc anticiper cette transformation et construire dès maintenant une solution pensée pour les réalités du marché ivoirien, plutôt que simplement créer une application.</p>
+    </div>
+    <div class="cote" style="width:50mm;flex:none">
+      <div class="tel"><img src="strategie/sources/img-vision/carte.jpg" alt="Carte du réseau : offres de manioc près de vous"></div>
+      <p class="lg"><b>La carte du réseau</b>Les offres d'un produit, de la plus proche à la plus loin. Données d'exemple.</p>
+    </div>
+  </div>
+  <div class="pied"><span>MGCI · Vision, besoins et conditions de réussite</span><span class="n"></span></div>
+</div>
+
+<div class="d vi">
+  <div class="rang">
+    <div class="texte" style="flex:0 0 72mm">
+      <h2>L'application <em>aujourd'hui</em></h2>
+      <p>Elle est construite et en phase de test. Vendeurs et acheteurs se trouvent, comparent les prix, négocient et suivent la commande au même endroit.</p>
+      <p>Le paiement se fait à la livraison, hors application : aucun paiement n'est encore branché.</p>
+      <p class="exemple" style="margin-top:auto">Aperçus avec des données d'exemple.</p>
+    </div>
+    <div style="display:flex;gap:7mm;flex:1;justify-content:flex-end">
+      <div style="width:47mm"><div class="tel"><img src="strategie/sources/img-vision/fiche.jpg" alt="Fiche produit : offres de banane plantain"></div><p class="lg"><b>Comparer</b>Les offres d'un produit, de la ville au pays entier, la meilleure correspondance en tête.</p></div>
+      <div style="width:47mm"><div class="tel"><img src="strategie/sources/img-vision/proposer.jpg" alt="Proposer un prix"></div><p class="lg"><b>Négocier</b>Proposer un prix dans l'application. Numéros cachés : tout se dit ici.</p></div>
+      <div style="width:47mm"><div class="tel"><img src="strategie/sources/img-vision/commande.jpg" alt="Commande en route, mot secret du vendeur"></div><p class="lg"><b>Suivre</b>Total figé, mot secret du vendeur, chaque étape datée.</p></div>
+    </div>
+  </div>
+  <div class="pied"><span>MGCI · Vision, besoins et conditions de réussite</span><span class="n"></span></div>
+</div>
+
+<div class="d vi">
+  <h2>Les besoins pour le <em>lancement</em></h2>
+  <table class="besoins">
+    <tr><th>Besoin</th><th>Objectif</th></tr>
+    <tr><td>Finalisation technique, sécurité et corrections</td><td>Rendre la plateforme fiable et prête à l'exploitation</td></tr>
+    <tr><td>Serveurs, domaine et services techniques</td><td>Garantir sa disponibilité et sa continuité</td></tr>
+    <tr><td>Juridique, contrats, CGU et conformité</td><td>Sécuriser les relations entre les différents acteurs</td></tr>
+    <tr><td>Communication de lancement</td><td>Créer rapidement la visibilité et la demande</td></tr>
+    <tr><td>Terrain : vendeurs et acheteurs</td><td>Constituer un véritable marché autour de MGCI</td></tr>
+    <tr><td>Support et opérations pendant 6 mois</td><td>Accompagner les premiers utilisateurs et transactions</td></tr>
+    <tr><td>Logistique et tests transport</td><td>Structurer progressivement la circulation des produits</td></tr>
+    <tr><td>Imprévus et réserve opérationnelle</td><td>Maintenir la continuité du projet</td></tr>
+  </table>
+  <div class="pied"><span>MGCI · Vision, besoins et conditions de réussite</span><span class="n"></span></div>
+</div>
+
+<div class="d fonce vi">
+  <h2>Ce qu'il faut pour <em>lancer, puis tenir</em></h2>
+  <div class="moyens">
+    <div class="bloc">
+      <small>Budget de lancement estimatif</small>
+      <div class="montant">10 à 16<small>millions FCFA</small></div>
+      <p>Pour couvrir les 8 besoins du lancement : technique, serveurs, juridique, communication, terrain, support pendant 6 mois, logistique et réserve.</p>
+    </div>
+    <div class="bloc">
+      <small>Fonctionnement continu, au démarrage</small>
+      <div class="montant">1,5 à 2,5<small>millions FCFA par mois, environ</small></div>
+      <ul class="postes">
+        <li>Coordination opérationnelle</li><li>Terrain et commercial</li><li>Support client</li><li>Communication</li><li>Outils numériques</li><li>Modération</li><li>Déplacements</li><li>Logistique</li><li>Frais administratifs</li>
+      </ul>
+    </div>
+  </div>
+  <div class="pied"><span>MGCI · Vision, besoins et conditions de réussite</span><span class="n"></span></div>
+</div>
+
+<div class="d vi">
+  <h2>Les 3 conditions essentielles du <em>succès</em></h2>
+  <div class="cond">
+    <div>
+      <span class="n">1</span><h3>L'offre</h3>
+      <p>Constituer un réseau de vendeurs actifs proposant de vrais produits disponibles.</p>
+      <div class="but"><small>Premier objectif</small><b>1 000</b> vendeurs actifs<br>et <b>5 000+</b> offres</div>
+    </div>
+    <div>
+      <span class="n">2</span><h3>La demande</h3>
+      <p>Créer une utilisation réelle auprès des restaurants, hôtels, grossistes, revendeurs, transformateurs, commerçants et particuliers, et donc <b>connecter tous les marchés des villes et entre les villes</b>.</p>
+      <div class="but"><small>Le véritable indicateur</small>Le <b>volume de transactions</b>, pas seulement le nombre d'inscrits</div>
+    </div>
+    <div>
+      <span class="n">3</span><h3>La confiance</h3>
+      <p style="margin-bottom:1.6mm">Sécuriser l'expérience avec :</p>
+      <ul class="coches">
+        <li>des vendeurs vérifiés</li><li>la notation</li><li>la confirmation de réception</li><li>les codes de retrait et de livraison</li><li>la gestion des litiges</li><li>la traçabilité</li>
+      </ul>
+      <div class="but"><small>Progressivement</small>le <b>paiement sécurisé</b> et le <b>transport sécurisé</b></div>
+    </div>
+  </div>
+  <div class="pied"><span>MGCI · Vision, besoins et conditions de réussite</span><span class="n"></span></div>
+</div>
+
+<div class="d vi">
+  <div class="rang">
+    <div class="texte conf centre">
+      <h2>La confiance, <em>déjà dans l'application</em></h2>
+      <h3>Aujourd'hui</h3>
+      <ul class="coches">
+        <li><b>Vendeurs vérifiés</b> : badge « Identité vérifiée » après contrôle par l'équipe</li>
+        <li><b>Notation</b> : avis et commandes terminées sur le profil</li>
+        <li><b>Confirmation de réception</b> : 1 h pour vérifier à l'arrivée</li>
+        <li><b>Code de livraison</b> : le mot secret glissé par le vendeur dans le colis, 5 essais</li>
+        <li><b>Litiges</b> : discussion à trois avec l'équipe, photos à l'appui</li>
+        <li><b>Traçabilité</b> : photos et poids au départ, chaque étape datée</li>
+      </ul>
+      <h3 style="margin-top:3.5mm">Progressivement</h3>
+      <ul class="coches"><li class="bientot"><b>Paiement sécurisé et transport sécurisé</b> : pas encore branchés</li></ul>
+    </div>
+    <div style="display:flex;gap:6mm;flex:none">
+      <div style="width:46mm"><div class="tel"><img src="strategie/sources/img-vision/profil.jpg" alt="Profil d'un vendeur à l'identité vérifiée"></div><p class="lg"><b>Profil</b>Identité vérifiée, niveau, avis. Données d'exemple.</p></div>
+      <div style="width:46mm"><div class="tel"><img src="strategie/sources/img-vision/reception.jpg" alt="Confirmer la réception avec le mot secret"></div><p class="lg"><b>Réception</b>Le mot secret du vendeur, tapé à l'arrivée.</p></div>
+    </div>
+  </div>
+  <div class="pied"><span>MGCI · Vision, besoins et conditions de réussite</span><span class="n"></span></div>
+</div>
+
+<div class="d vi">
+  <div class="rang">
+    <div class="texte centre">
+      <h2>Une donnée <em>stratégique</em></h2>
+      <p class="lead" style="font-size:12.6pt">Chaque offre, demande et transaction peut contribuer à construire une lecture du marché en temps réel :</p>
+      <div class="lectures"><span>Produits disponibles</span><span>Zones de demande</span><span>Niveaux de prix</span><span>Flux entre villes</span><span>Périodes de tension</span><span>Évolution des besoins</span></div>
+      <p class="cite">MGCI ne veut donc pas seulement faciliter une transaction. Il veut progressivement professionnaliser les commerçants qu'il accompagne, structurer le marché et produire une donnée fiable permettant de mieux comprendre et anticiper les mouvements du vivrier.</p>
+    </div>
+    <div class="cote" style="width:50mm;flex:none">
+      <div class="tel"><img src="strategie/sources/img-vision/annee.jpg" alt="L'année du marché : récoltes du mois"></div>
+      <p class="lg"><b>L'année du marché</b>Ce qui est en récolte ce mois-ci, produit par produit. Données d'exemple.</p>
+    </div>
+  </div>
+  <div class="pied"><span>MGCI · Vision, besoins et conditions de réussite</span><span class="n"></span></div>
+</div>
+
+<div class="d fonce vi">
+  <div class="fin">
+    <div class="logo" style="font-size:20pt">marché<span class="g">de Gros</span></div>
+    <p class="intro">La vision portée par Zirihi Boga Levis Stanislas (Stan Levis) est simple :</p>
+    <div class="marches">
+      <div><small>Commencer par</small><b>digitaliser les transactions</b></div>
+      <div><small>&nbsp;</small><b>professionnaliser les acteurs</b></div>
+      <div><small>&nbsp;</small><b>construire la donnée</b></div>
+      <div><small>et, progressivement,</small><b>devenir une véritable infrastructure numérique du marché vivrier ivoirien</b></div>
+    </div>
+  </div>
+  <div class="pied"><span>MGCI · Vision, besoins et conditions de réussite</span><span class="n"></span></div>
+</div>

@@ -7,6 +7,7 @@
 | `3-Probleme-et-solution.pdf` | Le problème précis auquel le projet répond, chiffres sourcés à l'appui, et la réponse de l'application. |
 | `4-Marketing.pdf` | Comment remplir le marché sans budget : cibles, messages, canaux, plan en trois temps, indicateurs. |
 | `cube-marche-de-gros.pdf` | Le cube : les briques du cœur de l'application (acheteur `A`, vendeur `V`, juge `J`, étapes et temps `E`, contexte `C`) et les piliers. Le propriétaire combine les briques pour trouver les scénarios. Modèle `sources/cube.html` ; le nombre de briques de chaque face est compté tout seul (`{{nb_a}}`…). Seulement des règles réelles ; « bientôt » = décidé, pas encore dans l'application. |
+| `5-Vision-et-besoins.pdf` | MGCI : vision, besoins et conditions de réussite (texte du concepteur, Zirihi Boga Levis Stanislas), en 9 diapositives : l'ambition, l'application aujourd'hui (captures avec des données d'exemple), les besoins et le budget du lancement, les 3 conditions du succès, la confiance, la donnée. Modèle `sources/vision.html`, captures dans `sources/img-vision/`. Les montants sont ceux du concepteur (estimations), pas des chiffres mesurés. |
 
 Le détail du modèle économique (exemples, grille de calcul, questions pour les professionnels) est dans `docs/Marche-de-Gros-application-et-modele-economique.pdf`.
 
@@ -22,6 +23,6 @@ Aucun chiffre n'est inventé.
 
 - **Les chiffres** se mettent à jour tout seuls à chaque nouvelle fabrication.
 - **Les textes** sont dans `sources/*.html`. Les valeurs entre `{{…}}` sont remplacées à la fabrication : `{{membres}}`, `{{produits}}`, `{{m:identifiant}}` pour un chiffre du marché, `{{sources}}` pour la liste des sources.
-- **Fabriquer les PDF** : `node strategie/sources/construire.js`, ou `CHROMIUM=/chemin/vers/chrome node …` si Playwright ne trouve pas de navigateur. Un PDF n'est refait que si son contenu a changé (`sources/empreintes.json`).
+- **Fabriquer les PDF** : `node strategie/sources/construire.js`, ou `CHROMIUM=/chemin/vers/chrome node …` si Playwright ne trouve pas de navigateur. Un PDF n'est refait que si son contenu a changé, images du modèle comprises (`sources/empreintes.json`).
 - **Tout seul** : la tâche GitHub `.github/workflows/strategie-pdf.yml` refait les PDF chaque lundi matin (nouveaux chiffres de la base) et à chaque fusion qui touche les textes, le catalogue ou les photos. On peut aussi la lancer à la main : onglet **Actions** → « PDF de stratégie » → **Run workflow**.
 - Claude met à jour les modèles et refait les PDF à chaque changement important du projet : c'est une règle de `CLAUDE.md`.

@@ -4,6 +4,10 @@ Cet historique vient de `git log origin/main` du dépôt (607 commits) et des se
 
 Total couvert : 12 jours avec des commits (3, 4, 10, 11, 12, 17, 18, 19, 21, 22, 23 et 24 octobre 2026), 607 commits. Aucun commit les 20/10 et entre le 5 et le 9, le 13 et le 16 octobre.
 
+## 18/11/2026
+
+- Nouveau PDF `strategie/5-Vision-et-besoins.pdf` (9 diapositives 16:9) : « MGCI : vision, besoins et conditions de réussite », texte du concepteur repris tel quel, 8 captures fraîches de l'application (données d'exemple injectées seulement dans le navigateur). Modèle `strategie/sources/vision.html`, images `strategie/sources/img-vision/`. `construire.js` compte maintenant les images du modèle dans l'empreinte (une capture changée refait le PDF) ; les autres PDF ne changent pas.
+
 ## 17/11/2026
 
 - Onglet Prix, « Prix du moment » : la rangée « Tout le pays » + 3 villes devient un seul bouton « Tout le pays ▾ » (il affiche la ville choisie). Il ouvre une feuille du bas : ma ville d'abord (même sans offre), Tout le pays, puis toutes les villes qui ont des offres, triées par nombre d'offres (pastille), recherche au-delà de 8 villes. Abidjan reste une seule ville. Cache `mgci-v326`.

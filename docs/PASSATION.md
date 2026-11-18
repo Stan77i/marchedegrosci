@@ -2427,3 +2427,12 @@ Décisions du propriétaire (« ok pour tout », 17/11/2026), étude : propositi
 - Captures validées (« ok pour la PR »). Pages `categories` et `annee` refaites (`data-v2`) : méthodes `v2Tous()` (familles `this.FAMS`, nombres d'offres et de demandes en direct, tri par activité puis photo puis nom) et `v2Annee()` (`A.CAL`, mois courant, source par ligne). L'ancien cadran annuel et l'ancienne grille ne sont plus affichés (leur code reste, nettoyage au lot 16).
 - **Décision du propriétaire** pour le lot 9 : garder la carte actuelle (MapLibre), ne prendre que la logique de la maquette. Notée dans `CLAUDE.md` et `docs/brief-design/ETAT-DESIGN.md`.
 - Vérifié (iPhone émulé, clair et sombre) : aucune erreur.
+
+## 18/11/2026 · PDF « MGCI : vision, besoins et conditions de réussite »
+
+- Demande du propriétaire : un PDF de présentation à partir de son texte (concepteur : Zirihi Boga Levis Stanislas, Stan Levis), avec les captures essentielles. Branche `claude/pdf-vision-mgci`. Aucun code de l'application ni base touchés.
+- `strategie/5-Vision-et-besoins.pdf`, 9 diapositives 16:9 (même format que le pitch) : couverture ; l'ambition ; l'application aujourd'hui ; les besoins pour le lancement (tableau) ; budget (10 à 16 millions FCFA, puis 1,5 à 2,5 millions FCFA par mois) ; les 3 conditions ; la confiance (ce qui existe, et « progressivement » : paiement et transport sécurisés) ; la donnée stratégique ; la vision. Texte repris sans rien ajouter ; aucun chiffre du marché ivoirien ajouté ; les montants sont les estimations du concepteur.
+- Captures fraîches (iPhone 13, clair, échelle 2, fausses données injectées seulement dans le navigateur, aucun appel réel au serveur) : accueil, carte du réseau, fiche produit, proposer un prix, commande en route (mot secret), confirmer la réception, profil vérifié, L'année du marché. Légende « données d'exemple » sur chaque page qui en montre. Noms d'exemple seulement (Bamba S., Awa) : aucun membre réel. Images JPEG 660 px dans `strategie/sources/img-vision/` (PDF ≈ 0,8 Mo).
+- `strategie/sources/construire.js` : l'empreinte compte aussi les images citées par le modèle (`src="…"`), sinon une capture remplacée ne refaisait pas le PDF. Les 5 autres PDF restent « inchangé ».
+- Vérifié : chaque page convertie en image et relue (aucun débordement, captures nettes) ; contrastes mesurés sur le vrai fond (#6B6455 sur crème 5,1:1 ; #C9C1AC sur vert 7,1:1).
+
